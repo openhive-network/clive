@@ -1,0 +1,25 @@
+# This dockerfile is used to build the base image used by CI/CD jobs.
+# To make changes, build a new image with the updated version in it's tag and upload it to the gitlab container registry.
+#
+# In the `scripts/` there are two scripts to help with building and pushing new image.
+# This could be done after MANUALLY UPDATING some of the variables in both of them.
+# Probably only VERSION should be updated.
+# These scripts are:
+# - `build-ci-base-image.sh`, which builds the image and tags it with the MANUALLY GIVEN version.
+# - `push-ci-base-image.sh`, which pushes the image and will make sure you won't overwrite an existing image.
+
+FROM ubuntu:20.04
+
+RUN \
+    apt-get update && \
+    apt-get install -y \
+      python3 \
+      python3-pip \
+      python3-venv \
+      git \
+      curl
+
+ENV PATH="/root/.local/bin:$PATH"
+
+# install poetry in an isolated environment
+RUN curl -sSL https://install.python-poetry.org | python3 -
