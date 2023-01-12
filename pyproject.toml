@@ -22,5 +22,9 @@ packages = [
 python = "^3.8"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "7.2.0"
+
+
 [tool.poetry.scripts]
 clive = "clive.main:main"
