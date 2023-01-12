@@ -1,0 +1,22 @@
+[build-system]
+requires = ["poetry-core>=1.1.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "clive"
+version = "0.0.0"
+description = "CLI application for interacting with the Hive blockchain."
+readme = "README.md"
+repository = "https://gitlab.syncad.com/hive/clive"
+authors = [
+    "Mateusz Żebrak <mzebrak@syncad.com>",
+    "Krzysztof Mochocki <kmochocki@syncad.com>"
+]
+packages = [
+    { include = "clive" },
+]
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
