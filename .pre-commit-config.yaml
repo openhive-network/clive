@@ -15,3 +15,8 @@ repos:
     hooks:
       - id: poetry-lock
         name: checking if poetry.lock is consistent with pyproject.toml
+  - repo: https://github.com/psf/black
+    rev: 22.12.0
+    hooks:
+      - id: black
+        name: format code using black
