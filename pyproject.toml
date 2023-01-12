@@ -35,3 +35,10 @@ clive = "clive.main:main"
 
 [tool.black]
 line-length = 120
+
+
+[tool.isort]
+color_output = true
+known_first_party = ["clive"]
+line_length = 120
+profile = "black"
