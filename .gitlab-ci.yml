@@ -23,6 +23,7 @@ variables:
     - source venv/bin/activate
     - poetry install
     - pip list
+  tags: *shared_tags
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -33,7 +34,6 @@ pre_commit_checks:
   script:
     - echo -e "${TXT_BLUE}Checking all files with pre-commit hooks...${TXT_CLEAR}" &&
       pre-commit run --all-files
-  tags: *shared_tags
 
 
 formatting_with_black_check:
@@ -42,7 +42,6 @@ formatting_with_black_check:
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Black...${TXT_CLEAR}" &&
       black ${PACKAGES_TO_CHECK} --check --diff --color
-  tags: *shared_tags
 
 
 imports_order_with_isort_check:
@@ -51,7 +50,6 @@ imports_order_with_isort_check:
   script:
     - echo -e "${TXT_BLUE}Checking imports order with isort...${TXT_CLEAR}" &&
       isort ${PACKAGES_TO_CHECK} --check --diff --color
-  tags: *shared_tags
 
 
 type_check_with_mypy:
@@ -60,7 +58,6 @@ type_check_with_mypy:
   script:
     - echo -e "${TXT_BLUE}Checking types with mypy...${TXT_CLEAR}" &&
       mypy ${PACKAGES_TO_CHECK}
-  tags: *shared_tags
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -77,6 +74,5 @@ tests_launch:
   artifacts:
     reports:
       junit: report.xml
-  tags: *shared_tags
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
