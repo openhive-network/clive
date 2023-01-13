@@ -36,6 +36,14 @@ pre_commit_checks:
       pre-commit run --all-files
 
 
+lint_code_with_ruff:
+  stage: static_code_analysis
+  extends: .configuration
+  script:
+    - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
+      ruff ${PACKAGES_TO_CHECK} --diff
+
+
 formatting_with_black_check:
   stage: static_code_analysis
   extends: .configuration
