@@ -49,3 +49,10 @@ profile = "black"
 
 [tool.mypy]
 strict = true
+
+
+[tool.ruff]
+ignore = [
+    "I", # isort, run separately
+    "E501", # line too long, handled by black
+]
