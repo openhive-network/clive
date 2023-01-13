@@ -53,6 +53,15 @@ imports_order_with_isort_check:
       isort ${PACKAGES_TO_CHECK} --check --diff --color
   tags: *shared_tags
 
+
+type_check_with_mypy:
+  stage: static_code_analysis
+  extends: .configuration
+  script:
+    - echo -e "${TXT_BLUE}Checking types with mypy...${TXT_CLEAR}" &&
+      mypy ${PACKAGES_TO_CHECK}
+  tags: *shared_tags
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
