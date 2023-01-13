@@ -2,7 +2,7 @@ import subprocess
 from typing import Final
 
 
-def test_if_entry_point_works():
+def test_if_entry_point_works() -> None:
     # ARRANGE
     entry_point: Final[str] = "clive"
     exit_code_successful: Final[int] = 0
