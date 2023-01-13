@@ -15,6 +15,13 @@ repos:
     hooks:
       - id: poetry-lock
         name: checking if poetry.lock is consistent with pyproject.toml
+  - repo: https://github.com/charliermarsh/ruff-pre-commit
+    # Ruff version.
+    rev: 'v0.0.220'
+    hooks:
+      - id: ruff
+        name: linting code with Ruff
+        args: [ "--fix" ]
   - repo: https://github.com/psf/black
     rev: 22.12.0
     hooks:
