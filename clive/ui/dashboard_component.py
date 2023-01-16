@@ -26,8 +26,13 @@ class DashboardComponent(Component):
                         [
                             VSplit(
                                 [
-                                    self.__left_component,
-                                    self.__right_component,
+                                    Frame(
+                                        self.__left_component,
+                                        width=Dimension(weight=3),
+                                    ),
+                                    Frame(
+                                        self.__right_component,
+                                    ),
                                 ]
                             ),
                             self.__prompt_component,
@@ -52,7 +57,6 @@ class DashboardComponent(Component):
     def __create_left_component() -> TextArea:
         return TextArea(
             text="LEFT COMPONENT",
-            width=Dimension(weight=3),
             style="class:secondary",
             focus_on_click=True,
         )
@@ -61,7 +65,6 @@ class DashboardComponent(Component):
     def __create_right_component() -> TextArea:
         return TextArea(
             text="RIGHT COMPONENT",
-            width=Dimension(weight=1),
             style="class:primary",
             focus_on_click=True,
         )
