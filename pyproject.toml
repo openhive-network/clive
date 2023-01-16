@@ -20,6 +20,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
+dynaconf = "^3.1.11"
 prompt-toolkit = "3.0.36"
 
 
