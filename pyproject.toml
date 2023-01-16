@@ -52,6 +52,7 @@ profile = "black"
 
 [tool.mypy]
 strict = true
+disallow_untyped_decorators = false
 
 
 [tool.ruff]
