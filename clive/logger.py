@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import logging
-import sys
 from pathlib import Path
 from typing import Any, Callable, Final
 
@@ -57,11 +56,6 @@ def configure_logger() -> None:
         logging.getLogger(name).setLevel(logging.DEBUG)
 
     logger.remove()
-    logger.add(
-        sink=sys.stdout,
-        format=LOG_FORMAT,
-        filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
-    )
     logger.add(
         sink=LOG_FILE_PATH,
         format=LOG_FORMAT,
