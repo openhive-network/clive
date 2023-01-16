@@ -1,0 +1,4 @@
+[default.style]
+primary = "bg:#5C6B73"
+secondary = "bg:#0000ff"
+tertiary = "bg:#ff0000"

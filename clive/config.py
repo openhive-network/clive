@@ -11,6 +11,6 @@ LAUNCH_TIME: Final[datetime] = datetime.now()
 
 settings = Dynaconf(
     envvar_prefix="CLIVE",
-    settings_files=["settings.toml", ".secrets.toml"],
+    settings_files=["settings.toml", "style.toml", ".secrets.toml"],
     environments=True,
 )
