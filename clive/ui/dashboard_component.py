@@ -7,15 +7,24 @@ from prompt_toolkit.layout import Dimension, HorizontalAlign, HSplit, VSplit, Wi
 from prompt_toolkit.widgets import Box, Button, Frame, Label, TextArea
 
 from clive.ui.component import Component
+from clive.ui.left_component import LeftComponentFirst
 
 
 class DashboardComponent(Component):
     def __init__(self) -> None:
-        self.__left_component = self.__create_left_component()
+        self.__left_component: Component = LeftComponentFirst()
         self.__right_component = self.__create_right_component()
         self.__prompt_component = self.__create_prompt_component()
         self.__menu_component = self.__create_menu_component()
         super().__init__()
+
+    @property
+    def left_component(self) -> Component:
+        return self.__left_component
+
+    @left_component.setter
+    def left_component(self, component: Component) -> None:
+        self.__left_component = component
 
     def _create_container(self) -> HSplit:
         return HSplit(
@@ -27,7 +36,7 @@ class DashboardComponent(Component):
                             VSplit(
                                 [
                                     Frame(
-                                        self.__left_component,
+                                        self.__left_component.container,
                                         width=Dimension(weight=3),
                                     ),
                                     Frame(
@@ -52,14 +61,6 @@ class DashboardComponent(Component):
     def __welcome_message() -> str:
         time = datetime.now().strftime("%H:%M:%S")
         return f"Hello from CLIVE! {time}"
-
-    @staticmethod
-    def __create_left_component() -> TextArea:
-        return TextArea(
-            text="LEFT COMPONENT",
-            style="class:secondary",
-            focus_on_click=True,
-        )
 
     @staticmethod
     def __create_right_component() -> TextArea:
