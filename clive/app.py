@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Final
 
+from loguru import logger
 from prompt_toolkit import Application
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.key_binding.bindings.focus import focus_next, focus_previous
@@ -29,6 +30,7 @@ class Clive:
         self.__app.run()
 
     def set_focus(self, container: FocusableElement) -> None:
+        logger.debug(f"Setting focus to: {container}")
         self.__app.layout.focus(container)
 
     def __create_app(self) -> Application[Any]:
