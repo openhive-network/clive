@@ -1,21 +1,30 @@
-from datetime import datetime
-from typing import Optional
+from __future__ import annotations
 
-from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
-from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout import Dimension, HorizontalAlign, HSplit, VSplit, WindowAlign
-from prompt_toolkit.widgets import Box, Button, Frame, Label, TextArea
+from datetime import datetime
+from typing import TYPE_CHECKING
+
+from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
+from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign
+from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 
 from clive.ui.component import Component
+from clive.ui.fn_keys_menu_first import FnKeysMenuFirst
 from clive.ui.left_component import LeftComponentFirst
+from clive.ui.view import View
+from clive.ui.view_switcher import switch_view
+
+if TYPE_CHECKING:
+    from clive.ui.fn_keys_menu_component import FnKeysMenuComponent
 
 
 class DashboardComponent(Component):
     def __init__(self) -> None:
+        self.__key_bindings: list[KeyBindings] = []
+
         self.__left_component: Component = LeftComponentFirst()
         self.__right_component = self.__create_right_component()
         self.__prompt_component = self.__create_prompt_component()
-        self.__menu_component = self.__create_menu_component()
+        self.__menu_component: FnKeysMenuComponent = FnKeysMenuFirst(self)
         super().__init__()
 
     @property
@@ -25,6 +34,20 @@ class DashboardComponent(Component):
     @left_component.setter
     def left_component(self, component: Component) -> None:
         self.__left_component = component
+        self.__rebuild()
+
+    @property
+    def menu_component(self) -> Component:
+        return self.__menu_component
+
+    @menu_component.setter
+    def menu_component(self, component: FnKeysMenuComponent) -> None:
+        self.__menu_component = component
+        self.__rebuild()
+
+    @property
+    def key_bindings(self) -> list[KeyBindings]:
+        return self.__key_bindings
 
     def _create_container(self) -> HSplit:
         return HSplit(
@@ -46,7 +69,7 @@ class DashboardComponent(Component):
                             ),
                             self.__prompt_component,
                             Frame(
-                                self.__menu_component,
+                                self.__menu_component.container,
                             ),
                         ]
                     ),
@@ -54,7 +77,7 @@ class DashboardComponent(Component):
                 ),
             ],
             style="class:primary",
-            key_bindings=self.__get_key_bindings(),
+            key_bindings=merge_key_bindings(self.__key_bindings),
         )
 
     @staticmethod
@@ -79,23 +102,6 @@ class DashboardComponent(Component):
             focus_on_click=True,
         )
 
-    def __create_menu_component(self) -> VSplit:
-        return VSplit(
-            [
-                Button(text="F1 First", handler=self.f1_action),
-                Button(text="F2 Second"),
-                Button(text="F3 Third"),
-            ],
-            align=HorizontalAlign.LEFT,
-            padding=1,
-        )
-
-    def __get_key_bindings(self) -> KeyBindings:
-        kb = KeyBindings()
-        kb.add(Keys.F1)(self.f1_action)
-        return kb
-
-    def f1_action(self, event: Optional[KeyPressEvent] = None) -> None:
-        from clive.app import clive  # TODO: This is a hack. Find a better way to do this.
-
-        clive.set_focus(self.__menu_component.children[-1])
+    def __rebuild(self) -> None:
+        self._container = self._create_container()
+        switch_view(View(self))
