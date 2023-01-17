@@ -24,9 +24,6 @@ class Clive:
         self.__app = self.__create_app()
 
     def run(self) -> None:
-        from clive.ui.view_switcher import switch_view
-
-        switch_view("welcome")
         self.__app.run()
 
     def set_focus(self, container: FocusableElement) -> None:
@@ -41,7 +38,12 @@ class Clive:
             full_screen=True,
             mouse_support=True,
             refresh_interval=self.REFRESH_INTERVAL,
+            on_invalidate=lambda _: self.invalidate(),
         )
+
+    def invalidate(self) -> None:
+        # rebuild all components
+        root_component.invalidate()
 
     @staticmethod
     def __get_key_bindings() -> KeyBindings:
@@ -55,6 +57,10 @@ class Clive:
             event.app.exit()
 
         return kb
+
+    @property
+    def app(self) -> Application[Any]:
+        return self.__app
 
 
 clive = Clive()

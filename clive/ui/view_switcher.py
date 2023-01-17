@@ -24,5 +24,5 @@ def switch_view(view: str | View) -> None:
     logger.info(f"Switching view to {view}")
 
     container = view.component.container
-    root_component.container = container
+    root_component.component = view.component
     clive.set_focus(container)

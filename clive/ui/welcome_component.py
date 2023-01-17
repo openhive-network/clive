@@ -8,7 +8,6 @@ from prompt_toolkit.layout import HorizontalAlign, HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Button, Label
 
 from clive.ui.component import Component
-from clive.ui.view_switcher import switch_view
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
@@ -35,6 +34,8 @@ class WelcomeComponent(Component):
 
     @staticmethod
     def __continue(event: KeyPressEvent | None = None) -> None:
+        from clive.ui.view_switcher import switch_view
+
         switch_view("dashboard")
 
     def __get_key_bindings(self) -> KeyBindings:
