@@ -4,7 +4,7 @@ from typing import Final
 
 def test_if_entry_point_works() -> None:
     # ARRANGE
-    entry_point: Final[str] = "clive"
+    entry_point: Final[str] = "clive --help"
     exit_code_successful: Final[int] = 0
 
     # ACT
