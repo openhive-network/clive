@@ -2,27 +2,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from prompt_toolkit.layout import VSplit, WindowAlign
+from prompt_toolkit.layout import DynamicContainer
 from prompt_toolkit.widgets import Label
-
-from clive.ui.component import Component
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
 
 
-class RootComponent(Component):
+class RootComponent:
     """A root component that contains all other components. Should be created only once."""
 
     def __init__(self) -> None:
-        super().__init__()
-        self.__root_container = self._container
+        self.__container: AnyContainer = Label(text="No view selected... Loading...")
+        self.__root_container = self.__create_container()
 
-    def _create_container(self) -> VSplit:
-        return VSplit(
-            [
-                Label(text="No view selected", align=WindowAlign.CENTER),
-            ]
+    def __create_container(self) -> DynamicContainer:
+        return DynamicContainer(
+            lambda: self.__container,
         )
 
     @property
@@ -31,7 +27,7 @@ class RootComponent(Component):
 
     @container.setter
     def container(self, value: AnyContainer) -> None:
-        self.__root_container.children = [value]
+        self.__container = value
 
 
 root_component = RootComponent()
