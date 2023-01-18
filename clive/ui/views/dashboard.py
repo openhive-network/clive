@@ -7,13 +7,13 @@ from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
 from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 
-from clive.ui.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.component import Component
+from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.left_component import LeftComponentFirst
 from clive.ui.view import DynamicView
 
 if TYPE_CHECKING:
-    from clive.ui.buttons_menu import ButtonsMenu
+    from clive.ui.components.buttons_menu import ButtonsMenu
 
 
 class Dashboard(DynamicView):
