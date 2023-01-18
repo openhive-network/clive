@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.ui.views.dashboard import Dashboard
-from clive.ui.welcome_component import WelcomeComponent
+from clive.ui.welcome import Welcome
 
 if TYPE_CHECKING:
     from clive.ui.view import View
 
 views: dict[str, View] = {
-    "welcome": WelcomeComponent(),
+    "welcome": Welcome(),
     "dashboard": Dashboard(),
 }

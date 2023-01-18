@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
 
 
-class WelcomeComponent(View):
+class Welcome(View):
     """A component that is displayed when the user first starts the application."""
 
     def _create_container(self) -> HSplit:
