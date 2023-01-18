@@ -2,19 +2,14 @@ from __future__ import annotations
 
 from abc import ABC
 
-from prompt_toolkit.layout import AnyContainer
+from prompt_toolkit.layout import DynamicContainer
 
 from clive.ui.component import Component
 
 
 class DynamicComponent(Component, ABC):
-    """A component that allows for changing its container entirely at runtime."""
+    """A component that refreshes (rebuilds) its container automatically during runtime."""
 
-    @property
-    def container(self) -> AnyContainer:
-        """Get the container holding all the component's elements"""
-        return self._container
-
-    @container.setter
-    def container(self, container: AnyContainer) -> None:
-        self._container = container
+    def __init__(self) -> None:
+        super().__init__()
+        self._container = DynamicContainer(lambda: self._create_container())
