@@ -8,16 +8,15 @@ from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 
 from clive.ui.component import Component
+from clive.ui.dynamic_component import DynamicComponent
 from clive.ui.fn_keys_menu_first import FnKeysMenuFirst
 from clive.ui.left_component import LeftComponentFirst
-from clive.ui.view import View
-from clive.ui.view_switcher import switch_view
 
 if TYPE_CHECKING:
     from clive.ui.fn_keys_menu_component import FnKeysMenuComponent
 
 
-class DashboardComponent(Component):
+class DashboardComponent(DynamicComponent):
     def __init__(self) -> None:
         self.__key_bindings: list[KeyBindings] = []
 
@@ -34,7 +33,6 @@ class DashboardComponent(Component):
     @left_component.setter
     def left_component(self, component: Component) -> None:
         self.__left_component = component
-        self.__rebuild()
 
     @property
     def menu_component(self) -> Component:
@@ -43,7 +41,6 @@ class DashboardComponent(Component):
     @menu_component.setter
     def menu_component(self, component: FnKeysMenuComponent) -> None:
         self.__menu_component = component
-        self.__rebuild()
 
     @property
     def key_bindings(self) -> list[KeyBindings]:
@@ -101,7 +98,3 @@ class DashboardComponent(Component):
             style="bg:#000000 #ffffff",
             focus_on_click=True,
         )
-
-    def __rebuild(self) -> None:
-        self._container = self._create_container()
-        switch_view(View(self))
