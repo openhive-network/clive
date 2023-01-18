@@ -9,7 +9,7 @@ from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 
 from clive.ui.component import Component
 from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
-from clive.ui.left_component import LeftComponentFirst
+from clive.ui.components.left_component import LeftComponentFirst
 from clive.ui.view import DynamicView
 
 if TYPE_CHECKING:
