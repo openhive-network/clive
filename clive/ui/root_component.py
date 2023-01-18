@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
-from clive.ui.dynamic_component import DynamicComponent
+from clive.ui.component import DynamicComponent
 from clive.ui.view import View
 
 if TYPE_CHECKING:

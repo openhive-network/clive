@@ -1,7 +1,6 @@
 from abc import ABC
 
-from clive.ui.component import Component
-from clive.ui.dynamic_component import DynamicComponent
+from clive.ui.component import Component, DynamicComponent
 
 
 class View(Component, ABC):

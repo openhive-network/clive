@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
-from prompt_toolkit.layout import AnyContainer
+from prompt_toolkit.layout import AnyContainer, DynamicContainer
 
 
 class Component(ABC):
@@ -27,3 +27,11 @@ class Component(ABC):
     @abstractmethod
     def _create_container(self) -> AnyContainer:
         """Create the container holding all the component's elements defining its layout."""
+
+
+class DynamicComponent(Component, ABC):
+    """A component that refreshes (rebuilds) its container automatically during runtime."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._container = DynamicContainer(lambda: self._create_container())
