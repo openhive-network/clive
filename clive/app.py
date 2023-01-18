@@ -12,6 +12,7 @@ from prompt_toolkit.styles import Style
 
 from clive.config import settings
 from clive.ui.view_manager import view_manager
+from clive.ui.views.registration import Registration
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout.layout import FocusableElement
@@ -26,7 +27,7 @@ class Clive:
     def run(self) -> None:
         from clive.ui.view_switcher import switch_view
 
-        switch_view("welcome")
+        switch_view(Registration())
         self.__app.run()
 
     def set_focus(self, container: FocusableElement) -> None:
