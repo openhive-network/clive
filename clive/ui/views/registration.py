@@ -18,9 +18,9 @@ from clive.ui.view_switcher import switch_view
 
 class RegistrationForm(Component):
     def __init__(self):
-        self.__profile_name_input = TextArea(style="class:primary")
-        self.__password_input = TextArea(style="class:primary", password=True)
-        self.__password_repeat_input = TextArea(style="class:primary", password=True)
+        self.__profile_name_input = TextArea(style="class:tertiary", focus_on_click=True)
+        self.__password_input = TextArea(style="class:tertiary", password=True, focus_on_click=True)
+        self.__password_repeat_input = TextArea(style="class:tertiary", password=True, focus_on_click=True)
 
         super().__init__()
 
@@ -36,19 +36,22 @@ class RegistrationForm(Component):
                                     Label("Profile name:"),
                                     Label("Password: "),
                                     Label("Repeat password: "),
-                                ]
+                                ],
                             ),
                             HSplit(
                                 [
                                     self.__profile_name_input,
                                     self.__password_input,
                                     self.__password_repeat_input,
-                                ]
+                                ],
                             ),
-                        ]
+                        ],
+                        style="#000000",
                     ),
-                ]
-            )
+                ],
+                style="class:primary",
+            ),
+            style="class:secondary",
         )
 
     @property
@@ -94,9 +97,10 @@ class ButtonsBased(DynamicView, ABC):
     def _create_container(self) -> HSplit:
         return HSplit(
             [
-                self._main_pane.container,
+                Frame(self._main_pane.container),
                 Frame(self.__get_buttons_container(), style="class:primary"),
             ],
+            style="class:primary",
             key_bindings=merge_key_bindings(self._key_bindings),
         )
 
