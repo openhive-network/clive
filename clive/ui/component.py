@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 
+from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import AnyContainer, DynamicContainer
 
 
@@ -11,6 +12,7 @@ class Component(ABC):
     """
 
     def __init__(self) -> None:
+        self._key_bindings: list[KeyBindings] = []
         self._container = self._create_container()
 
     def __str__(self) -> str:
@@ -22,6 +24,10 @@ class Component(ABC):
     @property
     def container(self) -> AnyContainer:
         return self._container
+
+    @property
+    def key_bindings(self) -> list[KeyBindings]:
+        return self._key_bindings
 
     @abstractmethod
     def _create_container(self) -> AnyContainer:

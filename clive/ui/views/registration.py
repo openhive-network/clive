@@ -3,14 +3,17 @@ from __future__ import annotations
 from abc import ABC
 from typing import Sequence
 
-from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
+from loguru import logger
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent, merge_key_bindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import AnyContainer, HSplit, VSplit
 from prompt_toolkit.widgets import Box, Button, Frame, Label, TextArea
 
 from clive.ui.component import Component
 from clive.ui.components.buttons_menu import ButtonsMenu
+from clive.ui.focus import set_focus
 from clive.ui.view import DynamicView
+from clive.ui.view_switcher import switch_view
 
 
 class RegistrationForm(Component):
@@ -62,39 +65,43 @@ class RegistrationForm(Component):
 
 
 class RegistrationButtons(ButtonsMenu):
-    def __init__(self, parent: Registration) -> None:
-        self.__parent = parent
+    def __init__(self) -> None:
         super().__init__()
 
-        self.__parent.key_bindings.append(self._key_bindings)
-
     def _create_buttons(self) -> Sequence[Button]:
-        return [Button("F1 Help"), Button("F2 Create Profile", handler=self.__f2_action)]
+        return [Button("F1 Help", handler=self.__f1_action), Button("F2 Create Profile", handler=self.__f2_action)]
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
+        kb.add(Keys.F1)(self.__f1_action)
         kb.add(Keys.F2)(self.__f2_action)
         return kb
 
-    def __f2_action(self) -> None:
-        print(self.__parent.main_pane.profile_name)
+    def __f1_action(self, event: KeyPressEvent | None = None) -> None:
+        print(self.context.main_pane.profile_name)
+
+    def __f2_action(self, event: KeyPressEvent | None = None) -> None:
+        # print(self.context.main_pane.profile_name)
+        switch_view('dashboard')
 
 
 class ButtonsBased(DynamicView, ABC):
-    def __init__(self, main_pane: Component, buttons: ButtonsMenu):
-        self._key_bindings: list[KeyBindings] = []
-        self.__main_pane = main_pane
-        self.__buttons = buttons
+    def __init__(self, main_pane: Component, buttons: ButtonsMenu | None = None) -> None:
+        self._buttons = buttons
+        self._main_pane = main_pane
         super().__init__()
 
     def _create_container(self) -> HSplit:
         return HSplit(
             [
-                self.__main_pane.container,
-                Frame(self.__buttons.container, style="class:primary"),
+                self._main_pane.container,
+                Frame(self.__get_buttons_container(), style="class:primary"),
             ],
             key_bindings=merge_key_bindings(self._key_bindings),
         )
+
+    def __get_buttons_container(self) -> AnyContainer:
+        return self._buttons.container if self._buttons else Label("No buttons")
 
     @property
     def key_bindings(self) -> list[KeyBindings]:
@@ -103,12 +110,11 @@ class ButtonsBased(DynamicView, ABC):
 
 class Registration(ButtonsBased):
     def __init__(self):
-        self._key_bindings: list[KeyBindings] = []
-        self.__main_pane = RegistrationForm()
-        self.__buttons = RegistrationButtons(self)
-        super().__init__(self.__main_pane, self.__buttons)
-        print(self._key_bindings)
+        main_pane = RegistrationForm()
+        buttons = RegistrationButtons()
+        super().__init__(main_pane, buttons)
+        self._buttons.context = self
 
     @property
-    def main_pane(self) -> RegistrationForm:
-        return self.__main_pane
+    def main_pane(self):
+        return self._main_pane

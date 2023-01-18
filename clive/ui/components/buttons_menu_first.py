@@ -17,12 +17,8 @@ if TYPE_CHECKING:
 
 
 class ButtonsMenuFirst(ButtonsMenu):
-    def __init__(self, parent: Dashboard) -> None:
-        self.__parent = parent
-
+    def __init__(self) -> None:
         super().__init__()
-
-        self.__parent.key_bindings.append(self._key_bindings)
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
         set_focus(self._buttons[-1])
@@ -32,9 +28,10 @@ class ButtonsMenuFirst(ButtonsMenu):
             ButtonsMenuSecond,
         )
 
-        self.__parent.key_bindings.remove(self._key_bindings)
-        self.__parent.left_component = LeftComponentSecond()
-        self.__parent.menu_component = ButtonsMenuSecond(self.__parent)
+        self._context.key_bindings.remove(self._key_bindings)
+        self._context.left_component = LeftComponentSecond()
+        self._context.menu_component = ButtonsMenuSecond()
+        self._context.menu_component.context = self._context
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()

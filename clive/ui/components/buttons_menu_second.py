@@ -13,19 +13,13 @@ from clive.ui.components.left_component import LeftComponentFirst
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
 
-    from clive.ui.views.dashboard import Dashboard
 
 
 class ButtonsMenuSecond(ButtonsMenu):
-    def __init__(self, parent: Dashboard) -> None:
-        self.__parent = parent
-        self.__parent.key_bindings.append(self._get_key_bindings())
-
-        super().__init__()
-
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
-        self.__parent.left_component = LeftComponentFirst()
-        self.__parent.menu_component = ButtonsMenuFirst(self.__parent)
+        self._context.left_component = LeftComponentFirst()
+        self._context.menu_component = ButtonsMenuFirst()
+        self._context.menu_component.context = self._context
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()

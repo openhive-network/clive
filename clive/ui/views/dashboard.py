@@ -18,13 +18,12 @@ if TYPE_CHECKING:
 
 class Dashboard(DynamicView):
     def __init__(self) -> None:
-        self.__key_bindings: list[KeyBindings] = []
-
         self.__left_component: Component = LeftComponentFirst()
         self.__right_component = self.__create_right_component()
         self.__prompt_component = self.__create_prompt_component()
-        self.__menu_component: ButtonsMenu = ButtonsMenuFirst(self)
+        self.__menu_component: ButtonsMenu = ButtonsMenuFirst()
         super().__init__()
+        self.__menu_component.context = self
 
     @property
     def left_component(self) -> Component:
@@ -41,10 +40,6 @@ class Dashboard(DynamicView):
     @menu_component.setter
     def menu_component(self, component: ButtonsMenu) -> None:
         self.__menu_component = component
-
-    @property
-    def key_bindings(self) -> list[KeyBindings]:
-        return self.__key_bindings
 
     def _create_container(self) -> HSplit:
         return HSplit(
@@ -74,7 +69,7 @@ class Dashboard(DynamicView):
                 ),
             ],
             style="class:primary",
-            key_bindings=merge_key_bindings(self.__key_bindings),
+            key_bindings=merge_key_bindings(self._key_bindings),
         )
 
     @staticmethod
