@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from loguru import logger
 
 from clive.exceptions import ViewDoesNotExist
-from clive.ui.root_component import root_component
+from clive.ui.view_manager import view_manager
 
 if TYPE_CHECKING:
     from clive.ui.view import View
@@ -22,4 +22,4 @@ def switch_view(view: str | View) -> None:
 
     logger.info(f"Switching view to {view}")
 
-    root_component.view = view
+    view_manager.active_view = view

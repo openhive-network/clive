@@ -11,7 +11,7 @@ from prompt_toolkit.layout import Layout
 from prompt_toolkit.styles import Style
 
 from clive.config import settings
-from clive.ui.root_component import root_component
+from clive.ui.view_manager import view_manager
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout.layout import FocusableElement
@@ -35,13 +35,13 @@ class Clive:
 
     def __create_app(self) -> Application[Any]:
         return Application(
-            layout=Layout(root_component.container),
+            layout=Layout(view_manager.active_container),
             style=Style.from_dict(settings.style),
             key_bindings=self.__get_key_bindings(),
             full_screen=True,
             mouse_support=True,
             refresh_interval=self.REFRESH_INTERVAL,
-            before_render=lambda _: self.__app.layout.focus(root_component.container),
+            before_render=lambda _: self.__app.layout.focus(view_manager.active_container),
         )
 
     @staticmethod
