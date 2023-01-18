@@ -7,6 +7,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
 from clive.ui.fn_keys_menu_component import FnKeysMenuComponent
+from clive.ui.focus import set_focus
 from clive.ui.left_component import LeftComponentSecond
 
 if TYPE_CHECKING:
@@ -24,9 +25,7 @@ class FnKeysMenuFirst(FnKeysMenuComponent):
         self.__parent.key_bindings.append(self._key_bindings)
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
-        from clive.app import clive  # TODO: This is a hack. Find a better way to do this.
-
-        clive.set_focus(self._buttons[-1])
+        set_focus(self._buttons[-1])
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
         from clive.ui.fn_keys_menu_second import FnKeysMenuSecond  # TODO: This is a hack. Find a better way to do this.
