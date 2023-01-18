@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 def switch_view(view: str | View) -> None:
     if isinstance(view, str):
-        from clive.ui.views import views
+        from clive.ui.views_holder import views
 
         try:
             view = views[view]
