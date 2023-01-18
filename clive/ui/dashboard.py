@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from clive.ui.fn_keys_menu_component import FnKeysMenuComponent
 
 
-class DashboardComponent(DynamicView):
+class Dashboard(DynamicView):
     def __init__(self) -> None:
         self.__key_bindings: list[KeyBindings] = []
 

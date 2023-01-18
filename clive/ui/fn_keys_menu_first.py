@@ -13,11 +13,11 @@ from clive.ui.left_component import LeftComponentSecond
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
 
-    from clive.ui.dashboard_component import DashboardComponent
+    from clive.ui.dashboard import Dashboard
 
 
 class FnKeysMenuFirst(FnKeysMenuComponent):
-    def __init__(self, parent: DashboardComponent) -> None:
+    def __init__(self, parent: Dashboard) -> None:
         self.__parent = parent
 
         super().__init__()
