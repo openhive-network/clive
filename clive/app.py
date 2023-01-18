@@ -41,6 +41,7 @@ class Clive:
             full_screen=True,
             mouse_support=True,
             refresh_interval=self.REFRESH_INTERVAL,
+            before_render=lambda _: self.__app.layout.focus(root_component.container),
         )
 
     @staticmethod

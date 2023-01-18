@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from clive.app import clive
 from clive.exceptions import ViewDoesNotExist
 from clive.ui.root_component import root_component
 
@@ -24,4 +23,3 @@ def switch_view(view: str | View) -> None:
     logger.info(f"Switching view to {view}")
 
     root_component.component = view.component
-    clive.set_focus(view.component.container)
