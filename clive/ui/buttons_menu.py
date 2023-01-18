@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyBindings
 
 
-class FnKeysMenuComponent(Component, ABC):
+class ButtonsMenu(Component, ABC):
     def __init__(self) -> None:
         self._buttons = self._create_buttons()
         self._key_bindings = self._get_key_bindings()

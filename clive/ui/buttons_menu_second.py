@@ -6,8 +6,8 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
-from clive.ui.fn_keys_menu_component import FnKeysMenuComponent
-from clive.ui.fn_keys_menu_first import FnKeysMenuFirst
+from clive.ui.buttons_menu import ButtonsMenu
+from clive.ui.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.left_component import LeftComponentFirst
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from clive.ui.views.dashboard import Dashboard
 
 
-class FnKeysMenuSecond(FnKeysMenuComponent):
+class ButtonsMenuSecond(ButtonsMenu):
     def __init__(self, parent: Dashboard) -> None:
         self.__parent = parent
         self.__parent.key_bindings.append(self._get_key_bindings())
@@ -25,7 +25,7 @@ class FnKeysMenuSecond(FnKeysMenuComponent):
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
         self.__parent.left_component = LeftComponentFirst()
-        self.__parent.menu_component = FnKeysMenuFirst(self.__parent)
+        self.__parent.menu_component = ButtonsMenuFirst(self.__parent)
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
