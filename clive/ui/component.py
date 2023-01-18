@@ -7,8 +7,7 @@ from prompt_toolkit.layout import AnyContainer, DynamicContainer
 
 class Component(ABC):
     """
-    A component is a part of an application that can be displayed on the screen in another component
-    or as a separate view.
+    A component is a part of an application that can be displayed on the screen in another component or view.
     """
 
     def __init__(self) -> None:
@@ -26,7 +25,7 @@ class Component(ABC):
 
     @abstractmethod
     def _create_container(self) -> AnyContainer:
-        """Create the container holding all the component's elements defining its layout."""
+        """Create a container containing all the elements that define the layout."""
 
 
 class DynamicComponent(Component, ABC):
