@@ -2,32 +2,34 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from prompt_toolkit.layout import DynamicContainer
 from prompt_toolkit.widgets import Label
+
+from clive.ui.dynamic_component import DynamicComponent
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
 
+    from clive.ui.component import Component
 
-class RootComponent:
+
+class RootComponent(DynamicComponent):
     """A root component that contains all other components. Should be created only once."""
 
     def __init__(self) -> None:
-        self.__container: AnyContainer = Label(text="No view selected... Loading...")
-        self.__root_container = self.__create_container()
+        self.__component: Component | None = None
+        self.__default_container = Label(text="No view selected... Loading...")
+        super().__init__()
 
-    def __create_container(self) -> DynamicContainer:
-        return DynamicContainer(
-            lambda: self.__container,
-        )
+    def _create_container(self) -> AnyContainer:
+        return self.__component.container if self.__component else self.__default_container
 
     @property
-    def container(self) -> AnyContainer:
-        return self.__root_container
+    def component(self) -> Component | None:
+        return self.__component
 
-    @container.setter
-    def container(self, value: AnyContainer) -> None:
-        self.__container = value
+    @component.setter
+    def component(self, component: Component) -> None:
+        self.__component = component
 
 
 root_component = RootComponent()
