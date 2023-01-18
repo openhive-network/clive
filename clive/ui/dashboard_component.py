@@ -8,15 +8,15 @@ from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 
 from clive.ui.component import Component
-from clive.ui.dynamic_component import DynamicComponent
 from clive.ui.fn_keys_menu_first import FnKeysMenuFirst
 from clive.ui.left_component import LeftComponentFirst
+from clive.ui.view import DynamicView
 
 if TYPE_CHECKING:
     from clive.ui.fn_keys_menu_component import FnKeysMenuComponent
 
 
-class DashboardComponent(DynamicComponent):
+class DashboardComponent(DynamicView):
     def __init__(self) -> None:
         self.__key_bindings: list[KeyBindings] = []
 

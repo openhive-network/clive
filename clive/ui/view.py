@@ -1,24 +1,17 @@
-from __future__ import annotations
-
 from abc import ABC
-from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from clive.ui.component import Component
+from clive.ui.component import Component
+from clive.ui.dynamic_component import DynamicComponent
 
 
-class View(ABC):
-    """Component that can be displayed on its own in the application."""
+class View(Component, ABC):
+    """
+    A view is a kind of component that consists of other components and determines their final layout/arrangement.
+    It should not be part of another view or component. Specifies the final appearance that can be shown to the user.
+    """
 
-    def __init__(self, component: Component) -> None:
-        self._component = component
 
-    def __str__(self) -> str:
-        return f"{self.__class__.__name__}({self._component})"
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    @property
-    def component(self) -> Component:
-        return self._component
+class DynamicView(View, DynamicComponent, ABC):
+    """
+    A dynamic view is a view that can change its appearance at runtime. This means that it can update its content (components).
+    """

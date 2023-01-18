@@ -22,4 +22,4 @@ def switch_view(view: str | View) -> None:
 
     logger.info(f"Switching view to {view}")
 
-    root_component.component = view.component
+    root_component.view = view
