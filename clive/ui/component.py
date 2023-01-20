@@ -65,3 +65,12 @@ class ConfigurableComponent(Component[T]):
         self.__is_editable = False
         return False
 
+
+def safe_edit(function: Callable[[Any, Any], None]) -> Callable[[Any, Any], None]:
+    def impl(self: Any, value: Any) -> None:
+        assert self._ConfigurableComponent__is_editable, "Cannot edit outside `with` statement"
+        function(self, value)
+        if self._ConfigurableComponent__is_configured:
+            self._rebuild()
+
+    return update_wrapper(impl, function)
