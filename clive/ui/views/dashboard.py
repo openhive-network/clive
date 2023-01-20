@@ -4,28 +4,28 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
-from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign
+from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign, AnyContainer
 from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 
 from clive.ui.component import Component
 from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.components.left_component import LeftComponentFirst
-from clive.ui.view import View
-from clive.ui.view_manager import view_manager
+from clive.ui.view import ReadyView
+from clive.ui.view_manager import ViewManager
 
 if TYPE_CHECKING:
     from clive.ui.components.buttons_menu import ButtonsMenu
 
 
-class Dashboard(View):
-    def __init__(self) -> None:
+class Dashboard(ReadyView):
+    def __init__(self, parent: ViewManager) -> None:
         self.__key_bindings: list[KeyBindings] = []
 
         self.__left_component: Component[Dashboard] = LeftComponentFirst(self)
         self.__right_component = self.__create_right_component()
         self.__prompt_component = self.__create_prompt_component()
         self.__menu_component: ButtonsMenu[Dashboard] = ButtonsMenuFirst(self)
-        super().__init__(view_manager)
+        super().__init__(parent)
 
     @property
     def left_component(self) -> Component[Dashboard]:
@@ -47,7 +47,7 @@ class Dashboard(View):
     def key_bindings(self) -> list[KeyBindings]:
         return self.__key_bindings
 
-    def _create_container(self) -> HSplit:
+    def _create_container(self) -> AnyContainer:
         return HSplit(
             [
                 Label(text=self.__welcome_message, align=WindowAlign.CENTER),
@@ -57,7 +57,7 @@ class Dashboard(View):
                             VSplit(
                                 [
                                     Frame(
-                                        self.__left_component.container,
+                                        self.left_component.container,
                                         width=Dimension(weight=3),
                                     ),
                                     Frame(
@@ -81,7 +81,7 @@ class Dashboard(View):
     @staticmethod
     def __welcome_message() -> str:
         time = datetime.now().strftime("%H:%M:%S")
-        return f"Hello from CLIVE! {time}"
+        return "Hello from CLIVE! %s" % time
 
     @staticmethod
     def __create_right_component() -> TextArea:
