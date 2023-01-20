@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from prompt_toolkit.layout import HSplit
 from prompt_toolkit.widgets import Frame
+from clive.ui.component import safe_edit
 
-from clive.ui.view import View
-from clive.ui.view_manager import view_manager
+from clive.ui.view import ConfigurableView, View
+from clive.ui.view_manager import ViewManager, view_manager
 
 if TYPE_CHECKING:
     from typing import Any  # noqa: F401
@@ -20,11 +21,9 @@ M = TypeVar("M", bound="Component[Any]")
 B = TypeVar("B", bound="ButtonsMenu[Any]")
 
 
-class ButtonsBased(View, Generic[M, B], ABC):
-    def __init__(self, main_pane: M, buttons: B) -> None:
-        self._main_panel = main_pane
-        self._buttons = buttons
-        super().__init__(view_manager)
+class ButtonsBased(ConfigurableView, Generic[M, B], ABC):
+    def __init__(self, parent: ViewManager) -> None:
+        super().__init__(parent)
 
     def _create_container(self) -> HSplit:
         return HSplit(
@@ -41,10 +40,15 @@ class ButtonsBased(View, Generic[M, B], ABC):
         return self._main_panel
 
     @main_panel.setter
+    @safe_edit
     def main_panel(self, value: M) -> None:
         self._main_panel = value
-        self._rebuild()
 
     @property
     def buttons(self) -> B:
         return self._buttons
+
+    @buttons.setter
+    @safe_edit
+    def buttons(self, value: B) -> None:
+        self._buttons = value
