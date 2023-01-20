@@ -5,7 +5,7 @@ from prompt_toolkit.widgets import Button
 from clive.ui.menu_handlers import MenuHandlers
 from prompt_toolkit.key_binding import KeyBindings
 
-from clive.ui.view import ConfigurableView
+from clive.ui.view import ConfigurableView, ReadyView
 from clive.ui.views.button_based import ButtonsBased
 from clive.ui.views.dashboard import Dashboard
 from clive.ui.views.default_menu_view import DefaultMenuView
@@ -23,7 +23,7 @@ class MockButtons(ButtonsMenu[ButtonsBased]):
     def _get_key_bindings(self) -> KeyBindings:
         return KeyBindings()
 
-class DefaultMenuWithButtonView(ConfigurableView):
+class DefaultMenuWithButtonView(ReadyView):
     def _create_container(self) -> DefaultMenuView:
         with DefaultMenuView(parent=self._parent) as dmv:
             with ButtonsBased(parent=dmv) as bb:

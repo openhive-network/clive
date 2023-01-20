@@ -26,11 +26,7 @@ class Clive:
 
     def run(self) -> None:
         from clive.ui.view_switcher import switch_view
-
-        with DefaultMenuWithButtonView(parent=view_manager) as dmv:
-            pass
-
-        switch_view(dmv)
+        switch_view(DefaultMenuWithButtonView(parent=view_manager))
         self.__app.run()
 
     def exit(self) -> None:
