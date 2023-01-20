@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TypeVar
 
-from prompt_toolkit.layout import AnyContainer, DynamicContainer
+from prompt_toolkit.layout import AnyContainer
 
 from clive.ui.parented import Parented
 from clive.ui.rebuildable import Rebuildable
@@ -36,11 +36,3 @@ class Component(Parented[T], Rebuildable, ABC):
         """Rebuilds the current component and then calls the _rebuild method of its parent to propagate the change."""
         self._container = self._create_container()
         self._parent._rebuild()
-
-
-class DynamicComponent(Component, ABC):
-    """A component that refreshes (rebuilds) its container automatically during runtime."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self._container = DynamicContainer(lambda: self._create_container())
