@@ -29,6 +29,10 @@ class Clive:
         switch_view("mock")
         self.__app.run()
 
+    def exit(self) -> None:
+        # TODO: Make it more smooth (currently it brake console)
+        self.__app.exit()
+
     def set_focus(self, container: FocusableElement) -> None:
         logger.debug(f"Setting focus to: {container}")
         self.__app.layout.focus(container)
