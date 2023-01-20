@@ -1,20 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional, Union
 
-from prompt_toolkit.layout import VSplit, to_container
-from prompt_toolkit.widgets import Label
+from prompt_toolkit.layout import to_container
 
 from clive.exceptions import ViewException
 from clive.ui.form_view import FormView
 from clive.ui.rebuildable import Rebuildable
-from clive.ui.view import View
-
-if TYPE_CHECKING:
-    from prompt_toolkit.layout import AnyContainer
+from clive.ui.view_manager_base import ViewManagerBase
+from clive.ui.view import ConfigurableView, ReadyView
 
 
-class ViewManager(Rebuildable):
+View = Union[ReadyView, ConfigurableView]
+
+class ViewManager(ViewManagerBase, Rebuildable):
     """
     A root that contains all other components.
     It doesn't define any layout, it just uses the one present in the currently set (active) view.
@@ -22,13 +21,8 @@ class ViewManager(Rebuildable):
     """
 
     def __init__(self) -> None:
-        self.__active_view: View | None = None
-        self.__default_container = Label(text="No view selected... Loading...")
-        self.__root_container = VSplit([self.__default_container])
-
-    @property
-    def active_container(self) -> AnyContainer:
-        return self.__root_container
+        self.__active_view: Optional[View] = None
+        super().__init__()
 
     @property
     def active_view(self) -> View:
@@ -39,7 +33,7 @@ class ViewManager(Rebuildable):
 
     @active_view.setter
     def active_view(self, value: View) -> None:
-        settable = (View, FormView)
+        settable = (ConfigurableView, ReadyView, FormView)
         if not isinstance(value, settable):
             raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
 
@@ -47,7 +41,7 @@ class ViewManager(Rebuildable):
         self._rebuild()
 
     def _rebuild(self) -> None:
-        self.__root_container.children = [to_container(self.active_view.container)]
+        self._root_container.children = [to_container(self.active_view.container)]
 
 
 view_manager = ViewManager()
