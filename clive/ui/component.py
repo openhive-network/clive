@@ -1,16 +1,21 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from typing import TypeVar
 
 from prompt_toolkit.layout import AnyContainer, DynamicContainer
 
+from clive.ui.parented import Parented
+from clive.ui.rebuildable import Rebuildable
 
-class Component(ABC):
-    """
-    A component is a part of an application that can be displayed on the screen in another component or view.
-    """
+T = TypeVar("T", bound=Rebuildable)
 
-    def __init__(self) -> None:
+
+class Component(Parented[T], Rebuildable, ABC):
+    """A component is a part of an application that can be displayed on the screen in another component or view."""
+
+    def __init__(self, parent: T) -> None:
+        super().__init__(parent)
         self._container = self._create_container()
 
     def __str__(self) -> str:
@@ -26,6 +31,11 @@ class Component(ABC):
     @abstractmethod
     def _create_container(self) -> AnyContainer:
         """Create a container containing all the elements that define the layout."""
+
+    def _rebuild(self) -> None:
+        """Rebuilds the current component and then calls the _rebuild method of its parent to propagate the change."""
+        self._container = self._create_container()
+        self._parent._rebuild()
 
 
 class DynamicComponent(Component, ABC):

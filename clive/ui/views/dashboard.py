@@ -10,36 +10,37 @@ from prompt_toolkit.widgets import Box, Frame, Label, TextArea
 from clive.ui.component import Component
 from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.components.left_component import LeftComponentFirst
-from clive.ui.view import DynamicView
+from clive.ui.view import View
+from clive.ui.view_manager import view_manager
 
 if TYPE_CHECKING:
     from clive.ui.components.buttons_menu import ButtonsMenu
 
 
-class Dashboard(DynamicView):
+class Dashboard(View):
     def __init__(self) -> None:
         self.__key_bindings: list[KeyBindings] = []
 
-        self.__left_component: Component = LeftComponentFirst()
+        self.__left_component: Component[Dashboard] = LeftComponentFirst(self)
         self.__right_component = self.__create_right_component()
         self.__prompt_component = self.__create_prompt_component()
-        self.__menu_component: ButtonsMenu = ButtonsMenuFirst(self)
-        super().__init__()
+        self.__menu_component: ButtonsMenu[Dashboard] = ButtonsMenuFirst(self)
+        super().__init__(view_manager)
 
     @property
-    def left_component(self) -> Component:
+    def left_component(self) -> Component[Dashboard]:
         return self.__left_component
 
     @left_component.setter
-    def left_component(self, component: Component) -> None:
+    def left_component(self, component: Component[Dashboard]) -> None:
         self.__left_component = component
 
     @property
-    def menu_component(self) -> Component:
+    def menu_component(self) -> Component[Dashboard]:
         return self.__menu_component
 
     @menu_component.setter
-    def menu_component(self, component: ButtonsMenu) -> None:
+    def menu_component(self, component: ButtonsMenu[Dashboard]) -> None:
         self.__menu_component = component
 
     @property

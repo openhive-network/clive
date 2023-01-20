@@ -16,13 +16,11 @@ if TYPE_CHECKING:
     from clive.ui.views.dashboard import Dashboard
 
 
-class ButtonsMenuFirst(ButtonsMenu):
+class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
     def __init__(self, parent: Dashboard) -> None:
-        self.__parent = parent
+        super().__init__(parent)
 
-        super().__init__()
-
-        self.__parent.key_bindings.append(self._key_bindings)
+        self._parent.key_bindings.append(self._key_bindings)
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
         set_focus(self._buttons[-1])
@@ -32,9 +30,10 @@ class ButtonsMenuFirst(ButtonsMenu):
             ButtonsMenuSecond,
         )
 
-        self.__parent.key_bindings.remove(self._key_bindings)
-        self.__parent.left_component = LeftComponentSecond()
-        self.__parent.menu_component = ButtonsMenuSecond(self.__parent)
+        self._parent.key_bindings.remove(self._key_bindings)
+        self._parent.left_component = LeftComponentSecond(self._parent)
+        self._parent.menu_component = ButtonsMenuSecond(self._parent)
+        self._rebuild()
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()

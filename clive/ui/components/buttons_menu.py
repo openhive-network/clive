@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Sequence
+from typing import TYPE_CHECKING, Any, Sequence, TypeVar
 
 from prompt_toolkit.layout import HorizontalAlign, VSplit
 from prompt_toolkit.widgets import Button
@@ -11,12 +11,14 @@ from clive.ui.component import Component
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyBindings
 
+T = TypeVar("T", bound=Component[Any])
 
-class ButtonsMenu(Component, ABC):
-    def __init__(self) -> None:
+
+class ButtonsMenu(Component[T], ABC):
+    def __init__(self, parent: T) -> None:
         self._buttons = self._create_buttons()
         self._key_bindings = self._get_key_bindings()
-        super().__init__()
+        super().__init__(parent)
 
     def _create_container(self) -> VSplit:
         return VSplit(
