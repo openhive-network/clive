@@ -26,7 +26,7 @@ class Clive:
     def run(self) -> None:
         from clive.ui.view_switcher import switch_view
 
-        switch_view("form")
+        switch_view("mock")
         self.__app.run()
 
     def set_focus(self, container: FocusableElement) -> None:

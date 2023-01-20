@@ -32,7 +32,8 @@ class Component(Parented[T], Rebuildable, ABC):
     def _create_container(self) -> AnyContainer:
         """Create a container containing all the elements that define the layout."""
 
-    def _rebuild(self) -> None:
+    def _rebuild(self, self_only: bool = False) -> None:
         """Rebuilds the current component and then calls the _rebuild method of its parent to propagate the change."""
         self._container = self._create_container()
-        self._parent._rebuild()
+        if not self_only:
+            self._parent._rebuild()

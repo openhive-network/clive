@@ -8,7 +8,7 @@ from clive.ui.form_view import FormView
 from clive.ui.views.button_based import ButtonsBased
 
 
-class Form(ButtonsBased):
+class Form(ButtonsBased[FormView, FormButtons]):
     def __init__(self) -> None:
         self.__views = [
             First(self),
