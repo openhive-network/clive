@@ -12,6 +12,7 @@ from prompt_toolkit.styles import Style
 
 from clive.config import settings
 from clive.ui.view_manager import view_manager
+from clive.ui.views.default_menu_with_button_view import DefaultMenuWithButtonView
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout.layout import FocusableElement
@@ -26,7 +27,10 @@ class Clive:
     def run(self) -> None:
         from clive.ui.view_switcher import switch_view
 
-        switch_view("mock")
+        with DefaultMenuWithButtonView(parent=view_manager) as dmv:
+            pass
+
+        switch_view(dmv)
         self.__app.run()
 
     def exit(self) -> None:
