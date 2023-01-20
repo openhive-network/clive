@@ -23,7 +23,7 @@ class SidePanelBased(ButtonsBased["SidePanel[M,S]", "ButtonsMenu[SidePanelBased[
         self._side_panel = side_panel
         super().__init__(self._side_panel, buttons)
 
-    @property
+    @property  # type: ignore
     def main_panel(self) -> M:
         return self._side_panel.main_panel
 
@@ -37,4 +37,4 @@ class SidePanelBased(ButtonsBased["SidePanel[M,S]", "ButtonsMenu[SidePanelBased[
 
     @property
     def buttons(self) -> B:
-        return self._buttons
+        return self._buttons  # type: ignore
