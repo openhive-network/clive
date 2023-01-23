@@ -6,6 +6,7 @@ from prompt_toolkit.layout import VSplit, to_container
 from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
+from clive.ui.form_view import FormView
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
 
@@ -38,8 +39,9 @@ class ViewManager(Rebuildable):
 
     @active_view.setter
     def active_view(self, value: View) -> None:
-        if not isinstance(value, View):
-            raise ViewException(f"Could not set view to `{value}`. It must be an instance of `{View}`.")
+        settable = (View, FormView)
+        if not isinstance(value, settable):
+            raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
 
         self.__active_view = value
         self._rebuild()
