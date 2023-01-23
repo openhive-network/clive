@@ -3,26 +3,21 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from prompt_toolkit.layout import Dimension, VSplit
-from prompt_toolkit.widgets import Frame, Label
+from prompt_toolkit.widgets import Frame
 
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
     from typing import Any  # noqa: F401
 
-    from prompt_toolkit.layout import AnyContainer
-
     from clive.ui.views.side_pane_based import SidePanelBased
-
 
 M = TypeVar("M", bound="Component[SidePanelSplitter[Any, Any]]")
 S = TypeVar("S", bound="Component[SidePanelSplitter[Any, Any]]")
 
 
 class SidePanelSplitter(Component["SidePanelBased[M, S, Any]"], Generic[M, S]):
-    def __init__(
-        self, parent: SidePanelBased[M, S, Any], main_panel: M | None = None, side_panel: S | None = None
-    ) -> None:
+    def __init__(self, parent: SidePanelBased[M, S, Any], main_panel: M, side_panel: S) -> None:
         self.__main_panel = main_panel
         self.__side_panel = side_panel
         super().__init__(parent)
@@ -30,25 +25,11 @@ class SidePanelSplitter(Component["SidePanelBased[M, S, Any]"], Generic[M, S]):
     def _create_container(self) -> VSplit:
         return VSplit(
             [
-                Frame(self.__get_main_panel_container(), width=Dimension(weight=3)),
-                Frame(self.__get_side_panel_container()),
+                Frame(self.__main_panel.container, width=Dimension(weight=3)),
+                Frame(self.__side_panel.container),
             ],
             style="class:primary",
         )
-
-    def __get_main_panel_container(self) -> AnyContainer:
-        return self.__main_panel.container if self.__main_panel else Label(text="Main panel was not set.")
-
-    def __get_side_panel_container(self) -> AnyContainer:
-        return self.__side_panel.container if self.__side_panel else Label(text="Side panel was not set.")
-
-    def set_main_panel_first_time(self, main_panel: M) -> None:
-        self.__main_panel = main_panel
-        self._rebuild(self_only=True)
-
-    def set_side_panel_first_time(self, side_panel: S) -> None:
-        self.__side_panel = side_panel
-        self._rebuild(self_only=True)
 
     @property
     def main_panel(self) -> M:

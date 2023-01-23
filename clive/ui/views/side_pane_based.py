@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from clive.abstract_class import AbstractClass
+from clive.ui.components.side_panel_splitter import SidePanelSplitter
 from clive.ui.views.button_based import ButtonsBased
 
 if TYPE_CHECKING:
@@ -10,19 +11,18 @@ if TYPE_CHECKING:
 
     from clive.ui.component import Component  # noqa: F401
     from clive.ui.components.buttons_menu import ButtonsMenu  # noqa: F401
-    from clive.ui.components.side_panel_splitter import SidePanelSplitter  # noqa: F401
 
 
-M = TypeVar("M", bound="Component[SidePanelSplitter[Any, Any]]")
-S = TypeVar("S", bound="Component[SidePanelSplitter[Any, Any]]")
+M = TypeVar("M", bound="Component[Any]")
+S = TypeVar("S", bound="Component[Any]")
 B = TypeVar("B", bound="ButtonsMenu[Any]")
 
 
 class SidePanelBased(
     ButtonsBased["SidePanelSplitter[M,S]", "ButtonsMenu[SidePanelBased[M, S, B]]"], Generic[M, S, B], AbstractClass
 ):
-    def __init__(self, splitter: SidePanelSplitter[M, S], buttons: B) -> None:
-        self.__splitter = splitter
+    def __init__(self, main_panel: M, side_panel: S, buttons: B) -> None:
+        self.__splitter = SidePanelSplitter(self, main_panel, side_panel)
         super().__init__(self.__splitter, buttons)
 
     @property  # type: ignore

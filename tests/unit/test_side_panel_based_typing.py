@@ -5,11 +5,10 @@ from prompt_toolkit.widgets import Button, Label
 
 from clive.ui.component import Component
 from clive.ui.components.buttons_menu import ButtonsMenu
-from clive.ui.components.side_panel_splitter import SidePanelSplitter
 from clive.ui.views.side_pane_based import SidePanelBased
 
 
-class MockMain(Component["SidePanelSplitter[MockMain, MockSide]"]):
+class MockMain(Component["MockSidePanelBasedConcrete"]):
     def mock_main_exclusive(self) -> None:
         print("mock_main_exclusive")
 
@@ -17,7 +16,7 @@ class MockMain(Component["SidePanelSplitter[MockMain, MockSide]"]):
         return Label("Main Component")
 
 
-class MockSide(Component["SidePanelSplitter[MockMain, MockSide]"]):
+class MockSide(Component["MockSidePanelBasedConcrete"]):
     def mock_side_exclusive(self) -> None:
         print("mock_side_exclusive")
 
@@ -40,13 +39,7 @@ class MockMenu(ButtonsMenu["MockSidePanelBasedConcrete"]):
 
 class MockSidePanelBasedConcrete(SidePanelBased[MockMain, MockSide, MockMenu]):
     def __init__(self) -> None:
-        splitter = SidePanelSplitter(self)
-        mock_main = MockMain(splitter)
-        mock_side = MockSide(splitter)
-        splitter.set_main_panel_first_time(mock_main)
-        splitter.set_side_panel_first_time(mock_side)
-
-        super().__init__(splitter, MockMenu(self))
+        super().__init__(MockMain(self), MockSide(self), MockMenu(self))
 
 
 def test_side_panel_based_types() -> None:
