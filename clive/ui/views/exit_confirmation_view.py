@@ -6,4 +6,7 @@ from clive.ui.view import View
 
 class ExitConfirmationView(View):
     def _create_container(self) -> AnyContainer:
-        return Label(text=self.__class__.__name__)
+        from clive.app import clive  # TODO: Temporary solution
+
+        clive.exit()
+        return Label("Never reached")

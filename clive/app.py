@@ -57,5 +57,8 @@ class Clive:
 
         return kb
 
+    def exit(self) -> None:
+        self.__app.exit()
+
 
 clive = Clive()
