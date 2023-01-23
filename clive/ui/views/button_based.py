@@ -8,7 +8,6 @@ from prompt_toolkit.widgets import Frame, Label
 
 from clive.abstract_class import AbstractClass
 from clive.ui.view import View
-from clive.ui.view_manager import view_manager
 
 if TYPE_CHECKING:
     from typing import Any  # noqa: F401
@@ -25,7 +24,7 @@ class ButtonsBased(View, Generic[M, B], AbstractClass):
     def __init__(self, main_panel: M, buttons: B) -> None:
         self.__main_panel = main_panel
         self.__buttons = buttons
-        super().__init__(view_manager)
+        super().__init__()
 
     def _create_container(self) -> HSplit:
         return HSplit(
