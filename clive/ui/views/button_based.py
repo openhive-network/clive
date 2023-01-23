@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from prompt_toolkit.layout import HSplit
-from prompt_toolkit.widgets import Frame
+from prompt_toolkit.layout import HSplit, VSplit, WindowAlign
+from prompt_toolkit.widgets import Frame, Label
 
 from clive.abstract_class import AbstractClass
 from clive.ui.view import View
@@ -29,12 +30,23 @@ class ButtonsBased(View, Generic[M, B], AbstractClass):
     def _create_container(self) -> HSplit:
         return HSplit(
             [
+                VSplit(
+                    [
+                        Label(text=self.__welcome_message),
+                        Label(text=f"View: {self.__class__.__name__}", align=WindowAlign.RIGHT),
+                    ]
+                ),
                 self._main_panel.container,
                 Frame(self._buttons.container, style="class:primary"),
             ],
             style="class:primary",
             key_bindings=self._buttons.key_bindings,
         )
+
+    @staticmethod
+    def __welcome_message() -> str:
+        time = datetime.now().strftime("%H:%M:%S")
+        return f"Hello from CLIVE! {time}"
 
     @property
     def main_panel(self) -> M:
