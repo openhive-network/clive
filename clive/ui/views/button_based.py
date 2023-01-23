@@ -22,9 +22,9 @@ B = TypeVar("B", bound="ButtonsMenu[Any]")
 
 
 class ButtonsBased(View, Generic[M, B], AbstractClass):
-    def __init__(self, main_pane: M, buttons: B) -> None:
-        self._main_panel = main_pane
-        self._buttons = buttons
+    def __init__(self, main_panel: M, buttons: B) -> None:
+        self.__main_panel = main_panel
+        self.__buttons = buttons
         super().__init__(view_manager)
 
     def _create_container(self) -> HSplit:
@@ -36,11 +36,11 @@ class ButtonsBased(View, Generic[M, B], AbstractClass):
                         Label(text=f"View: {self.__class__.__name__}", align=WindowAlign.RIGHT),
                     ]
                 ),
-                self._main_panel.container,
-                Frame(self._buttons.container, style="class:primary"),
+                self.__main_panel.container,
+                Frame(self.__buttons.container, style="class:primary"),
             ],
             style="class:primary",
-            key_bindings=self._buttons.key_bindings,
+            key_bindings=self.__buttons.key_bindings,
         )
 
     @staticmethod
@@ -50,13 +50,13 @@ class ButtonsBased(View, Generic[M, B], AbstractClass):
 
     @property
     def main_panel(self) -> M:
-        return self._main_panel
+        return self.__main_panel
 
     @main_panel.setter
     def main_panel(self, value: M) -> None:
-        self._main_panel = value
+        self.__main_panel = value
         self._rebuild()
 
     @property
     def buttons(self) -> B:
-        return self._buttons
+        return self.__buttons
