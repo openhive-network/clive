@@ -9,6 +9,7 @@ from clive.exceptions import ViewException
 from clive.ui.form_view import FormView
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
+from clive.ui.views.menu_view import MenuView
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
@@ -25,6 +26,7 @@ class ViewManager(Rebuildable):
         self.__active_view: View | None = None
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = VSplit([self.__default_container])
+        self.__menu = MenuView(self.__default_container)
 
     @property
     def active_container(self) -> AnyContainer:
@@ -47,7 +49,8 @@ class ViewManager(Rebuildable):
         self._rebuild()
 
     def _rebuild(self) -> None:
-        self.__root_container.children = [to_container(self.active_view.container)]
+        self.__menu.body = self.active_view.container
+        self.__root_container.children = [to_container(self.__menu.container)]
 
 
 view_manager = ViewManager()

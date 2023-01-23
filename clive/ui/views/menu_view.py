@@ -4,14 +4,17 @@ from prompt_toolkit.layout import AnyContainer
 from prompt_toolkit.widgets import Label, MenuContainer, MenuItem
 
 from clive.ui.menu_handlers import MenuHandlers
-from clive.ui.view import View
 
 
-class MenuView(View):
+class MenuView:
     def __init__(self, body: AnyContainer) -> None:
         self.__body = body or Label("Body was not set.")
         self.__handlers = MenuHandlers(self)
-        super().__init__()
+        self._container = self._create_container()
+
+    @property
+    def container(self) -> MenuContainer:
+        return self._container
 
     @property
     def body(self) -> AnyContainer:
@@ -20,7 +23,7 @@ class MenuView(View):
     @body.setter
     def body(self, value: AnyContainer) -> None:
         self.__body = value
-        self._rebuild()
+        self._container = self._create_container()
 
     def _create_container(self) -> MenuContainer:
         return MenuContainer(body=self.body, menu_items=self._create_menu())
