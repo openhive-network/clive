@@ -1,4 +1,9 @@
 [default.style]
-primary = "bg:#5C6B73"
-secondary = "bg:#0000ff"
-tertiary = "bg:#ff0000"
+gray = "#5C6B73"
+blue = "#285dff"
+green = "#00903e"
+primary = "@format bg:{this.style.GRAY}"
+secondary = "@format bg:{this.style.BLUE}"
+tertiary = "@format bg:{this.style.GREEN}"
+button = "@format bg:{this.style.BLUE}"
+"button.focused" = "fg:#000000"
