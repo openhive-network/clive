@@ -8,6 +8,7 @@ from prompt_toolkit.layout import HorizontalAlign, HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Button, Label
 
 from clive.ui.view import View
+from clive.ui.view_manager import view_manager
 from clive.ui.view_switcher import switch_view
 
 if TYPE_CHECKING:
@@ -16,6 +17,9 @@ if TYPE_CHECKING:
 
 class Welcome(View):
     """A component that is displayed when the user first starts the application."""
+
+    def __init__(self) -> None:
+        super().__init__(view_manager)
 
     def _create_container(self) -> HSplit:
         return HSplit(
