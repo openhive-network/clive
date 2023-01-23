@@ -27,6 +27,10 @@ class ButtonsMenu(Component[T], ABC):
             padding=1,
         )
 
+    @property
+    def key_bindings(self) -> KeyBindings:
+        return self._key_bindings
+
     @abstractmethod
     def _create_buttons(self) -> Sequence[Button]:
         """Creates buttons for the component."""
