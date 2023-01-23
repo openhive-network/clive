@@ -32,11 +32,22 @@ class SidePanelBased(
     @main_panel.setter
     def main_panel(self, value: M) -> None:
         self.__splitter.main_panel = value
+        self._rebuild()
 
     @property
     def side_panel(self) -> S:
         return self.__splitter.side_panel
 
-    @property
+    @side_panel.setter
+    def side_panel(self, value: S) -> None:
+        self.__splitter.side_panel = value
+        self._rebuild()
+
+    @property  # type: ignore
     def buttons(self) -> B:
-        return self._buttons  # type: ignore
+        return super().buttons  # type: ignore
+
+    @buttons.setter
+    def buttons(self, value: B) -> None:
+        super()._set_buttons(value)
+        self._rebuild()
