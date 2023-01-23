@@ -1,101 +1,30 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
-from prompt_toolkit.key_binding import KeyBindings, merge_key_bindings
-from prompt_toolkit.layout import Dimension, HSplit, VSplit, WindowAlign
-from prompt_toolkit.widgets import Box, Frame, Label, TextArea
+from prompt_toolkit.key_binding import KeyBindings
 
-from clive.ui.component import Component
 from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.components.left_component import LeftComponentFirst
-from clive.ui.view import View
-from clive.ui.view_manager import view_manager
+from clive.ui.components.right_component import RightComponent
+from clive.ui.views.side_pane_based import SidePanelBased
 
 if TYPE_CHECKING:
-    from clive.ui.components.buttons_menu import ButtonsMenu
+    from clive.ui.components.buttons_menu_second import ButtonsMenuSecond  # noqa: F401
+    from clive.ui.components.left_component import LeftComponentSecond  # noqa: F401
 
 
-class Dashboard(View):
+Main = Union[LeftComponentFirst, "LeftComponentSecond"]
+Side = RightComponent
+Buttons = Union[ButtonsMenuFirst, "ButtonsMenuSecond"]
+
+
+class Dashboard(SidePanelBased[Main, Side, Buttons]):
     def __init__(self) -> None:
         self.__key_bindings: list[KeyBindings] = []
 
-        self.__left_component: Component[Dashboard] = LeftComponentFirst(self)
-        self.__right_component = self.__create_right_component()
-        self.__prompt_component = self.__create_prompt_component()
-        self.__menu_component: ButtonsMenu[Dashboard] = ButtonsMenuFirst(self)
-        super().__init__(view_manager)
-
-    @property
-    def left_component(self) -> Component[Dashboard]:
-        return self.__left_component
-
-    @left_component.setter
-    def left_component(self, component: Component[Dashboard]) -> None:
-        self.__left_component = component
-
-    @property
-    def menu_component(self) -> Component[Dashboard]:
-        return self.__menu_component
-
-    @menu_component.setter
-    def menu_component(self, component: ButtonsMenu[Dashboard]) -> None:
-        self.__menu_component = component
+        super().__init__(LeftComponentFirst(self), RightComponent(self), ButtonsMenuFirst(self))
 
     @property
     def key_bindings(self) -> list[KeyBindings]:
         return self.__key_bindings
-
-    def _create_container(self) -> HSplit:
-        return HSplit(
-            [
-                Label(text=self.__welcome_message, align=WindowAlign.CENTER),
-                Box(
-                    HSplit(
-                        [
-                            VSplit(
-                                [
-                                    Frame(
-                                        self.__left_component.container,
-                                        width=Dimension(weight=3),
-                                    ),
-                                    Frame(
-                                        self.__right_component,
-                                    ),
-                                ]
-                            ),
-                            self.__prompt_component,
-                            Frame(
-                                self.__menu_component.container,
-                            ),
-                        ]
-                    ),
-                    padding=1,
-                ),
-            ],
-            style="class:primary",
-            key_bindings=merge_key_bindings(self.__key_bindings),
-        )
-
-    @staticmethod
-    def __welcome_message() -> str:
-        time = datetime.now().strftime("%H:%M:%S")
-        return f"Hello from CLIVE! {time}"
-
-    @staticmethod
-    def __create_right_component() -> TextArea:
-        return TextArea(
-            text="RIGHT COMPONENT",
-            style="class:primary",
-            focus_on_click=True,
-        )
-
-    @staticmethod
-    def __create_prompt_component() -> TextArea:
-        return TextArea(
-            text="PROMPT COMPONENT",
-            height=3,
-            style="bg:#000000 #ffffff",
-            focus_on_click=True,
-        )

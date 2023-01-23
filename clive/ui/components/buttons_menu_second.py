@@ -22,9 +22,8 @@ class ButtonsMenuSecond(ButtonsMenu["Dashboard"]):
         self._parent.key_bindings.append(self._get_key_bindings())
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
-        self._parent.left_component = LeftComponentFirst(self._parent)
-        self._parent.menu_component = ButtonsMenuFirst(self._parent)
-        self._rebuild()
+        self._parent.main_panel = LeftComponentFirst(self._parent)
+        self._parent.buttons = ButtonsMenuFirst(self._parent)
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()

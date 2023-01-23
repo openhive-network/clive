@@ -31,9 +31,8 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         )
 
         self._parent.key_bindings.remove(self._key_bindings)
-        self._parent.left_component = LeftComponentSecond(self._parent)
-        self._parent.menu_component = ButtonsMenuSecond(self._parent)
-        self._rebuild()
+        self._parent.main_panel = LeftComponentSecond(self._parent)
+        self._parent.buttons = ButtonsMenuSecond(self._parent)
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
