@@ -60,3 +60,8 @@ class ButtonsBased(View, Generic[M, B], AbstractClass):
     @property
     def buttons(self) -> B:
         return self.__buttons
+
+    @buttons.setter
+    def buttons(self, value: B) -> None:
+        self.__buttons = value
+        self._rebuild()
