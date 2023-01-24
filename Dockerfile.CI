@@ -8,7 +8,7 @@
 # - `build-ci-base-image.sh`, which builds the image and tags it with the MANUALLY GIVEN version.
 # - `push-ci-base-image.sh`, which pushes the image and will make sure you won't overwrite an existing image.
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 RUN \
     apt-get update && \
