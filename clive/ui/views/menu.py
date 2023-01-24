@@ -3,18 +3,15 @@ from __future__ import annotations
 from prompt_toolkit.layout import AnyContainer
 from prompt_toolkit.widgets import Label, MenuContainer, MenuItem
 
+from clive.ui.containerable import Containerable
 from clive.ui.menu_handlers import MenuHandlers
 
 
-class Menu:
+class Menu(Containerable):
     def __init__(self, body: AnyContainer) -> None:
         self.__body = body or Label("Body was not set.")
         self.__handlers = MenuHandlers(self)
-        self._container = self._create_container()
-
-    @property
-    def container(self) -> MenuContainer:
-        return self._container
+        super().__init__()
 
     @property
     def body(self) -> AnyContainer:
