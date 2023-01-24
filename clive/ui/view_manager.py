@@ -7,9 +7,9 @@ from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
 from clive.ui.form_view import FormView
+from clive.ui.menu import Menu
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
-from clive.ui.views.menu import Menu
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
