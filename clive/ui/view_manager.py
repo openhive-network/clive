@@ -33,6 +33,10 @@ class ViewManager(Rebuildable):
         return self.__root_container
 
     @property
+    def menu(self) -> Menu:
+        return self.__menu
+
+    @property
     def active_view(self) -> View:
         if self.__active_view is None:
             raise ViewException("No view was selected.")
