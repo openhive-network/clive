@@ -4,6 +4,7 @@ from abc import ABC
 from typing import TYPE_CHECKING
 
 from clive.ui.component import Component
+from clive.ui.get_view_manager import get_view_manager
 
 if TYPE_CHECKING:
     from clive.ui.view_manager import ViewManager  # noqa: F401
@@ -16,6 +17,5 @@ class View(Component["ViewManager"], ABC):
     """
 
     def __init__(self) -> None:
-        from clive.ui.view_manager import view_manager
 
-        super().__init__(view_manager)
+        super().__init__(get_view_manager())

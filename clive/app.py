@@ -11,7 +11,7 @@ from prompt_toolkit.layout import Layout
 from prompt_toolkit.styles import Style
 
 from clive.config import settings
-from clive.ui.view_manager import view_manager
+from clive.ui.get_view_manager import get_view_manager
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout.layout import FocusableElement
@@ -36,7 +36,7 @@ class Clive:
 
     def __create_app(self) -> Application[Any]:
         return Application(
-            layout=Layout(view_manager.active_container),
+            layout=Layout(get_view_manager().active_container),
             style=Style.from_dict(settings.style),
             key_bindings=self.__get_key_bindings(),
             full_screen=True,
@@ -46,7 +46,7 @@ class Clive:
         )
 
     def __set_focus_automatically(self) -> None:
-        self.__app.layout.focus(view_manager.active_container)
+        self.__app.layout.focus(get_view_manager().active_container)
 
         # switch to first focusable element, skipping the first one (Menu)
         if not self.__menu_focus_skipped:

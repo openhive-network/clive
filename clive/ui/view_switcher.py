@@ -6,7 +6,7 @@ from loguru import logger
 
 from clive.exceptions import ViewDoesNotExist
 from clive.get_clive import get_clive
-from clive.ui.view_manager import view_manager
+from clive.ui.get_view_manager import get_view_manager
 
 if TYPE_CHECKING:
     from clive.ui.view import View
@@ -24,4 +24,4 @@ def switch_view(view: str | View) -> None:
     logger.info(f"Switching view to {view}")
 
     get_clive().skip_focusing_menu()
-    view_manager.active_view = view
+    get_view_manager().active_view = view
