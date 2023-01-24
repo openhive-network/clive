@@ -1,4 +1,4 @@
-image: "$CI_REGISTRY_IMAGE/ci-base-image:ubuntu20.04-1"
+image: "$CI_REGISTRY_IMAGE/ci-base-image:ubuntu22.04-1"
 
 stages:
   - static_code_analysis
