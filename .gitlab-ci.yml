@@ -1,4 +1,4 @@
-image: "$CI_REGISTRY_IMAGE/ci-base-image:ubuntu22.04-1"
+image: "$CI_REGISTRY_IMAGE/ci-base-image@sha256:62a6bfd24f898d47be5853e6a777021ba03f35ae951a7804b8a5a660816501ba"
 
 stages:
   - static_code_analysis
