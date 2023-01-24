@@ -6,7 +6,7 @@ from prompt_toolkit.widgets import Label, MenuContainer, MenuItem
 from clive.ui.menu_handlers import MenuHandlers
 
 
-class MenuView:
+class Menu:
     def __init__(self, body: AnyContainer) -> None:
         self.__body = body or Label("Body was not set.")
         self.__handlers = MenuHandlers(self)
