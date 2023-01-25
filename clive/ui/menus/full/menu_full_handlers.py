@@ -29,7 +29,7 @@ from clive.ui.views.vote_for_witness_as_delegatee_view import VoteForWitnessAsDe
 from clive.ui.views.vote_for_witness_view import VoteForWitnessView
 
 if TYPE_CHECKING:
-    from clive.ui.menu_full import MenuFull
+    from clive.ui.menus.full.menu_full import MenuFull
 
 
 class MenuFullHandlers(Parented["MenuFull"]):

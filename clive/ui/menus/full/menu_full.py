@@ -4,7 +4,7 @@ from prompt_toolkit.layout import AnyContainer
 from prompt_toolkit.widgets import Label, MenuContainer, MenuItem
 
 from clive.ui.containerable import Containerable
-from clive.ui.menu_full_handlers import MenuFullHandlers
+from clive.ui.menus.full.menu_full_handlers import MenuFullHandlers
 from clive.ui.rebuildable import Rebuildable
 
 

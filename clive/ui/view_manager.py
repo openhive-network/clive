@@ -7,7 +7,7 @@ from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
 from clive.ui.form_view import FormView
-from clive.ui.menu_full import MenuFull
+from clive.ui.menus.full.menu_full import MenuFull
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
 from clive.ui.views.registration import Registration
