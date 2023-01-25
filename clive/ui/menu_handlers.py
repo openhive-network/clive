@@ -29,11 +29,11 @@ from clive.ui.views.vote_for_witness_as_delegatee_view import VoteForWitnessAsDe
 from clive.ui.views.vote_for_witness_view import VoteForWitnessView
 
 if TYPE_CHECKING:
-    from clive.ui.menu import Menu
+    from clive.ui.menu_full import MenuFull
 
 
-class MenuHandlers(Parented["Menu"]):
-    def __init__(self, parent: Menu) -> None:
+class MenuHandlers(Parented["MenuFull"]):
+    def __init__(self, parent: MenuFull) -> None:
         super().__init__(parent)
 
         self.dashboard = self.__default_switch_view(Dashboard)

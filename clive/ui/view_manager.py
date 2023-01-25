@@ -7,7 +7,7 @@ from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
 from clive.ui.form_view import FormView
-from clive.ui.menu import Menu
+from clive.ui.menu_full import MenuFull
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
 from clive.ui.views.registration import Registration
@@ -27,14 +27,14 @@ class ViewManager(Rebuildable):
         self.__active_view: View | FormView | None = None
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = VSplit([self.__default_container])
-        self.__menu = Menu(self.__default_container)
+        self.__menu = MenuFull(self.__default_container)
 
     @property
     def active_container(self) -> AnyContainer:
         return self.__root_container
 
     @property
-    def menu(self) -> Menu:
+    def menu(self) -> MenuFull:
         return self.__menu
 
     @property
