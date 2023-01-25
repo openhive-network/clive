@@ -10,6 +10,7 @@ from clive.ui.form_view import FormView
 from clive.ui.menu import Menu
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
+from clive.ui.views.registration import Registration
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
@@ -46,6 +47,7 @@ class ViewManager(Rebuildable):
     @active_view.setter
     def active_view(self, value: View | FormView) -> None:
         self.__assert_if_proper_settable_type(value)
+        self.__set_menu_visibility(value)
 
         self.__active_view = value
         self._rebuild()
@@ -60,6 +62,10 @@ class ViewManager(Rebuildable):
         if not isinstance(value, settable):
             raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
         return None
+
+    def __set_menu_visibility(self, value: View | FormView) -> None:
+        views_with_hidden_menu = (Registration,)
+        self.menu.hidden = isinstance(value, views_with_hidden_menu)
 
 
 view_manager = ViewManager()
