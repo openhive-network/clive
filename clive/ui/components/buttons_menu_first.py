@@ -30,7 +30,8 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         from clive.ui.components.buttons_menu_second import ButtonsMenuSecond
 
         get_clive().skip_focusing_menu()
-        self._parent.key_bindings.remove(self._key_bindings)
+        if self._key_bindings in self._parent.key_bindings:
+            self._parent.key_bindings.remove(self._key_bindings)
         self._parent.main_panel = LeftComponentSecond(self._parent)
         self._parent.buttons = ButtonsMenuSecond(self._parent)
 
