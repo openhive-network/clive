@@ -49,14 +49,9 @@ class Clive:
         self.__app.layout.focus(get_view_manager().active_container)
 
         # switch to first focusable element, skipping the first one (Menu)
-        if self.__skip_menu_on_focus and not self.__is_menu_body_focused():
+        if self.__skip_menu_on_focus and self.__is_menu_focused():
             self.__skip_menu_on_focus = False
             self.__app.layout.focus_next()
-
-    def __is_menu_body_focused(self) -> bool:
-        # The container property of MenuContainer class stores FloatContainer which contents is HSplit storing
-        # window and body. What we want to check is if the body is focused, and window takes over the focus.
-        return self.__app.layout.has_focus(get_view_manager().menu.container.container.content.children[1])  # type: ignore
 
     def __get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
@@ -81,6 +76,9 @@ class Clive:
         return focus
 
     def __is_menu_focused(self) -> bool:
+        # The container property of MenuContainer class stores FloatContainer which content is HSplit storing
+        # window and body. When we want to check if menu body is focused just by menu.container - window
+        # takes over the focus.
         menu_window = get_view_manager().menu.container.window
         return self.__app.layout.has_focus(menu_window)
 
