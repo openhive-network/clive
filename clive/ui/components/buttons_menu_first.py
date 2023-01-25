@@ -27,9 +27,7 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         set_focus(self._buttons[-1])
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
-        from clive.ui.components.buttons_menu_second import (  # TODO: This is a hack. Find a better way to do this.
-            ButtonsMenuSecond,
-        )
+        from clive.ui.components.buttons_menu_second import ButtonsMenuSecond
 
         get_clive().skip_focusing_menu()
         self._parent.key_bindings.remove(self._key_bindings)
