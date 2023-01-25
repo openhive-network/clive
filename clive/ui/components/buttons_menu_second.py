@@ -6,7 +6,6 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
-from clive.get_clive import get_clive
 from clive.ui.components.buttons_menu import ButtonsMenu
 from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
 from clive.ui.components.left_component import LeftComponentFirst
@@ -23,7 +22,6 @@ class ButtonsMenuSecond(ButtonsMenu["Dashboard"]):
         self._parent.key_bindings.append(self._get_key_bindings())
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
-        get_clive().skip_menu_on_focus()
         self._parent.main_panel = LeftComponentFirst(self._parent)
         self._parent.buttons = ButtonsMenuFirst(self._parent)
 

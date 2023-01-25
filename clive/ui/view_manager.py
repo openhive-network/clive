@@ -6,6 +6,7 @@ from prompt_toolkit.layout import VSplit, to_container
 from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
+from clive.ui.focus import set_focus
 from clive.ui.form_view import FormView
 from clive.ui.menus.full.menu_full import MenuFull
 from clive.ui.menus.menu import Menu
@@ -58,6 +59,7 @@ class ViewManager(Rebuildable):
     def _rebuild(self) -> None:
         self.__menu.body = self.active_view.container
         self.__root_container.children = [to_container(self.__menu.container)]
+        set_focus(self.__menu.body)
 
     @staticmethod
     def __assert_if_proper_settable_type(value: Any) -> NoReturn | None:

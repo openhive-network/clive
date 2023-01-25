@@ -22,7 +22,6 @@ class Clive:
 
     def __init__(self) -> None:
         self.__app = self.__create_app()
-        self.__skip_menu_on_focus = True
 
     def run(self) -> None:
         from clive.ui.view_switcher import switch_view
@@ -42,16 +41,7 @@ class Clive:
             full_screen=True,
             mouse_support=True,
             refresh_interval=self.REFRESH_INTERVAL,
-            after_render=lambda _: self.__set_focus_automatically(),
         )
-
-    def __set_focus_automatically(self) -> None:
-        self.__app.layout.focus(get_view_manager().active_container)
-
-        # switch to first focusable element, skipping the first one (Menu)
-        if self.__skip_menu_on_focus and self.__is_menu_focused():
-            self.__skip_menu_on_focus = False
-            self.__app.layout.focus_next()
 
     def __get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
@@ -84,9 +74,6 @@ class Clive:
 
     def exit(self) -> None:
         self.__app.exit()
-
-    def skip_menu_on_focus(self) -> None:
-        self.__skip_menu_on_focus = True
 
 
 clive = Clive()

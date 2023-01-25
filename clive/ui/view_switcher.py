@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from loguru import logger
 
 from clive.exceptions import ViewDoesNotExist
-from clive.get_clive import get_clive
 from clive.ui.get_view_manager import get_view_manager
 
 if TYPE_CHECKING:
@@ -23,5 +22,4 @@ def switch_view(view: str | View) -> None:
 
     logger.info(f"Switching view to {view}")
 
-    get_clive().skip_menu_on_focus()
     get_view_manager().active_view = view
