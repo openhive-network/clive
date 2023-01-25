@@ -12,6 +12,7 @@ from clive.ui.menus.menu import Menu
 from clive.ui.menus.menu_empty import MenuEmpty
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
+from clive.ui.views.login import Login
 from clive.ui.views.registration import Registration
 
 if TYPE_CHECKING:
@@ -66,8 +67,11 @@ class ViewManager(Rebuildable):
         return None
 
     def __set_menu(self, value: View | FormView) -> None:
-        menus: dict[type, tuple[type]] = {
-            MenuEmpty: (Registration,),
+        menus: dict[type, tuple[type, ...]] = {
+            MenuEmpty: (
+                Login,
+                Registration,
+            ),
             MenuFull: (object,),  # this one is the default menu
         }
 
