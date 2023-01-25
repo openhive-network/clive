@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, NoReturn
+from typing import TYPE_CHECKING, Any, NoReturn
 
 from prompt_toolkit.layout import VSplit, to_container
 from prompt_toolkit.widgets import Label
@@ -23,7 +23,7 @@ class ViewManager(Rebuildable):
     """
 
     def __init__(self) -> None:
-        self.__active_view: View | None = None
+        self.__active_view: View | FormView | None = None
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = VSplit([self.__default_container])
         self.__menu = Menu(self.__default_container)
@@ -37,14 +37,14 @@ class ViewManager(Rebuildable):
         return self.__menu
 
     @property
-    def active_view(self) -> View:
+    def active_view(self) -> View | FormView:
         if self.__active_view is None:
             raise ViewException("No view was selected.")
 
         return self.__active_view
 
     @active_view.setter
-    def active_view(self, value: View) -> None:
+    def active_view(self, value: View | FormView) -> None:
         self.__assert_if_proper_settable_type(value)
 
         self.__active_view = value
@@ -55,7 +55,7 @@ class ViewManager(Rebuildable):
         self.__root_container.children = [to_container(self.__menu.container)]
 
     @staticmethod
-    def __assert_if_proper_settable_type(value: View) -> NoReturn | None:
+    def __assert_if_proper_settable_type(value: Any) -> NoReturn | None:
         settable = (View, FormView)
         if not isinstance(value, settable):
             raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
