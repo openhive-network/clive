@@ -35,6 +35,8 @@ class Menu(Containerable):
         return MenuContainer(body=self.body, menu_items=self._create_menu())
 
     def _create_menu(self) -> list[MenuItem]:
+        if self.__hidden:
+            return self.__empty_menu()
         return [
             MenuItem(
                 "Wallet",
@@ -125,3 +127,7 @@ class Menu(Containerable):
                 ],
             ),
         ]
+
+    @staticmethod
+    def __empty_menu() -> list[MenuItem]:
+        return [MenuItem("")]
