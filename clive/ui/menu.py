@@ -11,6 +11,7 @@ class Menu(Containerable):
     def __init__(self, body: AnyContainer) -> None:
         self.__body = body or Label("Body was not set.")
         self.__handlers = MenuHandlers(self)
+        self.__hidden = False
         super().__init__()
 
     @property
@@ -21,6 +22,14 @@ class Menu(Containerable):
     def body(self, value: AnyContainer) -> None:
         self.__body = value
         self._container = self._create_container()
+
+    @property
+    def hidden(self) -> bool:
+        return self.__hidden
+
+    @hidden.setter
+    def hidden(self, value: bool) -> None:
+        self.__hidden = value
 
     def _create_container(self) -> MenuContainer:
         return MenuContainer(body=self.body, menu_items=self._create_menu())
