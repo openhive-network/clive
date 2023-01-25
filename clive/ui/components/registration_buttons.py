@@ -21,7 +21,7 @@ class RegistrationButtons(ButtonsMenu["Registration"]):
         super().__init__(parent)
 
     def _create_buttons(self) -> list[Button]:
-        return [Button("F1 Log form", handler=self.__f1_action), Button("F2 Create Profile", handler=self.__f2_action)]
+        return [Button("F1 Create Profile", handler=self.__f1_action), Button("F2 Login", handler=self.__f2_action)]
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
@@ -30,9 +30,9 @@ class RegistrationButtons(ButtonsMenu["Registration"]):
         return kb
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
-        logger.info(f"Profile name: {self._parent.main_panel.profile_name}")
+        logger.info(f"Registering: {self._parent.main_panel.profile_name}")
+        switch_view("dashboard")
 
     @staticmethod
     def __f2_action(event: KeyPressEvent | None = None) -> None:
-        # print(self.context.main_pane.profile_name)
-        switch_view("dashboard")
+        switch_view("login")
