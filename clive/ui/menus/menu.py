@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import typing
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Optional, TypeVar
 
 from prompt_toolkit.widgets import MenuContainer
+from prompt_toolkit.layout import Float
 
 from clive.ui.containerable import Containerable
+from clive.ui.floats.base_float import BaseFloat
+from clive.ui.get_view_manager import get_view_manager
 from clive.ui.rebuildable import Rebuildable
 
 if TYPE_CHECKING:
@@ -25,6 +28,7 @@ class Menu(Containerable, Rebuildable, Generic[T], ABC):
     def __init__(self, body: AnyContainer, handlers: T) -> None:
         self.__body = body
         self._handlers = handlers
+        self.__float: Optional[BaseFloat] = None
         super().__init__()
 
     @property
@@ -36,6 +40,16 @@ class Menu(Containerable, Rebuildable, Generic[T], ABC):
         self.__body = value
         self._rebuild()
 
+    @property
+    def float(self) -> Optional[BaseFloat]:
+        return self.__float
+
+    @float.setter
+    def float(self, value: Optional[BaseFloat]) -> None:
+        self.__float = value
+        self._container = self._create_container()
+        get_view_manager()._rebuild()
+
     @abstractmethod
     def _create_menu(self) -> list[MenuItem]:
         """Create a list of MenuItems which will be later used in MenuContainer."""
@@ -44,7 +58,11 @@ class Menu(Containerable, Rebuildable, Generic[T], ABC):
         self._container = self._create_container()
 
     def _create_container(self) -> MenuContainer:
-        return MenuContainer(body=self.body, menu_items=self._create_menu())
+        return MenuContainer(
+            body=self.body,
+            menu_items=self._create_menu(),
+            floats=([Float(self.__float.container)] if self.__float is not None else [])
+        )
 
     @property
     def container(self) -> MenuContainer:
