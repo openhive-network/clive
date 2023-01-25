@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import typing
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
@@ -44,3 +45,7 @@ class Menu(Containerable, Rebuildable, Generic[T], ABC):
 
     def _create_container(self) -> MenuContainer:
         return MenuContainer(body=self.body, menu_items=self._create_menu())
+
+    @property
+    def container(self) -> MenuContainer:
+        return typing.cast(MenuContainer, super().container)

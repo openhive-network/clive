@@ -1,17 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Callable, Final, Literal
 
 from loguru import logger
 from prompt_toolkit import Application
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
-from prompt_toolkit.key_binding.bindings.focus import focus_next, focus_previous
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.styles import Style
 
 from clive.config import settings
 from clive.ui.get_view_manager import get_view_manager
+from clive.ui.menus.menu_empty import MenuEmpty
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout.layout import FocusableElement
@@ -58,18 +58,31 @@ class Clive:
         # window and body. What we want to check is if the body is focused, and window takes over the focus.
         return self.__app.layout.has_focus(get_view_manager().menu.container.container.content.children[1])  # type: ignore
 
-    @staticmethod
-    def __get_key_bindings() -> KeyBindings:
+    def __get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
 
-        kb.add(Keys.Tab)(focus_next)
-        kb.add(Keys.BackTab)(focus_previous)
+        kb.add(Keys.Tab)(self.__focus("next"))
+        kb.add(Keys.BackTab)(self.__focus("previous"))
 
         @kb.add(Keys.ControlC)
         def _(event: KeyPressEvent) -> None:
             event.app.exit()
 
         return kb
+
+    def __focus(self, direction: Literal["next", "previous"]) -> Callable[[KeyPressEvent], None]:
+        def focus(event: KeyPressEvent) -> None:
+            fun = self.__app.layout.focus_next if direction == "next" else self.__app.layout.focus_previous
+            fun()
+
+            if isinstance(get_view_manager().menu, MenuEmpty) and self.__is_menu_focused():  # skip focusing MenuEmpty
+                fun()
+
+        return focus
+
+    def __is_menu_focused(self) -> bool:
+        menu_window = get_view_manager().menu.container.window
+        return self.__app.layout.has_focus(menu_window)
 
     def exit(self) -> None:
         self.__app.exit()
