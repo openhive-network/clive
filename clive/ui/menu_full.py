@@ -4,14 +4,14 @@ from prompt_toolkit.layout import AnyContainer
 from prompt_toolkit.widgets import Label, MenuContainer, MenuItem
 
 from clive.ui.containerable import Containerable
-from clive.ui.menu_handlers import MenuHandlers
+from clive.ui.menu_full_handlers import MenuFullHandlers
 from clive.ui.rebuildable import Rebuildable
 
 
 class MenuFull(Containerable, Rebuildable):
     def __init__(self, body: AnyContainer) -> None:
         self.__body = body or Label("Body was not set.")
-        self.__handlers = MenuHandlers(self)
+        self.__handlers = MenuFullHandlers(self)
         self.__hidden = False
         super().__init__()
 

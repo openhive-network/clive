@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from clive.ui.menu_full import MenuFull
 
 
-class MenuHandlers(Parented["MenuFull"]):
+class MenuFullHandlers(Parented["MenuFull"]):
     def __init__(self, parent: MenuFull) -> None:
         super().__init__(parent)
 
