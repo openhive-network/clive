@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
 
 from clive.ui.menus.menu_handlers import MenuHandlers
+from clive.ui.view_switcher import switch_view
 from clive.ui.views.about_view import AboutView
 from clive.ui.views.account_history_view import AccountHistoryView
 from clive.ui.views.account_update_authority_view import AccountUpdateAuthorityView
@@ -40,6 +41,7 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         self.manage_accounts = self._switch_view(ManageAccountsView)
         self.manage_watched_accounts = self._switch_view(ManageWatchedAccountsView)
         self.manage_private_keys = self._switch_view(ManagePrivateKeysView)
+        self.logout = self.__logout()
         self.exit = self._switch_view(ExitConfirmationView)
 
         self.transfer_hive_to_account = self._switch_view(TransferToAccountView, asset="HIVE")
@@ -74,3 +76,10 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         self.help = self._switch_view(HelpView)
         self.about = self._switch_view(AboutView)
         self.contribute = self._switch_view(ContributeView)
+
+    @staticmethod
+    def __logout() -> Callable[[], None]:
+        def logout() -> None:
+            switch_view("login")
+
+        return logout

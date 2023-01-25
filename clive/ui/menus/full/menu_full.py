@@ -20,6 +20,7 @@ class MenuFull(Menu[MenuFullHandlers]):
                     MenuItem("Manage Accounts", handler=self._handlers.manage_accounts),
                     MenuItem("Manage Watched Accounts", handler=self._handlers.manage_watched_accounts),
                     MenuItem("Manage Private Keys", handler=self._handlers.manage_private_keys),
+                    MenuItem("Log out", handler=self._handlers.logout),
                     MenuItem("Exit", handler=self._handlers.exit),
                 ],
             ),
