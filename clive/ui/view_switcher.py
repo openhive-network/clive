@@ -23,5 +23,5 @@ def switch_view(view: str | View) -> None:
 
     logger.info(f"Switching view to {view}")
 
-    get_clive().skip_focusing_menu()
+    get_clive().skip_menu_on_focus()
     get_view_manager().active_view = view

@@ -22,7 +22,7 @@ class Clive:
 
     def __init__(self) -> None:
         self.__app = self.__create_app()
-        self.__menu_focus_skipped = False
+        self.__skip_menu_on_focus = True
 
     def run(self) -> None:
         from clive.ui.view_switcher import switch_view
@@ -49,8 +49,8 @@ class Clive:
         self.__app.layout.focus(get_view_manager().active_container)
 
         # switch to first focusable element, skipping the first one (Menu)
-        if not self.__menu_focus_skipped and not self.__is_menu_body_focused():
-            self.__menu_focus_skipped = True
+        if self.__skip_menu_on_focus and not self.__is_menu_body_focused():
+            self.__skip_menu_on_focus = False
             self.__app.layout.focus_next()
 
     def __is_menu_body_focused(self) -> bool:
@@ -74,8 +74,8 @@ class Clive:
     def exit(self) -> None:
         self.__app.exit()
 
-    def skip_focusing_menu(self) -> None:
-        self.__menu_focus_skipped = False
+    def skip_menu_on_focus(self) -> None:
+        self.__skip_menu_on_focus = True
 
 
 clive = Clive()
