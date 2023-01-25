@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, NoReturn
 
 from prompt_toolkit.layout import VSplit, to_container
 from prompt_toolkit.widgets import Label
@@ -45,9 +45,7 @@ class ViewManager(Rebuildable):
 
     @active_view.setter
     def active_view(self, value: View) -> None:
-        settable = (View, FormView)
-        if not isinstance(value, settable):
-            raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
+        self.__assert_if_proper_settable_type(value)
 
         self.__active_view = value
         self._rebuild()
@@ -55,6 +53,13 @@ class ViewManager(Rebuildable):
     def _rebuild(self) -> None:
         self.__menu.body = self.active_view.container
         self.__root_container.children = [to_container(self.__menu.container)]
+
+    @staticmethod
+    def __assert_if_proper_settable_type(value: View) -> NoReturn | None:
+        settable = (View, FormView)
+        if not isinstance(value, settable):
+            raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
+        return None
 
 
 view_manager = ViewManager()
