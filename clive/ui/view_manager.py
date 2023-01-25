@@ -8,6 +8,8 @@ from prompt_toolkit.widgets import Label
 from clive.exceptions import ViewException
 from clive.ui.form_view import FormView
 from clive.ui.menus.full.menu_full import MenuFull
+from clive.ui.menus.menu import Menu
+from clive.ui.menus.menu_empty import MenuEmpty
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
 from clive.ui.views.registration import Registration
@@ -27,14 +29,14 @@ class ViewManager(Rebuildable):
         self.__active_view: View | FormView | None = None
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = VSplit([self.__default_container])
-        self.__menu = MenuFull(self.__default_container)
+        self.__menu = MenuEmpty(self.__default_container)
 
     @property
     def active_container(self) -> AnyContainer:
         return self.__root_container
 
     @property
-    def menu(self) -> MenuFull:
+    def menu(self) -> Menu[Any]:
         return self.__menu
 
     @property
@@ -47,7 +49,7 @@ class ViewManager(Rebuildable):
     @active_view.setter
     def active_view(self, value: View | FormView) -> None:
         self.__assert_if_proper_settable_type(value)
-        self.__set_menu_visibility(value)
+        self.__set_menu(value)
 
         self.__active_view = value
         self._rebuild()
@@ -63,9 +65,16 @@ class ViewManager(Rebuildable):
             raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
         return None
 
-    def __set_menu_visibility(self, value: View | FormView) -> None:
-        views_with_hidden_menu = (Registration,)
-        self.menu.hidden = isinstance(value, views_with_hidden_menu)
+    def __set_menu(self, value: View | FormView) -> None:
+        menus: dict[type, tuple[type]] = {
+            MenuEmpty: (Registration,),
+            MenuFull: (object,),  # this one is the default menu
+        }
+
+        for menu, views in menus.items():
+            if isinstance(value, views):
+                self.__menu = menu(self.__default_container)
+                break
 
 
 view_manager = ViewManager()

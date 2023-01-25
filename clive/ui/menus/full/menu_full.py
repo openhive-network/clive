@@ -9,20 +9,9 @@ from clive.ui.menus.menu import Menu
 
 class MenuFull(Menu[MenuFullHandlers]):
     def __init__(self, body: AnyContainer) -> None:
-        self.__hidden = False
         super().__init__(body, MenuFullHandlers(self))
 
-    @property
-    def hidden(self) -> bool:
-        return self.__hidden
-
-    @hidden.setter
-    def hidden(self, value: bool) -> None:
-        self.__hidden = value
-
     def _create_menu(self) -> list[MenuItem]:
-        if self.__hidden:
-            return self.__empty_menu()
         return [
             MenuItem(
                 "Wallet",
@@ -113,7 +102,3 @@ class MenuFull(Menu[MenuFullHandlers]):
                 ],
             ),
         ]
-
-    @staticmethod
-    def __empty_menu() -> list[MenuItem]:
-        return [MenuItem("")]
