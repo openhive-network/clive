@@ -1,4 +1,5 @@
 from __future__ import annotations
+
 from typing import List
 
 from clive.ui.components.form_buttons import FormButtons
@@ -11,21 +12,30 @@ class Form(ButtonsBased[FormView, FormButtons]):
         assert len(views) > 0
         self.__views = views
         self.__view_index = 0
-        super().__init__(self.__views[0], FormButtons(self))
+        super().__init__(self.__views[0], FormButtons.merge_buttons_and_actions(self, self.current_view))
+
+    @property
+    def current_view(self) -> FormView:
+        return self.__views[self.__view_index]
 
     def next_view(self) -> None:
         if self.__reached_last_view():
             return
 
         self.__view_index += 1
-        self.main_panel = self.__views[self.__view_index]
+        self._update_main_panel()
 
     def previous_view(self) -> None:
         if self.__reached_first_view():
             return
 
         self.__view_index -= 1
-        self.main_panel = self.__views[self.__view_index]
+        self._update_main_panel()
+
+    def _update_main_panel(self) -> None:
+        self.current_view._rebuild()
+        self.main_panel = self.current_view
+        self.buttons = FormButtons.merge_buttons_and_actions(self, self.current_view)
 
     def cancel(self) -> None:
         raise NotImplementedError("Cancel not implemented yet!")
