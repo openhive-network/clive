@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Callable, Final
+from typing import Any, Callable, Final, Tuple
 
 from loguru import logger
 
@@ -16,21 +16,28 @@ LOG_FORMAT: Final[str] = (
 )
 
 
-def create_log_file(log_name: str, log_group: str | None = None) -> Path:
+def create_log_file(log_name: str, log_group: str | None = None) -> Tuple[Path, Path]:
     log_directory = ROOT_DIRECTORY.parent / "logs" / log_group if log_group else ROOT_DIRECTORY.parent / "logs"
     log_directory.mkdir(parents=True, exist_ok=True)
 
     log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{log_name}.log"
     log_file_path = log_directory / log_file_name
-    with open(log_file_path, "a", encoding="utf-8"):
+    with log_file_path.open("a", encoding="utf-8"):
         # We just need to create an empty file to which we will log later
         pass
 
-    return log_file_path
+    latest_log_file_name = "latest.log"
+    latest_log_file_path = log_directory / latest_log_file_name
+
+    with latest_log_file_path.open("w", encoding="utf-8"):
+        # We just need to create an empty file to which we will log later
+        pass
+
+    return log_file_path, latest_log_file_path
 
 
-LOG_FILE_PATH: Final[Path] = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
-LOG_FILE_PATH_DEBUG: Final[Path] = create_log_file(log_name="debug", log_group="debug")
+LOG_FILE_PATH, LATEST_LOG_FILE_PATH = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
+LOG_FILE_PATH_DEBUG, LATEST_LOG_FILE_PATH_DEBUG = create_log_file(log_name="debug", log_group="debug")
 
 
 def configure_logger() -> None:
@@ -62,7 +69,17 @@ def configure_logger() -> None:
         filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
     )
     logger.add(
+        sink=LATEST_LOG_FILE_PATH,
+        format=LOG_FORMAT,
+        filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
+    )
+    logger.add(
         sink=LOG_FILE_PATH_DEBUG,
+        format=LOG_FORMAT,
+        filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
+    )
+    logger.add(
+        sink=LATEST_LOG_FILE_PATH_DEBUG,
         format=LOG_FORMAT,
         filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
     )
