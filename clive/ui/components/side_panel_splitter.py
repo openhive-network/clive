@@ -26,7 +26,7 @@ class SidePanelSplitter(Component["SidePanelBased[M, S, Any]"], Generic[M, S]):
         return VSplit(
             [
                 Frame(self.__main_panel.container, width=Dimension(weight=3)),
-                Frame(self.__side_panel.container),
+                Frame(self.__side_panel.container, width=Dimension(weight=1)),
             ],
             style="class:primary",
         )
