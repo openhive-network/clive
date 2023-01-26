@@ -10,8 +10,8 @@ from clive.ui.components.side_panel import SidePanel
 from clive.ui.views.side_pane_based import SidePanelBased
 
 if TYPE_CHECKING:
-    from clive.ui.components.account_info import LeftComponentSecond  # noqa: F401
     from clive.ui.components.buttons_menu_second import ButtonsMenuSecond  # noqa: F401
+    from clive.ui.components.left_component_second import LeftComponentSecond
 
 
 Main = Union[AccountInfo, "LeftComponentSecond"]

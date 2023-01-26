@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Generator
 
 from prompt_toolkit import HTML
-from prompt_toolkit.layout import FormattedTextControl, HSplit, VSplit, Window
-from prompt_toolkit.widgets import Frame, HorizontalLine, Label, ProgressBar, TextArea, VerticalLine
+from prompt_toolkit.layout import HSplit, VSplit, Window
+from prompt_toolkit.widgets import Frame, HorizontalLine, Label, ProgressBar, VerticalLine
 
 from clive.ui.component import Component
 
@@ -192,21 +192,6 @@ class AccountInfo(Component["Dashboard"]):
                             ]
                         ),
                     ]
-                ),
-            ]
-        )
-
-
-class LeftComponentSecond(Component["Dashboard"]):
-    def _create_container(self) -> VSplit:
-        return VSplit(
-            [
-                TextArea(
-                    text="LEFT COMPONENT SECOND VARIATION",
-                    style="class:secondary",
-                ),
-                Window(
-                    FormattedTextControl(text="LEFT COMPONENT SECOND VARIATION"),
                 ),
             ]
         )
