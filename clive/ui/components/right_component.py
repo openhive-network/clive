@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generator
 
+from prompt_toolkit import HTML
 from prompt_toolkit.layout import FormattedTextControl, HSplit, ScrollablePane, VSplit, Window
 from prompt_toolkit.widgets import Frame, Label
 
@@ -17,6 +18,7 @@ class RightComponent(Component["Dashboard"]):
         return HSplit(
             [
                 self.__profile(),
+                self.__mode(),
                 Window(),
                 self.__warnings(),
             ]
@@ -27,6 +29,14 @@ class RightComponent(Component["Dashboard"]):
             [
                 Label("PROFILE:", style="bold"),
                 Label(lambda: app_status.current_profile),
+            ]
+        )
+
+    def __mode(self) -> VSplit:
+        return VSplit(
+            [
+                Label("MODE:", style="bold"),
+                Label(lambda: HTML("<red>ACTIVE</red>") if app_status.active_mode else HTML("<blue>INACTIVE</blue>")),
             ]
         )
 
