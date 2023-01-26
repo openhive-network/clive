@@ -14,9 +14,7 @@ from clive.ui.views.convert_view import ConvertView
 from clive.ui.views.dashboard import Dashboard
 from clive.ui.views.exit_confirmation_view import ExitConfirmationView
 from clive.ui.views.help_view import HelpView
-from clive.ui.views.manage_accounts_view import ManageAccountsView
-from clive.ui.views.manage_private_keys_view import ManagePrivateKeysView
-from clive.ui.views.manage_watched_accounts_view import ManageWatchedAccountsView
+from clive.ui.manage_keys.manage_keys_view import ManageKeysView
 from clive.ui.views.power_up_down_view import PowerUpDownView
 from clive.ui.views.set_node_address_view import SetNodeAddressView
 from clive.ui.views.set_theme_view import SetThemeView
@@ -38,9 +36,7 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         super().__init__(parent)
 
         self.dashboard = self._switch_view(Dashboard)
-        self.manage_accounts = self._switch_view(ManageAccountsView)
-        self.manage_watched_accounts = self._switch_view(ManageWatchedAccountsView)
-        self.manage_private_keys = self._switch_view(ManagePrivateKeysView)
+        self.manage_private_keys = self._switch_view(ManageKeysView)
         self.logout = self.__logout()
         self.exit = self._switch_view(ExitConfirmationView)
 
