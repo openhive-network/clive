@@ -1,4 +1,5 @@
 from abc import ABC
+from typing import Callable
 
 from clive.ui.containerable import Containerable
 from clive.ui.focus import set_focus
@@ -12,9 +13,19 @@ class BaseFloat(Containerable, ABC):
     """
 
     def __init__(self) -> None:
+        self.__close_callback: Callable[[], None] = lambda: None
         super().__init__()
         get_view_manager().menu.float = self
         set_focus(self.container)
 
     def _close(self) -> None:
         get_view_manager().menu.float = None
+        self.close_callback()
+
+    @property
+    def close_callback(self) -> Callable[[], None]:
+        return self.__close_callback
+
+    @close_callback.setter
+    def close_callback(self, value: Callable[[], None]) -> None:
+        self.__close_callback = value
