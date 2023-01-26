@@ -1,0 +1,25 @@
+class AppStatus:
+    """A class that holds information about the current state of an application."""
+
+    def __init__(self) -> None:
+        self.__active_mode = False
+        self.__current_profile = "last_used_profile"
+
+    @property
+    def active_mode(self) -> bool:
+        return self.__active_mode
+
+    @active_mode.setter
+    def active_mode(self, value: bool) -> None:
+        self.__active_mode = value
+
+    @property
+    def current_profile(self) -> str:
+        return self.__current_profile
+
+    @current_profile.setter
+    def current_profile(self, value: str) -> None:
+        self.__current_profile = value
+
+
+app_status = AppStatus()
