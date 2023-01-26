@@ -15,6 +15,7 @@ from clive.ui.views.dashboard import Dashboard
 from clive.ui.views.exit_confirmation_view import ExitConfirmationView
 from clive.ui.views.help_view import HelpView
 from clive.ui.manage_keys.manage_keys_view import ManageKeysView
+from clive.ui.manage_watched_accounts.manage_watched_accounts_view import ManageWatchedAccountView
 from clive.ui.views.power_up_down_view import PowerUpDownView
 from clive.ui.views.set_node_address_view import SetNodeAddressView
 from clive.ui.views.set_theme_view import SetThemeView
@@ -37,6 +38,7 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
 
         self.dashboard = self._switch_view(Dashboard)
         self.manage_private_keys = self._switch_view(ManageKeysView)
+        self.manage_watched_accounts = self._switch_view(ManageWatchedAccountView)
         self.logout = self.__logout()
         self.exit = self._switch_view(ExitConfirmationView)
 
