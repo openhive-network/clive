@@ -19,14 +19,14 @@ class Form(ButtonsBased[FormView, FormButtons]):
         return self.__views[self.__view_index]
 
     def next_view(self) -> None:
-        if self.__reached_last_view():
+        if self._reached_last_view():
             return
 
         self.__view_index += 1
         self._update_main_panel()
 
     def previous_view(self) -> None:
-        if self.__reached_first_view():
+        if self._reached_first_view():
             return
 
         self.__view_index -= 1
@@ -40,8 +40,8 @@ class Form(ButtonsBased[FormView, FormButtons]):
     def cancel(self) -> None:
         raise NotImplementedError("Cancel not implemented yet!")
 
-    def __reached_last_view(self) -> bool:
+    def _reached_last_view(self) -> bool:
         return self.__view_index == len(self.__views) - 1
 
-    def __reached_first_view(self) -> bool:
+    def _reached_first_view(self) -> bool:
         return self.__view_index == 0
