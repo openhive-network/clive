@@ -14,6 +14,7 @@ from clive.ui.get_view_manager import get_view_manager
 from clive.ui.menus.menu_empty import MenuEmpty
 
 if TYPE_CHECKING:
+    from prompt_toolkit.layout import Window
     from prompt_toolkit.layout.layout import FocusableElement
 
 
@@ -69,8 +70,11 @@ class Clive:
         # The container property of MenuContainer class stores FloatContainer which content is HSplit storing
         # window and body. When we want to check if menu body is focused just by menu.container - window
         # takes over the focus.
-        menu_window = get_view_manager().menu.container.window
-        return self.__app.layout.has_focus(menu_window)
+        return self.__app.layout.has_focus(self.__get_menu_window())
+
+    @staticmethod
+    def __get_menu_window() -> Window:
+        return get_view_manager().menu.container.window
 
     def exit(self) -> None:
         self.__app.exit()
