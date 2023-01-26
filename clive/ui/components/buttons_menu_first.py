@@ -7,8 +7,8 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
 from clive.app_status import app_status
+from clive.ui.components.account_info import LeftComponentSecond
 from clive.ui.components.buttons_menu import ButtonsMenu
-from clive.ui.components.left_component import LeftComponentSecond
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent

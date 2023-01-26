@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.ui.views.dashboard import Dashboard  # noqa: F401
 
 
-class LeftComponentFirst(Component["Dashboard"]):
+class AccountInfo(Component["Dashboard"]):
     def __init__(self, parent: Dashboard) -> None:
         self.__progress_bar = ProgressBar()
         super().__init__(parent)

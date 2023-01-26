@@ -6,9 +6,9 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
+from clive.ui.components.account_info import AccountInfo
 from clive.ui.components.buttons_menu import ButtonsMenu
 from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
-from clive.ui.components.left_component import LeftComponentFirst
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
@@ -22,7 +22,7 @@ class ButtonsMenuSecond(ButtonsMenu["Dashboard"]):
         self._parent.key_bindings.append(self._get_key_bindings())
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
-        self._parent.main_panel = LeftComponentFirst(self._parent)
+        self._parent.main_panel = AccountInfo(self._parent)
         self._parent.buttons = ButtonsMenuFirst(self._parent)
 
     def _get_key_bindings(self) -> KeyBindings:
