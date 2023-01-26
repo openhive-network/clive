@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class Clive:
-    REFRESH_INTERVAL: Final[float] = 0.25
+    REFRESH_INTERVAL: Final[float] = 1
 
     def __init__(self) -> None:
         self.__app = self.__create_app()
