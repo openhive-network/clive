@@ -6,6 +6,7 @@ from clive.ui.manage_keys import ManageKeysView
 from clive.ui.manage_watched_accounts import ManageWatchedAccountView
 from clive.ui.menus.menu_handlers import MenuHandlers
 from clive.ui.quick_setup_form import QuickSetup
+from clive.ui.set_node_address import SetNodeAddressView
 from clive.ui.view_switcher import switch_view
 from clive.ui.views.about_view import AboutView
 from clive.ui.views.account_history_view import AccountHistoryView
@@ -18,7 +19,6 @@ from clive.ui.views.dashboard import Dashboard
 from clive.ui.views.exit_confirmation_view import ExitConfirmationView
 from clive.ui.views.help_view import HelpView
 from clive.ui.views.power_up_down_view import PowerUpDownView
-from clive.ui.views.set_node_address_view import SetNodeAddressView
 from clive.ui.views.set_theme_view import SetThemeView
 from clive.ui.views.set_wallet_password_view import SetWalletPasswordView
 from clive.ui.views.transfer_from_savings_view import TransferFromSavingsView
