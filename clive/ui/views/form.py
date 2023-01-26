@@ -35,18 +35,3 @@ class Form(ButtonsBased[FormView, FormButtons]):
 
     def __reached_first_view(self) -> bool:
         return self.__view_index == 0
-
-
-class First(FormView):
-    def _create_container(self) -> AnyContainer:
-        return Label("First view")
-
-
-class Second(FormView):
-    def _create_container(self) -> AnyContainer:
-        return Label("Second view")
-
-
-class Third(FormView):
-    def _create_container(self) -> AnyContainer:
-        return Label("Third view")
