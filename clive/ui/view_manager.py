@@ -55,7 +55,6 @@ class ViewManager(Rebuildable):
     @active_view.setter
     def active_view(self, value: View | FormView) -> None:
         self.__assert_if_proper_settable_type(value)
-        self.__set_menu(value)
 
         self.__active_view = value
         self._rebuild()
@@ -71,6 +70,7 @@ class ViewManager(Rebuildable):
         self._rebuild()
 
     def _rebuild(self) -> None:
+        self.__set_menu(self.active_view)
         self.__menu.body = self.active_view.container
         self.__root_container.content = to_container(self.__menu.container)
         set_focus(self.__menu.body)
