@@ -38,3 +38,7 @@ class ButtonsMenu(Component[T], ABC):
     @abstractmethod
     def _get_key_bindings(self) -> KeyBindings:
         """Creates key bindings for the component."""
+
+    def _rebuild(self) -> None:
+        self._buttons = self._create_buttons()
+        super()._rebuild()
