@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import List
 
 from clive.ui.components.form_buttons import FormButtons
@@ -37,8 +38,13 @@ class Form(ButtonsBased[FormView, FormButtons]):
         self.main_panel = self.current_view
         self.buttons = FormButtons.merge_buttons_and_actions(self, self.current_view)
 
+    @abstractmethod
     def cancel(self) -> None:
-        raise NotImplementedError("Cancel not implemented yet!")
+        ...
+
+    @abstractmethod
+    def finish(self) -> None:
+        ...
 
     def _reached_last_view(self) -> bool:
         return self.__view_index == len(self.__views) - 1

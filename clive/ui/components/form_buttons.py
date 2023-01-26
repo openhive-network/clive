@@ -22,6 +22,7 @@ class FormButtons(ButtonsMenu["Form"]):
             Button("F1 Previous", handler=self.__f1_action),
             Button("F2 Next", handler=self.__f2_action),
             Button("F3 Cancel", handler=self.__f3_action),
+            Button("F4 Finish", handler=self.__f4_action),
         ]
 
     def _get_key_bindings(self) -> KeyBindings:
@@ -29,6 +30,7 @@ class FormButtons(ButtonsMenu["Form"]):
         kb.add(Keys.F1)(self.__f1_action)
         kb.add(Keys.F2)(self.__f2_action)
         kb.add(Keys.F3)(self.__f3_action)
+        kb.add(Keys.F4)(self.__f4_action)
 
         return kb
 
@@ -40,6 +42,9 @@ class FormButtons(ButtonsMenu["Form"]):
 
     def __f3_action(self, event: KeyPressEvent | None = None) -> None:
         self._parent.cancel()
+
+    def __f4_action(self, event: KeyPressEvent | None = None) -> None:
+        self._parent.finish()
 
     @staticmethod
     def merge_buttons_and_actions(parent: Form, other: FormView) -> FormButtons:
