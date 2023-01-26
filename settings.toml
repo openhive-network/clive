@@ -1,3 +1,7 @@
 [default]
 LOG_LEVEL = "INFO"
 LOG_LEVEL_3RD_PARTY = "WARNING"
+
+
+[default.key_bindings]
+focus_menu = "c-n"

@@ -54,6 +54,11 @@ class Clive:
         def _(event: KeyPressEvent) -> None:
             event.app.exit()
 
+        @kb.add(self.__get_bind_from_config("focus_menu"))
+        def _(event: KeyPressEvent) -> None:
+            if not isinstance(get_view_manager().menu, MenuEmpty):
+                self.set_focus(self.__get_menu_window())
+
         return kb
 
     def __focus(self, direction: Literal["next", "previous"]) -> Callable[[KeyPressEvent], None]:
@@ -75,6 +80,14 @@ class Clive:
     @staticmethod
     def __get_menu_window() -> Window:
         return get_view_manager().menu.container.window
+
+    @staticmethod
+    def __get_bind_from_config(name: str) -> Keys:
+        binding = settings.key_bindings[name]
+        try:
+            return Keys(binding)
+        except ValueError as e:
+            raise ValueError(f"Invalid key binding: {binding}.") from e
 
     def exit(self) -> None:
         self.__app.exit()
