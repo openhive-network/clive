@@ -10,7 +10,7 @@ from clive.app_status import app_status
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
-    from clive.ui.views.dashboard import Dashboard  # noqa: F401
+    from clive.ui.dashboard.dashboard import Dashboard  # noqa: F401
 
 
 class SidePanel(Component["Dashboard"]):

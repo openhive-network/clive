@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
 
+from clive.ui.dashboard.dashboard import Dashboard
 from clive.ui.manage_keys import ManageKeysView
 from clive.ui.manage_watched_accounts import ManageWatchedAccountView
 from clive.ui.menus.menu_handlers import MenuHandlers
@@ -15,7 +16,6 @@ from clive.ui.views.account_update_memo_key_view import AccountUpdateMemoKeyView
 from clive.ui.views.account_update_metadata_view import AccountUpdateMetadataView
 from clive.ui.views.contribute_view import ContributeView
 from clive.ui.views.convert_view import ConvertView
-from clive.ui.views.dashboard import Dashboard
 from clive.ui.views.exit_confirmation_view import ExitConfirmationView
 from clive.ui.views.help_view import HelpView
 from clive.ui.views.power_up_down_view import PowerUpDownView

@@ -8,12 +8,12 @@ from prompt_toolkit.widgets import Button
 
 from clive.app_status import app_status
 from clive.ui.components.buttons_menu import ButtonsMenu
-from clive.ui.components.left_component_second import LeftComponentSecond
+from clive.ui.dashboard.left_component_second import LeftComponentSecond
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
 
-    from clive.ui.views.dashboard import Dashboard
+    from clive.ui.dashboard.dashboard import Dashboard
 
 
 class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
@@ -27,7 +27,7 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         self._rebuild()
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
-        from clive.ui.components.buttons_menu_second import ButtonsMenuSecond
+        from clive.ui.dashboard.buttons_menu_second import ButtonsMenuSecond
 
         if self._key_bindings in self._parent.key_bindings:
             self._parent.key_bindings.remove(self._key_bindings)

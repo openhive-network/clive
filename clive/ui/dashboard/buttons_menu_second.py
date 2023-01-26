@@ -6,14 +6,14 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
-from clive.ui.components.account_info import AccountInfo
 from clive.ui.components.buttons_menu import ButtonsMenu
-from clive.ui.components.buttons_menu_first import ButtonsMenuFirst
+from clive.ui.dashboard.account_info import AccountInfo
+from clive.ui.dashboard.buttons_menu_first import ButtonsMenuFirst
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
 
-    from clive.ui.views.dashboard import Dashboard
+    from clive.ui.dashboard.dashboard import Dashboard
 
 
 class ButtonsMenuSecond(ButtonsMenu["Dashboard"]):

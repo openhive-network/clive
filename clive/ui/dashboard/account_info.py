@@ -9,7 +9,7 @@ from prompt_toolkit.widgets import Frame, HorizontalLine, Label, ProgressBar, Ve
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
-    from clive.ui.views.dashboard import Dashboard  # noqa: F401
+    from clive.ui.dashboard.dashboard import Dashboard  # noqa: F401
 
 
 class AccountInfo(Component["Dashboard"]):

@@ -8,7 +8,7 @@ from prompt_toolkit.widgets import TextArea
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
-    from clive.ui.views.dashboard import Dashboard  # noqa: F401
+    from clive.ui.dashboard.dashboard import Dashboard  # noqa: F401
 
 
 class LeftComponentSecond(Component["Dashboard"]):
