@@ -23,9 +23,8 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         self._parent.key_bindings.append(self._key_bindings)
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
-        app_status.active_mode = True
-        self._parent._rebuild()
-        # TODO: should change buttons to buttons allowing to deactivate
+        app_status.deactivate() if app_status.active_mode else app_status.activate()
+        self._rebuild()
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
         from clive.ui.components.buttons_menu_second import ButtonsMenuSecond
@@ -44,7 +43,11 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
 
     def _create_buttons(self) -> list[Button]:
         return [
-            Button(text="F1 Activate", handler=self.__f1_action),
+            Button(text=f"F1 {self.__switch_mode_text()}", handler=self.__f1_action),
             Button(text="F2 SecondComponent", handler=self.__f2_action),
             Button(text="F3 Do nothing"),
         ]
+
+    @staticmethod
+    def __switch_mode_text() -> str:
+        return "Deactivate" if app_status.active_mode else "Activate"

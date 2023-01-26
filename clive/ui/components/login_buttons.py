@@ -7,6 +7,7 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
+from clive.app_status import app_status
 from clive.ui.components.buttons_menu import ButtonsMenu
 from clive.ui.view_switcher import switch_view
 
@@ -31,6 +32,7 @@ class LoginButtons(ButtonsMenu["Login"]):
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
         logger.info(f"Login as: {self._parent.main_panel.profile_name}")
+        app_status.active_mode = True
         switch_view("dashboard")
 
     @staticmethod

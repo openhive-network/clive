@@ -1,3 +1,6 @@
+from clive.ui.view_switcher import switch_view
+
+
 class AppStatus:
     """A class that holds information about the current state of an application."""
 
@@ -20,6 +23,13 @@ class AppStatus:
     @current_profile.setter
     def current_profile(self, value: str) -> None:
         self.__current_profile = value
+
+    def activate(self) -> None:
+        switch_view("login")
+
+    def deactivate(self) -> None:
+        self.active_mode = False
+        switch_view("dashboard")
 
 
 app_status = AppStatus()
