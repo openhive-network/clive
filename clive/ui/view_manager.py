@@ -35,7 +35,7 @@ class ViewManager(Rebuildable):
 
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = FloatContainer(self.__default_container, floats=[])
-        self.__menu = MenuEmpty(self.__default_container)
+        self.__menu: Menu[Any] = MenuEmpty(self.__default_container)
 
     @property
     def active_container(self) -> AnyContainer:
