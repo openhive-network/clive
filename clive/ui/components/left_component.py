@@ -51,7 +51,7 @@ class LeftComponentFirst(Component["Dashboard"]):
                 Label("WARNINGS", style="bold"),
                 *self.__get_warning_messages(),
             ],
-            style="#ff0000",
+            style="class:red",
         )
 
     def __get_warning_messages(self) -> Generator[Label, None, None]:

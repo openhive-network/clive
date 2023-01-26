@@ -43,13 +43,13 @@ class RightComponent(Component["Dashboard"]):
     def __warnings(self) -> HSplit:
         return HSplit(
             [
-                Label("\nWARNING MESSAGES:", style="#ff0000 bold"),
+                Label("\nWARNING MESSAGES:", style="class:red bold"),
                 ScrollablePane(
                     HSplit(
                         [
                             *self.__get_warning_messages(),
                         ],
-                        style="#ff0000",
+                        style="class:red",
                     )
                 ),
             ]

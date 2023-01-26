@@ -1,5 +1,6 @@
 [default.style]
 gray = "#5C6B73"
+red = "#871b13"
 blue = "#285dff"
 green = "#00903e"
 primary = "@format bg:{this.style.GRAY}"
