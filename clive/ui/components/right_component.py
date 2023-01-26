@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generator
 
-from prompt_toolkit.widgets import TextArea
+from prompt_toolkit.layout import FormattedTextControl, HSplit, ScrollablePane, VSplit, Window
+from prompt_toolkit.widgets import Frame, Label
 
 from clive.ui.component import Component
 
@@ -11,9 +12,42 @@ if TYPE_CHECKING:
 
 
 class RightComponent(Component["Dashboard"]):
-    def _create_container(self) -> TextArea:
-        return TextArea(
-            text="RIGHT COMPONENT",
-            style="class:primary",
-            focus_on_click=True,
+    def _create_container(self) -> HSplit:
+        return HSplit(
+            [
+                self.__profile(),
+                Window(),
+                self.__warnings(),
+            ]
         )
+
+    def __profile(self) -> VSplit:
+        return VSplit(
+            [
+                Label("PROFILE:", style="bold"),
+                Label("Kasia"),
+            ]
+        )
+
+    def __warnings(self) -> HSplit:
+        return HSplit(
+            [
+                Label("\nWARNING MESSAGES:", style="#ff0000 bold"),
+                ScrollablePane(
+                    HSplit(
+                        [
+                            *self.__get_warning_messages(),
+                        ],
+                        style="#ff0000",
+                    )
+                ),
+            ]
+        )
+
+    def __get_warning_messages(self) -> Generator[Frame, None, None]:
+        warnings = [
+            "Your account will expire in 10 days if you don't vote for witness or proposal.",
+            "The watched account: @gtg changed the owner authority.",
+        ] * 6
+        for idx, warning in enumerate(warnings):
+            yield Frame(Window(FormattedTextControl(f"{idx + 1}. {warning}", focusable=True), wrap_lines=True))
