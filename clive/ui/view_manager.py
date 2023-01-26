@@ -1,16 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, NoReturn
+from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
 from prompt_toolkit.layout import Float, FloatContainer, to_container
 from prompt_toolkit.widgets import Label
 
+from clive.app_status import app_status
 from clive.exceptions import ViewException
 from clive.ui.focus import set_focus
 from clive.ui.form_view import FormView
 from clive.ui.menus.full.menu_full import MenuFull
 from clive.ui.menus.menu import Menu
 from clive.ui.menus.menu_empty import MenuEmpty
+from clive.ui.menus.restricted.menu_restricted import MenuRestricted
 from clive.ui.rebuildable import Rebuildable
 from clive.ui.view import View
 from clive.ui.views.login import Login
@@ -83,16 +85,14 @@ class ViewManager(Rebuildable):
         return None
 
     def __set_menu(self, value: View | FormView) -> None:
-        menus: dict[type, tuple[type, ...]] = {
-            MenuEmpty: (
-                Login,
-                Registration,
-            ),
-            MenuFull: (object,),  # this one is the default menu
+        menus: dict[type, Callable[[], bool]] = {
+            MenuEmpty: lambda: isinstance(value, (Login, Registration)),
+            MenuRestricted: lambda: not app_status.active_mode,
+            MenuFull: lambda: app_status.active_mode,
         }
 
-        for menu, views in menus.items():
-            if isinstance(value, views):
+        for menu, predicate in menus.items():
+            if predicate():
                 self.__menu = menu(self.__default_container)
                 break
 

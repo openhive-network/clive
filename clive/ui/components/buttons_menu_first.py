@@ -6,9 +6,9 @@ from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
+from clive.app_status import app_status
 from clive.ui.components.buttons_menu import ButtonsMenu
 from clive.ui.components.left_component import LeftComponentSecond
-from clive.ui.focus import set_focus
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
@@ -23,7 +23,9 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         self._parent.key_bindings.append(self._key_bindings)
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
-        set_focus(self._buttons[-1])
+        app_status.active_mode = True
+        self._parent._rebuild()
+        # TODO: should change buttons to buttons allowing to deactivate
 
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
         from clive.ui.components.buttons_menu_second import ButtonsMenuSecond
@@ -42,7 +44,7 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
 
     def _create_buttons(self) -> list[Button]:
         return [
-            Button(text="F1 Select F3", handler=self.__f1_action),
+            Button(text="F1 Activate", handler=self.__f1_action),
             Button(text="F2 SecondComponent", handler=self.__f2_action),
             Button(text="F3 Do nothing"),
         ]
