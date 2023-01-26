@@ -88,6 +88,7 @@ class MenuFull(Menu[MenuFullHandlers]):
             MenuItem(
                 "Options",
                 children=[
+                    MenuItem("Quick Setup", handler=self._handlers.options_quick_setup),
                     MenuItem("Set Node Address", handler=self._handlers.options_set_node_address),
                     MenuItem("Set Theme", handler=self._handlers.options_set_theme),
                     MenuItem("Set Wallet Password", handler=self._handlers.options_wallet_password),

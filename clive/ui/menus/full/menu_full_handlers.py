@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
 from clive.ui.menus.menu_handlers import MenuHandlers
+from clive.ui.quick_setup_form.quick_setup import QuickSetup
 from clive.ui.view_switcher import switch_view
 from clive.ui.views.about_view import AboutView
 from clive.ui.views.account_history_view import AccountHistoryView
@@ -67,6 +68,7 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         self.account_update_authority = self._switch_view(AccountUpdateAuthorityView)
         self.account_update_memo_key = self._switch_view(AccountUpdateMemoKeyView)
 
+        self.options_quick_setup = self._switch_view(QuickSetup)
         self.options_set_node_address = self._switch_view(SetNodeAddressView)
         self.options_set_theme = self._switch_view(SetThemeView)
         self.options_wallet_password = self._switch_view(SetWalletPasswordView)
