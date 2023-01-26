@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable
 
-from clive.ui.manage_keys.manage_keys_view import ManageKeysView
-from clive.ui.manage_watched_accounts.manage_watched_accounts_view import ManageWatchedAccountView
+from clive.ui.manage_keys import ManageKeysView
+from clive.ui.manage_watched_accounts import ManageWatchedAccountView
 from clive.ui.menus.menu_handlers import MenuHandlers
-from clive.ui.quick_setup_form.quick_setup import QuickSetup
+from clive.ui.quick_setup_form import QuickSetup
 from clive.ui.view_switcher import switch_view
 from clive.ui.views.about_view import AboutView
 from clive.ui.views.account_history_view import AccountHistoryView
