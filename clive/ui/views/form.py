@@ -1,7 +1,5 @@
 from __future__ import annotations
-
-from prompt_toolkit.layout import AnyContainer
-from prompt_toolkit.widgets import Label
+from typing import List
 
 from clive.ui.components.form_buttons import FormButtons
 from clive.ui.form_view import FormView
@@ -9,12 +7,9 @@ from clive.ui.views.button_based import ButtonsBased
 
 
 class Form(ButtonsBased[FormView, FormButtons]):
-    def __init__(self) -> None:
-        self.__views = [
-            First(self),
-            Second(self),
-            Third(self),
-        ]
+    def __init__(self, views: List[FormView]) -> None:
+        assert len(views) > 0
+        self.__views = views
         self.__view_index = 0
         super().__init__(self.__views[0], FormButtons(self))
 
