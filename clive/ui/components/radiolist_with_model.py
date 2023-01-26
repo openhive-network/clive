@@ -1,25 +1,34 @@
 from __future__ import annotations
 
-from typing import Any, Callable, List, Tuple
+from typing import Callable, Generic, List, Tuple, TypeVar
 
-from prompt_toolkit.layout import AnyContainer
-from prompt_toolkit.widgets import RadioList
+from prompt_toolkit.layout import AnyContainer, HSplit, Window
+from prompt_toolkit.widgets import Frame, RadioList
 
 from clive.ui.component import Component, T
 
-ModelItemT = Tuple[Any, str]
-ModelT = List[ModelItemT]
+ItemT = TypeVar("ItemT")
+ModelItemT = Tuple[ItemT, str]
+ModelT = List[ModelItemT[ItemT]]
 
 
-class RadioListWithModel(Component[T]):
-    def __init__(self, parent: T, get_model: Callable[[], ModelT]) -> None:
+class RadioListWithModel(Generic[ItemT, T], Component[T]):
+    def __init__(self, parent: T, get_model: Callable[[], ModelT[ItemT]]) -> None:
+        self.__radio: RadioList[ItemT]
         self.__get_model = get_model
-        self.container: RadioList[ModelItemT]
         super().__init__(parent)
 
     @property
-    def current_item(self) -> ModelItemT:
-        return self.container.current_value
+    def current_item(self) -> ItemT:
+        return self.__radio.current_value
+
+    @property
+    def model(self) -> ModelT[ItemT]:
+        return self.__get_model()
+
+    def __update_radio_list(self) -> RadioList[ItemT]:
+        self.__radio = RadioList(values=self.model)
+        return self.__radio
 
     def _create_container(self) -> AnyContainer:
-        return RadioList(values=self.__get_model())
+        return Frame(HSplit([self.__update_radio_list(), Window()]))
