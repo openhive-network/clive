@@ -4,11 +4,11 @@ import typing
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, Optional, TypeVar
 
-from prompt_toolkit.widgets import MenuContainer
 from prompt_toolkit.layout import Float
+from prompt_toolkit.widgets import MenuContainer
 
+from clive.ui.base_float import BaseFloat
 from clive.ui.containerable import Containerable
-from clive.ui.floats.base_float import BaseFloat
 from clive.ui.get_view_manager import get_view_manager
 from clive.ui.rebuildable import Rebuildable
 
@@ -47,7 +47,6 @@ class Menu(Containerable, Rebuildable, Generic[T], ABC):
     @float.setter
     def float(self, value: Optional[BaseFloat]) -> None:
         self.__float = value
-        self._container = self._create_container()
         get_view_manager()._rebuild()
 
     @abstractmethod
@@ -61,7 +60,7 @@ class Menu(Containerable, Rebuildable, Generic[T], ABC):
         return MenuContainer(
             body=self.body,
             menu_items=self._create_menu(),
-            floats=([Float(self.__float.container)] if self.__float is not None else [])
+            floats=([Float(self.__float.container)] if self.__float is not None else []),
         )
 
     @property

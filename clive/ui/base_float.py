@@ -1,8 +1,9 @@
 from abc import ABC
 
 from clive.ui.containerable import Containerable
-from clive.ui.get_view_manager import get_view_manager
 from clive.ui.focus import set_focus
+from clive.ui.get_view_manager import get_view_manager
+
 
 class BaseFloat(Containerable, ABC):
     """
