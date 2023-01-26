@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Generator
 from prompt_toolkit.layout import FormattedTextControl, HSplit, ScrollablePane, VSplit, Window
 from prompt_toolkit.widgets import Frame, Label
 
+from clive.app_status import app_status
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ class RightComponent(Component["Dashboard"]):
         return VSplit(
             [
                 Label("PROFILE:", style="bold"),
-                Label("Kasia"),
+                Label(lambda: app_status.current_profile),
             ]
         )
 
