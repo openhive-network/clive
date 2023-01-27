@@ -21,8 +21,6 @@ class AccountInfo(Component["Dashboard"]):
     def _create_container(self) -> HSplit:
         return HSplit(
             [
-                self.__warnings(),
-                Window(),
                 VSplit(
                     [
                         HSplit(
@@ -38,10 +36,11 @@ class AccountInfo(Component["Dashboard"]):
                                 self.__powers(),
                                 HorizontalLine(),
                                 self.__recurrent_transfer(),
-                            ]
+                            ],
                         ),
                     ],
                 ),
+                Window(),
             ],
             style="class:secondary",
         )
