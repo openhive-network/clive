@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC
 from typing import TypeVar
 
+from loguru import logger
+
 from clive.ui.containerable import Containerable
 from clive.ui.parented import Parented
 from clive.ui.rebuildable import Rebuildable
@@ -25,5 +27,6 @@ class Component(Parented[T], Containerable, Rebuildable, ABC):
 
     def _rebuild(self) -> None:
         """Rebuilds the current component and then calls the _rebuild method of its parent to propagate the change."""
+        logger.debug(f"rebuilding component: {self.__class__.__name__}")
         self._container = self._create_container()
         self._parent._rebuild()

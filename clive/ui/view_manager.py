@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
+from loguru import logger
 from prompt_toolkit.layout import Float, FloatContainer, to_container
 from prompt_toolkit.widgets import Label
 
@@ -72,6 +73,7 @@ class ViewManager(Rebuildable):
         self._rebuild()
 
     def _rebuild(self) -> None:
+        logger.debug(f"rebuilding component: {self.__class__.__name__}")
         self.__set_menu(self.active_view)
         self.__menu.body = self.active_view.container
         self.__root_container.content = to_container(self.__menu.container)
