@@ -16,7 +16,7 @@ def switch_view(view: str | View) -> None:
         from clive.ui.views.views_holder import views
 
         try:
-            view = views[view]
+            view = views[view]()
         except KeyError:
             raise ViewDoesNotExist(f"View '{view}' does not exist. Available views: {list(views)}")
 
