@@ -10,6 +10,7 @@ from prompt_toolkit.layout import Layout
 from prompt_toolkit.styles import Style
 
 from clive.config import settings
+from clive.storage.mock_database import MockDB
 from clive.ui.get_view_manager import get_view_manager
 from clive.ui.menus.menu_empty import MenuEmpty
 from clive.ui.views.button_based import ButtonsBased
@@ -43,6 +44,7 @@ class Clive:
             full_screen=True,
             mouse_support=True,
             refresh_interval=self.REFRESH_INTERVAL,
+            on_invalidate=lambda _: MockDB.node.recalc(),
         )
 
     def __get_key_bindings(self) -> KeyBindings:
