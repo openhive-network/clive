@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, NoReturn
 
-from prompt_toolkit.layout import VSplit, to_container
+from prompt_toolkit.layout import Float, FloatContainer, to_container
 from prompt_toolkit.widgets import Label
 
 from clive.exceptions import ViewException
@@ -19,6 +19,8 @@ from clive.ui.views.registration import Registration
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
 
+    from clive.ui.base_float import BaseFloat
+
 
 class ViewManager(Rebuildable):
     """
@@ -29,8 +31,10 @@ class ViewManager(Rebuildable):
 
     def __init__(self) -> None:
         self.__active_view: View | FormView | None = None
+        self.__float: BaseFloat | None = None
+
         self.__default_container = Label(text="No view selected... Loading...")
-        self.__root_container = VSplit([self.__default_container])
+        self.__root_container = FloatContainer(self.__default_container, floats=[])
         self.__menu = MenuEmpty(self.__default_container)
 
     @property
@@ -56,9 +60,19 @@ class ViewManager(Rebuildable):
         self.__active_view = value
         self._rebuild()
 
+    @property
+    def float(self) -> BaseFloat | None:
+        return self.__float
+
+    @float.setter
+    def float(self, value: BaseFloat | None) -> None:
+        self.__float = value
+        self.__root_container.floats = [Float(self.__float.container)] if self.__float is not None else []
+        self._rebuild()
+
     def _rebuild(self) -> None:
         self.__menu.body = self.active_view.container
-        self.__root_container.children = [to_container(self.__menu.container)]
+        self.__root_container.content = to_container(self.__menu.container)
         set_focus(self.__menu.body)
 
     @staticmethod

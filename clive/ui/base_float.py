@@ -15,11 +15,11 @@ class BaseFloat(Containerable, ABC):
     def __init__(self) -> None:
         self.__close_callback: Callable[[], None] = lambda: None
         super().__init__()
-        get_view_manager().menu.float = self
+        get_view_manager().float = self
         set_focus(self.container)
 
     def _close(self) -> None:
-        get_view_manager().menu.float = None
+        get_view_manager().float = None
         self.close_callback()
 
     @property
