@@ -14,7 +14,7 @@ class MenuRestricted(Menu[MenuRestrictedHandlers]):
     def _create_menu(self) -> list[MenuItem]:
         return [
             MenuItem(
-                "Wallet",
+                "Clive",
                 children=[
                     MenuItem("Dashboard", handler=self._handlers.dashboard),
                     MenuItem("Activate", handler=self._handlers.activate),

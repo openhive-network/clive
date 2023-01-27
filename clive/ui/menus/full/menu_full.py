@@ -14,7 +14,7 @@ class MenuFull(Menu[MenuFullHandlers]):
     def _create_menu(self) -> list[MenuItem]:
         return [
             MenuItem(
-                "Wallet",
+                "Clive",
                 children=[
                     MenuItem("Dashboard", handler=self._handlers.dashboard),
                     MenuItem("Manage Private Keys", handler=self._handlers.manage_private_keys),
