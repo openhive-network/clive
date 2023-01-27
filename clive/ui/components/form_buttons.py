@@ -47,44 +47,46 @@ class FormButtons(ButtonsMenu["Form"]):
         self._parent.finish()
 
     @staticmethod
-    def merge_buttons_and_actions(parent: Form, other: FormView) -> FormButtons:
-        class FormButtonsMerged(FormButtons):
-            def __init__(self, parent: Form) -> None:
-                self.__additional_buttons = other.requested_buttons()
-                self.__allowed_keys = STANDARD_FUNCTIONAL_KEYS.copy()
+    def merge_buttons_and_actions(form: Form, form_view: FormView) -> FormButtons:
+        return _FormButtonsMerged(form, form_view)
 
-                for kb in super()._get_key_bindings().bindings:
-                    for key in kb.keys:
-                        assert isinstance(key, Keys)
-                        self.__allowed_keys.remove(key)
 
-                super().__init__(parent)
+class _FormButtonsMerged(FormButtons):
+    def __init__(self, form: Form, form_view: FormView) -> None:
+        self.__form_view = form_view
+        self.__additional_buttons = form_view.requested_buttons()
+        self.__allowed_keys = STANDARD_FUNCTIONAL_KEYS.copy()
 
-            def _create_buttons(self) -> List[Button]:
-                buttons = super()._create_buttons()
-                button_caption_regex = re.compile(r"^(F\d\d? )?(.*)")
-                for i, kv in enumerate(self.__additional_buttons.items()):
-                    button_caption = kv[0]
-                    if (button_caption_match := button_caption_regex.match(button_caption)) is not None:
-                        button_caption = button_caption_match.group(2)
-                    buttons.append(
-                        Button(
-                            text=f"{self.__allowed_keys[i].capitalize()} {button_caption}",
-                            handler=self.__create_button_handler(kv[1]),
-                        )
-                    )
-                return buttons
+        for kb in super()._get_key_bindings().bindings:
+            for key in kb.keys:
+                assert isinstance(key, Keys)
+                self.__allowed_keys.remove(key)
 
-            def _get_key_bindings(self) -> KeyBindings:
-                bindings = super()._get_key_bindings()
-                for i, kv in enumerate(other.requested_buttons().items()):
-                    bindings.add(self.__allowed_keys[i])(self.__create_button_handler(kv[1]))  # type: ignore
-                return bindings
+        super().__init__(form)
 
-            def __create_button_handler(self, handler: Callable[[], None]) -> Callable[[], None]:
-                def handler_impl(_: KeyPressEvent | None = None) -> None:
-                    handler()
+    def _create_buttons(self) -> List[Button]:
+        buttons = super()._create_buttons()
+        button_caption_regex = re.compile(r"^(F\d\d? )?(.*)")
+        for i, kv in enumerate(self.__additional_buttons.items()):
+            button_caption = kv[0]
+            if (button_caption_match := button_caption_regex.match(button_caption)) is not None:
+                button_caption = button_caption_match.group(2)
+            buttons.append(
+                Button(
+                    text=f"{self.__allowed_keys[i].capitalize()} {button_caption}",
+                    handler=self.__create_button_handler(kv[1]),
+                )
+            )
+        return buttons
 
-                return handler_impl
+    def _get_key_bindings(self) -> KeyBindings:
+        bindings = super()._get_key_bindings()
+        for i, kv in enumerate(self.__form_view.requested_buttons().items()):
+            bindings.add(self.__allowed_keys[i])(self.__create_button_handler(kv[1]))  # type: ignore
+        return bindings
 
-        return FormButtonsMerged(parent)
+    def __create_button_handler(self, handler: Callable[[], None]) -> Callable[[], None]:
+        def handler_impl(_: KeyPressEvent | None = None) -> None:
+            handler()
+
+        return handler_impl
