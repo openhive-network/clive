@@ -6,6 +6,7 @@ from prompt_toolkit import HTML
 from prompt_toolkit.layout import HSplit, VSplit, Window
 from prompt_toolkit.widgets import Frame, HorizontalLine, Label, ProgressBar, VerticalLine
 
+from clive.storage.mock_database import MockDB
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
@@ -102,14 +103,14 @@ class AccountInfo(Component["Dashboard"]):
                         ),
                         HSplit(
                             [
-                                Label("5330 HIVE"),
-                                Label("2,125 HP"),
-                                Label("$5.67"),
-                                Label("21.000 HIVE"),
-                                Label("71.615 HBD"),
-                                Label("0.014 HBD"),
-                                Label("0.014 HP"),
-                                Label("0.014 HIVE"),
+                                Label(lambda: f"{MockDB.node.hive_balance :.2f} HIVE"),
+                                Label(lambda: f"{MockDB.node.hive_power_balance :.2f} HP"),
+                                Label(lambda: f"${MockDB.node.hive_dollars :.2f}"),
+                                Label(lambda: f"{MockDB.node.hive_savings :.2f} HIVE"),
+                                Label(lambda: f"{MockDB.node.hbd_savings :.2f} HBD"),
+                                Label(lambda: f"{MockDB.node.hbd_unclaimed :.2f} HBD"),
+                                Label(lambda: f"{MockDB.node.hp_unclaimed :.2f} HP"),
+                                Label(lambda: f"{MockDB.node.hive_unclaimed :.2f} HIVE"),
                             ]
                         ),
                     ]
@@ -140,35 +141,37 @@ class AccountInfo(Component["Dashboard"]):
             title=HTML("<black><b>ACCOUNTS</b></black>"),
         )
 
-    def __powers(self) -> HSplit:
-        return HSplit(
-            [
-                Label("\nPOWERS"),
-                VSplit(
-                    [
-                        HSplit(
-                            [
-                                Label("Resource Credits (RC):"),
-                                Label("100% charged in:"),
-                                Label("Voting Power:"),
-                                Label("100% charged in:"),
-                                Label("Down vote Power:"),
-                                Label("100% charged in:"),
-                            ]
-                        ),
-                        HSplit(
-                            [
-                                self.__progress_bar,
-                                Label("2 days"),
-                                Label("93%"),
-                                Label("2 days"),
-                                Label("82%"),
-                                Label("4 days"),
-                            ]
-                        ),
-                    ]
-                ),
-            ]
+    def __update_progress_bar(self) -> str:
+        self.__progress_bar.percentage = MockDB.node.rc
+        return "Resource Credits (RC):"
+
+    def __powers(self) -> Frame:
+        return Frame(
+            title=HTML("<black><b>POWERS</b></black>"),
+            body=VSplit(
+                [
+                    HSplit(
+                        [
+                            Label(self.__update_progress_bar),
+                            Label("100% charged in:"),
+                            Label("Voting Power:"),
+                            Label("100% charged in:"),
+                            Label("Down vote Power:"),
+                            Label("100% charged in:"),
+                        ]
+                    ),
+                    HSplit(
+                        [
+                            self.__progress_bar,
+                            Label("2 days"),
+                            Label(lambda: f"{MockDB.node.voting_power :.2f}%"),
+                            Label("2 days"),
+                            Label(lambda: f"{MockDB.node.down_vote_power :.2f}%"),
+                            Label("4 days"),
+                        ]
+                    ),
+                ]
+            ),
         )
 
     def __recurrent_transfer(self) -> HSplit:
