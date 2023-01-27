@@ -69,15 +69,26 @@ class ViewManager(Rebuildable):
     @float.setter
     def float(self, value: BaseFloat | None) -> None:
         self.__float = value
-        self.__root_container.floats = [Float(self.__float.container)] if self.__float is not None else []
-        self._rebuild()
+        self.__update_float_containers()
+
 
     def _rebuild(self) -> None:
         logger.debug(f"rebuilding component: {self.__class__.__name__}")
         self.__set_menu(self.active_view)
         self.__menu.body = self.active_view.container
         self.__root_container.content = to_container(self.__menu.container)
-        set_focus(self.__menu.body)
+        if not self.__root_container.floats:
+            set_focus(self.__menu.body)
+
+    def __update_float_containers(self) -> None:
+        result: list[Float] = []
+
+        if self.float is not None:
+            result.append(Float(self.float.container))
+            set_focus(self.float.container)
+
+        self.__root_container.floats = result
+        self._rebuild()
 
     @staticmethod
     def __assert_if_proper_settable_type(value: Any) -> NoReturn | None:
