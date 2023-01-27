@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class Clive:
-    REFRESH_INTERVAL: Final[float] = 1
+    REFRESH_INTERVAL: Final[float] = 3
 
     def __init__(self) -> None:
         self.__app = self.__create_app()
@@ -45,6 +45,7 @@ class Clive:
             mouse_support=True,
             refresh_interval=self.REFRESH_INTERVAL,
             on_invalidate=lambda _: MockDB.node.recalc(),
+            min_redraw_interval=0.1,
         )
 
     def __get_key_bindings(self) -> KeyBindings:
