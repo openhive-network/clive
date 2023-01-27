@@ -35,6 +35,7 @@ class ViewManager(Rebuildable):
     def __init__(self) -> None:
         self.__active_view: View | FormView | None = None
         self.__float: BaseFloat | None = None
+        self.__error_float: BaseFloat | None = None
 
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = FloatContainer(self.__default_container, floats=[])
@@ -71,6 +72,14 @@ class ViewManager(Rebuildable):
         self.__float = value
         self.__update_float_containers()
 
+    @property
+    def error_float(self) -> BaseFloat | None:
+        return self.__error_float
+
+    @error_float.setter
+    def error_float(self, value: BaseFloat | None) -> None:
+        self.__error_float = value
+        self.__update_float_containers()
 
     def _rebuild(self) -> None:
         logger.debug(f"rebuilding component: {self.__class__.__name__}")
@@ -86,6 +95,10 @@ class ViewManager(Rebuildable):
         if self.float is not None:
             result.append(Float(self.float.container))
             set_focus(self.float.container)
+
+        if self.error_float is not None:
+            result.append(Float(self.error_float.container))
+            set_focus(self.error_float.container)
 
         self.__root_container.floats = result
         self._rebuild()
