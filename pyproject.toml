@@ -56,6 +56,10 @@ disallow_untyped_decorators = false
 
 
 [tool.ruff]
+select = [
+    "E",
+    "F",
+]
 ignore = [
     "I", # isort, run separately
     "E501", # line too long, handled by black
