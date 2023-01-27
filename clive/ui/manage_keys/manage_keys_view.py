@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, TypeVar, Union
 
-from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
@@ -36,18 +36,18 @@ class ManageKeysButtons(ButtonsMenu[K]):
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
-        kb.add(Keys.F1)(lambda _: self.__create_private_key)
-        kb.add(Keys.F2)(lambda _: self.__delete_private_key)
+        kb.add(Keys.F1)(self.__create_private_key)
+        kb.add(Keys.F2)(self.__delete_private_key)
         return kb
 
     def __refresh_view_after_db_update(self) -> None:
         self.__radio_list._rebuild()
 
-    def __delete_private_key(self) -> None:
+    def __delete_private_key(self, _: KeyPressEvent | None = None) -> None:
         MockDB.MAIN_ACTIVE_ACCOUNT.keys.remove(self.__radio_list.current_item)
         self.__refresh_view_after_db_update()
 
-    def __create_private_key(self) -> None:
+    def __create_private_key(self, _: KeyPressEvent | None = None) -> None:
         def on_account_object_created(pv_key: PrivateKey) -> None:
             MockDB.MAIN_ACTIVE_ACCOUNT.keys.append(pv_key)
             self.__refresh_view_after_db_update()

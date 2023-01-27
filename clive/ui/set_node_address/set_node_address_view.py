@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, TypeVar, Union
 
-from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
@@ -37,15 +37,15 @@ class SetNodeAddressViewButtons(ButtonsMenu[K]):
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
-        kb.add(Keys.F1)(lambda _: self.__create_node)
-        kb.add(Keys.F2)(lambda _: self.__delete_node)
-        kb.add(Keys.F3)(lambda _: self.__set_as_default_node)
+        kb.add(Keys.F1)(self.__create_node)
+        kb.add(Keys.F2)(self.__delete_node)
+        kb.add(Keys.F3)(self.__set_as_default_node)
         return kb
 
     def __refresh_view_after_db_update(self) -> None:
         self.__radio_list._rebuild()
 
-    def __delete_node(self) -> None:
+    def __delete_node(self, _: KeyPressEvent | None = None) -> None:
         item_to_delete = self.__radio_list.current_item
         if item_to_delete == MockDB.NODE_ADDRESS:
             if len(MockDB.BACKUP_NODE_ADDRESSES) > 0:
@@ -57,7 +57,7 @@ class SetNodeAddressViewButtons(ButtonsMenu[K]):
 
         self.__refresh_view_after_db_update()
 
-    def __create_node(self) -> None:
+    def __create_node(self, _: KeyPressEvent | None = None) -> None:
         def on_node_created(node: NodeAddress) -> None:
             if MockDB.NODE_ADDRESS is None:
                 MockDB.NODE_ADDRESS = node
@@ -67,7 +67,7 @@ class SetNodeAddressViewButtons(ButtonsMenu[K]):
 
         CreateNodeFloat(on_node_created)
 
-    def __set_as_default_node(self) -> None:
+    def __set_as_default_node(self, _: KeyPressEvent | None = None) -> None:
         future_default = self.__radio_list.current_item
         if future_default != MockDB.NODE_ADDRESS:
             assert MockDB.NODE_ADDRESS is not None

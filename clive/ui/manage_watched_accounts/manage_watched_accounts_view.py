@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, List, TypeVar, Union
 
-from prompt_toolkit.key_binding import KeyBindings
+from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
@@ -37,18 +37,18 @@ class ManageWatchedAccountsButtons(ButtonsMenu[K]):
 
     def _get_key_bindings(self) -> KeyBindings:
         kb = KeyBindings()
-        kb.add(Keys.F1)(lambda _: self.__create_watched_account)
-        kb.add(Keys.F2)(lambda _: self.__delete_watched_account)
+        kb.add(Keys.F1)(self.__create_watched_account)
+        kb.add(Keys.F2)(self.__delete_watched_account)
         return kb
 
-    def __refresh_view_after_db_update(self) -> None:
+    def __refresh_view_after_db_update(self, _: KeyPressEvent | None = None) -> None:
         self.__radio_list._rebuild()
 
-    def __delete_watched_account(self) -> None:
+    def __delete_watched_account(self, _: KeyPressEvent | None = None) -> None:
         MockDB.ACCOUNTS.remove(self.__radio_list.current_item)
         self.__refresh_view_after_db_update()
 
-    def __create_watched_account(self) -> None:
+    def __create_watched_account(self, _: KeyPressEvent | None = None) -> None:
         def on_account_object_created(account: Account) -> None:
             MockDB.ACCOUNTS.append(account)
             self.__refresh_view_after_db_update()

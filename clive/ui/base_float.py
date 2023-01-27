@@ -89,7 +89,6 @@ class BaseFloat(Containerable, ABC):
     def __create_label(self, text: str) -> Frame:
         return Frame(Label(text=text))
 
-    @abstractmethod
     def _cancel(self) -> None:
         """Called when user clicks Cancel button"""
 
