@@ -24,16 +24,16 @@ class Form(ButtonsBased[FormView, FormButtons]):
             return
 
         self.__view_index += 1
-        self._update_main_panel()
+        self.update_main_panel()
 
     def previous_view(self) -> None:
         if self._reached_first_view():
             return
 
         self.__view_index -= 1
-        self._update_main_panel()
+        self.update_main_panel()
 
-    def _update_main_panel(self) -> None:
+    def update_main_panel(self) -> None:
         self.current_view._rebuild()
         self.main_panel = self.current_view
         self.buttons = FormButtons.merge_buttons_and_actions(self, self.current_view)

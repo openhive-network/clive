@@ -31,9 +31,9 @@ class QuickFormView(FormView):
 
                     current_float = get_view_manager().float
                     if not float_exist_before_call and (current_float is not None):
-                        current_float.close_callback = self._parent._update_main_panel
+                        current_float.close_callback = self._parent.update_main_panel
                     else:
-                        self._parent._update_main_panel()
+                        self._parent.update_main_panel()
 
             return handler_impl
 
