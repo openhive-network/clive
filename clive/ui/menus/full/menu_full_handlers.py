@@ -1,14 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
+from clive.app_status import app_status
 from clive.ui.dashboard.dashboard import Dashboard
 from clive.ui.manage_keys import ManageKeysView
 from clive.ui.manage_watched_accounts import ManageWatchedAccountView
 from clive.ui.menus.menu_handlers import MenuHandlers
 from clive.ui.quick_setup_form import QuickSetup
 from clive.ui.set_node_address import SetNodeAddressView
-from clive.ui.view_switcher import switch_view
 from clive.ui.views.about_view import AboutView
 from clive.ui.views.account_history_view import AccountHistoryView
 from clive.ui.views.account_update_authority_view import AccountUpdateAuthorityView
@@ -40,7 +40,7 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         self.dashboard = self._switch_view(Dashboard)
         self.manage_private_keys = self._switch_view(ManageKeysView)
         self.manage_watched_accounts = self._switch_view(ManageWatchedAccountView)
-        self.logout = self.__logout()
+        self.deactivate = lambda: app_status.deactivate()
         self.exit = self._switch_view(ExitConfirmationView)
 
         self.transfer_hive_to_account = self._switch_view(TransferToAccountView, asset="HIVE")
@@ -76,10 +76,3 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         self.help = self._switch_view(HelpView)
         self.about = self._switch_view(AboutView)
         self.contribute = self._switch_view(ContributeView)
-
-    @staticmethod
-    def __logout() -> Callable[[], None]:
-        def logout() -> None:
-            switch_view("login")
-
-        return logout

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.app_status import app_status
 from clive.ui.dashboard.dashboard import Dashboard
 from clive.ui.menus.menu_handlers import MenuHandlers
 from clive.ui.set_node_address import SetNodeAddressView
@@ -20,6 +21,7 @@ class MenuRestrictedHandlers(MenuHandlers["MenuRestricted"]):
         super().__init__(parent)
 
         self.dashboard = self._switch_view(Dashboard)
+        self.activate = lambda: app_status.activate()
         self.exit = self._switch_view(ExitConfirmationView)
 
         self.options_set_node_address = self._switch_view(SetNodeAddressView)

@@ -17,6 +17,7 @@ class MenuRestricted(Menu[MenuRestrictedHandlers]):
                 "Wallet",
                 children=[
                     MenuItem("Dashboard", handler=self._handlers.dashboard),
+                    MenuItem("Activate", handler=self._handlers.activate),
                     MenuItem("Exit", handler=self._handlers.exit),
                 ],
             ),
