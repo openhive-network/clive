@@ -1,6 +1,8 @@
 from abc import ABC
 from typing import Callable
 
+from prompt_toolkit.widgets import Button
+
 from clive.ui.containerable import Containerable
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
@@ -29,3 +31,6 @@ class BaseFloat(Containerable, ABC):
     @close_callback.setter
     def close_callback(self, value: Callable[[], None]) -> None:
         self.__close_callback = value
+
+    def _create_popup_button(self, label: str, handler: Callable[[], None]) -> Button:
+        return Button(label, handler, left_symbol="", right_symbol="", width=len(label))
