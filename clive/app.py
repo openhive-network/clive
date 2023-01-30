@@ -75,6 +75,15 @@ class Clive:
             if isinstance(get_view_manager().active_view, ButtonsBased):
                 self.set_focus(input_field.container)
 
+        @kb.add(Keys.ControlSpace)
+        def _(event: KeyPressEvent) -> None:
+            """Start auto completion. If the menu is showing already, select the next completion."""
+            current_buffer = event.app.current_buffer
+            if current_buffer.complete_state:
+                current_buffer.complete_next()
+            else:
+                current_buffer.start_completion(select_first=False)
+
         return kb
 
     def __focus(self, direction: Literal["next", "previous"]) -> Callable[[KeyPressEvent], None]:
