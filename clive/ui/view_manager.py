@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
 from loguru import logger
-from prompt_toolkit.layout import Float, FloatContainer, to_container
+from prompt_toolkit.layout import CompletionsMenu, Float, FloatContainer, to_container
 from prompt_toolkit.widgets import Label
 
 from clive.app_status import app_status
@@ -39,7 +39,13 @@ class ViewManager(Rebuildable):
         self.__error_float: ErrorFloat | None = None
 
         self.__default_container = Label(text="No view selected... Loading...")
-        self.__root_container = FloatContainer(self.__default_container, floats=[])
+        self.__completion_float = Float(
+            xcursor=True,
+            ycursor=True,
+            content=CompletionsMenu(max_height=16, scroll_offset=1),
+        )
+
+        self.__root_container = FloatContainer(self.__default_container, floats=[self.__completion_float])
         self.__menu: Menu[Any] = MenuEmpty(self.__default_container)
 
     @property
@@ -91,7 +97,7 @@ class ViewManager(Rebuildable):
             set_focus(self.__menu.body)
 
     def __update_float_containers(self) -> None:
-        result: list[Float] = []
+        result: list[Float] = [self.__completion_float]
 
         if self.float is not None:
             result.append(Float(self.float.container))
