@@ -12,6 +12,7 @@ from prompt_toolkit.styles import Style
 from clive.config import settings
 from clive.storage.mock_database import MockDB
 from clive.ui.get_view_manager import get_view_manager
+from clive.ui.input_field import input_field
 from clive.ui.menus.menu_empty import MenuEmpty
 from clive.ui.views.button_based import ButtonsBased
 
@@ -68,6 +69,11 @@ class Clive:
             if isinstance(get_view_manager().active_view, ButtonsBased):
                 view: ButtonsBased = get_view_manager().active_view  # type: ignore
                 self.set_focus(view.buttons.container)
+
+        @kb.add(self.__get_bind_from_config("focus_input_field"))
+        def _(event: KeyPressEvent) -> None:
+            if isinstance(get_view_manager().active_view, ButtonsBased):
+                self.set_focus(input_field.container)
 
         return kb
 
