@@ -1,17 +1,29 @@
+from __future__ import annotations
+
 from datetime import datetime
 from pathlib import Path
-from typing import Final
+from typing import Any, Final
 
 from dynaconf import Dynaconf  # type: ignore
+from dynaconf.loaders.toml_loader import write  # type: ignore
 
 ROOT_DIRECTORY: Final[Path] = Path(__file__).parent
 TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"
 LAUNCH_TIME: Final[datetime] = datetime.now()
 
 
+SETTINGS_FILES: Final[list[str]] = ["settings.toml", "style.toml"]
+
 settings = Dynaconf(
     envvar_prefix="CLIVE",
     root_path=ROOT_DIRECTORY,
-    settings_files=["settings.toml", "style.toml"],
+    settings_files=SETTINGS_FILES,
     environments=True,
 )
+
+
+def update(settings_file: str, data: dict[str, Any], *, merge: bool = True) -> None:
+    if settings_file not in SETTINGS_FILES:
+        raise ValueError(f"settings_file must be one of {SETTINGS_FILES}")
+
+    write(ROOT_DIRECTORY.parent / settings_file, data, merge)
