@@ -49,6 +49,10 @@ class ViewManager(Rebuildable):
         self.__menu: Menu[Any] = MenuEmpty(self.__default_container)
 
     @property
+    def completion_float(self) -> Float:
+        return self.__completion_float
+
+    @property
     def active_container(self) -> AnyContainer:
         return self.__root_container
 
@@ -93,7 +97,7 @@ class ViewManager(Rebuildable):
         self.__set_menu(self.active_view)
         self.__menu.body = self.active_view.container
         self.__root_container.content = to_container(self.__menu.container)
-        if not self.__root_container.floats:
+        if not self.float and not self.error_float:
             set_focus(self.__menu.body)
 
     def __update_float_containers(self) -> None:

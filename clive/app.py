@@ -34,6 +34,10 @@ class Clive:
         self.__app.run()
 
     def set_focus(self, container: FocusableElement) -> None:
+        # skip focusing completion Float
+        if container is get_view_manager().completion_float:  # type: ignore
+            return
+
         logger.debug(f"Setting focus to: {container}")
         self.__app.layout.focus(container)
 
