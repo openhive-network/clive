@@ -4,7 +4,7 @@ import typing
 from typing import TYPE_CHECKING, Final
 
 from loguru import logger
-from prompt_toolkit.completion import WordCompleter
+from prompt_toolkit.completion import FuzzyWordCompleter
 from prompt_toolkit.widgets import SearchToolbar, TextArea
 
 from clive.app_status import app_status
@@ -20,10 +20,7 @@ class InputField(Containerable):
 
     def __init__(self) -> None:
         self.__search_field = SearchToolbar()  # For reverse search.
-        self.__completer = WordCompleter(
-            ["activate", "deactivate"],
-            ignore_case=True,
-        )
+        self.__completer = FuzzyWordCompleter(["activate", "deactivate"])
         super().__init__()
 
     @property
