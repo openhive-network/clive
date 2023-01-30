@@ -16,6 +16,10 @@ authors = [
 packages = [
     { include = "clive" },
 ]
+include = [
+    "settings.toml",
+    "style.toml",
+]
 
 
 [tool.poetry.dependencies]
