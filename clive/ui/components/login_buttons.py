@@ -9,6 +9,7 @@ from prompt_toolkit.widgets import Button
 
 from clive.app_status import app_status
 from clive.ui.components.buttons_menu import ButtonsMenu
+from clive.ui.input_field import input_field
 from clive.ui.view_switcher import switch_view
 
 if TYPE_CHECKING:
@@ -32,9 +33,14 @@ class LoginButtons(ButtonsMenu["Login"]):
 
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
         logger.info(f"Login as: {self._parent.main_panel.profile_name}")
-        app_status.active_mode = True
+        self.__login()
         switch_view("dashboard")
 
     @staticmethod
     def __f2_action(event: KeyPressEvent | None = None) -> None:
         switch_view("registration")
+
+    @staticmethod
+    def __login() -> None:
+        app_status.active_mode = True
+        input_field.set_prompt_text(input_field.ACTIVATED_PROMPT)

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 from loguru import logger
 from prompt_toolkit.completion import FuzzyWordCompleter
+from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.widgets import SearchToolbar, TextArea
 
 from clive.app_status import app_status
@@ -51,6 +52,13 @@ class InputField(Containerable):
             app_status.deactivate()
 
         return False
+
+    def set_prompt_text(self, text: str) -> None:
+        processors = self.container.control.input_processors or []
+        for processor in processors:
+            if isinstance(processor, BeforeInput):
+                processor.text = text
+                break
 
 
 input_field = InputField()
