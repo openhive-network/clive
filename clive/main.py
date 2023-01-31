@@ -1,22 +1,24 @@
 import sys
-
-from loguru import logger
+from os import environ
 
 from clive.cli import cli
-from clive.config import settings
-from clive.logger import configure_logger
+from clive.run_cli import run_cli
 from clive.run_tui import run_tui
 
 
-def main() -> None:
-    configure_logger()
-    logger.debug(f"settings:\n{settings.as_dict()}")
+def is_tab_completion_active() -> bool:
+    return "_CLIVE_COMPLETE" in environ
 
-    if not sys.argv[1:] and sys.stdin.isatty():
-        run_tui()
+
+def main() -> None:
+    if is_tab_completion_active():
+        cli()
         return
 
-    cli()
+    if not sys.argv[1:]:
+        run_tui()
+        return
+    run_cli()
 
 
 if __name__ == "__main__":
