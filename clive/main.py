@@ -12,7 +12,7 @@ def main() -> None:
     configure_logger()
     logger.debug(f"settings:\n{settings.as_dict()}")
 
-    if not sys.argv[1:]:
+    if not sys.argv[1:] and sys.stdin.isatty():
         get_clive().run()
         return
 
