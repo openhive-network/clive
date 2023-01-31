@@ -2,8 +2,8 @@ from typing import Final
 
 import typer
 
-from clive.app import clive
 from clive.cli import style
+from clive.run_tui import run_tui
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
@@ -17,4 +17,4 @@ cli.add_typer(style.app, name="style", help="Manage styles for the Clive TUI app
 @cli.command()
 def run() -> None:
     """Launch the TUI application."""
-    clive.run()
+    run_tui()

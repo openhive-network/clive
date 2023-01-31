@@ -4,8 +4,8 @@ from loguru import logger
 
 from clive.cli import cli
 from clive.config import settings
-from clive.get_clive import get_clive
 from clive.logger import configure_logger
+from clive.run_tui import run_tui
 
 
 def main() -> None:
@@ -13,7 +13,7 @@ def main() -> None:
     logger.debug(f"settings:\n{settings.as_dict()}")
 
     if not sys.argv[1:] and sys.stdin.isatty():
-        get_clive().run()
+        run_tui()
         return
 
     cli()
