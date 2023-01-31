@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from functools import wraps
+from typing import Any, Callable, Optional
+
 from prompt_toolkit import HTML
 from prompt_toolkit.formatted_text.base import AnyFormattedText
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
@@ -7,6 +10,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import AnyContainer, Dimension, HorizontalAlign, HSplit, VerticalAlign, VSplit
 from prompt_toolkit.widgets import Box, Button, Frame, Label
 
+from clive.exceptions import FloatException
 from clive.ui.containerable import Containerable
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
@@ -45,3 +49,17 @@ class ErrorFloat(Containerable):
 
     def __ok(self, _: KeyPressEvent | None = None) -> None:
         get_view_manager().error_float = None
+
+
+EventT = Callable[[Any, Optional[KeyPressEvent]], None]
+
+
+def catch(foo: EventT) -> EventT:
+    @wraps(foo)
+    def catch_impl(*args: Any, **kwargs: Any) -> None:
+        try:
+            return foo(*args, **kwargs)
+        except FloatException as ex:
+            ErrorFloat(ex.info())
+
+    return catch_impl
