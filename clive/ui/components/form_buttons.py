@@ -7,6 +7,7 @@ from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
+from clive.ui.catch import catch
 from clive.ui.components.buttons_menu import ButtonsMenu
 
 if TYPE_CHECKING:
@@ -22,7 +23,7 @@ class FormButtons(ButtonsMenu["Form"]):
             Button("F1 Previous", handler=self.__f1_action),
             Button("F2 Next", handler=self.__f2_action),
             Button("F3 Cancel", handler=self.__f3_action),
-            Button("F4 Finish", handler=self.__f4_action),
+            Button("F4 Finish", handler=lambda: self.__f4_action(None)),
         ]
 
     def _get_key_bindings(self) -> KeyBindings:
@@ -43,6 +44,7 @@ class FormButtons(ButtonsMenu["Form"]):
     def __f3_action(self, event: KeyPressEvent | None = None) -> None:
         self._parent.cancel()
 
+    @catch
     def __f4_action(self, event: KeyPressEvent | None = None) -> None:
         self._parent.finish()
 
