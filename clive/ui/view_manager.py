@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
 
     from clive.ui.base_float import BaseFloat
+    from clive.ui.catch import ErrorFloat
 
 
 class ViewManager(Rebuildable):
@@ -35,7 +36,7 @@ class ViewManager(Rebuildable):
     def __init__(self) -> None:
         self.__active_view: View | FormView | None = None
         self.__float: BaseFloat | None = None
-        self.__error_float: BaseFloat | None = None
+        self.__error_float: ErrorFloat | None = None
 
         self.__default_container = Label(text="No view selected... Loading...")
         self.__root_container = FloatContainer(self.__default_container, floats=[])
@@ -73,11 +74,11 @@ class ViewManager(Rebuildable):
         self.__update_float_containers()
 
     @property
-    def error_float(self) -> BaseFloat | None:
+    def error_float(self) -> ErrorFloat | None:
         return self.__error_float
 
     @error_float.setter
-    def error_float(self, value: BaseFloat | None) -> None:
+    def error_float(self, value: ErrorFloat | None) -> None:
         self.__error_float = value
         self.__update_float_containers()
 
