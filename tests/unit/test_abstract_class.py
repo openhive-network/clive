@@ -12,7 +12,7 @@ class MockPlainAbstract(AbstractClass):
     pass
 
 
-class MockAbstractWithGenerics(AbstractClass, Generic[T]):
+class MockAbstractWithGenerics(Generic[T], AbstractClass):
     pass
 
 

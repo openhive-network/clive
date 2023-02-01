@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 T = TypeVar("T", bound="Menu[Any]")
 
 
-class MenuHandlers(AbstractClass, Parented[T]):
+class MenuHandlers(Parented[T], AbstractClass):
     def __init__(self, parent: T) -> None:
         super().__init__(parent)
 
