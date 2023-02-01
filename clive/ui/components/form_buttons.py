@@ -23,7 +23,7 @@ class FormButtons(ButtonsMenu["Form"]):
             Button("F1 Previous", handler=self.__f1_action),
             Button("F2 Next", handler=self.__f2_action),
             Button("F3 Cancel", handler=self.__f3_action),
-            Button("F4 Finish", handler=lambda: self.__f4_action(None)),
+            Button("F4 Finish", handler=self.__f4_action),
         ]
 
     def _get_key_bindings(self) -> KeyBindings:

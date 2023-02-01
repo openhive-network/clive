@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from prompt_toolkit import HTML
 from prompt_toolkit.formatted_text.base import AnyFormattedText
@@ -53,7 +53,7 @@ class ErrorFloat(Containerable):
         get_view_manager().error_float = None
 
 
-EventT = Callable[[Any, Optional[KeyPressEvent]], None]
+EventT = Callable[..., None]
 
 
 def catch(foo: EventT) -> EventT:
