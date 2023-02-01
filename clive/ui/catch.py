@@ -24,9 +24,6 @@ class ErrorFloat(Containerable):
         set_focus(self.container)
 
     def _create_container(self) -> AnyContainer:
-        kb = KeyBindings()
-        kb.add(Keys.F1)(self.__ok)
-
         return Frame(
             HSplit(
                 [
@@ -44,8 +41,13 @@ class ErrorFloat(Containerable):
                 align=VerticalAlign.CENTER,
             ),
             title=HTML("""<style fg="#ff0000"><b>~ ERROR ~</b></style>"""),
-            key_bindings=kb,
+            key_bindings=self._create_key_bindings(),
         )
+
+    def _create_key_bindings(self) -> KeyBindings:
+        kb = KeyBindings()
+        kb.add(Keys.F1)(self.__ok)
+        return kb
 
     def __ok(self, _: KeyPressEvent | None = None) -> None:
         get_view_manager().error_float = None
