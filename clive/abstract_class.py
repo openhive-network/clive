@@ -12,4 +12,6 @@ class AbstractClass(ABC):
         if AbstractClass in cls.__bases__:
             raise TypeError(f"Abstract class `{cls.__name__}` cannot be instantiated.")
 
+        if super().__new__ is object.__new__ and cls.__init__ is not object.__init__:
+            return super().__new__(cls)
         return super().__new__(cls, *args, **kwargs)
