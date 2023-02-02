@@ -3,11 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Callable, NoReturn
 
 from loguru import logger
-from prompt_toolkit.layout import CompletionsMenu, Float, FloatContainer, to_container
+from prompt_toolkit.layout import FloatContainer, to_container
 from prompt_toolkit.widgets import Label
 
 from clive.app_status import app_status
 from clive.exceptions import ViewException
+from clive.ui.floats import Floats
 from clive.ui.focus import set_focus
 from clive.ui.form_view import FormView
 from clive.ui.menus.full.menu_full import MenuFull
@@ -22,9 +23,6 @@ from clive.ui.views.registration import Registration
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
 
-    from clive.ui.base_float import BaseFloat
-    from clive.ui.catch import ErrorFloat
-
 
 class ViewManager(Rebuildable):
     """
@@ -35,22 +33,12 @@ class ViewManager(Rebuildable):
 
     def __init__(self) -> None:
         self.__active_view: View | FormView | None = None
-        self.__float: BaseFloat | None = None
-        self.__error_float: ErrorFloat | None = None
 
         self.__default_container = Label(text="No view selected... Loading...")
-        self.__completion_float = Float(
-            xcursor=True,
-            ycursor=True,
-            content=CompletionsMenu(max_height=16, scroll_offset=1),
-        )
+        self.__floats = Floats(self)
 
-        self.__root_container = FloatContainer(self.__default_container, floats=[self.__completion_float])
+        self.__root_container = FloatContainer(self.__default_container, floats=self.floats.content)
         self.__menu: Menu[Any] = MenuEmpty(self.__default_container)
-
-    @property
-    def completion_float(self) -> Float:
-        return self.__completion_float
 
     @property
     def active_container(self) -> AnyContainer:
@@ -75,44 +63,20 @@ class ViewManager(Rebuildable):
         self._rebuild()
 
     @property
-    def float(self) -> BaseFloat | None:
-        return self.__float
+    def floats(self) -> Floats:
+        return self.__floats
 
-    @float.setter
-    def float(self, value: BaseFloat | None) -> None:
-        self.__float = value
-        self.__update_float_containers()
-
-    @property
-    def error_float(self) -> ErrorFloat | None:
-        return self.__error_float
-
-    @error_float.setter
-    def error_float(self, value: ErrorFloat | None) -> None:
-        self.__error_float = value
-        self.__update_float_containers()
+    def rebuild(self) -> None:
+        self._rebuild()
 
     def _rebuild(self) -> None:
         logger.debug(f"rebuilding component: {self.__class__.__name__}")
         self.__set_menu(self.active_view)
         self.__menu.body = self.active_view.container
         self.__root_container.content = to_container(self.__menu.container)
-        if not self.float and not self.error_float:
+        self.__root_container.floats = self.floats.content
+        if not self.floats.float and not self.floats.error_float:
             set_focus(self.__menu.body)
-
-    def __update_float_containers(self) -> None:
-        result: list[Float] = [self.__completion_float]
-
-        if self.float is not None:
-            result.append(Float(self.float.container))
-            set_focus(self.float.container)
-
-        if self.error_float is not None:
-            result.append(Float(self.error_float.container))
-            set_focus(self.error_float.container)
-
-        self.__root_container.floats = result
-        self._rebuild()
 
     @staticmethod
     def __assert_if_proper_settable_type(value: Any) -> NoReturn | None:

@@ -20,7 +20,7 @@ class ErrorFloat(Containerable):
     def __init__(self, message: AnyFormattedText) -> None:
         self.__message = message
         super().__init__()
-        get_view_manager().error_float = self
+        get_view_manager().floats.error_float = self
         set_focus(self.container)
 
     def _create_container(self) -> AnyContainer:
@@ -50,7 +50,7 @@ class ErrorFloat(Containerable):
         return kb
 
     def __ok(self, _: KeyPressEvent | None = None) -> None:
-        get_view_manager().error_float = None
+        get_view_manager().floats.error_float = None
 
 
 EventT = Callable[..., None]

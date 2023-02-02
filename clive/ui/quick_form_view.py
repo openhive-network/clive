@@ -23,13 +23,13 @@ class QuickFormView(FormView):
     def _set_buttons(self, buttons: Optional[ButtonsMenu[T]]) -> None:
         def create_handler(handler: Optional[Callable[[], None]]) -> Callable[[], None]:
             def handler_impl() -> None:
-                current_float = get_view_manager().float
+                current_float = get_view_manager().floats.float
                 float_exist_before_call = current_float is not None
 
                 if handler is not None:
                     handler()
 
-                    current_float = get_view_manager().float
+                    current_float = get_view_manager().floats.float
                     if not float_exist_before_call and (current_float is not None):
                         current_float.close_callback = self._parent.update_main_panel
                     else:

@@ -24,11 +24,11 @@ class BaseFloat(Containerable, ABC):
         self.__title = title
         self.__labels_n_inputs = labels_with_inputs
         super().__init__()
-        get_view_manager().float = self
+        get_view_manager().floats.float = self
         set_focus(self.container)
 
     def __close(self) -> None:
-        get_view_manager().float = None
+        get_view_manager().floats.float = None
         self.close_callback()
 
     def __cancel(self, _: KeyPressEvent | None = None) -> None:
