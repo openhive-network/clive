@@ -32,7 +32,7 @@ class AppStatus:
         self.active_mode = False
 
         input_field = get_view_manager().floats.prompt_float.input_field
-        input_field.set_prompt_text(input_field.DEACTIVATED_PROMPT)
+        input_field.prompt_text = input_field.DEACTIVATED_PROMPT
 
         switch_view("dashboard")
 

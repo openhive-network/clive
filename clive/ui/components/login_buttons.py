@@ -45,4 +45,4 @@ class LoginButtons(ButtonsMenu["Login"]):
         app_status.active_mode = True
 
         input_field = get_view_manager().floats.prompt_float.input_field
-        input_field.set_prompt_text(input_field.ACTIVATED_PROMPT)
+        input_field.prompt_text = input_field.ACTIVATED_PROMPT

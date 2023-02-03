@@ -23,8 +23,10 @@ class InputField(Containerable[VSplit]):
         self.__search_field = SearchToolbar()  # For reverse search.
         self.__completer = FuzzyWordCompleter(["activate", "deactivate"])
 
+        self.__prompt_text = self.DEACTIVATED_PROMPT
+
         self.__text_area = TextArea(
-            prompt=self.DEACTIVATED_PROMPT,
+            prompt=self.__prompt_text,
             multiline=False,
             wrap_lines=True,
             style="bg:#000000 #ffffff",
@@ -64,9 +66,16 @@ class InputField(Containerable[VSplit]):
 
         return False
 
-    def set_prompt_text(self, text: str) -> None:
+    @property
+    def prompt_text(self) -> str:
+        return self.__prompt_text
+
+    @prompt_text.setter
+    def prompt_text(self, text: str) -> None:
+        self.__prompt_text = text
+
         processors = self.__text_area.control.input_processors or []
         for processor in processors:
             if isinstance(processor, BeforeInput):
-                processor.text = text
+                processor.text = self.__prompt_text
                 break
