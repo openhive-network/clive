@@ -71,6 +71,3 @@ class InputField(Containerable[VSplit]):
             if isinstance(processor, BeforeInput):
                 processor.text = text
                 break
-
-
-input_field = InputField()

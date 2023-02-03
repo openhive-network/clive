@@ -1,3 +1,4 @@
+from clive.ui.get_view_manager import get_view_manager
 from clive.ui.view_switcher import switch_view
 
 
@@ -28,10 +29,11 @@ class AppStatus:
         switch_view("login")
 
     def deactivate(self) -> None:
-        from clive.ui.input_field import input_field
-
         self.active_mode = False
+
+        input_field = get_view_manager().floats.prompt_float.input_field
         input_field.set_prompt_text(input_field.DEACTIVATED_PROMPT)
+
         switch_view("dashboard")
 
 

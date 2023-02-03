@@ -9,7 +9,7 @@ from prompt_toolkit.widgets import Button
 
 from clive.app_status import app_status
 from clive.ui.components.buttons_menu import ButtonsMenu
-from clive.ui.input_field import input_field
+from clive.ui.get_view_manager import get_view_manager
 from clive.ui.view_switcher import switch_view
 
 if TYPE_CHECKING:
@@ -43,4 +43,6 @@ class LoginButtons(ButtonsMenu["Login"]):
     @staticmethod
     def __login() -> None:
         app_status.active_mode = True
+
+        input_field = get_view_manager().floats.prompt_float.input_field
         input_field.set_prompt_text(input_field.ACTIVATED_PROMPT)
