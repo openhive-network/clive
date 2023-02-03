@@ -1,12 +1,14 @@
-from prompt_toolkit.layout import Dimension, Float, HSplit, ScrollablePane, VSplit
-from prompt_toolkit.widgets import Frame, TextArea
+from prompt_toolkit.layout import Dimension, Float, HSplit
+from prompt_toolkit.widgets import Frame
 
 from clive.ui.containerable import Containerable
 from clive.ui.internal_cli.input_field import InputField
+from clive.ui.internal_cli.log_panel import LogPanel
 
 
 class PromptFloat(Containerable[Float]):
     def __init__(self) -> None:
+        self.__log_panel = LogPanel()
         self.__input_field = InputField()
         super().__init__()
 
@@ -19,7 +21,7 @@ class PromptFloat(Containerable[Float]):
             Frame(
                 HSplit(
                     [
-                        self.__crate_log_panel(),
+                        self.__log_panel.container,
                         self.__input_field.container,
                     ]
                 ),
@@ -28,20 +30,4 @@ class PromptFloat(Containerable[Float]):
                 modal=True,
             ),
             z_index=2,
-        )
-
-    @staticmethod
-    def __crate_log_panel() -> ScrollablePane:
-        return ScrollablePane(
-            VSplit(
-                [
-                    TextArea(
-                        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget",
-                        read_only=True,
-                        focusable=False,
-                        style="class:tertiary",
-                    )
-                ],
-                height=Dimension(preferred=15),
-            )
         )
