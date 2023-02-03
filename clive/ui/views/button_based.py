@@ -7,7 +7,6 @@ from prompt_toolkit.layout import HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Frame, Label
 
 from clive.abstract_class import AbstractClass
-from clive.ui.input_field import input_field
 from clive.ui.view import View
 
 if TYPE_CHECKING:
@@ -37,7 +36,6 @@ class ButtonsBased(View, Generic[M, B], AbstractClass):
                     ]
                 ),
                 self.__main_panel.container,
-                input_field.container,
                 Frame(self.__buttons.container, style="class:primary"),
             ],
             style="class:primary",
