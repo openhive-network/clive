@@ -8,6 +8,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import AnyContainer, Dimension, HorizontalAlign, HSplit, VSplit
 from prompt_toolkit.widgets import Button, Frame, Label, TextArea
 
+from clive.ui.catch import catch
 from clive.ui.containerable import Containerable
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
@@ -35,6 +36,7 @@ class BaseFloat(Containerable, ABC):
         self._cancel()
         self.__close()
 
+    @catch
     def __ok(self, _: KeyPressEvent | None = None) -> None:
         if self._ok():
             self.__cancel()
