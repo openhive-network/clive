@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, List, TypeVar, Union
+from typing import TYPE_CHECKING, Dict, List, TypeVar, Union
 
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
@@ -106,6 +106,13 @@ class SetNodeAddressView(
     @staticmethod
     def convert_to_form_view(parent: Form) -> FormView:
         obj = SetNodeAddressView.__create_radio_list(parent)
-        quick_form_view = QuickFormView(parent=parent, body=obj)
+
+        def validator() -> Dict[str, bool]:
+            return {
+                "contains at least one address": (MockDB.NODE_ADDRESS is not None),
+                "at least one address is connectable": True,
+            }
+
+        quick_form_view = QuickFormView(parent=parent, body=obj, validator=validator)
         quick_form_view._set_buttons(SetNodeAddressViewButtons(quick_form_view, obj))
         return quick_form_view

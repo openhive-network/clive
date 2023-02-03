@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import List
 
+from clive.exceptions import FormNotFinishedException
 from clive.ui.components.form_buttons import FormButtons
 from clive.ui.form_view import FormView
 from clive.ui.views.button_based import ButtonsBased
@@ -23,12 +24,16 @@ class Form(ButtonsBased[FormView, FormButtons]):
         if self._reached_last_view():
             return
 
+        self.__assert_is_view_valid(self.__view_index)
+
         self.__view_index += 1
         self.update_main_panel()
 
     def previous_view(self) -> None:
         if self._reached_first_view():
             return
+
+        self.__assert_is_view_valid(self.__view_index)
 
         self.__view_index -= 1
         self.update_main_panel()
@@ -38,6 +43,12 @@ class Form(ButtonsBased[FormView, FormButtons]):
         self.main_panel = self.current_view
         self.buttons = FormButtons.merge_buttons_and_actions(self, self.current_view)
 
+    def __assert_is_view_valid(self, view_index: int) -> None:
+        checkpoints = self.__views[view_index].is_valid()
+        for checkpoint_description, check_passed in checkpoints.items():
+            if not check_passed:
+                raise FormNotFinishedException(**{checkpoint_description: check_passed})
+
     @abstractmethod
     def cancel(self) -> None:
         ...
@@ -45,6 +56,11 @@ class Form(ButtonsBased[FormView, FormButtons]):
     @abstractmethod
     def finish(self) -> None:
         ...
+
+    def _finish(self) -> None:
+        for i in range(len(self.__views)):
+            self.__assert_is_view_valid(i)
+        self.finish()
 
     def _reached_last_view(self) -> bool:
         return self.__view_index == len(self.__views) - 1

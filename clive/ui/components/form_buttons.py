@@ -35,9 +35,11 @@ class FormButtons(ButtonsMenu["Form"]):
 
         return kb
 
+    @catch
     def __f1_action(self, event: KeyPressEvent | None = None) -> None:
         self._parent.previous_view()
 
+    @catch
     def __f2_action(self, event: KeyPressEvent | None = None) -> None:
         self._parent.next_view()
 
@@ -46,7 +48,7 @@ class FormButtons(ButtonsMenu["Form"]):
 
     @catch
     def __f4_action(self, event: KeyPressEvent | None = None) -> None:
-        self._parent.finish()
+        self._parent._finish()
 
     @staticmethod
     def merge_buttons_and_actions(form: Form, form_view: FormView) -> FormButtons:

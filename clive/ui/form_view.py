@@ -26,3 +26,12 @@ class FormView(Component["Form"], ABC):
                                             is handler for Button
         """
         return {}
+
+    def is_valid(self) -> Dict[str, bool]:
+        """
+        Returns list of all checks with result
+
+        Returns:
+            List[str, bool]: description of check with status
+        """
+        return {}

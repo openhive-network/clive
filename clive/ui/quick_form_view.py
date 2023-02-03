@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Callable, Dict, Optional
 
 from clive.ui.form_view import FormView
 from clive.ui.get_view_manager import get_view_manager
@@ -14,10 +14,16 @@ if TYPE_CHECKING:
     from clive.ui.views.form import Form
 
 
+ValidatorT = Callable[[], Dict[str, bool]]
+
+
 class QuickFormView(FormView):
-    def __init__(self, *, parent: Form, body: Containerable, buttons: Optional[ButtonsMenu[T]] = None):
+    def __init__(
+        self, *, parent: Form, body: Containerable, buttons: Optional[ButtonsMenu[T]] = None, validator: ValidatorT
+    ):
         self.__body = body
         self._set_buttons(buttons)
+        self.__validator = validator
         super().__init__(parent)
 
     def _set_buttons(self, buttons: Optional[ButtonsMenu[T]]) -> None:
@@ -46,3 +52,6 @@ class QuickFormView(FormView):
 
     def _create_container(self) -> AnyContainer:
         return self.__body._create_container()
+
+    def is_valid(self) -> Dict[str, bool]:
+        return self.__validator()
