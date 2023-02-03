@@ -45,7 +45,7 @@ class ErrorFloat(Containerable[Float]):
                 key_bindings=self._create_key_bindings(),
                 modal=True,
             ),
-            z_index=3,
+            z_index=4,
         )
 
     def _create_key_bindings(self) -> KeyBindings:
