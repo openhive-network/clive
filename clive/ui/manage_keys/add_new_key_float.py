@@ -58,4 +58,5 @@ class CreatePrivateKeyFloat(BaseFloat):
             self.__handle_private_key_file_input()
 
         pv_key = PrivateKey(key_name=self.__key_name, key=self.__private_key)
+        pv_key.valid()
         self.__on_accept(pv_key)

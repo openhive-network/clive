@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import re
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
 from random import random
 from typing import List, Optional
 
+from clive.exceptions import NoMatch
 from clive.get_clive import get_clive
 
 
@@ -14,15 +17,33 @@ class AccountType(IntEnum):
     WATCHED = 1
 
 
+class Validable(ABC):
+    @abstractmethod
+    def valid(self) -> None:
+        ...
+
+
 @dataclass
-class Account:
+class Account(Validable):
     name: str
 
+    def valid(self) -> None:
+        account_name_regex = re.compile(
+            r"^((([a-z0-9])[a-z0-9\-]{1,14}([a-z0-9]))(\.([a-z0-9])[a-z0-9\-]{1,14}([a-z0-9]))*)$"
+        )
+        if account_name_regex.match(self.name) is None:
+            raise NoMatch(self.name, account_name_regex.pattern)
+
 
 @dataclass
-class PrivateKey:
+class PrivateKey(Validable):
     key_name: str
     key: str
+
+    def valid(self) -> None:
+        private_key_regex = re.compile(r"^([\dA-Za-z]{51})$")
+        if private_key_regex.match(self.key) is None:
+            raise NoMatch(self.key, private_key_regex.pattern)
 
 
 @dataclass

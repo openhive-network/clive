@@ -23,4 +23,5 @@ class CreateWatchedAccountFloat(BaseFloat):
     def _ok(self) -> None:
         self.__handle_account_name_input()
         acc = Account(name=self.__account_name)
+        acc.valid()
         self.__on_accept(acc)
