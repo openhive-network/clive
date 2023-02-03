@@ -7,3 +7,4 @@ LOG_LEVEL_3RD_PARTY = "WARNING"
 focus_menu = "c-n"
 focus_buttons = "c-b"
 show_terminal = "c-p"
+terminal_new_line = 'c-\'

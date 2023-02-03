@@ -3,17 +3,21 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from loguru import logger
+from prompt_toolkit.clipboard import ClipboardData
 from prompt_toolkit.completion import FuzzyWordCompleter
+from prompt_toolkit.key_binding import KeyBindings
 from prompt_toolkit.layout import CompletionsMenu, Dimension, Float, FloatContainer, VSplit
 from prompt_toolkit.layout.processors import BeforeInput
 from prompt_toolkit.widgets import SearchToolbar, TextArea
 
 from clive.app_status import app_status
+from clive.config import get_bind_from_config
 from clive.ui.containerable import Containerable
 from clive.ui.parented import Parented
 
 if TYPE_CHECKING:
     from prompt_toolkit.buffer import Buffer
+    from prompt_toolkit.key_binding import KeyPressEvent
 
     from clive.ui.internal_cli.prompt_float import PromptFloat
 
@@ -51,10 +55,20 @@ class InputField(Parented["PromptFloat"], Containerable[VSplit]):
                 FloatContainer(
                     self.__text_area,
                     floats=[self.__completion_float],
+                    key_bindings=self.__get_key_bindings(),
                 ),
             ],
             height=Dimension(min=10),
         )
+
+    def __get_key_bindings(self) -> KeyBindings:
+        kb = KeyBindings()
+
+        @kb.add(get_bind_from_config("terminal_new_line"))
+        def _(_: KeyPressEvent) -> None:
+            self.__text_area.document = self.__text_area.document.paste_clipboard_data(ClipboardData("\n"))
+
+        return kb
 
     def __accept_handler(self, buffer: Buffer) -> bool:
         logger.debug(f"Received input: {buffer.text}")
