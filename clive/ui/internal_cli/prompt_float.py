@@ -39,7 +39,7 @@ class PromptFloat(Containerable[Float]):
                         text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec auctor, nisl eget",
                         read_only=True,
                         focusable=False,
-                        style="bg:#0000ff #ffffff",
+                        style="class:tertiary",
                     )
                 ],
                 height=Dimension(preferred=15),
