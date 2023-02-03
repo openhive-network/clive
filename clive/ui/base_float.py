@@ -5,7 +5,7 @@ from typing import Callable, Dict
 
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
-from prompt_toolkit.layout import AnyContainer, Dimension, HorizontalAlign, HSplit, VSplit
+from prompt_toolkit.layout import Dimension, Float, HorizontalAlign, HSplit, VSplit
 from prompt_toolkit.widgets import Button, Frame, Label, TextArea
 
 from clive.ui.containerable import Containerable
@@ -25,7 +25,7 @@ class BaseFloat(Containerable, ABC):
         self.__labels_n_inputs = labels_with_inputs
         super().__init__()
         get_view_manager().floats.float = self
-        set_focus(self.container)
+        set_focus(self.container.content)
 
     def __close(self) -> None:
         get_view_manager().floats.float = None
@@ -53,29 +53,31 @@ class BaseFloat(Containerable, ABC):
     def close_callback(self, value: Callable[[], None]) -> None:
         self.__close_callback = value
 
-    def _create_container(self) -> AnyContainer:
-        return Frame(
-            HSplit(
-                [
-                    VSplit(
-                        [
-                            HSplit([self.__create_label(key) for key in self.__labels_n_inputs.keys()]),
-                            HSplit([self.__create_text_area(value) for value in self.__labels_n_inputs.values()]),
-                        ]
-                    ),
-                    VSplit(
-                        [
-                            self.__create_popup_button("<F1> Ok", handler=self.__ok),
-                            self.__create_popup_button("<F2> Cancel", handler=self.__cancel),
-                        ],
-                        align=HorizontalAlign.CENTER,
-                        padding=Dimension(min=1),
-                    ),
-                ]
-            ),
-            title=self.__title,
-            key_bindings=self._create_binding(),
-            modal=True,
+    def _create_container(self) -> Float:
+        return Float(
+            Frame(
+                HSplit(
+                    [
+                        VSplit(
+                            [
+                                HSplit([self.__create_label(key) for key in self.__labels_n_inputs.keys()]),
+                                HSplit([self.__create_text_area(value) for value in self.__labels_n_inputs.values()]),
+                            ]
+                        ),
+                        VSplit(
+                            [
+                                self.__create_popup_button("<F1> Ok", handler=self.__ok),
+                                self.__create_popup_button("<F2> Cancel", handler=self.__cancel),
+                            ],
+                            align=HorizontalAlign.CENTER,
+                            padding=Dimension(min=1),
+                        ),
+                    ]
+                ),
+                title=self.__title,
+                key_bindings=self._create_binding(),
+                modal=True,
+            )
         )
 
     def __create_popup_button(self, label: str, handler: Callable[[], None]) -> Button:

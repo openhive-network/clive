@@ -58,12 +58,12 @@ class Floats(Parented["ViewManager"]):
         result: list[Float] = [self.__completion_float]
 
         if self.float is not None:
-            result.append(Float(self.float.container))
-            set_focus(self.float.container)
+            result.append(self.float.container)
+            set_focus(self.float.container.content)
 
         if self.error_float is not None:
-            result.append(Float(self.error_float.container))
-            set_focus(self.error_float.container)
+            result.append(self.error_float.container)
+            set_focus(self.error_float.container.content)
 
         self.__content = result
         self._parent.rebuild()
