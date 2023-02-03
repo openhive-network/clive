@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 class AccountInfo(Component["Dashboard"]):
     def __init__(self, parent: Dashboard) -> None:
         self.__rc_progress_bar = ProgressBar()
+        self.__voting_power_progress_bar = ProgressBar()
+        self.__down_vote_power_progress_bar = ProgressBar()
         super().__init__(parent)
 
     def _create_container(self) -> HSplit:
@@ -145,6 +147,14 @@ class AccountInfo(Component["Dashboard"]):
         self.__rc_progress_bar.percentage = MockDB.node.rc
         return "Resource Credits (RC):"
 
+    def __update_voting_power_progress_bar(self) -> str:
+        self.__voting_power_progress_bar.percentage = MockDB.node.voting_power
+        return "Voting Power:"
+
+    def __update_down_vote_power_progress_bar(self) -> str:
+        self.__down_vote_power_progress_bar.percentage = MockDB.node.down_vote_power
+        return "Down Vote Power:"
+
     def __powers(self) -> Frame:
         return Frame(
             title=HTML("<black><b>POWERS</b></black>"),
@@ -154,9 +164,9 @@ class AccountInfo(Component["Dashboard"]):
                         [
                             Label(self.__update_rc_progress_bar),
                             Label("100% charged in:"),
-                            Label("Voting Power:"),
+                            Label(self.__update_voting_power_progress_bar),
                             Label("100% charged in:"),
-                            Label("Down vote Power:"),
+                            Label(self.__update_down_vote_power_progress_bar),
                             Label("100% charged in:"),
                         ]
                     ),
@@ -164,9 +174,9 @@ class AccountInfo(Component["Dashboard"]):
                         [
                             self.__rc_progress_bar,
                             Label("2 days"),
-                            Label(lambda: f"{MockDB.node.voting_power :.2f}%"),
+                            self.__voting_power_progress_bar,
                             Label("2 days"),
-                            Label(lambda: f"{MockDB.node.down_vote_power :.2f}%"),
+                            self.__down_vote_power_progress_bar,
                             Label("4 days"),
                         ]
                     ),
