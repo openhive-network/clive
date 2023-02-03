@@ -20,7 +20,7 @@ class FloatException(CliveException, ABC):
 
     @abstractmethod
     def _get_info(self) -> str:
-        """Returns formated informations about exception"""
+        """Returns formatted information about exception"""
 
 
 class FormNotFinishedException(FloatException):
@@ -28,7 +28,7 @@ class FormNotFinishedException(FloatException):
 
     def __init__(self, **kwargs: bool) -> None:
         self.exception_message = self.__format_exception(kwargs)
-        super().__init__(self.exception_message)
+        super().__init__()
 
     def _get_info(self) -> str:
         return self.exception_message
