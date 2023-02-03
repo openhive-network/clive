@@ -49,7 +49,6 @@ class InputField(Containerable[VSplit]):
                 ),
             ],
             height=Dimension(min=10),
-            width=80,
         )
 
     def __accept_handler(self, buffer: Buffer) -> bool:

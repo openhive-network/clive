@@ -1,4 +1,4 @@
-from prompt_toolkit.layout import Float, HSplit, ScrollablePane, VSplit
+from prompt_toolkit.layout import Dimension, Float, HSplit, ScrollablePane, VSplit
 from prompt_toolkit.widgets import Frame, TextArea
 
 from clive.ui.containerable import Containerable
@@ -24,6 +24,7 @@ class PromptFloat(Containerable[Float]):
                     ]
                 ),
                 title="Prompt",
+                width=Dimension(preferred=80),
                 modal=True,
             ),
             z_index=2,
@@ -40,6 +41,7 @@ class PromptFloat(Containerable[Float]):
                         focusable=False,
                         style="bg:#0000ff #ffffff",
                     )
-                ]
+                ],
+                height=Dimension(preferred=15),
             )
         )
