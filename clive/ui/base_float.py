@@ -77,7 +77,8 @@ class BaseFloat(Containerable[Float], ABC):
                 title=self.__title,
                 key_bindings=self._create_binding(),
                 modal=True,
-            )
+            ),
+            z_index=2,
         )
 
     def __create_popup_button(self, label: str, handler: Callable[[], None]) -> Button:

@@ -44,7 +44,8 @@ class ErrorFloat(Containerable[Float]):
                 title=HTML("""<style fg="#ff0000"><b>~ ERROR ~</b></style>"""),
                 key_bindings=self._create_key_bindings(),
                 modal=True,
-            )
+            ),
+            z_index=3,
         )
 
     def _create_key_bindings(self) -> KeyBindings:
