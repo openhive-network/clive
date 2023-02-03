@@ -74,7 +74,7 @@ class Clive:
                 view: ButtonsBased = get_view_manager().active_view  # type: ignore
                 self.set_focus(view.buttons.container)
 
-        @kb.add(self.__get_bind_from_config("focus_input_field"))
+        @kb.add(self.__get_bind_from_config("show_terminal"))
         def _(event: KeyPressEvent) -> None:
             if isinstance(get_view_manager().active_view, ButtonsBased):
                 self.set_focus(input_field.container)

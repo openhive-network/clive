@@ -6,4 +6,4 @@ LOG_LEVEL_3RD_PARTY = "WARNING"
 [default.key_bindings]
 focus_menu = "c-n"
 focus_buttons = "c-b"
-focus_input_field = "c-p"
+show_terminal = "c-p"
