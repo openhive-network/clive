@@ -38,8 +38,8 @@ class BaseFloat(Containerable, ABC):
 
     @catch
     def __ok(self, _: KeyPressEvent | None = None) -> None:
-        if self._ok():
-            self.__cancel()
+        self._ok()
+        self.__cancel()
 
     def _create_binding(self) -> KeyBindings:
         kb = KeyBindings()
@@ -95,9 +95,5 @@ class BaseFloat(Containerable, ABC):
         """Called when user clicks Cancel button"""
 
     @abstractmethod
-    def _ok(self) -> bool:
-        """Called when user clicks Ok button
-
-        Returns:
-            bool: True: closes window, False: keep window alive
-        """
+    def _ok(self) -> None:
+        """Called when user clicks Ok button"""

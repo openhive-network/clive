@@ -1,7 +1,8 @@
-from typing import Callable, Optional, Tuple
+from typing import Callable, Optional
 
 from prompt_toolkit.widgets import TextArea
 
+from clive.exceptions import InvalidHost, NotInValidRange
 from clive.storage.mock_database import NodeAddress
 from clive.ui.base_float import BaseFloat
 
@@ -22,31 +23,30 @@ class CreateNodeFloat(BaseFloat):
             {"Proto": self.__proto_text_area, "Host": self.__host_text_area, "Port": self.__port_text_area},
         )
 
-    def __handle_str_input(self, area: TextArea) -> Tuple[str, bool]:
+    def __handle_str_input(self, area: TextArea) -> str:
         text = area.text
         if len(text) > 0:
-            return (text, True)
-        return ("", False)
+            return text
+        return ""
 
-    def __handle_proto_input(self) -> bool:
-        self.__proto, result = self.__handle_str_input(self.__proto_text_area)
-        return result
+    def __handle_proto_input(self) -> None:
+        self.__proto = self.__handle_str_input(self.__proto_text_area)
 
-    def __handle_host_input(self) -> bool:
-        self.__host, result = self.__handle_str_input(self.__host_text_area)
-        return result
+    def __handle_host_input(self) -> None:
+        self.__host = self.__handle_str_input(self.__host_text_area)
+        if len(self.__host) == 0:
+            raise InvalidHost()
 
-    def __handle_port_input(self) -> Optional[int]:
+    def __handle_port_input(self) -> None:
+        MAX_PORT_RANGE = (2**15) - 1
         text = self.__port_text_area.text
-        try:
-            self.__port = int(text)
-            assert self.__port > 0 and self.__port < ((2**15) - 1)
-        except Exception:
-            self.__port = None
-        return self.__port
+        port = int(text)
+        if port <= 0 or port >= MAX_PORT_RANGE:
+            raise NotInValidRange(port, 1, MAX_PORT_RANGE - 1)
+        self.__port = port
 
-    def _ok(self) -> bool:
-        if self.__handle_proto_input() and self.__handle_host_input():
-            self.__on_accept(NodeAddress(proto=self.__proto, host=self.__host, port=self.__handle_port_input()))
-            return True
-        return False
+    def _ok(self) -> None:
+        self.__handle_proto_input()
+        self.__handle_host_input()
+        self.__handle_port_input()
+        self.__on_accept(NodeAddress(proto=self.__proto, host=self.__host, port=self.__port))
