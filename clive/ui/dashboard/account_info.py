@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class AccountInfo(Component["Dashboard"]):
     def __init__(self, parent: Dashboard) -> None:
-        self.__progress_bar = ProgressBar()
+        self.__rc_progress_bar = ProgressBar()
         super().__init__(parent)
 
     def _create_container(self) -> HSplit:
@@ -141,8 +141,8 @@ class AccountInfo(Component["Dashboard"]):
             title=HTML("<black><b>ACCOUNTS</b></black>"),
         )
 
-    def __update_progress_bar(self) -> str:
-        self.__progress_bar.percentage = MockDB.node.rc
+    def __update_rc_progress_bar(self) -> str:
+        self.__rc_progress_bar.percentage = MockDB.node.rc
         return "Resource Credits (RC):"
 
     def __powers(self) -> Frame:
@@ -152,7 +152,7 @@ class AccountInfo(Component["Dashboard"]):
                 [
                     HSplit(
                         [
-                            Label(self.__update_progress_bar),
+                            Label(self.__update_rc_progress_bar),
                             Label("100% charged in:"),
                             Label("Voting Power:"),
                             Label("100% charged in:"),
@@ -162,7 +162,7 @@ class AccountInfo(Component["Dashboard"]):
                     ),
                     HSplit(
                         [
-                            self.__progress_bar,
+                            self.__rc_progress_bar,
                             Label("2 days"),
                             Label(lambda: f"{MockDB.node.voting_power :.2f}%"),
                             Label("2 days"),
