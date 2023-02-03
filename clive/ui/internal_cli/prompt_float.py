@@ -2,7 +2,7 @@ from prompt_toolkit.layout import Dimension, Float, HSplit, ScrollablePane, VSpl
 from prompt_toolkit.widgets import Frame, TextArea
 
 from clive.ui.containerable import Containerable
-from clive.ui.input_field import InputField
+from clive.ui.internal_cli.input_field import InputField
 
 
 class PromptFloat(Containerable[Float]):

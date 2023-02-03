@@ -6,8 +6,8 @@ from prompt_toolkit.layout import Float
 
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
+from clive.ui.internal_cli.prompt_float import PromptFloat
 from clive.ui.parented import Parented
-from clive.ui.prompt_float import PromptFloat
 
 if TYPE_CHECKING:
     from clive.ui.base_float import BaseFloat
