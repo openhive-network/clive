@@ -75,7 +75,7 @@ class ViewManager(Rebuildable):
         self.__menu.body = self.active_view.container
         self.__root_container.content = to_container(self.__menu.container)
         self.__root_container.floats = self.floats.content
-        if not self.floats.float and not self.floats.error_float:
+        if not self.__floats.is_any_float_visible():
             set_focus(self.__menu.body)
 
     @staticmethod

@@ -50,6 +50,9 @@ class Floats(Parented["ViewManager"]):
     def content(self) -> list[Float]:
         return self.__content
 
+    def is_any_float_visible(self) -> bool:
+        return bool(self.__content)
+
     def toggle_prompt(self) -> None:
         if self.__prompt_float.container in self.__content:
             self.__content.remove(self.__prompt_float.container)
