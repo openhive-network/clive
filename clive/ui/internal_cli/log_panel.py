@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from prompt_toolkit.document import Document
-from prompt_toolkit.layout import Dimension, ScrollablePane, VSplit
+from prompt_toolkit.layout import Dimension, VSplit
 from prompt_toolkit.widgets import TextArea
 
 from clive.ui.containerable import Containerable
@@ -13,12 +13,13 @@ if TYPE_CHECKING:
     from clive.ui.internal_cli.prompt_float import PromptFloat
 
 
-class LogPanel(Parented["PromptFloat"], Containerable[ScrollablePane]):
+class LogPanel(Parented["PromptFloat"], Containerable[VSplit]):
     def __init__(self, parent: PromptFloat) -> None:
         self.__text_area = TextArea(
             text="",
             read_only=True,
             focusable=False,
+            scrollbar=True,
             style="class:tertiary",
         )
         super().__init__(parent)
@@ -37,12 +38,10 @@ class LogPanel(Parented["PromptFloat"], Containerable[ScrollablePane]):
         text = self.__text_area.text + f"{text}\n"
         self.__text_area.document = Document(text, len(text))  # scroll to the bottom of the log panel
 
-    def _create_container(self) -> ScrollablePane:
-        return ScrollablePane(
-            VSplit(
-                [
-                    self.__text_area,
-                ],
-                height=Dimension(preferred=15),
-            )
+    def _create_container(self) -> VSplit:
+        return VSplit(
+            [
+                self.__text_area,
+            ],
+            height=Dimension(preferred=15),
         )
