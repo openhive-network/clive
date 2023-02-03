@@ -4,10 +4,11 @@ from typing import TYPE_CHECKING, Generator
 
 from prompt_toolkit import HTML
 from prompt_toolkit.layout import HSplit, VSplit, Window
-from prompt_toolkit.widgets import Frame, HorizontalLine, Label, ProgressBar, VerticalLine
+from prompt_toolkit.widgets import Frame, HorizontalLine, Label, VerticalLine
 
 from clive.storage.mock_database import MockDB
 from clive.ui.component import Component
+from clive.ui.widgets.progress_bar import ProgressBar
 
 if TYPE_CHECKING:
     from clive.ui.dashboard.dashboard import Dashboard  # noqa: F401
