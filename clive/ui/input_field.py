@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import typing
 from typing import TYPE_CHECKING, Final
 
 from loguru import logger
@@ -15,7 +14,7 @@ if TYPE_CHECKING:
     from prompt_toolkit.buffer import Buffer
 
 
-class InputField(Containerable):
+class InputField(Containerable[TextArea]):
     DEACTIVATED_PROMPT: Final[str] = ">>>: "
     ACTIVATED_PROMPT: Final[str] = "###: "
 
@@ -23,10 +22,6 @@ class InputField(Containerable):
         self.__search_field = SearchToolbar()  # For reverse search.
         self.__completer = FuzzyWordCompleter(["activate", "deactivate"])
         super().__init__()
-
-    @property
-    def container(self) -> TextArea:
-        return typing.cast(TextArea, self._container)
 
     def _create_container(self) -> TextArea:
         return TextArea(

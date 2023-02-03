@@ -13,7 +13,7 @@ from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
 
 
-class BaseFloat(Containerable, ABC):
+class BaseFloat(Containerable[Float], ABC):
     """
     By deriving from this class you can create float which
     will be automatically visible after creation

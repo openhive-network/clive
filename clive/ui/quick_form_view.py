@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class QuickFormView(FormView):
-    def __init__(self, *, parent: Form, body: Containerable, buttons: Optional[ButtonsMenu[T]] = None):
+    def __init__(self, *, parent: Form, body: Containerable[AnyContainer], buttons: Optional[ButtonsMenu[T]] = None):
         self.__body = body
         self._set_buttons(buttons)
         super().__init__(parent)

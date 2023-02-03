@@ -16,7 +16,7 @@ from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
 
 
-class ErrorFloat(Containerable):
+class ErrorFloat(Containerable[Float]):
     def __init__(self, message: AnyFormattedText) -> None:
         self.__message = message
         super().__init__()
