@@ -53,7 +53,8 @@ class SetNodeAddressViewButtons(ButtonsMenu[K]):
             else:
                 MockDB.NODE_ADDRESS = None
         else:
-            MockDB.BACKUP_NODE_ADDRESSES.remove(item_to_delete)
+            if item_to_delete is not None:
+                MockDB.BACKUP_NODE_ADDRESSES.remove(item_to_delete)
 
         self.__refresh_view_after_db_update()
 
@@ -69,7 +70,7 @@ class SetNodeAddressViewButtons(ButtonsMenu[K]):
 
     def __set_as_default_node(self, _: KeyPressEvent | None = None) -> None:
         future_default = self.__radio_list.current_item
-        if future_default != MockDB.NODE_ADDRESS:
+        if future_default != MockDB.NODE_ADDRESS and future_default is not None:
             assert MockDB.NODE_ADDRESS is not None
             MockDB.BACKUP_NODE_ADDRESSES.append(MockDB.NODE_ADDRESS)
             MockDB.NODE_ADDRESS = MockDB.BACKUP_NODE_ADDRESSES.pop(MockDB.BACKUP_NODE_ADDRESSES.index(future_default))

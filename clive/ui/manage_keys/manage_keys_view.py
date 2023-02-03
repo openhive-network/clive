@@ -44,7 +44,8 @@ class ManageKeysButtons(ButtonsMenu[K]):
         self.__radio_list._rebuild()
 
     def __delete_private_key(self, _: KeyPressEvent | None = None) -> None:
-        MockDB.MAIN_ACTIVE_ACCOUNT.keys.remove(self.__radio_list.current_item)
+        if (item := self.__radio_list.current_item) is not None:
+            MockDB.MAIN_ACTIVE_ACCOUNT.keys.remove(item)
         self.__refresh_view_after_db_update()
 
     def __create_private_key(self, _: KeyPressEvent | None = None) -> None:

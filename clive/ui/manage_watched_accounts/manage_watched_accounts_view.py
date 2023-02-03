@@ -45,7 +45,8 @@ class ManageWatchedAccountsButtons(ButtonsMenu[K]):
         self.__radio_list._rebuild()
 
     def __delete_watched_account(self, _: KeyPressEvent | None = None) -> None:
-        MockDB.ACCOUNTS.remove(self.__radio_list.current_item)
+        if (item := self.__radio_list.current_item) is not None:
+            MockDB.ACCOUNTS.remove(item)
         self.__refresh_view_after_db_update()
 
     def __create_watched_account(self, _: KeyPressEvent | None = None) -> None:
