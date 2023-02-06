@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING
 
 from prompt_toolkit import HTML
 from prompt_toolkit.layout import HSplit, VSplit, Window
@@ -47,23 +47,6 @@ class AccountInfo(Component["Dashboard"]):
             ],
             style="class:secondary",
         )
-
-    def __warnings(self) -> HSplit:
-        return HSplit(
-            [
-                Label("WARNINGS", style="bold"),
-                *self.__get_warning_messages(),
-            ],
-            style="class:red",
-        )
-
-    def __get_warning_messages(self) -> Generator[Label, None, None]:
-        warnings = [
-            "Your account will expire in 10 days if you don't vote for witness or proposal.",
-            "The watched account: @gtg changed the owner authority.",
-        ]
-        for idx, warning in enumerate(warnings):
-            yield Label(f"{idx + 1}. {warning}")
 
     def __general(self) -> Frame:
         return Frame(
