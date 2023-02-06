@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 Main = Union[AccountInfo, "LeftComponentSecond"]
-Side = SidePanel
+Side = SidePanel["Dashboard"]
 Buttons = Union[ButtonsMenuFirst, "ButtonsMenuSecond"]
 
 
