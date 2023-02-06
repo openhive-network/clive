@@ -1,5 +1,5 @@
-from clive.ui.components.registration_buttons import RegistrationButtons
-from clive.ui.components.registration_form import RegistrationForm
+from clive.ui.registration.registration_buttons import RegistrationButtons
+from clive.ui.registration.registration_form import RegistrationForm
 from clive.ui.views.button_based import ButtonsBased
 
 
