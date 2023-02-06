@@ -1,19 +1,20 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from clive.ui.components.side_panel import SidePanel
+from clive.ui.transfer_to_account.transfer_to_account_buttons import TransferToAccountButtons
+from clive.ui.transfer_to_account.transfer_to_account_panel import TransferToAccountPanel
+from clive.ui.views.side_pane_based import SidePanelBased
 
-from prompt_toolkit.widgets import Label
-
-from clive.ui.view import View
-
-if TYPE_CHECKING:
-    from prompt_toolkit.layout import AnyContainer
+Main = TransferToAccountPanel
+Side = SidePanel["TransferToAccountView"]
+Buttons = TransferToAccountButtons
 
 
-class TransferToAccountView(View):
+class TransferToAccountView(SidePanelBased[Main, Side, Buttons]):
     def __init__(self, asset: str) -> None:
         self.__asset = asset
-        super().__init__()
+        super().__init__(TransferToAccountPanel(self), SidePanel(self), TransferToAccountButtons(self))
 
-    def _create_container(self) -> AnyContainer:
-        return Label(text=self.__class__.__name__)
+    @property
+    def asset(self) -> str:
+        return self.__asset
