@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Union
 
+from clive.ui.components.side_panel import SidePanel
 from clive.ui.dashboard.account_info import AccountInfo
 from clive.ui.dashboard.buttons_menu_first import ButtonsMenuFirst
-from clive.ui.dashboard.side_panel import SidePanel
 from clive.ui.views.side_pane_based import SidePanelBased
 
 if TYPE_CHECKING:
