@@ -37,3 +37,7 @@ class FormNotFinishedException(FloatException):
         return "Form completion report\n\n" + "\n".join(
             [f'    - {key} = {("OK" if value else "FAIL")}' for key, value in report.items()]
         )
+
+
+class KeyBindingException(CliveException):
+    """Base class for all key binding exceptions."""
