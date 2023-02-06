@@ -50,7 +50,8 @@ class AccountInfo(Component["Dashboard"]):
 
     def __general(self) -> Frame:
         return Frame(
-            HSplit(
+            title=self.__create_title("GENERAL"),
+            body=HSplit(
                 [
                     VSplit(
                         [
@@ -65,7 +66,6 @@ class AccountInfo(Component["Dashboard"]):
                     ),
                 ]
             ),
-            title=HTML("<black><b>GENERAL</b></black>"),
         )
 
     def __money(self) -> HSplit:
@@ -105,7 +105,8 @@ class AccountInfo(Component["Dashboard"]):
 
     def __accounts(self) -> Frame:
         return Frame(
-            HSplit(
+            title=self.__create_title("ACCOUNTS"),
+            body=HSplit(
                 [
                     VSplit(
                         [
@@ -123,7 +124,6 @@ class AccountInfo(Component["Dashboard"]):
                     ),
                 ]
             ),
-            title=HTML("<black><b>ACCOUNTS</b></black>"),
         )
 
     def __update_rc_progress_bar(self) -> str:
@@ -140,7 +140,7 @@ class AccountInfo(Component["Dashboard"]):
 
     def __powers(self) -> Frame:
         return Frame(
-            title=HTML("<black><b>POWERS</b></black>"),
+            title=self.__create_title("POWERS"),
             body=VSplit(
                 [
                     HSplit(
@@ -191,3 +191,7 @@ class AccountInfo(Component["Dashboard"]):
                 ),
             ]
         )
+
+    @staticmethod
+    def __create_title(text: str) -> HTML:
+        return HTML(f"<black><b>{text}</b></black>")
