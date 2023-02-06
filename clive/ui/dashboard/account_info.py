@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from prompt_toolkit import HTML
 from prompt_toolkit.layout import HSplit, VSplit, Window
-from prompt_toolkit.widgets import Frame, HorizontalLine, Label, VerticalLine
+from prompt_toolkit.widgets import Frame, Label, VerticalLine
 
 from clive.storage.mock_database import MockDB
 from clive.ui.component import Component
@@ -37,7 +37,6 @@ class AccountInfo(Component["Dashboard"]):
                             [
                                 self.__accounts(),
                                 self.__powers(),
-                                HorizontalLine(),
                                 self.__recurrent_transfer(),
                             ],
                         ),
@@ -68,39 +67,41 @@ class AccountInfo(Component["Dashboard"]):
             ),
         )
 
-    def __money(self) -> HSplit:
-        return HSplit(
-            [
-                Label("\nMONEY"),
-                VSplit(
-                    [
-                        HSplit(
-                            [
-                                Label("HIVE balance:"),
-                                Label("HIVE POWER balance:"),
-                                Label("HIVE DOLLARS:"),
-                                Label("SAVINGS balance HIVE:"),
-                                Label("SAVINGS balance HBD:"),
-                                Label("Unclaimed rewards:"),
-                                Label("Unclaimed rewards:"),
-                                Label("Unclaimed rewards:"),
-                            ]
-                        ),
-                        HSplit(
-                            [
-                                Label(lambda: f"{MockDB.node.hive_balance :.2f} HIVE"),
-                                Label(lambda: f"{MockDB.node.hive_power_balance :.2f} HP"),
-                                Label(lambda: f"${MockDB.node.hive_dollars :.2f}"),
-                                Label(lambda: f"{MockDB.node.hive_savings :.2f} HIVE"),
-                                Label(lambda: f"{MockDB.node.hbd_savings :.2f} HBD"),
-                                Label(lambda: f"{MockDB.node.hbd_unclaimed :.2f} HBD"),
-                                Label(lambda: f"{MockDB.node.hp_unclaimed :.2f} HP"),
-                                Label(lambda: f"{MockDB.node.hive_unclaimed :.2f} HIVE"),
-                            ]
-                        ),
-                    ]
-                ),
-            ]
+    def __money(self) -> Frame:
+        return Frame(
+            title=self.__create_title("MONEY"),
+            body=HSplit(
+                [
+                    VSplit(
+                        [
+                            HSplit(
+                                [
+                                    Label("HIVE balance:"),
+                                    Label("HIVE POWER balance:"),
+                                    Label("HIVE DOLLARS:"),
+                                    Label("SAVINGS balance HIVE:"),
+                                    Label("SAVINGS balance HBD:"),
+                                    Label("Unclaimed rewards:"),
+                                    Label("Unclaimed rewards:"),
+                                    Label("Unclaimed rewards:"),
+                                ]
+                            ),
+                            HSplit(
+                                [
+                                    Label(lambda: f"{MockDB.node.hive_balance :.2f} HIVE"),
+                                    Label(lambda: f"{MockDB.node.hive_power_balance :.2f} HP"),
+                                    Label(lambda: f"${MockDB.node.hive_dollars :.2f}"),
+                                    Label(lambda: f"{MockDB.node.hive_savings :.2f} HIVE"),
+                                    Label(lambda: f"{MockDB.node.hbd_savings :.2f} HBD"),
+                                    Label(lambda: f"{MockDB.node.hbd_unclaimed :.2f} HBD"),
+                                    Label(lambda: f"{MockDB.node.hp_unclaimed :.2f} HP"),
+                                    Label(lambda: f"{MockDB.node.hive_unclaimed :.2f} HIVE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                ]
+            ),
         )
 
     def __accounts(self) -> Frame:
@@ -167,29 +168,31 @@ class AccountInfo(Component["Dashboard"]):
             ),
         )
 
-    def __recurrent_transfer(self) -> HSplit:
-        return HSplit(
-            [
-                Label("\nRECURRENT TRANSFER"),
-                VSplit(
-                    [
-                        HSplit(
-                            [
-                                Label("Pending transfers:"),
-                                Label("Next recurrent transfer date:"),
-                                Label("Next recurrent transfer amount:"),
-                            ]
-                        ),
-                        HSplit(
-                            [
-                                Label("2"),
-                                Label("01.06.2023"),
-                                Label("300 HIVE"),
-                            ]
-                        ),
-                    ]
-                ),
-            ]
+    def __recurrent_transfer(self) -> Frame:
+        return Frame(
+            title=self.__create_title("RECURRENT TRANSFER"),
+            body=HSplit(
+                [
+                    VSplit(
+                        [
+                            HSplit(
+                                [
+                                    Label("Pending transfers:"),
+                                    Label("Next recurrent transfer date:"),
+                                    Label("Next recurrent transfer amount:"),
+                                ]
+                            ),
+                            HSplit(
+                                [
+                                    Label("2"),
+                                    Label("01.06.2023"),
+                                    Label("300 HIVE"),
+                                ]
+                            ),
+                        ]
+                    ),
+                ]
+            ),
         )
 
     @staticmethod
