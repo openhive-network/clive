@@ -8,9 +8,13 @@ from clive.ui.internal_cli.log_panel import LogPanel
 
 class PromptFloat(Containerable[Float]):
     def __init__(self) -> None:
-        self.__log_panel = LogPanel()
-        self.__input_field = InputField()
+        self.__log_panel = LogPanel(self)
+        self.__input_field = InputField(self)
         super().__init__()
+
+    @property
+    def log_panel(self) -> LogPanel:
+        return self.__log_panel
 
     @property
     def input_field(self) -> InputField:

@@ -10,16 +10,19 @@ from prompt_toolkit.widgets import SearchToolbar, TextArea
 
 from clive.app_status import app_status
 from clive.ui.containerable import Containerable
+from clive.ui.parented import Parented
 
 if TYPE_CHECKING:
     from prompt_toolkit.buffer import Buffer
 
+    from clive.ui.internal_cli.prompt_float import PromptFloat
 
-class InputField(Containerable[VSplit]):
+
+class InputField(Parented["PromptFloat"], Containerable[VSplit]):
     DEACTIVATED_PROMPT: Final[str] = ">>>: "
     ACTIVATED_PROMPT: Final[str] = "###: "
 
-    def __init__(self) -> None:
+    def __init__(self, parent: PromptFloat) -> None:
         self.__search_field = SearchToolbar()  # For reverse search.
         self.__completer = FuzzyWordCompleter(["activate", "deactivate"])
 
@@ -40,7 +43,7 @@ class InputField(Containerable[VSplit]):
             ycursor=True,
             content=CompletionsMenu(max_height=16, scroll_offset=1),
         )
-        super().__init__()
+        super().__init__(parent)
 
     def _create_container(self) -> VSplit:
         return VSplit(
@@ -55,14 +58,16 @@ class InputField(Containerable[VSplit]):
 
     def __accept_handler(self, buffer: Buffer) -> bool:
         logger.debug(f"Received input: {buffer.text}")
+        self._parent.log_panel.save_input(buffer.text)
 
         # TODO: just for testing, should be done in a better way
 
         if buffer.text == "activate":
             app_status.activate()
-
         elif buffer.text == "deactivate":
             app_status.deactivate()
+        else:
+            self._parent.log_panel.save_error("Invalid command")
 
         return False
 
