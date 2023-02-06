@@ -54,7 +54,7 @@ class Floats(Parented["ViewManager"]):
         return bool(self.__content)
 
     def toggle_prompt(self) -> None:
-        if self.__prompt_float.container in self.__content:
+        if self.__is_prompt_float_visible():
             self.__content.remove(self.__prompt_float.container)
             set_focus(get_view_manager().active_container)
         else:
@@ -62,7 +62,7 @@ class Floats(Parented["ViewManager"]):
             set_focus(self.__prompt_float.container.content)
 
     def __update_float_containers(self) -> None:
-        result: list[Float] = []
+        result: list[Float] = [self.__prompt_float.container] if self.__is_prompt_float_visible() else []
 
         if self.float is not None:
             result.append(self.float.container)
@@ -74,3 +74,6 @@ class Floats(Parented["ViewManager"]):
 
         self.__content = result
         self._parent.rebuild()
+
+    def __is_prompt_float_visible(self) -> bool:
+        return self.__prompt_float.container in self.__content
