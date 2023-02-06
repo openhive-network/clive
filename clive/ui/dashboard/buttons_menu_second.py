@@ -21,7 +21,7 @@ class ButtonsMenuSecond(ButtonsMenu["Dashboard"]):
         super().__init__(parent)
         self._parent.key_bindings.append(self._get_key_bindings())
 
-    def __f2_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f2_action(self, _: KeyPressEvent | None = None) -> None:
         self._parent.main_panel = AccountInfo(self._parent)
         self._parent.buttons = ButtonsMenuFirst(self._parent)
 

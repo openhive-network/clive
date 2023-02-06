@@ -59,18 +59,18 @@ class Clive:
             event.app.exit()
 
         @kb.add(get_bind_from_config("focus_menu"))
-        def _(event: KeyPressEvent) -> None:
+        def _(_: KeyPressEvent) -> None:
             if not isinstance(get_view_manager().menu, MenuEmpty):
                 self.set_focus(self.__get_menu_window())
 
         @kb.add(get_bind_from_config("focus_buttons"))
-        def _(event: KeyPressEvent) -> None:
+        def _(_: KeyPressEvent) -> None:
             if isinstance(get_view_manager().active_view, ButtonsBased):
                 view: ButtonsBased = get_view_manager().active_view  # type: ignore
                 self.set_focus(view.buttons.container)
 
         @kb.add(get_bind_from_config("show_terminal"))
-        def _(event: KeyPressEvent) -> None:
+        def _(_: KeyPressEvent) -> None:
             get_view_manager().floats.toggle_prompt()
 
         @kb.add(Keys.ControlSpace)
@@ -85,7 +85,7 @@ class Clive:
         return kb
 
     def __focus(self, direction: Literal["next", "previous"]) -> Callable[[KeyPressEvent], None]:
-        def focus(event: KeyPressEvent) -> None:
+        def focus(_: KeyPressEvent) -> None:
             fun = self.__app.layout.focus_next if direction == "next" else self.__app.layout.focus_previous
             fun()
 

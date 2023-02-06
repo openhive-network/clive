@@ -29,10 +29,10 @@ class RegistrationButtons(ButtonsMenu["Registration"]):
         kb.add(Keys.F2)(self.__f2_action)
         return kb
 
-    def __f1_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f1_action(self, _: KeyPressEvent | None = None) -> None:
         logger.info(f"Registering: {self._parent.main_panel.profile_name}")
         switch_view("dashboard")
 
     @staticmethod
-    def __f2_action(event: KeyPressEvent | None = None) -> None:
+    def __f2_action(_: KeyPressEvent | None = None) -> None:
         switch_view("login")

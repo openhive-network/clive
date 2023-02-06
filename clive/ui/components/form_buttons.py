@@ -35,17 +35,17 @@ class FormButtons(ButtonsMenu["Form"]):
 
         return kb
 
-    def __f1_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f1_action(self, _: KeyPressEvent | None = None) -> None:
         self._parent.previous_view()
 
-    def __f2_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f2_action(self, _: KeyPressEvent | None = None) -> None:
         self._parent.next_view()
 
-    def __f3_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f3_action(self, _: KeyPressEvent | None = None) -> None:
         self._parent.cancel()
 
     @catch
-    def __f4_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f4_action(self, _: KeyPressEvent | None = None) -> None:
         self._parent.finish()
 
     @staticmethod

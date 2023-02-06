@@ -37,7 +37,7 @@ class Welcome(View):
         )
 
     @staticmethod
-    def __continue(event: KeyPressEvent | None = None) -> None:
+    def __continue(_: KeyPressEvent | None = None) -> None:
         switch_view("dashboard")
 
     def __get_key_bindings(self) -> KeyBindings:

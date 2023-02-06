@@ -22,11 +22,11 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
 
         self._parent.key_bindings.append(self._key_bindings)
 
-    def __f1_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f1_action(self, _: KeyPressEvent | None = None) -> None:
         app_status.deactivate() if app_status.active_mode else app_status.activate()
         self._rebuild()
 
-    def __f2_action(self, event: KeyPressEvent | None = None) -> None:
+    def __f2_action(self, _: KeyPressEvent | None = None) -> None:
         from clive.ui.dashboard.buttons_menu_second import ButtonsMenuSecond
 
         if self._key_bindings in self._parent.key_bindings:
