@@ -9,7 +9,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import Layout
 from prompt_toolkit.styles import Style
 
-from clive.config import settings
+from clive.config import get_bind_from_config, settings
 from clive.storage.mock_database import MockDB
 from clive.ui.get_view_manager import get_view_manager
 from clive.ui.menus.menu_empty import MenuEmpty
@@ -58,18 +58,18 @@ class Clive:
         def _(event: KeyPressEvent) -> None:
             event.app.exit()
 
-        @kb.add(self.__get_bind_from_config("focus_menu"))
+        @kb.add(get_bind_from_config("focus_menu"))
         def _(event: KeyPressEvent) -> None:
             if not isinstance(get_view_manager().menu, MenuEmpty):
                 self.set_focus(self.__get_menu_window())
 
-        @kb.add(self.__get_bind_from_config("focus_buttons"))
+        @kb.add(get_bind_from_config("focus_buttons"))
         def _(event: KeyPressEvent) -> None:
             if isinstance(get_view_manager().active_view, ButtonsBased):
                 view: ButtonsBased = get_view_manager().active_view  # type: ignore
                 self.set_focus(view.buttons.container)
 
-        @kb.add(self.__get_bind_from_config("show_terminal"))
+        @kb.add(get_bind_from_config("show_terminal"))
         def _(event: KeyPressEvent) -> None:
             get_view_manager().floats.toggle_prompt()
 
@@ -103,14 +103,6 @@ class Clive:
     @staticmethod
     def __get_menu_window() -> Window:
         return get_view_manager().menu.container.window
-
-    @staticmethod
-    def __get_bind_from_config(name: str) -> Keys:
-        binding = settings.key_bindings[name]
-        try:
-            return Keys(binding)
-        except ValueError as e:
-            raise ValueError(f"Invalid key binding: {binding}.") from e
 
     def exit(self) -> None:
         self.__app.exit()

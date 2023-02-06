@@ -6,11 +6,11 @@ from typing import Any, Final
 
 from dynaconf import Dynaconf  # type: ignore
 from dynaconf.loaders.toml_loader import write  # type: ignore
+from prompt_toolkit.keys import Keys
 
 ROOT_DIRECTORY: Final[Path] = Path(__file__).parent
 TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"
 LAUNCH_TIME: Final[datetime] = datetime.now()
-
 
 SETTINGS_FILES: Final[list[str]] = ["settings.toml", "style.toml"]
 
@@ -27,3 +27,11 @@ def update(settings_file: str, data: dict[str, Any], *, merge: bool = True) -> N
         raise ValueError(f"settings_file must be one of {SETTINGS_FILES}")
 
     write(ROOT_DIRECTORY.parent / settings_file, data, merge)
+
+
+def get_bind_from_config(name: str) -> Keys:
+    binding = settings.key_bindings[name]
+    try:
+        return Keys(binding)
+    except ValueError as exception:
+        raise ValueError(f"Invalid key binding: {binding}.") from exception
