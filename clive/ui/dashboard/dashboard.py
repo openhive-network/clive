@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from clive.ui.dashboard.left_component_second import LeftComponentSecond
 
 Main = Union[AccountInfo, "LeftComponentSecond"]
-Side = SidePanel
+Side = SidePanel["Dashboard"]
 Buttons = Union[ButtonsMenuFirst, "ButtonsMenuSecond"]
 
 

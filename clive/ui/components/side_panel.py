@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generator
+from typing import TYPE_CHECKING, Generator, TypeVar
 
 from prompt_toolkit import HTML
 from prompt_toolkit.layout import FormattedTextControl, HSplit, ScrollablePane, VSplit, Window
@@ -10,10 +10,12 @@ from clive.app_status import app_status
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
-    from clive.ui.dashboard.dashboard import Dashboard  # noqa: F401
+    from clive.ui.rebuildable import Rebuildable
+
+T = TypeVar("T", bound="Rebuildable")
 
 
-class SidePanel(Component["Dashboard"]):
+class SidePanel(Component[T]):
     def _create_container(self) -> HSplit:
         return HSplit(
             [
