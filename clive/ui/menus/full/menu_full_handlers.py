@@ -9,6 +9,7 @@ from clive.ui.manage_watched_accounts import ManageWatchedAccountView
 from clive.ui.menus.menu_handlers import MenuHandlers
 from clive.ui.quick_setup_form import QuickSetup
 from clive.ui.set_node_address import SetNodeAddressView
+from clive.ui.transfer_to_account.transfer_to_account_view import TransferToAccountView
 from clive.ui.views.about_view import AboutView
 from clive.ui.views.account_history_view import AccountHistoryView
 from clive.ui.views.account_update_authority_view import AccountUpdateAuthorityView
@@ -22,7 +23,6 @@ from clive.ui.views.power_up_down_view import PowerUpDownView
 from clive.ui.views.set_theme_view import SetThemeView
 from clive.ui.views.set_wallet_password_view import SetWalletPasswordView
 from clive.ui.views.transfer_from_savings_view import TransferFromSavingsView
-from clive.ui.views.transfer_to_account_view import TransferToAccountView
 from clive.ui.views.transfer_to_savings_view import TransferToSavingsView
 from clive.ui.views.update_witness_properties_view import UpdateWitnessPropertiesView
 from clive.ui.views.vote_for_proposal_view import VoteForProposalView
