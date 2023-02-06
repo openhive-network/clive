@@ -12,6 +12,7 @@ from prompt_toolkit.widgets import Box, Button, Frame, Label
 
 from clive.exceptions import FloatException
 from clive.ui.containerable import Containerable
+from clive.ui.enums import ZIndex
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
 
@@ -45,7 +46,7 @@ class ErrorFloat(Containerable[Float]):
                 key_bindings=self._create_key_bindings(),
                 modal=True,
             ),
-            z_index=4,
+            z_index=ZIndex.ERROR_FLOAT,
         )
 
     def _create_key_bindings(self) -> KeyBindings:

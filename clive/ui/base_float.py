@@ -9,6 +9,7 @@ from prompt_toolkit.layout import Dimension, Float, HorizontalAlign, HSplit, VSp
 from prompt_toolkit.widgets import Button, Frame, Label, TextArea
 
 from clive.ui.containerable import Containerable
+from clive.ui.enums import ZIndex
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
 
@@ -78,7 +79,7 @@ class BaseFloat(Containerable[Float], ABC):
                 key_bindings=self._create_binding(),
                 modal=True,
             ),
-            z_index=3,
+            z_index=ZIndex.BASE_FLOAT,
         )
 
     def __create_popup_button(self, label: str, handler: Callable[[], None]) -> Button:

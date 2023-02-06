@@ -2,6 +2,7 @@ from prompt_toolkit.layout import Dimension, Float, HSplit
 from prompt_toolkit.widgets import Frame
 
 from clive.ui.containerable import Containerable
+from clive.ui.enums import ZIndex
 from clive.ui.internal_cli.input_field import InputField
 from clive.ui.internal_cli.log_panel import LogPanel
 
@@ -33,5 +34,5 @@ class PromptFloat(Containerable[Float]):
                 width=Dimension(preferred=80),
                 modal=True,
             ),
-            z_index=2,
+            z_index=ZIndex.PROMPT_FLOAT,
         )
