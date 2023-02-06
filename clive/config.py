@@ -30,7 +30,10 @@ def update(settings_file: str, data: dict[str, Any], *, merge: bool = True) -> N
 
 
 def get_bind_from_config(name: str) -> Keys:
-    binding = settings.key_bindings[name]
+    binding = settings.key_bindings.get(name)
+    if not binding:
+        raise ValueError(f"Key binding `{name}` was not found in the settings.toml file")
+
     try:
         return Keys(binding)
     except ValueError as exception:
