@@ -3,6 +3,7 @@ image: "$CI_REGISTRY_IMAGE/ci-base-image@sha256:62a6bfd24f898d47be5853e6a777021b
 stages:
   - static_code_analysis
   - tests
+  - build
 
 
 variables:
@@ -76,7 +77,7 @@ type_check_with_mypy:
 tests_launch:
   stage: tests
   extends: .configuration
-  needs: []  # to start immediately, without waiting for previous stages
+  needs: [ ]  # to start immediately, without waiting for previous stages
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}" &&
       python3 -m pytest -n auto --junitxml=report.xml tests/
@@ -85,3 +86,30 @@ tests_launch:
       junit: report.xml
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+build_and_push_docker_image:
+  image: docker:20.10.13
+  stage: build
+  needs: [ "pre_commit_checks", "tests_launch" ]
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+    TAG_COMMIT: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:$CI_COMMIT_SHORT_SHA
+    TAG_LATEST: $CI_REGISTRY_IMAGE/$CI_COMMIT_REF_NAME:latest
+  services:
+    - docker:20.10.13-dind
+  script:
+    - echo -e "${TXT_BLUE}Building a docker image started...${TXT_CLEAR}"
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile .
+    - docker push $TAG_COMMIT
+    - docker push $TAG_LATEST
+  only:
+    - develop
+    - master
+  tags: *shared_tags
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
