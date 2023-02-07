@@ -65,6 +65,7 @@ select = [
     "C4",
     "SIM",
     "TCH",
+    "ARG",
 ]
 ignore = [
     "E501", # line too long, handled by black
