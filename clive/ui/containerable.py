@@ -4,8 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 if TYPE_CHECKING:
-    from prompt_toolkit.layout import AnyContainer  # noqa: F401
-    from prompt_toolkit.layout import Float  # noqa: F401
+    from prompt_toolkit.layout import AnyContainer, Float  # noqa: F401
 
 T = TypeVar("T", bound="AnyContainer | Float")
 

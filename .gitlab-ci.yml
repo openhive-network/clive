@@ -42,7 +42,9 @@ lint_code_with_ruff:
   stage: static_code_analysis
   extends: .configuration
   script:
-    - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
+    - echo -e "${TXT_BLUE}Linting all sources with Ruff (check)...${TXT_CLEAR}" &&
+      ruff ${PACKAGES_TO_CHECK}
+    - echo -e "${TXT_BLUE}Linting all sources with Ruff (diff)...${TXT_CLEAR}" &&
       ruff ${PACKAGES_TO_CHECK} --diff
 
 
@@ -52,14 +54,6 @@ formatting_with_black_check:
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Black...${TXT_CLEAR}" &&
       black ${PACKAGES_TO_CHECK} --check --diff --color
-
-
-imports_order_with_isort_check:
-  stage: static_code_analysis
-  extends: .configuration
-  script:
-    - echo -e "${TXT_BLUE}Checking imports order with isort...${TXT_CLEAR}" &&
-      isort ${PACKAGES_TO_CHECK} --check --diff --color
 
 
 type_check_with_mypy:
