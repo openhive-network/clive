@@ -61,7 +61,7 @@ class BaseFloat(Containerable[Float], ABC):
                     [
                         VSplit(
                             [
-                                HSplit([self.__create_label(key) for key in self.__labels_n_inputs.keys()]),
+                                HSplit([self.__create_label(key) for key in self.__labels_n_inputs]),
                                 HSplit([self.__create_text_area(value) for value in self.__labels_n_inputs.values()]),
                             ]
                         ),
