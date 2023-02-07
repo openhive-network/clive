@@ -12,7 +12,7 @@ from clive.ui.components.buttons_menu import ButtonsMenu
 
 if TYPE_CHECKING:
     from clive.ui.form_view import FormView
-    from clive.ui.views.form import Form  # noqa: F401
+    from clive.ui.views.form import Form
 
 STANDARD_FUNCTIONAL_KEYS: List[Keys] = [getattr(Keys, f"F{i}") for i in range(1, 13)]
 

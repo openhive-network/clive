@@ -10,10 +10,10 @@ from clive.abstract_class import AbstractClass
 from clive.ui.view import View
 
 if TYPE_CHECKING:
-    from typing import Any  # noqa: F401
+    from typing import Any
 
-    from clive.ui.component import Component  # noqa: F401
-    from clive.ui.components.buttons_menu import ButtonsMenu  # noqa: F401
+    from clive.ui.component import Component
+    from clive.ui.components.buttons_menu import ButtonsMenu
 
 
 M = TypeVar("M", bound="Component[Any]")

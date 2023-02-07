@@ -8,7 +8,7 @@ from prompt_toolkit.widgets import Frame
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
-    from typing import Any  # noqa: F401
+    from typing import Any
 
     from clive.ui.views.side_pane_based import SidePanelBased
 
