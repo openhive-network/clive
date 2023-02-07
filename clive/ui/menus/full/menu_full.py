@@ -17,6 +17,7 @@ class MenuFull(Menu[MenuFullHandlers]):
                 "Clive",
                 children=[
                     MenuItem("Dashboard", handler=self._handlers.dashboard),
+                    MenuItem("Watched Accounts", handler=self._handlers.watched_accounts),
                     MenuItem("Manage Private Keys", handler=self._handlers.manage_private_keys),
                     MenuItem("Manage Watched Accounts", handler=self._handlers.manage_watched_accounts),
                     MenuItem("Deactivate", handler=self._handlers.deactivate),

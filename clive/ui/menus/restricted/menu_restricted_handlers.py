@@ -11,6 +11,7 @@ from clive.ui.views.contribute_view import ContributeView
 from clive.ui.views.exit_confirmation_view import ExitConfirmationView
 from clive.ui.views.help_view import HelpView
 from clive.ui.views.set_theme_view import SetThemeView
+from clive.ui.watched_accounts.watched_accounts_view import WatchedAccountsView
 
 if TYPE_CHECKING:
     from clive.ui.menus.restricted.menu_restricted import MenuRestricted
@@ -21,6 +22,7 @@ class MenuRestrictedHandlers(MenuHandlers["MenuRestricted"]):
         super().__init__(parent)
 
         self.dashboard = self._switch_view(Dashboard)
+        self.watched_accounts = self._switch_view(WatchedAccountsView)
         self.activate = lambda: app_status.activate()
         self.exit = self._switch_view(ExitConfirmationView)
 

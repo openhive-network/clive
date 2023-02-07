@@ -28,6 +28,7 @@ from clive.ui.views.update_witness_properties_view import UpdateWitnessPropertie
 from clive.ui.views.vote_for_proposal_view import VoteForProposalView
 from clive.ui.views.vote_for_witness_as_delegatee_view import VoteForWitnessAsDelegateeView
 from clive.ui.views.vote_for_witness_view import VoteForWitnessView
+from clive.ui.watched_accounts.watched_accounts_view import WatchedAccountsView
 
 if TYPE_CHECKING:
     from clive.ui.menus.full.menu_full import MenuFull
@@ -38,6 +39,7 @@ class MenuFullHandlers(MenuHandlers["MenuFull"]):
         super().__init__(parent)
 
         self.dashboard = self._switch_view(Dashboard)
+        self.watched_accounts = self._switch_view(WatchedAccountsView)
         self.manage_private_keys = self._switch_view(ManageKeysView)
         self.manage_watched_accounts = self._switch_view(ManageWatchedAccountView)
         self.deactivate = lambda: app_status.deactivate()

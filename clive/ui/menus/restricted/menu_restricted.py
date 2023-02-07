@@ -17,6 +17,7 @@ class MenuRestricted(Menu[MenuRestrictedHandlers]):
                 "Clive",
                 children=[
                     MenuItem("Dashboard", handler=self._handlers.dashboard),
+                    MenuItem("Watched Accounts", handler=self._handlers.watched_accounts),
                     MenuItem("Activate", handler=self._handlers.activate),
                     MenuItem("Exit", handler=self._handlers.exit),
                 ],
