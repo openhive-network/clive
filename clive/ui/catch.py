@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from prompt_toolkit import HTML
-from prompt_toolkit.formatted_text.base import AnyFormattedText
 from prompt_toolkit.key_binding import KeyBindings, KeyPressEvent
 from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import Dimension, Float, HorizontalAlign, HSplit, VerticalAlign, VSplit
@@ -15,6 +14,9 @@ from clive.ui.containerable import Containerable
 from clive.ui.enums import ZIndex
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
+
+if TYPE_CHECKING:
+    from prompt_toolkit.formatted_text import AnyFormattedText
 
 
 class ErrorFloat(Containerable[Float]):

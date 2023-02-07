@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import Callable, Optional, Tuple
-
-from prompt_toolkit.widgets import TextArea
+from typing import TYPE_CHECKING, Callable, Optional, Tuple
 
 from clive.storage.mock_database import NodeAddress
 from clive.ui.base_float import BaseFloat
+
+if TYPE_CHECKING:
+    from prompt_toolkit.widgets import TextArea
 
 
 class CreateNodeFloat(BaseFloat):

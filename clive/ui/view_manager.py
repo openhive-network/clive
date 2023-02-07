@@ -12,7 +12,6 @@ from clive.ui.floats import Floats
 from clive.ui.focus import set_focus
 from clive.ui.form_view import FormView
 from clive.ui.menus.full.menu_full import MenuFull
-from clive.ui.menus.menu import Menu
 from clive.ui.menus.menu_empty import MenuEmpty
 from clive.ui.menus.restricted.menu_restricted import MenuRestricted
 from clive.ui.rebuildable import Rebuildable
@@ -22,6 +21,8 @@ from clive.ui.views.registration import Registration
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer
+
+    from clive.ui.menus.menu import Menu
 
 
 class ViewManager(Rebuildable):

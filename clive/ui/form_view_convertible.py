@@ -3,10 +3,9 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
-from clive.ui.views.form import Form
-
 if TYPE_CHECKING:
     from clive.ui.form_view import FormView
+    from clive.ui.views.form import Form
 
 
 class FormViewConvertible(ABC):
