@@ -9,12 +9,12 @@ from clive.ui.containerable import Containerable
 from clive.ui.rebuildable import Rebuildable
 
 if TYPE_CHECKING:
-    from typing import Any  # noqa: F401
+    from typing import Any
 
     from prompt_toolkit.layout import AnyContainer
     from prompt_toolkit.widgets import MenuItem
 
-    from clive.ui.menus.menu_handlers import MenuHandlers  # noqa: F401
+    from clive.ui.menus.menu_handlers import MenuHandlers
 
 
 T = TypeVar("T", bound="MenuHandlers[Any]")

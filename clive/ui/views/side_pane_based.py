@@ -7,10 +7,10 @@ from clive.ui.components.side_panel_splitter import SidePanelSplitter
 from clive.ui.views.button_based import ButtonsBased
 
 if TYPE_CHECKING:
-    from typing import Any  # noqa: F401
+    from typing import Any
 
-    from clive.ui.component import Component  # noqa: F401
-    from clive.ui.components.buttons_menu import ButtonsMenu  # noqa: F401
+    from clive.ui.component import Component
+    from clive.ui.components.buttons_menu import ButtonsMenu
 
 
 M = TypeVar("M", bound="Component[Any]")

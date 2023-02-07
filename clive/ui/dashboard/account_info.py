@@ -11,7 +11,7 @@ from clive.ui.component import Component
 from clive.ui.widgets.progress_bar import ProgressBar
 
 if TYPE_CHECKING:
-    from clive.ui.dashboard.dashboard import Dashboard  # noqa: F401
+    from clive.ui.dashboard.dashboard import Dashboard
 
 
 class AccountInfo(Component["Dashboard"]):

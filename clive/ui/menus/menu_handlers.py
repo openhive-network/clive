@@ -6,7 +6,7 @@ from clive.abstract_class import AbstractClass
 from clive.ui.parented import Parented
 
 if TYPE_CHECKING:
-    from clive.ui.menus.menu import Menu  # noqa: F401
+    from clive.ui.menus.menu import Menu
 
 T = TypeVar("T", bound="Menu[Any]")
 
