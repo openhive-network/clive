@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from clive.ui.components.login_buttons import LoginButtons
 from clive.ui.components.login_form import LoginForm
 from clive.ui.views.button_based import ButtonsBased

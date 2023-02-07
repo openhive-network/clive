@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from clive.ui.get_view_manager import get_view_manager
 from clive.ui.view_switcher import switch_view
 

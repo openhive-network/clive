@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from prompt_toolkit.layout import Dimension, Float, HSplit
 from prompt_toolkit.widgets import Frame
 

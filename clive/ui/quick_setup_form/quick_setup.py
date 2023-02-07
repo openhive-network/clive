@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from clive.exceptions import FormNotFinishedExceptionError
 from clive.storage.mock_database import MockDB
 from clive.ui.manage_keys import ManageKeysView
