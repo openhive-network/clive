@@ -41,7 +41,7 @@ class CreateNodeFloat(BaseFloat):
         try:
             self.__port = int(text)
             assert self.__port > 0 and self.__port < ((2**15) - 1)
-        except Exception:
+        except (AssertionError, ValueError):
             self.__port = None
         return self.__port
 

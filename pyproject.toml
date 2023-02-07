@@ -68,6 +68,7 @@ select = [
     "C",
     "N",
     "SIM",
+    "BLE",
 ]
 ignore = [
     "I", # isort, run separately
