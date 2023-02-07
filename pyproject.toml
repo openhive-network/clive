@@ -62,6 +62,7 @@ select = [
     "I",
     "N",
     "BLE",
+    "C4",
     "SIM",
     "TCH",
 ]
