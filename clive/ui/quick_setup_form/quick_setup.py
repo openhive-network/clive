@@ -1,4 +1,4 @@
-from clive.exceptions import FormNotFinishedException
+from clive.exceptions import FormNotFinishedExceptionError
 from clive.storage.mock_database import MockDB
 from clive.ui.manage_keys import ManageKeysView
 from clive.ui.manage_watched_accounts import ManageWatchedAccountView
@@ -27,7 +27,7 @@ class QuickSetup(Form):
             MockDB.NODE_ADDRESS is not None,
         ]
         if not all(checks):
-            raise FormNotFinishedException(
+            raise FormNotFinishedExceptionError(
                 **dict(zip(["is main account set", "is any private key set", "is any node address set"], checks))
             )
         else:

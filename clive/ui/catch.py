@@ -10,7 +10,7 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.layout import Dimension, Float, HorizontalAlign, HSplit, VerticalAlign, VSplit
 from prompt_toolkit.widgets import Box, Button, Frame, Label
 
-from clive.exceptions import FloatException
+from clive.exceptions import FloatError
 from clive.ui.containerable import Containerable
 from clive.ui.enums import ZIndex
 from clive.ui.focus import set_focus
@@ -66,7 +66,7 @@ def catch(foo: EventT) -> EventT:
     def catch_impl(*args: Any, **kwargs: Any) -> None:
         try:
             return foo(*args, **kwargs)
-        except FloatException as ex:
+        except FloatError as ex:
             ErrorFloat(ex.info())
 
     return catch_impl

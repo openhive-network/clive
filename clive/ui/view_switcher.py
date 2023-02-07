@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from clive.exceptions import ViewDoesNotExist
+from clive.exceptions import ViewDoesNotExistError
 from clive.ui.get_view_manager import get_view_manager
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ def switch_view(view: str | View) -> None:
         try:
             view = views[view]()
         except KeyError:
-            raise ViewDoesNotExist(f"View '{view}' does not exist. Available views: {list(views)}")
+            raise ViewDoesNotExistError(f"View '{view}' does not exist. Available views: {list(views)}")
 
     logger.info(f"Switching view to {view}")
 

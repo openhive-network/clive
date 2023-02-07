@@ -66,6 +66,7 @@ select = [
     "F",
     "W",
     "C",
+    "N",
     "SIM",
 ]
 ignore = [

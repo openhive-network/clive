@@ -2,19 +2,19 @@ from abc import ABC, abstractmethod
 from typing import Dict
 
 
-class CliveException(Exception):
+class CliveError(Exception):
     """Base class for all clive exceptions."""
 
 
-class ViewException(CliveException):
+class ViewError(CliveError):
     """Base class for all view exceptions."""
 
 
-class ViewDoesNotExist(ViewException):
+class ViewDoesNotExistError(ViewError):
     """Raised when a view does not exist."""
 
 
-class FloatException(CliveException, ABC):
+class FloatError(CliveError, ABC):
     def info(self) -> str:
         return self._get_info()
 
@@ -23,7 +23,7 @@ class FloatException(CliveException, ABC):
         """Returns formated informations about exception"""
 
 
-class FormNotFinishedException(FloatException):
+class FormNotFinishedExceptionError(FloatError):
     """Raised when user choose to finish, but form is not finished"""
 
     def __init__(self, **kwargs: bool) -> None:
@@ -39,5 +39,5 @@ class FormNotFinishedException(FloatException):
         )
 
 
-class KeyBindingException(CliveException):
+class KeyBindingError(CliveError):
     """Base class for all key binding exceptions."""

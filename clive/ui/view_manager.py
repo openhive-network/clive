@@ -7,7 +7,7 @@ from prompt_toolkit.layout import FloatContainer, to_container
 from prompt_toolkit.widgets import Label
 
 from clive.app_status import app_status
-from clive.exceptions import ViewException
+from clive.exceptions import ViewError
 from clive.ui.floats import Floats
 from clive.ui.focus import set_focus
 from clive.ui.form_view import FormView
@@ -51,7 +51,7 @@ class ViewManager(Rebuildable):
     @property
     def active_view(self) -> View | FormView:
         if self.__active_view is None:
-            raise ViewException("No view was selected.")
+            raise ViewError("No view was selected.")
 
         return self.__active_view
 
@@ -82,7 +82,7 @@ class ViewManager(Rebuildable):
     def __assert_if_proper_settable_type(value: Any) -> NoReturn | None:
         settable = (View, FormView)
         if not isinstance(value, settable):
-            raise ViewException(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
+            raise ViewError(f"Could not set view to `{value}`. It must be an instance of {list(settable)}.")
         return None
 
     def __set_menu(self, value: View | FormView) -> None:
