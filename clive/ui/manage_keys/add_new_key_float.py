@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Callable
-
-from prompt_toolkit.widgets import TextArea
+from typing import TYPE_CHECKING, Callable
 
 from clive.storage.mock_database import PrivateKey
 from clive.ui.base_float import BaseFloat
+
+if TYPE_CHECKING:
+    from prompt_toolkit.widgets import TextArea
 
 
 class CreatePrivateKeyFloat(BaseFloat):

@@ -1,10 +1,14 @@
 from __future__ import annotations
 
-from prompt_toolkit.layout import AnyContainer
+from typing import TYPE_CHECKING
+
 from prompt_toolkit.widgets import MenuItem
 
 from clive.ui.menus.menu import Menu
 from clive.ui.menus.restricted.menu_restricted_handlers import MenuRestrictedHandlers
+
+if TYPE_CHECKING:
+    from prompt_toolkit.layout import AnyContainer
 
 
 class MenuRestricted(Menu[MenuRestrictedHandlers]):

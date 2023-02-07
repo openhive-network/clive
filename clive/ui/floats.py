@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from prompt_toolkit.layout import Float
-
 from clive.ui.focus import set_focus
 from clive.ui.get_view_manager import get_view_manager
 from clive.ui.internal_cli.prompt_float import PromptFloat
 from clive.ui.parented import Parented
 
 if TYPE_CHECKING:
+    from prompt_toolkit.layout import Float
+
     from clive.ui.base_float import BaseFloat
     from clive.ui.catch import ErrorFloat
     from clive.ui.view_manager import ViewManager

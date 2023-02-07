@@ -7,19 +7,20 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
 from clive.storage.mock_database import MockDB, NodeAddress
-from clive.ui.component import T
 from clive.ui.components.buttons_menu import ButtonsMenu
 from clive.ui.components.radiolist_with_model import RadioListWithModel
 from clive.ui.form_view_convertible import FormViewConvertible
 from clive.ui.quick_form_view import QuickFormView
 from clive.ui.set_node_address.add_new_node_float import CreateNodeFloat
 from clive.ui.views.button_based import ButtonsBased
-from clive.ui.views.form import Form
 
 if TYPE_CHECKING:
+    from clive.ui.component import T
     from clive.ui.form_view import FormView
+    from clive.ui.views.form import Form
 
-ViewFormT = Union["SetNodeAddressView", Form]
+
+ViewFormT = Union["SetNodeAddressView", "Form"]
 K = TypeVar("K", bound="SetNodeAddressView | Form")
 
 

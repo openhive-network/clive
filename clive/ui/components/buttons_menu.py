@@ -4,12 +4,12 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, List, TypeVar
 
 from prompt_toolkit.layout import HorizontalAlign, VSplit
-from prompt_toolkit.widgets import Button
 
 from clive.ui.component import Component
 
 if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyBindings
+    from prompt_toolkit.widgets import Button
 
 T = TypeVar("T", bound=Component[Any])
 

@@ -7,19 +7,20 @@ from prompt_toolkit.keys import Keys
 from prompt_toolkit.widgets import Button
 
 from clive.storage.mock_database import MockDB, PrivateKey
-from clive.ui.component import T
 from clive.ui.components.buttons_menu import ButtonsMenu
 from clive.ui.components.radiolist_with_model import RadioListWithModel
 from clive.ui.form_view_convertible import FormViewConvertible
 from clive.ui.manage_keys.add_new_key_float import CreatePrivateKeyFloat
 from clive.ui.quick_form_view import QuickFormView
 from clive.ui.views.button_based import ButtonsBased
-from clive.ui.views.form import Form
 
 if TYPE_CHECKING:
+    from clive.ui.component import T
     from clive.ui.form_view import FormView
+    from clive.ui.views.form import Form
 
-ViewFormT = Union["ManageKeysView", Form]
+
+ViewFormT = Union["ManageKeysView", "Form"]
 K = TypeVar("K", bound="ManageKeysView | Form")
 
 
