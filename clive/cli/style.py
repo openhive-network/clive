@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import rich
 import typer
 from prompt_toolkit.styles import parse_color

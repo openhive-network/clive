@@ -70,3 +70,4 @@ ignore = [
 
 [tool.ruff.isort]
 known-first-party = ["clive"]
+required-imports = ["from __future__ import annotations"]
