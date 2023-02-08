@@ -8,3 +8,4 @@ class AppMode(Enum):
 
     INACTIVE = auto()
     ACTIVE = auto()
+    ANY = auto()
