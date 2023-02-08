@@ -17,7 +17,24 @@ if TYPE_CHECKING:
 class TransferToAccountPanel(Component["TransferToAccountView"]):
     def __init__(self, parent: TransferToAccountView):
         self.__asset = parent.asset
+
+        self.__to_input = TextArea(focus_on_click=True, style="class:tertiary underline")
+        self.__amount_input = TextArea(focus_on_click=True, style="class:tertiary underline")
+        self.__memo_input = TextArea(focus_on_click=True, style="class:tertiary underline")
+
         super().__init__(parent)
+
+    @property
+    def to(self) -> str:
+        return self.__to_input.text
+
+    @property
+    def amount(self) -> str:
+        return self.__amount_input.text
+
+    @property
+    def memo(self) -> str:
+        return self.__memo_input.text
 
     def _create_container(self) -> AnyContainer:
         return HSplit(
@@ -60,11 +77,11 @@ class TransferToAccountPanel(Component["TransferToAccountView"]):
                         [
                             Label(app_status.current_profile),
                             HorizontalSpace(),
-                            TextArea(focus_on_click=True, style="class:tertiary underline"),
+                            self.__to_input,
                             HorizontalSpace(),
-                            TextArea(focus_on_click=True, style="class:tertiary underline"),
+                            self.__amount_input,
                             HorizontalSpace(),
-                            TextArea(focus_on_click=True, style="class:tertiary underline"),
+                            self.__memo_input,
                         ]
                     ),
                 ]
