@@ -23,7 +23,7 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
         self._parent.key_bindings.append(self._key_bindings)
 
     def __f1_action(self, _: KeyPressEvent | None = None) -> None:
-        app_status.deactivate() if app_status.active_mode else app_status.activate()
+        app_status.deactivate() if app_status.is_active() else app_status.activate()
         self._rebuild()
 
     def __f2_action(self, _: KeyPressEvent | None = None) -> None:
@@ -50,4 +50,4 @@ class ButtonsMenuFirst(ButtonsMenu["Dashboard"]):
 
     @staticmethod
     def __switch_mode_text() -> str:
-        return "Deactivate" if app_status.active_mode else "Activate"
+        return "Deactivate" if app_status.is_active() else "Activate"

@@ -89,8 +89,8 @@ class ViewManager(Rebuildable):
     def __set_menu(self, value: View | FormView) -> None:
         menus: dict[type, Callable[[], bool]] = {
             MenuEmpty: lambda: isinstance(value, (Login, Registration)),
-            MenuRestricted: lambda: not app_status.active_mode,
-            MenuFull: lambda: app_status.active_mode,
+            MenuRestricted: lambda: app_status.is_inactive(),
+            MenuFull: lambda: app_status.is_active(),
         }
 
         for menu, predicate in menus.items():
