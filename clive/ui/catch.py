@@ -70,5 +70,7 @@ def catch(foo: EventT) -> EventT:
             return foo(*args, **kwargs)
         except FloatError as ex:
             ErrorFloat(ex.info())
+        except Exception as exception:  # noqa: BLE001
+            ErrorFloat(f"Something went wrong. Please try again.\n({exception})")
 
     return catch_impl
