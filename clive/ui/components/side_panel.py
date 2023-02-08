@@ -38,7 +38,7 @@ class SidePanel(Component[T]):
         return VSplit(
             [
                 Label("MODE:", style="bold"),
-                Label(lambda: HTML("<red>ACTIVE</red>") if app_status.active_mode else HTML("<blue>INACTIVE</blue>")),
+                Label(lambda: HTML("<red>ACTIVE</red>") if app_status.is_active() else HTML("<blue>INACTIVE</blue>")),
             ]
         )
 
