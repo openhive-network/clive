@@ -1,12 +1,13 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Sequence, TypeVar
 
 from prompt_toolkit.layout import HSplit, VSplit, WindowAlign
 from prompt_toolkit.widgets import Frame, Label
 
 from clive.abstract_class import AbstractClass
+from clive.enums import AppMode
 from clive.ui.view import View
 
 if TYPE_CHECKING:
@@ -21,10 +22,10 @@ B = TypeVar("B", bound="ButtonsMenu[Any]")
 
 
 class ButtonsBased(View, Generic[M, B], AbstractClass):
-    def __init__(self, main_panel: M, buttons: B) -> None:
+    def __init__(self, main_panel: M, buttons: B, *, available_in_modes: Sequence[AppMode] = (AppMode.ANY,)) -> None:
         self.__main_panel = main_panel
         self.__buttons = buttons
-        super().__init__()
+        super().__init__(available_in_modes=available_in_modes)
 
     def _create_container(self) -> HSplit:
         return HSplit(
