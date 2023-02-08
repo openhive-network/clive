@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from clive.enums import AppMode
 from clive.ui.components.side_panel import SidePanel
 from clive.ui.transfer_to_account.transfer_to_account_buttons import TransferToAccountButtons
 from clive.ui.transfer_to_account.transfer_to_account_panel import TransferToAccountPanel
@@ -13,7 +14,12 @@ Buttons = TransferToAccountButtons
 class TransferToAccountView(SidePanelBased[Main, Side, Buttons]):
     def __init__(self, asset: str) -> None:
         self.__asset = asset
-        super().__init__(TransferToAccountPanel(self), SidePanel(self), TransferToAccountButtons(self))
+        super().__init__(
+            TransferToAccountPanel(self),
+            SidePanel(self),
+            TransferToAccountButtons(self),
+            available_in_modes=(AppMode.ACTIVE,),
+        )
 
     @property
     def asset(self) -> str:
