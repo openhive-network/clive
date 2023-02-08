@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, Sequence, TypeVar
 
 from clive.abstract_class import AbstractClass
+from clive.enums import AppMode
 from clive.ui.components.side_panel_splitter import SidePanelSplitter
 from clive.ui.views.button_based import ButtonsBased
 
@@ -21,9 +22,11 @@ B = TypeVar("B", bound="ButtonsMenu[Any]")
 class SidePanelBased(
     ButtonsBased["SidePanelSplitter[M,S]", "ButtonsMenu[SidePanelBased[M, S, B]]"], Generic[M, S, B], AbstractClass
 ):
-    def __init__(self, main_panel: M, side_panel: S, buttons: B) -> None:
+    def __init__(
+        self, main_panel: M, side_panel: S, buttons: B, *, available_in_modes: Sequence[AppMode] = (AppMode.ANY,)
+    ) -> None:
         self.__splitter = SidePanelSplitter(self, main_panel, side_panel)
-        super().__init__(self.__splitter, buttons)
+        super().__init__(self.__splitter, buttons, available_in_modes=available_in_modes)
 
     @property  # type: ignore
     def main_panel(self) -> M:
