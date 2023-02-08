@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from loguru import logger
 
@@ -18,9 +18,11 @@ T = TypeVar("T", bound=Rebuildable)
 class Component(Parented[T], Containerable["AnyContainer"], Rebuildable, ABC):
     """A component is a part of an application that can be displayed on the screen in another component or view."""
 
-    def __init__(self, parent: T) -> None:
-        super().__init__(parent)
+    def __init__(self, parent: T, *args: Any, **kwargs: Any) -> None:
         self._container = self._create_container()
+
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(parent, *args, **kwargs)
 
     def __str__(self) -> str:
         return f"{self.__class__.__name__}()"
