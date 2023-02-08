@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 if TYPE_CHECKING:
     from prompt_toolkit.layout import AnyContainer, Float
@@ -16,8 +16,11 @@ class Containerable(Generic[T], ABC):
     from `prompt_toolkit` library.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._container = self._create_container()
+
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(*args, **kwargs)
 
     @abstractmethod
     def _create_container(self) -> T:
