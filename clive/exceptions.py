@@ -25,7 +25,7 @@ class FloatError(CliveError, ABC):
         """Returns formated informations about exception"""
 
 
-class FormNotFinishedExceptionError(FloatError):
+class FormNotFinishedError(FloatError):
     """Raised when user choose to finish, but form is not finished"""
 
     def __init__(self, **kwargs: bool) -> None:
