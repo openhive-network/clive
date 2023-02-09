@@ -53,7 +53,7 @@ class TransferToAccountButtons(ButtonsMenu["TransferToAccountView"]):
             amount=self._parent.main_panel.amount,
             memo=self._parent.main_panel.memo,
         )
-        switch_view(OperationSummaryView(operation))
+        switch_view(OperationSummaryView(operation=operation, previous=self._parent))
 
     @staticmethod
     def __f2_action(_: KeyPressEvent | None = None) -> None:
