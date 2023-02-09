@@ -8,7 +8,7 @@
 
 1. [Introduction](#introduction)
 2. [Requirements](#requirements)
-3. [Installation in development mode](#installation)
+3. [Installation in development mode](#installation-in-development-mode)
 4. [Running](#running)
 5. [Running via Docker](#running-via-docker)
 
