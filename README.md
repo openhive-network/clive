@@ -19,7 +19,7 @@ the [Hive](https://gitlab.syncad.com/hive/hive) blockchain. Inspired by midnight
 
 # Requirements
 
-- python3.8
+- python3.10
 - poetry (for development)
 
 # Installation in development mode
@@ -38,7 +38,7 @@ to install it via poetry as it includes dependencies used during development.
 
     ```bash
     cd clive/                # Go to repository root directory
-    python3.8 -m venv venv/  # Create virtual environment in the venv/ directory
+    python3.10 -m venv venv/  # Create virtual environment in the venv/ directory
     . venv/bin/activate      # Activate the virtual environment
     ```
 
