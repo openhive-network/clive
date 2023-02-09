@@ -27,7 +27,9 @@ python = "^3.10"
 dynaconf = "^3.1.11"
 loguru = "0.6.0"
 textual = "0.7.0"
-typer = {extras = ["all"], version = "0.7.0"}
+
+# TODO: Specify exact version of typer instead the git revision when typer will allow for rich 13.x.x (https://github.com/tiangolo/typer/pull/524)
+typer = { extras = ["all"], git = "https://github.com/musicinmybrain/typer.git", rev = "5bf232" }
 
 
 [tool.poetry.group.dev.dependencies]
