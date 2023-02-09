@@ -14,10 +14,12 @@ if TYPE_CHECKING:
     from prompt_toolkit.key_binding import KeyPressEvent
 
     from clive.ui.operation_summary.operation_summary_view import OperationSummaryView
+    from clive.ui.view import View
 
 
 class OperationSummaryButtons(ButtonsMenu["OperationSummaryView"]):
-    def __init__(self, parent: OperationSummaryView) -> None:
+    def __init__(self, parent: OperationSummaryView, previous: View) -> None:
+        self.__previous = previous
         super().__init__(parent)
 
     def _create_buttons(self) -> list[Button]:  # type: ignore
@@ -25,7 +27,8 @@ class OperationSummaryButtons(ButtonsMenu["OperationSummaryView"]):
             Button("F1 Send", handler=self.__f1_action),
             Button("F2 Preview", handler=self.__f2_action),
             Button("F3 Save", handler=self.__f3_action),
-            Button("F4 Cancel", handler=self.__f4_action),
+            Button("F4 Previous", handler=self.__f4_action),
+            Button("F5 Cancel", handler=self.__f5_action),
         ]
 
     def _get_key_bindings(self) -> KeyBindings:
@@ -48,6 +51,9 @@ class OperationSummaryButtons(ButtonsMenu["OperationSummaryView"]):
     def __f3_action(_: KeyPressEvent | None = None) -> None:
         logger.info("Should save the operation")
 
+    def __f4_action(self, _: KeyPressEvent | None = None) -> None:
+        switch_view(self.__previous)
+
     @staticmethod
-    def __f4_action(_: KeyPressEvent | None = None) -> None:
+    def __f5_action(_: KeyPressEvent | None = None) -> None:
         switch_view("dashboard")

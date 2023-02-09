@@ -9,6 +9,7 @@ from clive.ui.views.side_pane_based import SidePanelBased
 
 if TYPE_CHECKING:
     from clive.models.operation import Operation
+    from clive.ui.view import View
 
 Main = OperationSummaryPanel
 Side = SidePanel["OperationSummaryView"]
@@ -16,5 +17,7 @@ Buttons = OperationSummaryButtons
 
 
 class OperationSummaryView(SidePanelBased[Main, Side, Buttons]):
-    def __init__(self, operation: Operation):
-        super().__init__(OperationSummaryPanel(self, operation), SidePanel(self), OperationSummaryButtons(self))
+    def __init__(self, *, operation: Operation, previous: View):
+        super().__init__(
+            OperationSummaryPanel(self, operation), SidePanel(self), OperationSummaryButtons(self, previous)
+        )
