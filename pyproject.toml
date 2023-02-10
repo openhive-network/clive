@@ -46,6 +46,7 @@ textual = { extras = ["dev"], version = "0.7.0" }
 
 [tool.poetry.scripts]
 clive = "clive.main:main"
+clive-dev = "clive.dev:main"
 
 
 [tool.black]
