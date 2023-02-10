@@ -1,11 +1,10 @@
 [build-system]
-requires = ["poetry-core>=1.1.0"]
-build-backend = "poetry.core.masonry.api"
-
+requires = ["poetry-core>=1.1.0", "poetry-dynamic-versioning"]
+build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry]
 name = "clive"
-version = "0.0.0"
+version = "0.0.0.post340.dev0+5eac5de"
 description = "CLI application for interacting with the Hive blockchain."
 readme = "README.md"
 repository = "https://gitlab.syncad.com/hive/clive"
@@ -24,6 +23,7 @@ include = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
+dunamai = "1.15.0"
 dynaconf = "3.1.11"
 loguru = "0.6.0"
 textual = "0.7.0"
@@ -44,6 +44,15 @@ types-pyyaml = "6.0.12.4"
 
 [tool.poetry.scripts]
 clive = "clive.main:main"
+
+
+[tool.poetry-dynamic-versioning]
+# should stick with the dunamai default version scheme
+enable = true
+
+[tool.poetry-dynamic-versioning.substitution]
+files = ["clive/_version.py"]
+patterns = ["(^__dynamic_versioning__\\s*(?::.*?)?=\\s*['\"])[^'\"]*(['\"])"]
 
 
 [tool.black]
