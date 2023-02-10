@@ -18,7 +18,7 @@ class Clive(App[int]):
 
     async def action_quit(self) -> None:
         self.log.debug("ctrl+c pressed, quitting...")
-        self.exit(0)
+        self.exit(0, "CLIVE says goodbye!")
 
 
 clive = Clive()
