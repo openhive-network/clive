@@ -5,6 +5,7 @@ from typing import Final
 import typer
 
 from clive.run_tui import run_tui
+from clive.version import VERSION
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
