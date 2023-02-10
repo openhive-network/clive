@@ -21,4 +21,4 @@ class Clive(App[int]):
         self.exit(0, "CLIVE says goodbye!")
 
 
-clive = Clive()
+clive_app = Clive()
