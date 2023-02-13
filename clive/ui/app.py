@@ -4,6 +4,7 @@ from pathlib import Path
 
 from textual.app import App
 from textual.binding import Binding
+from textual.reactive import reactive
 
 from clive.ui.dashboard.dashboard import Dashboard
 from clive.ui.quit.quit import Quit
@@ -27,6 +28,9 @@ class Clive(App[int]):
         "quit": Quit,
         "dashboard": Dashboard,
     }
+
+    header_expanded = reactive(False)
+    """Synchronize the expanded header state in all created header objects."""
 
     def on_mount(self) -> None:
         self.push_screen("dashboard")

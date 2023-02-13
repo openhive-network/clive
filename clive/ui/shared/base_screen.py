@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING
 
 from textual.message_pump import MessagePumpMeta
 from textual.screen import Screen
-from textual.widgets import Footer, Header
+from textual.widgets import Footer
+
+from clive.ui.widgets.header import Header
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

@@ -1,0 +1,29 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from textual.reactive import watch
+from textual.widgets import Header as TextualHeader
+
+if TYPE_CHECKING:
+    from textual import events
+    from textual.app import ComposeResult
+
+    from clive.ui.app import Clive
+
+
+class Header(TextualHeader):
+    def on_mount(self) -> None:
+        watch(self.app, "header_expanded", self.on_header_expanded)
+
+    def compose(self) -> ComposeResult:
+        yield from super().compose()  # type: ignore
+
+    def on_click(self, event: events.Click) -> None:  # type: ignore
+        event.prevent_default()
+
+        self.app: Clive
+        self.app.header_expanded = not self.app.header_expanded
+
+    def on_header_expanded(self, expanded: bool) -> None:
+        self.add_class("-tall") if expanded else self.remove_class("-tall")
