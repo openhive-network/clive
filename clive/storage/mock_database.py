@@ -6,7 +6,8 @@ from datetime import datetime
 from enum import IntEnum
 from typing import List, Optional
 
-from clive.get_clive import get_clive
+from textual.reactive import var
+from textual.widget import Widget
 
 
 class AccountType(IntEnum):
@@ -61,9 +62,6 @@ class DataFromNodeT:
     last_refresh: datetime = datetime.now()
 
     def recalc(self) -> None:
-        if (datetime.now() - self.last_refresh).seconds < get_clive().REFRESH_INTERVAL:
-            return
-
         self.last_refresh: datetime = datetime.now()
 
         for key, value in self.__dict__.items():
@@ -73,14 +71,17 @@ class DataFromNodeT:
                 setattr(self, key, random.randint(0, 100))
 
 
-class MockDB:
+class MockDB(Widget):
     MAIN_ACTIVE_ACCOUNT: ActiveAccount = ActiveAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
     ACCOUNTS: List[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
-    NODE_ADDRESS: Optional[NodeAddress] = NodeAddress("https", "api.hive.blog")
+    node_address = var(NodeAddress("https", "api.hive.blog"))
     BACKUP_NODE_ADDRESSES: List[NodeAddress] = [
         NodeAddress("http", "localhost", 8090),
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
     node = DataFromNodeT()
+
+
+mock_db = MockDB()
