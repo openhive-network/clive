@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from textual.app import App, ComposeResult
+from textual.app import App
 from textual.binding import Binding
-from textual.widgets import Footer, Header
 
+from clive.ui.dashboard.dashboard import Dashboard
 from clive.version import VERSION_INFO
 
 
@@ -16,9 +16,12 @@ class Clive(App[int]):
         Binding("ctrl+c", "quit", "Quit"),
     ]
 
-    def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
-        yield Footer()
+    SCREENS = {
+        "dashboard": Dashboard,
+    }
+
+    def on_mount(self) -> None:
+        self.push_screen("dashboard")
 
     async def action_quit(self) -> None:
         self.log.debug("ctrl+c pressed, quitting...")
