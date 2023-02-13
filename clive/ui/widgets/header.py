@@ -15,6 +15,9 @@ if TYPE_CHECKING:
 
 
 class HeaderIcon(TextualHeaderIcon):
+    def __init__(self) -> None:
+        super().__init__(id="icon")
+
     def on_mount(self) -> None:
         watch(self.app, "header_expanded", self.on_header_expanded)
 
