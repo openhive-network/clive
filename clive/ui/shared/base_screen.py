@@ -24,7 +24,7 @@ class MessagePumpMetaABC(MessagePumpMeta, ABCMeta):
 
 class BaseScreen(Screen, metaclass=MessagePumpMetaABC):
     def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
+        yield Header()
         yield from self.create_main_panel()
         yield Footer()
 

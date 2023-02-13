@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.reactive import watch
 from textual.widgets import Header as TextualHeader
-from textual.widgets._header import HeaderClock, HeaderClockSpace, HeaderTitle
+from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
 if TYPE_CHECKING:
@@ -23,13 +23,16 @@ class HeaderIcon(TextualHeaderIcon):
 
 
 class Header(TextualHeader):
+    def __init__(self) -> None:
+        super().__init__()
+
     def on_mount(self) -> None:
         watch(self.app, "header_expanded", self.on_header_expanded)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         yield HeaderTitle()
-        yield HeaderClock() if self.show_clock else HeaderClockSpace()
+        yield HeaderClock()
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()
