@@ -4,9 +4,13 @@ from textual.app import App, ComposeResult
 from textual.binding import Binding
 from textual.widgets import Footer, Header
 
+from clive.version import VERSION_INFO
+
 
 class Clive(App[int]):
     """A singleton instance of the Clive app."""
+
+    SUB_TITLE = VERSION_INFO
 
     BINDINGS = [
         Binding("ctrl+c", "quit", "Quit"),

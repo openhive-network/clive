@@ -5,7 +5,7 @@ from typing import Final, Optional
 import typer
 
 from clive.run_tui import run_tui
-from clive.version import VERSION
+from clive.version import VERSION_INFO
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
@@ -25,7 +25,7 @@ def _main(
     ),
 ) -> None:
     if version:
-        typer.echo(f"CLIVE Version: {VERSION.base} ({VERSION.commit}) {'dirty!' if VERSION.dirty else ''}")
+        typer.echo(f"CLIVE Version: {VERSION_INFO}")
         raise typer.Exit()
 
 
