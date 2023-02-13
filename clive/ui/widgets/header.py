@@ -7,6 +7,8 @@ from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
+from clive.ui.widgets.titled import Titled
+
 if TYPE_CHECKING:
     from textual import events
     from textual.app import ComposeResult
@@ -36,6 +38,7 @@ class Header(TextualHeader):
         yield HeaderIcon()
         yield HeaderTitle()
         yield HeaderClock()
+        yield Titled("node", "https://hive.blog")
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()

@@ -3,3 +3,8 @@ Header #icon {
   content-align: center middle;
   width: auto;
 }
+
+Header HeaderTitle {
+  background: $foreground -5%;
+  height: 1;
+}
