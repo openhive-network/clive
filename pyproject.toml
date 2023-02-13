@@ -27,7 +27,7 @@ python = "^3.10"
 dunamai = "1.15.0"
 dynaconf = "3.1.11"
 loguru = "0.6.0"
-textual = "0.7.0"
+textual = "0.10.1"
 
 # TODO: Specify exact version of typer instead the git revision when typer will allow for rich 13.x.x (https://github.com/tiangolo/typer/pull/524)
 typer = { extras = ["all"], git = "https://github.com/musicinmybrain/typer.git", rev = "5bf232" }
@@ -41,7 +41,7 @@ pytest = "7.2.0"
 pytest-xdist = "3.1.0"
 ruff = "0.0.243"
 types-pyyaml = "6.0.12.4"
-textual = { extras = ["dev"], version = "0.7.0" }
+textual = { extras = ["dev"], version = "0.10.1" }
 
 
 [tool.poetry.scripts]
