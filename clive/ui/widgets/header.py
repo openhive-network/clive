@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from textual.reactive import watch
 from textual.widgets import Header as TextualHeader
+from textual.widgets._header import HeaderClock, HeaderClockSpace, HeaderTitle
+from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
 if TYPE_CHECKING:
     from textual import events
@@ -12,12 +14,22 @@ if TYPE_CHECKING:
     from clive.ui.app import Clive
 
 
+class HeaderIcon(TextualHeaderIcon):
+    def on_mount(self) -> None:
+        watch(self.app, "header_expanded", self.on_header_expanded)
+
+    def on_header_expanded(self, expanded: bool) -> None:
+        self.icon = "-" if expanded else "+"
+
+
 class Header(TextualHeader):
     def on_mount(self) -> None:
         watch(self.app, "header_expanded", self.on_header_expanded)
 
     def compose(self) -> ComposeResult:
-        yield from super().compose()  # type: ignore
+        yield HeaderIcon()
+        yield HeaderTitle()
+        yield HeaderClock() if self.show_clock else HeaderClockSpace()
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()
