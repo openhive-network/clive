@@ -1,0 +1,29 @@
+Quit #dialog {
+  background: $panel;
+  border: tall $background;
+  color: $text;
+  height: 100%;
+  margin: 4 8;
+  padding: 1 2;
+  align: center middle;
+}
+
+Quit #hint {
+  color: $text-muted;
+}
+
+Quit #question, Quit #hint {
+  content-align: center middle;
+}
+
+Quit Button {
+  width: 1fr;
+}
+
+Quit #buttons {
+  height: auto;
+}
+
+Quit #quit {
+  margin-right: 1;
+}
