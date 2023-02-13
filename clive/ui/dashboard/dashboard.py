@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.screen import Screen
-from textual.widgets import Footer, Header, Placeholder
+from textual.widgets import Placeholder
+
+from clive.ui.shared.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Dashboard(Screen):
-    def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
+class Dashboard(BaseScreen):
+    def create_main_panel(self) -> ComposeResult:
         yield Placeholder("Dashboard content goes here")
-        yield Footer()

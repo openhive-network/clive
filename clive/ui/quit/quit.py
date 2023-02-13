@@ -4,14 +4,15 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
-from textual.screen import Screen
-from textual.widgets import Button, Footer, Header, Static
+from textual.widgets import Button, Static
+
+from clive.ui.shared.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Quit(Screen):
+class Quit(BaseScreen):
     BINDINGS = [
         Binding("ctrl+c", "exit_cleanly", "Quit"),
         Binding("escape", "pop_screen", "Cancel"),
@@ -20,8 +21,7 @@ class Quit(Screen):
     def on_mount(self) -> None:
         self.query(Button).first().focus()
 
-    def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
+    def create_main_panel(self) -> ComposeResult:
         yield Container(
             Static("Are you sure you want to quit?", id="question"),
             Static("(You can also confirm by pressing Ctrl+C again)", id="hint"),
@@ -32,7 +32,6 @@ class Quit(Screen):
             ),
             id="dialog",
         )
-        yield Footer()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":
