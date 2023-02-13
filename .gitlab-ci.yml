@@ -19,9 +19,9 @@ variables:
 
 .configuration:
   before_script:
-    - python3.8 -V
+    - python3 -V
     - poetry self update
-    - python3.8 -m venv venv/
+    - python3 -m venv venv/
     - source venv/bin/activate
     - poetry install
     - pip list
