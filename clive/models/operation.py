@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-
-import yaml
+import dataclasses
+import json
 
 from clive.abstract_class import AbstractClass
 
 
-@dataclass
+@dataclasses.dataclass
 class Operation(AbstractClass):
     type_: str
 
-    def as_yaml(self) -> str:
-        return str(yaml.dump(self.__dict__))
+    def as_json(self) -> str:
+        return json.dumps(dataclasses.asdict(self), indent=4)

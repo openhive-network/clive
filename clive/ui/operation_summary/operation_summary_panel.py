@@ -53,7 +53,7 @@ class OperationSummaryPanel(Component["OperationSummaryView"]):
                 [
                     Label(f"Operation: {self.__operation.type_}"),
                     Box(
-                        TextArea(text=self.__operation.as_yaml(), focusable=False, style="class:primary"),
+                        TextArea(text=self.__operation.as_json(), focusable=False, style="class:primary"),
                         padding=0,
                         padding_left=1,
                     ),
