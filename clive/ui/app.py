@@ -22,6 +22,7 @@ class Clive(App[int]):
     CSS_PATH = [
         Path(__file__).parent / "quit/quit.scss",
         Path(__file__).parent / "widgets/header.scss",
+        Path(__file__).parent / "widgets/titled_label.scss",
     ]
 
     BINDINGS = [

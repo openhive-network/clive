@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Titled(Widget):
+class TitledLabel(Widget):
     def __init__(self, title: RenderableType, value: RenderableType) -> None:
         super().__init__()
         self.title = title
