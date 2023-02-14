@@ -13,9 +13,9 @@ if TYPE_CHECKING:
 class TitledLabel(Widget):
     def __init__(self, title: RenderableType, value: RenderableType) -> None:
         super().__init__()
-        self.title = title
-        self.value = value
+        self.__title = title
+        self.__value = value
 
     def compose(self) -> ComposeResult:
-        yield Label(f"{self.title}:", id="title")
-        yield Label(f" {self.value}", id="value")
+        yield Label(f"{self.__title}:", id="title")
+        yield Label(f" {self.__value}", id="value")
