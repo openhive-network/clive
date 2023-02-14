@@ -5,6 +5,6 @@ WORKDIR /clive
 
 RUN poetry self update
 
-RUN poetry install --no-dev
+RUN poetry install --only main
 
 ENTRYPOINT ["poetry", "run", "clive"]
