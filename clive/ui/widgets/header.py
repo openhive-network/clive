@@ -7,6 +7,7 @@ from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
+from clive.storage.mock_database import mock_db
 from clive.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
@@ -38,7 +39,7 @@ class Header(TextualHeader):
         yield HeaderIcon()
         yield HeaderTitle()
         yield HeaderClock()
-        yield TitledLabel("node", "https://hive.blog")
+        yield TitledLabel("node address", obj_to_watch=mock_db, attribute_name="node_address")
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()
