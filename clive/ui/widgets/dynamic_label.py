@@ -12,8 +12,10 @@ if TYPE_CHECKING:
 class DynamicLabel(Label):
     """A label that can be updated dynamically when a reactive variable changes."""
 
-    def __init__(self, obj_to_watch: Reactable, attribute_name: str, *, prefix: str = "") -> None:
-        super().__init__("DynamicLabel was not updated!")
+    def __init__(
+        self, obj_to_watch: Reactable, attribute_name: str, *, prefix: str = "", id_: str | None = None
+    ) -> None:
+        super().__init__("DynamicLabel was not updated!", id=id_)
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__prefix = prefix
