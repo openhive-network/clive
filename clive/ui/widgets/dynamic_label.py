@@ -20,7 +20,7 @@ class DynamicLabel(Label):
         self.__prefix = prefix
 
     def on_mount(self) -> None:
-        self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed)
+        self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed)  # type: ignore # https://github.com/Textualize/textual/issues/1805
 
     def on_attribute_changed(self, value: Any) -> None:
         self.update(f"{self.__prefix}{value}")
