@@ -27,8 +27,9 @@ class TitledLabel(Widget):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
+        id_: str | None = None,
     ) -> None:
-        super().__init__()
+        super().__init__(id=id_)
         self.__title = title
         self.__value = value
 

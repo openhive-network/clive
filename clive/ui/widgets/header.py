@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.containers import Horizontal
 from textual.reactive import watch
 from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderClock, HeaderTitle
@@ -37,7 +38,11 @@ class Header(TextualHeader):
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
-        yield HeaderTitle()
+        yield Horizontal(
+            TitledLabel("Profile", "Account", id_="profile-label"),
+            HeaderTitle(),
+            TitledLabel("Mode", "ACTIVE", id_="mode-label"),
+        )
         yield HeaderClock()
         yield TitledLabel("node address", obj_to_watch=mock_db, attribute_name="node_address")
 
