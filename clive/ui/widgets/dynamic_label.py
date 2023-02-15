@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from textual.reactive import watch
 from textual.widgets import Label
 
 if TYPE_CHECKING:
@@ -21,7 +20,7 @@ class DynamicLabel(Label):
         self.__prefix = prefix
 
     def on_mount(self) -> None:
-        watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed)
+        self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed)
 
     def on_attribute_changed(self, value: Any) -> None:
         self.update(f"{self.__prefix}{value}")

@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
-from textual.reactive import watch
 from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
@@ -23,7 +22,7 @@ class HeaderIcon(TextualHeaderIcon):
         super().__init__(id="icon")
 
     def on_mount(self) -> None:
-        watch(self.app, "header_expanded", self.on_header_expanded)
+        self.watch(self.app, "header_expanded", self.on_header_expanded)
 
     def on_header_expanded(self, expanded: bool) -> None:
         self.icon = "-" if expanded else "+"
@@ -34,7 +33,7 @@ class Header(TextualHeader):
         super().__init__()
 
     def on_mount(self) -> None:
-        watch(self.app, "header_expanded", self.on_header_expanded)
+        self.watch(self.app, "header_expanded", self.on_header_expanded)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
