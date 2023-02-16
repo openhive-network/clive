@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.widget import Widget
 from textual.widgets import Label
 
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from textual.reactive import Reactable
 
 
-class TitledLabel(Widget):
+class TitledLabel(CliveWidget):
     """
     A label with a title and a value.
     The value can be updated dynamically if :obj_to_watch: and :attribute_name: is given.

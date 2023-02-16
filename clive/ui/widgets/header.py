@@ -8,13 +8,12 @@ from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
 from clive.storage.mock_database import mock_db
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
     from textual import events
     from textual.app import ComposeResult
-
-    from clive.ui.app import Clive
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -28,7 +27,7 @@ class HeaderIcon(TextualHeaderIcon):
         self.icon = "-" if expanded else "+"
 
 
-class Header(TextualHeader):
+class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
 
@@ -47,8 +46,6 @@ class Header(TextualHeader):
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()
-
-        self.app: Clive
         self.app.header_expanded = not self.app.header_expanded
 
     def on_header_expanded(self, expanded: bool) -> None:

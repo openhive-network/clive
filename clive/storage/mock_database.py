@@ -7,7 +7,8 @@ from enum import IntEnum
 from typing import List, Optional
 
 from textual.reactive import var
-from textual.widget import Widget
+
+from clive.ui.widgets.clive_widget import CliveWidget
 
 
 class AccountType(IntEnum):
@@ -71,7 +72,7 @@ class DataFromNodeT:
                 setattr(self, key, random.randint(0, 100))
 
 
-class MockDB(Widget):
+class MockDB(CliveWidget):
     MAIN_ACTIVE_ACCOUNT: ActiveAccount = ActiveAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
