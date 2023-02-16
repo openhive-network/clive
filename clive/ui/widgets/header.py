@@ -41,6 +41,7 @@ class Header(TextualHeader, CliveWidget):
             TitledLabel("Profile", "Account", id_="profile-label"),
             HeaderTitle(),
             TitledLabel("Mode", "ACTIVE", id_="mode-label"),
+            id="bar",
         )
         yield HeaderClock()
         yield TitledLabel(
