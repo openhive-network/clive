@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, Callable
 
 from textual.widgets import Label
 
@@ -27,6 +27,7 @@ class TitledLabel(CliveWidget):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
+        callback: Callable[[Any], Any] | None = None,
         id_: str | None = None,
     ) -> None:
         super().__init__(id=id_)
@@ -34,8 +35,8 @@ class TitledLabel(CliveWidget):
         self.__value = value
 
         self.__value_label = (
-            DynamicLabel(obj_to_watch, attribute_name, prefix=self.__formatted_value(), id_="value")
-            if obj_to_watch and attribute_name
+            DynamicLabel(obj_to_watch, attribute_name, callback, prefix=self.__formatted_value(), id_="value")
+            if obj_to_watch and attribute_name and callback
             else Label(self.__formatted_value(), id="value")
         )
 

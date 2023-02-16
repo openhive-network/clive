@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import asyncio
 import uuid
+from copy import deepcopy
 from pathlib import Path
 
 from textual.app import App
 from textual.binding import Binding
 from textual.reactive import var
 
-from clive.storage.mock_database import NodeAddress, mock_db
+from clive.storage.mock_database import NodeAddress, NodeData, ProfileData
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.quit.quit import Quit
 from clive.version import VERSION_INFO
@@ -37,6 +38,10 @@ class Clive(App[int]):
     header_expanded = var(False)
     """Synchronize the expanded header state in all created header objects."""
 
+    node_data = var(NodeData())
+
+    profile_data = var(ProfileData())
+
     def on_mount(self) -> None:
         asyncio.create_task(self.background_task())
         self.push_screen("dashboard_inactive")
@@ -45,7 +50,9 @@ class Clive(App[int]):
         while True:
             await asyncio.sleep(3)
             self.log("Updating mock node_address...")
-            mock_db.node_address = NodeAddress("https", str(uuid.uuid4()))
+            new_data = deepcopy(self.profile_data)
+            new_data.node_address = NodeAddress("https", str(uuid.uuid4()))
+            self.profile_data = new_data
 
 
 clive_app = Clive()
