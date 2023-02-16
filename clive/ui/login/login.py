@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 class Login(BaseScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
+        Binding("f1", "login", "Login"),
     ]
 
     def on_mount(self) -> None:
@@ -33,5 +34,12 @@ class Login(BaseScreen):
             id="dialog",
         )
 
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "login-button":
+            self.action_login()
+
     def action_dashboard(self) -> None:
+        self.app.pop_screen()
+
+    def action_login(self) -> None:
         self.app.pop_screen()
