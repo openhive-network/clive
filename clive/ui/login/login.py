@@ -5,18 +5,19 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 from textual.widgets import Placeholder
 
-from clive.ui.login.login import Login
 from clive.ui.shared.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class DashboardInactive(BaseScreen):
-    BINDINGS = [Binding("f1", "login", "Login")]
+class Login(BaseScreen):
+    BINDINGS = [
+        Binding("escape", "dashboard", "Dashboard"),
+    ]
 
     def create_main_panel(self) -> ComposeResult:
-        yield Placeholder("Dashboard content goes here")
+        yield Placeholder("Login content goes here")
 
-    def action_login(self) -> None:
-        self.app.push_screen(Login())
+    def action_dashboard(self) -> None:
+        self.app.pop_screen()
