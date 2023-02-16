@@ -6,10 +6,6 @@ from datetime import datetime
 from enum import IntEnum
 from typing import List, Optional
 
-from textual.reactive import var
-
-from clive.ui.widgets.clive_widget import CliveWidget
-
 
 class AccountType(IntEnum):
     ACTIVE = 0
@@ -46,7 +42,7 @@ class NodeAddress:
 
 
 @dataclass
-class DataFromNodeT:
+class NodeData:
     reputation: float = random.uniform(0, 100)
     hive_balance: float = random.uniform(0, 100)
     hive_power_balance: float = random.uniform(0, 100)
@@ -72,17 +68,13 @@ class DataFromNodeT:
                 setattr(self, key, random.randint(0, 100))
 
 
-class MockDB(CliveWidget):
-    MAIN_ACTIVE_ACCOUNT: ActiveAccount = ActiveAccount(
+class ProfileData:
+    active_account: ActiveAccount = ActiveAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
-    ACCOUNTS: List[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
-    node_address = var(NodeAddress("https", "api.hive.blog"))
-    BACKUP_NODE_ADDRESSES: List[NodeAddress] = [
+    node_address: NodeAddress = NodeAddress("https", "api.hive.blog")
+    backup_node_addresses: list[NodeAddress] = [
         NodeAddress("http", "localhost", 8090),
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
-    node = DataFromNodeT()
-
-
-mock_db = MockDB()
+    watched_accounts: list[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
