@@ -4,9 +4,9 @@ from abc import ABCMeta, abstractmethod
 from typing import TYPE_CHECKING
 
 from textual.message_pump import MessagePumpMeta
-from textual.screen import Screen
 from textual.widgets import Footer
 
+from clive.ui.widgets.clive_screen import CliveScreen
 from clive.ui.widgets.header import Header
 
 if TYPE_CHECKING:
@@ -22,7 +22,7 @@ class MessagePumpMetaABC(MessagePumpMeta, ABCMeta):
     """
 
 
-class BaseScreen(Screen, metaclass=MessagePumpMetaABC):
+class BaseScreen(CliveScreen, metaclass=MessagePumpMetaABC):
     def compose(self) -> ComposeResult:
         yield Header()
         yield from self.create_main_panel()
