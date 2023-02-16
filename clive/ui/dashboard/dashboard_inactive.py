@@ -10,6 +10,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Dashboard(BaseScreen):
+class DashboardInactive(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         yield Placeholder("Dashboard content goes here")

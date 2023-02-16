@@ -9,7 +9,7 @@ from textual.binding import Binding
 from textual.reactive import var
 
 from clive.storage.mock_database import NodeAddress, mock_db
-from clive.ui.dashboard.dashboard import Dashboard
+from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.quit.quit import Quit
 from clive.version import VERSION_INFO
 
@@ -31,7 +31,7 @@ class Clive(App[int]):
 
     SCREENS = {
         "quit": Quit,
-        "dashboard": Dashboard,
+        "dashboard_inactive": DashboardInactive,
     }
 
     header_expanded = var(False)
@@ -39,7 +39,7 @@ class Clive(App[int]):
 
     def on_mount(self) -> None:
         asyncio.create_task(self.background_task())
-        self.push_screen("dashboard")
+        self.push_screen("dashboard_inactive")
 
     async def background_task(self) -> None:
         while True:
