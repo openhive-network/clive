@@ -45,7 +45,11 @@ class Header(TextualHeader, CliveWidget):
         )
         yield HeaderClock()
         yield TitledLabel(
-            "node address", obj_to_watch=self.app, attribute_name="profile_data", callback=self.__get_node_address
+            "node address",
+            obj_to_watch=self.app,
+            attribute_name="profile_data",
+            callback=self.__get_node_address,
+            id_="node-address-label",
         )
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
