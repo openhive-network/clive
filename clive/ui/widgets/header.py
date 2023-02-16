@@ -7,7 +7,6 @@ from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
-from clive.storage.mock_database import mock_db
 from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.titled_label import TitledLabel
 
@@ -39,10 +38,21 @@ class Header(TextualHeader, CliveWidget):
         yield Horizontal(
             TitledLabel("Profile", "Account", id_="profile-label"),
             HeaderTitle(),
-            TitledLabel("Mode", "ACTIVE", id_="mode-label"),
+            TitledLabel(
+                "Mode",
+                obj_to_watch=self.app,
+                attribute_name="app_status",
+                callback=lambda app_status: app_status.mode,
+                id_="mode-label",
+            ),
         )
         yield HeaderClock()
-        yield TitledLabel("node address", obj_to_watch=mock_db, attribute_name="node_address")
+        yield TitledLabel(
+            "node address",
+            obj_to_watch=self.app,
+            attribute_name="mock_db",
+            callback=lambda mock_db: mock_db.node_address,
+        )
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()

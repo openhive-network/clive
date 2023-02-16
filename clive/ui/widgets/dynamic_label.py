@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Callable
 
 from textual.widgets import Label
 
@@ -12,15 +12,22 @@ class DynamicLabel(Label):
     """A label that can be updated dynamically when a reactive variable changes."""
 
     def __init__(
-        self, obj_to_watch: Reactable, attribute_name: str, *, prefix: str = "", id_: str | None = None
+        self,
+        obj_to_watch: Reactable,
+        attribute_name: str,
+        callback: Callable[[Any], Any],
+        *,
+        prefix: str = "",
+        id_: str | None = None,
     ) -> None:
         super().__init__("DynamicLabel was not updated!", id=id_)
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
+        self.__callback = callback
         self.__prefix = prefix
 
     def on_mount(self) -> None:
         self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed)  # type: ignore # https://github.com/Textualize/textual/issues/1805
 
     def on_attribute_changed(self, value: Any) -> None:
-        self.update(f"{self.__prefix}{value}")
+        self.update(f"{self.__prefix}{self.__callback(value)}")

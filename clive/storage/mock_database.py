@@ -1,14 +1,11 @@
 from __future__ import annotations
 
 import random
+from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime
 from enum import IntEnum
-from typing import List, Optional
-
-from textual.reactive import var
-
-from clive.ui.widgets.clive_widget import CliveWidget
+from typing import Any, List, Optional
 
 
 class AccountType(IntEnum):
@@ -72,17 +69,21 @@ class DataFromNodeT:
                 setattr(self, key, random.randint(0, 100))
 
 
-class MockDB(CliveWidget):
+class MockDB:
     MAIN_ACTIVE_ACCOUNT: ActiveAccount = ActiveAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
     ACCOUNTS: List[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
-    node_address = var(NodeAddress("https", "api.hive.blog"))
+    node_address = NodeAddress("https", "api.hive.blog")
     BACKUP_NODE_ADDRESSES: List[NodeAddress] = [
         NodeAddress("http", "localhost", 8090),
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
     node = DataFromNodeT()
 
+    def __setattr__(self, key: str, value: Any) -> None:
+        """Trigger all watchers when any attribute changes."""
+        from clive.ui.app import clive_app
 
-mock_db = MockDB()
+        super().__setattr__(key, value)
+        clive_app.mock_db = deepcopy(self)
