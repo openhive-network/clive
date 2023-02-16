@@ -4,20 +4,19 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Container
-from textual.widgets import Button, Input, Static, Switch
+from textual.widgets import Button, Input, Static
 
-from clive.ui.registration.registration import Registration
 from clive.ui.shared.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Login(BaseScreen):
+class Registration(BaseScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
-        Binding("f1", "login", "Login"),
-        Binding("f2", "register", "Register"),
+        Binding("f1", "register", "Register"),
+        Binding("f2", "login", "Login"),
     ]
 
     def on_mount(self) -> None:
@@ -29,22 +28,22 @@ class Login(BaseScreen):
             Input(placeholder="Username"),
             Static("Password", classes="label"),
             Input(placeholder="Password", password=True),
-            Switch(False),
-            Static("Permanent active mode", classes="label", id="active-mode-label"),
+            Static("Repeat password", classes="label"),
+            Input(placeholder="Repeat Password", password=True),
             Static(),
-            Button("Login", variant="primary", id="login-button"),
+            Button("Register", variant="primary", id="register-button"),
             id="dialog",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "login-button":
-            self.action_login()
+        if event.button.id == "register-button":
+            self.action_register()
 
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
-    def action_login(self) -> None:
+    def action_register(self) -> None:
         self.app.pop_screen()
 
-    def action_register(self) -> None:
-        self.app.push_screen(Registration())
+    def action_login(self) -> None:
+        self.app.pop_screen()

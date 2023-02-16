@@ -25,6 +25,7 @@ class Clive(App[int]):
         Path(__file__).parent / "widgets/header.scss",
         Path(__file__).parent / "widgets/titled_label.scss",
         Path(__file__).parent / "login/login.scss",
+        Path(__file__).parent / "registration/registration.scss",
     ]
 
     BINDINGS = [
