@@ -16,7 +16,7 @@ class DashboardInactive(BaseScreen):
     BINDINGS = [Binding("f1", "login", "Login")]
 
     def create_main_panel(self) -> ComposeResult:
-        yield Placeholder("Dashboard content goes here")
+        yield Placeholder("DashboardInactive content goes here")
 
     def action_login(self) -> None:
         self.app.push_screen(Login())
