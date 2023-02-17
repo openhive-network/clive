@@ -45,6 +45,7 @@ class Login(BaseScreen):
 
     def action_login(self) -> None:
         self.app.pop_screen()
+        self.app.switch_screen("dashboard_active")
 
     def action_register(self) -> None:
         self.app.push_screen(Registration())

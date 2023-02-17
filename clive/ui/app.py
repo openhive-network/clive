@@ -10,6 +10,7 @@ from textual.binding import Binding
 from textual.reactive import var
 
 from clive.storage.mock_database import NodeAddress, NodeData, ProfileData
+from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.quit.quit import Quit
 from clive.version import VERSION_INFO
@@ -35,6 +36,7 @@ class Clive(App[int]):
     SCREENS = {
         "quit": Quit,
         "dashboard_inactive": DashboardInactive,
+        "dashboard_active": DashboardActive,
     }
 
     header_expanded = var(False)
