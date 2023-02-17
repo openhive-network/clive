@@ -1,0 +1,35 @@
+Terminal {
+  background: $surface;
+  border-top: hkey $secondary;
+  color: $text;
+  dock: bottom;
+  height: 40vh;
+  min-height: 10;
+  layer: terminal;
+  padding: 0 1 1 1;
+  padding-bottom: 2;
+}
+
+Terminal.-hidden {
+  display: none;
+}
+
+Terminal:focus {
+  offset: 0 0 !important;
+}
+
+Terminal Logs {
+  background: $panel-lighten-1;
+  margin: 1;
+  overflow-y: scroll;
+  box-sizing: content-box;
+
+}
+
+Terminal Logs:focus {
+  border-top: hkey $accent;
+}
+
+Terminal Input {
+  dock: bottom;
+}

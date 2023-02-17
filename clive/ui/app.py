@@ -3,19 +3,24 @@ from __future__ import annotations
 import asyncio
 import uuid
 from pathlib import Path
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable, Literal
 
 from textual.app import App
 from textual.binding import Binding
-from textual.reactive import var
+from textual.reactive import reactive, var
 
 from clive.enums import AppMode
 from clive.storage.mock_database import NodeAddress, NodeData, ProfileData
 from clive.ui.app_state import AppState
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.ui.login.login import Login
 from clive.ui.quit.quit import Quit
+from clive.ui.registration.registration import Registration
 from clive.version import VERSION_INFO
+
+if TYPE_CHECKING:
+    from rich.console import RenderableType
 
 
 class Clive(App[int]):
@@ -24,26 +29,34 @@ class Clive(App[int]):
     SUB_TITLE = VERSION_INFO
 
     CSS_PATH = [
+        Path(__file__).parent / "global.scss",
         Path(__file__).parent / "quit/quit.scss",
         Path(__file__).parent / "widgets/header.scss",
         Path(__file__).parent / "widgets/titled_label.scss",
         Path(__file__).parent / "login/login.scss",
         Path(__file__).parent / "registration/registration.scss",
         Path(__file__).parent / "dashboard/dashboard.scss",
+        Path(__file__).parent / "terminal/terminal.scss",
     ]
 
     BINDINGS = [
         Binding("ctrl+c", "push_screen('quit')", "Quit"),
+        Binding("ctrl+t", "terminal", "Toggle terminal"),
+        Binding("l", "mock_log", "Mock log"),
     ]
 
     SCREENS = {
         "quit": Quit,
         "dashboard_inactive": DashboardInactive,
         "dashboard_active": DashboardActive,
+        "login": Login,
+        "registration": Registration,
     }
 
     header_expanded = var(False)
     """Synchronize the expanded header state in all created header objects."""
+
+    terminal_expanded = var(False)
 
     node_data = var(NodeData())
 
@@ -51,11 +64,26 @@ class Clive(App[int]):
 
     app_state = var(AppState())
 
+    logs: reactive[list[RenderableType | object]] = reactive([], repaint=False, init=False, always_update=True)
+    """A list of all log messages. Shared between all Terminal.Logs widgets."""
+
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
         asyncio.create_task(self.background_task())
         asyncio.create_task(self.debug_task())
         self.push_screen("dashboard_inactive")
+
+    def action_terminal(self) -> None:
+        self.terminal_expanded = not self.terminal_expanded
+
+    def action_mock_log(self) -> None:
+        self.write("This is a mock log.", message_type="info")
+
+    def write(self, text: RenderableType, *, message_type: Literal["info", "warning"] | None = None) -> None:
+        if message_type == "info":
+            text = f"[blue]INFO:[/blue] {text}"
+
+        self.logs += [text]
 
     async def background_task(self) -> None:
         def __update_function(profile_data: ProfileData) -> None:
