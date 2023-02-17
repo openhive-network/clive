@@ -1,0 +1,11 @@
+DashboardBase Section {
+  height: auto;
+  border: round $primary;
+}
+
+DashboardBase SectionTitle {
+  background: $primary;
+  text-align: center;
+  text-style: bold;
+  margin-bottom: 1;
+}
