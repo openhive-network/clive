@@ -46,6 +46,7 @@ class Clive(App[int]):
 
     def on_mount(self) -> None:
         asyncio.create_task(self.background_task())
+        asyncio.create_task(self.debug_task())
         self.push_screen("dashboard_inactive")
 
     async def background_task(self) -> None:
@@ -55,6 +56,13 @@ class Clive(App[int]):
             new_data = deepcopy(self.profile_data)
             new_data.node_address = NodeAddress("https", str(uuid.uuid4()))
             self.profile_data = new_data
+
+    async def debug_task(self) -> None:
+        while True:
+            await asyncio.sleep(1)
+            self.log("===================== DEBUG =====================")
+            self.log(f"Screen stack: {self.screen_stack}")
+            self.log("=================================================")
 
 
 clive_app = Clive()
