@@ -13,14 +13,14 @@ if TYPE_CHECKING:
 
 class DashboardActive(BaseScreen):
     BINDINGS = [
-        Binding("f1", "logout", "Logout"),
+        Binding("f1", "log_out", "Log out"),
         Binding("f2", "transfer", "Transfer"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
         yield Placeholder("DashboardActive content goes here")
 
-    def action_logout(self) -> None:
+    def action_log_out(self) -> None:
         self.app.switch_screen("dashboard_inactive")
 
     def action_transfer(self) -> None:
