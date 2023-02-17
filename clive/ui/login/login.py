@@ -18,7 +18,7 @@ class Login(BaseScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
         Binding("f1", "login", "Login"),
-        Binding("f2", "register", "Register"),
+        Binding("f2", "registration", "Registration"),
     ]
 
     def on_mount(self) -> None:
@@ -35,7 +35,7 @@ class Login(BaseScreen):
             Static(),
             Button("Login", variant="primary", id="login-button"),
             Static(),
-            FocusableLink("Don't have an account yet?", self.action_register),
+            FocusableLink("Don't have an account yet?", self.action_registration),
             id="dialog",
         )
 
@@ -50,5 +50,5 @@ class Login(BaseScreen):
         self.app.pop_screen()
         self.app.switch_screen("dashboard_active")
 
-    def action_register(self) -> None:
+    def action_registration(self) -> None:
         self.app.push_screen(Registration())
