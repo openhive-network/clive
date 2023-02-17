@@ -59,5 +59,6 @@ class Header(TextualHeader, CliveWidget):
     def on_header_expanded(self, expanded: bool) -> None:
         self.add_class("-tall") if expanded else self.remove_class("-tall")
 
-    def __get_node_address(self, profile_data: ProfileData) -> str:
+    @staticmethod
+    def __get_node_address(profile_data: ProfileData) -> str:
         return str(profile_data.node_address)
