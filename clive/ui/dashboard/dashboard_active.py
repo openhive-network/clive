@@ -21,6 +21,7 @@ class DashboardActive(BaseScreen):
         yield Placeholder("DashboardActive content goes here")
 
     def action_log_out(self) -> None:
+        self.app.deactivate()
         self.app.switch_screen("dashboard_inactive")
 
     def action_transfer(self) -> None:

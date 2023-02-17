@@ -40,7 +40,13 @@ class Header(TextualHeader, CliveWidget):
         yield Horizontal(
             TitledLabel("Profile", "Account", id_="profile-label"),
             HeaderTitle(),
-            TitledLabel("Mode", "ACTIVE", id_="mode-label"),
+            TitledLabel(
+                "Mode",
+                obj_to_watch=self.app,
+                attribute_name="app_state",
+                callback=lambda app_state: app_state.mode,
+                id_="mode-label",
+            ),
             id="bar",
         )
         yield HeaderClock()
