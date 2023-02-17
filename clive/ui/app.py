@@ -52,6 +52,7 @@ class Clive(App[int]):
     app_state = var(AppState())
 
     def on_mount(self) -> None:
+        self.console.set_window_title("Clive")
         asyncio.create_task(self.background_task())
         asyncio.create_task(self.debug_task())
         self.push_screen("dashboard_inactive")
