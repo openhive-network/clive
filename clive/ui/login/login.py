@@ -13,6 +13,23 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
+class RegistrationLink(Static):
+    """
+    *WORKAROUND*
+    A simple Static widget with a click handler like below:
+    `Static("[@click='register']Some link[/]")`
+
+    seems to reference to wrong namespace - the app (app.register) instead of the current screen.
+    This is a workaround to get the click handler to work.
+    """
+
+    def __init__(self) -> None:
+        super().__init__("[@click='register']Don't have an account yet?[/]")
+
+    def action_register(self) -> None:
+        self.app.push_screen(Registration())
+
+
 class Login(BaseScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
@@ -33,6 +50,8 @@ class Login(BaseScreen):
             Static("Permanent active mode", classes="label", id="active-mode-label"),
             Static(),
             Button("Login", variant="primary", id="login-button"),
+            Static(),
+            RegistrationLink(),
             id="dialog",
         )
 
