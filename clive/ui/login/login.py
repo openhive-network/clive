@@ -8,26 +8,10 @@ from textual.widgets import Button, Input, Static, Switch
 
 from clive.ui.registration.registration import Registration
 from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.widgets.focusable_link import FocusableLink
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-
-class RegistrationLink(Static):
-    """
-    *WORKAROUND*
-    A simple Static widget with a click handler like below:
-    `Static("[@click='register']Some link[/]")`
-
-    seems to reference to wrong namespace - the app (app.register) instead of the current screen.
-    This is a workaround to get the click handler to work.
-    """
-
-    def __init__(self) -> None:
-        super().__init__("[@click='register']Don't have an account yet?[/]")
-
-    def action_register(self) -> None:
-        self.app.push_screen(Registration())
 
 
 class Login(BaseScreen):
@@ -51,7 +35,7 @@ class Login(BaseScreen):
             Static(),
             Button("Login", variant="primary", id="login-button"),
             Static(),
-            RegistrationLink(),
+            FocusableLink("Don't have an account yet?", self.action_register),
             id="dialog",
         )
 
