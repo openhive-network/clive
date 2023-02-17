@@ -61,8 +61,11 @@ class Clive(App[int]):
 
         while True:
             await asyncio.sleep(3)
-            self.log("Updating mock node_address...")
+            self.log("Updating mock data...")
             self.update_reactive("profile_data", __update_function)
+
+            self.node_data.recalc()
+            self.update_reactive("node_data")
 
     async def debug_task(self) -> None:
         while True:
@@ -83,7 +86,7 @@ class Clive(App[int]):
 
         self.update_reactive("app_state", __update_function)
 
-    def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None]) -> None:
+    def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
         """
         Reactive attributes of Textual are unable to detect changes to their own attributes
         (if we are dealing with a non-primitive type like a custom class).
@@ -98,7 +101,8 @@ class Clive(App[int]):
 
         descriptor = self.__class__.__dict__[attribute_name]
 
-        update_function(attribute)  # modify attributes of the reactive attribute
+        if update_function is not None:
+            update_function(attribute)  # modify attributes of the reactive attribute
 
         # now we trigger the descriptor.__set__ method like the `self.attribute_name = value` would do
         if not descriptor._always_update:
