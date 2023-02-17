@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 class Login(BaseScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
-        Binding("f1", "login", "Login"),
+        Binding("f1", "log_in", "Log in"),
         Binding("f2", "registration", "Registration"),
     ]
 
@@ -33,20 +33,20 @@ class Login(BaseScreen):
             Switch(False),
             Static("Permanent active mode", classes="label", id="active-mode-label"),
             Static(),
-            Button("Login", variant="primary", id="login-button"),
+            Button("Log in", variant="primary", id="log-in-button"),
             Static(),
             FocusableLink("Don't have an account yet?", self.action_registration),
             id="dialog",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "login-button":
-            self.action_login()
+        if event.button.id == "log-in-button":
+            self.action_log_in()
 
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
-    def action_login(self) -> None:
+    def action_log_in(self) -> None:
         self.app.pop_screen()
         self.app.switch_screen("dashboard_active")
 
