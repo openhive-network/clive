@@ -15,7 +15,7 @@ Header #profile-label #value {
 }
 
 Header #mode-label #value {
-  color: $success;
+  color: $error;
 }
 
 Header #bar {
@@ -25,4 +25,8 @@ Header #bar {
 
 Header #node-address-label {
   margin-top: 1;
+}
+
+Header.-active #mode-label #value {
+  color: $success;
 }

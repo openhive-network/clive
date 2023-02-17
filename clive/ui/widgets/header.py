@@ -15,6 +15,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.storage.mock_database import ProfileData
+    from clive.ui.app_state import AppState
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -34,6 +35,7 @@ class Header(TextualHeader, CliveWidget):
 
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.on_header_expanded)  # type: ignore # https://github.com/Textualize/textual/issues/1805
+        self.watch(self.app, "app_state", self.on_app_state)  # type: ignore # https://github.com/Textualize/textual/issues/1805
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
@@ -64,6 +66,12 @@ class Header(TextualHeader, CliveWidget):
 
     def on_header_expanded(self, expanded: bool) -> None:
         self.add_class("-tall") if expanded else self.remove_class("-tall")
+
+    def on_app_state(self, app_state: AppState) -> None:
+        if app_state.is_active():
+            self.add_class("-active")
+        else:
+            self.remove_class("-active")
 
     @staticmethod
     def __get_node_address(profile_data: ProfileData) -> str:

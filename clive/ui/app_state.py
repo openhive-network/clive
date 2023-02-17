@@ -10,3 +10,6 @@ class AppState:
     """A class that holds information about the current state of an application."""
 
     mode: AppMode = AppMode.INACTIVE
+
+    def is_active(self) -> bool:
+        return self.mode == AppMode.ACTIVE
