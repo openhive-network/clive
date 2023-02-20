@@ -17,7 +17,7 @@ from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.login.login import Login
 from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
-from clive.ui.terminal.terminal import CommandLinePrompt
+from clive.ui.terminal.command_line import CommandLinePrompt
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
