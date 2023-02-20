@@ -17,6 +17,7 @@ from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.login.login import Login
 from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
+from clive.ui.terminal.terminal import CommandLinePrompt
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
@@ -79,9 +80,12 @@ class Clive(App[int]):
     def action_mock_log(self) -> None:
         self.write("This is a mock log.", message_type="info")
 
-    def write(self, text: RenderableType, *, message_type: Literal["info", "warning"] | None = None) -> None:
+    def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
         if message_type == "info":
             text = f"[blue]INFO:[/blue] {text}"
+        elif message_type == "input":
+            prefix = self.query(CommandLinePrompt).first(CommandLinePrompt).get_current_prompt()
+            text = f"{prefix} {text}"
 
         self.logs += [text]
 

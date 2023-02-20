@@ -50,6 +50,13 @@ class CommandLineInput(Input, CliveWidget):
     def __init__(self) -> None:
         super().__init__(placeholder="Enter command...")
 
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        raw_input = event.value
+
+        if raw_input:
+            self.app.write(raw_input, message_type="input")
+        self.value = ""
+
 
 class CommandLine(Widget):
     def compose(self) -> ComposeResult:
