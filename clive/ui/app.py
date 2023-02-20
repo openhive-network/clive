@@ -17,6 +17,7 @@ from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.login.login import Login
 from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
+from clive.ui.shared.help import Help
 from clive.ui.terminal.command_line import CommandLinePrompt
 from clive.version import VERSION_INFO
 
@@ -43,6 +44,7 @@ class Clive(App[int]):
     BINDINGS = [
         Binding("ctrl+c", "push_screen('quit')", "Quit"),
         Binding("ctrl+t", "terminal", "Toggle terminal"),
+        Binding("?", "help", "Show help"),
         Binding("l", "mock_log", "Mock log"),
     ]
 
@@ -79,6 +81,9 @@ class Clive(App[int]):
 
     def action_mock_log(self) -> None:
         self.write("This is a mock log.", message_type="info")
+
+    def action_help(self) -> None:
+        self.push_screen(Help(self.screen))
 
     def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
         if message_type == "info":

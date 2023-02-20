@@ -34,5 +34,7 @@ class Modal(Widget, AbstractClassMessagePump):
 
         if self.__previously_focused is not None and self.__previously_focused in self.app.screen.focus_chain:
             self.app.set_focus(self.__previously_focused)
-        else:
+            return
+
+        if self.app.screen.focus_chain:
             self.app.set_focus(self.app.screen.focus_chain[0])
