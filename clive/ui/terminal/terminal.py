@@ -1,15 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual.containers import Container
-from textual.widgets import Input, TextLog
+from textual.widget import Widget
+from textual.widgets import Input, Static, TextLog
 
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.modal import Modal
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.app import ComposeResult
+
+    from clive.ui.app_state import AppState
 
 
 class Logs(TextLog):
@@ -25,13 +29,47 @@ class Logs(TextLog):
             self.write(log)
 
 
+class CommandLinePrompt(Static, CliveWidget):
+    INACTIVE_PROMPT: Final[str] = " 🔒 >>>:"
+    ACTIVE_PROMPT: Final[str] = " 🔑 ###:"
+
+    def __init__(self) -> None:
+        super().__init__(self.INACTIVE_PROMPT)
+
+    def on_mount(self) -> None:
+        self.watch(self.app, "app_state", self.on_app_state)  # type: ignore # https://github.com/Textualize/textual/issues/1805
+
+    def on_app_state(self, _: AppState) -> None:
+        self.update(self.get_current_prompt())
+
+    def get_current_prompt(self) -> str:
+        return self.ACTIVE_PROMPT if self.app.app_state.is_active() else self.INACTIVE_PROMPT
+
+
+class CommandLineInput(Input, CliveWidget):
+    def __init__(self) -> None:
+        super().__init__(placeholder="Enter command...")
+
+
+class CommandLine(Widget):
+    def compose(self) -> ComposeResult:
+        yield CommandLinePrompt()
+        yield CommandLineInput()
+
+    def on_descendant_focus(self) -> None:
+        self.query_one(CommandLinePrompt).add_class("active-prompt")
+
+    def on_descendant_blur(self) -> None:
+        self.query_one(CommandLinePrompt).remove_class("active-prompt")
+
+
 class Terminal(Modal, Container):
     def __init__(self) -> None:
         super().__init__(classes="-hidden")
 
     def compose(self) -> ComposeResult:
         yield Logs()
-        yield Input()
+        yield CommandLine()
 
     def on_mount(self) -> None:
         self.watch(self.app, "terminal_expanded", self.on_terminal_expanded)  # type: ignore # https://github.com/Textualize/textual/issues/1805

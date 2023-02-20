@@ -30,6 +30,24 @@ Terminal Logs:focus {
   border-top: hkey $accent;
 }
 
-Terminal Input {
+Terminal CommandLinePrompt {
+  dock: left;
+  width: 8;
+
+}
+
+Terminal CommandLine {
   dock: bottom;
+  height: auto;
+}
+
+Terminal CommandLineInput {
+  margin-left: 1;
+  border: none;
+  padding: 0;
+  background: $panel;
+}
+
+Terminal .active-prompt {
+  color: $success;
 }
