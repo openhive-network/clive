@@ -46,13 +46,16 @@ def test_instantiating_class_inheriting_from_abstract_class(cls: type) -> None:
 
 
 def test_instantiating_class_inheriting_from_abstract_class_with_abstract_method() -> None:
+    # ARRANGE
+    expected_error_message = (
+        "Can't instantiate abstract class MockSubclassWithoutAbstractMethod with abstract method abstract_method"
+    )
+
+    # ACT & ASSERT
     with pytest.raises(TypeError) as exception:
         MockSubclassWithoutAbstractMethod()  # type: ignore
 
-    assert (
-        str(exception.value)
-        == "Can't instantiate abstract class MockSubclassWithoutAbstractMethod with abstract methods abstract_method"
-    )
+    assert str(exception.value) == expected_error_message
 
 
 @pytest.mark.parametrize("cls", [MockValidPlainSubclass, MockValidSubclassWithAbstractMethod])
