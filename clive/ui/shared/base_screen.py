@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class MessagePumpMetaABC(MessagePumpMeta, ABCMeta):
+class MessagePumpABCMeta(MessagePumpMeta, ABCMeta):
     """
     Combine MessagePumpMeta and ABCMeta into a single metaclass.
     Resolves the issue with:
@@ -22,7 +22,7 @@ class MessagePumpMetaABC(MessagePumpMeta, ABCMeta):
     """
 
 
-class BaseScreen(CliveScreen, metaclass=MessagePumpMetaABC):
+class BaseScreen(CliveScreen, metaclass=MessagePumpABCMeta):
     def compose(self) -> ComposeResult:
         yield Header()
         yield from self.create_main_panel()
