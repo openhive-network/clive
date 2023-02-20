@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class Logs(TextLog):
     def __init__(self) -> None:
-        super().__init__(wrap=False, highlight=True, markup=True)
+        super().__init__(wrap=True, highlight=True, markup=True)
 
     def on_mount(self) -> None:
         self.watch(self.app, "logs", self.on_logs)  # type: ignore # https://github.com/Textualize/textual/issues/1805
