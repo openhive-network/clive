@@ -7,4 +7,7 @@ RUN poetry self update
 
 RUN poetry install --only main
 
+# crucial for proper display
+export COLORTERM=truecolor
+
 ENTRYPOINT ["poetry", "run", "clive"]
