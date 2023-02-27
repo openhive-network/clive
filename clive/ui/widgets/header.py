@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Header as TextualHeader
 from textual.widgets import Label
 from textual.widgets._header import HeaderClock, HeaderTitle
@@ -64,7 +64,7 @@ class Header(TextualHeader, CliveWidget):
                 callback=lambda app_state: app_state.mode,
                 id_="mode-label",
             )
-        with Horizontal(id="expandable"):
+        with Vertical(id="expandable"):
             yield HeaderTitle()
             yield TitledLabel(
                 "node address",
