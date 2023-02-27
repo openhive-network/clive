@@ -74,6 +74,7 @@ class AccountRow(Container):
 
 class DashboardBase(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
-        yield AccountRow("vogel")
-        yield AccountRow("gtg", account_type=AccountType.WATCHED)
-        yield AccountRow("veryverylonglongname", account_type=AccountType.WATCHED)
+        with Container():
+            yield AccountRow("vogel")
+            yield AccountRow("gtg", account_type=AccountType.WATCHED)
+            yield AccountRow("veryverylonglongname", account_type=AccountType.WATCHED)
