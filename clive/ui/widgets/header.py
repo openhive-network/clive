@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal
+from textual.containers import Container, Horizontal
 from textual.widgets import Header as TextualHeader
+from textual.widgets import Label
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
@@ -29,6 +30,20 @@ class HeaderIcon(TextualHeaderIcon):
         self.icon = "-" if expanded else "+"
 
 
+class AlarmsSummary(Container):
+    def __init__(self) -> None:
+        super().__init__()
+        self.label = Label("!2x ALARMS!")
+        # self.__set_no_alarms()
+
+    def compose(self) -> ComposeResult:
+        yield self.label
+
+    def __set_no_alarms(self) -> None:
+        self.label.update("No alarms")
+        self.label.toggle_class("-no-alarms")
+
+
 class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
@@ -41,7 +56,7 @@ class Header(TextualHeader, CliveWidget):
         yield HeaderIcon()
         with Horizontal(id="bar"):
             yield TitledLabel("Profile", "Account", id_="profile-label")
-            yield HeaderTitle()
+            yield AlarmsSummary()
             yield TitledLabel(
                 "Mode",
                 obj_to_watch=self.app,
@@ -49,14 +64,16 @@ class Header(TextualHeader, CliveWidget):
                 callback=lambda app_state: app_state.mode,
                 id_="mode-label",
             )
+        with Horizontal(id="expandable"):
+            yield HeaderTitle()
+            yield TitledLabel(
+                "node address",
+                obj_to_watch=self.app,
+                attribute_name="profile_data",
+                callback=self.__get_node_address,
+                id_="node-address-label",
+            )
         yield HeaderClock()
-        yield TitledLabel(
-            "node address",
-            obj_to_watch=self.app,
-            attribute_name="profile_data",
-            callback=self.__get_node_address,
-            id_="node-address-label",
-        )
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()
