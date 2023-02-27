@@ -1,0 +1,77 @@
+AuthorityTittle {
+  layout: grid;
+  grid-size: 10 1;
+  height: 5;
+  width: 100%;
+  border: $primary;
+}
+
+ColumnLayout {
+  layout: grid;
+  grid-size: 10 1;
+  grid-gutter: 1;
+  content-align: center middle;
+  margin-top: 1;
+  height: 3;
+}
+
+OddColumn {
+  background: $primary-background-darken-1;
+  content-align: center middle;
+  height: 3;
+  width: 100%;
+}
+
+.OddColumn {
+  background: $primary-background-darken-1;
+  content-align: center middle;
+  height: 3;
+  width: 100%;
+}
+
+EvenColumn {
+  background: $primary-background-darken-2;
+  content-align: center middle;
+  height: 3;
+}
+
+#remove_authority_button {
+  content-align: center middle;
+  column-span: 1;
+  width: 100%;
+}
+
+#edit_authority_button {
+  content-align: center middle;
+  column-span: 1;
+  width: 100%;
+}
+
+#authority_row_number {
+  column-span: 1;
+}
+
+#authority_name {
+  column-span: 4;
+}
+
+#authority_type {
+  column-span: 3;
+}
+
+#authorities_tittle_label {
+  content-align: center middle;
+  column-span: 8;
+  height: 3;
+}
+
+#add_authority_button {
+  column-span: 2;
+  width: 100%;
+  margin-right: 1;
+  margin-left: 1;
+}
+
+.deleted {
+  display: none;
+}
