@@ -39,18 +39,16 @@ class Header(TextualHeader, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
-        yield Horizontal(
-            TitledLabel("Profile", "Account", id_="profile-label"),
-            HeaderTitle(),
-            TitledLabel(
+        with Horizontal(id="bar"):
+            yield TitledLabel("Profile", "Account", id_="profile-label")
+            yield HeaderTitle()
+            yield TitledLabel(
                 "Mode",
                 obj_to_watch=self.app,
                 attribute_name="app_state",
                 callback=lambda app_state: app_state.mode,
                 id_="mode-label",
-            ),
-            id="bar",
-        )
+            )
         yield HeaderClock()
         yield TitledLabel(
             "node address",
