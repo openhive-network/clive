@@ -1,0 +1,15 @@
+AuthoritySubmitButtons {
+    content-align: center middle;
+    height: 5;
+    width: 100%;
+    layout: grid;
+    grid-size: 2 1;
+    grid-gutter: 5;
+    border: $primary;
+    margin-top: 3;
+}
+
+AuthoritySubmitButtons Button {
+    width: 100%;
+    margin: 0 2;
+}
