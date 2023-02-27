@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
-from textual.widgets import Markdown
+from textual.widgets import MarkdownViewer
 
 from clive.config import ROOT_DIRECTORY
 from clive.ui.dashboard.dashboard_base import DashboardBase
@@ -38,11 +38,11 @@ class Help(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         if self.__help_file_path.exists():
-            yield Markdown(self.__help_file_path.read_text())
+            yield MarkdownViewer(self.__help_file_path.read_text())
         else:
             screen_name = self.__screen.name or self.__screen.__class__.__name__
             context_help_unavailable_text = f"""
 **Looks like there is no help available for this screen ({screen_name}). \
 Global help is shown below instead.**
 """
-            yield Markdown(context_help_unavailable_text + self.GLOBAL_HELP_FILE_PATH.read_text())
+            yield MarkdownViewer(context_help_unavailable_text + self.GLOBAL_HELP_FILE_PATH.read_text())
