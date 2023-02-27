@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual._compose import compose
 from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import Button, Input, Static
@@ -50,3 +51,10 @@ class Registration(BaseScreen):
 
     def action_login(self) -> None:
         self.app.pop_screen()
+
+    def as_form(self):
+        container: Container = next(self.create_main_panel())
+        for widget in container.children:
+            if isinstance(widget, FocusableLink):
+                continue
+            yield widget

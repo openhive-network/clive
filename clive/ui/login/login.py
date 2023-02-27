@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual._compose import compose
 from textual.binding import Binding
 from textual.containers import Container
-from textual.widgets import Button, Input, Static, Switch
+from textual.widgets import Button, Input, Placeholder, Static, Switch
 
 from clive.ui.registration.registration import Registration
 from clive.ui.shared.base_screen import BaseScreen
@@ -53,3 +54,10 @@ class Login(BaseScreen):
 
     def action_registration(self) -> None:
         self.app.push_screen(Registration())
+
+    def as_form(self):
+        container: Container = next(self.create_main_panel())
+        for widget in container.children:
+            if isinstance(widget, FocusableLink):
+                continue
+            yield widget
