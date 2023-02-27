@@ -1,11 +1,108 @@
-DashboardBase Section {
-  height: auto;
-  border: round $primary;
+$active-color: $secondary-darken-2;
+$watched-color: $primary-darken-1;
+
+/* AccountRow */
+
+DashboardBase AccountRow {
+  height: 7;
 }
 
-DashboardBase SectionTitle {
-  background: $primary;
-  text-align: center;
+DashboardBase AccountRow.active {
+  border-bottom: wide $active-color;
+}
+
+DashboardBase AccountRow.watched {
+  border-bottom: wide $watched-color;
+}
+
+DashboardBase AccountRow #tables {
+  width: 1fr;
+}
+
+/* AccountInfo */
+
+DashboardBase AccountInfo {
+  width: auto;
+}
+
+DashboardBase AccountInfo #account-alarms {
+  color: $error;
   text-style: bold;
-  margin-bottom: 1;
+}
+
+/* BalanceStats */
+
+DashboardBase BalanceStats {
+  layout: grid;
+  grid-size: 7 2;
+  height: 2;
+}
+
+DashboardBase BalanceStats Static {
+  text-align: center;
+}
+
+DashboardBase BalanceStats .title {
+  column-span: 2;
+  background: $accent-lighten-3;
+}
+
+DashboardBase BalanceStats .title-variant {
+  background: $accent-lighten-2;
+}
+
+DashboardBase BalanceStats .percentage {
+  background: $panel-lighten-1;
+}
+
+DashboardBase BalanceStats .time {
+  background: $panel-lighten-2;
+}
+
+DashboardBase BalanceStats #hivepower-value {
+  background: $panel-lighten-1;
+}
+
+/* ActivityStats */
+
+DashboardBase ActivityStats {
+  layout: grid;
+  grid-size: 3;
+  height: 3;
+}
+
+DashboardBase AccountRow.active ActivityStats {
+  background: $active-color;
+}
+
+DashboardBase AccountRow.watched ActivityStats {
+  background: $watched-color;
+}
+
+DashboardBase ActivityStats Static {
+  text-align: center;
+}
+
+DashboardBase ActivityStats .title {
+  background: $accent-lighten-3;
+}
+
+DashboardBase ActivityStats .title-variant {
+  background: $accent-lighten-2;
+}
+
+DashboardBase ActivityStats .token {
+  background: $accent-lighten-1;
+}
+
+DashboardBase ActivityStats .token-variant {
+  background: $accent-lighten-2;
+}
+
+DashboardBase ActivityStats .amount {
+  background: $panel-lighten-1;
+}
+
+DashboardBase ActivityStats .amount-variant {
+  background: $panel-lighten-2;
 }
