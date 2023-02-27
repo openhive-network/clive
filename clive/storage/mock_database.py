@@ -3,13 +3,15 @@ from __future__ import annotations
 import random
 from dataclasses import dataclass
 from datetime import datetime
-from enum import IntEnum
+from enum import Enum
 from typing import List, Optional
 
 
-class AccountType(IntEnum):
-    ACTIVE = 0
-    WATCHED = 1
+class AccountType(str, Enum):
+    value: str
+
+    ACTIVE = "active"
+    WATCHED = "watched"
 
 
 @dataclass
