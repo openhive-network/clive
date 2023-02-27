@@ -30,16 +30,7 @@ class Clive(App[int]):
 
     SUB_TITLE = VERSION_INFO
 
-    CSS_PATH = [
-        Path(__file__).parent / "global.scss",
-        Path(__file__).parent / "quit/quit.scss",
-        Path(__file__).parent / "widgets/header.scss",
-        Path(__file__).parent / "widgets/titled_label.scss",
-        Path(__file__).parent / "login/login.scss",
-        Path(__file__).parent / "registration/registration.scss",
-        Path(__file__).parent / "dashboard/dashboard.scss",
-        Path(__file__).parent / "terminal/terminal.scss",
-    ]
+    CSS_PATH = list(Path(__file__).parent.glob("**/*.scss"))
 
     BINDINGS = [
         Binding("ctrl+c", "push_screen('quit')", "Quit", show=False),
