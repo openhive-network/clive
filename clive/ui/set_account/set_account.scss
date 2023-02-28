@@ -1,0 +1,24 @@
+SetAccount {
+    layout: grid;
+    grid-size: 5 3;
+}
+
+SetAccount BigTitle {
+    width: 100%;
+    height: 5;
+    row-span: 1;
+    column-span: 5;
+    content-align: center middle;
+}
+
+SetAccount Label {
+    width: 100%;
+    height: 3;
+    content-align: right middle;
+}
+
+SetAccount Input {
+    width: 100%;
+    column-span: 4;
+    margin-right: 5;
+}

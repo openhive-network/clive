@@ -1,0 +1,24 @@
+SetNodeAddress {
+    layout: grid;
+    grid-size: 5 3;
+}
+
+SetNodeAddress BigTitle {
+    width: 100%;
+    height: 5;
+    row-span: 1;
+    column-span: 5;
+    content-align: center middle;
+}
+
+SetNodeAddress Label {
+    width: 100%;
+    height: 3;
+    content-align: center middle;
+}
+
+SetNodeAddress Input {
+    width: 100%;
+    column-span: 4;
+    margin-right: 5;
+}
