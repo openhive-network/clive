@@ -79,6 +79,7 @@ class ProfileData:
     )
     node_address: NodeAddress = NodeAddress("https", "api.hive.blog")
     backup_node_addresses: list[NodeAddress] = [
+        NodeAddress("https", "api.hive.blog"),
         NodeAddress("http", "localhost", 8090),
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
