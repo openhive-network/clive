@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from textual.binding import Binding
 
+from clive.ui.config.config_active import ConfigActive
 from clive.ui.dashboard.dashboard_base import DashboardBase
 
 
 class DashboardActive(DashboardBase):
     BINDINGS = [
+        Binding("c", "config", "Config"),
         Binding("f1", "log_out", "Log out"),
         Binding("f2", "transfer", "Transfer"),
     ]
@@ -17,3 +19,6 @@ class DashboardActive(DashboardBase):
 
     def action_transfer(self) -> None:
         self.log("Transfer action not implemented yet.")
+
+    def action_config(self) -> None:
+        self.app.push_screen(ConfigActive())
