@@ -8,7 +8,7 @@ from clive.storage.mock_database import PrivateKey
 from clive.ui.manage_authorities.edit_authority import EditAuthorities
 from clive.ui.manage_authorities.new_authority import NewAuthority
 from clive.ui.shared.base_screen import BaseScreen
-from clive.ui.widgets.big_tittle import BigTittle
+from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
@@ -81,15 +81,15 @@ class AuthorityHeader(ColumnLayout):
         yield EvenColumn("Delete")
 
 
-class AuthorityTittle(Static):
+class AuthorityTitle(Static):
     def compose(self) -> ComposeResult:
-        yield BigTittle("authorities", id="authorities_tittle_label")
+        yield BigTitle("authorities", id="authorities_title_label")
         yield Button("✨ Add New Authority", id="add_authority_button")
 
 
 class ManageAuthorities(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
-        yield AuthorityTittle()
+        yield AuthorityTitle()
         self.__last_widget: Any = AuthorityHeader()
         yield self.__last_widget
 

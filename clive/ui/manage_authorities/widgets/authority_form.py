@@ -12,7 +12,7 @@ from clive.ui.manage_authorities.widgets.authority_inputs import (
     RawAuthorityDefinition,
 )
 from clive.ui.manage_authorities.widgets.authority_submit_buttons import AuthoritySubmitButtons
-from clive.ui.widgets.big_tittle import BigTittle
+from clive.ui.widgets.big_title import BigTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -47,7 +47,7 @@ class AuthorityForm(Container):
             on_close()
 
         with Vertical():
-            yield BigTittle(self.__title)
+            yield BigTitle(self.__title)
             yield name
             yield AuthorityInputSwitch(raw_input, file_input)
             yield Container(raw_input, file_input)

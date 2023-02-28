@@ -5,16 +5,16 @@ from textual.widgets import Static
 from clive.ui.widgets.resources.font import FONT
 
 
-class BigTittle(Static):
+class BigTitle(Static):
     DEFAULT_CSS = """
-    EditAuthorityTitle {
+    BigTitle {
         min-height: 3;
     }
     """
 
     def __init__(
         self,
-        tittle: str = "",
+        title: str = "",
         *,
         expand: bool = False,
         shrink: bool = False,
@@ -25,7 +25,7 @@ class BigTittle(Static):
         disabled: bool = False,
     ) -> None:
         super().__init__(
-            self.__translate(tittle),
+            self.__translate(title),
             expand=expand,
             shrink=shrink,
             markup=markup,
