@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widget import Widget
 from textual.widgets import Label, Static
 
 from clive.storage.mock_database import AccountType
+from clive.ui.select_node.select_node import SelectNode
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
 
@@ -73,8 +75,15 @@ class AccountRow(Container):
 
 
 class DashboardBase(BaseScreen):
+    BINDINGS = [
+        Binding("n", "node", "Select node"),
+    ]
+
     def create_main_panel(self) -> ComposeResult:
         with Container():
             yield AccountRow("vogel")
             yield AccountRow("gtg", account_type=AccountType.WATCHED)
             yield AccountRow("veryverylonglongname", account_type=AccountType.WATCHED)
+
+    def action_node(self) -> None:
+        self.app.push_screen(SelectNode())
