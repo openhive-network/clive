@@ -8,6 +8,7 @@ from textual.app import App
 from textual.binding import Binding
 from textual.reactive import reactive, var
 
+from clive.config import settings
 from clive.enums import AppMode
 from clive.storage.mock_database import NodeData, ProfileData
 from clive.ui.app_state import AppState
@@ -64,7 +65,8 @@ class Clive(App[int]):
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
         asyncio.create_task(self.background_task())
-        asyncio.create_task(self.debug_task())
+        if settings.LOG_DEBUG_LOOP:
+            asyncio.create_task(self.debug_task())
         self.push_screen(Onboarding())
 
     def action_terminal(self) -> None:
