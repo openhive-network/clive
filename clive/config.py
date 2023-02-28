@@ -7,6 +7,7 @@ from typing import Final
 from dynaconf import Dynaconf  # type: ignore
 
 ROOT_DIRECTORY: Final[Path] = Path(__file__).parent
+DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
 TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"
 LAUNCH_TIME: Final[datetime] = datetime.now()
 
