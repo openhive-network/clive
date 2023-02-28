@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import asyncio
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal
+from typing import TYPE_CHECKING, Any, Callable, Literal, overload
 
 from textual.app import App
 from textual.binding import Binding
@@ -24,6 +24,8 @@ from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
+    from textual.screen import Screen
+    from textual.widget import AwaitMount
 
 
 class Clive(App[int]):
@@ -68,6 +70,36 @@ class Clive(App[int]):
         if settings.LOG_DEBUG_LOOP:
             asyncio.create_task(self.debug_task())
         self.push_screen(Onboarding())
+
+    def push_screen(self, screen: Screen | str) -> AwaitMount:
+        return self.__update_screen("push_screen", screen)
+
+    def pop_screen(self) -> Screen:
+        return self.__update_screen("pop_screen")
+
+    def switch_screen(self, screen: Screen | str) -> AwaitMount:
+        return self.__update_screen("switch_screen", screen)
+
+    @overload
+    def __update_screen(self, method_name: Literal["push_screen", "switch_screen"], screen: Screen | str) -> AwaitMount:
+        ...
+
+    @overload
+    def __update_screen(self, method_name: Literal["pop_screen"]) -> Screen:
+        ...
+
+    def __update_screen(
+        self, method_name: Literal["push_screen", "switch_screen", "pop_screen"], screen: str | Screen | None = None
+    ) -> AwaitMount | Screen:
+        """
+        Because of textual's event ScreenResume not being bubbled up, we can't easily hook on it via
+        `def on_screen_resume` so we have to override the push_screen, switch_screen and pop_screen methods.
+        """
+        method = getattr(super(), method_name)
+        reply: AwaitMount | Screen = method(screen) if screen else method()
+
+        self.title = f"{self.__class__.__name__} ({self.screen.__class__.__name__})"
+        return reply
 
     def action_terminal(self) -> None:
         self.terminal_expanded = not self.terminal_expanded
