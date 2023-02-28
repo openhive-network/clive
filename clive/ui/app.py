@@ -54,7 +54,7 @@ class Clive(App[int]):
 
     node_data = var(NodeData())
 
-    profile_data = var(ProfileData())
+    profile_data = var(ProfileData.load())
 
     app_state = var(AppState())
 
@@ -89,8 +89,6 @@ class Clive(App[int]):
         while True:
             await asyncio.sleep(3)
             self.log("Updating mock data...")
-            self.update_reactive("profile_data")
-
             self.node_data.recalc()
             self.update_reactive("node_data")
 

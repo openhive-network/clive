@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import random
+import shelve
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import List, Optional
+
+from clive.config import DATA_DIRECTORY
 
 
 class AccountType(str, Enum):
@@ -84,3 +87,19 @@ class ProfileData:
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
     watched_accounts: list[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
+
+    def save(self) -> None:
+        from clive.ui.app import clive_app
+
+        clive_app.update_reactive("profile_data")
+
+        with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
+            db["profile_data"] = self
+
+    @classmethod
+    def load(cls) -> ProfileData:
+        # create data directory if it doesn't exist
+        DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
+
+        with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
+            return db.get("profile_data", cls())
