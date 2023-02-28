@@ -47,7 +47,9 @@ class Authority(ColumnLayout):
 
     def compose(self) -> ComposeResult:
         def authority_index(profile_data: ProfileData) -> str:
-            return f"{profile_data.active_account.keys.index(self.__authority) + 1}."
+            if self.__authority in profile_data.active_account.keys:
+                return f"{profile_data.active_account.keys.index(self.__authority) + 1}."
+            return "⌛"
 
         yield even(DynamicColumn(self.__clive, "profile_data", authority_index, id_="authority_row_number"))
         yield odd(
@@ -62,6 +64,7 @@ class Authority(ColumnLayout):
         if event.button.id == "remove_authority_button":
             self.__clive.profile_data.active_account.keys.remove(self.__authority)
             self.add_class("deleted")
+            self.remove()
         if event.button.id == "edit_authority_button":
             self.__edit_authority_view()
 
