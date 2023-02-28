@@ -6,14 +6,14 @@ from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import Button, Input, Static
 
-from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.focusable_link import FocusableLink
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Registration(BaseScreen):
+class Registration(FormScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
         Binding("f1", "register", "Register"),
@@ -43,10 +43,13 @@ class Registration(BaseScreen):
             self.action_register()
 
     def action_dashboard(self) -> None:
-        self.app.pop_screen()
+        if not self.is_form():
+            self.app.pop_screen()
 
     def action_register(self) -> None:
-        self.app.pop_screen()
+        if not self.is_form():
+            self.app.pop_screen()
 
     def action_login(self) -> None:
-        self.app.pop_screen()
+        if not self.is_form():
+            self.app.pop_screen()
