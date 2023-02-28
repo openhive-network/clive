@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import uuid
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Literal
 
@@ -10,7 +9,7 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.enums import AppMode
-from clive.storage.mock_database import NodeAddress, NodeData, ProfileData
+from clive.storage.mock_database import NodeData, ProfileData
 from clive.ui.app_state import AppState
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -86,13 +85,10 @@ class Clive(App[int]):
         self.logs += [text]
 
     async def background_task(self) -> None:
-        def __update_function(profile_data: ProfileData) -> None:
-            profile_data.node_address = NodeAddress("https", str(uuid.uuid4()))
-
         while True:
             await asyncio.sleep(3)
             self.log("Updating mock data...")
-            self.update_reactive("profile_data", __update_function)
+            self.update_reactive("profile_data")
 
             self.node_data.recalc()
             self.update_reactive("node_data")
