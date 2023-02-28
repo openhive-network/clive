@@ -1,9 +1,10 @@
-SetAccount {
+SetAccount ViewBag {
     layout: grid;
-    grid-size: 5 3;
+    grid-size: 5 4;
 }
 
-SetAccount BigTitle {
+SetAccount ViewBag BigTitle {
+    margin-top: 2;
     width: 100%;
     height: 5;
     row-span: 1;
@@ -11,13 +12,13 @@ SetAccount BigTitle {
     content-align: center middle;
 }
 
-SetAccount Label {
+SetAccount ViewBag Label {
     width: 100%;
     height: 3;
     content-align: right middle;
 }
 
-SetAccount Input {
+SetAccount ViewBag Input {
     width: 100%;
     column-span: 4;
     margin-right: 5;

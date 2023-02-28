@@ -1,9 +1,10 @@
-SetNodeAddress {
+SetNodeAddress ViewBag {
     layout: grid;
-    grid-size: 5 3;
+    grid-size: 5 4;
 }
 
-SetNodeAddress BigTitle {
+SetNodeAddress ViewBag BigTitle {
+    margin-top: 2;
     width: 100%;
     height: 5;
     row-span: 1;
@@ -11,13 +12,13 @@ SetNodeAddress BigTitle {
     content-align: center middle;
 }
 
-SetNodeAddress Label {
+SetNodeAddress ViewBag Label {
     width: 100%;
     height: 3;
-    content-align: center middle;
+    content-align: right middle;
 }
 
-SetNodeAddress Input {
+SetNodeAddress ViewBag Input {
     width: 100%;
     column-span: 4;
     margin-right: 5;
