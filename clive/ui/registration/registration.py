@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
 from textual.containers import Container
@@ -47,6 +47,22 @@ class Registration(FormScreen):
             self.app.pop_screen()
 
     def action_register(self) -> None:
+        minimum_input_length: Final[int] = 3
+
+        profile_name = self.get_widget_by_id("profile_name_input", expect_type=Input).value
+        password = self.get_widget_by_id("password_input", expect_type=Input).value
+        repeated_password = self.get_widget_by_id("repeat_password_input", expect_type=Input).value
+
+        if all(
+            [
+                len(profile_name) >= minimum_input_length,
+                len(password) >= minimum_input_length,
+                (password == repeated_password),
+            ]
+        ):
+            self.app.profile_data.name = profile_name
+            self.app.profile_data.password = password
+
         if not self.is_form():
             self.app.pop_screen()
 
