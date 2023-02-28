@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.containers import Vertical
 from textual.widget import Widget
 from textual.widgets import Label, ListItem
@@ -19,6 +20,10 @@ if TYPE_CHECKING:
 
 class _SelectList(Widget):
     """The dropdown list which is opened at the input."""
+
+    BINDINGS = [
+        Binding("escape", "close", "Close", priority=True),
+    ]
 
     DEFAULT_CSS = """
     _SelectList {
@@ -83,7 +88,7 @@ class _SelectList(Widget):
         #   * emitted on single click (can be ok, but would close immediately)
 
         if event.key == "escape":
-            self.close()
+            event.stop()
         elif event.key == "enter":
             self.on_click()
         elif event.key == "tab" or event.key == "shift+tab":
@@ -107,8 +112,8 @@ class _SelectList(Widget):
 
     def on_click(self) -> None:
         self.select_highlighted_item()
-        self.close()
+        self.action_close()
 
-    def close(self) -> None:
+    def action_close(self) -> None:
         self.display = False
         self.__select.focus()
