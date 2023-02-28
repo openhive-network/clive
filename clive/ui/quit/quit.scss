@@ -1,13 +1,3 @@
-Quit #dialog {
-  background: $panel;
-  border: tall $background;
-  color: $text;
-  height: 100%;
-  margin: 4 8;
-  padding: 1 2;
-  align: center middle;
-}
-
 Quit #hint {
   color: $text-muted;
 }

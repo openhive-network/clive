@@ -7,8 +7,8 @@ from textual.widgets import Button, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
+from clive.ui.widgets.dialog_container import DialogContainer
 from clive.ui.widgets.focusable_link import FocusableLink
-from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class RegistrationCommon(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
+        with DialogContainer():
             yield Static("Profile name", classes="label")
             yield Input(placeholder="e.x.: Master", id="profile_name_input")
             yield Static("Password", classes="label")
@@ -57,6 +57,7 @@ class Registration(RegistrationCommon):
     ]
 
     def _panel_extras(self) -> ComposeResult:
+        yield Static()
         yield Button("Register", variant="primary", id="register-button")
         yield Static()
         yield FocusableLink("Login instead", self.action_login)

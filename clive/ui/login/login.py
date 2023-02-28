@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container
 from textual.widgets import Button, Input, Static, Switch
 
 from clive.ui.registration.registration import Registration
 from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.widgets.dialog_container import DialogContainer
 from clive.ui.widgets.focusable_link import FocusableLink
 
 if TYPE_CHECKING:
@@ -25,7 +25,7 @@ class Login(BaseScreen):
         self.query(Input).first().focus()
 
     def create_main_panel(self) -> ComposeResult:
-        yield Container(
+        yield DialogContainer(
             Static("Username", classes="label"),
             Input(placeholder="Username"),
             Static("Password", classes="label"),
@@ -36,7 +36,6 @@ class Login(BaseScreen):
             Button("Log in", variant="primary", id="log-in-button"),
             Static(),
             FocusableLink("Don't have an account yet?", self.action_registration),
-            id="dialog",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

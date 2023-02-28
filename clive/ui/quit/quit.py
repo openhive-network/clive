@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Horizontal
 from textual.widgets import Button, Static
 
 from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -22,7 +23,7 @@ class Quit(BaseScreen):
         self.query(Button).first().focus()
 
     def create_main_panel(self) -> ComposeResult:
-        yield Container(
+        yield DialogContainer(
             Static("Are you sure you want to quit?", id="question"),
             Static("(You can also confirm by pressing Ctrl+C again)", id="hint"),
             Horizontal(
@@ -30,7 +31,6 @@ class Quit(BaseScreen):
                 Button("Cancel", variant="primary", id="cancel"),
                 id="buttons",
             ),
-            id="dialog",
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

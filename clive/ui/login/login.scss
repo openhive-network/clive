@@ -1,14 +1,8 @@
-Login #dialog{
-    align: center middle;
-    background: $panel;
-    border: tall $background;
-    grid-columns: 12 1fr;
-    grid-rows: 4;
-    grid-size: 2;
-    height: 100%;
-    layout: grid;
-    margin: 4 8;
-    padding: 1 2;
+Login DialogContainer {
+  grid-columns: 12 1fr;
+  grid-rows: 4;
+  grid-size: 2;
+  layout: grid;
 }
 
 Login Button{
