@@ -25,16 +25,16 @@ class Registration(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         yield Container(
-            Static("Username", classes="label"),
-            Input(placeholder="Username"),
+            Static("Profile name", classes="label"),
+            Input(placeholder="e.x.: Master", id="profile_name_input"),
             Static("Password", classes="label"),
-            Input(placeholder="Password", password=True),
+            Input(placeholder="Password", password=True, id="password_input"),
             Static("Repeat password", classes="label"),
-            Input(placeholder="Repeat Password", password=True),
+            Input(placeholder="Repeat Password", password=True, id="repeat_password_input"),
             Static(),
             Button("Register", variant="primary", id="register-button"),
             Static(),
-            FocusableLink("Login instead", self.action_login),
+            FocusableLink("Login instead", self.action_login) if not self.is_form() else Static(),
             id="dialog",
         )
 
