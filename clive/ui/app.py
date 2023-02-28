@@ -14,6 +14,7 @@ from clive.ui.app_state import AppState
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.login.login import Login
+from clive.ui.onboarding.onboarding import Onboarding
 from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
 from clive.ui.shared.help import Help
@@ -64,7 +65,7 @@ class Clive(App[int]):
         self.console.set_window_title("Clive")
         asyncio.create_task(self.background_task())
         asyncio.create_task(self.debug_task())
-        self.push_screen("dashboard_inactive")
+        self.push_screen(Onboarding())
 
     def action_terminal(self) -> None:
         self.terminal_expanded = not self.terminal_expanded
