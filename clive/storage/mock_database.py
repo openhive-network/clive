@@ -71,6 +71,9 @@ class NodeData:
 
 
 class ProfileData:
+    name: str = ""
+    password: str = ""  # yes, yes, plaintext
+
     active_account: ActiveAccount = ActiveAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
