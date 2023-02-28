@@ -21,3 +21,7 @@ AuthorityForm Input {
     border: tall $primary;
     margin-bottom: 1;
 }
+
+AuthorityForm .hidden {
+    display: none;
+}
