@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.ui.manage_authorities.widgets.authority_form import AuthorityForm
-from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.shared.form_screen import FormScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class NewAuthority(BaseScreen):
+class NewAuthority(FormScreen):
     def create_main_panel(self) -> ComposeResult:
         yield AuthorityForm("create authority")
 

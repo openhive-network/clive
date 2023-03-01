@@ -14,6 +14,7 @@ from clive.ui.manage_authorities.widgets.authority_inputs import (
     RawAuthorityDefinition,
 )
 from clive.ui.widgets.big_title import BigTitle
+from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -36,10 +37,14 @@ class AuthorityForm(Container):
     def __init__(self, title: str, existing_authority: PrivateKey | None = None) -> None:
         self.__existing_authority = existing_authority
         self.__title = title
+        self.__on_close = on_close or self.__default_close
         super().__init__()
 
+    def __default_close(self) -> None:
+        self.app.pop_screen()
+
     def compose(self) -> ComposeResult:
-        with Container():
+        with ViewBag():
             yield BigTitle(self.__title)
             yield Input(
                 self.__existing_authority.key if self.__existing_authority is not None else "",
