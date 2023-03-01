@@ -4,21 +4,22 @@ from textual.binding import Binding
 
 from clive.ui.config.config_active import ConfigActive
 from clive.ui.dashboard.dashboard_base import DashboardBase
+from clive.ui.operations.operations import Operations
 
 
 class DashboardActive(DashboardBase):
     BINDINGS = [
         Binding("c", "config", "Config"),
         Binding("f1", "log_out", "Log out"),
-        Binding("f2", "transfer", "Transfer"),
+        Binding("f2", "operations", "Operations"),
     ]
 
     def action_log_out(self) -> None:
         self.app.deactivate()
         self.app.switch_screen("dashboard_inactive")
 
-    def action_transfer(self) -> None:
-        self.log("Transfer action not implemented yet.")
+    def action_operations(self) -> None:
+        self.app.push_screen(Operations())
 
     def action_config(self) -> None:
         self.app.push_screen(ConfigActive())

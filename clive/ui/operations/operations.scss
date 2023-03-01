@@ -1,0 +1,8 @@
+Operations DialogContainer #hint {
+  text-align: center;
+}
+
+Operations DialogContainer > Button {
+  width: 1fr;
+  background: $primary;
+}
