@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING
+from datetime import datetime
+from typing import TYPE_CHECKING, Final
 from urllib.parse import urlparse
 
+import requests
+from rich.highlighter import Highlighter
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
@@ -19,6 +22,8 @@ from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
+    from rich.text import Text
+    from textual import Logger
     from textual.app import ComposeResult
 
 
@@ -47,10 +52,52 @@ class NodesList(Container, CliveWidget):
         )
 
 
+class NodeUrlHighlighter(Highlighter):
+    def __init__(self, logger: Logger) -> None:
+        self.logger = logger
+        self.__last_highlight_time = datetime.now()
+        self.__last_style = "white"
+        super().__init__()
+
+    def __check_and_update_highlight_period(self) -> bool:
+        highlight_period: Final[int] = 1
+        now = datetime.now()
+        if (now - self.__last_highlight_time).seconds >= highlight_period:
+            self.__last_highlight_time = now
+            return True
+        return False
+
+    def is_valid_url(self, url: str) -> bool:
+        ok_status: Final[int] = 200
+        with contextlib.suppress(requests.exceptions.RequestException):
+            return (
+                requests.post(
+                    url,
+                    data='{"jsonrpc":"2.0", "method":"condenser_api.get_config", "params":[], "id":1}',
+                    headers={"Content-Type": "application/json"},
+                    timeout=0.5,
+                ).status_code
+                == ok_status
+            )
+        return False
+
+    def highlight(self, text: Text) -> None:
+        if self.__check_and_update_highlight_period():
+            if self.is_valid_url(str(text)):
+                self.__last_style = "green"
+            else:
+                self.__last_style = "red"
+        text.stylize(self.__last_style)
+
+
 class ManualNode(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please manually enter the node address you want to connect to.")
-        yield Input(placeholder=f"e.g.: {self.app.profile_data.node_address}", id="node-address-input")
+        yield Input(
+            placeholder=f"e.g.: {self.app.profile_data.node_address}",
+            id="node-address-input",
+            highlighter=NodeUrlHighlighter(self.log),
+        )
         yield Button("Save", id="save-node-address-button")
 
 
