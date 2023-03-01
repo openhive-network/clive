@@ -47,6 +47,7 @@ class RegistrationCommon(BaseScreen):
         ):
             self.app.profile_data.name = profile_name
             self.app.profile_data.password = password
+            self.app.update_reactive("profile_data")
 
 
 class Registration(RegistrationCommon):

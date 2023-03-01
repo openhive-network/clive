@@ -55,7 +55,13 @@ class Header(TextualHeader, CliveWidget):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            yield TitledLabel("Profile", "Account", id_="profile-label")
+            yield TitledLabel(
+                "Profile",
+                obj_to_watch=self.app,
+                attribute_name="profile_data",
+                callback=self.__get_profile_name,
+                id_="profile-label",
+            )
             yield AlarmsSummary()
             yield TitledLabel(
                 "Mode",
@@ -91,3 +97,7 @@ class Header(TextualHeader, CliveWidget):
     @staticmethod
     def __get_node_address(profile_data: ProfileData) -> str:
         return str(profile_data.node_address)
+
+    @staticmethod
+    def __get_profile_name(profile_data: ProfileData) -> str:
+        return profile_data.name
