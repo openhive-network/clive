@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 from textual.widgets import Button, Static
 
 from clive.storage.mock_database import PrivateKey, ProfileData
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.manage_authorities.edit_authority import EditAuthorities
 from clive.ui.manage_authorities.new_authority import NewAuthority
 from clive.ui.shared.base_screen import BaseScreen
@@ -40,7 +41,7 @@ def even(widget: Widget) -> Widget:
     return widget
 
 
-class Authority(ColumnLayout):
+class Authority(ColumnLayout, CliveWidget):
     def __init__(self, authority: PrivateKey) -> None:
         self.__authority = authority
         super().__init__()
@@ -62,7 +63,7 @@ class Authority(ColumnLayout):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "remove_authority_button":
-            self.__clive.profile_data.active_account.keys.remove(self.__authority)
+            self.app.profile_data.active_account.keys.remove(self.__authority)
             self.add_class("deleted")
             self.remove()
         if event.button.id == "edit_authority_button":
@@ -72,13 +73,7 @@ class Authority(ColumnLayout):
         self.app.push_screen(EditAuthorities(self.__authority, self.__update_authority))
 
     def __update_authority(self) -> None:
-        self.__clive.update_reactive("profile_data")
-
-    @property
-    def __clive(self) -> Clive:
-        from clive.ui.app import clive_app
-
-        return clive_app
+        self.app.update_reactive("profile_data")
 
 
 class AuthorityHeader(ColumnLayout):
@@ -102,9 +97,7 @@ class ManageAuthorities(BaseScreen):
         self.__last_widget: Any = AuthorityHeader()
         yield self.__last_widget
 
-        from clive.ui.app import clive_app
-
-        for key in clive_app.profile_data.active_account.keys:
+        for key in self.app.profile_data.active_account.keys:
             auth = Authority(key)
             self.__last_widget = auth
             yield auth
@@ -118,7 +111,7 @@ class ManageAuthorities(BaseScreen):
 
             def __create_new_authority_callback() -> None:
                 if len(pv_key.key) > 0 and len(pv_key.key_name) > 0:
-                    clive_app.profile_data.active_account.keys.append(pv_key)
+                    self.app.profile_data.active_account.keys.append(pv_key)
 
                     auth = Authority(pv_key)
                     self.mount(auth, self.__last_widget)
