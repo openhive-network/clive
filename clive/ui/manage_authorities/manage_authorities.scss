@@ -29,6 +29,18 @@ ManageAuthorities .EvenColumn {
   width: 100%;
 }
 
+ManageAuthorities AuthorityTitle {
+  margin: 1 5;
+}
+
+ManageAuthorities AuthorityHeader {
+  margin: 1 5;
+}
+
+ManageAuthorities Authority {
+  margin: 1 5;
+}
+
 Authority #remove_authority_button {
   content-align: center middle;
   column-span: 1;

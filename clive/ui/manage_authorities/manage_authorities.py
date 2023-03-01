@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Dict, Final
 
 from textual.widgets import Button, Static
 
@@ -14,7 +14,6 @@ from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from textual.widget import Widget
 
     from clive.ui.app import Clive
 
@@ -31,14 +30,8 @@ class ColumnLayout(Static):
     """This class holds column order"""
 
 
-def odd(widget: Widget) -> Widget:
-    widget.add_class("OddColumn")
-    return widget
-
-
-def even(widget: Widget) -> Widget:
-    widget.add_class("EvenColumn")
-    return widget
+odd: Final[Dict[str, str]] = {"classes": "OddColumn"}
+even: Final[Dict[str, str]] = {"classes": "EvenColumn"}
 
 
 class Authority(ColumnLayout, CliveWidget):
@@ -52,13 +45,11 @@ class Authority(ColumnLayout, CliveWidget):
                 return f"{profile_data.active_account.keys.index(self.__authority) + 1}."
             return "⌛"
 
-        yield even(DynamicColumn(self.__clive, "profile_data", authority_index, id_="authority_row_number"))
-        yield odd(
-            DynamicColumn(self.__clive, "profile_data", lambda _: self.__authority.key_name, id_="authority_name")
-        )
-        yield even(StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type"))
-        yield odd(Button("✏️", id="edit_authority_button"))
-        yield even(Button("🗑️", id="remove_authority_button"))
+        yield DynamicColumn(self.app, "profile_data", authority_index, id_="authority_row_number", **even)
+        yield DynamicColumn(self.app, "profile_data", lambda _: self.__authority.key_name, id_="authority_name", **odd)
+        yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", **even)
+        yield Button("✏️", id="edit_authority_button", **odd)
+        yield Button("🗑️", id="remove_authority_button", **even)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
@@ -78,11 +69,11 @@ class Authority(ColumnLayout, CliveWidget):
 
 class AuthorityHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield even(StaticColumn("No.", id="authority_row_number"))
-        yield odd(StaticColumn("Authority Name", id="authority_name"))
-        yield even(StaticColumn("Authority Type", id="authority_type"))
-        yield odd(StaticColumn("Edit"))
-        yield even(StaticColumn("Delete"))
+        yield StaticColumn("No.", id="authority_row_number", **even)
+        yield StaticColumn("Authority Name", id="authority_name", **odd)
+        yield StaticColumn("Authority Type", id="authority_type", **even)
+        yield StaticColumn("Edit", **odd)
+        yield StaticColumn("Delete", **even)
 
 
 class AuthorityTitle(Static):
