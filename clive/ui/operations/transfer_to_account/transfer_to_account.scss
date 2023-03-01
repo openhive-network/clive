@@ -1,0 +1,41 @@
+TransferToAccount BigTitle {
+  margin-top: 2;
+  height: 5;
+  content-align: center middle;
+}
+
+TransferToAccount Body {
+  grid-size: 3;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 3 4 4 4 4;
+  height: 20;
+  margin: 2 4;
+  background: $panel;
+}
+
+TransferToAccount PlaceTaker {
+  row-span: 2;
+}
+
+TransferToAccount .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+TransferToAccount #from-label {
+  padding: 1 2;
+}
+
+TransferToAccount Buttons {
+  height: auto;
+}
+
+TransferToAccount Button {
+  width: 1fr;
+  background: $primary;
+}
+
+TransferToAccount #finalize-button {
+  margin-right: 1;
+  background: $success;
+}
