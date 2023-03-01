@@ -4,17 +4,13 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from textual.containers import Container, Horizontal
-from textual.widgets import Placeholder
 
 from clive.abstract_class import AbstractClassMessagePump
+from clive.ui.operations.cart_based_screen.cart_overview import CartOverview
 from clive.ui.shared.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-
-class MockCartWidget(Placeholder):
-    """A mock of the cart widget."""
 
 
 class LeftContainer(Container):
@@ -31,7 +27,7 @@ class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
             with LeftContainer():
                 yield from self.create_left_panel()
             with RightContainer():
-                yield MockCartWidget()
+                yield CartOverview()
 
     @abstractmethod
     def create_left_panel(self) -> ComposeResult:
