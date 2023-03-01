@@ -1,21 +1,19 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, Final
+from typing import TYPE_CHECKING, Any
 
 from textual.widgets import Button, Static
 
 from clive.storage.mock_database import PrivateKey, ProfileData
-from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.manage_authorities.edit_authority import EditAuthorities
 from clive.ui.manage_authorities.new_authority import NewAuthority
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-    from clive.ui.app import Clive
 
 
 class DynamicColumn(DynamicLabel):
@@ -30,8 +28,8 @@ class ColumnLayout(Static):
     """This class holds column order"""
 
 
-odd: Final[Dict[str, str]] = {"classes": "OddColumn"}
-even: Final[Dict[str, str]] = {"classes": "EvenColumn"}
+odd = "OddColumn"
+even = "EvenColumn"
 
 
 class Authority(ColumnLayout, CliveWidget):
@@ -45,11 +43,13 @@ class Authority(ColumnLayout, CliveWidget):
                 return f"{profile_data.active_account.keys.index(self.__authority) + 1}."
             return "⌛"
 
-        yield DynamicColumn(self.app, "profile_data", authority_index, id_="authority_row_number", **even)
-        yield DynamicColumn(self.app, "profile_data", lambda _: self.__authority.key_name, id_="authority_name", **odd)
-        yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", **even)
-        yield Button("✏️", id="edit_authority_button", **odd)
-        yield Button("🗑️", id="remove_authority_button", **even)
+        yield DynamicColumn(self.app, "profile_data", authority_index, id_="authority_row_number", classes=even)
+        yield DynamicColumn(
+            self.app, "profile_data", lambda _: self.__authority.key_name, id_="authority_name", classes=odd
+        )
+        yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", classes=even)
+        yield Button("✏️", id="edit_authority_button", classes=odd)
+        yield Button("🗑️", id="remove_authority_button", classes=even)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
@@ -69,11 +69,11 @@ class Authority(ColumnLayout, CliveWidget):
 
 class AuthorityHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="authority_row_number", **even)
-        yield StaticColumn("Authority Name", id="authority_name", **odd)
-        yield StaticColumn("Authority Type", id="authority_type", **even)
-        yield StaticColumn("Edit", **odd)
-        yield StaticColumn("Delete", **even)
+        yield StaticColumn("No.", id="authority_row_number", classes=even)
+        yield StaticColumn("Authority Name", id="authority_name", classes=odd)
+        yield StaticColumn("Authority Type", id="authority_type", classes=even)
+        yield StaticColumn("Edit", classes=odd)
+        yield StaticColumn("Delete", classes=even)
 
 
 class AuthorityTitle(Static):
@@ -96,7 +96,6 @@ class ManageAuthorities(BaseScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "add_authority_button":
-            from clive.ui.app import clive_app
 
             pv_key = PrivateKey("", "")
 
