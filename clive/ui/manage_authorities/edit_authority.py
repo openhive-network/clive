@@ -9,7 +9,9 @@ if TYPE_CHECKING:
 
 
 class EditAuthority(AuthorityForm):
-    def __init__(self, authority: PrivateKey, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(
+        self, authority: PrivateKey, name: str | None = None, id: str | None = None, classes: str | None = None
+    ) -> None:
         self.authority = authority
         super().__init__(name, id, classes)
 

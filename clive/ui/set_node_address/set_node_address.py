@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Input, Label
 
 from clive.storage.mock_database import NodeAddress
+from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.view_bag import ViewBag
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class SetNodeAddress(FormScreen):
+class SetNodeAddress(BaseScreen, FormScreen):
     BINDINGS = [Binding("f10", "save_node_address", "Save")]
 
     def create_main_panel(self) -> ComposeResult:

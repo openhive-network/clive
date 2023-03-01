@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 from textual.widgets import Input, Label
 
+from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.view_bag import ViewBag
@@ -13,7 +14,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class SetAccount(FormScreen):
+class SetAccount(BaseScreen, FormScreen):
     BINDINGS = [Binding("f10", "save_account_name", "Save")]
 
     def create_main_panel(self) -> ComposeResult:

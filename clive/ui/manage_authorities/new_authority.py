@@ -10,6 +10,7 @@ from clive.ui.shared.form_screen import FormScreen
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+
 class NewAuthority(AuthorityForm):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.app.profile_data.active_account.keys.append(event.authority)
@@ -17,6 +18,7 @@ class NewAuthority(AuthorityForm):
 
     def _title(self) -> str:
         return "create authority"
+
 
 class NewAuthorityForm(NewAuthority, FormScreen):
     def _submit_buttons(self) -> ComposeResult:
