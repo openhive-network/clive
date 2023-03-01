@@ -17,13 +17,9 @@ if TYPE_CHECKING:
 class BaseScreen(CliveScreen, AbstractClassMessagePump):
     def compose(self) -> ComposeResult:
         yield Header()
-        yield from self._create_main_panel()
+        yield from self.create_main_panel()
         yield Terminal()
         yield Footer()
-
-    def _create_main_panel(self) -> ComposeResult:
-        """Proxy method to be override by other implementations of Clive Screen"""
-        yield from self.create_main_panel()
 
     @abstractmethod
     def create_main_panel(self) -> ComposeResult:

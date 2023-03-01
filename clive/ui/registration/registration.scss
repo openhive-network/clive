@@ -1,4 +1,4 @@
-Registration #dialog {
+RegistrationCommon ViewBag {
   align: center middle;
   background: $panel;
   border: tall $background;
@@ -11,12 +11,12 @@ Registration #dialog {
   padding: 1 2;
 }
 
-Registration Button {
+RegistrationCommon Button {
   margin: 0 1;
   width: 100%;
 }
 
-Registration .label {
+RegistrationCommon .label {
   padding: 1 2;
   text-align: right;
 }

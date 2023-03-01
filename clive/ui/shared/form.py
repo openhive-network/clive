@@ -3,10 +3,11 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Callable, Iterator, List
 
+from clive.ui.shared.base_screen import BaseScreen  # noqa: TCH001
 from clive.ui.shared.form_screen import FormScreen  # noqa: TCH001
 from clive.ui.widgets.clive_screen import CliveScreen
 
-ScreenBuilder = Callable[[], FormScreen]
+ScreenBuilder = Callable[[], FormScreen | BaseScreen]
 
 
 class Form(CliveScreen):
@@ -36,7 +37,7 @@ class Form(CliveScreen):
         self.__pop_current_screen()
 
     def __push_current_screen(self) -> None:
-        self.app.push_screen(self.__screens[self.__current_screen_index]().set_form_owner(owner=self))
+        self.app.push_screen(self.__screens[self.__current_screen_index]().set_form_owner(owner=self))  # type: ignore
 
     def __pop_current_screen(self) -> None:
         self.app.pop_screen().remove()

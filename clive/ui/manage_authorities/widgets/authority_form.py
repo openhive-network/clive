@@ -56,9 +56,12 @@ class AuthorityForm(BaseScreen):
             with Container():
                 yield AuthorityDefinitionFromFile(classes="hidden")
                 yield RawAuthorityDefinition(self._default_raw_authority())
-            with Container(id="user_action_buttons"):
-                yield Button("💾 Save", id="authority_edit_save")
-                yield Button("🚫 Cancel", id="authority_edit_cancel")
+            yield from self._submit_buttons()
+
+    def _submit_buttons(self) -> ComposeResult:
+        with Container(id="user_action_buttons"):
+            yield Button("💾 Save", id="authority_edit_save")
+            yield Button("🚫 Cancel", id="authority_edit_cancel")
 
     def action_save(self) -> None:
         name = self.get_widget_by_id("authority_name_input", expect_type=Input).value
