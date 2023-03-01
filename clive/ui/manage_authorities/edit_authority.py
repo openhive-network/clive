@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from clive.storage.mock_database import PrivateKey
 
 
-class EditAuthorities(BaseScreen):
+class EditAuthority(BaseScreen):
     def __init__(self, authority: PrivateKey) -> None:
         self.authority = authority
         super().__init__()

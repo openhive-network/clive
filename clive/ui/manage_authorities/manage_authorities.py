@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Container
 from textual.widgets import Button, Static
 
-from clive.ui.manage_authorities.edit_authority import EditAuthorities
+from clive.ui.manage_authorities.edit_authority import EditAuthority
 from clive.ui.manage_authorities.new_authority import NewAuthority
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
@@ -61,7 +61,7 @@ class Authority(ColumnLayout, CliveWidget):
             self.add_class("deleted")
             self.remove()
         if event.button.id == "edit_authority_button":
-            self.app.push_screen(EditAuthorities(self.__authority))
+            self.app.push_screen(EditAuthority(self.__authority))
 
 
 class AuthorityHeader(ColumnLayout):
