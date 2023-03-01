@@ -13,6 +13,7 @@ from clive.ui.manage_authorities.widgets.authority_inputs import (
     AuthorityInputSwitch,
     RawAuthorityDefinition,
 )
+from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.view_bag import ViewBag
 
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class AuthorityForm(Container):
+class AuthorityForm(BaseScreen):
     BINDINGS = [("f10", "save", "Save")]
 
     class Saved(Message, bubble=True):
@@ -34,29 +35,27 @@ class AuthorityForm(Container):
     class Canceled(Message, bubble=True):
         """Emitted when user press Cancel button"""
 
-    def __init__(self, title: str, existing_authority: PrivateKey | None = None) -> None:
-        self.__existing_authority = existing_authority
-        self.__title = title
-        self.__on_close = on_close or self.__default_close
-        super().__init__()
+    def _title(self) -> str:
+        return ""
 
-    def __default_close(self) -> None:
-        self.app.pop_screen()
+    def _default_authority_name(self) -> str:
+        return ""
 
-    def compose(self) -> ComposeResult:
+    def _default_raw_authority(self) -> str:
+        return ""
+
+    def create_main_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle(self.__title)
+            yield BigTitle(self._title())
             yield Input(
-                self.__existing_authority.key if self.__existing_authority is not None else "",
+                self._default_authority_name(),
                 "authority name",
                 id="authority_name_input",
             )
             yield AuthorityInputSwitch()
             with Container():
-                yield RawAuthorityDefinition(
-                    self.__existing_authority.key if self.__existing_authority is not None else ""
-                )
                 yield AuthorityDefinitionFromFile(classes="hidden")
+                yield RawAuthorityDefinition(self._default_raw_authority())
             with Container(id="user_action_buttons"):
                 yield Button("💾 Save", id="authority_edit_save")
                 yield Button("🚫 Cancel", id="authority_edit_cancel")
