@@ -18,7 +18,7 @@ class RegistrationCommon(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Profile name", classes="label")
-            yield Input(placeholder="e.x.: Master", id="profile_name_input")
+            yield Input(self.app.profile_data.name, placeholder="e.x.: Master", id="profile_name_input")
             yield Static("Password", classes="label")
             yield Input(placeholder="Password", password=True, id="password_input")
             yield Static("Repeat password", classes="label")
