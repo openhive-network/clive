@@ -7,7 +7,7 @@ from textual.containers import Grid, Horizontal
 from textual.widgets import Button, Input, Static
 
 from clive.models.transfer_operation import TransferOperation
-from clive.ui.shared.cart_based_screen import CartBasedScreen
+from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.ui.widgets.select.select import Select

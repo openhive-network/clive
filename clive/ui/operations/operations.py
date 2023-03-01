@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 from textual.widgets import Button, Static
 
+from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
-from clive.ui.shared.cart_based_screen import CartBasedScreen
 from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
