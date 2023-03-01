@@ -1,27 +1,27 @@
-SetNodeAddress BigTitle {
+SetNodeAddressForm BigTitle {
   margin-top: 2;
   height: 5;
   content-align: center middle;
 }
 
-SetNodeAddress Body {
+SetNodeAddressForm Body {
   padding: 2 4;
 }
 
-SetNodeAddress NodesList, SetNodeAddress ManualNode, SetNodeAddress ModeSwitchContainer {
+SetNodeAddressForm NodesList, SetNodeAddressForm ManualNode, SetNodeAddressForm ModeSwitchContainer {
   height: auto;
 }
 
-SetNodeAddress NodesList.-hidden, SetNodeAddress ManualNode.-hidden {
+SetNodeAddressForm NodesList.-hidden, SetNodeAddressForm ManualNode.-hidden {
   display: none;
 }
 
-SetNodeAddress ModeSwitchContainer Static {
+SetNodeAddressForm ModeSwitchContainer Static {
   text-align: left;
   padding: 1 2;
 }
 
-SetNodeAddress ManualNode Button {
+SetNodeAddressForm ManualNode Button {
   background: $primary;
   margin-top: 1;
 }
