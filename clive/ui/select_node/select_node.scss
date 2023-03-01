@@ -1,0 +1,25 @@
+SelectNode ViewBag {
+  padding: 2 4;
+}
+
+SelectNode NodesList {
+  height: auto;
+}
+
+SelectNode NodesList.-hidden, SelectNode ManualNode.-hidden {
+  display: none;
+}
+
+SelectNode ModeSwitchContainer {
+  height: auto;
+}
+
+SelectNode ModeSwitchContainer Static {
+  text-align: left;
+  padding: 1 2;
+}
+
+SelectNode ManualNode Button {
+  background: $primary;
+  margin-top: 1;
+}
