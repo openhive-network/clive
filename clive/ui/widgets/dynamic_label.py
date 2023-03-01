@@ -19,8 +19,9 @@ class DynamicLabel(Label):
         *,
         prefix: str = "",
         id_: str | None = None,
+        classes: str | None = None,
     ) -> None:
-        super().__init__("DynamicLabel was not updated!", id=id_)
+        super().__init__("DynamicLabel was not updated!", id=id_, classes=classes)
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__callback = callback
