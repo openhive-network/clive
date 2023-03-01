@@ -1,25 +1,27 @@
-SetNodeAddress ViewBag {
-    layout: grid;
-    grid-size: 5 4;
+SetNodeAddress BigTitle {
+  margin-top: 2;
+  height: 5;
+  content-align: center middle;
 }
 
-SetNodeAddress ViewBag BigTitle {
-    margin-top: 2;
-    width: 100%;
-    height: 5;
-    row-span: 1;
-    column-span: 5;
-    content-align: center middle;
+SetNodeAddress Body {
+  padding: 2 4;
 }
 
-SetNodeAddress ViewBag Label {
-    width: 100%;
-    height: 3;
-    content-align: right middle;
+SetNodeAddress NodesList, SetNodeAddress ManualNode, SetNodeAddress ModeSwitchContainer {
+  height: auto;
 }
 
-SetNodeAddress ViewBag Input {
-    width: 100%;
-    column-span: 4;
-    margin-right: 5;
+SetNodeAddress NodesList.-hidden, SetNodeAddress ManualNode.-hidden {
+  display: none;
+}
+
+SetNodeAddress ModeSwitchContainer Static {
+  text-align: left;
+  padding: 1 2;
+}
+
+SetNodeAddress ManualNode Button {
+  background: $primary;
+  margin-top: 1;
 }

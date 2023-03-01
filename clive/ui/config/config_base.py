@@ -6,7 +6,7 @@ from textual.binding import Binding
 from textual.widgets import Button, Static
 
 from clive.abstract_class import AbstractClassMessagePump
-from clive.ui.select_node.select_node import SelectNode
+from clive.ui.set_node_address.set_node_address import SetNodeAddress
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.dialog_container import DialogContainer
 
@@ -31,7 +31,7 @@ class ConfigBase(BaseScreen, AbstractClassMessagePump):
             yield from self.additional_buttons()
 
     def action_select_node(self) -> None:
-        self.app.push_screen(SelectNode())
+        self.app.push_screen(SetNodeAddress())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "select-node":
