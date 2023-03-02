@@ -6,6 +6,8 @@ from clive.ui.manage_authorities import NewAuthorityForm
 from clive.ui.registration.registration import RegistrationForm
 from clive.ui.set_account.set_account import SetAccount
 from clive.ui.set_node_address.set_node_address import SetNodeAddressForm
+from clive.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
+from clive.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.ui.shared.form import Form, ScreenBuilder
 
 
@@ -15,3 +17,9 @@ class Onboarding(Form):
         yield SetNodeAddressForm
         yield SetAccount
         yield NewAuthorityForm
+
+    def create_welcome_screen(self) -> WelcomeFormScreen:
+        return WelcomeFormScreen("Let's start onboarding! 🚢")
+
+    def create_finish_screen(self) -> FinishFormScreen:
+        return FinishFormScreen("Now you are ready to enter Clive 🚀")
