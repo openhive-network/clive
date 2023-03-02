@@ -5,9 +5,13 @@ import shelve
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
 from clive.config import DATA_DIRECTORY
+from clive.models.transfer_operation import TransferOperation
+
+if TYPE_CHECKING:
+    from clive.models.operation import Operation
 
 
 class AccountType(str, Enum):
@@ -87,6 +91,16 @@ class ProfileData:
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
     watched_accounts: list[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
+    operations_cart: list[Operation] = [
+        TransferOperation(
+            asset="HIVE",
+            from_="anna",
+            to=f"acc-{i}",
+            amount=f"{random.uniform(0, 100) :.3f}",
+            memo=f"transfero numero {i+1}",
+        )
+        for i in range(5)
+    ]
 
     def save(self) -> None:
         from clive.ui.app import clive_app
