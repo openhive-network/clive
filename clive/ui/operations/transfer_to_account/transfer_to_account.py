@@ -87,13 +87,13 @@ class TransferToAccount(CartBasedScreen):
         self.__collect_data()
 
     def __collect_data(self) -> None:
-        self.app.profile_data.operations_cart.append(
-            TransferOperation(
-                asset=self.__currency_selector.text,
-                from_=str(self.app.profile_data.active_account.name),
-                to=self.__to_input.value,
-                amount=self.__amount_input.value,
-                memo=self.__memo_input.value,
-            )
+        op = TransferOperation(
+            asset=self.__currency_selector.text,
+            from_=str(self.app.profile_data.active_account.name),
+            to=self.__to_input.value,
+            amount=self.__amount_input.value,
+            memo=self.__memo_input.value,
         )
-        self.app.update_reactive("profile_data")
+        if op.is_valid():
+            self.app.profile_data.operations_cart.append(op)
+            self.app.update_reactive("profile_data")
