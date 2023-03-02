@@ -28,5 +28,9 @@ class Operation(AbstractClass):
         return json.dumps(dataclasses.asdict(self), indent=4)
 
     @abstractmethod
+    def pretty_print(self) -> str:
+        """This method should return short, formatted description of operation without op type"""
+
+    @abstractmethod
     def is_valid(self) -> bool:
         """This is abstract method, that should be implemented by each child"""
