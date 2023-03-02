@@ -1,0 +1,27 @@
+FinishFormScreen DialogContainer {
+	layout: grid;
+}
+
+FinishFormScreen DialogContainer BigTitle {
+	content-align: center middle;
+	width: 100%;
+	margin: 2;
+}
+
+FinishFormScreen DialogContainer Static {
+	content-align: center middle;
+	width: 100%;
+	margin: 2;
+}
+
+FinishFormScreen DialogContainer Container {
+	layout: grid;
+	grid-size: 2 1;
+	height: 100%;
+	width: 100%;
+}
+
+FinishFormScreen DialogContainer Container Button {
+	width: 100%;
+	background: $primary-background-darken-2;
+}
