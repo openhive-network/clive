@@ -139,8 +139,8 @@ class CartOperationTitle(Static):
 
 class Cart(BaseScreen):
     BINDINGS = [
+        Binding("escape", "pop_screen", "Operations"),
         Binding("f1", "summary", "Summary"),
-        Binding("f2", "back_to_op_list", "Add"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
@@ -155,16 +155,10 @@ class Cart(BaseScreen):
         yield Button("📦️ summary", id="cart_operations_go_to_summary")
         yield Button("+ add more operations", id="cart_operations_more_ops")
 
-    def action_back_to_op_list(self) -> None:
-        while len(self.app.screen_stack) != 0:
-            self.app.pop_screen()
-
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummary())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
-        if event.button.id == "cart_operations_more_ops":
-            self.action_back_to_op_list()
-        elif event.button.id == "cart_operations_go_to_summary":
+        if event.button.id == "cart_operations_go_to_summary":
             self.action_summary()
