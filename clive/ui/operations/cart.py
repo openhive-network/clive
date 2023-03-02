@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
+from textual.message import Message
 from textual.widgets import Button, Static
 
 from clive.ui.operations.tranaction_summary import TransactionSummary
@@ -80,23 +81,21 @@ class ScrollablePart(Container):
 
 
 class DetailedCartOperation(ColumnLayout, CliveWidget):
-    def __init__(self, operation: Operation) -> None:
-        self.__operation = operation
-        self.__operation_idx = self.app.profile_data.operations_cart.index(operation)
+    class Deleted(Message):
+        def __init__(self, sender: DetailedCartOperation, deleted: Operation) -> None:
+            self.deleted = deleted
+            super().__init__(sender)
+
+    class Move(Message):
+        def __init__(self, sender: DetailedCartOperation, from_idx: int, to_idx: int) -> None:
+            self.from_idx = from_idx
+            self.to_idx = to_idx
+            super().__init__(sender)
+
+    def __init__(self, operation_idx: int) -> None:
+        self.__operation_idx = operation_idx
         assert self.is_valid(), "During construction, index has to be valid"
         super().__init__()
-
-    def __sync_position(self) -> None:
-        if self.is_valid() and self.app.profile_data.operations_cart[self.__operation_idx] == self.__operation:
-            return
-
-        if self.__operation in self.app.profile_data.operations_cart:
-            self.__operation_idx = self.app.profile_data.operations_cart.index(self.__operation)
-        elif self.is_valid():
-            self.__operation = self.app.profile_data.operations_cart[self.__operation_idx]
-
-    def on_mount(self) -> None:
-        self.watch(self.app, "profile_data", self.__sync_position)
 
     def is_valid(self) -> bool:
         return self.__operation_idx < self.__operations_count
@@ -105,67 +104,61 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
         def operation_index(_: ProfileData) -> str:
             if self.is_valid():
                 return f"{self.__operation_idx + 1}."
-            return "⌛"
+            return ""
 
         def operation_name(_: ProfileData) -> str:
             if self.is_valid():
                 return self.__operation.type_
-            return "⌛"
+            return ""
 
         def operation_details(_: ProfileData) -> str:
             if self.is_valid():
                 return self.__operation.pretty_print()
-            return "⌛"
+            return ""
 
-        yield DynamicColumn(self.app, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell")
-        yield DynamicColumn(self.app, "profile_data", operation_name, id_="operation_type", classes="cell cell-variant")
+        yield DynamicColumn(
+            self.app, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell cell-middle"
+        )
+        yield DynamicColumn(
+            self.app, "profile_data", operation_name, id_="operation_type", classes="cell cell-variant cell-middle"
+        )
         yield DynamicColumn(self.app, "profile_data", operation_details, id_="operation_details", classes="cell")
         yield ButtonMoveUp(disabled=self.__operation_idx == 0)
-        yield ButtonMoveDown(disabled=self.__operation_idx >= self.__operations_count)
+        yield ButtonMoveDown(disabled=self.__operation_idx >= self.__operations_count - 1)
         yield ButtonDelete()
 
     @property
     def __operations_count(self) -> int:
         return len(self.app.profile_data.operations_cart)
 
+    @property
+    def __operation(self) -> Operation:
+        assert self.is_valid(), "cannot get operation, position is invalid"
+        return self.app.profile_data.operations_cart[self.__operation_idx]
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
-            self.app.profile_data.operations_cart.remove(self.__operation)
-            self.add_class("deleted")
-            self.remove()
+            self.post_message_no_wait(self.Deleted(self, self.__operation))
         elif event.button.id == "move-up-button":
-            changed = True
-            assert self.__operation_idx != 0, "can't move up first operation"
-            (
-                self.app.profile_data.operations_cart[self.__operation_idx - 1],
-                self.app.profile_data.operations_cart[self.__operation_idx],
-            ) = (
-                self.app.profile_data.operations_cart[self.__operation_idx],
-                self.app.profile_data.operations_cart[self.__operation_idx - 1],
-            )
+            self.post_message_no_wait(self.Move(self, self.__operation_idx, self.__operation_idx - 1))
         elif event.button.id == "move-down-button":
-            changed = True
-            assert self.__operation_idx < self.__operations_count - 1
-            (
-                self.app.profile_data.operations_cart[self.__operation_idx + 1],
-                self.app.profile_data.operations_cart[self.__operation_idx],
-            ) = (
-                self.app.profile_data.operations_cart[self.__operation_idx],
-                self.app.profile_data.operations_cart[self.__operation_idx + 1],
-            )
-        if changed:
-            self.app.update_reactive("profile_data")
+            self.post_message_no_wait(self.Move(self, self.__operation_idx, self.__operation_idx + 1))
+
+    def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
+        if event.to_idx == self.__operation_idx:
+            self.__operation_idx = event.from_idx
+        self.app.update_reactive("profile_data")
 
 
 class CartOperationsHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="operation_position_in_trx", classes="cell")
-        yield StaticColumn("Operation Type", id="operation_type", classes="cell cell-variant")
-        yield StaticColumn("Operation Details", id="operation_details", classes="cell")
-        yield StaticColumn("Move Up", classes="cell cell-variant")
-        yield StaticColumn("Move Down", classes="cell")
-        yield StaticColumn("Delete", classes="cell cell-variant")
+        yield StaticColumn("No.", id="operation_position_in_trx", classes="cell cell-middle")
+        yield StaticColumn("Operation Type", id="operation_type", classes="cell cell-variant cell-middle")
+        yield StaticColumn("Operation Details", id="operation_details", classes="cell cell-middle")
+        yield StaticColumn("Move Up", classes="cell cell-variant cell-middle")
+        yield StaticColumn("Move Down", classes="cell cell-middle")
+        yield StaticColumn("Delete", classes="cell cell-variant cell-middle")
 
 
 class Cart(BaseScreen):
@@ -186,10 +179,29 @@ class Cart(BaseScreen):
                 yield CartOperationsHeader()
 
             with ScrollablePart():
-                for operation in self.app.profile_data.operations_cart:
-                    yield DetailedCartOperation(operation)
+                for idx, _ in enumerate(self.app.profile_data.operations_cart):
+                    yield DetailedCartOperation(idx)
 
             yield Static()
+
+    def on_detailed_cart_operation_deleted(self, event: DetailedCartOperation.Deleted) -> None:
+        widget = self.query(DetailedCartOperation).last()
+        self.app.profile_data.operations_cart.remove(event.deleted)
+        widget.add_class("deleted")
+        widget.remove()
+        self.app.update_reactive("profile_data")
+
+    def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
+        assert event.to_idx >= 0 and event.to_idx < len(self.app.profile_data.operations_cart)
+
+        self.__swap_operations(event.from_idx, event.to_idx)
+        self.app.update_reactive("profile_data")
+
+    def __swap_operations(self, first_index: int, second_index: int) -> None:
+        self.app.profile_data.operations_cart[first_index], self.app.profile_data.operations_cart[second_index] = (
+            self.app.profile_data.operations_cart[second_index],
+            self.app.profile_data.operations_cart[first_index],
+        )
 
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummary())
