@@ -21,6 +21,7 @@ if TYPE_CHECKING:
 class TransactionSummary(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cart"),
+        Binding("f1", "dashboard", "Dashboard"),
         Binding("f10", "save", "Save"),
         Binding("f11", "broadcast", "Broadcast"),
     ]
@@ -61,3 +62,7 @@ class TransactionSummary(BaseScreen):
 
     def action_broadcast(self) -> None:
         self.__clear_all()
+        self.action_dashboard()
+
+    def action_dashboard(self) -> None:
+        self.app.pop_screen_until("DashboardActive")

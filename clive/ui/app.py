@@ -88,6 +88,18 @@ class Clive(App[int]):
     def pop_screen(self) -> Screen:
         return self.__update_screen("pop_screen")
 
+    def pop_screen_until(self, screen: str | type[Screen]) -> None:
+        """Pop all screens until the given screen is on top of the stack."""
+
+        screen_name = screen if isinstance(screen, str) else screen.__name__
+
+        if screen_name not in [screen.__class__.__name__ for screen in self.screen_stack]:
+            raise ValueError(f"Screen {screen_name} is not in the screen stack.")
+
+        with self.batch_update():
+            while self.screen_stack[-1].__class__.__name__ != screen_name:
+                self.pop_screen()
+
     def switch_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("switch_screen", screen)
 
