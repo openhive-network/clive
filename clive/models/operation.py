@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import dataclasses
 import json
+from abc import abstractmethod
 from itertools import count
 from typing import ClassVar
 
@@ -25,3 +26,7 @@ class Operation(AbstractClass):
 
     def as_json(self) -> str:
         return json.dumps(dataclasses.asdict(self), indent=4)
+
+    @abstractmethod
+    def is_valid(self) -> bool:
+        """This is abstract method, that should be implemented by each child"""
