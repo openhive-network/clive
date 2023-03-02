@@ -1,0 +1,67 @@
+Cart CartOperationTitle {
+  layout: grid;
+  grid-size: 10 1;
+  height: 5;
+  width: 100%;
+  border: $primary;
+  margin: 1 5;
+}
+
+Cart ColumnLayout {
+  layout: grid;
+  grid-size: 10 1;
+  grid-gutter: 1;
+  content-align: center middle;
+  margin-top: 1;
+  height: 3;
+}
+
+Cart .OddColumn {
+  background: $primary-background-darken-1;
+  content-align: center middle;
+  height: 3;
+  width: 100%;
+}
+
+Cart .EvenColumn {
+  background: $primary-background-darken-2;
+  content-align: center middle;
+  height: 3;
+  width: 100%;
+}
+
+Cart CartOperationsHeader {
+  margin: 1 5;
+}
+
+Cart DetailedCartOperation {
+  margin: 1 5;
+}
+
+Cart DetailedCartOperation Button {
+  content-align: center middle;
+  column-span: 1;
+  width: 100%;
+}
+
+Cart .deleted {
+  display: none;
+}
+
+Cart #operation_position_in_trx {
+  column-span: 1;
+}
+
+Cart #operation_type {
+  column-span: 2;
+}
+
+Cart #operation_details {
+  column-span: 5;
+}
+
+Cart CartOperationTitle #cart_operations_title_label {
+  content-align: center middle;
+  column-span: 8;
+  height: 3;
+}

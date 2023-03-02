@@ -7,6 +7,7 @@ from textual.containers import Grid, Horizontal
 from textual.widgets import Button, Input, Static
 
 from clive.models.transfer_operation import TransferOperation
+from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
@@ -82,6 +83,7 @@ class TransferToAccount(CartBasedScreen):
 
     def action_finalize(self) -> None:
         self.__collect_data()
+        self.app.push_screen(Cart())
 
     def action_add_to_cart(self) -> None:
         self.__collect_data()
