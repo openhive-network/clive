@@ -3,15 +3,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Container, Grid
-from textual.widget import Widget
 from textual.widgets import Static
 
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.storage.mock_database import NodeData
+    from clive.models.operation import Operation
+    from clive.storage.mock_database import NodeData, ProfileData
 
 
 class Resources(Grid):
@@ -22,22 +23,43 @@ class CartInfoContainer(Container):
     """A container that holds the label with amount of items and items itself."""
 
 
-class CartItem(Static):
+class CartItem(DynamicLabel):
     """Holds the cart item info."""
 
+    def __init__(
+        self, operation: Operation, *, prefix: str = "", id_: str | None = None, classes: str | None = None
+    ) -> None:
+        self._operation = operation
+        super().__init__(self.app, "profile_data", self.__fetch_operation_info, prefix=prefix, id_=id_, classes=classes)
 
-class CartItemsAmount(Static):
+    def __fetch_operation_info(self, profile_data: ProfileData) -> str:
+        if self._operation in profile_data.operations_cart:
+            idx = profile_data.operations_cart.index(self._operation)
+            return f"{idx + 1}. {self._operation.type_} operation"
+        else:
+            self.add_class("deleted")
+            self.remove()
+        return ""
+
+
+class CartItemsAmount(DynamicLabel):
     """Holds the cart items amount info."""
 
-    def __init__(self, amount: int) -> None:
-        super().__init__(f"{amount} OPERATIONS IN THE CART" if amount > 0 else "CART IS EMPTY")
+    def __init__(self) -> None:
+        super().__init__(self.app, "profile_data", self.__get_cart_item_count)
+
+    def __get_cart_item_count(self, profile_data: ProfileData) -> str:
+        amount = len(profile_data.operations_cart)
+        if amount > 0:
+            return f"{amount} OPERATIONS IN THE CART"
+        return "CART IS EMPTY"
 
 
 class CartItemsContainer(Container):
     """A container that holds the cart items."""
 
 
-class CartOverview(Widget):
+class CartOverview(CliveWidget):
     def compose(self) -> ComposeResult:
         with Resources():
             yield Static("Resource credits (RC):")
@@ -49,10 +71,41 @@ class CartOverview(Widget):
             yield Static("HBD balance:")
             yield DynamicLabel(self.app, "node_data", self.__get_hbd_balance)
         with CartInfoContainer():
-            yield CartItemsAmount(len(self.__get_operations_from_cart()))
-            with CartItemsContainer():
-                yield from self.__get_operations_from_cart()
+            yield CartItemsAmount()
+            self.__cart_operations_mount_point = CartItemsContainer()
+            with self.__cart_operations_mount_point:
+                self.__current_cart_operations = self.__get_operations_from_cart()
+                yield from self.__current_cart_operations
         yield Static()
+
+    def on_mount(self) -> None:
+        self.watch(self.app, "profile_data", callback=self.__sync_cart_items)
+
+    def __sync_cart_items(self) -> None:
+        current_ops = self.__get_operations_from_cart()
+
+        def find_in_current_ops(op: CartItem) -> CartItem | None:
+            for x in current_ops:
+                # this custom comparator is because every time new objects are created
+                # and shallow comparison returns false positive, that none of these
+                # CartItem exists. Overriding __eq__ is invalid, because it breaks
+                # textual internally. Comparison in this case has to be done on
+                # Operation object, not CartItem
+                if x._operation == op._operation:
+                    return x
+            return None
+
+        for op in self.__current_cart_operations:
+            nop = find_in_current_ops(op)
+            if nop is not None:
+                current_ops.remove(nop)
+            else:
+                op.add_class("deleted")
+                op.remove()
+
+        if len(current_ops) > 0:
+            self.__cart_operations_mount_point.mount(*current_ops)
+        self.__current_cart_operations = self.__get_operations_from_cart()
 
     @staticmethod
     def __get_rc(node_data: NodeData) -> str:
@@ -66,8 +119,5 @@ class CartOverview(Widget):
     def __get_hbd_balance(node_data: NodeData) -> str:
         return f"{node_data.hive_dollars:.2f} HBD"
 
-    @staticmethod
-    def __get_operations_from_cart() -> list[Static]:
-        items_in_cart = 50
-
-        return [CartItem(f"{i + 1}. Transfer to account") for i in range(items_in_cart)]
+    def __get_operations_from_cart(self) -> list[CartItem]:
+        return [CartItem(op) for op in self.app.profile_data.operations_cart]
