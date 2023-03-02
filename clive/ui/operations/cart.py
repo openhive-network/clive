@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
+from textual.containers import Container, Horizontal
 from textual.widgets import Button, Static
 
 from clive.ui.operations.tranaction_summary import TransactionSummary
@@ -15,6 +16,7 @@ from clive.ui.widgets.view_bag import ViewBag
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.models.operation import Operation
     from clive.storage.mock_database import ProfileData
 
 
@@ -30,20 +32,61 @@ class ColumnLayout(Static):
     """This class holds column order"""
 
 
-odd = "OddColumn"
-even = "EvenColumn"
+class ButtonsContainer(Horizontal):
+    """Container for the buttons"""
+
+
+class ButtonMoveUp(Button):
+    """Button used for moving the operation up in the cart"""
+
+    def __init__(self, *, disabled: bool = False) -> None:
+        super().__init__("🔼", id="move-up-button", disabled=disabled)
+
+
+class ButtonMoveDown(Button):
+    """Button used for moving the operation down in the cart"""
+
+    def __init__(self, *, disabled: bool = False) -> None:
+        super().__init__("🔽", id="move-down-button", disabled=disabled)
+
+
+class ButtonDelete(Button):
+    """Button used for removing the operation from cart"""
+
+    def __init__(self) -> None:
+        super().__init__("🗑️", id="delete-button")
+
+
+class ButtonSummary(Button):
+    """Button used for navigating to the operations summary"""
+
+    def __init__(self) -> None:
+        super().__init__("📝 Summary", id="summary-button")
+
+
+class ButtonOperations(Button):
+    """Button used for navigating to the operations choice screen"""
+
+    def __init__(self) -> None:
+        super().__init__("🔙 Add more ops", id="operations-button")
+
+
+class StaticPart(Static):
+    """Container for the static part of the screen - title, global buttons and table header"""
+
+
+class ScrollablePart(Container):
+    """Container used for holding operation items"""
 
 
 class DetailedCartOperation(ColumnLayout, CliveWidget):
-    def __init__(self, operation_idx: int) -> None:
-        self.__operation_idx = operation_idx
+    def __init__(self, operation: Operation) -> None:
+        self.__operation = operation
+        self.__operation_idx = self.app.profile_data.operations_cart.index(operation)
         assert self.is_valid(), "During construction, index has to be valid"
-        self.__operation = self.app.profile_data.operations_cart[self.__operation_idx]
         super().__init__()
 
     def __sync_position(self) -> None:
-        self.log.debug("__sync_position")
-
         if self.is_valid() and self.app.profile_data.operations_cart[self.__operation_idx] == self.__operation:
             return
 
@@ -74,17 +117,12 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
                 return self.__operation.as_json()
             return "⌛"
 
-        yield DynamicColumn(self.app, "profile_data", operation_index, id_="operation_position_in_trx", classes=even)
-        yield DynamicColumn(self.app, "profile_data", operation_name, id_="operation_type", classes=odd)
-        yield DynamicColumn(self.app, "profile_data", operation_details, id_="operation_details", classes=even)
-        yield Button("⬆️", id="move_operation_up_button", classes=odd, disabled=(self.__operation_idx == 0))
-        yield Button(
-            "⬇️",
-            id="move_operation_down_button",
-            classes=odd,
-            disabled=(self.__operation_idx >= self.__operations_count),
-        )
-        yield Button("🗑️", id="remove_operation_button", classes=odd)
+        yield DynamicColumn(self.app, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell")
+        yield DynamicColumn(self.app, "profile_data", operation_name, id_="operation_type", classes="cell cell-variant")
+        yield DynamicColumn(self.app, "profile_data", operation_details, id_="operation_details", classes="cell")
+        yield ButtonMoveUp(disabled=self.__operation_idx == 0)
+        yield ButtonMoveDown(disabled=self.__operation_idx >= self.__operations_count)
+        yield ButtonDelete()
 
     @property
     def __operations_count(self) -> int:
@@ -92,13 +130,11 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
-        changed = False
-        if event.button.id == "remove_operation_button":
-            changed = True
+        if event.button.id == "delete-button":
             self.app.profile_data.operations_cart.remove(self.__operation)
             self.add_class("deleted")
             self.remove()
-        elif event.button.id == "move_operation_up_button":
+        elif event.button.id == "move-up-button":
             changed = True
             assert self.__operation_idx != 0, "can't move up first operation"
             (
@@ -108,7 +144,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
                 self.app.profile_data.operations_cart[self.__operation_idx],
                 self.app.profile_data.operations_cart[self.__operation_idx - 1],
             )
-        elif event.button.id == "move_operation_down_button":
+        elif event.button.id == "move-down-button":
             changed = True
             assert self.__operation_idx < self.__operations_count - 1
             (
@@ -124,17 +160,12 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
 class CartOperationsHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="operation_position_in_trx", classes=even)
-        yield StaticColumn("Operation Type", id="operation_type", classes=odd)
-        yield StaticColumn("Operation Details", id="operation_details", classes=even)
-        yield StaticColumn("Move Up", classes=odd)
-        yield StaticColumn("Move Down", classes=even)
-        yield StaticColumn("Delete", classes=odd)
-
-
-class CartOperationTitle(Static):
-    def compose(self) -> ComposeResult:
-        yield BigTitle("staged ops", id="cart_operations_title_label")
+        yield StaticColumn("No.", id="operation_position_in_trx", classes="cell")
+        yield StaticColumn("Operation Type", id="operation_type", classes="cell cell-variant")
+        yield StaticColumn("Operation Details", id="operation_details", classes="cell")
+        yield StaticColumn("Move Up", classes="cell cell-variant")
+        yield StaticColumn("Move Down", classes="cell")
+        yield StaticColumn("Delete", classes="cell cell-variant")
 
 
 class Cart(BaseScreen):
@@ -144,23 +175,28 @@ class Cart(BaseScreen):
     ]
 
     def create_main_panel(self) -> ComposeResult:
-        yield CartOperationTitle()
-        yield CartOperationsHeader()
+        with ViewBag():
+            with StaticPart():
+                yield BigTitle("operations cart")
 
-        self.__mount_point_for_ops = ViewBag()
-        with self.__mount_point_for_ops:
-            for i, _ in enumerate(self.app.profile_data.operations_cart):
-                yield DetailedCartOperation(i)
+                with ButtonsContainer():
+                    yield ButtonOperations()
+                    yield ButtonSummary()
 
-        yield Button("📦️ summary", id="cart_operations_go_to_summary")
-        yield Button("+ add more operations", id="cart_operations_more_ops")
+                yield CartOperationsHeader()
+
+            with ScrollablePart():
+                for operation in self.app.profile_data.operations_cart:
+                    yield DetailedCartOperation(operation)
+
+            yield Static()
 
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummary())
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
-        if event.button.id == "cart_operations_go_to_summary":
+        if event.button.id == "summary-button":
             self.action_summary()
-        elif event.button.id == "cart_operations_more_ops":
+        elif event.button.id == "operations-button":
             self.app.pop_screen()
