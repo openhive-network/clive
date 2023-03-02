@@ -114,7 +114,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
         def operation_details(_: ProfileData) -> str:
             if self.is_valid():
-                return self.__operation.as_json()
+                return self.__operation.pretty_print()
             return "⌛"
 
         yield DynamicColumn(self.app, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell")

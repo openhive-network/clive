@@ -22,3 +22,6 @@ class TransferOperation(Operation):
             and len(self.to) > 0
             and len(self.from_) > 0
         )
+
+    def pretty_print(self) -> str:
+        return f"to={self.to}\namount={self.amount} {self.asset}\nmemo={self.memo}"
