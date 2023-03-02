@@ -87,6 +87,7 @@ class TransferToAccount(CartBasedScreen):
 
     def action_add_to_cart(self) -> None:
         self.__collect_data()
+        self.app.pop_screen()
 
     def __collect_data(self) -> None:
         op = TransferOperation(
