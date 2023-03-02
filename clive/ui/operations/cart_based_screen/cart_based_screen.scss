@@ -21,6 +21,7 @@ CartBasedScreen CartOverview CartItemsAmount {
   column-span: 2;
   text-align: center;
   text-style: bold;
+  width: 100%;
 }
 
 CartBasedScreen CartOverview CartInfoContainer {
