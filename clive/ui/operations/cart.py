@@ -162,3 +162,5 @@ class Cart(BaseScreen):
         """Event handler called when a button is pressed."""
         if event.button.id == "cart_operations_go_to_summary":
             self.action_summary()
+        elif event.button.id == "cart_operations_more_ops":
+            self.app.pop_screen()
