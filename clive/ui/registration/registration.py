@@ -23,10 +23,12 @@ class RegistrationCommon(BaseScreen):
             yield Input(placeholder="Password", password=True, id="password_input")
             yield Static("Repeat password", classes="label")
             yield Input(placeholder="Repeat Password", password=True, id="repeat_password_input")
+            yield Static()
+            yield Button("Register", variant="primary", id="register-button")
             yield from self._panel_extras()
 
     def _panel_extras(self) -> ComposeResult:
-        yield Static()
+        return []
 
     def on_mount(self) -> None:
         self.query(Input).first().focus()
@@ -59,8 +61,6 @@ class Registration(RegistrationCommon):
 
     def _panel_extras(self) -> ComposeResult:
         yield Static()
-        yield Button("Register", variant="primary", id="register-button")
-        yield Static()
         yield FocusableLink("Login instead", self.action_login)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -83,3 +83,7 @@ class RegistrationForm(RegistrationCommon, FormScreen):
 
     def action_save(self) -> None:
         self.save_profile_data()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "register-button":
+            self.action_save()
