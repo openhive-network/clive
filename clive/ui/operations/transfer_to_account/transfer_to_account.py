@@ -83,7 +83,7 @@ class TransferToAccount(CartBasedScreen):
 
     def action_finalize(self) -> None:
         self.__collect_data()
-        self.app.push_screen(Cart())
+        self.app.switch_screen(Cart())
 
     def action_add_to_cart(self) -> None:
         self.__collect_data()
