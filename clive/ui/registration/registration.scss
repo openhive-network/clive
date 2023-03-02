@@ -17,3 +17,16 @@ RegistrationCommon DialogContainer .label {
   text-align: right;
   column-span: 2;
 }
+
+Registration DialogContainer Static {
+  column-span: 2;
+}
+
+Registration DialogContainer Button {
+  column-span: 10;
+}
+
+Registration DialogContainer FocusableLink {
+  align: left middle;
+  column-span: 10;
+}
