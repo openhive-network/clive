@@ -1,67 +1,77 @@
-Cart CartOperationTitle {
-  layout: grid;
-  grid-size: 10 1;
+Cart ViewBag {
+  overflow-y: hidden;
+}
+
+Cart StaticPart {
+  height: auto;
+}
+
+Cart BigTitle {
+  margin-top: 2;
   height: 5;
-  width: 100%;
-  border: $primary;
-  margin: 1 5;
+  content-align: center middle;
 }
 
 Cart ColumnLayout {
   layout: grid;
-  grid-size: 10 1;
+  grid-size: 6 1;
+  grid-columns: 5 1fr 2fr 10 10 10;
   grid-gutter: 1;
   content-align: center middle;
-  margin-top: 1;
   height: 3;
 }
 
-Cart .OddColumn {
-  background: $primary-background-darken-1;
-  content-align: center middle;
-  height: 3;
-  width: 100%;
-}
-
-Cart .EvenColumn {
+Cart .cell {
   background: $primary-background-darken-2;
   content-align: center middle;
   height: 3;
   width: 100%;
 }
 
-Cart CartOperationsHeader {
-  margin: 1 5;
+Cart .cell-variant {
+  background: $primary-background-darken-1;
 }
 
-Cart DetailedCartOperation {
-  margin: 1 5;
-}
-
-Cart DetailedCartOperation Button {
-  content-align: center middle;
-  column-span: 1;
-  width: 100%;
+Cart CartOperationsHeader, Cart DetailedCartOperation {
+  margin: 1;
 }
 
 Cart .deleted {
   display: none;
 }
 
-Cart #operation_position_in_trx {
-  column-span: 1;
+Cart ButtonsContainer {
+  margin-right: 1;
+  height: auto;
+  align: right middle;
 }
 
-Cart #operation_type {
-  column-span: 2;
+Cart ButtonOperations {
+  margin-right: 1;
+  background: $primary;
 }
 
-Cart #operation_details {
-  column-span: 5;
+Cart ButtonSummary {
+  background: $success;
 }
 
-Cart CartOperationTitle #cart_operations_title_label {
-  content-align: center middle;
-  column-span: 8;
-  height: 3;
+Cart ButtonMoveUp, Cart ButtonMoveDown {
+  background: $primary;
+}
+
+Cart ButtonMoveUp:focus, Cart ButtonMoveDown:focus {
+  background: $primary-darken-1;
+}
+
+Cart ButtonDelete {
+  background: $error;
+}
+
+Cart ButtonDelete:focus {
+  background: $error-darken-1;
+}
+
+Cart Scrollable {
+  overflow-y: scroll;
+  height: 1fr;
 }
