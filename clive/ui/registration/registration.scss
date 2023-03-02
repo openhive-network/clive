@@ -1,5 +1,7 @@
 RegistrationCommon DialogContainer {
-  grid-size: 12 5;
+  grid-columns: 12 1fr;
+  grid-rows: 4;
+  grid-size: 2;
   layout: grid;
 }
 
@@ -8,25 +10,7 @@ RegistrationCommon Button {
   width: 100%;
 }
 
-RegistrationCommon DialogContainer Input {
-  column-span: 10;
-}
-
-RegistrationCommon DialogContainer .label {
+RegistrationCommon .label {
   padding: 1 2;
   text-align: right;
-  column-span: 2;
-}
-
-Registration DialogContainer Static {
-  column-span: 2;
-}
-
-Registration DialogContainer Button {
-  column-span: 10;
-}
-
-Registration DialogContainer FocusableLink {
-  align: left middle;
-  column-span: 10;
 }
