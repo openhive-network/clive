@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Literal, overload
 
@@ -69,7 +70,18 @@ class Clive(App[int]):
         asyncio.create_task(self.background_task())
         if settings.LOG_DEBUG_LOOP:
             asyncio.create_task(self.debug_task())
-        self.push_screen(Onboarding())
+        self.push_screen(DashboardInactive())
+        if (
+            not (
+                self.profile_data.name is not None
+                and len(self.profile_data.name) > 0
+                and self.profile_data.password is not None
+                and len(self.profile_data.password) > 0
+                and self.profile_data.node_address is not None
+            )
+            or "ONBOARD" in os.environ
+        ):
+            self.push_screen(Onboarding())
 
     def push_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
