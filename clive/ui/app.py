@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import os
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Literal, overload
 
@@ -79,7 +78,7 @@ class Clive(App[int]):
                 and len(self.profile_data.password) > 0
                 and self.profile_data.node_address is not None
             )
-            or "ONBOARD" in os.environ
+            or settings.FORCE_ONBOARDING
         ):
             self.push_screen(Onboarding())
 
