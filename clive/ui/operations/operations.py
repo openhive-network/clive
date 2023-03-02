@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 from textual.widgets import Button, Static
 
+from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.ui.widgets.dialog_container import DialogContainer
@@ -29,4 +30,4 @@ class Operations(CartBasedScreen):
             self.app.push_screen(TransferToAccount())
 
     def action_cart(self) -> None:
-        self.log("Should go to the cart management screen")
+        self.app.push_screen(Cart())
