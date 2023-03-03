@@ -29,7 +29,6 @@ class AuthorityForm(BaseScreen):
 
         def __init__(self, sender: AuthorityForm, authority: PrivateKey) -> None:
             self.authority = authority
-            self.bubble
             super().__init__(sender)
 
     class Canceled(Message, bubble=True):
