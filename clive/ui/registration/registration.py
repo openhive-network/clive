@@ -96,7 +96,9 @@ class RegistrationForm(RegistrationCommon, FormScreen):
     BINDINGS = [Binding("f10", "save", "Save")]
 
     def action_save(self) -> None:
-        self._create_profile()
+        if self._create_profile():
+            self._owner.action_next_screen()
+            self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "register-button":
