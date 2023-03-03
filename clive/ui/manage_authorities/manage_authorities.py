@@ -95,3 +95,7 @@ class ManageAuthorities(BaseScreen):
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.mount(Authority(event.authority), self.__mount_point)
+        self.app.pop_screen()
+
+    def on_authority_form_canceled(self, _: AuthorityForm.Canceled) -> None:
+        self.app.pop_screen()
