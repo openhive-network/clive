@@ -9,6 +9,7 @@ from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.dialog_container import DialogContainer
 from clive.ui.widgets.focusable_link import FocusableLink
+from clive.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -33,23 +34,35 @@ class RegistrationCommon(BaseScreen):
     def on_mount(self) -> None:
         self.query(Input).first().focus()
 
-    def save_profile_data(self) -> None:
+    def _create_profile(self) -> bool:
+        """
+        Collects the data from the form and creates a profile.
+        :return: True if the profile was created successfully, False otherwise.
+        """
         minimum_input_length: Final[int] = 3
 
         profile_name = self.get_widget_by_id("profile_name_input", expect_type=Input).value
         password = self.get_widget_by_id("password_input", expect_type=Input).value
         repeated_password = self.get_widget_by_id("repeat_password_input", expect_type=Input).value
 
-        if all(
+        if not all(
             [
                 len(profile_name) >= minimum_input_length,
                 len(password) >= minimum_input_length,
                 (password == repeated_password),
             ]
         ):
-            self.app.profile_data.name = profile_name
-            self.app.profile_data.password = password
-            self.app.update_reactive("profile_data")
+            Notification("Failed the validation process! Could not continue", category="error").show()
+            return False
+        self.app.profile_data.name = profile_name
+        self.app.profile_data.password = password
+        self.app.update_reactive("profile_data")
+        self._show_notification_on_profile_created()
+        return True
+
+    @staticmethod
+    def _show_notification_on_profile_created() -> None:
+        Notification("Profile created successfully!", category="success").show()
 
 
 class Registration(RegistrationCommon):
@@ -71,8 +84,9 @@ class Registration(RegistrationCommon):
         self.app.pop_screen()
 
     def action_register(self) -> None:
-        self.save_profile_data()
-        self.app.pop_screen()
+        if self._create_profile():
+            self.app.pop_screen()
+            self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
 
     def action_login(self) -> None:
         self.app.pop_screen()
@@ -82,7 +96,7 @@ class RegistrationForm(RegistrationCommon, FormScreen):
     BINDINGS = [Binding("f10", "save", "Save")]
 
     def action_save(self) -> None:
-        self.save_profile_data()
+        self._create_profile()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "register-button":
