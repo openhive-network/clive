@@ -11,6 +11,7 @@ from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.ui.widgets.notification import Notification
 from clive.ui.widgets.select.select import Select
 from clive.ui.widgets.select.select_item import SelectItem
 from clive.ui.widgets.view_bag import ViewBag
@@ -82,14 +83,18 @@ class TransferToAccount(CartBasedScreen):
             self.action_add_to_cart()
 
     def action_finalize(self) -> None:
-        self.__collect_data()
-        self.app.switch_screen(Cart())
+        if self.__collect_data():
+            self.app.switch_screen(Cart())
 
     def action_add_to_cart(self) -> None:
-        self.__collect_data()
-        self.app.pop_screen()
+        if self.__collect_data():
+            self.app.pop_screen()
 
-    def __collect_data(self) -> None:
+    def __collect_data(self) -> bool:
+        """
+        Collects data from the screen and creates a new operation based on it.
+        :return: True if the operation was created successfully, False otherwise.
+        """
         op = TransferOperation(
             asset=self.__currency_selector.text,
             from_=str(self.app.profile_data.active_account.name),
@@ -97,6 +102,9 @@ class TransferToAccount(CartBasedScreen):
             amount=self.__amount_input.value,
             memo=self.__memo_input.value,
         )
-        if op.is_valid():
-            self.app.profile_data.operations_cart.append(op)
-            self.app.update_reactive("profile_data")
+        if not op.is_valid():
+            Notification("⚠️  Operation failed the validation process.").send()
+            return False
+        self.app.profile_data.operations_cart.append(op)
+        self.app.update_reactive("profile_data")
+        return True
