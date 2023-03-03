@@ -102,11 +102,13 @@ class _SelectList(Widget):
 
     def select_next(self) -> None:
         if self.__select.selected is not None:
+            assert self.__select_list_view.index is not None, "index must be set"
             self.__select_list_view.index += 1
         self.select_highlighted_item()
 
     def select_previous(self) -> None:
         if self.__select.selected is not None:
+            assert self.__select_list_view.index is not None, "index must be set"
             self.__select_list_view.index -= 1
         self.select_highlighted_item()
 
