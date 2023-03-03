@@ -83,14 +83,14 @@ class TransferToAccount(CartBasedScreen):
             self.action_add_to_cart()
 
     def action_finalize(self) -> None:
-        if self.__collect_data():
+        if self.__create_operation():
             self.app.switch_screen(Cart())
 
     def action_add_to_cart(self) -> None:
-        if self.__collect_data():
+        if self.__create_operation():
             self.app.pop_screen()
 
-    def __collect_data(self) -> bool:
+    def __create_operation(self) -> bool:
         """
         Collects data from the screen and creates a new operation based on it.
         :return: True if the operation was created successfully, False otherwise.
