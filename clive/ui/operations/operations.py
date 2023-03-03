@@ -9,6 +9,7 @@ from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.ui.widgets.dialog_container import DialogContainer
+from clive.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -30,4 +31,8 @@ class Operations(CartBasedScreen):
             self.app.push_screen(TransferToAccount())
 
     def action_cart(self) -> None:
+        if not self.app.profile_data.operations_cart:
+            Notification("📢  There are no operations in the cart! Cannot continue.").send()
+            return
+
         self.app.push_screen(Cart())
