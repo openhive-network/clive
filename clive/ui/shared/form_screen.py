@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.dom import DOMNode
+from textual.screen import Screen
 
 if TYPE_CHECKING:
     from clive.ui.shared.form import Form
 
 
-class FormScreenBase(DOMNode):
+class FormScreenBase(Screen):
     def set_form_owner(self, owner: "Form") -> FormScreenBase:
         self._owner = owner
         return self
