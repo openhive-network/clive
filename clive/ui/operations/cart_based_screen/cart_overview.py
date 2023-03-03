@@ -60,6 +60,12 @@ class CartItemsContainer(Container):
 
 
 class CartOverview(CliveWidget):
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.__cart_items_container = CartItemsContainer()
+        self.__current_cart_operations = self.__get_operations_from_cart()
+
     def compose(self) -> ComposeResult:
         with Resources():
             yield Static("Resource credits (RC):")
@@ -72,9 +78,7 @@ class CartOverview(CliveWidget):
             yield DynamicLabel(self.app, "node_data", self.__get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount()
-            self.__cart_operations_mount_point = CartItemsContainer()
-            with self.__cart_operations_mount_point:
-                self.__current_cart_operations = self.__get_operations_from_cart()
+            with self.__cart_items_container:
                 yield from self.__current_cart_operations
         yield Static()
 
@@ -104,7 +108,7 @@ class CartOverview(CliveWidget):
                 op.remove()
 
         if len(current_ops) > 0:
-            self.__cart_operations_mount_point.mount(*current_ops)
+            self.__cart_items_container.mount(*current_ops)
         self.__current_cart_operations = self.__get_operations_from_cart()
 
     @staticmethod
