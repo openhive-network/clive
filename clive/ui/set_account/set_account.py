@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from re import compile
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Pattern
 
 from rich.highlighter import Highlighter
 from textual.binding import Binding
@@ -18,14 +18,14 @@ if TYPE_CHECKING:
 
 
 class AccountNameHighlighter(Highlighter):
-    hive_account_name_regex = compile(
+    MAX_ACCOUNT_NAME_LENGTH: Final[int] = 14
+    HIVE_ACCOUNT_NAME_REGEX: Final[Pattern[str]] = compile(
         r"^((([a-z0-9])[a-z0-9\-]{1,14}([a-z0-9]))(\.([a-z0-9])[a-z0-9\-]{1,14}([a-z0-9]))*)$"
     )
 
     @classmethod
     def is_valid_account_name(cls, name: str) -> bool:
-        max_account_name_length: Final[int] = 14
-        return len(name) <= max_account_name_length and (cls.hive_account_name_regex.match(name) is not None)
+        return len(name) <= cls.MAX_ACCOUNT_NAME_LENGTH and (cls.HIVE_ACCOUNT_NAME_REGEX.match(name) is not None)
 
     def highlight(self, text: Text) -> None:
         if self.is_valid_account_name(str(text)):
