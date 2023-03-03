@@ -8,3 +8,19 @@ Notification {
   color: $text;
   height: auto;
 }
+
+Notification.success {
+  background: $success;
+}
+
+Notification.info {
+  background: $accent-lighten-1;
+}
+
+Notification.warning {
+  background: $warning;
+}
+
+Notification.error {
+  background: $error;
+}
