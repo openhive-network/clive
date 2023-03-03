@@ -103,7 +103,7 @@ class TransferToAccount(CartBasedScreen):
             memo=self.__memo_input.value,
         )
         if not op.is_valid():
-            Notification("⚠️  Operation failed the validation process.").show()
+            Notification("Operation failed the validation process.", category="error").show()
             return False
         self.app.profile_data.operations_cart.append(op)
         self.app.update_reactive("profile_data")

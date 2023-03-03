@@ -32,7 +32,7 @@ class Operations(CartBasedScreen):
 
     def action_cart(self) -> None:
         if not self.app.profile_data.operations_cart:
-            Notification("📢  There are no operations in the cart! Cannot continue.").show()
+            Notification("There are no operations in the cart! Cannot continue.", category="warning").show()
             return
 
         self.app.push_screen(Cart())
