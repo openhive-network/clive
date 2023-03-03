@@ -1,54 +1,71 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
-from textual.containers import Container, Vertical
-from textual.widgets import Input
+from textual.containers import Container
+from textual.message import Message
+from textual.widgets import Button, Input, Switch
 
+from clive.storage.mock_database import PrivateKey
 from clive.ui.manage_authorities.widgets.authority_inputs import (
     AuthorityDefinitionFromFile,
     AuthorityInputSwitch,
     RawAuthorityDefinition,
 )
-from clive.ui.manage_authorities.widgets.authority_submit_buttons import AuthoritySubmitButtons
 from clive.ui.widgets.big_title import BigTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.storage.mock_database import PrivateKey
-
 
 class AuthorityForm(Container):
-    def __init__(self, authority: PrivateKey, callback: Callable[[], None], title: str) -> None:
-        self.__authority = authority
-        self.__callback = callback
+    BINDINGS = [("f10", "save", "Save")]
+
+    class Saved(Message):
+        """Emitted when user press Save button"""
+
+        def __init__(self, sender: AuthorityForm, authority: PrivateKey) -> None:
+            self.authority = authority
+            super().__init__(sender)
+
+    class Canceled(Message):
+        """Emitted when user press Cancel button"""
+
+    def __init__(self, title: str, existing_authority: PrivateKey | None = None) -> None:
+        self.__existing_authority = existing_authority
         self.__title = title
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        raw_input = RawAuthorityDefinition(self.__authority.key)
-        file_input = AuthorityDefinitionFromFile()
-        name = Input(self.__authority.key_name, "authority name")
-
-        def on_close() -> None:
-            self.app.pop_screen()
-
-        def on_save() -> None:
-            self.__authority.key_name = name.value
-            if not raw_input.has_class("hidden"):
-                self.__authority.key = raw_input.value
-            else:
-                path = Path(file_input.value)
-                with path.open("rt") as file:
-                    self.__authority.key = file.readline().strip("\n")
-            self.__callback()
-            on_close()
-
-        with Vertical():
+        with Container():
             yield BigTitle(self.__title)
-            yield name
-            yield AuthorityInputSwitch(raw_input, file_input)
-            yield Container(raw_input, file_input)
-            yield AuthoritySubmitButtons(on_save, on_close)
+            yield Input(
+                self.__existing_authority.key if self.__existing_authority is not None else "",
+                "authority name",
+                id="authority_name_input",
+            )
+            yield AuthorityInputSwitch()
+            with Container():
+                yield AuthorityDefinitionFromFile()
+                yield RawAuthorityDefinition(
+                    self.__existing_authority.key if self.__existing_authority is not None else ""
+                )
+            with Container(id="user_action_buttons"):
+                yield Button("💾 Save", id="authority_edit_save")
+                yield Button("🚫 Cancel", id="authority_edit_cancel")
+
+    def action_save(self) -> None:
+        name = self.get_widget_by_id("authority_name_input", expect_type=Input).value
+        if self.get_widget_by_id("input_type", expect_type=Switch).value:
+            pv_key = PrivateKey(name, self.query_one(RawAuthorityDefinition).value)
+        else:
+            with Path(self.query_one(AuthorityDefinitionFromFile).value).open("rt") as file:
+                pv_key = PrivateKey(name, file.readline().strip("\n"))
+        self.post_message_no_wait(self.Saved(self, pv_key))
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "authority_edit_save":
+            self.action_save()
+        elif event.button.id == "authority_edit_cancel":
+            self.post_message_no_wait(self.Canceled(self))

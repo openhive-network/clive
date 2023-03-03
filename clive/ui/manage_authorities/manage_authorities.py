@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
+from textual.containers import Container
 from textual.widgets import Button, Static
 
-from clive.storage.mock_database import PrivateKey, ProfileData
 from clive.ui.manage_authorities.edit_authority import EditAuthorities
 from clive.ui.manage_authorities.new_authority import NewAuthority
 from clive.ui.shared.base_screen import BaseScreen
@@ -14,6 +14,9 @@ from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from clive.storage.mock_database import PrivateKey, ProfileData
+    from clive.ui.manage_authorities.widgets.authority_form import AuthorityForm
 
 
 class DynamicColumn(DynamicLabel):
@@ -58,13 +61,7 @@ class Authority(ColumnLayout, CliveWidget):
             self.add_class("deleted")
             self.remove()
         if event.button.id == "edit_authority_button":
-            self.__edit_authority_view()
-
-    def __edit_authority_view(self) -> None:
-        self.app.push_screen(EditAuthorities(self.__authority, self.__update_authority))
-
-    def __update_authority(self) -> None:
-        self.app.update_reactive("profile_data")
+            self.app.push_screen(EditAuthorities(self.__authority))
 
 
 class AuthorityHeader(ColumnLayout):
@@ -84,28 +81,17 @@ class AuthorityTitle(Static):
 
 class ManageAuthorities(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
-        yield AuthorityTitle()
-        self.__last_widget: Any = AuthorityHeader()
-        yield self.__last_widget
-
-        for key in self.app.profile_data.active_account.keys:
-            auth = Authority(key)
-            self.__last_widget = auth
-            yield auth
+        self.__mount_point = Container()
+        with self.__mount_point:
+            yield AuthorityTitle()
+            yield AuthorityHeader()
+            for key in self.app.profile_data.active_account.keys:
+                yield Authority(key)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "add_authority_button":
+            self.app.push_screen(NewAuthority())
 
-            pv_key = PrivateKey("", "")
-
-            def __create_new_authority_callback() -> None:
-                if len(pv_key.key) > 0 and len(pv_key.key_name) > 0:
-                    self.app.profile_data.active_account.keys.append(pv_key)
-
-                    auth = Authority(pv_key)
-                    self.mount(auth, self.__last_widget)
-
-                    self.__last_widget = auth
-
-            self.app.push_screen(NewAuthority(pv_key, __create_new_authority_callback))
+    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
+        self.mount(Authority(event.authority), self.__mount_point)
