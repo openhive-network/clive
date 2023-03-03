@@ -20,6 +20,7 @@ from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
 from clive.ui.shared.help import Help
 from clive.ui.terminal.command_line import CommandLinePrompt
+from clive.ui.widgets.notification import Notification
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
@@ -38,6 +39,7 @@ class Clive(App[int]):
     BINDINGS = [
         Binding("ctrl+c", "push_screen('quit')", "Quit", show=False),
         Binding("ctrl+t", "terminal", "Toggle terminal", show=False),
+        Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("?", "help", "Show help", show=False),
         Binding("l", "mock_log", "Mock log"),
     ]
@@ -132,6 +134,12 @@ class Clive(App[int]):
 
     def action_help(self) -> None:
         self.push_screen(Help(self.screen))
+
+    def action_screenshot(self, filename: str | None = None, path: str = "./") -> None:
+        self.bell()
+        path = self.save_screenshot(filename, path)
+        message = f"Screenshot saved to [bold green]'{path}'[/]"
+        Notification(message).send()
 
     def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
         if message_type == "info":
