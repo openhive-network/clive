@@ -139,7 +139,7 @@ class Clive(App[int]):
         self.bell()
         path = self.save_screenshot(filename, path)
         message = f"Screenshot saved to [bold green]'{path}'[/]"
-        Notification(message).send()
+        Notification(message).show()
 
     def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
         if message_type == "info":
