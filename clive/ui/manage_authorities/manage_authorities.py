@@ -91,10 +91,11 @@ class ManageAuthorities(BaseScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "add_authority_button":
-            self.app.push_screen(NewAuthority())
+            na = NewAuthority()
+            self.app.push_screen(na)
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.mount(Authority(event.authority), self.__mount_point)
+        self.__mount_point.mount(Authority(event.authority), self.__mount_point)
         self.app.pop_screen()
 
     def on_authority_form_canceled(self, _: AuthorityForm.Canceled) -> None:

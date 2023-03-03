@@ -1,10 +1,15 @@
-AuthorityForm {
+AuthorityForm Container {
     margin: 0 5;
     layout: vertical;
     grid-gutter: 0 0;
 }
 
-AuthorityForm BigTitle {
+AuthorityForm Container Container {
+    margin: 0;
+    height: auto;
+}
+
+AuthorityForm Container BigTitle {
     content-align: center middle;
     border: tall $primary;
     width: 100%;
@@ -12,16 +17,23 @@ AuthorityForm BigTitle {
     margin-bottom: 1;
 }
 
-AuthorityForm Container {
-    height: 4;
+AuthorityForm Container #user_action_buttons {
+    layout: grid;
+    grid-size: 2 1;
+    height: 6;
 }
 
-AuthorityForm Input {
+AuthorityForm Container #user_action_buttons Button {
+    width: 100%;
+    margin: 0 1;
+}
+
+AuthorityForm Container Input {
     width: 100%;
     border: tall $primary;
     margin-bottom: 1;
 }
 
-AuthorityForm .hidden {
+AuthorityForm Container .hidden {
     display: none;
 }

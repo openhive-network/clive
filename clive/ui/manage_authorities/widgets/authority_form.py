@@ -22,14 +22,15 @@ if TYPE_CHECKING:
 class AuthorityForm(Container):
     BINDINGS = [("f10", "save", "Save")]
 
-    class Saved(Message):
+    class Saved(Message, bubble=True):
         """Emitted when user press Save button"""
 
         def __init__(self, sender: AuthorityForm, authority: PrivateKey) -> None:
             self.authority = authority
+            self.bubble
             super().__init__(sender)
 
-    class Canceled(Message):
+    class Canceled(Message, bubble=True):
         """Emitted when user press Cancel button"""
 
     def __init__(self, title: str, existing_authority: PrivateKey | None = None) -> None:
@@ -47,25 +48,27 @@ class AuthorityForm(Container):
             )
             yield AuthorityInputSwitch()
             with Container():
-                yield AuthorityDefinitionFromFile()
                 yield RawAuthorityDefinition(
                     self.__existing_authority.key if self.__existing_authority is not None else ""
                 )
+                yield AuthorityDefinitionFromFile(classes="hidden")
             with Container(id="user_action_buttons"):
                 yield Button("💾 Save", id="authority_edit_save")
                 yield Button("🚫 Cancel", id="authority_edit_cancel")
 
     def action_save(self) -> None:
         name = self.get_widget_by_id("authority_name_input", expect_type=Input).value
-        if self.get_widget_by_id("input_type", expect_type=Switch).value:
+        if not self.get_widget_by_id("input_type", expect_type=Switch).value:
             pv_key = PrivateKey(name, self.query_one(RawAuthorityDefinition).value)
         else:
             with Path(self.query_one(AuthorityDefinitionFromFile).value).open("rt") as file:
                 pv_key = PrivateKey(name, file.readline().strip("\n"))
-        self.post_message_no_wait(self.Saved(self, pv_key))
+        for screen in self.app.screen_stack:
+            screen.post_message_no_wait(self.Saved(self, pv_key))
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "authority_edit_save":
             self.action_save()
         elif event.button.id == "authority_edit_cancel":
-            self.post_message_no_wait(self.Canceled(self))
+            for screen in self.app.screen_stack:
+                screen.post_message_no_wait(self.Canceled(self))
