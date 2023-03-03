@@ -10,6 +10,7 @@ from textual.widgets import Input, Label
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.big_title import BigTitle
+from clive.ui.widgets.notification import Notification
 from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
@@ -51,6 +52,10 @@ class SetAccount(BaseScreen, FormScreen):
 
     def action_save_account_name(self) -> None:
         account_name = self.get_widget_by_id("set_account_name", expect_type=Input).value
-        if AccountNameHighlighter.is_valid_account_name(account_name):
-            self.app.profile_data.active_account.name = account_name
-            self.app.profile_data.save()
+        if not AccountNameHighlighter.is_valid_account_name(account_name):
+            Notification("Invalid account name!", category="error").show()
+            return
+        self.app.profile_data.active_account.name = account_name
+        self.app.profile_data.save()
+        self._owner.action_next_screen()
+        Notification("Account name saved.", category="success").show()
