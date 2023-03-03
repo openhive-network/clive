@@ -23,7 +23,7 @@ class Notification(Static):
     def on_click(self) -> None:
         self.remove()
 
-    def send(self) -> None:
+    def show(self) -> None:
         self.app.mount(self)
 
     @staticmethod
