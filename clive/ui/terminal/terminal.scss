@@ -10,10 +10,6 @@ Terminal {
   padding-bottom: 2;
 }
 
-Terminal.-hidden {
-  display: none;
-}
-
 Terminal:focus {
   offset: 0 0 !important;
 }

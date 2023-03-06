@@ -12,10 +12,6 @@ SetNodeAddressForm NodesList, SetNodeAddressForm ManualNode, SetNodeAddressForm 
   height: auto;
 }
 
-SetNodeAddressForm NodesList.-hidden, SetNodeAddressForm ManualNode.-hidden {
-  display: none;
-}
-
 SetNodeAddressForm ModeSwitchContainer Static {
   text-align: left;
   padding: 1 2;
