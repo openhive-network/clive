@@ -25,6 +25,7 @@ from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
+    from textual.message import Message
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
@@ -203,6 +204,13 @@ class Clive(App[int]):
         else:
             # we just need to trigger descriptor.__set__
             setattr(self, attribute_name, attribute)
+
+    def post_message_to_everyone(self, message: Message) -> None:
+        """
+        Post a message to all screens in the stack. You should not rely on the order in which the event is processed.
+        """
+        for screen in reversed(self.screen_stack):
+            screen.post_message_no_wait(message)
 
 
 clive_app = Clive()

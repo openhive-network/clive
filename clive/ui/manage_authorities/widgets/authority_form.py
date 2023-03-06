@@ -69,12 +69,10 @@ class AuthorityForm(BaseScreen):
         else:
             with Path(self.query_one(AuthorityDefinitionFromFile).value).open("rt") as file:
                 pv_key = PrivateKey(name, file.readline().strip("\n"))
-        for screen in self.app.screen_stack:
-            screen.post_message_no_wait(self.Saved(self, pv_key))
+        self.app.post_message_to_everyone(self.Saved(self, pv_key))
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "authority_edit_save":
             self.action_save()
         elif event.button.id == "authority_edit_cancel":
-            for screen in self.app.screen_stack:
-                screen.post_message_no_wait(self.Canceled(self))
+            self.app.post_message_to_everyone(self.Canceled(self))
