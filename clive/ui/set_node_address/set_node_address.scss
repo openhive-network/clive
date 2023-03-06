@@ -1,23 +1,23 @@
-SetNodeAddressForm BigTitle {
+SetNodeAddressBase BigTitle {
   margin-top: 2;
   height: 5;
   content-align: center middle;
 }
 
-SetNodeAddressForm Body {
+SetNodeAddressBase Body {
   padding: 2 4;
 }
 
-SetNodeAddressForm NodesList, SetNodeAddressForm ManualNode, SetNodeAddressForm ModeSwitchContainer {
+SetNodeAddressBase NodesList, SetNodeAddressBase ManualNode, SetNodeAddressBase ModeSwitchContainer {
   height: auto;
 }
 
-SetNodeAddressForm ModeSwitchContainer Static {
+SetNodeAddressBase ModeSwitchContainer Static {
   text-align: left;
   padding: 1 2;
 }
 
-SetNodeAddressForm ManualNode Button {
+SetNodeAddressBase ManualNode Button {
   background: $primary;
   margin-top: 1;
 }

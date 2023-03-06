@@ -107,9 +107,7 @@ class ModeSwitchContainer(Horizontal):
         yield Static("Toggle mode")
 
 
-class SetNodeAddressForm(BaseScreen, FormScreen):
-    BINDINGS = [Binding("f10", "save_node_address", "Save")]
-
+class SetNodeAddressBase(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
@@ -153,5 +151,9 @@ class SetNodeAddressForm(BaseScreen, FormScreen):
         self.__manual_node.toggle_class("-hidden")
 
 
-class SetNodeAddress(SetNodeAddressForm):
+class SetNodeAddressForm(SetNodeAddressBase, FormScreen):
+    BINDINGS = [Binding("f10", "save_node_address", "Save")]
+
+
+class SetNodeAddress(SetNodeAddressBase):
     BINDINGS = [Binding("escape", "pop_screen", "Cancel")]
