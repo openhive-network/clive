@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import Button, Static
 
@@ -80,6 +81,10 @@ class AuthorityTitle(Static):
 
 
 class ManageAuthorities(BaseScreen):
+    BINDINGS = [
+        Binding("escape", "pop_screen", "Configs"),
+    ]
+
     def create_main_panel(self) -> ComposeResult:
         self.__mount_point = Container()
         with self.__mount_point:
