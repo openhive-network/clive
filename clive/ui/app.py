@@ -15,6 +15,7 @@ from clive.ui.app_state import AppState
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.login.login import Login
+from clive.ui.manage_authorities import ManageAuthorities
 from clive.ui.onboarding.onboarding import Onboarding
 from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
@@ -71,7 +72,7 @@ class Clive(App[int]):
         asyncio.create_task(self.background_task())
         if settings.LOG_DEBUG_LOOP:
             asyncio.create_task(self.debug_task())
-        self.push_screen(DashboardInactive())
+        self.push_screen(ManageAuthorities())
         if (
             not (
                 self.profile_data.name is not None

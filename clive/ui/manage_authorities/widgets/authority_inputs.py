@@ -28,7 +28,7 @@ class AuthorityInput(Input):
 
     def on_switch_changed(self, ev: Switch.Changed) -> None:
         hidden_class: Final[str] = "hidden"
-        if ev.input.id == "input_type" and self._condition(ev.value):
+        if ev.input.id == "input-type-switch" and self._condition(ev.value):
             self.add_class(hidden_class)
             self.remove_class(hidden_class)
 
@@ -36,7 +36,7 @@ class AuthorityInput(Input):
 class AuthorityInputSwitch(Horizontal):
     def compose(self) -> ComposeResult:
         yield Static("Input private key")
-        yield Switch(False, id="input_type")
+        yield Switch(False, id="input-type-switch")
         yield Static("Input path to private key")
 
 

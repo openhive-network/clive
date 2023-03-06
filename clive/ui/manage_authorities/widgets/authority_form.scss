@@ -1,35 +1,18 @@
-AuthorityForm Container {
-    margin: 0 5;
-    layout: vertical;
-    grid-gutter: 0 0;
+AuthorityForm ViewBag {
+  margin: 0 5;
 }
 
-AuthorityForm Container Container {
-    margin: 0;
-    height: auto;
+AuthorityForm BigTitle {
+  margin-top: 2;
+  height: 5;
+  content-align: center middle;
 }
 
-AuthorityForm Container BigTitle {
-    content-align: center middle;
-    border: tall $primary;
-    width: 100%;
-    height: 5;
-    margin-bottom: 1;
+AuthorityForm ButtonsContainer Button {
+  width: 1fr;
 }
 
-AuthorityForm Container #user_action_buttons {
-    layout: grid;
-    grid-size: 2 1;
-    height: 6;
-}
-
-AuthorityForm Container #user_action_buttons Button {
-    width: 100%;
-    margin: 0 1;
-}
-
-AuthorityForm Container Input {
-    width: 100%;
-    border: tall $primary;
-    margin-bottom: 1;
+AuthorityForm Input {
+  width: 1fr;
+  margin-bottom: 1;
 }

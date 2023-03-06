@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from textual.containers import Container
+from textual.containers import Container, Horizontal
 from textual.message import Message
 from textual.widgets import Button, Input, Switch
 
@@ -19,6 +19,14 @@ from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+
+class AuthorityDefinitionContainer(Container):
+    """Container for authority definition input widgets"""
+
+
+class ButtonsContainer(Horizontal):
+    """Container for buttons"""
 
 
 class AuthorityForm(BaseScreen):
@@ -49,22 +57,22 @@ class AuthorityForm(BaseScreen):
             yield Input(
                 self._default_authority_name(),
                 "authority name",
-                id="authority_name_input",
+                id="authority-name-input",
             )
             yield AuthorityInputSwitch()
-            with Container():
+            with AuthorityDefinitionContainer():
                 yield AuthorityDefinitionFromFile(classes="-hidden")
                 yield RawAuthorityDefinition(self._default_raw_authority())
-            yield from self._submit_buttons()
+            with ButtonsContainer():
+                yield from self._create_buttons()
 
-    def _submit_buttons(self) -> ComposeResult:
-        with Container(id="user_action_buttons"):
-            yield Button("💾 Save", id="authority_edit_save")
-            yield Button("🚫 Cancel", id="authority_edit_cancel")
+    def _create_buttons(self) -> ComposeResult:
+        yield Button("💾 Save", id="authority-save-button")
+        yield Button("🚫 Cancel", id="authority-cancel-button")
 
     def action_save(self) -> None:
-        name = self.get_widget_by_id("authority_name_input", expect_type=Input).value
-        if not self.get_widget_by_id("input_type", expect_type=Switch).value:
+        name = self.get_widget_by_id("authority-name-input", expect_type=Input).value
+        if not self.get_widget_by_id("input-type-switch", expect_type=Switch).value:
             pv_key = PrivateKey(name, self.query_one(RawAuthorityDefinition).value)
         else:
             with Path(self.query_one(AuthorityDefinitionFromFile).value).open("rt") as file:
@@ -73,8 +81,8 @@ class AuthorityForm(BaseScreen):
             screen.post_message_no_wait(self.Saved(self, pv_key))
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "authority_edit_save":
+        if event.button.id == "authority-save-button":
             self.action_save()
-        elif event.button.id == "authority_edit_cancel":
+        elif event.button.id == "authority-cancel-button":
             for screen in self.app.screen_stack:
                 screen.post_message_no_wait(self.Canceled(self))
