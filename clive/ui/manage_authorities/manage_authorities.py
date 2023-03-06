@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container
+from textual.message import Message
 from textual.widgets import Button, Static
 
 from clive.ui.manage_authorities.edit_authority import EditAuthority
@@ -12,12 +12,13 @@ from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.dynamic_label import DynamicLabel
+from clive.ui.widgets.notification import Notification
+from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.storage.mock_database import PrivateKey, ProfileData
-    from clive.ui.manage_authorities.widgets.authority_form import AuthorityForm
+    from clive.storage.mock_database import PrivateKey
 
 
 class DynamicColumn(DynamicLabel):
@@ -37,20 +38,17 @@ even = "EvenColumn"
 
 
 class Authority(ColumnLayout, CliveWidget):
+    class AuthoritiesChanged(Message):
+        """Emitted when authorities have been changed"""
+
     def __init__(self, authority: PrivateKey) -> None:
         self.__authority = authority
+        self.__index = self.app.profile_data.active_account.keys.index(self.__authority)
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        def authority_index(profile_data: ProfileData) -> str:
-            if self.__authority in profile_data.active_account.keys:
-                return f"{profile_data.active_account.keys.index(self.__authority) + 1}."
-            return "⌛"
-
-        yield DynamicColumn(self.app, "profile_data", authority_index, id_="authority_row_number", classes=even)
-        yield DynamicColumn(
-            self.app, "profile_data", lambda _: self.__authority.key_name, id_="authority_name", classes=odd
-        )
+        yield StaticColumn(str(self.__index + 1), id="authority_row_number", classes=even)
+        yield StaticColumn(self.__authority.key_name, id="authority_name", classes=odd)
         yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", classes=even)
         yield Button("✏️", id="edit_authority_button", classes=odd)
         yield Button("🗑️", id="remove_authority_button", classes=even)
@@ -59,8 +57,8 @@ class Authority(ColumnLayout, CliveWidget):
         """Event handler called when a button is pressed."""
         if event.button.id == "remove_authority_button":
             self.app.profile_data.active_account.keys.remove(self.__authority)
-            self.add_class("deleted")
-            self.remove()
+            Notification(f"Authority `{self.__authority.key_name}` was removed.", category="success").show()
+            self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged(self))
         if event.button.id == "edit_authority_button":
             self.app.push_screen(EditAuthority(self.__authority))
 
@@ -85,8 +83,11 @@ class ManageAuthorities(BaseScreen):
         Binding("escape", "pop_screen", "Configs"),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.__mount_point = ViewBag()
+
     def create_main_panel(self) -> ComposeResult:
-        self.__mount_point = Container()
         with self.__mount_point:
             yield AuthorityTitle()
             yield AuthorityHeader()
@@ -96,12 +97,16 @@ class ManageAuthorities(BaseScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "add_authority_button":
-            na = NewAuthority()
-            self.app.push_screen(na)
+            self.app.push_screen(NewAuthority())
 
-    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.__mount_point.mount(Authority(event.authority), self.__mount_point)
-        self.app.pop_screen()
+    def on_authority_form_authorities_changed(self) -> None:
+        self.__rebuild_authorities()
 
-    def on_authority_form_canceled(self, _: AuthorityForm.Canceled) -> None:
-        self.app.pop_screen()
+    def on_authority_authorities_changed(self) -> None:
+        self.__rebuild_authorities()
+
+    def __rebuild_authorities(self) -> None:
+        self.query(Authority).remove()
+
+        for key in self.app.profile_data.active_account.keys:
+            self.__mount_point.mount(Authority(key))
