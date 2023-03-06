@@ -11,10 +11,6 @@ TransactionSummary ScrollablePart {
   padding-bottom: 1;
 }
 
-TransactionSummary ScrollablePart.-hidden {
-  display: none;
-}
-
 TransactionSummary ScrollablePart:focus {
   border-top: hkey $primary;
 }

@@ -53,7 +53,7 @@ class AuthorityForm(BaseScreen):
             )
             yield AuthorityInputSwitch()
             with Container():
-                yield AuthorityDefinitionFromFile(classes="hidden")
+                yield AuthorityDefinitionFromFile(classes="-hidden")
                 yield RawAuthorityDefinition(self._default_raw_authority())
             yield from self._submit_buttons()
 
