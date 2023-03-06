@@ -67,8 +67,8 @@ class AuthorityForm(BaseScreen):
         if not self.get_widget_by_id("input_type", expect_type=Switch).value:
             pv_key = PrivateKey(name, self.query_one(RawAuthorityDefinition).value)
         else:
-            with Path(self.query_one(AuthorityDefinitionFromFile).value).open("rt") as file:
-                pv_key = PrivateKey(name, file.readline().strip("\n"))
+            file_path = Path(self.query_one(AuthorityDefinitionFromFile).value)
+            pv_key = PrivateKey.from_file(name, file_path)
         self.app.post_message_to_everyone(self.Saved(self, pv_key))
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

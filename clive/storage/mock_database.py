@@ -34,6 +34,11 @@ class PrivateKey:
     key: str
     file_path: Path | None = None
 
+    @classmethod
+    def from_file(cls, key_name: str, file_path: Path) -> PrivateKey:
+        key = file_path.read_text().strip()
+        return cls(key_name, key, file_path)
+
 
 @dataclass
 class ActiveAccount(Account):
