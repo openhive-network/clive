@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
+
 from clive.ui.manage_authorities.widgets.authority_form import AuthorityForm
 
 if TYPE_CHECKING:
@@ -9,6 +11,10 @@ if TYPE_CHECKING:
 
 
 class EditAuthority(AuthorityForm):
+    BINDINGS = [
+        Binding("escape", "pop_screen", "Authorities"),
+    ]
+
     def __init__(
         self, authority: PrivateKey, name: str | None = None, id: str | None = None, classes: str | None = None
     ) -> None:
