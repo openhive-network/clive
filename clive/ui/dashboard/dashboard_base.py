@@ -9,9 +9,14 @@ from textual.widgets import Label, Static
 from clive.storage.mock_database import AccountType
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+
+class ContainerTitle(Static):
+    """A title for active/watched accounts container"""
 
 
 class BalanceStats(Widget):
@@ -43,13 +48,12 @@ class ActivityStats(Widget):
 
 
 class AccountInfo(Container):
-    def __init__(self, account_name: str, *, account_type: AccountType):
+    def __init__(self, account_name: str):
         super().__init__()
         self.__account_name = account_name
-        self.__account_type = account_type
 
     def compose(self) -> ComposeResult:
-        yield EllipsedStatic(f"{self.__account_type.capitalize()}: {self.__account_name}")
+        yield EllipsedStatic(f"{self.__account_name}")
         yield Label("2x ALARMS!", id="account-alarms")
         yield Static()
         yield Label("LAST:")
@@ -65,16 +69,28 @@ class AccountRow(Container):
 
     def compose(self) -> ComposeResult:
         with Horizontal():
-            yield AccountInfo(self.__account_name, account_type=self.__account_type)
+            yield AccountInfo(self.__account_name)
             with Container(id="tables"):
                 yield BalanceStats()
                 yield Static()
                 yield ActivityStats()
 
 
+class ActiveAccountContainer(Static):
+    def compose(self) -> ComposeResult:
+        yield ContainerTitle("ACTIVE ACCOUNT", classes="active")
+        yield AccountRow("vogel")
+
+
+class WatchedAccountContainer(Static):
+    def compose(self) -> ComposeResult:
+        yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
+        yield AccountRow("gtg", account_type=AccountType.WATCHED)
+        yield AccountRow("veryverylonglong", account_type=AccountType.WATCHED)
+
+
 class DashboardBase(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
-        with Container():
-            yield AccountRow("vogel")
-            yield AccountRow("gtg", account_type=AccountType.WATCHED)
-            yield AccountRow("veryverylonglongname", account_type=AccountType.WATCHED)
+        with ViewBag():
+            yield ActiveAccountContainer()
+            yield WatchedAccountContainer()

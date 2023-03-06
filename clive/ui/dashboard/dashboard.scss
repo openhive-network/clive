@@ -1,18 +1,37 @@
 $active-color: $secondary-darken-2;
 $watched-color: $primary-darken-1;
 
+DashboardBase ActiveAccountContainer {
+  border: $active-color;
+}
+
+DashboardBase WatchedAccountContainer {
+  border: $watched-color;
+}
+
+DashboardBase ContainerTitle {
+  color: $text;
+  text-style: bold;
+}
+
+DashboardBase ContainerTitle.watched {
+  background: $watched-color;
+}
+
+DashboardBase ContainerTitle.active {
+  background: $active-color;
+}
+
 /* AccountRow */
 
 DashboardBase AccountRow {
-  height: 7;
+  height: 6;
+  box-sizing: content-box;
 }
 
-DashboardBase AccountRow.active {
-  border-bottom: wide $active-color;
-}
 
 DashboardBase AccountRow.watched {
-  border-bottom: wide $watched-color;
+  border-bottom:  $primary-lighten-1;
 }
 
 DashboardBase AccountRow #tables {
@@ -43,6 +62,7 @@ DashboardBase BalanceStats Static {
 }
 
 DashboardBase BalanceStats .title {
+  color: $text;
   column-span: 2;
   background: $accent-lighten-3;
 }
@@ -84,6 +104,7 @@ DashboardBase ActivityStats Static {
 }
 
 DashboardBase ActivityStats .title {
+  color: $text;
   background: $accent-lighten-3;
 }
 
