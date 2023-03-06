@@ -11,6 +11,8 @@ from clive.config import DATA_DIRECTORY
 from clive.models.transfer_operation import TransferOperation
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from clive.models.operation import Operation
 
 
@@ -30,6 +32,7 @@ class Account:
 class PrivateKey:
     key_name: str
     key: str
+    file_path: Path | None = None
 
 
 @dataclass
