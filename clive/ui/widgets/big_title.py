@@ -10,6 +10,11 @@ class BigTitle(Static):
     BigTitle {
         min-height: 3;
     }
+
+    BigTitle.-compact {
+        min-height: 1;
+        text-style: bold;
+    }
     """
 
     def __init__(
@@ -24,8 +29,12 @@ class BigTitle(Static):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
+        self.__title = title
+        self.__translated = self.__translate(title)
+        self.__translated_width = self.__translated.index("\n")
+
         super().__init__(
-            self.__translate(title),
+            self.__translated,
             expand=expand,
             shrink=shrink,
             markup=markup,
@@ -34,6 +43,20 @@ class BigTitle(Static):
             classes=classes,
             disabled=disabled,
         )
+
+    def on_resize(self) -> None:
+        if self.size.width < self.__translated_width:
+            self.__show_in_compact_mode()
+        else:
+            self.__show_in_normal_mode()
+
+    def __show_in_compact_mode(self) -> None:
+        self.update(self.__title.upper())
+        self.add_class("-compact")
+
+    def __show_in_normal_mode(self) -> None:
+        self.update(self.__translated)
+        self.remove_class("-compact")
 
     def __translate(self, text: str) -> str:
         result = ["", "", ""]
