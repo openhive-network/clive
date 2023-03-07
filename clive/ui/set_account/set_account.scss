@@ -1,25 +1,39 @@
-SetAccount ViewBag {
-    layout: grid;
-    grid-size: 5 4;
+SetAccount BigTitle {
+  margin-top: 2;
+  height: 5;
+  content-align: center middle;
 }
 
-SetAccount ViewBag BigTitle {
-    margin-top: 2;
-    width: 100%;
-    height: 5;
-    row-span: 1;
-    column-span: 5;
-    content-align: center middle;
+SetAccount Body {
+  padding: 2 4;
 }
 
-SetAccount ViewBag Label {
-    width: 100%;
-    height: 3;
-    content-align: right middle;
+SetAccount AccountNameInputContainer {
+  height: auto;
 }
 
-SetAccount ViewBag Input {
-    width: 100%;
-    column-span: 4;
-    margin-right: 5;
+SetAccount #account-name-label {
+  padding: 1 2;
+  width: 1fr;
+}
+
+SetAccount #account-name-at {
+  padding: 1 2;
+  text-align: right;
+  text-style: bold;
+  color: $secondary;
+  width: auto;
+}
+
+SetAccount AccountNameInputContainer Input {
+  width: 3fr
+}
+
+SetAccount ButtonSave {
+  column-span: 2;
+  background: $primary;
+}
+
+SetAccount ButtonSave:focus {
+  background: $primary-darken-1;
 }
