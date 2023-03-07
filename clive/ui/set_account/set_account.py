@@ -38,22 +38,28 @@ class AccountNameHighlighter(Highlighter):
 class SetAccount(BaseScreen, FormScreen):
     BINDINGS = [Binding("f10", "save_account_name", "Save")]
 
+    def __init__(self) -> None:
+        super().__init__()
+
+        self.__account_name_input = Input(
+            str(self.app.profile_data.active_account.name),
+            placeholder="e.g.: cookingwithkasia",
+            id="set_account_name",
+            highlighter=AccountNameHighlighter(),
+        )
+
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("set account name")
             yield Label("Account name:\t @")
-            yield Input(
-                str(self.app.profile_data.active_account.name),
-                placeholder="e.x.: cookingwithkasia",
-                id="set_account_name",
-                highlighter=AccountNameHighlighter(),
-            )
+            yield self.__account_name_input
 
     def action_save_account_name(self) -> None:
-        account_name = self.get_widget_by_id("set_account_name", expect_type=Input).value
+        account_name = self.__account_name_input.value
         if not AccountNameHighlighter.is_valid_account_name(account_name):
             Notification("Invalid account name!", category="error").show()
             return
+
         self.app.profile_data.active_account.name = account_name
         self.app.profile_data.save()
         self._owner.action_next_screen()
