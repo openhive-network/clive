@@ -27,4 +27,11 @@ class NewAuthority(NewAuthorityBase):
 
 
 class NewAuthorityForm(NewAuthorityBase, FormScreen):
-    pass
+    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
+        event.prevent_default()
+
+        self.app.profile_data.active_account.keys.append(event.private_key)
+        self.app.update_reactive("profile_data")
+
+        self._owner.action_next_screen()
+        Notification(f"New authority `{event.private_key.key_name}` was created.", category="success").show()
