@@ -95,9 +95,7 @@ class Clive(App[int]):
         """Pop all screens until the given screen is on top of the stack."""
 
         screen_name = screen if isinstance(screen, str) else screen.__name__
-
-        if screen_name not in [screen.__class__.__name__ for screen in self.screen_stack]:
-            raise ValueError(f"Screen {screen_name} is not in the screen stack.")
+        self.__assert_screen_name_in_stack(screen_name)
 
         with self.batch_update():
             while self.screen_stack[-1].__class__.__name__ != screen_name:
@@ -211,6 +209,21 @@ class Clive(App[int]):
         """
         for screen in reversed(self.screen_stack):
             screen.post_message_no_wait(message)
+
+    def post_message_to_screen(self, screen: str | type[Screen], message: Message) -> None:
+        """
+        Post a message to a specific screen in the stack.
+        """
+        screen_name = screen if isinstance(screen, str) else screen.__name__
+        self.__assert_screen_name_in_stack(screen_name)
+
+        for screen_ in reversed(self.screen_stack):
+            if screen_.__class__.__name__ == screen_name:
+                screen_.post_message_no_wait(message)
+
+    def __assert_screen_name_in_stack(self, screen_name: str) -> None:
+        if screen_name not in [screen.__class__.__name__ for screen in self.screen_stack]:
+            raise ValueError(f"Screen {screen_name} is not in the screen stack.\nScreen stack: {self.screen_stack}")
 
 
 clive_app = Clive()
