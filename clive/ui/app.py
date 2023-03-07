@@ -42,7 +42,7 @@ class Clive(App[int]):
         Binding("ctrl+t", "terminal", "Toggle terminal", show=False),
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("?", "help", "Show help", show=False),
-        Binding("l", "mock_log", "Mock log"),
+        Binding("l", "mock_log", "Mock log", show=False),
     ]
 
     SCREENS = {
