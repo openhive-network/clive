@@ -80,12 +80,12 @@ class ProfileData:
     active_account: ActiveAccount = ActiveAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
-    node_address: NodeAddress = NodeAddress("https", "api.hive.blog")
     backup_node_addresses: list[NodeAddress] = [
         NodeAddress("https", "api.hive.blog"),
         NodeAddress("http", "localhost", 8090),
         NodeAddress("http", "hive-6.pl.syncad.com", 18090),
     ]
+    node_address: NodeAddress = backup_node_addresses[0]
     watched_accounts: list[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
 
     def save(self) -> None:
