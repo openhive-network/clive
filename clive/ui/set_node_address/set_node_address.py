@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 from datetime import datetime
 from typing import TYPE_CHECKING, Final
-from urllib.parse import urlparse
 
 import requests
 from rich.highlighter import Highlighter
@@ -11,11 +10,13 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
+from clive.exceptions import NodeAddressError
 from clive.storage.mock_database import NodeAddress
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.clive_widget import CliveWidget
+from clive.ui.widgets.notification import Notification
 from clive.ui.widgets.select.select import Select
 from clive.ui.widgets.select.select_item import SelectItem
 from clive.ui.widgets.view_bag import ViewBag
@@ -137,22 +138,54 @@ class SetNodeAddressBase(BaseScreen):
             self.action_save_node_address()
 
     def action_save_node_address(self) -> None:
-        raw_value = self.app.query_one("#node-address-input", Input).value
+        if self._in_nodes_list_mode():  # it is handled by the on_select_changed event
+            return
 
-        with contextlib.suppress(ValueError):
-            url = urlparse(raw_value)
-        if url.hostname:
-            self.app.profile_data.node_address = NodeAddress(url.scheme, str(url.hostname), url.port)
-            self.app.profile_data.save()
-            self.__selected_node.refresh()
+        if not self._is_valid():
+            Notification(
+                "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
+                category="error",
+            ).show()
+            return
+
+        self.app.profile_data.node_address = NodeAddress.parse(self.__get_node_address_input())
+        self.app.profile_data.save()
+        self.__selected_node.refresh()
 
     def on_switch_changed(self) -> None:
         self.__nodes_list.toggle_class("-hidden")
         self.__manual_node.toggle_class("-hidden")
 
+    def _is_valid(self) -> bool:
+        if self._in_nodes_list_mode():  # Skip validation if the nodes list mode is active
+            return True
+
+        try:
+            NodeAddress.parse(self.__get_node_address_input())
+            return True
+        except NodeAddressError:
+            return False
+
+    def _in_nodes_list_mode(self) -> bool:
+        """Returns True if the nodes list (combobox) mode is active, False otherwise."""
+        return not self.app.query_one(ModeSwitch).value
+
+    def __get_node_address_input(self) -> str:
+        return self.app.query_one("#node-address-input", Input).value
+
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen):
     BINDINGS = [Binding("f10", "save_node_address", "Save")]
+
+    def action_save_node_address(self) -> None:
+        super().action_save_node_address()
+        if not self._in_nodes_list_mode() and self._is_valid():
+            Notification("Node address saved. Press `CTRL+N` to continue.", category="success").show()
+            return
+
+        if self._in_nodes_list_mode():
+            self._owner.action_next_screen()
+            Notification(f"Node address set to `{self.app.profile_data.node_address}`.", category="success").show()
 
 
 class SetNodeAddress(SetNodeAddressBase):

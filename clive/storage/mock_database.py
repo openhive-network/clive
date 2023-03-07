@@ -6,8 +6,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, List, Optional
+from urllib.parse import urlparse
 
 from clive.config import DATA_DIRECTORY
+from clive.exceptions import NodeAddressError
 from clive.models.transfer_operation import TransferOperation
 
 if TYPE_CHECKING:
@@ -56,6 +58,16 @@ class NodeAddress:
 
     def __repr__(self) -> str:
         return str(self)
+
+    @classmethod
+    def parse(cls, address: str) -> NodeAddress:
+        try:
+            url = urlparse(address)
+            if url.hostname is None:
+                raise ValueError
+            return cls(url.scheme, str(url.hostname), url.port)
+        except ValueError:
+            raise NodeAddressError(f"Invalid address: {address}")
 
 
 @dataclass
