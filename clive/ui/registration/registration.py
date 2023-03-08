@@ -8,7 +8,6 @@ from textual.widgets import Button, Input, Static
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.dialog_container import DialogContainer
-from clive.ui.widgets.focusable_link import FocusableLink
 from clive.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
@@ -26,10 +25,6 @@ class RegistrationCommon(BaseScreen):
             yield Input(placeholder="Repeat Password", password=True, id="repeat_password_input")
             yield Static()
             yield Button("Register", variant="primary", id="register-button")
-            yield from self._panel_extras()
-
-    def _panel_extras(self) -> ComposeResult:
-        return []
 
     def on_mount(self) -> None:
         self.query(Input).first().focus()
@@ -69,12 +64,7 @@ class Registration(RegistrationCommon):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
         Binding("f1", "register", "Register"),
-        Binding("f2", "login", "Login"),
     ]
-
-    def _panel_extras(self) -> ComposeResult:
-        yield Static()
-        yield FocusableLink("Login instead", self.action_login)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "register-button":
@@ -87,9 +77,6 @@ class Registration(RegistrationCommon):
         if self._create_profile():
             self.app.pop_screen()
             self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
-
-    def action_login(self) -> None:
-        self.app.pop_screen()
 
 
 class RegistrationForm(RegistrationCommon, FormScreen):
