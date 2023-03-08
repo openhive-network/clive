@@ -10,11 +10,11 @@ from clive.ui.operations.operations import Operations
 class DashboardActive(DashboardBase):
     BINDINGS = [
         Binding("c", "config", "Config"),
-        Binding("f1", "log_out", "Log out"),
+        Binding("f1", "deactivate", "Deactivate"),
         Binding("f2", "operations", "Operations"),
     ]
 
-    def action_log_out(self) -> None:
+    def action_deactivate(self) -> None:
         self.app.deactivate()
         self.app.switch_screen("dashboard_inactive")
 

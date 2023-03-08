@@ -1,20 +1,20 @@
-Login DialogContainer {
+Activate DialogContainer {
   grid-columns: 12 1fr;
   grid-rows: 4;
   grid-size: 2;
   layout: grid;
 }
 
-Login Button{
+Activate Button{
     margin: 0 1;
     width: 100%;
 }
 
-Login .label {
+Activate .label {
     padding: 1 2;
     text-align: right;
 }
 
-Login #active-mode-label {
+Activate #active-mode-label {
     text-align: left;
 }

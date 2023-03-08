@@ -12,10 +12,10 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Login(BaseScreen):
+class Activate(BaseScreen):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
-        Binding("f1", "log_in", "Log in"),
+        Binding("f1", "activate", "Activate"),
     ]
 
     def on_mount(self) -> None:
@@ -28,17 +28,17 @@ class Login(BaseScreen):
             Switch(False),
             Static("Permanent active mode", classes="label", id="active-mode-label"),
             Static(),
-            Button("Log in", variant="primary", id="log-in-button"),
+            Button("Activate", variant="primary", id="activate-button"),
         )
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "log-in-button":
-            self.action_log_in()
+        if event.button.id == "activate-button":
+            self.action_activate()
 
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
-    def action_log_in(self) -> None:
+    def action_activate(self) -> None:
         self.app.activate()
         self.app.pop_screen()
         self.app.switch_screen("dashboard_active")

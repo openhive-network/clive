@@ -14,7 +14,6 @@ from clive.storage.mock_database import NodeData, ProfileData
 from clive.ui.app_state import AppState
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
-from clive.ui.login.login import Login
 from clive.ui.onboarding.onboarding import Onboarding
 from clive.ui.quit.quit import Quit
 from clive.ui.registration.registration import Registration
@@ -49,7 +48,6 @@ class Clive(App[int]):
         "quit": Quit,
         "dashboard_inactive": DashboardInactive,
         "dashboard_active": DashboardActive,
-        "login": Login,
         "registration": Registration,
     }
 
