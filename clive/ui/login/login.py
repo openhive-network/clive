@@ -26,8 +26,6 @@ class Login(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         yield DialogContainer(
-            Static("Username", classes="label"),
-            Input(placeholder="Username"),
             Static("Password", classes="label"),
             Input(placeholder="Password", password=True),
             Switch(False),
