@@ -72,6 +72,13 @@ class ButtonOperations(Button):
         super().__init__("🔙 Add more ops", id="operations-button")
 
 
+class ButtonClearAll(Button):
+    """Button used for removing all the operations from the cart"""
+
+    def __init__(self) -> None:
+        super().__init__("🗑️ Clear all", id="clear-all-button")
+
+
 class StaticPart(Static):
     """Container for the static part of the screen - title, global buttons and table header"""
 
@@ -165,7 +172,12 @@ class Cart(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Operations"),
         Binding("f1", "summary", "Summary"),
+        Binding("f10", "clear_all", "Clear all"),
     ]
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
@@ -174,11 +186,12 @@ class Cart(BaseScreen):
 
                 with ButtonsContainer():
                     yield ButtonOperations()
+                    yield ButtonClearAll()
                     yield ButtonSummary()
 
                 yield CartOperationsHeader()
 
-            with ScrollablePart():
+            with self.__scrollable_part:
                 for idx, _ in enumerate(self.app.profile_data.operations_cart):
                     yield DetailedCartOperation(idx)
 
@@ -206,9 +219,16 @@ class Cart(BaseScreen):
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummary())
 
+    def action_clear_all(self) -> None:
+        self.app.profile_data.operations_cart.clear()
+        self.app.update_reactive("profile_data")
+        self.__scrollable_part.add_class("-hidden")
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "summary-button":
             self.action_summary()
         elif event.button.id == "operations-button":
             self.app.pop_screen()
+        elif event.button.id == "clear-all-button":
+            self.action_clear_all()

@@ -47,15 +47,6 @@ TransactionSummary ButtonBroadcast:focus {
   background: $success-darken-1;
 }
 
-TransactionSummary ButtonClearAll {
-  margin-right: 1;
-  background: $error;
-}
-
-TransactionSummary ButtonClearAll:focus {
-  background: $error-darken-1;
-}
-
 TransactionSummary ButtonSave {
   background: $primary;
 }

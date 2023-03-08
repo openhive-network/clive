@@ -82,3 +82,12 @@ Cart Scrollable {
   overflow-y: scroll;
   height: 1fr;
 }
+
+Cart ButtonClearAll {
+  margin-right: 1;
+  background: $error;
+}
+
+Cart ButtonClearAll:focus {
+  background: $error-darken-1;
+}

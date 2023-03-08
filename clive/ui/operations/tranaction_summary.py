@@ -47,13 +47,6 @@ class OperationItem(Static):
     """Item in the operations list"""
 
 
-class ButtonClearAll(Button):
-    """Button used for removing all the operations from the cart"""
-
-    def __init__(self) -> None:
-        super().__init__("🗑️ Clear all", id="clear-all-button")
-
-
 class ButtonSave(Button):
     """Button used for saving transaction to the file"""
 
@@ -84,7 +77,6 @@ class TransactionSummary(BaseScreen):
         Binding("escape", "pop_screen", "Cart"),
         Binding("f1", "dashboard", "Dashboard"),
         Binding("f10", "broadcast", "Broadcast"),
-        Binding("f11", "clear_all", "Clear all"),
         Binding("f12", "save", "Save"),
     ]
 
@@ -103,7 +95,6 @@ class TransactionSummary(BaseScreen):
                     yield self.__select_key
                     yield ButtonBroadcast()
                     yield ActionsSpacer()
-                    yield ButtonClearAll()
                     yield ButtonSave()
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
@@ -115,8 +106,6 @@ class TransactionSummary(BaseScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "broadcast-button":
             self.action_broadcast()
-        elif event.button.id == "clear-all-button":
-            self.action_clear_all()
         elif event.button.id == "save-button":
             self.action_save()
 
@@ -124,10 +113,6 @@ class TransactionSummary(BaseScreen):
         self.app.pop_screen_until("DashboardActive")
 
     def action_broadcast(self) -> None:
-        self.__clear_all()
-        self.action_dashboard()
-
-    def action_clear_all(self) -> None:
         self.__clear_all()
         self.action_dashboard()
 
