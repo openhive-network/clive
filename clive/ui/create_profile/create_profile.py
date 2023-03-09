@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
-from textual.widgets import Button, Input, Static
+from textual.widgets import Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
@@ -23,8 +23,6 @@ class CreateProfileCommon(BaseScreen):
             yield Input(placeholder="Password", password=True, id="password_input")
             yield Static("Repeat password", classes="label")
             yield Input(placeholder="Repeat Password", password=True, id="repeat_password_input")
-            yield Static()
-            yield Button("Create profile", variant="primary", id="create-profile-button")
 
     def on_mount(self) -> None:
         self.query(Input).first().focus()
@@ -66,10 +64,6 @@ class CreateProfile(CreateProfileCommon):
         Binding("f1", "create_profile", "Create profile"),
     ]
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "create-profile-button":
-            self.action_create_profile()
-
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
@@ -86,7 +80,3 @@ class CreateProfileForm(CreateProfileCommon, FormScreen):
         if self._create_profile():
             self._owner.action_next_screen()
             self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "create-profile-button":
-            self.action_save()
