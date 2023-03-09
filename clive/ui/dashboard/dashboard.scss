@@ -12,6 +12,7 @@ DashboardBase WatchedAccountContainer {
 DashboardBase ContainerTitle {
   color: $text;
   text-style: bold;
+  padding-left: 2;
 }
 
 DashboardBase ContainerTitle.watched {

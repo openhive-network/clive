@@ -78,13 +78,11 @@ class AccountRow(Container):
 
 class ActiveAccountContainer(Static):
     def compose(self) -> ComposeResult:
-        yield ContainerTitle("ACTIVE ACCOUNT", classes="active")
         yield AccountRow("vogel")
 
 
 class WatchedAccountContainer(Static):
     def compose(self) -> ComposeResult:
-        yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
         yield AccountRow("gtg", account_type=AccountType.WATCHED)
         yield AccountRow("veryverylonglong", account_type=AccountType.WATCHED)
 
@@ -92,5 +90,7 @@ class WatchedAccountContainer(Static):
 class DashboardBase(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
+            yield ContainerTitle("ACTIVE ACCOUNT", classes="active")
             yield ActiveAccountContainer()
+            yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
             yield WatchedAccountContainer()
