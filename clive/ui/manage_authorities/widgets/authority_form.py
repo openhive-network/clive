@@ -85,7 +85,7 @@ class AuthorityForm(BaseScreen):
         with ViewBag():
             yield BigTitle(self._title())
             with Body():
-                yield Static("Authority name:")
+                yield Static("Key alias:")
                 yield self.__authority_name_input
                 yield Static()
                 yield ModeSwitchContainer()
