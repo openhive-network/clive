@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Grid, Horizontal
-from textual.widgets import Button, Input, Static
+from textual.containers import Grid
+from textual.widgets import Input, Static
 
 from clive.models.transfer_operation import TransferOperation
 from clive.ui.operations.cart import Cart
@@ -26,10 +26,6 @@ class Body(Grid):
 
 class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
-
-
-class Buttons(Horizontal):
-    """Container for the buttons"""
 
 
 class CurrencySelector(Select):
@@ -70,17 +66,6 @@ class TransferToAccount(CartBasedScreen):
                 yield self.__currency_selector
                 yield Static("memo", classes="label")
                 yield self.__memo_input
-                yield Static()
-                yield Static()
-                with Buttons():
-                    yield Button("Finalize transaction", id="finalize-button")
-                    yield Button("Add to cart", id="add-to-cart-button")
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "finalize-button":
-            self.action_finalize()
-        elif event.button.id == "add-to-cart-button":
-            self.action_add_to_cart()
 
     def action_finalize(self) -> None:
         if self.__create_operation():

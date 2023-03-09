@@ -25,17 +25,3 @@ TransferToAccount .label {
 TransferToAccount #from-label {
   padding: 1 2;
 }
-
-TransferToAccount Buttons {
-  height: auto;
-}
-
-TransferToAccount Button {
-  width: 1fr;
-  background: $primary;
-}
-
-TransferToAccount #finalize-button {
-  margin-right: 1;
-  background: $success;
-}
