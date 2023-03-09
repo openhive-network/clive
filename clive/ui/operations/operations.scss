@@ -6,3 +6,7 @@ Operations DialogContainer > Button {
   width: 1fr;
   background: $primary;
 }
+
+Operations DialogContainer > Button:focus {
+  background: $primary-darken-1;
+}
