@@ -59,7 +59,7 @@ class TransferToAccount(CartBasedScreen):
             yield BigTitle("Transfer to account")
             with Body():
                 yield Static("from", classes="label")
-                yield EllipsedStatic(str(self.app.profile_data.active_account.name), id_="from-label")
+                yield EllipsedStatic(str(self.app.profile_data.working_account.name), id_="from-label")
                 yield PlaceTaker()
                 yield Static("to", classes="label")
                 yield self.__to_input
@@ -85,7 +85,7 @@ class TransferToAccount(CartBasedScreen):
         """
         op = TransferOperation(
             asset=self.__currency_selector.text,
-            from_=str(self.app.profile_data.active_account.name),
+            from_=str(self.app.profile_data.working_account.name),
             to=self.__to_input.value,
             amount=self.__amount_input.value,
             memo=self.__memo_input.value,

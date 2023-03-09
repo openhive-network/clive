@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 class AccountType(str, Enum):
     value: str
 
-    ACTIVE = "active"
+    WORKING = "working"
     WATCHED = "watched"
 
 
@@ -43,7 +43,7 @@ class PrivateKey:
 
 
 @dataclass
-class ActiveAccount(Account):
+class WorkingAccount(Account):
     keys: List[PrivateKey]
 
 
@@ -101,7 +101,7 @@ class ProfileData:
     name: str = ""
     password: str = ""  # yes, yes, plaintext
 
-    active_account: ActiveAccount = ActiveAccount(
+    working_account: WorkingAccount = WorkingAccount(
         "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
     )
     backup_node_addresses: list[NodeAddress] = [

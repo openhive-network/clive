@@ -21,8 +21,8 @@ class EditAuthority(AuthorityForm):
         super().__init__()
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        idx = self.app.profile_data.active_account.keys.index(self.authority)
-        self.app.profile_data.active_account.keys[idx] = event.private_key
+        idx = self.app.profile_data.working_account.keys.index(self.authority)
+        self.app.profile_data.working_account.keys[idx] = event.private_key
         self.app.update_reactive("profile_data")
 
         self.app.pop_screen()

@@ -1,8 +1,8 @@
-$active-color: $secondary-darken-2;
+$working-color: $secondary-darken-2;
 $watched-color: $primary-darken-1;
 
-DashboardBase ActiveAccountContainer {
-  border: $active-color;
+DashboardBase WorkingAccountContainer {
+  border: $working-color;
 }
 
 DashboardBase WatchedAccountContainer {
@@ -19,8 +19,8 @@ DashboardBase ContainerTitle.watched {
   background: $watched-color;
 }
 
-DashboardBase ContainerTitle.active {
-  background: $active-color;
+DashboardBase ContainerTitle.working {
+  background: $working-color;
 }
 
 /* AccountRow */

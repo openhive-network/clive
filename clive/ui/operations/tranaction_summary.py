@@ -52,7 +52,7 @@ class SelectKey(Select, CliveWidget):
 
     def __init__(self) -> None:
         super().__init__(
-            [SelectItem(x, x.key_name) for x in self.app.profile_data.active_account.keys],
+            [SelectItem(x, x.key_name) for x in self.app.profile_data.working_account.keys],
             list_mount="ViewBag",
             selected=0,
         )

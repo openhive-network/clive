@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 
 class ContainerTitle(Static):
-    """A title for active/watched accounts container"""
+    """A title for working/watched accounts container"""
 
 
 class BalanceStats(Widget):
@@ -62,7 +62,7 @@ class AccountInfo(Container):
 
 
 class AccountRow(Container):
-    def __init__(self, account_name: str, *, account_type: AccountType = AccountType.ACTIVE) -> None:
+    def __init__(self, account_name: str, *, account_type: AccountType = AccountType.WORKING) -> None:
         super().__init__(classes=account_type)
         self.__account_name = account_name
         self.__account_type = account_type
@@ -76,7 +76,7 @@ class AccountRow(Container):
                 yield ActivityStats()
 
 
-class ActiveAccountContainer(Static):
+class WorkingAccountContainer(Static):
     def compose(self) -> ComposeResult:
         yield AccountRow("vogel")
 
@@ -90,7 +90,7 @@ class WatchedAccountContainer(Static):
 class DashboardBase(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
-            yield ContainerTitle("ACTIVE ACCOUNT", classes="active")
-            yield ActiveAccountContainer()
+            yield ContainerTitle("WORKING ACCOUNT", classes="working")
+            yield WorkingAccountContainer()
             yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
             yield WatchedAccountContainer()

@@ -56,7 +56,7 @@ class SetAccount(BaseScreen, FormScreen):
         super().__init__()
 
         self.__account_name_input = Input(
-            str(self.app.profile_data.active_account.name),
+            str(self.app.profile_data.working_account.name),
             placeholder="e.g.: cookingwithkasia",
             id="set_account_name",
             highlighter=AccountNameHighlighter(),
@@ -79,7 +79,7 @@ class SetAccount(BaseScreen, FormScreen):
             Notification("Invalid account name!", category="error").show()
             return
 
-        self.app.profile_data.active_account.name = account_name
+        self.app.profile_data.working_account.name = account_name
         self.app.profile_data.save()
         self._owner.action_next_screen()
         Notification("Account name saved.", category="success").show()

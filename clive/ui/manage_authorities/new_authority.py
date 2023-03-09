@@ -9,7 +9,7 @@ from clive.ui.widgets.notification import Notification
 
 class NewAuthorityBase(AuthorityForm):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.app.profile_data.active_account.keys.append(event.private_key)
+        self.app.profile_data.working_account.keys.append(event.private_key)
         self.app.update_reactive("profile_data")
 
         self.app.pop_screen()
@@ -30,7 +30,7 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         event.prevent_default()
 
-        self.app.profile_data.active_account.keys.append(event.private_key)
+        self.app.profile_data.working_account.keys.append(event.private_key)
         self.app.update_reactive("profile_data")
 
         self._owner.action_next_screen()
