@@ -4,7 +4,6 @@ from re import compile
 from typing import TYPE_CHECKING, Final, Pattern
 
 from rich.highlighter import Highlighter
-from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Input, Static
 
@@ -45,8 +44,6 @@ class AccountNameHighlighter(Highlighter):
 
 
 class SetAccount(BaseScreen, FormScreen):
-    BINDINGS = [Binding("f10", "save_account_name", "Save")]
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -65,13 +62,19 @@ class SetAccount(BaseScreen, FormScreen):
                 yield Static("@", id="account-name-at")
                 yield self.__account_name_input
 
-    def action_save_account_name(self) -> None:
-        account_name = self.__account_name_input.value
-        if not AccountNameHighlighter.is_valid_account_name(account_name):
-            Notification("Invalid account name!", category="error").show()
-            return
+    def action_next_screen(self) -> None:
+        if self.__save_account_name():
+            super().action_next_screen()
+            Notification("Account name saved.", category="success").show()
 
-        self.app.profile_data.working_account.name = account_name
+    def __is_valid(self) -> bool:
+        return AccountNameHighlighter.is_valid_account_name(self.__account_name_input.value)
+
+    def __save_account_name(self) -> bool:
+        if not self.__is_valid():
+            Notification("Invalid account name!", category="error").show()
+            return False
+
+        self.app.profile_data.working_account.name = self.__account_name_input.value
         self.app.profile_data.save()
-        self._owner.action_next_screen()
-        Notification("Account name saved.", category="success").show()
+        return True
