@@ -19,7 +19,9 @@ class Onboarding(Form):
         yield NewAuthorityForm
 
     def create_welcome_screen(self) -> WelcomeFormScreen:
-        return WelcomeFormScreen("Let's start onboarding! 🚢")
+        return WelcomeFormScreen(
+            "Let's start onboarding! 🚢\nIn any moment you can press the `[blue]?[/]` button to see the help page."
+        )
 
     def create_finish_screen(self) -> FinishFormScreen:
         return FinishFormScreen("Now you are ready to enter Clive 🚀")
