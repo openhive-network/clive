@@ -1,10 +1,9 @@
 from __future__ import annotations
 
 import dataclasses
-import json
 from abc import abstractmethod
 from itertools import count
-from typing import ClassVar
+from typing import Any, ClassVar
 
 from clive.abstract_class import AbstractClass
 
@@ -24,8 +23,8 @@ class Operation(AbstractClass):
         compare=True,
     )
 
-    def as_json(self) -> str:
-        return json.dumps(dataclasses.asdict(self), indent=4)
+    def as_json(self) -> dict[str, Any]:
+        return dataclasses.asdict(self)
 
     @abstractmethod
     def pretty_print(self) -> str:
