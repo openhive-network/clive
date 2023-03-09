@@ -100,7 +100,7 @@ class TransactionSummary(BaseScreen):
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
                 for idx, operation in enumerate(self.app.profile_data.operations_cart):
-                    yield OperationItem(str(operation), classes="-even" if idx % 2 == 0 else "")
+                    yield OperationItem(json.dumps(operation.as_json()), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
