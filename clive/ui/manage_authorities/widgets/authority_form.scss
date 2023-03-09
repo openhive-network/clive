@@ -17,6 +17,18 @@ AuthorityForm Body {
   padding: 2 4;
 }
 
+AuthorityForm AuthorityNameContainer {
+  height: auto;
+}
+
+AuthorityForm AuthorityNameLabel {
+  padding: 1 2;
+}
+
+AuthorityForm AuthorityNameInput {
+  width: 1fr;
+}
+
 AuthorityForm ModeSwitchContainer {
   height: auto;
 }

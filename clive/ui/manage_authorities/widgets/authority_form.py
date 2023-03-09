@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual.containers import Container, Horizontal
 from textual.message import Message
-from textual.widgets import Button, DirectoryTree, Input, Static, Switch
+from textual.widgets import Button, DirectoryTree, Input, Label, Static, Switch
 
 from clive.storage.mock_database import PrivateKey
 from clive.ui.shared.base_screen import BaseScreen
@@ -34,6 +34,18 @@ class ButtonsContainer(Horizontal):
 
 class Body(Container):
     """Container for body"""
+
+
+class AuthorityNameContainer(Horizontal):
+    """Container for authority name label and input"""
+
+
+class AuthorityNameLabel(Label):
+    """Label for authority name"""
+
+
+class AuthorityNameInput(Input):
+    """Input for authority name"""
 
 
 class SubTitle(Static):
@@ -76,7 +88,7 @@ class AuthorityForm(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__authority_name_input = Input(self._default_authority_name(), "e.g. My active key")
+        self.__authority_name_input = AuthorityNameInput(self._default_authority_name(), "e.g. My active key")
         self.__manual_file_path = ManualFilePath()
         self.__tree_file_selector = TreeFileSelector()
 
@@ -91,8 +103,9 @@ class AuthorityForm(BaseScreen):
             if self._subtitle():
                 yield SubTitle(self._subtitle())
             with Body():
-                yield Static("Key alias:")
-                yield self.__authority_name_input
+                with AuthorityNameContainer():
+                    yield AuthorityNameLabel("Key alias:")
+                    yield self.__authority_name_input
                 yield Static()
                 yield ModeSwitchContainer()
                 yield Static()
