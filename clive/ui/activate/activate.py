@@ -23,6 +23,8 @@ class Activate(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         yield DialogContainer(
+            Static("Profile name", classes="label"),
+            Input(self.app.profile_data.name, disabled=True),
             Static("Password", classes="label"),
             Input(placeholder="Password", password=True),
             Switch(False),
