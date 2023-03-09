@@ -25,10 +25,15 @@ class Operations(CartBasedScreen):
         with DialogContainer():
             yield Static("Select one of the following operations:", id="hint")
             yield Button("Transfer to account", id="account-transfer-button")
+            yield Button("Transfer to savings", id="savings-transfer-button")
+            yield Button("Power up", id="power-up-button")
+            yield Button("Power down", id="power-down-button")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account-transfer-button":
             self.app.push_screen(TransferToAccount())
+        else:
+            Notification("Not implemented yet!", category="error").show()
 
     def action_cart(self) -> None:
         if not self.app.profile_data.operations_cart:
