@@ -41,7 +41,7 @@ class CurrencySelector(Select):
 class TransferToAccount(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Operations"),
-        Binding("f1", "finalize", "Finalize"),
+        Binding("f1", "finalize", "Finalize transaction"),
         Binding("f2", "add_to_cart", "Add to cart"),
     ]
 
