@@ -91,14 +91,6 @@ DashboardBase ActivityStats {
   height: 3;
 }
 
-DashboardBase AccountRow.active ActivityStats {
-  background: $active-color;
-}
-
-DashboardBase AccountRow.watched ActivityStats {
-  background: $watched-color;
-}
-
 DashboardBase ActivityStats Static {
   text-align: center;
 }
