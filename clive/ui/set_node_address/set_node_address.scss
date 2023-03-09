@@ -12,6 +12,10 @@ SetNodeAddressBase NodesList, SetNodeAddressBase ManualNode, SetNodeAddressBase 
   height: auto;
 }
 
+SetNodeAddressBase ModeSwitchContainer {
+  display: none;
+}
+
 SetNodeAddressBase ModeSwitchContainer Static {
   text-align: left;
   padding: 1 2;
