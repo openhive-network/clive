@@ -36,6 +36,10 @@ class Body(Container):
     """Container for body"""
 
 
+class SubTitle(Static):
+    pass
+
+
 class ManualFilePath(Static):
     def __init__(self) -> None:
         super().__init__(classes="-hidden")
@@ -84,6 +88,8 @@ class AuthorityForm(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle(self._title())
+            if self._subtitle():
+                yield SubTitle(self._subtitle())
             with Body():
                 yield Static("Key alias:")
                 yield self.__authority_name_input
@@ -119,6 +125,9 @@ class AuthorityForm(BaseScreen):
         self.__manual_file_path.input.value = event.path
 
     def _title(self) -> str:
+        return ""
+
+    def _subtitle(self) -> str:
         return ""
 
     def _default_authority_name(self) -> str:

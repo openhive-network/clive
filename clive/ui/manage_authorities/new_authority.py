@@ -35,3 +35,6 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen):
 
         self._owner.action_next_screen()
         Notification(f"New authority `{event.private_key.key_name}` was created.", category="success").show()
+
+    def _subtitle(self) -> str:
+        return "(Optional step, could be done later)"
