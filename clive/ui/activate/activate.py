@@ -22,16 +22,15 @@ class Activate(BaseScreen):
         self.query(Input).first().focus()
 
     def create_main_panel(self) -> ComposeResult:
-        yield DialogContainer(
-            Static("Profile name", classes="label"),
-            Input(self.app.profile_data.name, disabled=True),
-            Static("Password", classes="label"),
-            Input(placeholder="Password", password=True),
-            Switch(False),
-            Static("Permanent active mode", classes="label", id="active-mode-label"),
-            Static(),
-            Button("Activate", variant="primary", id="activate-button"),
-        )
+        with DialogContainer():
+            yield Static("Profile name", classes="label")
+            yield Input(self.app.profile_data.name, disabled=True)
+            yield Static("Password", classes="label")
+            yield Input(placeholder="Password", password=True)
+            yield Switch(False)
+            yield Static("Permanent active mode", classes="label", id="active-mode-label")
+            yield Static()
+            yield Button("Activate", variant="primary", id="activate-button")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "activate-button":
