@@ -55,13 +55,14 @@ class Header(TextualHeader, CliveWidget):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            yield TitledLabel(
-                "Profile",
-                obj_to_watch=self.app,
-                attribute_name="profile_data",
-                callback=self.__get_profile_name,
-                id_="profile-label",
-            )
+            if self.app.profile_data.name:
+                yield TitledLabel(
+                    "Profile",
+                    obj_to_watch=self.app,
+                    attribute_name="profile_data",
+                    callback=self.__get_profile_name,
+                    id_="profile-label",
+                )
             yield AlarmsSummary()
             yield TitledLabel(
                 "Mode",
