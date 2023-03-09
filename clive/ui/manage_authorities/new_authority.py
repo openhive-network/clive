@@ -17,7 +17,7 @@ class NewAuthorityBase(AuthorityForm):
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged(self))
 
     def _title(self) -> str:
-        return "create authority"
+        return "define keys"
 
 
 class NewAuthority(NewAuthorityBase):
