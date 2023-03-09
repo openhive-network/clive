@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
-from textual.widgets import Button, Label, Static
+from textual.widgets import Label, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
@@ -28,7 +28,7 @@ class ScrollablePart(Container, can_focus=True):
 
 
 class ActionsContainer(Horizontal):
-    """Container for the all the actions - combobox and buttons"""
+    """Container for the all the actions - combobox"""
 
 
 class ActionsSpacer(Static):
@@ -45,20 +45,6 @@ class TransactionHint(Label):
 
 class OperationItem(Static):
     """Item in the operations list"""
-
-
-class ButtonSave(Button):
-    """Button used for saving transaction to the file"""
-
-    def __init__(self) -> None:
-        super().__init__("💾 Save", id="save-button")
-
-
-class ButtonBroadcast(Button):
-    """Button used for broadcasting transaction"""
-
-    def __init__(self) -> None:
-        super().__init__("📡 Broadcast", id="broadcast-button")
 
 
 class SelectKey(Select, CliveWidget):
@@ -93,21 +79,12 @@ class TransactionSummary(BaseScreen):
                 with ActionsContainer():
                     yield KeyHint("Sign with key:")
                     yield self.__select_key
-                    yield ButtonBroadcast()
-                    yield ActionsSpacer()
-                    yield ButtonSave()
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
                 for idx, operation in enumerate(self.app.profile_data.operations_cart):
                     yield OperationItem(json.dumps(operation.as_json()), classes="-even" if idx % 2 == 0 else "")
             yield Static()
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "broadcast-button":
-            self.action_broadcast()
-        elif event.button.id == "save-button":
-            self.action_save()
 
     def action_dashboard(self) -> None:
         self.app.pop_screen_until("DashboardActive")

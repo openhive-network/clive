@@ -27,32 +27,12 @@ TransactionSummary ActionsContainer {
 }
 
 TransactionSummary SelectKey {
-  width: 1fr;
-}
-
-TransactionSummary ActionsSpacer {
-  width: 1fr;
+  max-width: 25%;
 }
 
 TransactionSummary KeyHint {
   padding: 1;
   text-style: bold;
-}
-
-TransactionSummary ButtonBroadcast {
-  background: $success;
-}
-
-TransactionSummary ButtonBroadcast:focus {
-  background: $success-darken-1;
-}
-
-TransactionSummary ButtonSave {
-  background: $primary;
-}
-
-TransactionSummary ButtonSave:focus {
-  background: $primary-darken-1;
 }
 
 TransactionSummary TransactionHint {
