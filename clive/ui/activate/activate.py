@@ -27,7 +27,8 @@ class Activate(BaseScreen):
             yield Input(self.app.profile_data.name, disabled=True)
             yield Static("Password", classes="label")
             yield Input(placeholder="Password", password=True)
-            yield Switch(False)
+            with Static():
+                yield Switch(False)
             yield Static("Permanent active mode", classes="label", id="active-mode-label")
             yield Static()
             yield Button("Activate", variant="primary", id="activate-button")

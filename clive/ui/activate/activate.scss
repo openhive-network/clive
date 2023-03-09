@@ -1,5 +1,5 @@
 Activate DialogContainer {
-  grid-columns: 12 1fr;
+  grid-columns: 20 1fr;
   grid-rows: 4;
   grid-size: 2;
   layout: grid;
@@ -17,4 +17,8 @@ Activate .label {
 
 Activate #active-mode-label {
     text-align: left;
+}
+
+Activate Switch {
+  dock: right;
 }
