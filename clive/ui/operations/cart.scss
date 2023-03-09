@@ -47,21 +47,6 @@ Cart .deleted {
   display: none;
 }
 
-Cart ButtonsContainer {
-  margin-right: 1;
-  height: auto;
-  align: right middle;
-}
-
-Cart ButtonOperations {
-  margin-right: 1;
-  background: $primary;
-}
-
-Cart ButtonSummary {
-  background: $success;
-}
-
 Cart ButtonMoveUp, Cart ButtonMoveDown {
   background: $primary;
 }
@@ -81,13 +66,4 @@ Cart ButtonDelete:focus {
 Cart Scrollable {
   overflow-y: scroll;
   height: 1fr;
-}
-
-Cart ButtonClearAll {
-  margin-right: 1;
-  background: $error;
-}
-
-Cart ButtonClearAll:focus {
-  background: $error-darken-1;
 }

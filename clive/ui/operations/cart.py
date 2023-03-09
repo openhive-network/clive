@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Container
 from textual.message import Message
 from textual.widgets import Button, Static
 
@@ -33,10 +33,6 @@ class ColumnLayout(Static):
     """This class holds column order"""
 
 
-class ButtonsContainer(Horizontal):
-    """Container for the buttons"""
-
-
 class ButtonMoveUp(Button):
     """Button used for moving the operation up in the cart"""
 
@@ -56,27 +52,6 @@ class ButtonDelete(Button):
 
     def __init__(self) -> None:
         super().__init__("🗑️", id="delete-button")
-
-
-class ButtonSummary(Button):
-    """Button used for navigating to the operations summary"""
-
-    def __init__(self) -> None:
-        super().__init__("📝 Summary", id="summary-button")
-
-
-class ButtonOperations(Button):
-    """Button used for navigating to the operations choice screen"""
-
-    def __init__(self) -> None:
-        super().__init__("🔙 Add more ops", id="operations-button")
-
-
-class ButtonClearAll(Button):
-    """Button used for removing all the operations from the cart"""
-
-    def __init__(self) -> None:
-        super().__init__("🗑️ Clear all", id="clear-all-button")
 
 
 class StaticPart(Static):
@@ -183,12 +158,6 @@ class Cart(BaseScreen):
         with ViewBag():
             with StaticPart():
                 yield BigTitle("operations cart")
-
-                with ButtonsContainer():
-                    yield ButtonOperations()
-                    yield ButtonClearAll()
-                    yield ButtonSummary()
-
                 yield CartOperationsHeader()
 
             with self.__scrollable_part:
@@ -223,12 +192,3 @@ class Cart(BaseScreen):
         self.app.profile_data.operations_cart.clear()
         self.app.update_reactive("profile_data")
         self.__scrollable_part.add_class("-hidden")
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Event handler called when a button is pressed."""
-        if event.button.id == "summary-button":
-            self.action_summary()
-        elif event.button.id == "operations-button":
-            self.app.pop_screen()
-        elif event.button.id == "clear-all-button":
-            self.action_clear_all()
