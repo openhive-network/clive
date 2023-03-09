@@ -16,7 +16,6 @@ from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.onboarding.onboarding import Onboarding
 from clive.ui.quit.quit import Quit
-from clive.ui.registration.registration import Registration
 from clive.ui.shared.help import Help
 from clive.ui.terminal.command_line import CommandLinePrompt
 from clive.ui.widgets.notification import Notification
@@ -48,7 +47,6 @@ class Clive(App[int]):
         "quit": Quit,
         "dashboard_inactive": DashboardInactive,
         "dashboard_active": DashboardActive,
-        "registration": Registration,
     }
 
     header_expanded = var(False)

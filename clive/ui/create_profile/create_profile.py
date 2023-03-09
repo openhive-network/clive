@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class RegistrationCommon(BaseScreen):
+class CreateProfileCommon(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Profile name", classes="label")
@@ -24,7 +24,7 @@ class RegistrationCommon(BaseScreen):
             yield Static("Repeat password", classes="label")
             yield Input(placeholder="Repeat Password", password=True, id="repeat_password_input")
             yield Static()
-            yield Button("Register", variant="primary", id="register-button")
+            yield Button("Create profile", variant="primary", id="create-profile-button")
 
     def on_mount(self) -> None:
         self.query(Input).first().focus()
@@ -60,26 +60,26 @@ class RegistrationCommon(BaseScreen):
         Notification("Profile created successfully!", category="success").show()
 
 
-class Registration(RegistrationCommon):
+class CreateProfile(CreateProfileCommon):
     BINDINGS = [
         Binding("escape", "dashboard", "Dashboard"),
-        Binding("f1", "register", "Register"),
+        Binding("f1", "create_profile", "Create profile"),
     ]
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "register-button":
-            self.action_register()
+        if event.button.id == "create-profile-button":
+            self.action_create_profile()
 
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
-    def action_register(self) -> None:
+    def action_create_profile(self) -> None:
         if self._create_profile():
             self.app.pop_screen()
             self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
 
 
-class RegistrationForm(RegistrationCommon, FormScreen):
+class CreateProfileForm(CreateProfileCommon, FormScreen):
     BINDINGS = [Binding("f10", "save", "Save")]
 
     def action_save(self) -> None:
@@ -88,5 +88,5 @@ class RegistrationForm(RegistrationCommon, FormScreen):
             self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "register-button":
+        if event.button.id == "create-profile-button":
             self.action_save()

@@ -1,16 +1,16 @@
-RegistrationCommon DialogContainer {
+CreateProfileCommon DialogContainer {
   grid-columns: 20 1fr;
   grid-rows: 4;
   grid-size: 2;
   layout: grid;
 }
 
-RegistrationCommon Button {
+CreateProfileCommon Button {
   margin: 0 1;
   width: 100%;
 }
 
-RegistrationCommon .label {
+CreateProfileCommon .label {
   padding: 1 2;
   text-align: right;
 }
