@@ -175,9 +175,10 @@ class SetNodeAddressBase(BaseScreen):
 
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen):
-    BINDINGS = [Binding("f10", "save_node_address", "Save")]
+    def action_next_screen(self) -> None:
+        self.__save_node_address()
 
-    def action_save_node_address(self) -> None:
+    def __save_node_address(self) -> None:
         super().action_save_node_address()
         if not self._in_nodes_list_mode() and self._is_valid():
             Notification("Node address saved. Press `CTRL+N` to continue.", category="success").show()
