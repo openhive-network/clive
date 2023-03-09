@@ -9,6 +9,7 @@ from textual.widgets import Input, Static
 from clive.models.transfer_operation import TransferOperation
 from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.ui.operations.tranaction_summary import TransactionSummary
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.ui.widgets.notification import Notification
@@ -70,7 +71,8 @@ class TransferToAccount(CartBasedScreen):
 
     def action_finalize(self) -> None:
         if self.__create_operation():
-            self.app.switch_screen(Cart())
+            self.app.switch_screen(TransactionSummary())
+            self.app.push_screen_at(-1, Cart())
 
     def action_add_to_cart(self) -> None:
         if self.__create_operation():

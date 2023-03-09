@@ -84,6 +84,11 @@ class Clive(App[int]):
     def push_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
 
+    def push_screen_at(self, index: int, screen: Screen | str) -> None:
+        """Push a screen at the given index in the stack."""
+        screen_, _ = self.app._get_screen(screen)
+        self.app._screen_stack.insert(index, screen_)
+
     def pop_screen(self) -> Screen:
         return self.__update_screen("pop_screen")
 
