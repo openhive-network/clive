@@ -28,12 +28,3 @@ SetAccount #account-name-at {
 SetAccount AccountNameInputContainer Input {
   width: 3fr
 }
-
-SetAccount ButtonSave {
-  column-span: 2;
-  background: $primary;
-}
-
-SetAccount ButtonSave:focus {
-  background: $primary-darken-1;
-}
