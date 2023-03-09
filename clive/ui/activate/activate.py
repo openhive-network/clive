@@ -18,15 +18,19 @@ class Activate(BaseScreen):
         Binding("f1", "activate", "Activate"),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.__password_input = Input(placeholder="Password", password=True)
+
     def on_mount(self) -> None:
-        self.query(Input).first().focus()
+        self.__password_input.focus()
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Profile name", classes="label")
             yield Input(self.app.profile_data.name, disabled=True)
-            yield Static("Password", classes="label")
-            yield Input(placeholder="Password", password=True)
+            yield Static("Password", classes="label", id="password-label")
+            yield self.__password_input
             with Static():
                 yield Switch(False)
             yield Static("Permanent active mode", classes="label", id="active-mode-label")
