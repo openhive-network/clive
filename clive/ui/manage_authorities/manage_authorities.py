@@ -75,12 +75,12 @@ class AuthorityHeader(ColumnLayout):
 class AuthorityTitle(Static):
     def compose(self) -> ComposeResult:
         yield BigTitle("authorities", id="authorities_title_label")
-        yield Button("✨ Add New Authority", id="add_authority_button")
 
 
 class ManageAuthorities(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
+        Binding("f1", "new_authority", "New authority"),
     ]
 
     def __init__(self) -> None:
@@ -94,10 +94,8 @@ class ManageAuthorities(BaseScreen):
             for key in self.app.profile_data.working_account.keys:
                 yield Authority(key)
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Event handler called when a button is pressed."""
-        if event.button.id == "add_authority_button":
-            self.app.push_screen(NewAuthority())
+    def action_new_authority(self) -> None:
+        self.app.push_screen(NewAuthority())
 
     def on_authority_form_authorities_changed(self) -> None:
         self.__rebuild_authorities()
