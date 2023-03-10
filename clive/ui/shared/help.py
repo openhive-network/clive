@@ -20,7 +20,7 @@ class Help(BaseScreen):
     """The help screen for the application. Created dynamically, based on previously active screen."""
 
     BINDINGS = [
-        Binding("space,q,question_mark,escape", "pop_screen", "Close", key_display="ESC"),
+        Binding("space,q,question_mark,escape", "pop_screen", "Cancel", key_display="ESC"),
     ]
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "ui/global_help.md"

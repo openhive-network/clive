@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 class ConfigBase(BaseScreen, AbstractClassMessagePump):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Dashboard"),
+        Binding("escape", "pop_screen", "Cancel"),
         Binding("f1", "select_node", "Select node"),
     ]
 

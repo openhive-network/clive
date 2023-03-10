@@ -22,7 +22,7 @@ class _SelectList(Widget):
     """The dropdown list which is opened at the input."""
 
     BINDINGS = [
-        Binding("escape", "close", "Close", priority=True),
+        Binding("escape", "close", "Cancel", priority=True),
     ]
 
     DEFAULT_CSS = """

@@ -190,4 +190,4 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen):
 
 
 class SetNodeAddress(SetNodeAddressBase):
-    BINDINGS = [Binding("escape", "pop_screen", "Configs")]
+    BINDINGS = [Binding("escape", "pop_screen", "Cancel")]

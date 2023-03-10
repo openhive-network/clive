@@ -60,7 +60,7 @@ class CreateProfileCommon(BaseScreen):
 
 class CreateProfile(CreateProfileCommon):
     BINDINGS = [
-        Binding("escape", "dashboard", "Dashboard"),
+        Binding("escape", "dashboard", "Cancel"),
         Binding("f1", "create_profile", "Create profile"),
     ]
 

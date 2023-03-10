@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 class Activate(BaseScreen):
     BINDINGS = [
-        Binding("escape", "dashboard", "Dashboard"),
+        Binding("escape", "dashboard", "Cancel"),
         Binding("f1", "activate", "Activate"),
     ]
 

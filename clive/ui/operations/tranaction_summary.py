@@ -60,7 +60,7 @@ class SelectKey(Select, CliveWidget):
 
 class TransactionSummary(BaseScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cart"),
+        Binding("escape", "pop_screen", "Cancel"),
         Binding("f1", "dashboard", "Dashboard"),
         Binding("f10", "broadcast", "Broadcast"),
         Binding("f12", "save", "Save"),

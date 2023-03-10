@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class Operations(CartBasedScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Dashboard"),
+        Binding("escape", "pop_screen", "Cancel"),
         Binding("f1", "cart", "Cart"),
     ]
 

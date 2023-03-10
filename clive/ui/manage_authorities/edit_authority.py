@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 class EditAuthority(AuthorityForm):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Authorities"),
+        Binding("escape", "pop_screen", "Cancel"),
     ]
 
     def __init__(self, authority: PrivateKey) -> None:

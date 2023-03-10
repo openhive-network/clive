@@ -80,7 +80,7 @@ class AuthorityTitle(Static):
 
 class ManageAuthorities(BaseScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Configs"),
+        Binding("escape", "pop_screen", "Cancel"),
     ]
 
     def __init__(self) -> None:
