@@ -58,7 +58,7 @@ class Authority(ColumnLayout, CliveWidget):
         if event.button.id == "remove_authority_button":
             self.app.profile_data.working_account.keys.remove(self.__authority)
             Notification(f"Authority `{self.__authority.key_name}` was removed.", category="success").show()
-            self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged(self))
+            self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
         if event.button.id == "edit_authority_button":
             self.app.push_screen(EditAuthority(self.__authority))
 

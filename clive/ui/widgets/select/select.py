@@ -127,8 +127,8 @@ class Select(Widget, can_focus=True):
         self.__show_select_list()
 
     class Changed(Message, bubble=True):
-        def __init__(self, sender: Select, selected: SelectItem | None) -> None:
-            super().__init__(sender)
+        def __init__(self, selected: SelectItem | None) -> None:
+            super().__init__()
             self.selected = selected
 
     async def watch_selected(self, selected: SelectItem | None) -> None:
@@ -139,7 +139,7 @@ class Select(Widget, can_focus=True):
             self.text = selected.text
 
         self.refresh(layout=True)
-        await self.post_message(self.Changed(self, selected))
+        await self.post_message(self.Changed(selected))
 
     def __assert_min_amount_of_items(self) -> None:
         if len(self.__items) < self.MIN_AMOUNT_OF_ITEMS:

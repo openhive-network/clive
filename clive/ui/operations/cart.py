@@ -64,15 +64,15 @@ class ScrollablePart(Container):
 
 class DetailedCartOperation(ColumnLayout, CliveWidget):
     class Deleted(Message):
-        def __init__(self, sender: DetailedCartOperation, deleted: Operation) -> None:
+        def __init__(self, deleted: Operation) -> None:
             self.deleted = deleted
-            super().__init__(sender)
+            super().__init__()
 
     class Move(Message):
-        def __init__(self, sender: DetailedCartOperation, from_idx: int, to_idx: int) -> None:
+        def __init__(self, from_idx: int, to_idx: int) -> None:
             self.from_idx = from_idx
             self.to_idx = to_idx
-            super().__init__(sender)
+            super().__init__()
 
     def __init__(self, operation_idx: int) -> None:
         self.__operation_idx = operation_idx
@@ -121,11 +121,11 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
-            self.post_message(self.Deleted(self, self.__operation))
+            self.post_message(self.Deleted(self.__operation))
         elif event.button.id == "move-up-button":
-            self.post_message(self.Move(self, self.__operation_idx, self.__operation_idx - 1))
+            self.post_message(self.Move(self.__operation_idx, self.__operation_idx - 1))
         elif event.button.id == "move-down-button":
-            self.post_message(self.Move(self, self.__operation_idx, self.__operation_idx + 1))
+            self.post_message(self.Move(self.__operation_idx, self.__operation_idx + 1))
 
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
         if event.to_idx == self.__operation_idx:

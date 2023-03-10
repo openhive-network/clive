@@ -31,9 +31,9 @@ class AuthorityForm(BaseScreen):
     class Saved(Message, bubble=True):
         """Emitted when user Saves the form"""
 
-        def __init__(self, sender: AuthorityForm, private_key: PrivateKey) -> None:
+        def __init__(self, private_key: PrivateKey) -> None:
             self.private_key = private_key
-            super().__init__(sender)
+            super().__init__()
 
     class AuthoritiesChanged(Message):
         """Emitted when authorities have been changed"""
@@ -70,7 +70,7 @@ class AuthorityForm(BaseScreen):
             return
 
         private_key = PrivateKey(self.__get_authority_name(), self._get_key(), self.__key_file_path)
-        self.app.post_message_to_everyone(self.Saved(self, private_key))
+        self.app.post_message_to_everyone(self.Saved(private_key))
 
     def _title(self) -> str:
         return ""

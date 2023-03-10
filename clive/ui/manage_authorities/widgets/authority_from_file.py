@@ -32,9 +32,9 @@ class AuthorityFromFile(BaseScreen):
     class Saved(Message):
         """Emitted when user saves the form"""
 
-        def __init__(self, sender: AuthorityFromFile, file_path: Path) -> None:
+        def __init__(self, file_path: Path) -> None:
             self.file_path = file_path
-            super().__init__(sender)
+            super().__init__()
 
     def __init__(self, default_file_path: str | None = None) -> None:
         super().__init__()
@@ -54,7 +54,7 @@ class AuthorityFromFile(BaseScreen):
         if not self.__is_valid():
             Notification("Failed the validation process! Could not continue.", category="error").show()
             return
-        self.app.post_message_to_everyone(self.Saved(self, self.__get_file_path()))
+        self.app.post_message_to_everyone(self.Saved(self.__get_file_path()))
         self.app.pop_screen()
 
     def __is_valid(self) -> bool:

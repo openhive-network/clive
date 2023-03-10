@@ -32,7 +32,7 @@ class EditAuthority(AuthorityForm):
 
         self.app.pop_screen()
         Notification(f"Authority `{event.private_key.key_name}` was edited.", category="success").show()
-        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged(self))
+        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
 
     def _title(self) -> str:
         return "edit authority"
