@@ -56,10 +56,12 @@ class Select(CliveWidget, can_focus=True):
         search: bool = False,
         selected: int | SelectItemType | SelectItem | None = None,
         placeholder: str = "",
-        id_: str | None = None,
+        name: str | None = None,
+        id: str | None = None,
         classes: str | None = None,
+        disabled: bool = False,
     ) -> None:
-        super().__init__(id=id_, classes=classes)
+        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
 
         self.__bindings_before: Bindings | None = None
 
