@@ -23,5 +23,7 @@ class TransferOperation(Operation):
             and len(self.from_) > 0
         )
 
-    def pretty_print(self) -> str:
-        return f"to={self.to}\namount={self.amount} {self.asset}\nmemo={self.memo}"
+    def pretty(self, *, with_type: bool = False, separator: str = "\n") -> str:
+        return (
+            self.type_ + separator if with_type else ""
+        ) + f"to={self.to}{separator}amount={self.amount} {self.asset}{separator}memo={self.memo}"

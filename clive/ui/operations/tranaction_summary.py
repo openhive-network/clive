@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -83,7 +82,7 @@ class TransactionSummary(BaseScreen):
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
                 for idx, operation in enumerate(self.app.profile_data.operations_cart):
-                    yield OperationItem(json.dumps(operation.as_json()), classes="-even" if idx % 2 == 0 else "")
+                    yield OperationItem(operation.as_json(), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
     def action_dashboard(self) -> None:

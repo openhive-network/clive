@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import dataclasses
 from abc import abstractmethod
 from itertools import count
@@ -23,11 +24,14 @@ class Operation(AbstractClass):
         compare=True,
     )
 
-    def as_json(self) -> dict[str, Any]:
+    def as_dict(self) -> dict[str, Any]:
         return dataclasses.asdict(self)
 
+    def as_json(self) -> str:
+        return json.dumps(self.as_dict(), indent=2)
+
     @abstractmethod
-    def pretty_print(self) -> str:
+    def pretty(self, *, with_type: bool = False, separator: str = "\n") -> str:
         """This method should return short, formatted description of operation without op type"""
 
     @abstractmethod
