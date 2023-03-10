@@ -1,0 +1,20 @@
+AuthorityFromFile DialogContainer {
+  overflow-y: hidden;
+  layout: grid;
+  grid-size: 2;
+  grid-columns: 24 1fr;
+  grid-rows: 4 2 1fr;
+}
+
+AuthorityFromFile FilePathLabel {
+  padding: 1 0;
+}
+
+AuthorityFromFile DirectoryTreeHint {
+  column-span: 2;
+  color: $text-muted;
+}
+
+AuthorityFromFile DirectoryTree {
+  column-span: 2;
+}
