@@ -1,9 +1,7 @@
-ManageAuthorities AuthorityTitle {
-  layout: grid;
-  grid-size: 10 1;
+ManageAuthorities BigTitle {
+  margin-top: 2;
   height: 5;
-  width: 100%;
-  border: $primary;
+  content-align: center middle;
 }
 
 ManageAuthorities ColumnLayout {

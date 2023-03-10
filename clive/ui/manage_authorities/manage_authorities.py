@@ -72,11 +72,6 @@ class AuthorityHeader(ColumnLayout):
         yield StaticColumn("Delete", classes=even)
 
 
-class AuthorityTitle(Static):
-    def compose(self) -> ComposeResult:
-        yield BigTitle("authorities", id="authorities_title_label")
-
-
 class ManageAuthorities(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -89,7 +84,7 @@ class ManageAuthorities(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with self.__mount_point:
-            yield AuthorityTitle()
+            yield BigTitle("authorities")
             yield AuthorityHeader()
             for key in self.app.profile_data.working_account.keys:
                 yield Authority(key)
