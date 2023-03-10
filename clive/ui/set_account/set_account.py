@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final, Pattern
 
 from rich.highlighter import Highlighter
 from textual.containers import Horizontal
-from textual.widgets import Input, Static
+from textual.widgets import Checkbox, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
@@ -57,10 +57,12 @@ class SetAccount(BaseScreen, FormScreen):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("set account name")
-            with Body(), AccountNameInputContainer():
-                yield Static("Account name:", id="account-name-label")
-                yield Static("@", id="account-name-at")
-                yield self.__account_name_input
+            with Body():
+                with AccountNameInputContainer():
+                    yield Static("Account name:", id="account-name-label")
+                    yield Static("@", id="account-name-at")
+                    yield self.__account_name_input
+                yield Checkbox("Working account?", value=True)
 
     def action_next_screen(self) -> None:
         if self.__save_account_name():
