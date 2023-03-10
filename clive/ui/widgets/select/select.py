@@ -51,7 +51,7 @@ class Select(CliveWidget, can_focus=True):
     def __init__(
         self,
         items: list[SelectItem],
-        list_mount: str,
+        list_mount: str | Widget,
         *,
         search: bool = False,
         selected: int | SelectItemType | SelectItem | None = None,
@@ -89,6 +89,11 @@ class Select(CliveWidget, can_focus=True):
     def search(self) -> bool:
         return self.__search
 
+    def __get_list_mount_point(self) -> Widget:
+        if isinstance(self.__list_mount, str):
+            return self.app.query_one(self.__list_mount)
+        return self.__list_mount
+
     def render(self) -> str:
         chevron = "\u25bc"
         text_space = max(0, self.content_size.width - 2)
@@ -115,8 +120,7 @@ class Select(CliveWidget, can_focus=True):
         #           it's a normal widget
         #     else if issubclass(..., App):
         #           use this child...
-
-        self.app.query_one(self.__list_mount).mount(self.select_list)
+        self.__get_list_mount_point().mount(self.select_list)
 
     def on_focus(self) -> None:
         self.__restore_bindings()
@@ -166,7 +170,7 @@ class Select(CliveWidget, can_focus=True):
             self.__items.index(self.selected) if self.selected is not None else 0
         )
 
-        mount_widget = self.app.query_one(self.__list_mount)
+        mount_widget = self.__get_list_mount_point()
 
         self.select_list.display = True
         self.select_list.styles.width = self.outer_size.width
