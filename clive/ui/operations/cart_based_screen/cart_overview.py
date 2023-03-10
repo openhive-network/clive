@@ -85,7 +85,7 @@ class CartOverview(CliveWidget):
     def on_mount(self) -> None:
         self.watch(self.app, "profile_data", callback=self.__sync_cart_items)
 
-    def __sync_cart_items(self) -> None:
+    def __sync_cart_items(self, _: ProfileData) -> None:
         current_ops = self.__get_operations_from_cart()
 
         def find_in_current_ops(op: CartItem) -> CartItem | None:
