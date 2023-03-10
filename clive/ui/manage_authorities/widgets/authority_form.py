@@ -47,7 +47,7 @@ class AuthorityForm(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__key_alias_input = Input(self._default_authority_name(), placeholder="e.g. My active key")
+        self.__key_alias_input = Input(self.__generate_key_alias(), placeholder="e.g. My active key", disabled=True)
         self.__key_input = Input(self._default_key(), placeholder="You can paste your key here")
         self.__key_file_path: Path | None = None
 
@@ -101,3 +101,6 @@ class AuthorityForm(BaseScreen):
 
     def __is_valid(self) -> bool:
         return bool(self.__get_key()) and bool(self.__get_authority_name())
+
+    def __generate_key_alias(self) -> str:
+        return f"{self.app.profile_data.working_account.name}@active"
