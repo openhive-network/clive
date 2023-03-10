@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -10,7 +11,7 @@ from textual.widgets import Label, Static
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.clive_widget import CliveWidget
-from clive.ui.widgets.select.select import Select
+from clive.ui.widgets.select.safe_select import SafeSelect
 from clive.ui.widgets.select.select_item import SelectItem
 from clive.ui.widgets.view_bag import ViewBag
 
@@ -45,8 +46,7 @@ class TransactionHint(Label):
 class OperationItem(Static):
     """Item in the operations list"""
 
-
-class SelectKey(Select, CliveWidget):
+class SelectKey(SafeSelect, CliveWidget):
     """Combobox for selecting the authority key"""
 
     def __init__(self) -> None:
@@ -54,6 +54,7 @@ class SelectKey(Select, CliveWidget):
             [SelectItem(x, x.key_name) for x in self.app.profile_data.working_account.keys],
             list_mount="ViewBag",
             selected=0,
+            empty_string="no private key found",
         )
 
 
