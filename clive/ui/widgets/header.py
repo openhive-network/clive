@@ -24,7 +24,7 @@ class HeaderIcon(TextualHeaderIcon):
         super().__init__(id="icon")
 
     def on_mount(self) -> None:
-        self.watch(self.app, "header_expanded", self.on_header_expanded)  # type: ignore # https://github.com/Textualize/textual/issues/1805
+        self.watch(self.app, "header_expanded", self.on_header_expanded)
 
     def on_header_expanded(self, expanded: bool) -> None:
         self.icon = "-" if expanded else "+"
@@ -49,8 +49,8 @@ class Header(TextualHeader, CliveWidget):
         super().__init__()
 
     def on_mount(self) -> None:
-        self.watch(self.app, "header_expanded", self.on_header_expanded)  # type: ignore # https://github.com/Textualize/textual/issues/1805
-        self.watch(self.app, "app_state", self.on_app_state)  # type: ignore # https://github.com/Textualize/textual/issues/1805
+        self.watch(self.app, "header_expanded", self.on_header_expanded)
+        self.watch(self.app, "app_state", self.on_app_state)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()

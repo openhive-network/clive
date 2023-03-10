@@ -21,7 +21,7 @@ class CommandLinePrompt(Static, CliveWidget):
         super().__init__(self.INACTIVE_PROMPT)
 
     def on_mount(self) -> None:
-        self.watch(self.app, "app_state", self.on_app_state)  # type: ignore # https://github.com/Textualize/textual/issues/1805
+        self.watch(self.app, "app_state", self.on_app_state)
 
     def on_app_state(self, _: AppState) -> None:
         self.update(self.get_current_prompt())

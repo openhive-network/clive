@@ -22,7 +22,7 @@ class Terminal(Modal, Container):
         yield CommandLine()
 
     def on_mount(self) -> None:
-        self.watch(self.app, "terminal_expanded", self.on_terminal_expanded)  # type: ignore # https://github.com/Textualize/textual/issues/1805
+        self.watch(self.app, "terminal_expanded", self.on_terminal_expanded)
 
     def on_terminal_expanded(self, expanded: bool) -> None:
         if not expanded:
