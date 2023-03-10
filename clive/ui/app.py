@@ -205,11 +205,9 @@ class Clive(App[int]):
             setattr(self, attribute_name, attribute)
 
     def post_message_to_everyone(self, message: Message) -> None:
-        """
-        Post a message to all screens in the stack. You should not rely on the order in which the event is processed.
-        """
+        """Post a message to all screens in the stack."""
         for screen in reversed(self.screen_stack):
-            screen.post_message_no_wait(message)
+            screen.post_message(message)
 
     def post_message_to_screen(self, screen: str | type[Screen], message: Message) -> None:
         """
@@ -220,7 +218,7 @@ class Clive(App[int]):
 
         for screen_ in reversed(self.screen_stack):
             if screen_.__class__.__name__ == screen_name:
-                screen_.post_message_no_wait(message)
+                screen_.post_message(message)
 
     def __assert_screen_name_in_stack(self, screen_name: str) -> None:
         if screen_name not in [screen.__class__.__name__ for screen in self.screen_stack]:

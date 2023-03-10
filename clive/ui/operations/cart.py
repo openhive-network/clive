@@ -121,11 +121,11 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
-            self.post_message_no_wait(self.Deleted(self, self.__operation))
+            self.post_message(self.Deleted(self, self.__operation))
         elif event.button.id == "move-up-button":
-            self.post_message_no_wait(self.Move(self, self.__operation_idx, self.__operation_idx - 1))
+            self.post_message(self.Move(self, self.__operation_idx, self.__operation_idx - 1))
         elif event.button.id == "move-down-button":
-            self.post_message_no_wait(self.Move(self, self.__operation_idx, self.__operation_idx + 1))
+            self.post_message(self.Move(self, self.__operation_idx, self.__operation_idx + 1))
 
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
         if event.to_idx == self.__operation_idx:
