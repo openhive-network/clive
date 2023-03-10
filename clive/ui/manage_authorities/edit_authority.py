@@ -35,5 +35,8 @@ class EditAuthority(AuthorityForm):
     def _default_authority_name(self) -> str:
         return self.authority.key_name
 
+    def _default_key(self) -> str:
+        return self.authority.key
+
     def _default_file_path(self) -> str:
         return str(self.authority.file_path) if self.authority.file_path else ""

@@ -38,8 +38,16 @@ class PrivateKey:
 
     @classmethod
     def from_file(cls, key_name: str, file_path: Path) -> PrivateKey:
-        key = file_path.read_text().strip()
+        key = cls.read_key_from_file(file_path)
         return cls(key_name, key, file_path)
+
+    @classmethod
+    def read_key_from_file(cls, file_path: Path) -> str:
+        return file_path.read_text().strip()
+
+    @staticmethod
+    def validate_key(key: str) -> str:
+        return key
 
 
 @dataclass
