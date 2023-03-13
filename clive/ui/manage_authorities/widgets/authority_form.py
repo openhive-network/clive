@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.binding import Binding
 from textual.containers import Grid
 from textual.message import Message
 from textual.widgets import Input, Static
@@ -29,10 +28,6 @@ class SubTitle(Static):
 
 
 class AuthorityForm(BaseScreen):
-    BINDINGS = [
-        Binding("f1", "load_from_file", "Load from file"),
-    ]
-
     class Saved(Message, bubble=True):
         """Emitted when user Saves the form"""
 

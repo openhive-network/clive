@@ -23,6 +23,7 @@ class NewAuthorityBase(AuthorityForm):
 class NewAuthority(NewAuthorityBase):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
+        Binding("f1", "load_from_file", "Load from file"),
         Binding("f10", "save", "Save"),
     ]
 
@@ -31,6 +32,10 @@ class NewAuthority(NewAuthorityBase):
 
 
 class NewAuthorityForm(NewAuthorityBase, FormScreen):
+    BINDINGS = [
+        Binding("f1", "load_from_file", "Load from file"),
+    ]
+
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         event.prevent_default()
 
