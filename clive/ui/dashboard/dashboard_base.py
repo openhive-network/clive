@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.containers import Container, Horizontal
+from textual.reactive import var
 from textual.widget import Widget
 from textual.widgets import Label, Static
 
@@ -88,6 +90,19 @@ class WatchedAccountContainer(Static):
 
 
 class DashboardBase(BaseScreen):
+    BINDINGS = [
+        Binding("b", "bindings", "Bindings"),
+    ]
+
+    removed = var(False)
+
+    def action_bindings(self) -> None:
+        if self.removed:
+            self.bind(Binding("f1", "activate", "Activate"), before="f2")
+        else:
+            self.unbind("f1")
+        self.removed = not self.removed
+
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield ContainerTitle("WORKING ACCOUNT", classes="working")
