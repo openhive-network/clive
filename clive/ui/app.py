@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Literal, overload
 
@@ -12,6 +11,7 @@ from clive.config import settings
 from clive.enums import AppMode
 from clive.storage.mock_database import NodeData, ProfileData
 from clive.ui.app_state import AppState
+from clive.ui.background_tasks import BackgroundTasks
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.ui.onboarding.onboarding import Onboarding
@@ -65,9 +65,8 @@ class Clive(App[int]):
 
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
-        asyncio.create_task(self.background_task())
-        if settings.LOG_DEBUG_LOOP:
-            asyncio.create_task(self.debug_task())
+        self.background_tasks = BackgroundTasks(self)
+
         self.push_screen(DashboardInactive())
         if (
             not (
@@ -149,20 +148,6 @@ class Clive(App[int]):
             text = f"{prefix} {text}"
 
         self.logs += [text]
-
-    async def background_task(self) -> None:
-        while True:
-            await asyncio.sleep(3)
-            self.log("Updating mock data...")
-            self.node_data.recalc()
-            self.update_reactive("node_data")
-
-    async def debug_task(self) -> None:
-        while True:
-            await asyncio.sleep(1)
-            self.log("===================== DEBUG =====================")
-            self.log(f"Screen stack: {self.screen_stack}")
-            self.log("=================================================")
 
     def activate(self, permanent_active: bool = False) -> None:
         def __update_function(app_state: AppState) -> None:
