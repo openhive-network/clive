@@ -23,7 +23,11 @@ class NewAuthorityBase(AuthorityForm):
 class NewAuthority(NewAuthorityBase):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
+        Binding("f10", "save", "Save"),
     ]
+
+    def action_save(self) -> None:
+        self._save()
 
 
 class NewAuthorityForm(NewAuthorityBase, FormScreen):
@@ -35,6 +39,13 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen):
 
         self._owner.action_next_screen()
         Notification(f"New authority `{event.private_key.key_name}` was created.", category="success").show()
+
+    def action_next_screen(self) -> None:
+        if not self._get_key():  # this (NewAuthorityForm) step is optional, so we can skip it when no key is provided
+            super().action_next_screen()
+            return
+
+        self._save()
 
     def _subtitle(self) -> str:
         return "(Optional step, could be done later)"

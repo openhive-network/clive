@@ -31,7 +31,6 @@ class SubTitle(Static):
 class AuthorityForm(BaseScreen):
     BINDINGS = [
         Binding("f1", "load_from_file", "Load from file"),
-        Binding("f10", "save", "Save"),
     ]
 
     class Saved(Message, bubble=True):
@@ -62,14 +61,6 @@ class AuthorityForm(BaseScreen):
                 yield Static("Key:", classes="label")
                 yield self.__key_input
 
-    def action_save(self) -> None:
-        if not self.__is_valid():
-            Notification("Failed the validation process! Could not continue", category="error").show()
-            return
-
-        private_key = PrivateKey(self.__get_authority_name(), self.__get_key(), self.__key_file_path)
-        self.app.post_message_to_everyone(self.Saved(self, private_key))
-
     def action_load_from_file(self) -> None:
         self.app.push_screen(AuthorityFromFile(self._default_file_path()))
 
@@ -77,6 +68,14 @@ class AuthorityForm(BaseScreen):
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
+
+    def _save(self) -> None:
+        if not self.__is_valid():
+            Notification("Failed the validation process! Could not continue", category="error").show()
+            return
+
+        private_key = PrivateKey(self.__get_authority_name(), self._get_key(), self.__key_file_path)
+        self.app.post_message_to_everyone(self.Saved(self, private_key))
 
     def _title(self) -> str:
         return ""
@@ -96,11 +95,11 @@ class AuthorityForm(BaseScreen):
     def __get_authority_name(self) -> str:
         return self.__key_alias_input.value
 
-    def __get_key(self) -> str:
+    def _get_key(self) -> str:
         return PrivateKey.validate_key(self.__key_input.value)
 
     def __is_valid(self) -> bool:
-        return bool(self.__get_key()) and bool(self.__get_authority_name())
+        return bool(self._get_key()) and bool(self.__get_authority_name())
 
     def __generate_key_alias(self) -> str:
         return f"{self.app.profile_data.working_account.name}@active"

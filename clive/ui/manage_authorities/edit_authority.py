@@ -14,11 +14,15 @@ if TYPE_CHECKING:
 class EditAuthority(AuthorityForm):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
+        Binding("f10", "save", "Save"),
     ]
 
     def __init__(self, authority: PrivateKey) -> None:
         self.authority = authority
         super().__init__()
+
+    def action_save(self) -> None:
+        self._save()
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         idx = self.app.profile_data.working_account.keys.index(self.authority)
