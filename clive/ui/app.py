@@ -164,9 +164,10 @@ class Clive(App[int]):
             self.log(f"Screen stack: {self.screen_stack}")
             self.log("=================================================")
 
-    def activate(self) -> None:
+    def activate(self, permanent_active: bool = False) -> None:
         def __update_function(app_state: AppState) -> None:
             app_state.mode = AppMode.ACTIVE
+            app_state.permanent_active = permanent_active
 
         self.update_reactive("app_state", __update_function)
 

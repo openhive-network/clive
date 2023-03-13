@@ -21,6 +21,7 @@ class Activate(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
         self.__password_input = Input(placeholder="Password", password=True)
+        self.__permanent_active_mode_switch = Switch(False)
         self.__temporary_active_mode_label = Static("Active mode time", classes="label")
         self.__temporary_active_mode_input = Input("60", placeholder="Time in minutes", id="active-mode-input")
 
@@ -34,7 +35,7 @@ class Activate(BaseScreen):
             yield Static("Password", classes="label", id="password-label")
             yield self.__password_input
             with Static():
-                yield Switch(False)
+                yield self.__permanent_active_mode_switch
             yield Static("Permanent active mode", classes="label", id="active-mode-label")
             yield self.__temporary_active_mode_label
             yield self.__temporary_active_mode_input
@@ -53,6 +54,8 @@ class Activate(BaseScreen):
         self.app.pop_screen()
 
     def action_activate(self) -> None:
-        self.app.activate()
+        permanent_active = self.__permanent_active_mode_switch.value
+
+        self.app.activate(permanent_active)
         self.app.pop_screen()
         self.app.switch_screen("dashboard_active")
