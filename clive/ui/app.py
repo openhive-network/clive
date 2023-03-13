@@ -156,11 +156,17 @@ class Clive(App[int]):
             app_state.mode = AppMode.ACTIVE
             app_state.permanent_active = permanent_active
 
+        def __auto_deactivate() -> None:
+            self.deactivate()
+            message = "Mode switched to [bold red]inactive[/] because the active mode time has expired."
+            self.log(message)
+            Notification(message, category="info").show()
+
         if permanent_active and active_mode_time:
             raise ValueError("Can't set both permanent_active and active_mode_time.")
 
         if active_mode_time:
-            self.background_tasks.run_after(active_mode_time, self.deactivate)
+            self.background_tasks.run_after(active_mode_time, __auto_deactivate)
 
         self.update_reactive("app_state", __update_function)
         self.app.switch_screen("dashboard_active")
