@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
@@ -7,6 +8,7 @@ from textual.widgets import Button, Input, Static, Switch
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.dialog_container import DialogContainer
+from clive.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -55,6 +57,22 @@ class Activate(BaseScreen):
 
     def action_activate(self) -> None:
         permanent_active = self.__permanent_active_mode_switch.value
+        active_mode_time: timedelta | None = None
 
-        self.app.activate(permanent_active)
+        if not permanent_active:
+            raw_active_mode_time = self.__get_active_mode_time()
+            if raw_active_mode_time is None:
+                Notification("The active mode time must be a number and >= 1", category="error").show()
+                return
+
+            active_mode_time = timedelta(minutes=raw_active_mode_time)
+
         self.app.pop_screen()
+        self.app.activate(permanent_active, active_mode_time)
+
+    def __get_active_mode_time(self) -> int | None:
+        try:
+            value = int(self.__temporary_active_mode_input.value)
+            return value if value >= 1 else None
+        except ValueError:
+            return None

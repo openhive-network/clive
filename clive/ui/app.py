@@ -22,6 +22,8 @@ from clive.ui.widgets.notification import Notification
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from rich.console import RenderableType
     from textual.message import Message
     from textual.screen import Screen
@@ -149,10 +151,16 @@ class Clive(App[int]):
 
         self.logs += [text]
 
-    def activate(self, permanent_active: bool = False) -> None:
+    def activate(self, permanent_active: bool = False, active_mode_time: timedelta | None = None) -> None:
         def __update_function(app_state: AppState) -> None:
             app_state.mode = AppMode.ACTIVE
             app_state.permanent_active = permanent_active
+
+        if permanent_active and active_mode_time:
+            raise ValueError("Can't set both permanent_active and active_mode_time.")
+
+        if active_mode_time:
+            self.background_tasks.run_after(active_mode_time, self.deactivate)
 
         self.update_reactive("app_state", __update_function)
         self.app.switch_screen("dashboard_active")
