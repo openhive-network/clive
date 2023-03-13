@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from textual.binding import Bindings
 from textual.message import Message
 from textual.reactive import reactive
-from textual.widget import Widget
 
+from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.select.select_item import SelectItem
 from clive.ui.widgets.select.select_list import _SelectList
 from clive.ui.widgets.select.select_list_search_input import _SelectListSearchInput
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     from clive.ui.widgets.select.select_item import SelectItemType
 
 
-class Select(Widget, can_focus=True):
+class Select(CliveWidget, can_focus=True):
     """
     A select widget with a drop-down.
     Modified version of: https://github.com/mitosch/textual-select
@@ -59,6 +60,8 @@ class Select(Widget, can_focus=True):
         classes: str | None = None,
     ) -> None:
         super().__init__(id=id_, classes=classes)
+
+        self.__bindings_before: Bindings | None = None
 
         self.__items = items
         self.__assert_min_amount_of_items()
@@ -115,6 +118,9 @@ class Select(Widget, can_focus=True):
 
         self.app.query_one(self.__list_mount).mount(self.select_list)
 
+    def on_focus(self) -> None:
+        self.__restore_bindings()
+
     def on_key(self, event: events.Key) -> None:
         if event.key == "enter":
             self.__show_select_list()
@@ -154,6 +160,8 @@ class Select(Widget, can_focus=True):
             self.selected = next(filter(lambda item: item.value == selected, self.__items), None)
 
     def __show_select_list(self) -> None:
+        self.__override_bindings()
+
         self.__select_list.select_list_view.index = (
             self.__items.index(self.selected) if self.selected is not None else 0
         )
@@ -184,3 +192,13 @@ class Select(Widget, can_focus=True):
             self.select_list.query_one("_SelectListSearchInput", _SelectListSearchInput).focus()
         else:
             self.select_list.query("ListView").first().focus()
+
+    def __override_bindings(self) -> None:
+        self.__bindings_before = self.screen._bindings
+        self.screen._bindings = Bindings()
+        self._refresh_footer_bindings()
+
+    def __restore_bindings(self) -> None:
+        if self.__bindings_before is not None:
+            self.screen._bindings = self.__bindings_before
+            self._refresh_footer_bindings()
