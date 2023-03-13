@@ -58,4 +58,3 @@ class Activate(BaseScreen):
 
         self.app.activate(permanent_active)
         self.app.pop_screen()
-        self.app.switch_screen("dashboard_active")

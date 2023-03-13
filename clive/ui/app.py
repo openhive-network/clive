@@ -155,12 +155,14 @@ class Clive(App[int]):
             app_state.permanent_active = permanent_active
 
         self.update_reactive("app_state", __update_function)
+        self.app.switch_screen("dashboard_active")
 
     def deactivate(self) -> None:
         def __update_function(app_state: AppState) -> None:
             app_state.mode = AppMode.INACTIVE
 
         self.update_reactive("app_state", __update_function)
+        self.switch_screen("dashboard_inactive")
 
     def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
         """

@@ -16,7 +16,6 @@ class DashboardActive(DashboardBase):
 
     def action_deactivate(self) -> None:
         self.app.deactivate()
-        self.app.switch_screen("dashboard_inactive")
 
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
