@@ -34,7 +34,7 @@ class SafeSelect(Widget):
         selected: int | SelectItemType | SelectItem | None = None,
         placeholder: str = "",
         empty_string: str = "nothing to choose",
-        id: str | None = None,
+        id_: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
@@ -48,7 +48,7 @@ class SafeSelect(Widget):
         else:  # if len(items) == 1
             self.__selected = items[0]
             self.__content = Static(self.__selected.text)
-        super().__init__(id=id, classes=classes, disabled=disabled)
+        super().__init__(id=id_, classes=classes, disabled=disabled)
 
     @property
     def selected(self) -> SelectItem | None:
