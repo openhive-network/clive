@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from textual.message import Message
 
 from clive.config import settings
+from clive.core.communication import Communication
 
 if TYPE_CHECKING:
     from clive.ui.app import Clive
@@ -80,7 +81,14 @@ class BackgroundTasks:
         self.__app.node_data.recalc()
         self.__app.update_reactive("node_data")
 
-    def __debug_log(self) -> None:
+    async def __debug_log(self) -> None:
         self.__app.log("===================== DEBUG =====================")
+
         self.__app.log(f"Screen stack: {self.__app.screen_stack}")
+
+        query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
+        response = await Communication.request(str(self.__app.profile_data.node_address), data=query)
+        result = response.json()
+        self.__app.log(f'Current block: {result["result"]["head_block_number"]}')
+
         self.__app.log("=================================================")
