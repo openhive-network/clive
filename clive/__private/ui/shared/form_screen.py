@@ -10,13 +10,9 @@ if TYPE_CHECKING:
 
 
 class FormScreenBase(Screen):
-    def set_form_owner(self, owner: Form) -> FormScreenBase:
+    def __init__(self, owner: Form) -> None:
         self._owner = owner
-        return self
-
-    def _is_owner_set(self) -> bool:
-        return hasattr(self, "_owner") and self._owner is not None
-
+        super().__init__()
 
 class FirstFormScreen(FormScreenBase):
     BINDINGS = [
@@ -24,7 +20,6 @@ class FirstFormScreen(FormScreenBase):
     ]
 
     def action_next_screen(self) -> None:
-        assert self._is_owner_set()
         self._owner.action_next_screen()
 
 
@@ -34,7 +29,6 @@ class LastFormScreen(FormScreenBase):
     ]
 
     def action_previous_screen(self) -> None:
-        assert self._is_owner_set()
         self._owner.action_previous_screen()
 
 
