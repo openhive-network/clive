@@ -13,6 +13,7 @@ from clive.ui.widgets.select.select_list_search_input import _SelectListSearchIn
 
 if TYPE_CHECKING:
     from textual import events
+    from textual.widget import Widget
 
     from clive.ui.widgets.select.select_item import SelectItemType
 
@@ -56,12 +57,11 @@ class Select(CliveWidget, can_focus=True):
         search: bool = False,
         selected: int | SelectItemType | SelectItem | None = None,
         placeholder: str = "",
-        name: str | None = None,
         id: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        super().__init__(name=name, id=id, classes=classes, disabled=disabled)
+        super().__init__(id=id, classes=classes, disabled=disabled)
 
         self.__bindings_before: Bindings | None = None
 
