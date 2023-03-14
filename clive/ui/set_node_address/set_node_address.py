@@ -4,7 +4,7 @@ import contextlib
 from datetime import datetime
 from typing import TYPE_CHECKING, Final
 
-import requests
+import httpx
 from rich.highlighter import Highlighter
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
@@ -70,11 +70,11 @@ class NodeUrlHighlighter(Highlighter):
 
     def is_valid_url(self, url: str) -> bool:
         ok_status: Final[int] = 200
-        with contextlib.suppress(requests.exceptions.RequestException):
+        with contextlib.suppress(httpx.HTTPError):
             return (
-                requests.post(
+                httpx.post(
                     url,
-                    data='{"jsonrpc":"2.0", "method":"condenser_api.get_config", "params":[], "id":1}',
+                    data={"jsonrpc": "2.0", "method": "condenser_api.get_config", "params": [], "id": 1},
                     headers={"Content-Type": "application/json"},
                     timeout=0.5,
                 ).status_code
