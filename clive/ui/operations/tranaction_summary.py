@@ -46,6 +46,7 @@ class TransactionHint(Label):
 class OperationItem(Static):
     """Item in the operations list"""
 
+
 class SelectKey(SafeSelect, CliveWidget):
     """Combobox for selecting the authority key"""
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import json
 import dataclasses
+import json
 from abc import abstractmethod
 from itertools import count
 from typing import Any, ClassVar
