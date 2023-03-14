@@ -2,39 +2,58 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import Task
+from datetime import timedelta
+from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Callable
+
+from textual.message import Message
 
 from clive.config import settings
 
 if TYPE_CHECKING:
-    from datetime import timedelta
-
     from clive.ui.app import Clive
 
 TasksDict = dict[str, Task[Any]]
+
+
+class BackgroundErrorOccurred(Message):
+    def __init__(self, exception: Exception) -> None:
+        self.exception = exception
+        super().__init__()
 
 
 class BackgroundTasks:
     def __init__(self, app: Clive) -> None:
         self.__app = app
         self.__tasks: TasksDict = {}
-        self.__long_running_tasks = [
-            asyncio.create_task(self.__update_data_from_node()),
-            *[asyncio.create_task(self.__debug_log()) if settings.LOG_DEBUG_LOOP else []],
-        ]
+
+        self.run_every(timedelta(seconds=3), self.__update_data_from_node)
+        if settings.LOG_DEBUG_LOOP:
+            self.run_every(timedelta(seconds=1), self.__debug_log)
 
     @property
     def tasks(self) -> TasksDict:
         return self.__tasks.copy()
 
-    def run(self, name: str, function: Callable[[], Any]) -> None:
+    def run(self, function: Callable[[], Any], *, name: str | None = None) -> None:
         """Create a new background task."""
-        self.__tasks[name] = asyncio.create_task(function())
+        name = name or function.__name__
+        self.__tasks[name] = asyncio.create_task(self.__run_safely(function))
 
-    def run_after(self, time: timedelta, function: Callable[[], Any], name: str | None = None) -> None:
+    def run_after(self, time: timedelta, function: Callable[[], Any], *, name: str | None = None) -> None:
         """Run a function after a given time."""
         name = name or f"delayed-{function.__name__}"
         self.__tasks[name] = asyncio.create_task(self.__wait_before_call(time, function))
+
+    def run_every(self, time: timedelta, function: Callable[[], Any], *, name: str | None = None) -> None:
+        """Run a function every given time."""
+
+        async def __loop() -> None:
+            await self.__wait_before_call(time, function)
+            await __loop()
+
+        name = name or f"continuous-{function.__name__}"
+        self.__tasks[name] = asyncio.create_task(__loop())
 
     def cancel(self, name: str, *, remove: bool = True) -> None:
         """Cancel a background task."""
@@ -43,23 +62,25 @@ class BackgroundTasks:
 
         if remove:
             self.__tasks.pop(name, None)
-            self.__delayed_tasks.pop(name, None)
 
-    @staticmethod
-    async def __wait_before_call(time: timedelta, function: Callable[[], Any]) -> None:
+    async def __wait_before_call(self, time: timedelta, function: Callable[[], Any]) -> None:
         await asyncio.sleep(time.total_seconds())
-        function()
+        await self.__run_safely(function)
 
-    async def __update_data_from_node(self) -> None:
-        while True:
-            await asyncio.sleep(3)
-            self.__app.log("Updating mock data...")
-            self.__app.node_data.recalc()
-            self.__app.update_reactive("node_data")
+    async def __run_safely(self, function: Callable[[], Any]) -> None:
+        try:
+            result = function()
+            if isawaitable(result):
+                await result
+        except Exception as error:  # noqa: BLE001
+            self.__app.post_message(BackgroundErrorOccurred(error))
 
-    async def __debug_log(self) -> None:
-        while True:
-            await asyncio.sleep(1)
-            self.__app.log("===================== DEBUG =====================")
-            self.__app.log(f"Screen stack: {self.__app.screen_stack}")
-            self.__app.log("=================================================")
+    def __update_data_from_node(self) -> None:
+        self.__app.log("Updating mock data...")
+        self.__app.node_data.recalc()
+        self.__app.update_reactive("node_data")
+
+    def __debug_log(self) -> None:
+        self.__app.log("===================== DEBUG =====================")
+        self.__app.log(f"Screen stack: {self.__app.screen_stack}")
+        self.__app.log("=================================================")

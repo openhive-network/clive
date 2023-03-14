@@ -30,6 +30,8 @@ if TYPE_CHECKING:
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
+    from clive.ui.background_tasks import BackgroundErrorOccurred
+
 
 class Clive(App[int]):
     """A singleton instance of the Clive app."""
@@ -172,7 +174,7 @@ class Clive(App[int]):
             raise ValueError("Can't set both permanent_active and active_mode_time.")
 
         if active_mode_time:
-            self.background_tasks.run_after(active_mode_time, __auto_deactivate)
+            self.background_tasks.run_after(active_mode_time, __auto_deactivate, name="auto_deactivate")
 
         self.update_reactive("app_state", __update_function)
         self.app.switch_screen("dashboard_active")
@@ -181,8 +183,7 @@ class Clive(App[int]):
         def __update_function(app_state: AppState) -> None:
             app_state.mode = AppMode.INACTIVE
 
-        # cancel pending "auto_deactivate" background task if any
-        self.background_tasks.cancel("run_after___auto_deactivate")
+        self.background_tasks.cancel("auto_deactivate")
 
         self.update_reactive("app_state", __update_function)
         self.switch_screen("dashboard_inactive")
@@ -234,6 +235,9 @@ class Clive(App[int]):
     def __assert_screen_name_in_stack(self, screen_name: str) -> None:
         if screen_name not in [screen.__class__.__name__ for screen in self.screen_stack]:
             raise ValueError(f"Screen {screen_name} is not in the screen stack.\nScreen stack: {self.screen_stack}")
+
+    def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
+        self.log.error(event.exception)
 
 
 clive_app = Clive()
