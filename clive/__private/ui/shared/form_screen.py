@@ -1,20 +1,27 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generic
 
 from textual.binding import Binding
 from textual.screen import Screen
+
+from clive.ui.shared.form import ContextT
 
 if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class FormScreenBase(Screen):
-    def __init__(self, owner: Form) -> None:
+class FormScreenBase(Generic[ContextT], Screen):
+    def __init__(self, owner: Form[ContextT]) -> None:
         self._owner = owner
         super().__init__()
 
-class FirstFormScreen(FormScreenBase):
+    @property
+    def context(self) -> ContextT:
+        return self._owner.context()
+
+
+class FirstFormScreen(FormScreenBase[ContextT]):
     BINDINGS = [
         Binding("ctrl+n", "next_screen", "Next screen"),
     ]
@@ -23,7 +30,7 @@ class FirstFormScreen(FormScreenBase):
         self._owner.action_next_screen()
 
 
-class LastFormScreen(FormScreenBase):
+class LastFormScreen(FormScreenBase[ContextT]):
     BINDINGS = [
         Binding("ctrl+p", "previous_screen", "Previous screen"),
     ]
@@ -32,5 +39,5 @@ class LastFormScreen(FormScreenBase):
         self._owner.action_previous_screen()
 
 
-class FormScreen(FirstFormScreen, LastFormScreen):
+class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT]):
     pass
