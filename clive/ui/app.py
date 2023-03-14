@@ -8,6 +8,7 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.config import settings
+from clive.core.communication import Communication
 from clive.enums import AppMode
 from clive.storage.mock_database import NodeData, ProfileData
 from clive.ui.app_state import AppState
@@ -67,6 +68,8 @@ class Clive(App[int]):
 
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
+
+        Communication.start()
         self.background_tasks = BackgroundTasks(self)
 
         self.push_screen(DashboardInactive())
@@ -81,6 +84,9 @@ class Clive(App[int]):
             or settings.FORCE_ONBOARDING
         ):
             self.push_screen(Onboarding())
+
+    async def on_unmount(self) -> None:
+        await Communication.close()
 
     def push_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
