@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
-from typing import Final
+from typing import Final, Generic, TypeVar
 
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -11,8 +11,10 @@ from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 ScreenBuilder = Callable[[], FormScreen | BaseScreen]
+ContextT = TypeVar("ContextT")
 
-class Form(CliveScreen):
+
+class Form(Generic[ContextT], CliveScreen):
     AMOUNT_OF_DEFAULT_SCREENS: Final[int] = 2
 
     def __init__(self) -> None:
@@ -56,6 +58,10 @@ class Form(CliveScreen):
     @abstractmethod
     def register_screen_builders(self) -> Iterator[ScreenBuilder]:
         """Returns screens to display"""
+
+    @abstractmethod
+    def context(self) -> ContextT:
+        """Returns form context"""
 
     def create_welcome_screen(self) -> WelcomeFormScreen:
         return WelcomeFormScreen("Let's fill some fields")
