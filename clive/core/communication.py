@@ -1,17 +1,25 @@
 from __future__ import annotations
 
 import asyncio
+import time
+import typing
 from datetime import timedelta
-from typing import Any
+from functools import partial
+from typing import Any, Callable, Final
 
 import httpx
 from loguru import logger
 from textual import log
 
+from clive.core._async import asyncio_run
+from clive.core.callback import invoke
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
 
 
 class Communication:
+    DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
+    DEFAULT_ATTEMPTS: Final[int] = 3
+
     __async_client: httpx.AsyncClient | None = None
 
     @classmethod
@@ -31,16 +39,46 @@ class Communication:
         return cls.__async_client
 
     @classmethod
-    async def request(
-        cls, url: str, *, data: dict[str, Any], max_attempts: int = 3, pool_time: timedelta = timedelta(seconds=0.2)
+    def request(
+        cls,
+        url: str,
+        *,
+        data: dict[str, Any],
+        max_attempts: int = DEFAULT_ATTEMPTS,
+        pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
+    ) -> httpx.Response:
+        return typing.cast(
+            httpx.Response,
+            asyncio_run(cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time)),
+        )
+
+    @classmethod
+    async def arequest(
+        cls,
+        url: str,
+        *,
+        data: dict[str, Any],
+        max_attempts: int = DEFAULT_ATTEMPTS,
+        pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
+    ) -> httpx.Response:
+        return await cls.__request(url, sync=False, data=data, max_attempts=max_attempts, pool_time=pool_time)
+
+    @classmethod
+    async def __request(
+        cls,
+        url: str,
+        *,
+        sync: bool,
+        data: dict[str, Any],
+        max_attempts: int,
+        pool_time: timedelta,
     ) -> httpx.Response:
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
-        client = cls.get_async_client()
+        post_method: Callable[..., httpx.Response] = httpx.post if sync else cls.get_async_client().post  # type: ignore
 
         for attempts_left in reversed(range(max_attempts)):
-            response = await client.post(url, json=data)
-
+            response: httpx.Response = await invoke(callback=partial(post_method, url, json=data))
             result = response.json()
 
             if response.is_success:
@@ -57,6 +95,7 @@ class Communication:
                 log(message)
 
             if attempts_left > 0:
-                await asyncio.sleep(pool_time.total_seconds())
+                seconds_to_sleep = pool_time.total_seconds()
+                time.sleep(seconds_to_sleep) if sync else await asyncio.sleep(seconds_to_sleep)
 
         raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}, {result=}")

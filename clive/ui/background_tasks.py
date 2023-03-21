@@ -86,7 +86,7 @@ class BackgroundTasks:
         self.__app.log(f"Background tasks: { {name: task._state for name, task in self.__tasks.items()} }")
 
         query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
-        response = await Communication.request(str(self.__app.profile_data.node_address), data=query)
+        response = await Communication.arequest(str(self.__app.profile_data.node_address), data=query)
         result = response.json()
         self.__app.log(f'Current block: {result["result"]["head_block_number"]}')
 
