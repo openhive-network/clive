@@ -85,6 +85,7 @@ class BackgroundTasks:
         self.__app.log("===================== DEBUG =====================")
 
         self.__app.log(f"Screen stack: {self.__app.screen_stack}")
+        self.__app.log(f"Background tasks: { {name: task._state for name, task in self.__tasks.items()} }")
 
         query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
         response = await Communication.request(str(self.__app.profile_data.node_address), data=query)
