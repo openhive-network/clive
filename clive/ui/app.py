@@ -175,6 +175,9 @@ class Clive(App[int]):
         def __update_function(app_state: AppState) -> None:
             app_state.mode = AppMode.INACTIVE
 
+        # cancel pending "auto_deactivate" background task if any
+        self.background_tasks.cancel("run_after___auto_deactivate")
+
         self.update_reactive("app_state", __update_function)
         self.switch_screen("dashboard_inactive")
 

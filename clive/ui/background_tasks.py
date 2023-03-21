@@ -42,12 +42,16 @@ class BackgroundTasks:
 
         self.__delayed_tasks[name] = asyncio.create_task(self.__wait_before_call(time, function))
 
-    def cancel(self, name: str) -> None:
+    def cancel(self, name: str, *, remove: bool = True) -> None:
         """Cancel a background task."""
         if name in self.__tasks:
             self.__tasks[name].cancel()
         elif name in self.__delayed_tasks:
             self.__delayed_tasks[name].cancel()
+
+        if remove:
+            self.__tasks.pop(name, None)
+            self.__delayed_tasks.pop(name, None)
 
     @staticmethod
     async def __wait_before_call(time: timedelta, function: Callable[[], Any]) -> None:
