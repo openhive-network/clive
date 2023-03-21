@@ -3,12 +3,12 @@ from __future__ import annotations
 import asyncio
 from asyncio import Task
 from datetime import timedelta
-from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Callable
 
 from textual.message import Message
 
 from clive.config import settings
+from clive.core.callback import invoke
 from clive.core.communication import Communication
 
 if TYPE_CHECKING:
@@ -70,9 +70,7 @@ class BackgroundTasks:
 
     async def __run_safely(self, function: Callable[[], Any]) -> None:
         try:
-            result = function()
-            if isawaitable(result):
-                await result
+            await invoke(function)
         except Exception as error:  # noqa: BLE001
             self.__app.post_message(BackgroundErrorOccurred(error))
 
