@@ -10,8 +10,8 @@ from clive.ui.dashboard.dashboard_base import DashboardBase
 
 class DashboardInactive(DashboardBase):
     BINDINGS = [
-        Binding("f2", "create_profile", "Create profile"),
         Binding("f4", "activate", "Activate"),
+        Binding("f7", "create_profile", "Create profile"),
         Binding("f9", "config", "Config"),
     ]
 
