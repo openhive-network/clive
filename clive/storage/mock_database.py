@@ -10,7 +10,6 @@ from urllib.parse import urlparse
 
 from clive.config import DATA_DIRECTORY
 from clive.exceptions import NodeAddressError
-from clive.models.transfer_operation import TransferOperation
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -119,16 +118,7 @@ class ProfileData:
     ]
     node_address: NodeAddress = backup_node_addresses[0]
     watched_accounts: list[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
-    operations_cart: list[Operation] = [
-        TransferOperation(
-            asset="HIVE",
-            from_="anna",
-            to=f"acc-{i}",
-            amount=f"{random.uniform(0, 100) :.3f}",
-            memo=f"transfero numero {i+1}",
-        )
-        for i in range(5)
-    ]
+    operations_cart: list[Operation] = []
 
     def save(self) -> None:
         from clive.ui.app import clive_app
