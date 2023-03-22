@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class EditAuthority(AuthorityForm):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f1", "load_from_file", "Load from file"),
+        Binding("f2", "load_from_file", "Load from file"),
         Binding("f10", "save", "Save"),
     ]
 

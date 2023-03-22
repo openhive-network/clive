@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class Operations(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f1", "cart", "Cart"),
+        Binding("f2", "cart", "Cart"),
     ]
 
     def create_left_panel(self) -> ComposeResult:

@@ -75,7 +75,7 @@ class AuthorityHeader(ColumnLayout):
 class ManageAuthorities(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f1", "new_authority", "New authority"),
+        Binding("f2", "new_authority", "New authority"),
     ]
 
     def __init__(self) -> None:
