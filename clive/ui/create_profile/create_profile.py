@@ -61,7 +61,7 @@ class CreateProfileCommon(BaseScreen):
 class CreateProfile(CreateProfileCommon):
     BINDINGS = [
         Binding("escape", "dashboard", "Cancel"),
-        Binding("f1", "create_profile", "Create profile"),
+        Binding("f2", "create_profile", "Ok"),
     ]
 
     def action_dashboard(self) -> None:
