@@ -9,9 +9,9 @@ from clive.ui.operations.operations import Operations
 
 class DashboardActive(DashboardBase):
     BINDINGS = [
-        Binding("c", "config", "Config"),
         Binding("f1", "deactivate", "Deactivate"),
         Binding("f2", "operations", "Operations"),
+        Binding("f9", "config", "Config"),
     ]
 
     def action_deactivate(self) -> None:
