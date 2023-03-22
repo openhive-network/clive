@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Callable, Final, Tuple
 
 from loguru import logger as loguru_logger
+from textual import log as textual_logger
 
 from clive.config import LAUNCH_TIME, ROOT_DIRECTORY, settings
 
@@ -100,3 +101,23 @@ class InterceptHandler(logging.Handler):
             depth += 1
 
         loguru_logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+
+
+class Logger:
+    """Logger used to log into both Textual (textual console) and Loguru (file located in logs/)."""
+
+    def __getattr__(self, item: str) -> Callable[..., None]:
+        loguru_attr = getattr(loguru_logger, item, None)
+        textual_log_attr = getattr(textual_logger, item, None)
+
+        if not callable(loguru_attr) or not callable(textual_log_attr):
+            raise AttributeError(f"Callable `{item}` not found in either Textual or Loguru loggers.")
+
+        def __hooked(*args: Any, **kwargs: Any) -> None:
+            loguru_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
+            textual_log_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
+
+        return __hooked
+
+
+logger = Logger()
