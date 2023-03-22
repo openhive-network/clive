@@ -237,7 +237,7 @@ class Clive(App[int]):
             raise ValueError(f"Screen {screen_name} is not in the screen stack.\nScreen stack: {self.screen_stack}")
 
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
-        self.log.error(event.exception)
+        raise event.exception
 
 
 clive_app = Clive()
