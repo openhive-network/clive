@@ -4,7 +4,7 @@ import logging
 from pathlib import Path
 from typing import Any, Callable, Final, Tuple
 
-from loguru import logger
+from loguru import logger as loguru_logger
 
 from clive.config import LAUNCH_TIME, ROOT_DIRECTORY, settings
 
@@ -62,23 +62,23 @@ def configure_logger() -> None:
         logging.getLogger(name).propagate = True
         logging.getLogger(name).setLevel(logging.DEBUG)
 
-    logger.remove()
-    logger.add(
+    loguru_logger.remove()
+    loguru_logger.add(
         sink=LOG_FILE_PATH,
         format=LOG_FORMAT,
         filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
     )
-    logger.add(
+    loguru_logger.add(
         sink=LATEST_LOG_FILE_PATH,
         format=LOG_FORMAT,
         filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
     )
-    logger.add(
+    loguru_logger.add(
         sink=LOG_FILE_PATH_DEBUG,
         format=LOG_FORMAT,
         filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
     )
-    logger.add(
+    loguru_logger.add(
         sink=LATEST_LOG_FILE_PATH_DEBUG,
         format=LOG_FORMAT,
         filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
@@ -89,7 +89,7 @@ class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         # Get corresponding Loguru level if it exists
         try:
-            level = logger.level(record.levelname).name
+            level = loguru_logger.level(record.levelname).name
         except ValueError:
             level = record.levelno  # type: ignore
 
@@ -99,4 +99,4 @@ class InterceptHandler(logging.Handler):
             frame = frame.f_back  # type: ignore
             depth += 1
 
-        logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
+        loguru_logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())
