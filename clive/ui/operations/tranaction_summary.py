@@ -63,8 +63,8 @@ class TransactionSummary(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f1", "dashboard", "Dashboard"),
+        Binding("f2", "save", "Save"),
         Binding("f10", "broadcast", "Broadcast"),
-        Binding("f12", "save", "Save"),
     ]
 
     def __init__(self) -> None:
