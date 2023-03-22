@@ -22,7 +22,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen):
         with DialogContainer():
             yield BigTitle("welcome")
             yield Static(self.__title)
-            yield Button("start! 🐝", id="welcome_button_start")
+            yield Button("Start! 🐝", id="welcome_button_start")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "welcome_button_start":
