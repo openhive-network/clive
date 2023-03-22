@@ -10,6 +10,7 @@ from textual.message import Message
 from clive.config import settings
 from clive.core.callback import invoke
 from clive.core.communication import Communication
+from clive.logger import logger
 
 if TYPE_CHECKING:
     from clive.ui.app import Clive
@@ -75,19 +76,19 @@ class BackgroundTasks:
             self.__app.post_message(BackgroundErrorOccurred(error))
 
     def __update_data_from_node(self) -> None:
-        self.__app.log("Updating mock data...")
+        logger.info("Updating mock data...")
         self.__app.node_data.recalc()
         self.__app.update_reactive("node_data")
 
     async def __debug_log(self) -> None:
-        self.__app.log("===================== DEBUG =====================")
+        logger.debug("===================== DEBUG =====================")
 
-        self.__app.log(f"Screen stack: {self.__app.screen_stack}")
-        self.__app.log(f"Background tasks: { {name: task._state for name, task in self.__tasks.items()} }")
+        logger.debug(f"Screen stack: {self.__app.screen_stack}")
+        logger.debug(f"Background tasks: { {name: task._state for name, task in self.__tasks.items()} }")
 
         query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
         response = await Communication.arequest(str(self.__app.profile_data.node_address), data=query)
         result = response.json()
-        self.__app.log(f'Current block: {result["result"]["head_block_number"]}')
+        logger.debug(f'Current block: {result["result"]["head_block_number"]}')
 
-        self.__app.log("=================================================")
+        logger.debug("=================================================")
