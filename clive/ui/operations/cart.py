@@ -146,8 +146,8 @@ class CartOperationsHeader(ColumnLayout):
 class Cart(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f1", "summary", "Summary"),
-        Binding("f10", "clear_all", "Clear all"),
+        Binding("f9", "clear_all", "Clear all"),
+        Binding("f10", "summary", "Summary"),
     ]
 
     def __init__(self) -> None:
