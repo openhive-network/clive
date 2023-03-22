@@ -8,12 +8,11 @@ from functools import partial
 from typing import Any, Callable, Final
 
 import httpx
-from loguru import logger
-from textual import log
 
 from clive.core._async import asyncio_run
 from clive.core.callback import invoke
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
+from clive.logger import logger
 
 
 class Communication:
@@ -91,8 +90,7 @@ class Communication:
                     raise UnknownResponseFormatError(response)
             else:
                 message = f"Received bad status code: {response.status_code} from {url=}, {data=}, {result=}"
-                logger.debug(message)
-                log(message)
+                logger.error(message)
 
             if attempts_left > 0:
                 seconds_to_sleep = pool_time.total_seconds()
