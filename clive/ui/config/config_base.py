@@ -17,7 +17,6 @@ if TYPE_CHECKING:
 class ConfigBase(BaseScreen, AbstractClassMessagePump):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f1", "select_node", "Select node"),
     ]
 
     def additional_buttons(self) -> Iterable[Button]:
@@ -30,9 +29,6 @@ class ConfigBase(BaseScreen, AbstractClassMessagePump):
             yield Button("Select node", id="select-node")
             yield from self.additional_buttons()
 
-    def action_select_node(self) -> None:
-        self.app.push_screen(SetNodeAddress())
-
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "select-node":
-            self.action_select_node()
+            self.app.push_screen(SetNodeAddress())
