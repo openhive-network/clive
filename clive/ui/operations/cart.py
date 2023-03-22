@@ -51,7 +51,7 @@ class ButtonDelete(Button):
     """Button used for removing the operation from cart"""
 
     def __init__(self) -> None:
-        super().__init__("🗑️", id="delete-button")
+        super().__init__(":wastebasket:", id="delete-button")
 
 
 class StaticPart(Static):
