@@ -44,6 +44,7 @@ class TransferToAccount(CartBasedScreen):
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f1", "finalize", "Finalize transaction"),
         Binding("f2", "add_to_cart", "Add to cart"),
+        Binding("f3", "sign_and_broadcast", "Sign and broadcast"),
     ]
 
     def __init__(self) -> None:
@@ -77,6 +78,10 @@ class TransferToAccount(CartBasedScreen):
     def action_add_to_cart(self) -> None:
         if self.__create_operation():
             self.app.pop_screen()
+
+    def action_sign_and_broadcast(self) -> None:
+        # TODO: Implement this action
+        self.app.pop_screen()
 
     def __create_operation(self) -> bool:
         """
