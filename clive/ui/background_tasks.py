@@ -50,8 +50,8 @@ class BackgroundTasks:
         """Run a function every given time."""
 
         async def __loop() -> None:
-            await self.__wait_before_call(time, function)
-            await __loop()
+            while True:
+                await self.__wait_before_call(time, function)
 
         name = name or f"continuous-{function.__name__}"
         self.__tasks[name] = asyncio.create_task(__loop())
