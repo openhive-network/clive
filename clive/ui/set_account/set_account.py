@@ -48,7 +48,7 @@ class SetAccount(BaseScreen, FormScreen):
         super().__init__()
 
         self.__account_name_input = Input(
-            placeholder="e.g.: cookingwithkasia",
+            placeholder="Please enter hive account name, without @",
             id="set_account_name",
             highlighter=AccountNameHighlighter(),
         )
