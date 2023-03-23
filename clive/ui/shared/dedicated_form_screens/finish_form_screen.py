@@ -30,8 +30,8 @@ class FinishFormScreen(BaseScreen, LastFormScreen):
             yield BigTitle("done!")
             yield Static(self.__end_note)
             with Container():
-                yield Button("Forgot something? 🤔", id="return_finish_form_screen")
                 yield Button("Finish 🎉", id="finish_return_form_screen")
+                yield Button("Forgot something? 🤔", id="return_finish_form_screen")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "return_finish_form_screen":
