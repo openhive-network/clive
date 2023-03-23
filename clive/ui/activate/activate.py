@@ -4,6 +4,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
+from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
 from clive.ui.shared.base_screen import BaseScreen
@@ -12,6 +13,10 @@ from clive.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+
+class ButtonsContainer(Horizontal):
+    """Container for the buttons."""
 
 
 class Activate(BaseScreen):
@@ -42,11 +47,15 @@ class Activate(BaseScreen):
             yield self.__temporary_active_mode_label
             yield self.__temporary_active_mode_input
             yield Static()
-            yield Button("Activate", variant="primary", id="activate-button")
+            with ButtonsContainer():
+                yield Button("Ok", variant="primary", id="activate-button")
+                yield Button("Cancel", variant="error", id="cancel-button")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "activate-button":
             self.action_activate()
+        elif event.button.id == "cancel-button":
+            self.action_dashboard()
 
     def on_switch_changed(self) -> None:
         self.__temporary_active_mode_label.toggle_class("-hidden")

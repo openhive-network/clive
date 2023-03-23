@@ -5,9 +5,24 @@ Activate DialogContainer {
   layout: grid;
 }
 
+Activate ButtonsContainer {
+  height: auto;
+}
+
 Activate Button{
-    margin: 0 1;
-    width: 100%;
+    width: 1fr;
+}
+
+Activate #activate-button {
+  margin-right: 1;
+}
+
+Activate #activate-button:focus {
+  background: $primary-darken-1;
+}
+
+Activate #cancel-button:focus {
+  background: $error-darken-1;
 }
 
 Activate .label {
