@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import random
 import shelve
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, List, Optional
@@ -104,21 +104,22 @@ class NodeData:
                 setattr(self, key, random.randint(0, 100))
 
 
+@dataclass
 class ProfileData:
     name: str = ""
     password: str = ""  # yes, yes, plaintext
 
     # TODO: Should be None if not set, since we'll allow for using app without a working account
     working_account: WorkingAccount = WorkingAccount("", [])
+    watched_accounts: list[Account] = field(default_factory=list)
+    operations_cart: list[Operation] = field(default_factory=list)
 
-    backup_node_addresses: list[NodeAddress] = [
-        NodeAddress("https", "api.hive.blog"),
-        NodeAddress("http", "localhost", 8090),
-        NodeAddress("http", "hive-6.pl.syncad.com", 18090),
-    ]
-    node_address: NodeAddress = backup_node_addresses[0]
-    watched_accounts: list[Account] = [Account(f"WATCHED_ACCOUNT_{i}") for i in range(10)]
-    operations_cart: list[Operation] = []
+    backup_node_addresses: list[NodeAddress] = field(init=False)
+    node_address: NodeAddress = field(init=False)
+
+    def __post_init__(self) -> None:
+        self.backup_node_addresses = self.__default_node_address()
+        self.node_address = self.backup_node_addresses[0]
 
     def save(self) -> None:
         from clive.ui.app import clive_app
@@ -135,3 +136,11 @@ class ProfileData:
 
         with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
             return db.get("profile_data", cls())
+
+    @staticmethod
+    def __default_node_address() -> list[NodeAddress]:
+        return [
+            NodeAddress("https", "api.hive.blog"),
+            NodeAddress("http", "localhost", 8090),
+            NodeAddress("http", "hive-6.pl.syncad.com", 18090),
+        ]
