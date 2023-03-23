@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
-from textual.widgets import Input, Static
+from textual.containers import Horizontal
+from textual.widgets import Button, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
@@ -12,6 +13,10 @@ from clive.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+
+class ButtonsContainer(Horizontal):
+    """Container for the buttons."""
 
 
 class CreateProfileCommon(BaseScreen):
@@ -23,9 +28,14 @@ class CreateProfileCommon(BaseScreen):
             yield Input(placeholder="Password", password=True, id="password_input")
             yield Static("Repeat password", classes="label")
             yield Input(placeholder="Repeat Password", password=True, id="repeat_password_input")
+            yield from self._additional_content()
 
     def on_mount(self) -> None:
         self.query(Input).first().focus()
+
+    def _additional_content(self) -> ComposeResult:
+        """Additional content to be added to the form."""
+        return []
 
     def _create_profile(self) -> bool:
         """
@@ -64,6 +74,12 @@ class CreateProfile(CreateProfileCommon):
         Binding("f2", "create_profile", "Ok"),
     ]
 
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "create-button":
+            self.action_create_profile()
+        elif event.button.id == "cancel-button":
+            self.action_dashboard()
+
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
@@ -71,6 +87,12 @@ class CreateProfile(CreateProfileCommon):
         if self._create_profile():
             self.app.pop_screen()
             self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
+
+    def _additional_content(self) -> ComposeResult:
+        yield Static()
+        with ButtonsContainer():
+            yield Button("Ok", variant="primary", id="create-button")
+            yield Button("Cancel", variant="error", id="cancel-button")
 
 
 class CreateProfileForm(CreateProfileCommon, FormScreen):
