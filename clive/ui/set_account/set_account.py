@@ -48,7 +48,6 @@ class SetAccount(BaseScreen, FormScreen):
         super().__init__()
 
         self.__account_name_input = Input(
-            str(self.app.profile_data.working_account.name),
             placeholder="e.g.: cookingwithkasia",
             id="set_account_name",
             highlighter=AccountNameHighlighter(),

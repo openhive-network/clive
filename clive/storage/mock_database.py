@@ -108,9 +108,9 @@ class ProfileData:
     name: str = ""
     password: str = ""  # yes, yes, plaintext
 
-    working_account: WorkingAccount = WorkingAccount(
-        "MAIN_ACCOUNT" * 4, [PrivateKey("default", "X" * 14), PrivateKey("memo", "Y" * 14)]
-    )
+    # TODO: Should be None if not set, since we'll allow for using app without a working account
+    working_account: WorkingAccount = WorkingAccount("", [])
+
     backup_node_addresses: list[NodeAddress] = [
         NodeAddress("https", "api.hive.blog"),
         NodeAddress("http", "localhost", 8090),
