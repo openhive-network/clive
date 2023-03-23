@@ -59,7 +59,7 @@ class CreateProfileCommon(BaseScreen):
             return False
         self.app.profile_data.name = profile_name
         self.app.profile_data.password = password
-        self.app.update_reactive("profile_data")
+        self.app.profile_data.save()
         self._show_notification_on_profile_created()
         return True
 
