@@ -165,19 +165,15 @@ class Clive(App[int]):
 
         self.logs += [text]
 
-    def activate(self, permanent_active: bool = False, active_mode_time: timedelta | None = None) -> None:
+    def activate(self, active_mode_time: timedelta | None = None) -> None:
         def __update_function(app_state: AppState) -> None:
             app_state.mode = AppMode.ACTIVE
-            app_state.permanent_active = permanent_active
 
         def __auto_deactivate() -> None:
             self.deactivate()
             message = "Mode switched to [bold red]inactive[/] because the active mode time has expired."
             self.log(message)
             Notification(message, category="info").show()
-
-        if permanent_active and active_mode_time:
-            raise ValueError("Can't set both permanent_active and active_mode_time.")
 
         if active_mode_time:
             self.background_tasks.run_after(active_mode_time, __auto_deactivate, name="auto_deactivate")

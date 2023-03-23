@@ -77,7 +77,7 @@ class Activate(BaseScreen):
             active_mode_time = timedelta(minutes=raw_active_mode_time)
 
         self.app.pop_screen()
-        self.app.activate(permanent_active, active_mode_time)
+        self.app.activate(active_mode_time)
 
     def __get_active_mode_time(self) -> int | None:
         try:

@@ -16,10 +16,7 @@ class DashboardInactive(DashboardBase):
     ]
 
     def action_activate(self) -> None:
-        if self.app.app_state.permanent_active:
-            self.app.activate(True)
-        else:
-            self.app.push_screen(Activate())
+        self.app.push_screen(Activate())
 
     def action_config(self) -> None:
         self.app.push_screen(ConfigInactive())
