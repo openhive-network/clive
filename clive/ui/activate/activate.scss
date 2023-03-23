@@ -34,8 +34,9 @@ Activate #active-mode-label {
     text-align: left;
 }
 
-Activate Switch {
-  dock: right;
+Activate Checkbox {
+  column-span: 2;
+  margin: 1 2;
 }
 
 Activate #active-mode-input {

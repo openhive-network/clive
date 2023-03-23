@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.widgets import Button, Input, Static, Switch
+from textual.widgets import Button, Checkbox, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.dialog_container import DialogContainer
@@ -28,7 +28,7 @@ class Activate(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
         self.__password_input = Input(placeholder="Password", password=True)
-        self.__permanent_active_mode_switch = Switch(False)
+        self.__permanent_active_mode_switch = Checkbox("Permanent active mode")
         self.__temporary_active_mode_label = Static("Active mode time (minutes)", classes="label")
         self.__temporary_active_mode_input = Input("60", placeholder="Time in minutes", id="active-mode-input")
 
@@ -41,9 +41,7 @@ class Activate(BaseScreen):
             yield Input(self.app.profile_data.name, disabled=True)
             yield Static("Password", classes="label", id="password-label")
             yield self.__password_input
-            with Static():
-                yield self.__permanent_active_mode_switch
-            yield Static("Permanent active mode", classes="label", id="active-mode-label")
+            yield self.__permanent_active_mode_switch
             yield self.__temporary_active_mode_label
             yield self.__temporary_active_mode_input
             yield Static()
@@ -57,7 +55,7 @@ class Activate(BaseScreen):
         elif event.button.id == "cancel-button":
             self.action_dashboard()
 
-    def on_switch_changed(self) -> None:
+    def on_checkbox_changed(self) -> None:
         self.__temporary_active_mode_label.toggle_class("-hidden")
         self.__temporary_active_mode_input.toggle_class("-hidden")
 
