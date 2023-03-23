@@ -35,7 +35,7 @@ class CurrencySelector(Select):
             items=[SelectItem(0, "HIVE"), SelectItem(1, "HBD")],
             list_mount="ViewBag",
             placeholder="Select currency",
-            selected=0,
+            selected=1,
         )
 
 
