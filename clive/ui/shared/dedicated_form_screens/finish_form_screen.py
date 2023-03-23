@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class FinishFormScreen(BaseScreen, LastFormScreen):
-    BINDINGS = [Binding("f10", "finish", "Save")]
+    BINDINGS = [Binding("f10", "finish", "Ok")]
 
     def __init__(
         self, end_note: str, name: str | None = None, id: str | None = None, classes: str | None = None
