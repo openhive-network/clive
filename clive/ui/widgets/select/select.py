@@ -64,6 +64,7 @@ class Select(CliveWidget, can_focus=True):
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
         self.__bindings_before: Bindings | None = None
+        self.__global_bindings_before: Bindings | None = None
 
         self.__items = items
         self.__assert_min_amount_of_items()
@@ -201,10 +202,15 @@ class Select(CliveWidget, can_focus=True):
 
     def __override_bindings(self) -> None:
         self.__bindings_before = self.screen._bindings
+        self.__global_bindings_before = self.app._bindings
         self.screen._bindings = Bindings()
+        self.app._bindings = Bindings()
         self._refresh_footer_bindings()
 
     def __restore_bindings(self) -> None:
         if self.__bindings_before is not None:
             self.screen._bindings = self.__bindings_before
-            self._refresh_footer_bindings()
+
+        if self.__global_bindings_before is not None:
+            self.app._bindings = self.__global_bindings_before
+        self._refresh_footer_bindings()
