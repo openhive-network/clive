@@ -179,7 +179,6 @@ class Clive(App[int]):
             self.background_tasks.run_after(active_mode_time, __auto_deactivate, name="auto_deactivate")
 
         self.update_reactive("app_state", __update_function)
-        self.app.switch_screen("dashboard_active")
 
     def deactivate(self) -> None:
         def __update_function(app_state: AppState) -> None:

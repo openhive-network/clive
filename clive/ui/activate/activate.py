@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Horizontal
+from textual.message import Message
 from textual.widgets import Button, Checkbox, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
@@ -24,6 +25,9 @@ class Activate(BaseScreen):
         Binding("escape", "dashboard", "Cancel"),
         Binding("f2", "activate", "Ok"),
     ]
+
+    class Succeeded(Message):
+        """Emitted when application goes into the active state."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -74,8 +78,9 @@ class Activate(BaseScreen):
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)
 
-        self.app.pop_screen()
         self.app.activate(active_mode_time)
+        self.app.pop_screen()
+        self.app.post_message_to_everyone(self.Succeeded())
 
     def __get_active_mode_time(self) -> int | None:
         try:

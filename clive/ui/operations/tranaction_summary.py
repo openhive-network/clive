@@ -8,6 +8,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Label, Static
 
+from clive.ui.activate.activate import Activate
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.clive_widget import CliveWidget
@@ -87,10 +88,20 @@ class TransactionSummary(BaseScreen):
                     yield OperationItem(operation.as_json(), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
+    def on_activate_succeeded(self) -> None:
+        self.__broadcast()
+
     def action_dashboard(self) -> None:
         self.app.pop_screen_until("DashboardActive")
 
     def action_broadcast(self) -> None:
+        if not self.app.app_state.is_active():
+            self.app.push_screen(Activate())
+            return
+
+        self.__broadcast()
+
+    def __broadcast(self) -> None:
         self.__clear_all()
         self.action_dashboard()
 

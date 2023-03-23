@@ -94,3 +94,6 @@ class DashboardBase(BaseScreen):
             yield WorkingAccountContainer()
             yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
             yield WatchedAccountContainer()
+
+    def on_activate_succeeded(self) -> None:
+        self.app.switch_screen("dashboard_active")
