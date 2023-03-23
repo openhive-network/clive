@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from textual.widget import AwaitMount
 
     from clive.ui.background_tasks import BackgroundErrorOccurred
+    from clive.ui.types import NamespaceBindingsMapType
 
 
 class Clive(App[int]):
@@ -67,6 +68,11 @@ class Clive(App[int]):
 
     logs: reactive[list[RenderableType | object]] = reactive([], repaint=False, init=False, always_update=True)
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
+
+    @property
+    def namespace_bindings(self) -> NamespaceBindingsMapType:
+        """Provides the ability to control the binding order in the footer"""
+        return self.__sort_bindings(super().namespace_bindings)
 
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
@@ -238,6 +244,14 @@ class Clive(App[int]):
 
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception
+
+    @staticmethod
+    def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
+        """Sorts function bindings by placing the fn keys at the end of the dictionary"""
+        fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
+        non_fn_keys = [key for key in data if key not in fn_keys]
+        sorted_keys = non_fn_keys + fn_keys
+        return {key: data[key] for key in sorted_keys}
 
 
 clive_app = Clive()
