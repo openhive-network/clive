@@ -29,7 +29,7 @@ class Activate(BaseScreen):
         super().__init__()
         self.__password_input = Input(placeholder="Password", password=True)
         self.__permanent_active_mode_switch = Switch(False)
-        self.__temporary_active_mode_label = Static("Active mode time", classes="label")
+        self.__temporary_active_mode_label = Static("Active mode time (minutes)", classes="label")
         self.__temporary_active_mode_input = Input("60", placeholder="Time in minutes", id="active-mode-input")
 
     def on_mount(self) -> None:
