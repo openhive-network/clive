@@ -26,7 +26,7 @@ class DirectoryTreeHint(Static):
 class AuthorityFromFile(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f10", "save", "Save"),
+        Binding("f2", "save", "Ok"),
     ]
 
     class Saved(Message):
