@@ -71,33 +71,44 @@ class TransferToAccount(CartBasedScreen):
                 yield self.__memo_input
 
     def action_finalize(self) -> None:
-        if self.__create_operation():
+        if self.__add_to_cart():
             self.app.switch_screen(TransactionSummary())
             self.app.push_screen_at(-1, Cart())
 
     def action_add_to_cart(self) -> None:
-        if self.__create_operation():
+        if self.__add_to_cart():
             self.app.pop_screen()
 
     def action_fast_broadcast(self) -> None:
         # TODO: Implement this action
         self.app.pop_screen()
 
-    def __create_operation(self) -> bool:
+    def __create_operation(self) -> TransferOperation | None:
         """
         Collects data from the screen and creates a new operation based on it.
-        :return: True if the operation was created successfully, False otherwise.
+        :return: Operation if the operation is valid, None otherwise.
         """
-        op = TransferOperation(
+        operation = TransferOperation(
             asset=self.__currency_selector.text,
             from_=str(self.app.profile_data.working_account.name),
             to=self.__to_input.value,
             amount=self.__amount_input.value,
             memo=self.__memo_input.value,
         )
-        if not op.is_valid():
+        if not operation.is_valid():
             Notification("Operation failed the validation process.", category="error").show()
+            return None
+        return operation
+
+    def __add_to_cart(self) -> bool:
+        """
+        Creates a new operation and adds it to the cart.
+        :return: True if the operation was added to the cart successfully, False otherwise.
+        """
+        operation = self.__create_operation()
+        if not operation:
             return False
-        self.app.profile_data.operations_cart.append(op)
+
+        self.app.profile_data.operations_cart.append(operation)
         self.app.update_reactive("profile_data")
         return True
