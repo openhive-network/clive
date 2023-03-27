@@ -10,6 +10,7 @@ from textual.reactive import reactive, var
 from clive.config import settings
 from clive.core.communication import Communication
 from clive.enums import AppMode
+from clive.exceptions import ScreenNotFoundError
 from clive.storage.mock_database import NodeData, ProfileData
 from clive.ui.app_state import AppState
 from clive.ui.background_tasks import BackgroundTasks
@@ -107,15 +108,24 @@ class Clive(App[int]):
     def pop_screen(self) -> Screen:
         return self.__update_screen("pop_screen")
 
-    def pop_screen_until(self, screen: str | type[Screen]) -> None:
-        """Pop all screens until the given screen is on top of the stack."""
+    def pop_screen_until(self, *screens: str | type[Screen]) -> None:
+        """
+        Pop all screens until one of the given screen is on top of the stack.
+        ScreenNotFoundError is raised if no screen was found.
+        """
+        for screen in screens:
+            screen_name = screen if isinstance(screen, str) else screen.__name__
+            if not self.__is_screen_in_stack(screen_name):
+                continue  # Screen not found, try next one
 
-        screen_name = screen if isinstance(screen, str) else screen.__name__
-        self.__assert_screen_name_in_stack(screen_name)
-
-        with self.batch_update():
-            while self.screen_stack[-1].__class__.__name__ != screen_name:
-                self.pop_screen()
+            with self.batch_update():
+                while self.screen_stack[-1].__class__.__name__ != screen_name:
+                    self.pop_screen()
+            break  # Screen found and located on top of the stack, stop
+        else:
+            raise ScreenNotFoundError(
+                f"None of the {screens} screens was found in stack.\nScreen stack: {self.screen_stack}"
+            )
 
     def switch_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("switch_screen", screen)
@@ -234,8 +244,13 @@ class Clive(App[int]):
                 screen_.post_message(message)
 
     def __assert_screen_name_in_stack(self, screen_name: str) -> None:
-        if screen_name not in [screen.__class__.__name__ for screen in self.screen_stack]:
-            raise ValueError(f"Screen {screen_name} is not in the screen stack.\nScreen stack: {self.screen_stack}")
+        if not self.__is_screen_in_stack(screen_name):
+            raise ScreenNotFoundError(
+                f"Screen {screen_name} is not in the screen stack.\nScreen stack: {self.screen_stack}"
+            )
+
+    def __is_screen_in_stack(self, screen_name: str) -> bool:
+        return screen_name in [screen.__class__.__name__ for screen in self.screen_stack]
 
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception

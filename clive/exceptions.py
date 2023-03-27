@@ -28,3 +28,11 @@ class UnknownResponseFormatError(CommunicationError):
             f"data={response.request.content!r}, result={response.json()}"
         )
         super().__init__(message)
+
+
+class ScreenError(CliveError):
+    """Base class for all screen exceptions."""
+
+
+class ScreenNotFoundError(ScreenError):
+    """Raised when screen is not found."""

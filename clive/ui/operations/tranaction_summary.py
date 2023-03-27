@@ -92,7 +92,10 @@ class TransactionSummary(BaseScreen):
         self.__broadcast()
 
     def action_dashboard(self) -> None:
-        self.app.pop_screen_until("DashboardActive")
+        from clive.ui.dashboard.dashboard_active import DashboardActive
+        from clive.ui.dashboard.dashboard_inactive import DashboardInactive
+
+        self.app.pop_screen_until(DashboardActive, DashboardInactive)
 
     def action_broadcast(self) -> None:
         if not self.app.app_state.is_active():
