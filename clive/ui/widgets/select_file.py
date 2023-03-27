@@ -41,8 +41,9 @@ class SelectFile(BaseScreen):
             self.file_path = file_path
             super().__init__()
 
-    def __init__(self, default_file_path: str | None = None) -> None:
+    def __init__(self, default_file_path: str | None = None, *, file_must_exist: bool = True) -> None:
         super().__init__()
+        self.__file_must_exist = file_must_exist
         self.__file_path_input = Input(default_file_path, placeholder="e.g.: /home/me/my-active-key")
 
     def create_main_panel(self) -> ComposeResult:
@@ -63,7 +64,9 @@ class SelectFile(BaseScreen):
         self.app.pop_screen()
 
     def __is_valid(self) -> bool:
-        return self.__get_file_path().is_file()
+        if self.__file_must_exist:
+            return self.__get_file_path().is_file()
+        return True
 
     def __get_file_path(self) -> Path:
         return Path(self.__file_path_input.value)

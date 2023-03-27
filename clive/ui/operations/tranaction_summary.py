@@ -15,6 +15,7 @@ from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.notification import Notification
 from clive.ui.widgets.select.safe_select import SafeSelect
 from clive.ui.widgets.select.select_item import SelectItem
+from clive.ui.widgets.select_file import SelectFile
 from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
@@ -92,6 +93,16 @@ class TransactionSummary(BaseScreen):
     def on_activate_succeeded(self) -> None:
         self.__broadcast()
 
+    def on_select_file_saved(self, event: SelectFile.Saved) -> None:
+        file_path = event.file_path
+        with Path(file_path).open("w") as file:
+            json.dump(
+                self.__get_transaction_file_format(),
+                file,
+                default=vars,
+            )
+        Notification(f"Transaction saved to [bold blue]'{file_path}'[/]", category="success").show()
+
     def action_dashboard(self) -> None:
         from clive.ui.dashboard.dashboard_active import DashboardActive
         from clive.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -111,12 +122,7 @@ class TransactionSummary(BaseScreen):
         Notification("Transaction broadcast successfully!", category="success").show()
 
     def action_save(self) -> None:
-        with Path("transaction.json").open("w") as file:
-            json.dump(
-                self.__get_transaction_file_format(),
-                file,
-                default=vars,
-            )
+        self.app.push_screen(SelectFile(file_must_exist=False))
 
     def __clear_all(self) -> None:
         self.app.profile_data.operations_cart.clear()
