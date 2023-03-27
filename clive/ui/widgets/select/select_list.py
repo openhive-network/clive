@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Vertical
+from textual.containers import VerticalScroll
 from textual.widget import Widget
 from textual.widgets import Label, ListItem
 
@@ -73,7 +73,7 @@ class _SelectList(Widget):
         return self.__select_list_view
 
     def compose(self) -> ComposeResult:
-        with Vertical():
+        with VerticalScroll():
             if self.__select.search:
                 yield _SelectListSearchInput(select_list=self)
 
