@@ -9,6 +9,7 @@ class BigTitle(Static):
     DEFAULT_CSS = """
     BigTitle {
         min-height: 3;
+        content-align: center middle;
     }
 
     BigTitle.-compact {
