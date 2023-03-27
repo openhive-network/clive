@@ -7,10 +7,10 @@ from textual.message import Message
 from textual.widgets import Input, Static
 
 from clive.storage.mock_database import PrivateKey
-from clive.ui.manage_authorities.widgets.select_file import SelectFile
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.notification import Notification
+from clive.ui.widgets.select_file import SelectFile
 from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
