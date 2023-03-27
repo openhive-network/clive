@@ -29,7 +29,11 @@ Cart .cell-variant {
   background: $primary-background-darken-1;
 }
 
-Cart CartOperationsHeader, Cart DetailedCartOperation {
+Cart CartOperationsHeader {
+  margin: 0 1;
+}
+
+Cart DetailedCartOperation {
   margin: 1;
 }
 
