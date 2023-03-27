@@ -12,6 +12,7 @@ from clive.ui.activate.activate import Activate
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.clive_widget import CliveWidget
+from clive.ui.widgets.notification import Notification
 from clive.ui.widgets.select.safe_select import SafeSelect
 from clive.ui.widgets.select.select_item import SelectItem
 from clive.ui.widgets.view_bag import ViewBag
@@ -107,6 +108,7 @@ class TransactionSummary(BaseScreen):
     def __broadcast(self) -> None:
         self.__clear_all()
         self.action_dashboard()
+        Notification("Transaction broadcast successfully!", category="success").show()
 
     def action_save(self) -> None:
         with Path("transaction.json").open("w") as file:
