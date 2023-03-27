@@ -1,21 +1,17 @@
-FinishFormScreen DialogContainer {
-	layout: grid;
-}
-
-FinishFormScreen DialogContainer Static {
+FinishFormScreen Description {
 	content-align: center middle;
-	width: 100%;
-	margin: 2;
+	margin: 1;
 }
 
-FinishFormScreen DialogContainer Container {
-	layout: grid;
-	grid-size: 2 1;
-	height: 100%;
-	width: 100%;
+FinishFormScreen ButtonsContainer {
+	height: auto;
 }
 
-FinishFormScreen DialogContainer Container Button {
-	width: 100%;
+FinishFormScreen Button {
+	width: 1fr;
 	background: $primary-background-darken-2;
+}
+
+FinishFormScreen #finish_return_form_screen {
+	margin-right: 1;
 }

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container
+from textual.containers import Horizontal
 from textual.widgets import Button, Static
 
 from clive.ui.shared.base_screen import BaseScreen
@@ -14,6 +14,14 @@ from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+
+class Description(Static):
+    """Some description text"""
+
+
+class ButtonsContainer(Horizontal):
+    """Container holding buttons"""
 
 
 class FinishFormScreen(BaseScreen, LastFormScreen):
@@ -28,8 +36,8 @@ class FinishFormScreen(BaseScreen, LastFormScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield BigTitle("done!")
-            yield Static(self.__end_note)
-            with Container():
+            yield Description(self.__end_note)
+            with ButtonsContainer():
                 yield Button("Finish 🎉", id="finish_return_form_screen")
                 yield Button("Forgot something? 🤔", id="return_finish_form_screen")
 
