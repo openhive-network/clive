@@ -7,6 +7,7 @@ from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.models.transfer_operation import TransferOperation
+from clive.ui.activate.activate import Activate
 from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.operations.tranaction_summary import TransactionSummary
@@ -70,6 +71,9 @@ class TransferToAccount(CartBasedScreen):
                 yield Static("memo", classes="label")
                 yield self.__memo_input
 
+    def on_activate_succeeded(self) -> None:
+        self.__fast_broadcast()
+
     def action_finalize(self) -> None:
         if self.__add_to_cart():
             self.app.switch_screen(TransactionSummary())
@@ -80,6 +84,16 @@ class TransferToAccount(CartBasedScreen):
             self.app.pop_screen()
 
     def action_fast_broadcast(self) -> None:
+        if not self.__create_operation():  # For faster validation feedback to the user
+            return
+
+        if not self.app.app_state.is_active():
+            self.app.push_screen(Activate())
+            return
+
+        self.__fast_broadcast()
+
+    def __fast_broadcast(self) -> None:
         if operation := self.__create_operation():
             # TODO: Implement this action
             self.app.pop_screen()
