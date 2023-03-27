@@ -9,7 +9,6 @@ from textual.widgets import Button, Static
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.ui.shared.form_screen import LastFormScreen
-from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
@@ -34,8 +33,7 @@ class FinishFormScreen(BaseScreen, LastFormScreen):
         super().__init__(name, id, classes)
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer():
-            yield BigTitle("done!")
+        with DialogContainer("done!"):
             yield Description(self.__end_note)
             with ButtonsContainer():
                 yield Button("Finish 🎉", id="finish_return_form_screen")

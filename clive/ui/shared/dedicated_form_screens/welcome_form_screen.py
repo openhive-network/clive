@@ -6,7 +6,6 @@ from textual.widgets import Button, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FirstFormScreen
-from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
@@ -19,8 +18,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen):
         super().__init__(name, id, classes)
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer():
-            yield BigTitle("welcome")
+        with DialogContainer("welcome"):
             yield Static(self.__title)
             yield Button("Start! 🐝", id="welcome_button_start")
 
