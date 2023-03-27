@@ -4,6 +4,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
+from textual.containers import Grid
 from textual.message import Message
 from textual.widgets import DirectoryTree, Input, Static
 
@@ -21,6 +22,10 @@ class FilePathLabel(Static):
 
 class DirectoryTreeHint(Static):
     """Hint for DirectoryTree widget"""
+
+
+class Body(Grid):
+    """Container for widgets"""
 
 
 class AuthorityFromFile(BaseScreen):
@@ -41,7 +46,7 @@ class AuthorityFromFile(BaseScreen):
         self.__file_path_input = Input(default_file_path, placeholder="e.g.: /home/me/my-active-key")
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer():
+        with DialogContainer("Select file"), Body():
             yield FilePathLabel("Authority file path:")
             yield self.__file_path_input
             yield DirectoryTreeHint("Or select from the directory tree:")
