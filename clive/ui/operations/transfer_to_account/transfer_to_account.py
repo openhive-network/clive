@@ -80,8 +80,12 @@ class TransferToAccount(CartBasedScreen):
             self.app.pop_screen()
 
     def action_fast_broadcast(self) -> None:
-        # TODO: Implement this action
-        self.app.pop_screen()
+        if operation := self.__create_operation():
+            # TODO: Implement this action
+            self.app.pop_screen()
+            Notification(
+                f"Operation `{operation.__class__.__name__}` broadcast succesfully.", category="success"
+            ).show()
 
     def __create_operation(self) -> TransferOperation | None:
         """
