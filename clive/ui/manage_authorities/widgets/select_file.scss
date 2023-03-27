@@ -1,19 +1,19 @@
-AuthorityFromFile Body {
+SelectFile Body {
   layout: grid;
   grid-size: 2;
   grid-columns: 24 1fr;
   grid-rows: 4 2 1fr;
 }
 
-AuthorityFromFile FilePathLabel {
+SelectFile FilePathLabel {
   padding: 1 0;
 }
 
-AuthorityFromFile DirectoryTreeHint {
+SelectFile DirectoryTreeHint {
   column-span: 2;
   color: $text-muted;
 }
 
-AuthorityFromFile DirectoryTree {
+SelectFile DirectoryTree {
   column-span: 2;
 }

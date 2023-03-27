@@ -28,7 +28,7 @@ class Body(Grid):
     """Container for widgets"""
 
 
-class AuthorityFromFile(BaseScreen):
+class SelectFile(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f2", "save", "Ok"),
@@ -47,7 +47,7 @@ class AuthorityFromFile(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("Select file"), Body():
-            yield FilePathLabel("Authority file path:")
+            yield FilePathLabel("File path:")
             yield self.__file_path_input
             yield DirectoryTreeHint("Or select from the directory tree:")
             yield DirectoryTree(str(Path.home()))

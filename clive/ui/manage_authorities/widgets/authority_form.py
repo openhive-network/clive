@@ -7,7 +7,7 @@ from textual.message import Message
 from textual.widgets import Input, Static
 
 from clive.storage.mock_database import PrivateKey
-from clive.ui.manage_authorities.widgets.authority_from_file import AuthorityFromFile
+from clive.ui.manage_authorities.widgets.select_file import SelectFile
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
 from clive.ui.widgets.notification import Notification
@@ -57,9 +57,9 @@ class AuthorityForm(BaseScreen):
                 yield self.__key_input
 
     def action_load_from_file(self) -> None:
-        self.app.push_screen(AuthorityFromFile(self._default_file_path()))
+        self.app.push_screen(SelectFile(self._default_file_path()))
 
-    def on_authority_from_file_saved(self, event: AuthorityFromFile.Saved) -> None:
+    def on_select_file_saved(self, event: SelectFile.Saved) -> None:
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
