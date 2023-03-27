@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widget import Widget
 from textual.widgets import Label, Static
 
 from clive.storage.mock_database import AccountType
+from clive.ui.operations.operations import Operations
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.ui.widgets.view_bag import ViewBag
@@ -88,6 +90,10 @@ class WatchedAccountContainer(Static):
 
 
 class DashboardBase(BaseScreen):
+    BINDINGS = [
+        Binding("f2", "operations", "Operations"),
+    ]
+
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield ContainerTitle("WORKING ACCOUNT", classes="working")
@@ -97,3 +103,6 @@ class DashboardBase(BaseScreen):
 
     def on_activate_succeeded(self) -> None:
         self.app.switch_screen("dashboard_active")
+
+    def action_operations(self) -> None:
+        self.app.push_screen(Operations())
