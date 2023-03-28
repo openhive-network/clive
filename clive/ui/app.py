@@ -20,6 +20,7 @@ from clive.ui.onboarding.onboarding import Onboarding
 from clive.ui.quit.quit import Quit
 from clive.ui.shared.help import Help
 from clive.ui.terminal.command_line import CommandLinePrompt
+from clive.ui.terminal.terminal_screen import TerminalScreen
 from clive.ui.widgets.notification import Notification
 from clive.version import VERSION_INFO
 
@@ -44,7 +45,6 @@ class Clive(App[int]):
 
     BINDINGS = [
         Binding("ctrl+c", "push_screen('quit')", "Quit", show=False),
-        Binding("ctrl+o", "terminal", "Toggle terminal", show=False),
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("l", "mock_log", "Mock log", show=False),
         Binding("f1", "help", "Help"),
@@ -58,8 +58,6 @@ class Clive(App[int]):
 
     header_expanded = var(False)
     """Synchronize the expanded header state in all created header objects."""
-
-    terminal_expanded = var(False)
 
     node_data = var(NodeData())
 
@@ -152,7 +150,7 @@ class Clive(App[int]):
         return reply
 
     def action_terminal(self) -> None:
-        self.terminal_expanded = not self.terminal_expanded
+        self.push_screen(TerminalScreen())
 
     def action_mock_log(self) -> None:
         self.write("This is a mock log.", message_type="info")

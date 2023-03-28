@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import Input, Static
 
@@ -32,7 +33,7 @@ class CommandLinePrompt(Static, CliveWidget):
 
 class CommandLineInput(Input, CliveWidget):
     def __init__(self) -> None:
-        super().__init__(placeholder="Enter command...")
+        super().__init__(placeholder="Enter command...", id="command-line-input")
 
     def on_input_submitted(self, event: Input.Submitted) -> None:
         raw_input = event.value
@@ -43,12 +44,26 @@ class CommandLineInput(Input, CliveWidget):
 
 
 class CommandLine(Widget):
+    BINDINGS = [
+        Binding("escape", "cancel", "Cancel"),
+    ]
+
+    def __init__(self, *, focus_on_cancel: Widget) -> None:
+        super().__init__()
+        self.__focus_on_cancel = focus_on_cancel
+
     def compose(self) -> ComposeResult:
         yield CommandLinePrompt()
         yield CommandLineInput()
 
+    def focus(self, _: bool = True) -> None:
+        self.query_one(CommandLineInput).focus()
+
     def on_descendant_focus(self) -> None:
-        self.query_one(CommandLinePrompt).add_class("active-prompt")
+        self.query_one(CommandLinePrompt).add_class("--active")
 
     def on_descendant_blur(self) -> None:
-        self.query_one(CommandLinePrompt).remove_class("active-prompt")
+        self.query_one(CommandLinePrompt).remove_class("--active")
+
+    def action_cancel(self) -> None:
+        self.__focus_on_cancel.focus()

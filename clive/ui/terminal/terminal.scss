@@ -1,49 +1,25 @@
-Terminal {
-  background: $surface;
-  border-top: hkey $secondary;
-  color: $text;
-  dock: bottom;
-  height: 40vh;
-  min-height: 10;
-  layer: terminal;
-  padding: 0 1 1 1;
-  padding-bottom: 2;
-}
-
-Terminal:focus {
-  offset: 0 0 !important;
-}
-
-Terminal Logs {
-  background: $panel-lighten-1;
-  margin: 1;
-  overflow-y: scroll;
-  box-sizing: content-box;
-
-}
-
-Terminal Logs:focus {
-  border-top: hkey $accent;
-}
-
-Terminal CommandLinePrompt {
+CommandLinePrompt {
   dock: left;
   width: 8;
-
 }
 
-Terminal CommandLine {
+CommandLine {
   dock: bottom;
-  height: auto;
+  height: 2;
 }
 
-Terminal CommandLineInput {
+CommandLineInput {
   margin-left: 1;
   border: none;
   padding: 0;
   background: $panel;
 }
 
-Terminal .active-prompt {
+CommandLinePrompt.--active {
   color: $success;
+}
+
+TerminalScreen Logs {
+  margin: 1 2;
+  background: $background-lighten-2
 }

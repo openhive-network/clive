@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from textual.widgets import Footer
 
 from clive.abstract_class import AbstractClassMessagePump
-from clive.ui.terminal.terminal import Terminal
 from clive.ui.widgets.clive_screen import CliveScreen
 from clive.ui.widgets.header import Header
 
@@ -18,7 +17,6 @@ class BaseScreen(CliveScreen, AbstractClassMessagePump):
     def compose(self) -> ComposeResult:
         yield Header()
         yield from self.create_main_panel()
-        yield Terminal()
         yield Footer()
 
     @abstractmethod

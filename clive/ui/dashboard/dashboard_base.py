@@ -10,6 +10,7 @@ from textual.widgets import Label, Static
 from clive.storage.mock_database import AccountType
 from clive.ui.operations.operations import Operations
 from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.terminal.command_line import CommandLine
 from clive.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.ui.widgets.view_bag import ViewBag
 
@@ -19,6 +20,10 @@ if TYPE_CHECKING:
 
 class ContainerTitle(Static):
     """A title for working/watched accounts container"""
+
+
+class Body(Static, can_focus=True):
+    """A body for working/watched accounts container"""
 
 
 class BalanceStats(Widget):
@@ -91,15 +96,19 @@ class WatchedAccountContainer(Static):
 
 class DashboardBase(BaseScreen):
     BINDINGS = [
+        Binding("colon", "focus('command-line-input')", "Command line", show=False),
+        Binding("ctrl+o", "terminal", "Extend terminal", show=False),
         Binding("f2", "operations", "Operations"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
-            yield ContainerTitle("WORKING ACCOUNT", classes="working")
-            yield WorkingAccountContainer()
-            yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
-            yield WatchedAccountContainer()
+            with Body() as body:
+                yield ContainerTitle("WORKING ACCOUNT", classes="working")
+                yield WorkingAccountContainer()
+                yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
+                yield WatchedAccountContainer()
+            yield CommandLine(focus_on_cancel=body)
 
     def on_activate_succeeded(self) -> None:
         self.app.switch_screen("dashboard_active")
