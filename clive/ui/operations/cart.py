@@ -63,6 +63,11 @@ class ScrollablePart(Container):
 
 
 class DetailedCartOperation(ColumnLayout, CliveWidget):
+    BINDINGS = [
+        Binding("ctrl+up", "select_previous", "Prev"),
+        Binding("ctrl+down", "select_next", "Next"),
+    ]
+
     class Deleted(Message):
         def __init__(self, deleted: Operation) -> None:
             self.deleted = deleted
@@ -74,10 +79,20 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
             self.to_idx = to_idx
             super().__init__()
 
+    class Focus(Message):
+        """Message sent when other DetailedCartOperation should be focused"""
+
+        def __init__(self, target_idx: int) -> None:
+            self.target_idx = target_idx
+            super().__init__()
+
     def __init__(self, operation_idx: int) -> None:
         self.__idx = operation_idx
         assert self.is_valid(), "During construction, index has to be valid"
         super().__init__()
+
+    def __repr__(self) -> str:
+        return f"DetailedCartOperation({self.__idx=})"
 
     def is_valid(self) -> bool:
         return self.__idx < self.__operations_count
@@ -108,6 +123,18 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
         yield ButtonMoveUp(disabled=self.__is_first)
         yield ButtonMoveDown(disabled=self.__is_last)
         yield ButtonDelete()
+
+    def focus(self, _: bool = True) -> None:
+        for button in self.query(Button):
+            if button.focusable:
+                button.focus()
+                break
+
+    def action_select_previous(self) -> None:
+        self.post_message(self.Focus(target_idx=self.__idx - 1))
+
+    def action_select_next(self) -> None:
+        self.post_message(self.Focus(target_idx=self.__idx + 1))
 
     @property
     def idx(self) -> int:
@@ -190,6 +217,11 @@ class Cart(BaseScreen):
 
         self.__swap_operations(event.from_idx, event.to_idx)
         self.app.update_reactive("profile_data")
+
+    def on_detailed_cart_operation_focus(self, event: DetailedCartOperation.Focus) -> None:
+        for detailed in self.query(DetailedCartOperation):
+            if event.target_idx == detailed.idx:
+                detailed.focus()
 
     def __swap_operations(self, first_index: int, second_index: int) -> None:
         self.app.profile_data.operations_cart[first_index], self.app.profile_data.operations_cart[second_index] = (
