@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Container
+from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Button, Static
 
@@ -125,10 +127,17 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
         yield ButtonDelete()
 
     def focus(self, _: bool = True) -> None:
-        for button in self.query(Button):
-            if button.focusable:
-                button.focus()
-                break
+        if focused := self.app.focused:  # Focus the corresponding button as it was before
+            assert focused.id, "Previously focused widget has no id!"
+            with contextlib.suppress(NoMatches):
+                previous = self.get_child_by_id(focused.id)
+                if previous.focusable:
+                    previous.focus()
+                    return
+
+        for child in reversed(self.children):  # Focus first focusable
+            if child.focusable:
+                child.focus()
 
     def action_select_previous(self) -> None:
         self.post_message(self.Focus(target_idx=self.__idx - 1))
