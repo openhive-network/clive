@@ -75,17 +75,17 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
             super().__init__()
 
     def __init__(self, operation_idx: int) -> None:
-        self.__operation_idx = operation_idx
+        self.__idx = operation_idx
         assert self.is_valid(), "During construction, index has to be valid"
         super().__init__()
 
     def is_valid(self) -> bool:
-        return self.__operation_idx < self.__operations_count
+        return self.__idx < self.__operations_count
 
     def compose(self) -> ComposeResult:
         def operation_index(_: ProfileData) -> str:
             if self.is_valid():
-                return f"{self.__operation_idx + 1}."
+                return f"{self.__idx + 1}."
             return ""
 
         def operation_name(_: ProfileData) -> str:
@@ -110,34 +110,38 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
         yield ButtonDelete()
 
     @property
+    def idx(self) -> int:
+        return self.__idx
+
+    @property
     def __operations_count(self) -> int:
         return len(self.app.profile_data.operations_cart)
 
     @property
     def __operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.app.profile_data.operations_cart[self.__operation_idx]
+        return self.app.profile_data.operations_cart[self.__idx]
 
     @property
     def __is_first(self) -> bool:
-        return self.__operation_idx == 0
+        return self.__idx == 0
 
     @property
     def __is_last(self) -> bool:
-        return self.__operation_idx == self.__operations_count - 1
+        return self.__idx == self.__operations_count - 1
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
             self.post_message(self.Deleted(self.__operation))
         elif event.button.id == "move-up-button":
-            self.post_message(self.Move(self.__operation_idx, self.__operation_idx - 1))
+            self.post_message(self.Move(self.__idx, self.__idx - 1))
         elif event.button.id == "move-down-button":
-            self.post_message(self.Move(self.__operation_idx, self.__operation_idx + 1))
+            self.post_message(self.Move(self.__idx, self.__idx + 1))
 
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
-        if event.to_idx == self.__operation_idx:
-            self.__operation_idx = event.from_idx
+        if event.to_idx == self.__idx:
+            self.__idx = event.from_idx
         self.app.update_reactive("profile_data")
 
 
