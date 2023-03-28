@@ -44,7 +44,7 @@ class Clive(App[int]):
 
     BINDINGS = [
         Binding("ctrl+c", "push_screen('quit')", "Quit", show=False),
-        Binding("ctrl+t", "terminal", "Toggle terminal", show=False),
+        Binding("ctrl+o", "terminal", "Toggle terminal", show=False),
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("l", "mock_log", "Mock log", show=False),
         Binding("f1", "help", "Help"),
