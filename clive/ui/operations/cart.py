@@ -105,8 +105,8 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
             self.app, "profile_data", operation_name, id_="operation_type", classes="cell cell-variant cell-middle"
         )
         yield DynamicColumn(self.app, "profile_data", operation_details, id_="operation_details", classes="cell")
-        yield ButtonMoveUp(disabled=self.__operation_idx == 0)
-        yield ButtonMoveDown(disabled=self.__operation_idx >= self.__operations_count - 1)
+        yield ButtonMoveUp(disabled=self.__is_first)
+        yield ButtonMoveDown(disabled=self.__is_last)
         yield ButtonDelete()
 
     @property
@@ -117,6 +117,14 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def __operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
         return self.app.profile_data.operations_cart[self.__operation_idx]
+
+    @property
+    def __is_first(self) -> bool:
+        return self.__operation_idx == 0
+
+    @property
+    def __is_last(self) -> bool:
+        return self.__operation_idx == self.__operations_count - 1
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
