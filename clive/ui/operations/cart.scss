@@ -65,3 +65,7 @@ Cart Scrollable {
   overflow-y: scroll;
   height: 1fr;
 }
+
+Cart DetailedCartOperation:focus-within {
+  background: $primary-background;
+}
