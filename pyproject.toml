@@ -82,7 +82,6 @@ select = [  # https://beta.ruff.rs/docs/rules/
     "PTH",
     "ERA",
     "PL",
-    "PLR",
     "RUF",
 ]
 ignore = [
