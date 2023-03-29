@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import Self
 
-    from clive.ui.app_state import AppState
+    from clive.core.app_state import AppState
 
 
 class CommandLinePrompt(Static, CliveWidget):

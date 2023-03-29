@@ -15,8 +15,8 @@ if TYPE_CHECKING:
     from textual import events
     from textual.app import ComposeResult
 
+    from clive.core.app_state import AppState
     from clive.storage.mock_database import ProfileData
-    from clive.ui.app_state import AppState
 
 
 class HeaderIcon(TextualHeaderIcon):

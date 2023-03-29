@@ -8,11 +8,11 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.config import settings
+from clive.core.app_state import AppState
 from clive.core.communication import Communication
 from clive.enums import AppMode
 from clive.exceptions import ScreenNotFoundError
 from clive.storage.mock_database import NodeData, ProfileData
-from clive.ui.app_state import AppState
 from clive.ui.background_tasks import BackgroundTasks
 from clive.ui.dashboard.dashboard_active import DashboardActive
 from clive.ui.dashboard.dashboard_inactive import DashboardInactive
