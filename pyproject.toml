@@ -68,6 +68,7 @@ select = [
     "C",
     "I",
     "N",
+    "UP",
     "BLE",
     "C4",
     "SIM",
@@ -85,3 +86,9 @@ ignore = [
 [tool.ruff.isort]
 known-first-party = ["clive"]
 required-imports = ["from __future__ import annotations"]
+
+
+[tool.ruff.per-file-ignores]
+"clive/cli/**" = [
+    "UP007",  # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
+]
