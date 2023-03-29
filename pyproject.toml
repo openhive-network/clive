@@ -82,11 +82,13 @@ select = [  # https://beta.ruff.rs/docs/rules/
     "PTH",
     "ERA",
     "PL",
+    "TRY",
     "RUF",
 ]
 ignore = [
     "E501", # line too long, handled by black
     "B008", # in Typer it is common to do that
+    "TRY003", # too restrictive
 ]
 
 [tool.ruff.isort]
