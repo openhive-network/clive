@@ -75,6 +75,7 @@ select = [  # https://beta.ruff.rs/docs/rules/
     "C4",
     "PIE",
     "T20",
+    "RET",
     "SIM",
     "TCH",
     "ARG",
