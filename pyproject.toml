@@ -80,6 +80,7 @@ select = [  # https://beta.ruff.rs/docs/rules/
     "TCH",
     "ARG",
     "PTH",
+    "ERA",
     "PL",
     "PLR",
     "RUF",
