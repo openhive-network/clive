@@ -71,6 +71,7 @@ select = [  # https://beta.ruff.rs/docs/rules/
     "UP",
     "BLE",
     "B",
+    "A",
     "C4",
     "SIM",
     "TCH",
