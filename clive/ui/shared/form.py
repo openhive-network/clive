@@ -3,10 +3,10 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Callable, Iterator, List
 
-from clive.ui.shared.base_screen import BaseScreen  # noqa: TCH001
+from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
-from clive.ui.shared.form_screen import FormScreen  # noqa: TCH001
+from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.clive_screen import CliveScreen
 
 ScreenBuilder = Callable[[], FormScreen | BaseScreen]

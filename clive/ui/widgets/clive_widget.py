@@ -21,7 +21,7 @@ class CliveWidget(Widget):
 
     @property
     def app(self) -> Clive:
-        from clive.ui.app import Clive  # noqa: TCH001  # To avoid circular imports
+        from clive.ui.app import Clive  # To avoid circular imports
 
         return typing.cast(Clive, super().app)
 
