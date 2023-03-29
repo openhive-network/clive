@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
 from textual.widgets import Static
 
@@ -9,6 +9,13 @@ if TYPE_CHECKING:
 
 
 class Notification(Static):
+    __EMOJIS: Final[dict[str, str]] = {
+        "success": "✅",
+        "info": "ℹ️",  # noqa: RUF001
+        "warning": "📢",
+        "error": "⚠️",
+    }
+
     def __init__(
         self, renderable: RenderableType, *, category: Literal["success", "info", "warning", "error"] | None = None
     ) -> None:
@@ -26,17 +33,8 @@ class Notification(Static):
     def show(self) -> None:
         self.app.mount(self)
 
-    @staticmethod
+    @classmethod
     def __format_renderable(
-        renderable: RenderableType, category: Literal["success", "info", "warning", "error"] | None = None
+        cls, renderable: RenderableType, category: Literal["success", "info", "warning", "error"] | None = None
     ) -> RenderableType:
-        if category == "success":
-            return f"✅ {renderable}"
-        elif category == "info":
-            return f"ℹ️  {renderable}"  # noqa: RUF001
-        elif category == "warning":
-            return f"📢 {renderable}"
-        elif category == "error":
-            return f"⚠️  {renderable}"
-        else:
-            return renderable
+        return f"{cls.__EMOJIS[category]}  {renderable}" if category in cls.__EMOJIS else renderable
