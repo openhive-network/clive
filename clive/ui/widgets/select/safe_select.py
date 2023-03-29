@@ -54,7 +54,7 @@ class SafeSelect(Widget):
     def selected(self) -> SelectItem | None:
         if isinstance(self.__content, Static):
             return self.__selected
-        elif isinstance(self.__content, Select):
+        if isinstance(self.__content, Select):
             return self.__content.selected
         raise ValueError(f"unknown self.__content type: {type(self.__content).__name__}", self.__content)
 

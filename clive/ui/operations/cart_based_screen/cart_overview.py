@@ -36,9 +36,8 @@ class CartItem(DynamicLabel):
         if self._operation in profile_data.operations_cart:
             idx = profile_data.operations_cart.index(self._operation)
             return f"{idx + 1}. {self._operation.type_} operation"
-        else:
-            self.add_class("deleted")
-            self.remove()
+        self.add_class("deleted")
+        self.remove()
         return ""
 
 
