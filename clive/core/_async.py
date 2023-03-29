@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
-from typing import Any, Coroutine
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Coroutine
 
 
 def asyncio_run(coroutine: Coroutine[Any, Any, Any]) -> Any:

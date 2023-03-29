@@ -1,12 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 from clive.ui.config.config_base import ConfigBase
 from clive.ui.manage_authorities import ManageAuthorities
 from clive.ui.widgets.clive_button import CliveButton
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from textual.widgets import Button
 
 

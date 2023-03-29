@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from textual.widgets import Label
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from textual.reactive import Reactable
 
 

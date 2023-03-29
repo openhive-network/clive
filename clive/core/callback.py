@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from functools import lru_cache
 from inspect import isawaitable, signature
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 @lru_cache(maxsize=2048)

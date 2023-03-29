@@ -10,7 +10,7 @@ if TYPE_CHECKING:
 
 
 class FormScreenBase(Screen):
-    def set_form_owner(self, owner: "Form") -> FormScreenBase:
+    def set_form_owner(self, owner: Form) -> FormScreenBase:
         self._owner = owner
         return self
 

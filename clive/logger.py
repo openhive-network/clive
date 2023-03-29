@@ -2,12 +2,15 @@ from __future__ import annotations
 
 import logging
 from pathlib import Path
-from typing import Any, Callable, Final, Tuple
+from typing import TYPE_CHECKING, Any, Final
 
 from loguru import logger as loguru_logger
 from textual import log as textual_logger
 
 from clive.config import LAUNCH_TIME, ROOT_DIRECTORY, settings
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 LOG_FORMAT: Final[str] = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>"
@@ -17,7 +20,7 @@ LOG_FORMAT: Final[str] = (
 )
 
 
-def create_log_file(log_name: str, log_group: str | None = None) -> Tuple[Path, Path]:
+def create_log_file(log_name: str, log_group: str | None = None) -> tuple[Path, Path]:
     log_directory = ROOT_DIRECTORY.parent / "logs" / log_group if log_group else ROOT_DIRECTORY.parent / "logs"
     log_directory.mkdir(parents=True, exist_ok=True)
 

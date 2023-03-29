@@ -5,7 +5,7 @@ import time
 import typing
 from datetime import timedelta
 from functools import partial
-from typing import Any, Callable, Final
+from typing import Any, Final
 
 import httpx
 
@@ -13,6 +13,9 @@ from clive.core._async import asyncio_run
 from clive.core.callback import invoke
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
 from clive.logger import logger
+
+if typing.TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class Communication:

@@ -5,7 +5,7 @@ import shelve
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from clive.config import DATA_DIRECTORY
@@ -51,14 +51,14 @@ class PrivateKey:
 
 @dataclass
 class WorkingAccount(Account):
-    keys: List[PrivateKey]
+    keys: list[PrivateKey]
 
 
 @dataclass
 class NodeAddress:
     proto: str
     host: str
-    port: Optional[int] = None
+    port: int | None = None
 
     def __str__(self) -> str:
         return f"{self.proto}://{self.host}" + ("" if self.port is None else f":{self.port}")

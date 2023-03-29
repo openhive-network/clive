@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable
+from typing import TYPE_CHECKING
 
 from textual.widgets import Static
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from rich.console import RenderableType
     from textual import events
 

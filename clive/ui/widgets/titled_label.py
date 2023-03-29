@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from textual.widgets import Label
 
@@ -8,6 +8,8 @@ from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable

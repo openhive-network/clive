@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Final
+from typing import TYPE_CHECKING, Any, Final
 
 from clive.ui.app import Clive
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 METHOD_TO_TEST: Final[Callable[[Any], Any]] = Clive._Clive__sort_bindings  # type: ignore[attr-defined]
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from asyncio import Task
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Callable
+from typing import TYPE_CHECKING, Any
 
 from textual.message import Message
 
@@ -13,6 +13,8 @@ from clive.core.communication import Communication
 from clive.logger import logger
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from clive.ui.app import Clive
 
 TasksDict = dict[str, Task[Any]]

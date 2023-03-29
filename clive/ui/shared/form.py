@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Callable, Iterator, List
+from collections.abc import Callable, Iterator
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -15,7 +15,7 @@ ScreenBuilder = Callable[[], FormScreen | BaseScreen]
 class Form(CliveScreen):
     def __init__(self, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
         self.__current_screen_index = 0
-        self.__screens: List[ScreenBuilder] = [self.create_welcome_screen, *list(self.register_screen_builders())]
+        self.__screens: list[ScreenBuilder] = [self.create_welcome_screen, *list(self.register_screen_builders())]
         assert len(self.__screens) > 1, "no screen given to display"
         self.__screens.append(self.create_finish_screen)
 

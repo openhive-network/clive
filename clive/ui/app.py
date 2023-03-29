@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from textual.app import App
 from textual.binding import Binding
@@ -25,6 +25,7 @@ from clive.ui.widgets.notification import Notification
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from datetime import timedelta
 
     from rich.console import RenderableType

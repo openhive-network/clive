@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable
+from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.widgets import Button, Static
@@ -12,6 +12,8 @@ from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from textual.app import ComposeResult
 
 

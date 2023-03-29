@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from re import compile
-from typing import TYPE_CHECKING, Final, Pattern
+from re import Pattern, compile
+from typing import TYPE_CHECKING, Final
 
 from rich.highlighter import Highlighter
 from textual.containers import Horizontal
