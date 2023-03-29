@@ -10,7 +10,6 @@ from textual.reactive import reactive, var
 from clive.__private.config import settings
 from clive.__private.core.app_state import AppState
 from clive.__private.core.communication import Communication
-from clive.__private.enums import AppMode
 from clive.__private.storage.mock_database import NodeData, ProfileData
 from clive.__private.ui.background_tasks import BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
@@ -175,9 +174,6 @@ class Clive(App[int]):
         self.logs += [text]
 
     def activate(self, active_mode_time: timedelta | None = None) -> None:
-        def __update_function(app_state: AppState) -> None:
-            app_state.mode = AppMode.ACTIVE
-
         def __auto_deactivate() -> None:
             self.deactivate()
             message = "Mode switched to [bold red]inactive[/] because the active mode time has expired."
@@ -186,16 +182,14 @@ class Clive(App[int]):
 
         if active_mode_time:
             self.background_tasks.run_after(active_mode_time, __auto_deactivate, name="auto_deactivate")
-
-        self.update_reactive("app_state", __update_function)
+        self.app_state.activate()
+        self.update_reactive("app_state")
 
     def deactivate(self) -> None:
-        def __update_function(app_state: AppState) -> None:
-            app_state.mode = AppMode.INACTIVE
-
         self.background_tasks.cancel("auto_deactivate")
 
-        self.update_reactive("app_state", __update_function)
+        self.app_state.deactivate()
+        self.update_reactive("app_state")
         self.switch_screen("dashboard_inactive")
 
     def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:

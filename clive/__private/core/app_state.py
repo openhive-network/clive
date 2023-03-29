@@ -13,3 +13,9 @@ class AppState:
 
     def is_active(self) -> bool:
         return self.mode == AppMode.ACTIVE
+
+    def activate(self) -> None:
+        self.mode = AppMode.ACTIVE
+
+    def deactivate(self) -> None:
+        self.mode = AppMode.INACTIVE
