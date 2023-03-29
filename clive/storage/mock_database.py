@@ -71,10 +71,11 @@ class NodeAddress:
         try:
             url = urlparse(address)
             if url.hostname is None:
-                raise ValueError
-            return cls(url.scheme, str(url.hostname), url.port)
+                raise ValueError  # noqa TRY301 TODO: Refactor
         except ValueError:
             raise NodeAddressError(f"Invalid address: {address}") from None
+        else:
+            return cls(url.scheme, str(url.hostname), url.port)
 
 
 @dataclass

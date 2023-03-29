@@ -86,6 +86,7 @@ class Activate(BaseScreen):
     def __get_active_mode_time(self) -> int | None:
         try:
             value = int(self.__temporary_active_mode_input.value)
-            return value if value >= 1 else None
         except ValueError:
             return None
+        else:
+            return value if value >= 1 else None

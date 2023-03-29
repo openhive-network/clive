@@ -114,7 +114,7 @@ class Logger:
         textual_log_attr = getattr(textual_logger, item, None)
 
         if not callable(loguru_attr) or not callable(textual_log_attr):
-            raise AttributeError(f"Callable `{item}` not found in either Textual or Loguru loggers.")
+            raise TypeError(f"Callable `{item}` not found in either Textual or Loguru loggers.")
 
         def __hooked(*args: Any, **kwargs: Any) -> None:
             loguru_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None

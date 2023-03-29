@@ -163,9 +163,10 @@ class SetNodeAddressBase(BaseScreen):
 
         try:
             NodeAddress.parse(self.__get_node_address_input())
-            return True
         except NodeAddressError:
             return False
+        else:
+            return True
 
     def _in_nodes_list_mode(self) -> bool:
         """Returns True if the nodes list (combobox) mode is active, False otherwise."""
