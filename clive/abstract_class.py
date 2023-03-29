@@ -6,7 +6,7 @@ from typing import Any
 from textual.message_pump import MessagePumpMeta
 
 
-class AbstractClass(ABC):
+class AbstractClass(ABC):  # noqa: B024
     """
     Abstract class that marks if some class cannot be instantiated.
     Even when no abstract methods were defined, this class cannot be instantiated. (default ABC allows for that)

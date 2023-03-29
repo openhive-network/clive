@@ -74,7 +74,7 @@ class NodeAddress:
                 raise ValueError
             return cls(url.scheme, str(url.hostname), url.port)
         except ValueError:
-            raise NodeAddressError(f"Invalid address: {address}")
+            raise NodeAddressError(f"Invalid address: {address}") from None
 
 
 @dataclass
