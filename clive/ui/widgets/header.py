@@ -34,7 +34,6 @@ class AlarmsSummary(Container):
     def __init__(self) -> None:
         super().__init__()
         self.label = Label("!6x ALARMS!")
-        # self.__set_no_alarms()
 
     def compose(self) -> ComposeResult:
         yield self.label
