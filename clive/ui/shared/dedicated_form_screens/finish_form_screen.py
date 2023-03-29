@@ -27,11 +27,9 @@ class ButtonsContainer(Horizontal):
 class FinishFormScreen(BaseScreen, LastFormScreen):
     BINDINGS = [Binding("f10", "finish", "Ok")]
 
-    def __init__(
-        self, end_note: str, name: str | None = None, id: str | None = None, classes: str | None = None
-    ) -> None:
+    def __init__(self, end_note: str) -> None:
         self.__end_note = end_note
-        super().__init__(name, id, classes)
+        super().__init__()
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("done!"):

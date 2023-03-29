@@ -18,14 +18,14 @@ class BigTitle(Static):
     }
     """
 
-    def __init__(self, title: str = "", *, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(self, title: str = "", *, id_: str | None = None, classes: str | None = None) -> None:
         self.__title = title
         self.__translated = self.__translate(title)
         self.__translated_width = self.__translated.index("\n")
 
         super().__init__(
             self.__translated,
-            id=id,
+            id=id_,
             classes=classes,
         )
 

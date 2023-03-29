@@ -14,9 +14,9 @@ if TYPE_CHECKING:
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen):
-    def __init__(self, title: str, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(self, title: str) -> None:
         self.__title = title
-        super().__init__(name, id, classes)
+        super().__init__()
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):

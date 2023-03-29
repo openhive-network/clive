@@ -13,13 +13,13 @@ ScreenBuilder = Callable[[], FormScreen | BaseScreen]
 
 
 class Form(CliveScreen):
-    def __init__(self, name: str | None = None, id: str | None = None, classes: str | None = None) -> None:
+    def __init__(self) -> None:
         self.__current_screen_index = 0
         self.__screens: list[ScreenBuilder] = [self.create_welcome_screen, *list(self.register_screen_builders())]
         assert len(self.__screens) > 1, "no screen given to display"
         self.__screens.append(self.create_finish_screen)
 
-        super().__init__(name, id, classes)
+        super().__init__()
 
     def on_mount(self) -> None:
         assert self.__current_screen_index == 0
