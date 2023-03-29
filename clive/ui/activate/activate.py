@@ -9,6 +9,7 @@ from textual.message import Message
 from textual.widgets import Button, Checkbox, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.dialog_container import DialogContainer
 from clive.ui.widgets.notification import Notification
 
@@ -50,8 +51,8 @@ class Activate(BaseScreen):
             yield self.__temporary_active_mode_input
             yield Static()
             with ButtonsContainer():
-                yield Button("Ok", variant="primary", id="activate-button")
-                yield Button("Cancel", variant="error", id="cancel-button")
+                yield CliveButton("Ok", variant="primary", id_="activate-button")
+                yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "activate-button":

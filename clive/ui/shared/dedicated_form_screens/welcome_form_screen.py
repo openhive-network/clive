@@ -6,6 +6,7 @@ from textual.widgets import Button, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FirstFormScreen
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
@@ -20,7 +21,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):
             yield Static(self.__title)
-            yield Button("Start! 🐝", id="welcome_button_start")
+            yield CliveButton("Start! 🐝", id_="welcome_button_start")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "welcome_button_start":

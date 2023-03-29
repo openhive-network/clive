@@ -8,6 +8,7 @@ from textual.widgets import Button, Input, Static
 
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.dialog_container import DialogContainer
 from clive.ui.widgets.notification import Notification
 
@@ -91,8 +92,8 @@ class CreateProfile(CreateProfileCommon):
     def _additional_content(self) -> ComposeResult:
         yield Static()
         with ButtonsContainer():
-            yield Button("Ok", variant="primary", id="create-button")
-            yield Button("Cancel", variant="error", id="cancel-button")
+            yield CliveButton("Ok", variant="primary", id_="create-button")
+            yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
 
 class CreateProfileForm(CreateProfileCommon, FormScreen):

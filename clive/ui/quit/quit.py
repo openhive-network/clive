@@ -7,6 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import Button, Static
 
 from clive.ui.shared.base_screen import BaseScreen
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
@@ -27,8 +28,8 @@ class Quit(BaseScreen):
             yield Static("Are you sure you want to quit?", id="question")
             yield Static("(You can also confirm by pressing Ctrl+C again)", id="hint")
             with Horizontal(id="buttons"):
-                yield Button("Quit", variant="error", id="quit")
-                yield Button("Cancel", variant="primary", id="cancel")
+                yield CliveButton("Quit", variant="error", id_="quit")
+                yield CliveButton("Cancel", variant="primary", id_="cancel")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "quit":

@@ -8,6 +8,7 @@ from textual.widgets import Button, Static
 from clive.ui.operations.cart import Cart
 from clive.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.dialog_container import DialogContainer
 from clive.ui.widgets.notification import Notification
 
@@ -24,10 +25,10 @@ class Operations(CartBasedScreen):
     def create_left_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Select one of the following operations:", id="hint")
-            yield Button("Transfer to account", id="account-transfer-button")
-            yield Button("Transfer to savings", id="savings-transfer-button")
-            yield Button("Power up", id="power-up-button")
-            yield Button("Power down", id="power-down-button")
+            yield CliveButton("Transfer to account", id_="account-transfer-button")
+            yield CliveButton("Transfer to savings", id_="savings-transfer-button")
+            yield CliveButton("Power up", id_="power-up-button")
+            yield CliveButton("Power down", id_="power-down-button")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account-transfer-button":

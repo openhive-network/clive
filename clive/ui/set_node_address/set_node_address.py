@@ -15,6 +15,7 @@ from clive.storage.mock_database import NodeAddress
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.shared.form_screen import FormScreen
 from clive.ui.widgets.big_title import BigTitle
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.notification import Notification
 from clive.ui.widgets.select.select import Select
@@ -99,7 +100,7 @@ class ManualNode(Container, CliveWidget):
             id="node-address-input",
             highlighter=NodeUrlHighlighter(self.log),
         )
-        yield Button("Save", id="save-node-address-button")
+        yield CliveButton("Save", id_="save-node-address-button")
 
 
 class ModeSwitchContainer(Horizontal):

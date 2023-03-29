@@ -10,6 +10,7 @@ from clive.ui.manage_authorities.edit_authority import EditAuthority
 from clive.ui.manage_authorities.new_authority import NewAuthority
 from clive.ui.shared.base_screen import BaseScreen
 from clive.ui.widgets.big_title import BigTitle
+from clive.ui.widgets.clive_button import CliveButton
 from clive.ui.widgets.clive_widget import CliveWidget
 from clive.ui.widgets.dynamic_label import DynamicLabel
 from clive.ui.widgets.notification import Notification
@@ -50,8 +51,8 @@ class Authority(ColumnLayout, CliveWidget):
         yield StaticColumn(str(self.__index + 1), id="authority_row_number", classes=even)
         yield StaticColumn(self.__authority.key_name, id="authority_name", classes=odd)
         yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", classes=even)
-        yield Button("✏️", id="edit_authority_button", classes=odd)
-        yield Button("🗑️", id="remove_authority_button", classes=even)
+        yield CliveButton("✏️", id_="edit_authority_button", classes=odd)
+        yield CliveButton("🗑️", id_="remove_authority_button", classes=even)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
