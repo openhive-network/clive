@@ -66,7 +66,7 @@ class Clive(App[int]):
     profile_data: ProfileData = var(world.profile_data)  # type: ignore[assignment]
     app_state: AppState = var(world.app_state)  # type: ignore[assignment]
 
-    logs: reactive[list[RenderableType | object]] = reactive([], repaint=False, init=False, always_update=True)
+    logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
 
     @property
