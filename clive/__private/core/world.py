@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.core.app_state import AppState
+from clive.__private.core.commands import Commands
 from clive.__private.storage.mock_database import NodeData, ProfileData
 
 
@@ -9,6 +10,7 @@ class World:
         self.__node_data = NodeData()
         self.__profile_data = ProfileData.load()
         self.__app_state = AppState()
+        self.__commands = Commands(self)
 
     @property
     def node_data(self) -> NodeData:
@@ -21,3 +23,7 @@ class World:
     @property
     def app_state(self) -> AppState:
         return self.__app_state
+
+    @property
+    def commands(self) -> Commands:
+        return self.__commands
