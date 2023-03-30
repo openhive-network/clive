@@ -8,9 +8,8 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.app_state import AppState
 from clive.__private.core.communication import Communication
-from clive.__private.storage.mock_database import NodeData, ProfileData
+from clive.__private.core.world import World
 from clive.__private.ui.background_tasks import BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -32,6 +31,8 @@ if TYPE_CHECKING:
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
+    from clive.__private.core.app_state import AppState
+    from clive.__private.storage.mock_database import NodeData, ProfileData
     from clive.__private.ui.app_messages import ProfileDataUpdated
     from clive.__private.ui.background_tasks import BackgroundErrorOccurred
     from clive.__private.ui.types import NamespaceBindingsMapType
@@ -60,11 +61,10 @@ class Clive(App[int]):
     header_expanded = var(False)
     """Synchronize the expanded header state in all created header objects."""
 
-    node_data = var(NodeData())
-
-    profile_data = var(ProfileData.load())
-
-    app_state = var(AppState())
+    world = World()
+    node_data: NodeData = var(world.node_data)  # type: ignore[assignment]
+    profile_data: ProfileData = var(world.profile_data)  # type: ignore[assignment]
+    app_state: AppState = var(world.app_state)  # type: ignore[assignment]
 
     logs: reactive[list[RenderableType | object]] = reactive([], repaint=False, init=False, always_update=True)
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
