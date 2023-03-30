@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Final
 
-from clive.ui.app import Clive
+from clive.__private.ui.app import Clive
 
 if TYPE_CHECKING:
     from collections.abc import Callable

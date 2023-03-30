@@ -5,7 +5,7 @@ from typing import Generic, TypeVar
 
 import pytest
 
-from clive.abstract_class import AbstractClassMessagePump
+from clive.__private.abstract_class import AbstractClassMessagePump
 
 T = TypeVar("T")
 

@@ -4,9 +4,9 @@ from typing import Final
 
 import pytest
 
-from clive.ui.widgets.select.safe_select import SafeSelect
-from clive.ui.widgets.select.select import Select
-from clive.ui.widgets.select.select_item import SelectItem
+from clive.__private.ui.widgets.select.safe_select import SafeSelect
+from clive.__private.ui.widgets.select.select import Select
+from clive.__private.ui.widgets.select.select_item import SelectItem
 
 
 def test_minimum_length() -> None:

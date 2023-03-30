@@ -3,9 +3,9 @@ from __future__ import annotations
 import sys
 from os import environ
 
-from clive.cli import cli
-from clive.run_cli import run_cli
-from clive.run_tui import run_tui
+from clive.__private.cli import cli
+from clive.__private.run_cli import run_cli
+from clive.__private.run_tui import run_tui
 
 
 def __is_tab_completion_active() -> bool:

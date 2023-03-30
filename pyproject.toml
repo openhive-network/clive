@@ -97,6 +97,6 @@ required-imports = ["from __future__ import annotations"]
 
 
 [tool.ruff.per-file-ignores]
-"clive/cli/**" = [
+"clive/__private/cli/**" = [
     "UP007",  # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
 ]

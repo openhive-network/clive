@@ -6,7 +6,7 @@ from abc import abstractmethod
 from itertools import count
 from typing import Any, ClassVar
 
-from clive.abstract_class import AbstractClass
+from clive.__private.abstract_class import AbstractClass
 
 
 @dataclasses.dataclass
