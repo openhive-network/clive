@@ -20,9 +20,6 @@ class Quit(BaseScreen):
         Binding("escape", "pop_screen", "Cancel"),
     ]
 
-    def on_mount(self) -> None:
-        self.query(Button).first().focus()
-
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Are you sure you want to quit?", id="question")

@@ -11,3 +11,7 @@ class CliveScreen(Screen, CliveWidget):
 
     Inspired by: https://github.com/Textualize/textual/discussions/1099#discussioncomment-4049612
     """
+
+    def on_mount(self) -> None:
+        if self.app.focused is None:
+            self.focus_next()
