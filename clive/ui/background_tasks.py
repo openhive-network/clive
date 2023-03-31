@@ -84,7 +84,7 @@ class BackgroundTasks:
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
-
+        logger.debug(f"Currently focused: {self.__app.focused}")
         logger.debug(f"Screen stack: {self.__app.screen_stack}")
         logger.debug(f"Background tasks: { {name: task._state for name, task in self.__tasks.items()} }")
 
