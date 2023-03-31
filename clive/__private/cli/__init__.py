@@ -4,6 +4,7 @@ from typing import Final, Optional
 
 import typer
 
+from clive.__private.cli.transfer import transfer
 from clive.__private.run_tui import run_tui
 from clive.version import VERSION_INFO
 
@@ -13,9 +14,8 @@ Type "clive <command> --help" to read more about a specific subcommand.
 """  # fmt: skip
 
 cli = typer.Typer(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
-mock = typer.Typer()
 
-cli.add_typer(mock, name="mock", help="Just a mock subcommand to enable typer subcommands.")
+cli.add_typer(transfer, name="transfer")
 
 
 @cli.callback(invoke_without_command=True)
