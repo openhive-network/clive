@@ -114,7 +114,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
         def operation_name(_: ProfileData) -> str:
             if self.is_valid():
-                return self.__operation.type_
+                return self.__operation.get_name()
             return ""
 
         def operation_details(_: ProfileData) -> str:

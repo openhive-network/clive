@@ -1,39 +1,24 @@
 from __future__ import annotations
 
-import dataclasses
 import json
 from abc import abstractmethod
-from itertools import count
-from typing import Any, ClassVar
+
+from pydantic import BaseModel
 
 from clive.__private.abstract_class import AbstractClass
 
 
-@dataclasses.dataclass
-class Operation(AbstractClass):
-    __instance_count: ClassVar[count[int]] = count(0)
+class Operation(BaseModel, AbstractClass):
+    class Config:
+        allow_population_by_field_name = True
 
-    type_: str
-
-    # this field is just to grant uniqueness of each operation
-    _id: int = dataclasses.field(
-        default_factory=lambda: next(Operation.__instance_count),
-        init=False,
-        hash=True,
-        repr=False,
-        compare=True,
-    )
-
-    def as_dict(self) -> dict[str, Any]:
-        return dataclasses.asdict(self)
-
-    def as_json(self) -> str:
-        return json.dumps(self.as_dict(), indent=2)
+    def as_json(self, indent: int = 4) -> str:
+        return json.dumps(self.dict(by_alias=True), indent=indent)
 
     @abstractmethod
-    def pretty(self, *, with_type: bool = False, separator: str = "\n") -> str:
+    def get_name(self) -> str:
+        """Get the name of the operation."""
+
+    @abstractmethod
+    def pretty(self, *, separator: str = "\n") -> str:
         """This method should return short, formatted description of operation without op type"""
-
-    @abstractmethod
-    def is_valid(self) -> bool:
-        """This is abstract method, that should be implemented by each child"""
