@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -106,16 +107,21 @@ class TransferToAccount(CartBasedScreen):
         Collects data from the screen and creates a new operation based on it.
         :return: Operation if the operation is valid, None otherwise.
         """
-        operation = TransferOperation(
-            asset=self.__currency_selector.text,
-            from_=str(self.app.profile_data.working_account.name),
-            to=self.__to_input.value,
-            amount=self.__amount_input.value,
-            memo=self.__memo_input.value,
-        )
-        if not operation.is_valid():
-            Notification("Operation failed the validation process.", category="error").show()
+
+        data = {
+            "asset": self.__currency_selector.text,
+            "from": str(self.app.profile_data.working_account.name),
+            "to": self.__to_input.value,
+            "amount": self.__amount_input.value,
+            "memo": self.__memo_input.value,
+        }
+
+        try:
+            operation = TransferOperation(**data)
+        except ValidationError as error:
+            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
             return None
+
         return operation
 
     def __add_to_cart(self) -> bool:

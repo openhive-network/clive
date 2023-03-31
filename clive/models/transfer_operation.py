@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pydantic import Field
+from pydantic import Field, validator
 
 from clive.models.operation import Operation
 
@@ -8,20 +8,20 @@ from clive.models.operation import Operation
 class TransferOperation(Operation):
     asset: str
     from_: str = Field(..., alias="from")
-    to: str
-    amount: str
+    to: str = Field(..., min_length=1)
+    amount: str = Field(..., min_length=1)
     memo: str | None = None
 
     def get_name(self) -> str:
         return "transfer"
 
-    def is_valid(self) -> bool:
-        return (
-            self.asset in ["HBD", "TBD", "HIVE", "TESTS"]
-            and len(self.amount) > 0
-            and len(self.to) > 0
-            and len(self.from_) > 0
-        )
+    @validator("asset")
+    @classmethod
+    def validate_asset(cls, value: str) -> str:
+        correct_values = ["HBD", "TBD", "HIVE", "TESTS"]
+        if value not in correct_values:
+            raise ValueError(f"Invalid asset. Available values: {correct_values}")
+        return value
 
     def pretty(self, *, separator: str = "\n") -> str:
         return f"to={self.to}{separator}amount={self.amount} {self.asset}{separator}memo={self.memo}"
