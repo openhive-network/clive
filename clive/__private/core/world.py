@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.core.app_state import AppState
-from clive.__private.core.commands import Commands
+from clive.__private.core.commands.commands import Commands
 from clive.__private.storage.mock_database import NodeData, ProfileData
 
 
