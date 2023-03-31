@@ -10,6 +10,7 @@ from clive.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from typing_extensions import Self
 
     from clive.ui.app_state import AppState
 
@@ -56,8 +57,9 @@ class CommandLine(Widget):
         yield CommandLinePrompt()
         yield CommandLineInput()
 
-    def focus(self, _: bool = True) -> None:
+    def focus(self, _: bool = True) -> Self:
         self.query_one(CommandLineInput).focus()
+        return self
 
     def on_descendant_focus(self) -> None:
         self.query_one(CommandLinePrompt).add_class("--active")

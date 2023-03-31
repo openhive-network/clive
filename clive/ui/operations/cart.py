@@ -18,6 +18,7 @@ from clive.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from typing_extensions import Self
 
     from clive.models.operation import Operation
     from clive.storage.mock_database import ProfileData
@@ -126,18 +127,20 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
         yield ButtonMoveDown(disabled=self.__is_last)
         yield ButtonDelete()
 
-    def focus(self, _: bool = True) -> None:
+    def focus(self, _: bool = True) -> Self:
         if focused := self.app.focused:  # Focus the corresponding button as it was before
             assert focused.id, "Previously focused widget has no id!"
             with contextlib.suppress(NoMatches):
                 previous = self.get_child_by_id(focused.id)
                 if previous.focusable:
                     previous.focus()
-                    return
+                    return self
 
         for child in reversed(self.children):  # Focus first focusable
             if child.focusable:
                 child.focus()
+
+        return self
 
     def action_select_previous(self) -> None:
         self.post_message(self.Focus(target_idx=self.__idx - 1))
