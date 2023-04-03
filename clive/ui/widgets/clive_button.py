@@ -27,4 +27,4 @@ class CliveButton(Button, CliveWidget):
         super().__init__(label=label, variant=variant, id=id_, classes=classes, disabled=disabled)
 
     def on_focus(self) -> None:
-        self.bind(Binding("enter", "", str(self.label)))
+        self.bind(Binding("enter", "press", str(self.label)))
