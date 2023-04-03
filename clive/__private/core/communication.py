@@ -75,6 +75,10 @@ class Communication:
         max_attempts: int,
         pool_time: timedelta,
     ) -> httpx.Response:
+        async def __sleep() -> None:
+            seconds_to_sleep = pool_time.total_seconds()
+            time.sleep(seconds_to_sleep) if sync else await asyncio.sleep(seconds_to_sleep)
+
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
         result: dict[str, Any] = {}
@@ -97,7 +101,6 @@ class Communication:
                 logger.error(message)
 
             if attempts_left > 0:
-                seconds_to_sleep = pool_time.total_seconds()
-                time.sleep(seconds_to_sleep) if sync else await asyncio.sleep(seconds_to_sleep)
+                await __sleep()
 
         raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}, {result=}")
