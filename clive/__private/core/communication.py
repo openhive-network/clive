@@ -77,6 +77,7 @@ class Communication:
     ) -> httpx.Response:
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
+        result: dict[str, Any] = {}
         post_method: Callable[..., httpx.Response] = httpx.post if sync else cls.get_async_client().post  # type: ignore
 
         for attempts_left in reversed(range(max_attempts)):
