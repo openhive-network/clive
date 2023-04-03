@@ -97,6 +97,12 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def __repr__(self) -> str:
         return f"DetailedCartOperation({self.__idx=})"
 
+    def on_mount(self) -> None:
+        if self.__is_first:
+            self.unbind("ctrl+up")
+        elif self.__is_last:
+            self.unbind("ctrl+down")
+
     def is_valid(self) -> bool:
         return self.__idx < self.__operations_count
 
