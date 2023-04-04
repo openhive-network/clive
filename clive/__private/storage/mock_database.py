@@ -114,6 +114,7 @@ class NodeData:
 @dataclass
 class ProfileData:
     _STORAGE_FILE_PATH: Final[Path] = field(init=False, default=config.DATA_DIRECTORY / "profile_data")
+    _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
 
     name: str = ""
     password: str = ""  # yes, yes, plaintext
@@ -135,9 +136,9 @@ class ProfileData:
 
         clive_app.update_reactive("profile_data")
 
-        with shelve.open(str(self.__class__._STORAGE_FILE_PATH)) as db:
+        with shelve.open(str(self._STORAGE_FILE_PATH)) as db:
             db[self.name] = self
-            db["!last_used"] = self.name
+            db[self._LAST_USED_IDENTIFIER] = self.name
 
     @classmethod
     def load(cls, name: str | None = None) -> ProfileData:
@@ -152,13 +153,13 @@ class ProfileData:
 
         with shelve.open(str(cls._STORAGE_FILE_PATH)) as db:
             if name is None:
-                name = db.get("!last_used", "")
+                name = db.get(cls._LAST_USED_IDENTIFIER, "")
             return db.get(name, cls(name))
 
     @classmethod
     def list_profiles(cls) -> list[str]:
         with shelve.open(str(cls._STORAGE_FILE_PATH)) as db:
-            return list(db.keys())
+            return list(db.keys() - {cls._LAST_USED_IDENTIFIER})
 
     @staticmethod
     def __default_node_address() -> list[NodeAddress]:
