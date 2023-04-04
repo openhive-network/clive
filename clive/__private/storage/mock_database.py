@@ -5,10 +5,10 @@ import shelve
 from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 from urllib.parse import urlparse
 
-from clive.__private.config import DATA_DIRECTORY
+import clive.__private.config as config  # noqa: PLR0402 # it is patched in tests
 from clive.__private.core.operations_cart import OperationsCart
 from clive.exceptions import NodeAddressError, PrivateKeyError
 
@@ -113,6 +113,8 @@ class NodeData:
 
 @dataclass
 class ProfileData:
+    _STORAGE_FILE_PATH: Final[Path] = field(init=False, default=config.DATA_DIRECTORY / "profile_data")
+
     name: str = ""
     password: str = ""  # yes, yes, plaintext
 
@@ -133,7 +135,7 @@ class ProfileData:
 
         clive_app.update_reactive("profile_data")
 
-        with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
+        with shelve.open(str(self.__class__._STORAGE_FILE_PATH)) as db:
             db[self.name] = self
             db["!last_used"] = self.name
 
@@ -146,16 +148,16 @@ class ProfileData:
         :return: Profile data.
         """
         # create data directory if it doesn't exist
-        DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
+        cls._STORAGE_FILE_PATH.mkdir(parents=True, exist_ok=True)
 
-        with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
+        with shelve.open(str(cls._STORAGE_FILE_PATH)) as db:
             if name is None:
                 name = db.get("!last_used", "")
             return db.get(name, cls(name))
 
-    @staticmethod
-    def list_profiles() -> list[str]:
-        with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
+    @classmethod
+    def list_profiles(cls) -> list[str]:
+        with shelve.open(str(cls._STORAGE_FILE_PATH)) as db:
             return list(db.keys())
 
     @staticmethod
