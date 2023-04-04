@@ -153,6 +153,10 @@ class ProfileData:
                 name = db.get("!last_used", "")
             return db.get(name, cls(name))
 
+    @staticmethod
+    def list_profiles() -> list[str]:
+        with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
+            return list(db.keys())
 
     @staticmethod
     def __default_node_address() -> list[NodeAddress]:
