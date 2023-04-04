@@ -7,7 +7,7 @@ from rich.highlighter import Highlighter
 from textual.containers import Horizontal
 from textual.widgets import Checkbox, Input, Static
 
-from clive.__private.storage.mock_database import ProfileData
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle

@@ -7,8 +7,8 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static
 
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
-from clive.__private.storage.mock_database import ProfileData
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen

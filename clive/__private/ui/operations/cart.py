@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import Self
 
-    from clive.__private.storage.mock_database import ProfileData
+    from clive.__private.core.profile_data import ProfileData
     from clive.models.operation import Operation
 
 

@@ -11,7 +11,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
-from clive.__private.storage.mock_database import NodeAddress, ProfileData
+from clive.__private.storage.mock_database import NodeAddress
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from textual import Logger
     from textual.app import ComposeResult
 
+    from clive.__private.core.profile_data import ProfileData
     from clive.__private.ui.shared.form import Form
 
 

@@ -32,7 +32,8 @@ if TYPE_CHECKING:
     from textual.widget import AwaitMount
 
     from clive.__private.core.app_state import AppState
-    from clive.__private.storage.mock_database import NodeData, ProfileData
+    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.storage.mock_database import NodeData
     from clive.__private.ui.app_messages import ProfileDataUpdated
     from clive.__private.ui.background_tasks import BackgroundErrorOccurred
     from clive.__private.ui.types import NamespaceBindingsMapType

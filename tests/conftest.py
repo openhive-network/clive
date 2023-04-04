@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 import clive.__private.config as config  # noqa: PLR0402
-from clive.__private.storage.mock_database import ProfileData
+from clive.__private.core.profile_data import ProfileData
 
 if TYPE_CHECKING:
     from pathlib import Path

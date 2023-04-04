@@ -11,7 +11,8 @@ from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.storage.mock_database import NodeData, ProfileData
+    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.storage.mock_database import NodeData
     from clive.models.operation import Operation
 
 

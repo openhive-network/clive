@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.storage.mock_database import ProfileData
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
 from clive.__private.ui.manage_authorities import NewAuthorityForm
