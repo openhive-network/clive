@@ -134,15 +134,25 @@ class ProfileData:
         clive_app.update_reactive("profile_data")
 
         with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
-            db["profile_data"] = self
+            db[self.name] = self
+            db["!last_used"] = self.name
 
     @classmethod
-    def load(cls) -> ProfileData:
+    def load(cls, name: str | None = None) -> ProfileData:
+        """
+        Load profile data with the given name from the database. If no name is given, the last used profile is loaded.
+
+        :param name: Name of the profile to load.
+        :return: Profile data.
+        """
         # create data directory if it doesn't exist
         DATA_DIRECTORY.mkdir(parents=True, exist_ok=True)
 
         with shelve.open(str(DATA_DIRECTORY / "profile_data")) as db:
-            return db.get("profile_data", cls())
+            if name is None:
+                name = db.get("!last_used", "")
+            return db.get(name, cls(name))
+
 
     @staticmethod
     def __default_node_address() -> list[NodeAddress]:

@@ -6,9 +6,9 @@ from clive.__private.storage.mock_database import NodeData, ProfileData
 
 
 class World:
-    def __init__(self) -> None:
+    def __init__(self, profile_name: str | None = None) -> None:
         self.__node_data = NodeData()
-        self.__profile_data = ProfileData.load()
+        self.__profile_data = ProfileData.load(profile_name)
         self.__app_state = AppState()
         self.__commands = Commands(self)
 
