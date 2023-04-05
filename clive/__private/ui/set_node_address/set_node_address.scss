@@ -2,7 +2,9 @@ SetNodeAddressBase Body {
   padding: 2 4;
 }
 
-SetNodeAddressBase NodesList, SetNodeAddressBase ManualNode, SetNodeAddressBase ModeSwitchContainer {
+SetNodeAddressBase NodesList,
+SetNodeAddressBase ManualNode,
+SetNodeAddressBase ModeSwitchContainer {
   height: auto;
 }
 
