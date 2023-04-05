@@ -108,21 +108,17 @@ class TransferToAccount(CartBasedScreen):
         :return: Operation if the operation is valid, None otherwise.
         """
 
-        data = {
-            "asset": self.__currency_selector.text,
-            "from": str(self.app.profile_data.working_account.name),
-            "to": self.__to_input.value,
-            "amount": self.__amount_input.value,
-            "memo": self.__memo_input.value,
-        }
-
         try:
-            operation = TransferOperation(**data)
+            return TransferOperation(
+                from_=str(self.app.profile_data.working_account.name),
+                to=self.__to_input.value,
+                amount=self.__amount_input.value,
+                asset=self.__currency_selector.text,
+                memo=self.__memo_input.value,
+            )
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
             return None
-
-        return operation
 
     def __add_to_cart(self) -> bool:
         """
