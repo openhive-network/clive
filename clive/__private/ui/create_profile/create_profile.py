@@ -6,6 +6,9 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static
 
+from clive.__private.storage.contextual import Contextual
+from clive.__private.storage.mock_database import ProfileData
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -20,11 +23,11 @@ class ButtonsContainer(Horizontal):
     """Container for the buttons."""
 
 
-class CreateProfileCommon(BaseScreen):
+class CreateProfileCommon(BaseScreen, Contextual[ProfileData]):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Profile name", classes="label")
-            yield Input(self.app.profile_data.name, placeholder="e.x.: Master", id="profile_name_input")
+            yield Input(self.context.name, placeholder="e.x.: Master", id="profile_name_input")
             yield Static("Password", classes="label")
             yield Input(placeholder="Password", password=True, id="password_input")
             yield Static("Repeat password", classes="label")
@@ -58,9 +61,9 @@ class CreateProfileCommon(BaseScreen):
         ):
             Notification("Failed the validation process! Could not continue", category="error").show()
             return False
-        self.app.profile_data.name = profile_name
-        self.app.profile_data.password = password
-        self.app.profile_data.save()
+        self.context.name = profile_name
+        self.context.password = password
+        self.post_message(ProfileDataUpdated())
         self._show_notification_on_profile_created()
         return True
 
@@ -95,8 +98,11 @@ class CreateProfile(CreateProfileCommon):
             yield CliveButton("Ok", variant="primary", id_="create-button")
             yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
+    def get_context(self) -> ProfileData:
+        return self.app.profile_data
 
-class CreateProfileForm(CreateProfileCommon, FormScreen):
+
+class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
     def action_next_screen(self) -> None:
         if self._create_profile():
             super().action_next_screen()

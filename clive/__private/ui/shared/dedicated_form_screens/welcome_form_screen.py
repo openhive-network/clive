@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.widgets import Button, Static
 
+from clive.__private.storage.contextual import ContextT
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FirstFormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -12,11 +13,13 @@ from clive.__private.ui.widgets.dialog_container import DialogContainer
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.ui.shared.form import Form
 
-class WelcomeFormScreen(BaseScreen, FirstFormScreen):
-    def __init__(self, title: str) -> None:
+
+class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
+    def __init__(self, owner: Form[ContextT], title: str) -> None:
         self.__title = title
-        super().__init__()
+        super().__init__(owner)
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):

@@ -7,6 +7,8 @@ from rich.highlighter import Highlighter
 from textual.containers import Horizontal
 from textual.widgets import Checkbox, Input, Static
 
+from clive.__private.storage.mock_database import ProfileData
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -16,6 +18,8 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 if TYPE_CHECKING:
     from rich.text import Text
     from textual.app import ComposeResult
+
+    from clive.ui.shared.form import Form
 
 
 class Body(Static):
@@ -43,11 +47,12 @@ class AccountNameHighlighter(Highlighter):
             text.stylize("red")
 
 
-class SetAccount(BaseScreen, FormScreen):
-    def __init__(self) -> None:
-        super().__init__()
+class SetAccount(BaseScreen, FormScreen[ProfileData]):
+    def __init__(self, owner: Form[ProfileData]) -> None:
+        super().__init__(owner)
 
         self.__account_name_input = Input(
+            str(self.context.working_account.name),
             placeholder="Please enter hive account name, without @",
             id="set_account_name",
             highlighter=AccountNameHighlighter(),
@@ -76,6 +81,7 @@ class SetAccount(BaseScreen, FormScreen):
             Notification("Invalid account name!", category="error").show()
             return False
 
-        self.app.profile_data.working_account.name = self.__account_name_input.value
+        self.context.working_account.name = self.__account_name_input.value
+        self.post_message(ProfileDataUpdated())
         self.app.profile_data.save()
         return True

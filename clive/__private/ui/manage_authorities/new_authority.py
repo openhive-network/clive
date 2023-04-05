@@ -1,20 +1,25 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from textual.binding import Binding
 
+from clive.__private.storage.contextual import Contextual
+from clive.__private.storage.mock_database import ProfileData
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.notification import Notification
 
+if TYPE_CHECKING:
+    from clive.__private.ui.shared.form import Form
 
-class NewAuthorityBase(AuthorityForm):
+
+class NewAuthorityBase(AuthorityForm, Contextual[ProfileData]):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.app.profile_data.working_account.keys.append(event.private_key)
-        self.app.update_reactive("profile_data")
-
-        self.app.pop_screen()
+        self.context.working_account.keys.append(event.private_key)
+        self.post_message(ProfileDataUpdated())
         Notification(f"New authority `{event.private_key.key_name}` was created.", category="success").show()
-        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
 
     def _title(self) -> str:
         return "define keys"
@@ -27,23 +32,27 @@ class NewAuthority(NewAuthorityBase):
         Binding("f10", "save", "Save"),
     ]
 
+    def on_authority_form_saved(self, _: AuthorityForm.Saved) -> None:
+        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
+        self.app.pop_screen()
+
     def action_save(self) -> None:
         self._save()
 
+    def get_context(self) -> ProfileData:
+        return self.app.profile_data
 
-class NewAuthorityForm(NewAuthorityBase, FormScreen):
+
+class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]
 
-    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        event.prevent_default()
+    def __init__(self, owner: Form[ProfileData]) -> None:
+        super().__init__(owner=owner)
 
-        self.app.profile_data.working_account.keys.append(event.private_key)
-        self.app.update_reactive("profile_data")
-
+    def on_authority_form_saved(self, _: AuthorityForm.Saved) -> None:
         self._owner.action_next_screen()
-        Notification(f"New authority `{event.private_key.key_name}` was created.", category="success").show()
 
     def action_next_screen(self) -> None:
         if not self._get_key():  # this (NewAuthorityForm) step is optional, so we can skip it when no key is provided

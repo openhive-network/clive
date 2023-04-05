@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.storage.mock_database import ProfileData
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
 from clive.__private.ui.manage_authorities import NewAuthorityForm
 from clive.__private.ui.set_account.set_account import SetAccount
@@ -14,17 +16,29 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-class Onboarding(Form):
-    def register_screen_builders(self) -> Iterator[ScreenBuilder]:
+class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
+    def action_finish(self) -> None:
+        self.app.profile_data = self.context
+        self.post_message(ProfileDataUpdated())
+
+
+class Onboarding(Form[ProfileData]):
+    def register_screen_builders(self) -> Iterator[ScreenBuilder[ProfileData]]:
+        self.__context = self.app.profile_data
+
         yield CreateProfileForm
         yield SetNodeAddressForm
         yield SetAccount
         yield NewAuthorityForm
 
-    def create_welcome_screen(self) -> WelcomeFormScreen:
-        return WelcomeFormScreen(
-            "Let's start onboarding! 🚢\nIn any moment you can press the [blue]F1[/] button to see the help page."
+    def create_welcome_screen(self) -> ScreenBuilder[ProfileData]:
+        return lambda owner: WelcomeFormScreen(
+            owner,
+            "Let's start onboarding! 🚢\nIn any moment you can press the `[blue]?[/]` button to see the help page.",
         )
 
-    def create_finish_screen(self) -> FinishFormScreen:
-        return FinishFormScreen("Now you are ready to enter Clive 🚀")
+    def create_finish_screen(self) -> ScreenBuilder[ProfileData]:
+        return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive 🚀")
+
+    def get_context(self) -> ProfileData:
+        return self.__context

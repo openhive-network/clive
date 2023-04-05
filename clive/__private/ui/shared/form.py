@@ -2,27 +2,27 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
-from typing import Final, Generic, TypeVar
+from typing import Final
 
+from clive.__private.storage.contextual import ContextT, Contextual
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
-ScreenBuilder = Callable[[], FormScreen | BaseScreen]
-ContextT = TypeVar("ContextT")
+ScreenBuilder = type | Callable[["Form[ContextT]"], FormScreen[ContextT] | BaseScreen]
 
 
-class Form(Generic[ContextT], CliveScreen):
+class Form(Contextual[ContextT], CliveScreen):
     AMOUNT_OF_DEFAULT_SCREENS: Final[int] = 2
 
     def __init__(self) -> None:
         self.__current_screen_index = 0
-        self.__screens: list[ScreenBuilder] = [
-            self.create_welcome_screen,
+        self.__screens: list[ScreenBuilder[ContextT]] = [
+            self.create_welcome_screen(),
             *list(self.register_screen_builders()),
-            self.create_finish_screen,
+            self.create_finish_screen(),
         ]
         assert len(self.__screens) > self.AMOUNT_OF_DEFAULT_SCREENS, "no screen given to display"
 
@@ -47,7 +47,7 @@ class Form(Generic[ContextT], CliveScreen):
         self.__pop_current_screen()
 
     def __push_current_screen(self) -> None:
-        self.app.push_screen(self.__screens[self.__current_screen_index](owner=self))  # type: ignore
+        self.app.push_screen(self.__screens[self.__current_screen_index](self))  # type: ignore
 
     def __pop_current_screen(self) -> None:
         self.app.pop_screen().remove()
@@ -56,15 +56,11 @@ class Form(Generic[ContextT], CliveScreen):
         return (proposed_idx >= 0) and (proposed_idx < len(self.__screens))
 
     @abstractmethod
-    def register_screen_builders(self) -> Iterator[ScreenBuilder]:
+    def register_screen_builders(self) -> Iterator[ScreenBuilder[ContextT]]:
         """Returns screens to display"""
 
-    @abstractmethod
-    def context(self) -> ContextT:
-        """Returns form context"""
+    def create_welcome_screen(self) -> ScreenBuilder[ContextT]:
+        return lambda owner: WelcomeFormScreen(owner, "Let's fill some fields")
 
-    def create_welcome_screen(self) -> WelcomeFormScreen:
-        return WelcomeFormScreen("Let's fill some fields")
-
-    def create_finish_screen(self) -> FinishFormScreen:
-        return FinishFormScreen("Hope it didn't take too long")
+    def create_finish_screen(self) -> ScreenBuilder[ContextT]:
+        return lambda owner: FinishFormScreen(owner, "Hope it didn't take too long")

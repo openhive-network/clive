@@ -6,6 +6,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Static
 
+from clive.__private.storage.contextual import ContextT
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.shared.form_screen import LastFormScreen
@@ -14,6 +15,8 @@ from clive.__private.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from clive.__private.ui.shared.form import Form
 
 
 class Description(Static):
@@ -24,12 +27,12 @@ class ButtonsContainer(Horizontal):
     """Container holding buttons"""
 
 
-class FinishFormScreen(BaseScreen, LastFormScreen):
+class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
     BINDINGS = [Binding("f10", "finish", "Ok")]
 
-    def __init__(self, end_note: str) -> None:
+    def __init__(self, owner: Form[ContextT], end_note: str) -> None:
         self.__end_note = end_note
-        super().__init__()
+        super().__init__(owner)
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("done!"):

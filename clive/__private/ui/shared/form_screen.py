@@ -1,24 +1,23 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.screen import Screen
 
-from clive.ui.shared.form import ContextT
+from clive.storage.contextual import ContextT, Contextual
 
 if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class FormScreenBase(Generic[ContextT], Screen):
+class FormScreenBase(Screen, Contextual[ContextT]):
     def __init__(self, owner: Form[ContextT]) -> None:
         self._owner = owner
         super().__init__()
 
-    @property
-    def context(self) -> ContextT:
-        return self._owner.context()
+    def get_context(self) -> ContextT:
+        return self._owner.context
 
 
 class FirstFormScreen(FormScreenBase[ContextT]):

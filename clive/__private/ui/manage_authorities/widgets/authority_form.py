@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from textual.containers import Grid
 from textual.message import Message
@@ -38,8 +38,9 @@ class AuthorityForm(BaseScreen):
     class AuthoritiesChanged(Message):
         """Emitted when authorities have been changed"""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(*args, **kwargs)
 
         self.__key_alias_input = Input(self.__generate_key_alias(), placeholder="e.g. My active key", disabled=True)
         self.__key_input = Input(self._default_key(), placeholder="You can paste your key here")
