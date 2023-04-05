@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from clive.models.operation import Operation
 
 
-class OperationsCart:
+class Transaction:
     def __init__(self) -> None:
         self.__operations: list[Operation] = []
 

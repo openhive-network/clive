@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from clive.__private import config
-from clive.__private.core.operations_cart import OperationsCart
+from clive.__private.core.transaction import Transaction
 from clive.__private.storage.mock_database import Account, NodeAddress, WorkingAccount
 
 if TYPE_CHECKING:
@@ -23,7 +23,7 @@ class ProfileData:
     # TODO: Should be None if not set, since we'll allow for using app without a working account
     working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", []))
     watched_accounts: list[Account] = field(default_factory=list)
-    operations_cart = OperationsCart()
+    transaction = Transaction()
 
     backup_node_addresses: list[NodeAddress] = field(init=False)
     node_address: NodeAddress = field(init=False)

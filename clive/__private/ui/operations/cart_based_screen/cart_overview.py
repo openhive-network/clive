@@ -34,8 +34,8 @@ class CartItem(DynamicLabel):
         super().__init__(self.app, "profile_data", self.__fetch_operation_info, prefix=prefix, id_=id_, classes=classes)
 
     def __fetch_operation_info(self, profile_data: ProfileData) -> str:
-        if self._operation in profile_data.operations_cart.operations:
-            idx = profile_data.operations_cart.operations.index(self._operation)
+        if self._operation in profile_data.transaction.operations:
+            idx = profile_data.transaction.operations.index(self._operation)
             return f"{idx + 1}. {self._operation.get_name()} operation"
         self.add_class("deleted")
         self.remove()
@@ -49,7 +49,7 @@ class CartItemsAmount(DynamicLabel):
         super().__init__(self.app, "profile_data", self.__get_cart_item_count)
 
     def __get_cart_item_count(self, profile_data: ProfileData) -> str:
-        amount = len(profile_data.operations_cart)
+        amount = len(profile_data.transaction)
         if amount > 0:
             return f"{amount} OPERATIONS IN THE CART"
         return "CART IS EMPTY"
@@ -124,4 +124,4 @@ class CartOverview(CliveWidget):
         return f"{node_data.hive_dollars:.2f} HBD"
 
     def __get_operations_from_cart(self) -> list[CartItem]:
-        return [CartItem(op) for op in self.app.profile_data.operations_cart.operations]
+        return [CartItem(op) for op in self.app.profile_data.transaction.operations]

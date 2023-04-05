@@ -160,12 +160,12 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
     @property
     def __operations_count(self) -> int:
-        return len(self.app.profile_data.operations_cart)
+        return len(self.app.profile_data.transaction)
 
     @property
     def __operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.app.profile_data.operations_cart.get(self.__idx)
+        return self.app.profile_data.transaction.get(self.__idx)
 
     @property
     def __is_first(self) -> bool:
@@ -218,22 +218,22 @@ class Cart(BaseScreen):
                 yield CartOperationsHeader()
 
             with self.__scrollable_part:
-                for idx in range(len(self.app.profile_data.operations_cart)):
+                for idx in range(len(self.app.profile_data.transaction)):
                     yield DetailedCartOperation(idx)
 
             yield Static()
 
     def on_detailed_cart_operation_deleted(self, event: DetailedCartOperation.Deleted) -> None:
         widget = self.query(DetailedCartOperation).last()
-        self.app.profile_data.operations_cart.remove(event.deleted)
+        self.app.profile_data.transaction.remove(event.deleted)
         widget.add_class("deleted")
         widget.remove()
         self.app.update_reactive("profile_data")
 
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
-        assert event.to_idx >= 0 and event.to_idx < len(self.app.profile_data.operations_cart)
+        assert event.to_idx >= 0 and event.to_idx < len(self.app.profile_data.transaction)
 
-        self.app.profile_data.operations_cart.swap_order(event.from_idx, event.to_idx)
+        self.app.profile_data.transaction.swap_order(event.from_idx, event.to_idx)
         self.app.update_reactive("profile_data")
 
     def on_detailed_cart_operation_focus(self, event: DetailedCartOperation.Focus) -> None:
@@ -245,6 +245,6 @@ class Cart(BaseScreen):
         self.app.push_screen(TransactionSummary())
 
     def action_clear_all(self) -> None:
-        self.app.profile_data.operations_cart.clear()
+        self.app.profile_data.transaction.clear()
         self.app.update_reactive("profile_data")
         self.__scrollable_part.add_class("-hidden")
