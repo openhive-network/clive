@@ -5,12 +5,14 @@ from typing import TYPE_CHECKING
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
+    from clive.__private.storage.mock_database import PrivateKey
     from clive.models.operation import Operation
 
 
 class Transaction:
     def __init__(self) -> None:
         self.__operations: list[Operation] = []
+        self.__signatures: list[PrivateKey] = []
 
     def __len__(self) -> int:
         return len(self.__operations)
@@ -41,3 +43,7 @@ class Transaction:
 
     def broadcast(self) -> None:
         logger.info(f"Broadcasting transaction: {self}")
+
+    def sign(self, key: PrivateKey) -> None:
+        self.__signatures.append(key)
+        logger.info(f"Signed {self} with key: {key.key_name}")
