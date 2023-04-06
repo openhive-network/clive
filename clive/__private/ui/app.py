@@ -200,9 +200,20 @@ class Clive(App[int], ManualReactive):
         message = f"Screenshot saved to [bold green]'{path}'[/]"
         Notification(message).show()
 
-    def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
-        if message_type == "info":
-            text = f"[blue]INFO:[/blue] {text}"
+    def write(
+        self,
+        text: RenderableType,
+        *,
+        message_type: Literal["success", "info", "warning", "error", "input"] | None = None,
+    ) -> None:
+        if message_type == "success":
+            text = f"[bold white on green]SUCCESS:[/] {text}"
+        elif message_type == "info":
+            text = f"[bold white on blue]INFO:[/] {text}"
+        elif message_type == "warning":
+            text = f"[bold white on orange1]WARNING:[/] {text}"
+        elif message_type == "error":
+            text = f"[bold white on red]ERROR:[/] {text}"
         elif message_type == "input":
             prefix = self.query(CommandLinePrompt).first(CommandLinePrompt).get_current_prompt()
             text = f"{prefix} {text}"

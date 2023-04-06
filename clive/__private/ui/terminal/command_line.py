@@ -6,6 +6,7 @@ from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import Input, Static
 
+from clive.__private.ui.terminal.commands import InternalCLICommands
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
@@ -35,12 +36,14 @@ class CommandLinePrompt(Static, CliveWidget):
 class CommandLineInput(Input, CliveWidget):
     def __init__(self) -> None:
         super().__init__(placeholder="Enter command...", id="command-line-input")
+        self.__cli_commands = InternalCLICommands(self.app)
 
-    def on_input_submitted(self, event: Input.Submitted) -> None:
+    async def on_input_submitted(self, event: Input.Submitted) -> None:
         raw_input = event.value
 
         if raw_input:
             self.app.write(raw_input, message_type="input")
+            await self.__cli_commands.handle(raw_input)
         self.value = ""
 
 
