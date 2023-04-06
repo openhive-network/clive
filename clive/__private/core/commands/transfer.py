@@ -7,7 +7,7 @@ from clive.models.transfer_operation import TransferOperation
 
 class Transfer(Command[bool]):
     def __init__(self, *, from_: str, to: str, amount: str, asset: str, memo: str | None = None) -> None:
-        super().__init__()
+        super().__init__(result_default=False)
         self.__from = from_
         self.__to = to
         self.__amount = amount

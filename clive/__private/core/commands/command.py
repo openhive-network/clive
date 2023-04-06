@@ -9,8 +9,8 @@ T = TypeVar("T")
 
 
 class Command(Generic[T], AbstractClass):
-    def __init__(self) -> None:
-        self._result: T | None = None
+    def __init__(self, *, result_default: T | None = None) -> None:
+        self._result = result_default
 
     @property
     def result(self) -> T:
