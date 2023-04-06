@@ -81,7 +81,6 @@ class Activate(BaseScreen):
 
         self.app.activate(active_mode_time)
         self.app.pop_screen()
-        self.app.post_message_to_everyone(self.Succeeded())
 
     def __get_active_mode_time(self) -> int | None:
         try:

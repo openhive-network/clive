@@ -14,6 +14,7 @@ from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import World
 from clive.__private.logger import logger
+from clive.__private.ui.activate.activate import Activate as ActivateScreen
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -193,6 +194,7 @@ class Clive(App[int]):
         command.execute()
         if command.result:
             self.update_reactive("app_state")
+            self.post_message_to_everyone(ActivateScreen.Succeeded())
 
     def deactivate(self) -> None:
         command = Deactivate(self.app_state, self.background_tasks)
