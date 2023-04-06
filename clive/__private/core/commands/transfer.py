@@ -25,4 +25,4 @@ class Transfer(Command[bool]):
 
         command = Broadcast(operation)
         command.execute()
-        self.result = command.result
+        self._result = command.result

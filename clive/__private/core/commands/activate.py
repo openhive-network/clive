@@ -35,7 +35,7 @@ class Activate(Command[bool]):
             self.__background_tasks.run_after(self.__active_mode_time, self.__auto_deactivate, name="auto_deactivate")
         self.__app_state.activate()
         logger.info("Mode switched to [bold green]active[/].")
-        self.result = True
+        self._result = True
 
     def __auto_deactivate_default(self) -> None:
         Deactivate(self.__app_state, self.__background_tasks).execute()

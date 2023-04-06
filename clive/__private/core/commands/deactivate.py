@@ -18,4 +18,4 @@ class Deactivate(Command[bool]):
     def execute(self) -> None:
         self.__background_tasks.cancel("auto_deactivate")
         self.__app_state.deactivate()
-        self.result = True
+        self._result = True

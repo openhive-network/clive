@@ -34,10 +34,6 @@ class Command(Generic[T], AbstractClass):
             raise ValueError("The result is not set yet.")
         return self._result
 
-    @result.setter
-    def result(self, value: T) -> None:
-        self._result = value
-
     @abstractmethod
     def execute(self) -> None:
         """Executes the command. The result could be set and accessed via the `result` property."""
