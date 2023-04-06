@@ -5,7 +5,7 @@ from clive.__private.logger import logger
 from clive.models.transfer_operation import TransferOperation
 
 
-class Transfer(Command[None]):
+class Transfer(Command[bool]):
     def __init__(self, *, from_: str, to: str, amount: str, asset: str, memo: str | None = None) -> None:
         super().__init__()
         self.__from = from_
@@ -26,3 +26,4 @@ class Transfer(Command[None]):
         # TODO: Some logic that will send the operation to the blockchain
 
         logger.info(f"Operation sent: {operation}")
+        self.result = True

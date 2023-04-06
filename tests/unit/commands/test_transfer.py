@@ -1,21 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import clive
 
-if TYPE_CHECKING:
-    from _pytest.capture import CaptureFixture
 
-
-def test_transfer(capsys: CaptureFixture[str]) -> None:
+def test_transfer() -> None:
     # ARRANGE
     world = clive.World()
-    expected_message = "Operation sent"
 
     # ACT
-    world.commands.transfer(from_="initminer", to="alice", amount="1.000", asset="HIVE").execute()
+    command = world.commands.transfer(from_="initminer", to="alice", amount="1.000", asset="HIVE")
+    command.execute()
 
     # ASSERT
-    out, err = capsys.readouterr()
-    assert expected_message in out
+    assert command.result is True
