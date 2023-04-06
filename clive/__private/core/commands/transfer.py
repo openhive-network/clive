@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.command import Command
-from clive.__private.logger import logger
 from clive.models.transfer_operation import TransferOperation
 
 
@@ -23,7 +23,6 @@ class Transfer(Command[bool]):
             memo=self.__memo,
         )
 
-        # TODO: Some logic that will send the operation to the blockchain
-
-        logger.info(f"Operation sent: {operation}")
-        self.result = True
+        command = Broadcast(operation)
+        command.execute()
+        self.result = command.result

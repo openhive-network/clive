@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.logger import logger
+
 if TYPE_CHECKING:
     from clive.models.operation import Operation
 
@@ -12,6 +14,9 @@ class Transaction:
 
     def __len__(self) -> int:
         return len(self.__operations)
+
+    def __str__(self) -> str:
+        return f"Transaction(operations={self.__operations})"
 
     @property
     def operations(self) -> list[Operation]:
@@ -33,3 +38,6 @@ class Transaction:
 
     def swap_order(self, index1: int, index2: int) -> None:
         self.__operations[index1], self.__operations[index2] = self.__operations[index2], self.__operations[index1]
+
+    def broadcast(self) -> None:
+        logger.info(f"Broadcasting transaction: {self}")
