@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.commands.activate import Activate
+from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.transfer import Transfer
-from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -17,18 +18,8 @@ class Commands:
 
         self.transfer = Transfer
 
-    def activate(self, active_mode_time: timedelta | None = None) -> None:
-        logger.info("Mode switched to [bold green]active[/].")
-
-        def __auto_deactivate() -> None:
-            self.deactivate()
-            message = "Mode switched to [bold red]inactive[/] because the active mode time has expired."
-            logger.info(message)
-
-        if active_mode_time:
-            self.__world.background_tasks.run_after(active_mode_time, __auto_deactivate, name="auto_deactivate")
-        self.__world.app_state.activate()
+    def activate(self, *, active_mode_time: timedelta | None = None) -> None:
+        Activate(self.__world.app_state, self.__world.background_tasks, active_mode_time=active_mode_time).execute()
 
     def deactivate(self) -> None:
-        self.__world.background_tasks.cancel("auto_deactivate")
-        self.__world.app_state.deactivate()
+        Deactivate(self.__world.app_state, self.__world.background_tasks).execute()

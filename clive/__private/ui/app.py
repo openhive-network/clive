@@ -9,6 +9,8 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core.commands.activate import Activate
+from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import World
 from clive.__private.logger import logger
@@ -182,20 +184,22 @@ class Clive(App[int]):
         def __auto_deactivate() -> None:
             self.deactivate()
             message = "Mode switched to [bold red]inactive[/] because the active mode time has expired."
-            self.log(message)
+            logger.info(message)
             Notification(message, category="info").show()
 
-        if active_mode_time:
-            self.background_tasks.run_after(active_mode_time, __auto_deactivate, name="auto_deactivate")
-        self.app_state.activate()
-        self.update_reactive("app_state")
+        command = Activate(
+            self.app_state, self.background_tasks, active_mode_time=active_mode_time, auto_deactivate=__auto_deactivate
+        )
+        command.execute()
+        if command.result:
+            self.update_reactive("app_state")
 
     def deactivate(self) -> None:
-        self.background_tasks.cancel("auto_deactivate")
-
-        self.app_state.deactivate()
-        self.update_reactive("app_state")
-        self.switch_screen("dashboard_inactive")
+        command = Deactivate(self.app_state, self.background_tasks)
+        command.execute()
+        if command.result:
+            self.update_reactive("app_state")
+            self.switch_screen("dashboard_inactive")
 
     def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
         """
