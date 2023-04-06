@@ -15,7 +15,7 @@ class Commands:
     def __init__(self, world: World) -> None:
         self.__world = world
 
-        self.transfer = Transfer.execute
+        self.transfer = Transfer
 
     def activate(self, active_mode_time: timedelta | None = None) -> None:
         logger.info("Mode switched to [bold green]active[/].")

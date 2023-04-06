@@ -35,4 +35,4 @@ def _main(
 
     from clive.__private.core.commands.transfer import Transfer
 
-    Transfer.execute(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo)
+    Transfer(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo).execute()

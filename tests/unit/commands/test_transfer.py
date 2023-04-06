@@ -14,7 +14,7 @@ def test_transfer(capsys: CaptureFixture[str]) -> None:
     expected_message = "Operation sent"
 
     # ACT
-    world.commands.transfer(from_="initminer", to="alice", amount="1.000", asset="HIVE")
+    world.commands.transfer(from_="initminer", to="alice", amount="1.000", asset="HIVE").execute()
 
     # ASSERT
     out, err = capsys.readouterr()
