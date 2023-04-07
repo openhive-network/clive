@@ -104,10 +104,9 @@ class TransactionSummary(BaseScreen):
         Notification(f"Transaction saved to [bold blue]'{file_path}'[/]", category="success").show()
 
     def action_dashboard(self) -> None:
-        from clive.__private.ui.dashboard.dashboard_active import DashboardActive
-        from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+        from clive.__private.ui.dashboard.dashboard_base import DashboardBase
 
-        self.app.pop_screen_until(DashboardActive, DashboardInactive)
+        self.app.pop_screen_until(DashboardBase)
 
     def action_broadcast(self) -> None:
         if not self.app.app_state.is_active():

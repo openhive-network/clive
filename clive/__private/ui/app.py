@@ -113,12 +113,11 @@ class Clive(App[int]):
         ScreenNotFoundError is raised if no screen was found.
         """
         for screen in screens:
-            screen_name = screen if isinstance(screen, str) else screen.__name__
-            if not self.__is_screen_in_stack(screen_name):
+            if not self.__is_screen_in_stack(screen):
                 continue  # Screen not found, try next one
 
             with self.batch_update():
-                while self.screen_stack[-1].__class__.__name__ != screen_name:
+                while self.__screen_eq(self.screen_stack[-1], screen):
                     self.pop_screen()
             break  # Screen found and located on top of the stack, stop
         else:
@@ -235,21 +234,24 @@ class Clive(App[int]):
         """
         Post a message to a specific screen in the stack.
         """
-        screen_name = screen if isinstance(screen, str) else screen.__name__
-        self.__assert_screen_name_in_stack(screen_name)
-
+        self.__assert_screen_name_in_stack(screen)
         for screen_ in reversed(self.screen_stack):
-            if screen_.__class__.__name__ == screen_name:
+            if self.__screen_eq(screen_, screen):
                 screen_.post_message(message)
 
-    def __assert_screen_name_in_stack(self, screen_name: str) -> None:
-        if not self.__is_screen_in_stack(screen_name):
+    def __assert_screen_name_in_stack(self, screen_to_check: str | type[Screen]) -> None:
+        if not self.__is_screen_in_stack(screen_to_check):
             raise ScreenNotFoundError(
-                f"Screen {screen_name} is not in the screen stack.\nScreen stack: {self.screen_stack}"
+                f"Screen {screen_to_check} is not in the screen stack.\nScreen stack: {self.screen_stack}"
             )
 
-    def __is_screen_in_stack(self, screen_name: str) -> bool:
-        return screen_name in [screen.__class__.__name__ for screen in self.screen_stack]
+    def __is_screen_in_stack(self, screen_to_check: str | type[Screen]) -> bool:
+        return any(self.__screen_eq(screen, screen_to_check) for screen in self.screen_stack)
+
+    def __screen_eq(self, screen: Screen, other: str | type[Screen]) -> bool:
+        if isinstance(other, str):
+            return screen.__class__.__name__ == other
+        return isinstance(screen, other)
 
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception
