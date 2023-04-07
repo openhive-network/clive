@@ -31,7 +31,7 @@ class FirstFormScreen(FormScreenBase[ContextT]):
 
 class LastFormScreen(FormScreenBase[ContextT]):
     BINDINGS = [
-        Binding("esc", "start_over", "Cancel"),
+        Binding("escape", "start_over", "Cancel"),
         Binding("ctrl+p", "previous_screen", "Previous screen"),
     ]
 

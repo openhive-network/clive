@@ -270,9 +270,9 @@ class Clive(App[int]):
         non_fn_keys = [key for key in data if key not in fn_keys]
 
         # place ESC key before other non-fn keys
-        if "esc" in non_fn_keys:
-            non_fn_keys.remove("esc")
-            non_fn_keys.insert(0, "esc")
+        if "escape" in non_fn_keys:
+            non_fn_keys.remove("escape")
+            non_fn_keys.insert(0, "escape")
 
         sorted_keys = non_fn_keys + fn_keys
         return {key: data[key] for key in sorted_keys}

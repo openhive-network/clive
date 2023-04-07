@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
-    BINDINGS = [Binding("esc", "cancel", "Cancel")]
+    BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
     def __init__(self, owner: Form[ContextT], title: str) -> None:
         self.__title = title

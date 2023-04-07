@@ -55,7 +55,7 @@ def test_sort_fn_and_char_bindings() -> None:
 
 def test_sorting_with_esc_binding() -> None:
     # ARRANGE
-    additional_esc_binding = {"esc": "esc"}
+    additional_esc_binding = {"escape": "escape"}
     dict_to_sort = FN_BINDINGS_UNSORTED | ADDITIONAL_CHARACTER_BINDINGS | additional_esc_binding
 
     dict_sorted = additional_esc_binding | ADDITIONAL_CHARACTER_BINDINGS | FN_BINDINGS_SORTED
