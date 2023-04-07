@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.widgets import Button, Static
 
 from clive.__private.storage.contextual import ContextT
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
+    BINDINGS = [Binding("esc", "cancel", "Cancel")]
+
     def __init__(self, owner: Form[ContextT], title: str) -> None:
         self.__title = title
         super().__init__(owner)
@@ -29,3 +32,9 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "welcome_button_start":
             self.action_next_screen()
+
+    def action_cancel(self) -> None:
+        self._cancel()
+
+    def _cancel(self) -> None:
+        self.app.pop_screen()

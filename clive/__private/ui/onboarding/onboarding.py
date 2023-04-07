@@ -6,6 +6,7 @@ from clive.__private.storage.mock_database import ProfileData
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
 from clive.__private.ui.manage_authorities import NewAuthorityForm
+from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.set_account.set_account import SetAccount
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -16,6 +17,11 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
+class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
+    def _cancel(self) -> None:
+        self.app.push_screen(Quit())
+
+
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
         self.app.profile_data = self.context
@@ -24,15 +30,13 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
 
 class Onboarding(Form[ProfileData]):
     def register_screen_builders(self) -> Iterator[ScreenBuilder[ProfileData]]:
-        self.__context = self.app.profile_data
-
         yield CreateProfileForm
         yield SetNodeAddressForm
         yield SetAccount
         yield NewAuthorityForm
 
     def create_welcome_screen(self) -> ScreenBuilder[ProfileData]:
-        return lambda owner: WelcomeFormScreen(
+        return lambda owner: OnboardingWelcomeScreen(
             owner,
             "Let's start onboarding! 🚢\nIn any moment you can press the `[blue]?[/]` button to see the help page.",
         )
@@ -42,3 +46,6 @@ class Onboarding(Form[ProfileData]):
 
     def get_context(self) -> ProfileData:
         return self.__context
+
+    def _rebuild_context(self) -> None:
+        self.__context = ProfileData()
