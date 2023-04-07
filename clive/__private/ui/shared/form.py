@@ -5,13 +5,12 @@ from collections.abc import Callable, Iterator
 from typing import Final
 
 from clive.__private.storage.contextual import ContextT, Contextual
-from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
-from clive.__private.ui.shared.form_screen import FormScreen
+from clive.__private.ui.shared.form_screen import FormScreenBase
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
-ScreenBuilder = type | Callable[["Form[ContextT]"], FormScreen[ContextT] | BaseScreen]
+ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT]]
 
 
 class Form(Contextual[ContextT], CliveScreen):
