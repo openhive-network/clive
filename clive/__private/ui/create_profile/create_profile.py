@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
@@ -23,7 +24,7 @@ class ButtonsContainer(Horizontal):
     """Container for the buttons."""
 
 
-class CreateProfileCommon(BaseScreen, Contextual[ProfileData]):
+class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Profile name", classes="label")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+from abc import ABC
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Final
 
@@ -112,7 +113,7 @@ class ModeSwitchContainer(Horizontal):
         yield Static("Toggle mode")
 
 
-class SetNodeAddressBase(BaseScreen, Contextual[ProfileData]):
+class SetNodeAddressBase(BaseScreen, Contextual[ProfileData], ABC):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 

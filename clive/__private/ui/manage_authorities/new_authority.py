@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class NewAuthorityBase(AuthorityForm, Contextual[ProfileData]):
+class NewAuthorityBase(AuthorityForm, Contextual[ProfileData], ABC):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.context.working_account.keys.append(event.private_key)
         self.post_message(ProfileDataUpdated())
