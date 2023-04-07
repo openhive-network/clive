@@ -23,6 +23,12 @@ FN_BINDINGS_SORTED: dict[str, str] = {
     "f4": "f4",
 }
 
+ADDITIONAL_CHARACTER_BINDINGS: dict[str, str] = {
+    "a": "a",
+    "b": "b",
+    "c": "c",
+}
+
 
 def dicts_equal_with_order(dict_a: dict[Any, Any], dict_b: dict[Any, Any]) -> bool:
     """
@@ -39,10 +45,20 @@ def test_sort_fn_bindings() -> None:
 
 def test_sort_fn_and_char_bindings() -> None:
     # ARRANGE
-    additional_character_bindings = {"a": "a", "b": "b", "c": "c"}
-    dict_to_sort = FN_BINDINGS_UNSORTED | additional_character_bindings
+    dict_to_sort = FN_BINDINGS_UNSORTED | ADDITIONAL_CHARACTER_BINDINGS
 
-    dict_sorted = additional_character_bindings | FN_BINDINGS_SORTED
+    dict_sorted = ADDITIONAL_CHARACTER_BINDINGS | FN_BINDINGS_SORTED
+
+    # ACT & ASSERT
+    assert dicts_equal_with_order(METHOD_TO_TEST(dict_to_sort), dict_sorted)
+
+
+def test_sorting_with_esc_binding() -> None:
+    # ARRANGE
+    additional_esc_binding = {"esc": "esc"}
+    dict_to_sort = FN_BINDINGS_UNSORTED | ADDITIONAL_CHARACTER_BINDINGS | additional_esc_binding
+
+    dict_sorted = additional_esc_binding | ADDITIONAL_CHARACTER_BINDINGS | FN_BINDINGS_SORTED
 
     # ACT & ASSERT
     assert dicts_equal_with_order(METHOD_TO_TEST(dict_to_sort), dict_sorted)

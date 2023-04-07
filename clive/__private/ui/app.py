@@ -258,9 +258,22 @@ class Clive(App[int]):
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
-        """Sorts function bindings by placing the fn keys at the end of the dictionary"""
+        """Sorts bindings by placing the ESC key at first place and fn keys at the end of the dictionary.
+        This is done so that the bindings in the footer are displayed in a correct, uniform way.
+
+        Args:
+            data: The bindings to sort.
+        Returns:
+            New dictionary holding sorted bindings.
+        """
         fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
         non_fn_keys = [key for key in data if key not in fn_keys]
+
+        # place ESC key before other non-fn keys
+        if "esc" in non_fn_keys:
+            non_fn_keys.remove("esc")
+            non_fn_keys.insert(0, "esc")
+
         sorted_keys = non_fn_keys + fn_keys
         return {key: data[key] for key in sorted_keys}
 
