@@ -811,6 +811,18 @@ files = [
 ]
 
 [[package]]
+name = "merge-args"
+version = "0.1.5"
+description = "Merge signatures of two functions with Advanced Hackery."
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "merge_args-0.1.5-py2.py3-none-any.whl", hash = "sha256:f296a2dd9156dd055e3f540f0fb5784b94933457a4e0e8d0031a763c26bf24a8"},
+    {file = "merge_args-0.1.5.tar.gz", hash = "sha256:ad37e6c4c7f1eadda5a0564b26ca7d56f8a37f232f5c5c46f9ef93d352757c23"},
+]
+
+[[package]]
 name = "msgpack"
 version = "1.0.4"
 description = "MessagePack serializer"
@@ -1638,4 +1650,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7d6e67a89c364794323808253204f6e5226f6950ba6c7d343186e5de212b4d18"
+content-hash = "53092dbb12e775ba98b433ba2e42c05e205979b1a747063de25571beadcaff0c"
