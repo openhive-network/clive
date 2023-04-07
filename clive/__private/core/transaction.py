@@ -12,8 +12,8 @@ if TYPE_CHECKING:
 
 
 class Transaction:
-    def __init__(self) -> None:
-        self.__operations: list[Operation] = []
+    def __init__(self, *operations: Operation) -> None:
+        self.__operations = list(operations)
         self.__signatures: list[PrivateKey] = []
 
     def __len__(self) -> int:
@@ -26,6 +26,10 @@ class Transaction:
     def operations(self) -> list[Operation]:
         """Get the copy of the operations list"""
         return self.__operations.copy()
+
+    @property
+    def signed(self) -> bool:
+        return bool(self.__signatures)
 
     def add(self, *operations: Operation) -> None:
         self.__operations.extend(operations)

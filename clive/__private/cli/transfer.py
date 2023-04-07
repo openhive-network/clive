@@ -1,10 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Final, Optional
 
 import typer
 
 from clive.__private.cli import common
+from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
+from clive.__private.storage.mock_database import PrivateKey
+from clive.models.transfer_operation import TransferOperation
 
 HELP: Final[str] = """
 Transfer some funds to another account.
@@ -33,6 +37,9 @@ def _main(
 
     value, asset = amount.split(" ")
 
-    from clive.__private.core.commands.transfer import Transfer
-
-    Transfer(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo).execute()
+    perform_actions_on_transaction(
+        TransferOperation(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo),
+        sign_key=PrivateKey("temporary", sign) if sign else None,
+        save_file_path=Path(save_file) if save_file else None,
+        broadcast=broadcast,
+    )
