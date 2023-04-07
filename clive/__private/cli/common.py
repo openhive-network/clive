@@ -1,5 +1,6 @@
 from collections.abc import Callable
 from functools import wraps
+from inspect import signature
 from typing import Any, Optional
 
 import typer
@@ -44,3 +45,20 @@ def common_options(func: Callable[..., None]) -> Any:
             return func(ctx=ctx, **kwargs)
 
     return wrapper
+
+
+def get_args_from_typer_function(function: Callable[..., None]) -> list[tuple[str, str]]:
+    """Get the arguments from a typer function.
+
+    Args:
+        function: The typer function to get the arguments from.
+
+    Returns:
+        A list of tuples containing the argument name and help text.
+    """
+    collected = []
+    for k, v in signature(function).parameters.items():
+        option_info = v.default
+        collected.append((k, option_info.help))
+
+    return collected
