@@ -29,6 +29,10 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
 
 
 class Onboarding(Form[ProfileData]):
+    @property
+    def context(self) -> ProfileData:
+        return self.__context
+
     def register_screen_builders(self) -> Iterator[ScreenBuilder[ProfileData]]:
         yield CreateProfileForm
         yield SetNodeAddressForm
@@ -43,9 +47,6 @@ class Onboarding(Form[ProfileData]):
 
     def create_finish_screen(self) -> ScreenBuilder[ProfileData]:
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive 🚀")
-
-    def get_context(self) -> ProfileData:
-        return self.__context
 
     def _rebuild_context(self) -> None:
         self.__context = ProfileData()

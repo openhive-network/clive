@@ -200,5 +200,6 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen[ProfileData]):
 class SetNodeAddress(SetNodeAddressBase):
     BINDINGS = [Binding("escape", "pop_screen", "Cancel")]
 
-    def get_context(self) -> ProfileData:
+    @property
+    def context(self) -> ProfileData:
         return self.app.profile_data

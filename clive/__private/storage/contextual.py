@@ -9,19 +9,21 @@ ContextT = TypeVar("ContextT")
 
 
 class Contextual(Generic[ContextT], AbstractClassMessagePump):
-    @abstractmethod
-    def get_context(self) -> ContextT:
-        """Return reference to context"""
+    """A class that could return its context"""
 
     @property
+    @abstractmethod
     def context(self) -> ContextT:
-        return self.get_context()
+        """Return reference to context"""
 
 
 class ContextualHolder(Contextual[ContextT]):
+    """A class that holds a context"""
+
     def __init__(self, context: ContextT) -> None:
         self.__context = context
         super().__init__()
 
-    def get_context(self) -> ContextT:
+    @property
+    def context(self) -> ContextT:
         return self.__context

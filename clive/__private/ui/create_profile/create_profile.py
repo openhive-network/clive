@@ -78,6 +78,10 @@ class CreateProfile(CreateProfileCommon):
         Binding("f2", "create_profile", "Ok"),
     ]
 
+    @property
+    def context(self) -> ProfileData:
+        return self.app.profile_data
+
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "create-button":
             self.action_create_profile()
@@ -97,9 +101,6 @@ class CreateProfile(CreateProfileCommon):
         with ButtonsContainer():
             yield CliveButton("Ok", variant="primary", id_="create-button")
             yield CliveButton("Cancel", variant="error", id_="cancel-button")
-
-    def get_context(self) -> ProfileData:
-        return self.app.profile_data
 
 
 class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):

@@ -32,15 +32,16 @@ class NewAuthority(NewAuthorityBase):
         Binding("f10", "save", "Save"),
     ]
 
+    @property
+    def context(self) -> ProfileData:
+        return self.app.profile_data
+
     def on_authority_form_saved(self, _: AuthorityForm.Saved) -> None:
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
 
     def action_save(self) -> None:
         self._save()
-
-    def get_context(self) -> ProfileData:
-        return self.app.profile_data
 
 
 class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):

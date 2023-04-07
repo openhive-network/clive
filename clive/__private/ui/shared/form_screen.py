@@ -16,7 +16,8 @@ class FormScreenBase(CliveScreen, Contextual[ContextT]):
         self._owner = owner
         super().__init__()
 
-    def get_context(self) -> ContextT:
+    @property
+    def context(self) -> ContextT:
         return self._owner.context
 
 
