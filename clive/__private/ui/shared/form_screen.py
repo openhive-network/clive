@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.storage.contextual import ContextT, Contextual
-from clive.ui.widgets.clive_screen import CliveScreen
+from clive.__private.storage.contextual import ContextT, Contextual
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form

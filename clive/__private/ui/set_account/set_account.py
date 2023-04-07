@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from rich.text import Text
     from textual.app import ComposeResult
 
-    from clive.ui.shared.form import Form
+    from clive.__private.ui.shared.form import Form
 
 
 class Body(Static):
