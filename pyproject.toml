@@ -102,7 +102,7 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.per-file-ignores]
 "clive/__private/cli/**" = [
+    "I002",  # TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
     "UP007",  # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
-    "ARG001",  # TODO: Temporary disabled, remove when logic will be implemented
     "PLR0913",  # too restrictive
 ]
