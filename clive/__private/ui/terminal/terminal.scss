@@ -20,6 +20,7 @@ CommandLinePrompt.--active {
 }
 
 TerminalScreen Logs {
+  overflow-y: auto;
   margin: 1 2;
   background: $panel;
 }
