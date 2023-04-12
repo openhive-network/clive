@@ -10,10 +10,6 @@ class CliveError(Exception):
     """Base class for all clive exceptions."""
 
 
-class NodeAddressError(CliveError):
-    """Base class for all node address exceptions."""
-
-
 class CommunicationError(CliveError):
     """Base class for all communication exceptions."""
 
@@ -44,3 +40,11 @@ class FormValidationError(CliveError):
         self.given_value = given_value
         super().__init__()
 
+
+class NodeAddressError(FormValidationError):
+    """Base class for all node address exceptions."""
+
+
+class PrivateKeyError(FormValidationError):
+    def __init__(self, given_key: str | None = None) -> None:
+        super().__init__(f"Given key is in invalid form: `{given_key}`", given_value=given_key)

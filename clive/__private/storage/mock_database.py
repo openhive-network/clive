@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from clive.__private.config import DATA_DIRECTORY
-from clive.exceptions import NodeAddressError
+from clive.exceptions import NodeAddressError, PrivateKeyError
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -46,6 +46,8 @@ class PrivateKey:
 
     @staticmethod
     def validate_key(key: str) -> str:
+        if key == "error":
+            raise PrivateKeyError(key)
         return key
 
 
