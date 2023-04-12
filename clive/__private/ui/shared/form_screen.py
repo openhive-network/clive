@@ -53,10 +53,11 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
     def _perform_next_screen(self) -> None:
         try:
             self.apply_and_validate()
-            super()._perform_next_screen()
-            self.validation_success()
         except FormValidationError as e:
             self.validation_failure(e)
+        else:
+            super()._perform_next_screen()
+            self.validation_success()
 
     def validation_failure(self, exception: FormValidationError) -> None:
         Notification(f"Data validated with error, reason: {exception.reason}", category="error").show()
