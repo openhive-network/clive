@@ -11,7 +11,6 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
-from clive.__private.storage.contextual import Contextual, ContextualHolder
 from clive.__private.storage.mock_database import NodeAddress, ProfileData
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -42,19 +41,19 @@ class ModeSwitch(Switch):
     """A switch that changes the way the node address is selected."""
 
 
-class SelectedNodeAddress(ContextualHolder[ProfileData], Static, CliveWidget):
+class SelectedNodeAddress(Static, CliveWidget):
     """The currently selected node address."""
 
     def render(self) -> RenderableType:
-        return f"Selected node address: {self.context.node_address}"
+        return f"Selected node address: {self.app.profile_data.node_address}"
 
 
-class NodesList(ContextualHolder[ProfileData], Container, CliveWidget):
+class NodesList(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
         yield Select(
-            items=[SelectItem(node, str(node)) for idx, node in enumerate(self.context.backup_node_addresses)],
-            selected=self.context.node_address,
+            items=[SelectItem(node, str(node)) for idx, node in enumerate(self.app.profile_data.backup_node_addresses)],
+            selected=self.app.profile_data.node_address,
             list_mount="ViewBag",
         )
 
@@ -114,12 +113,12 @@ class ModeSwitchContainer(Horizontal):
         yield Static("Toggle mode")
 
 
-class SetNodeAddressBase(BaseScreen, Contextual[ProfileData], ABC):
+class SetNodeAddressBase(BaseScreen, ABC):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 
-        self.__selected_node = SelectedNodeAddress(self.context)
-        self.__nodes_list = NodesList(self.context)
+        self.__selected_node = SelectedNodeAddress()
+        self.__nodes_list = NodesList()
         self.__manual_node = ManualNode(classes="-hidden")
 
     def create_main_panel(self) -> ComposeResult:
@@ -141,7 +140,7 @@ class SetNodeAddressBase(BaseScreen, Contextual[ProfileData], ABC):
             address = cast(NodeAddress, selected.value)
         else:
             address = NodeAddress.parse(self.app.query_one("#node-address-input", Input).value)
-        self.context.node_address = address
+        self.app.profile_data.node_address = address
         self.post_message(ProfileDataUpdated())
         self.__selected_node.refresh()
 
@@ -162,7 +161,7 @@ class SetNodeAddressBase(BaseScreen, Contextual[ProfileData], ABC):
                 category="error",
             ).show()
         else:
-            Notification(f"Node address set to `{self.context.node_address}`.", category="success").show()
+            Notification(f"Node address set to `{self.app.profile_data.node_address}`.", category="success").show()
 
     def on_switch_changed(self) -> None:
         self.__nodes_list.toggle_class("-hidden")
@@ -173,7 +172,7 @@ class SetNodeAddressBase(BaseScreen, Contextual[ProfileData], ABC):
         return not self.app.query_one(ModeSwitch).value
 
 
-class SetNodeAddressForm(SetNodeAddressBase, FormScreen[ProfileData]):
+class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
@@ -183,7 +182,3 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen[ProfileData]):
 
 class SetNodeAddress(SetNodeAddressBase):
     BINDINGS = [Binding("escape", "pop_screen", "Cancel")]
-
-    @property
-    def context(self) -> ProfileData:
-        return self.app.profile_data
