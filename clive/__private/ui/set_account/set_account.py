@@ -12,14 +12,19 @@ from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from rich.text import Text
     from textual.app import ComposeResult
 
     from clive.__private.ui.shared.form import Form
+
+
+class InvalidAccountNameError(FormValidationError):
+    def __init__(self, given_account_name: str) -> None:
+        super().__init__(f"Given account name is invalid: `{given_account_name}`", given_value=given_account_name)
 
 
 class Body(Static):
@@ -68,20 +73,9 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
                     yield self.__account_name_input
                 yield Checkbox("Working account?", value=True)
 
-    def action_next_screen(self) -> None:
-        if self.__save_account_name():
-            super().action_next_screen()
-            Notification("Account name saved.", category="success").show()
+    def apply_and_validate(self) -> None:
+        if not AccountNameHighlighter.is_valid_account_name(account_name := self.__account_name_input.value):
+            raise InvalidAccountNameError(account_name)
 
-    def __is_valid(self) -> bool:
-        return AccountNameHighlighter.is_valid_account_name(self.__account_name_input.value)
-
-    def __save_account_name(self) -> bool:
-        if not self.__is_valid():
-            Notification("Invalid account name!", category="error").show()
-            return False
-
-        self.context.working_account.name = self.__account_name_input.value
+        self.context.working_account.name = account_name
         self.post_message(ProfileDataUpdated())
-        self.app.profile_data.save()
-        return True
