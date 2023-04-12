@@ -11,6 +11,7 @@ from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.notification import Notification
+from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
@@ -20,7 +21,6 @@ class NewAuthorityBase(AuthorityForm, Contextual[ProfileData], ABC):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.context.working_account.keys.append(event.private_key)
         self.post_message(ProfileDataUpdated())
-        Notification(f"New authority `{event.private_key.key_name}` was created.", category="success").show()
 
     def _title(self) -> str:
         return "define keys"
@@ -42,7 +42,12 @@ class NewAuthority(NewAuthorityBase):
         self.app.pop_screen()
 
     def action_save(self) -> None:
-        self._save()
+        try:
+            if self._is_key_provided():
+                self._save()
+                Notification("New authority was created.", category="success").show()
+        except FormValidationError:
+            Notification("Failed the validation process! Could not continue", category="error").show()
 
 
 class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
@@ -53,15 +58,9 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
-    def on_authority_form_saved(self, _: AuthorityForm.Saved) -> None:
-        self._owner.action_next_screen()
-
-    def action_next_screen(self) -> None:
-        if not self._get_key():  # this (NewAuthorityForm) step is optional, so we can skip it when no key is provided
-            super().action_next_screen()
-            return
-
-        self._save()
+    def apply_and_validate(self) -> None:
+        if self._is_key_provided():
+            self._save()  # this (NewAuthorityForm) step is optional, so we can skip it when no key is provided
 
     def _subtitle(self) -> str:
         return "(Optional step, could be done later)"

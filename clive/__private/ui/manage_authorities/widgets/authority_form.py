@@ -66,10 +66,7 @@ class AuthorityForm(BaseScreen):
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
 
     def _save(self) -> None:
-        if not self.__is_valid():
-            Notification("Failed the validation process! Could not continue", category="error").show()
-            return
-
+        self._validate()
         private_key = PrivateKey(self.__get_authority_name(), self._get_key(), self.__key_file_path)
         self.app.post_message_to_everyone(self.Saved(private_key))
 
@@ -92,10 +89,13 @@ class AuthorityForm(BaseScreen):
         return self.__key_alias_input.value
 
     def _get_key(self) -> str:
-        return PrivateKey.validate_key(self.__key_input.value)
+        return self.__key_input.value
 
-    def __is_valid(self) -> bool:
-        return bool(self._get_key()) and bool(self.__get_authority_name())
+    def _is_key_provided(self) -> bool:
+        return bool(self._get_key())
+
+    def _validate(self) -> None:
+        PrivateKey.validate_key(self._get_key())
 
     def __generate_key_alias(self) -> str:
         return f"{self.app.profile_data.working_account.name}@active"
