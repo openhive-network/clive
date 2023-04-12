@@ -40,12 +40,12 @@ class NewAuthority(NewAuthorityBase):
     def on_authority_form_saved(self, _: AuthorityForm.Saved) -> None:
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
+        Notification("New authority was created.", category="success").show()
 
     def action_save(self) -> None:
         try:
             if self._is_key_provided():
                 self._save()
-                Notification("New authority was created.", category="success").show()
         except FormValidationError:
             Notification("Failed the validation process! Could not continue", category="error").show()
 
