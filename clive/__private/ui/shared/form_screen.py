@@ -6,6 +6,8 @@ from textual.binding import Binding
 
 from clive.__private.storage.contextual import ContextT, Contextual
 from clive.__private.ui.widgets.clive_screen import CliveScreen
+from clive.__private.ui.widgets.notification import Notification
+from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
@@ -26,8 +28,11 @@ class FirstFormScreen(FormScreenBase[ContextT]):
         Binding("ctrl+n", "next_screen", "Next screen"),
     ]
 
-    def action_next_screen(self) -> None:
+    def _perform_next_screen(self) -> None:
         self._owner.action_next_screen()
+
+    def action_next_screen(self) -> None:
+        self._perform_next_screen()
 
 
 class LastFormScreen(FormScreenBase[ContextT]):
@@ -44,4 +49,19 @@ class LastFormScreen(FormScreenBase[ContextT]):
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT]):
-    pass
+    def _perform_next_screen(self) -> None:
+        try:
+            self.apply_and_validate()
+            super()._perform_next_screen()
+            self.validation_success()
+        except FormValidationError as e:
+            self.validation_failure(e)
+
+    def validation_failure(self, exception: FormValidationError) -> None:
+        Notification(f"Data validated with error, reason: {exception.reason}", category="error").show()
+
+    def validation_success(self) -> None:
+        Notification("Data validated successfully", category="success").show()
+
+    def apply_and_validate(self) -> None:
+        """This method should perform its actions and raise FormValidationError if some input is invalid"""
