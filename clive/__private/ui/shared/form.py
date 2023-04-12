@@ -10,7 +10,7 @@ from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import
 from clive.__private.ui.shared.form_screen import FormScreenBase
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
-ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT]]
+ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
 
 
 class Form(Contextual[ContextT], CliveScreen):
