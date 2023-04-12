@@ -26,6 +26,7 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
         self.app.profile_data = self.context
         self.post_message(ProfileDataUpdated())
+        super().action_finish()
 
 
 class Onboarding(Form[ProfileData]):
