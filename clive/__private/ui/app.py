@@ -117,7 +117,7 @@ class Clive(App[int]):
                 continue  # Screen not found, try next one
 
             with self.batch_update():
-                while self.__screen_eq(self.screen_stack[-1], screen):
+                while not self.__screen_eq(self.screen_stack[-1], screen):
                     self.pop_screen()
             break  # Screen found and located on top of the stack, stop
         else:
