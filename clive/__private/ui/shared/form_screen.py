@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
@@ -48,7 +49,7 @@ class LastFormScreen(FormScreenBase[ContextT]):
         self._owner.reset()
 
 
-class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT]):
+class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
     def _perform_next_screen(self) -> None:
         try:
             self.apply_and_validate()
@@ -63,5 +64,6 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT]):
     def validation_success(self) -> None:
         Notification("Data validated successfully", category="success").show()
 
+    @abstractmethod
     def apply_and_validate(self) -> None:
         """This method should perform its actions and raise FormValidationError if some input is invalid"""
