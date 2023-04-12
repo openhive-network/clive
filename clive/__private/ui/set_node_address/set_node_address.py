@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from abc import ABC
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any, Final, cast
 
 import httpx
 from rich.highlighter import Highlighter
@@ -13,6 +13,7 @@ from textual.widgets import Button, Input, Static, Switch
 
 from clive.__private.storage.contextual import Contextual, ContextualHolder
 from clive.__private.storage.mock_database import NodeAddress, ProfileData
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -132,70 +133,52 @@ class SetNodeAddressBase(BaseScreen, Contextual[ProfileData], ABC):
                 yield self.__nodes_list
                 yield self.__manual_node
 
+    def _valid_and_save_address(self) -> None:
+        address: NodeAddress
+        if self._in_nodes_list_mode():
+            selected = self.query_one(Select).selected
+            assert selected is not None
+            address = cast(NodeAddress, selected.value)
+        else:
+            address = NodeAddress.parse(self.app.query_one("#node-address-input", Input).value)
+        self.context.node_address = address
+        self.post_message(ProfileDataUpdated())
+        self.__selected_node.refresh()
+
     def on_select_changed(self, event: Select.Changed) -> None:
         if event.selected:
-            self.app.profile_data.node_address = event.selected.value
-            self.app.profile_data.save()
-            self.__selected_node.refresh()
+            self.save_node_address_with_gui_support()
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "save-node-address-button":
-            self.action_save_node_address()
+            self.save_node_address_with_gui_support()
 
-    def action_save_node_address(self) -> None:
-        if self._in_nodes_list_mode():  # it is handled by the on_select_changed event
-            return
-
-        if not self._is_valid():
+    def save_node_address_with_gui_support(self) -> None:
+        try:
+            self._valid_and_save_address()
+        except NodeAddressError:
             Notification(
                 "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
                 category="error",
             ).show()
-            return
-
-        self.app.profile_data.node_address = NodeAddress.parse(self.__get_node_address_input())
-        self.app.profile_data.save()
-        self.__selected_node.refresh()
+        else:
+            Notification(f"Node address set to `{self.context.node_address}`.", category="success").show()
 
     def on_switch_changed(self) -> None:
         self.__nodes_list.toggle_class("-hidden")
         self.__manual_node.toggle_class("-hidden")
 
-    def _is_valid(self) -> bool:
-        if self._in_nodes_list_mode():  # Skip validation if the nodes list mode is active
-            return True
-
-        try:
-            NodeAddress.parse(self.__get_node_address_input())
-        except NodeAddressError:
-            return False
-        else:
-            return True
-
     def _in_nodes_list_mode(self) -> bool:
         """Returns True if the nodes list (combobox) mode is active, False otherwise."""
         return not self.app.query_one(ModeSwitch).value
-
-    def __get_node_address_input(self) -> str:
-        return self.app.query_one("#node-address-input", Input).value
 
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen[ProfileData]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
-    def action_next_screen(self) -> None:
-        self.__save_node_address()
-
-    def __save_node_address(self) -> None:
-        super().action_save_node_address()
-        if not self._in_nodes_list_mode() and self._is_valid():
-            Notification("Node address saved. Press `CTRL+N` to continue.", category="success").show()
-            return
-
-        if self._in_nodes_list_mode():
-            self._owner.action_next_screen()
-            Notification(f"Node address set to `{self.app.profile_data.node_address}`.", category="success").show()
+    def apply_and_validate(self) -> None:
+        self._valid_and_save_address()
 
 
 class SetNodeAddress(SetNodeAddressBase):
