@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
+    from clive.__private.ui.app_messages import ProfileDataUpdated
     from clive.__private.ui.background_tasks import BackgroundErrorOccurred
     from clive.__private.ui.types import NamespaceBindingsMapType
 
@@ -255,6 +256,9 @@ class Clive(App[int]):
 
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception
+
+    def on_profile_data_updated(self, _: ProfileDataUpdated) -> None:
+        self.update_reactive("profile_data")
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
