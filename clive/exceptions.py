@@ -48,3 +48,15 @@ class NodeAddressError(FormValidationError):
 class PrivateKeyError(FormValidationError):
     def __init__(self, given_key: str | None = None) -> None:
         super().__init__(f"Given key is in invalid form: `{given_key}`", given_value=given_key)
+
+
+class InputTooShortError(FormValidationError):
+    def __init__(self, *, expected_length: int, given_value: str) -> None:
+        super().__init__(
+            f"Expected length of {expected_length}, but string of {len(given_value)} given", given_value=given_value
+        )
+
+
+class RepeatedPasswordIsDifferentError(FormValidationError):
+    def __init__(self) -> None:
+        super().__init__("Repeated password is different than original one")
