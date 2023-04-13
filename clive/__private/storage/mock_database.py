@@ -50,6 +50,11 @@ class PrivateKey:
             raise PrivateKeyError(key)
         return key
 
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, PrivateKey):
+            return self.key == __value.key and self.key_name == __value.key_name
+        return super().__eq__(__value)
+
 
 @dataclass
 class WorkingAccount(Account):
