@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
 from textual.containers import VerticalScroll
@@ -52,8 +52,8 @@ class _SelectList(Widget):
 
     def __init__(
         self,
-        select: Select,
-        items: list[SelectItem],
+        select: Select[Any],
+        items: list[SelectItem[Any]],
         classes: str | None = None,
     ) -> None:
         if select.search:
@@ -98,16 +98,16 @@ class _SelectList(Widget):
     def select_highlighted_item(self) -> None:
         if self.__select_list_view.index is not None:
             # index can be None, if a search results in no entries => do not change select value in this case
-            self.__select.selected = self.items_filtered[self.__select_list_view.index]
+            self.__select._selected = self.items_filtered[self.__select_list_view.index]
 
     def select_next(self) -> None:
-        if self.__select.selected is not None:
+        if self.__select._selected is not None:
             assert self.__select_list_view.index is not None, "index must be set"
             self.__select_list_view.index += 1
         self.select_highlighted_item()
 
     def select_previous(self) -> None:
-        if self.__select.selected is not None:
+        if self.__select._selected is not None:
             assert self.__select_list_view.index is not None, "index must be set"
             self.__select_list_view.index -= 1
         self.select_highlighted_item()

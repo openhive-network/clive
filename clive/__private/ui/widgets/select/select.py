@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final, Generic
 
 from textual.binding import Bindings
 from textual.message import Message
 from textual.reactive import reactive
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.select.select_item import SelectItem
+from clive.__private.ui.widgets.select.select_item import SelectItem, SelectItemValueType
 from clive.__private.ui.widgets.select.select_list import _SelectList
 from clive.__private.ui.widgets.select.select_list_search_input import _SelectListSearchInput
 
@@ -15,10 +15,8 @@ if TYPE_CHECKING:
     from textual import events
     from textual.widget import Widget
 
-    from clive.__private.ui.widgets.select.select_item import SelectItemType
 
-
-class Select(CliveWidget, can_focus=True):
+class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
     """
     A select widget with a drop-down.
     Modified version of: https://github.com/mitosch/textual-select
@@ -47,15 +45,15 @@ class Select(CliveWidget, can_focus=True):
 
     MIN_AMOUNT_OF_ITEMS: Final[int] = 2
 
-    selected: reactive[SelectItem | None] = reactive(None, layout=True, init=False)
+    _selected: SelectItem[SelectItemValueType] | None = reactive(None, layout=True, init=False)  # type: ignore[assignment]
 
     def __init__(
         self,
-        items: list[SelectItem],
+        items: list[SelectItem[SelectItemValueType]],
         list_mount: str | Widget,
         *,
         search: bool = False,
-        selected: int | SelectItemType | SelectItem | None = None,
+        selected: int | SelectItemValueType | SelectItem[SelectItemValueType] | None = None,
         placeholder: str = "",
         id_: str | None = None,
         classes: str | None = None,
@@ -82,11 +80,15 @@ class Select(CliveWidget, can_focus=True):
             classes=self.__classes,
         )
 
-        self.text = self.selected.text if self.selected is not None else ""
+        self.text = self._selected.text if self._selected is not None else ""
 
     @property
     def select_list(self) -> _SelectList:
         return self.__select_list
+
+    @property
+    def selected(self) -> SelectItem[SelectItemValueType] | None:
+        return self._selected
 
     @property
     def search(self) -> bool:
@@ -101,7 +103,7 @@ class Select(CliveWidget, can_focus=True):
         chevron = "\u25bc"
         text_space = max(0, self.content_size.width - 2)
 
-        text = self.selected.text if self.selected is not None else self.__placeholder or self.text
+        text = self._selected.text if self._selected is not None else self.__placeholder or self.text
 
         if len(text) > text_space:
             text = text[0:text_space]
@@ -140,11 +142,11 @@ class Select(CliveWidget, can_focus=True):
         self.__show_select_list()
 
     class Changed(Message, bubble=True):
-        def __init__(self, selected: SelectItem | None) -> None:
+        def __init__(self, selected: SelectItem[SelectItemValueType] | None) -> None:
             super().__init__()
             self.selected = selected
 
-    def watch_selected(self, selected: SelectItem | None) -> None:
+    def watch__selected(self, selected: SelectItem[SelectItemValueType] | None) -> None:
         if selected is None:
             self.text = ""
             self.__select_list.select_list_view.index = 0
@@ -158,19 +160,22 @@ class Select(CliveWidget, can_focus=True):
         if len(self.__items) < self.MIN_AMOUNT_OF_ITEMS:
             raise ValueError(f"At least {self.MIN_AMOUNT_OF_ITEMS} items are required to use {self}.")
 
-    def __retrieve_selected(self, selected: int | SelectItem | None) -> None:
+    def __retrieve_selected(self, selected: Any) -> None:
         if isinstance(selected, int):
-            self.selected = self.__items[selected]
+            self._selected = self.__items[selected]
         elif isinstance(selected, SelectItem):
-            self.selected = selected
+            self._selected = selected
         elif selected is not None:
-            self.selected = next(filter(lambda item: item.value == selected, self.__items), None)
+            for item in self.__items:
+                if item.value == selected:
+                    self._selected = item
+                    break
 
     def __show_select_list(self) -> None:
         self.__override_bindings()
 
         self.__select_list.select_list_view.index = (
-            self.__items.index(self.selected) if self.selected is not None else 0
+            self.__items.index(self._selected) if self._selected is not None else 0
         )
 
         mount_widget = self.__get_list_mount_point()

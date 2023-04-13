@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from abc import ABC
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Final, cast
+from typing import TYPE_CHECKING, Any, Final
 
 import httpx
 from rich.highlighter import Highlighter
@@ -51,7 +51,7 @@ class SelectedNodeAddress(Static, CliveWidget):
 class NodesList(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
-        yield Select(
+        yield Select[NodeAddress](
             items=[SelectItem(node, str(node)) for idx, node in enumerate(self.app.profile_data.backup_node_addresses)],
             selected=self.app.profile_data.node_address,
             list_mount="ViewBag",
@@ -133,11 +133,10 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 yield self.__manual_node
 
     def _valid_and_save_address(self) -> None:
-        address: NodeAddress
         if self._in_nodes_list_mode():
-            selected = self.query_one(Select).selected
+            selected: SelectItem[NodeAddress] = self.query_one(Select)._selected
             assert selected is not None
-            address = cast(NodeAddress, selected.value)
+            address = selected.value
         else:
             address = NodeAddress.parse(self.app.query_one("#node-address-input", Input).value)
         self.app.profile_data.node_address = address

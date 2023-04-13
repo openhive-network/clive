@@ -30,7 +30,7 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select):
+class CurrencySelector(Select[int]):
     def __init__(self) -> None:
         super().__init__(
             items=[SelectItem(0, "HIVE"), SelectItem(1, "HBD")],

@@ -8,6 +8,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Label, Static
 
+from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -50,7 +51,7 @@ class OperationItem(Static):
     """Item in the operations list"""
 
 
-class SelectKey(SafeSelect, CliveWidget):
+class SelectKey(SafeSelect[PrivateKey], CliveWidget):
     """Combobox for selecting the authority key"""
 
     def __init__(self) -> None:
