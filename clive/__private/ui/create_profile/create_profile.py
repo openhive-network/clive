@@ -85,19 +85,6 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         self.context.password = password
         self.post_message(ProfileDataUpdated())
 
-    def create_profile_with_gui_support(self) -> bool:
-        try:
-            self._create_profile()
-        except FormValidationError:
-            Notification("Failed the validation process! Could not continue", category="error").show()
-            return False
-        self._show_notification_on_profile_created()
-        return True
-
-    @staticmethod
-    def _show_notification_on_profile_created() -> None:
-        Notification("Profile created successfully!", category="success").show()
-
 
 class CreateProfile(CreateProfileCommon):
     BINDINGS = [
@@ -119,9 +106,13 @@ class CreateProfile(CreateProfileCommon):
         self.app.pop_screen()
 
     def action_create_profile(self) -> None:
-        if self.create_profile_with_gui_support():
+        try:
+            self._create_profile()
+        except FormValidationError as error:
+            Notification(f"Failed the validation process! Reason: {error.reason}", category="error").show()
+        else:
             self.app.pop_screen()
-            self._show_notification_on_profile_created()  # show it on the new screen, or it won't be visible
+            Notification("Profile created successfully!", category="success").show()
 
     def _additional_content(self) -> ComposeResult:
         yield Static()
