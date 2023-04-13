@@ -10,6 +10,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.select.select_item import SelectItem, SelectItemValueType
 from clive.__private.ui.widgets.select.select_list import _SelectList
 from clive.__private.ui.widgets.select.select_list_search_input import _SelectListSearchInput
+from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual import events
@@ -87,7 +88,9 @@ class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
         return self.__select_list
 
     @property
-    def selected(self) -> SelectItem[SelectItemValueType] | None:
+    def selected(self) -> SelectItem[SelectItemValueType]:
+        if self._selected is None:
+            raise NoItemSelectedError(f"No item is selected yet from {self}.")
         return self._selected
 
     @property

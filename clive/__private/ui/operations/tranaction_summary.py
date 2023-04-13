@@ -129,5 +129,5 @@ class TransactionSummary(BaseScreen):
         self.__scrollable_part.add_class("-hidden")
 
     def __get_transaction_file_format(self) -> dict[str, Any]:
-        selected_authority = str(self.__select_key.selected.value) if self.__select_key.selected is not None else ""
+        selected_authority = str(self.__select_key.selected.value)
         return {"ops_in_trx": self.app.profile_data.operations_cart, "selected_authority": selected_authority}

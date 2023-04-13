@@ -50,11 +50,12 @@ class SafeSelect(Widget, Generic[SelectItemValueType]):
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
     @property
-    def selected(self) -> SelectItem[SelectItemValueType] | None:
+    def selected(self) -> SelectItem[SelectItemValueType]:
         if isinstance(self.__content, Static):
+            assert self.__selected is not None
             return self.__selected
         if isinstance(self.__content, Select):
-            return self.__content._selected
+            return self.__content.selected
         raise ValueError(f"unknown self.__content type: {type(self.__content).__name__}", self.__content)
 
     def compose(self) -> ComposeResult:

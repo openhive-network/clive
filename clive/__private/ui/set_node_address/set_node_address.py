@@ -134,8 +134,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
     def _valid_and_save_address(self) -> None:
         if self._in_nodes_list_mode():
-            selected: SelectItem[NodeAddress] = self.query_one(Select)._selected
-            assert selected is not None
+            selected: SelectItem[NodeAddress] = self.query_one(Select).selected
             address = selected.value
         else:
             address = NodeAddress.parse(self.app.query_one("#node-address-input", Input).value)

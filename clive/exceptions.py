@@ -26,6 +26,10 @@ class UnknownResponseFormatError(CommunicationError):
         super().__init__(message)
 
 
+class NoItemSelectedError(CliveError):
+    """Raised when tried to access `selected` property of Select widget when no item was selected."""
+
+
 class ScreenError(CliveError):
     """Base class for all screen exceptions."""
 
