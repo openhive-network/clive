@@ -20,7 +20,6 @@ if TYPE_CHECKING:
 class NewAuthorityBase(AuthorityForm, Contextual[ProfileData], ABC):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.context.working_account.keys.append(event.private_key)
-        self.post_message(ProfileDataUpdated())
 
     def _title(self) -> str:
         return "define keys"
@@ -37,7 +36,12 @@ class NewAuthority(NewAuthorityBase):
     def context(self) -> ProfileData:
         return self.app.profile_data
 
-    def on_authority_form_saved(self, _: AuthorityForm.Saved) -> None:
+    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
+        # we need to change the order (first execute super method, then this one)
+        event.prevent_default()
+        super().on_authority_form_saved(event)
+        self.post_message(ProfileDataUpdated())
+
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
         Notification("New authority was created.", category="success").show()

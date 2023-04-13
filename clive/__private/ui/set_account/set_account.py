@@ -8,7 +8,6 @@ from textual.containers import Horizontal
 from textual.widgets import Checkbox, Input, Static
 
 from clive.__private.storage.mock_database import ProfileData
-from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -78,4 +77,3 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
             raise InvalidAccountNameError(account_name)
 
         self.context.working_account.name = account_name
-        self.post_message(ProfileDataUpdated())
