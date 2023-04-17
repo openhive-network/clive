@@ -38,27 +38,22 @@ class SafeSelect(Widget, Generic[SelectItemValueType]):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
+        super().__init__(id=id_, classes=classes, disabled=disabled)
+
         self.__selected: SelectItem[SelectItemValueType] | None = None
+        self.__content: Select[SelectItemValueType] | Static = Static(empty_string, classes="-empty-list")
+
         if len(items) >= Select.MIN_AMOUNT_OF_ITEMS:
-            self.__content: Select[SelectItemValueType] | Static = Select(
-                items, list_mount, search=search, selected=selected, placeholder=placeholder
-            )
-        elif len(items) == 0:
-            self.__content = Static(empty_string, classes="-empty-list")
-        else:  # if len(items) == 1
+            self.__content = Select(items, list_mount, search=search, selected=selected, placeholder=placeholder)
+        elif items:
             self.__selected = items[0]
             self.__content = Static(self.__selected.text)
-        super().__init__(id=id_, classes=classes, disabled=disabled)
 
     @property
     def selected(self) -> SelectItem[SelectItemValueType]:
-        if isinstance(self.__content, Static):
-            if self.__selected is None:
-                raise NoItemSelectedError(f"No item is selected yet from {self}.")
-            return self.__selected
-        if isinstance(self.__content, Select):
-            return self.__content.selected
-        raise ValueError(f"unknown self.__content type: {type(self.__content).__name__}", self.__content)
+        if self.__selected is None:
+            raise NoItemSelectedError(f"No item is selected yet from {self}.")
+        return self.__selected
 
     def compose(self) -> ComposeResult:
         yield self.__content
