@@ -23,7 +23,7 @@ class Help(BaseScreen):
         Binding("space,q,question_mark,escape", "pop_screen", "Cancel", key_display="ESC"),
     ]
 
-    GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "ui/global_help.md"
+    GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
 
     def __init__(self, screen: Screen) -> None:
         super().__init__()
