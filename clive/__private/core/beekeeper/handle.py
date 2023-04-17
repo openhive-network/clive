@@ -19,7 +19,10 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
 
 
-class Beekeeper:
+class BeekeeperRemote:
+    def __init__(self, address: Url | None) -> None:
+        self.__address = address
+
     class UrlNotSetError(CommunicationError):
         pass
 
@@ -42,14 +45,8 @@ Got error response: {response}
             logger.error(f"Id sent: `{given}`, got: `{got}`")
             super().__init__(given, got)
 
-    def __init__(self, *, executable: Path | None = None) -> None:
-        self.__executable = BeekeeperExecutable(executable=executable)
-        self.__notification_server = BeekeeperNotificationsServer()
-        self.config = BeekeeperConfig()
-        self.api = BeekeeperApi(self)
-
     def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> HiveResponse[T]:  # noqa: ARG002, RUF100
-        url = self.config.webserver_http_endpoint
+        url = self._get_request_url()
 
         if url is None:
             raise Beekeeper.UrlNotSetError()
@@ -70,6 +67,21 @@ Got error response: {response}
 
         logger.info(f"Returning model: {return_value}")
         return return_value
+
+    def _get_request_url(self) -> Url | None:
+        return self.__address
+
+
+class Beekeeper(BeekeeperRemote):
+    def __init__(self, *, executable: Path | None = None) -> None:
+        self.__executable = BeekeeperExecutable(executable=executable)
+        self.__notification_server = BeekeeperNotificationsServer()
+        self.config = BeekeeperConfig()
+        self.api = BeekeeperApi(self)
+        super().__init__(None)
+
+    def _get_request_url(self) -> Url | None:
+        return self.config.webserver_http_endpoint
 
     def run(self, *, timeout: float = 5.0) -> None:
         self.config.notifications_endpoint = Url(f"127.0.0.1:{self.__notification_server.listen()}")
