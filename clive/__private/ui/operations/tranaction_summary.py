@@ -18,6 +18,7 @@ from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -96,11 +97,12 @@ class TransactionSummary(BaseScreen):
 
     def on_select_file_saved(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
-        if selected := self.__select_key.selected:
-            key = selected.value
-            Sign(self.app.profile_data.transaction, key=key)
+        signed = self.__sign_transaction()
         SaveToFile(self.app.profile_data.transaction, file_path).execute()
-        Notification(f"Transaction saved to [bold blue]'{file_path}'[/]", category="success").show()
+        Notification(
+            f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}",
+            category="success",
+        ).show()
 
     def action_dashboard(self) -> None:
         from clive.__private.ui.dashboard.dashboard_base import DashboardBase
@@ -125,3 +127,19 @@ class TransactionSummary(BaseScreen):
     def __clear_all(self) -> None:
         self.app.profile_data.transaction.clear()
         self.__scrollable_part.add_class("-hidden")
+
+    def __sign_transaction(self) -> bool:
+        """
+        Tries to sign the transaction with the selected key.
+
+        Returns:
+            True if the transaction was signed, False otherwise.
+        """
+        try:
+            selected = self.__select_key.selected
+        except NoItemSelectedError:
+            return False
+        else:
+            key = selected.value
+            Sign(self.app.profile_data.transaction, key=key).execute()
+            return True
