@@ -140,7 +140,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
         else:
             address = NodeAddress.parse(self.app.query_one("#node-address-input", Input).value)
         self.app.profile_data.node_address = address
-        self.post_message(ProfileDataUpdated())
+        self.app.post_message_to_everyone(ProfileDataUpdated())
         self.__selected_node.refresh()
 
     def on_select_changed(self, event: Select.Changed) -> None:

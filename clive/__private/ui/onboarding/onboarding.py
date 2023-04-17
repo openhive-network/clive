@@ -25,7 +25,7 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
         self.app.profile_data = self.context
-        self.post_message(ProfileDataUpdated())
+        self.app.post_message_to_everyone(ProfileDataUpdated())
         super().action_finish()
 
 

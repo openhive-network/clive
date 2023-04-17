@@ -39,7 +39,7 @@ class NewAuthority(NewAuthorityBase):
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         if event.private_key not in self.context.working_account.keys:
             self.context.working_account.keys.append(event.private_key)
-            self.post_message(ProfileDataUpdated())
+            self.app.post_message_to_everyone(ProfileDataUpdated())
 
             self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
             self.app.pop_screen()

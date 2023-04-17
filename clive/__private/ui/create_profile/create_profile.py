@@ -98,7 +98,7 @@ class CreateProfile(CreateProfileCommon):
         except FormValidationError as error:
             Notification(f"Failed the validation process! Reason: {error.reason}", category="error").show()
         else:
-            self.post_message(ProfileDataUpdated())
+            self.app.post_message_to_everyone(ProfileDataUpdated())
             self.app.pop_screen()
             Notification("Profile created successfully!", category="success").show()
 
