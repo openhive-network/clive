@@ -18,9 +18,9 @@ if TYPE_CHECKING:
 
 
 class NewAuthorityBase(AuthorityForm, Contextual[ProfileData], ABC):
-    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        if event.private_key not in self.context.working_account.keys:
-            self.context.working_account.keys.append(event.private_key)
+    BINDINGS = [
+        Binding("f2", "load_from_file", "Load from file"),
+    ]
 
     def _title(self) -> str:
         return "define keys"
@@ -29,7 +29,6 @@ class NewAuthorityBase(AuthorityForm, Contextual[ProfileData], ABC):
 class NewAuthority(NewAuthorityBase):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
-        Binding("f2", "load_from_file", "Load from file"),
         Binding("f10", "save", "Save"),
     ]
 
@@ -38,30 +37,36 @@ class NewAuthority(NewAuthorityBase):
         return self.app.profile_data
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        # we need to change the order (first execute super method, then this one)
-        event.prevent_default()
-        super().on_authority_form_saved(event)
-        self.post_message(ProfileDataUpdated())
+        if event.private_key not in self.context.working_account.keys:
+            self.context.working_account.keys.append(event.private_key)
+            self.post_message(ProfileDataUpdated())
 
-        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
-        self.app.pop_screen()
-        Notification("New authority was created.", category="success").show()
+            self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
+            self.app.pop_screen()
+            Notification("New authority was created.", category="success").show()
+        else:
+            Notification("Cannot add the same key twice.", category="error").show()
 
     def action_save(self) -> None:
         try:
             if self._is_key_provided():
                 self._save()
+            else:
+                Notification("Not saving any private key, because none has been provided", category="warning").show()
         except FormValidationError:
             Notification("Failed the validation process! Could not continue", category="error").show()
 
 
 class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
-    BINDINGS = [
-        Binding("f2", "load_from_file", "Load from file"),
-    ]
-
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
+
+    def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
+        if self.context.working_account.keys:
+            assert len(self.context.working_account.keys) == 1
+            self.context.working_account.keys[0] = event.private_key
+        else:
+            self.context.working_account.keys.append(event.private_key)
 
     def apply_and_validate(self) -> None:
         if self._is_key_provided():
@@ -69,3 +74,6 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
 
     def _subtitle(self) -> str:
         return "(Optional step, could be done later)"
+
+    def _default_key(self) -> str:
+        return self.context.working_account.keys[0].key if self.context.working_account.keys else super()._default_key()
