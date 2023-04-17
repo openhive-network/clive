@@ -87,7 +87,7 @@ class TransactionSummary(BaseScreen):
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
-                for idx, operation in enumerate(self.app.profile_data.operations_cart):
+                for idx, operation in enumerate(self.app.profile_data.operations_cart.operations):
                     yield OperationItem(operation.as_json(), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
@@ -130,4 +130,7 @@ class TransactionSummary(BaseScreen):
 
     def __get_transaction_file_format(self) -> dict[str, Any]:
         selected_authority = str(self.__select_key.selected.value)
-        return {"ops_in_trx": self.app.profile_data.operations_cart, "selected_authority": selected_authority}
+        return {
+            "ops_in_trx": self.app.profile_data.operations_cart.operations,
+            "selected_authority": selected_authority,
+        }

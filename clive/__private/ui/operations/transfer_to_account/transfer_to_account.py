@@ -133,6 +133,6 @@ class TransferToAccount(CartBasedScreen):
         if not operation:
             return False
 
-        self.app.profile_data.operations_cart.append(operation)
+        self.app.profile_data.operations_cart.add(operation)
         self.app.update_reactive("profile_data")
         return True

@@ -165,7 +165,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     @property
     def __operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.app.profile_data.operations_cart[self.__idx]
+        return self.app.profile_data.operations_cart.get(self.__idx)
 
     @property
     def __is_first(self) -> bool:
@@ -218,7 +218,7 @@ class Cart(BaseScreen):
                 yield CartOperationsHeader()
 
             with self.__scrollable_part:
-                for idx, _ in enumerate(self.app.profile_data.operations_cart):
+                for idx in range(len(self.app.profile_data.operations_cart)):
                     yield DetailedCartOperation(idx)
 
             yield Static()
@@ -233,19 +233,13 @@ class Cart(BaseScreen):
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
         assert event.to_idx >= 0 and event.to_idx < len(self.app.profile_data.operations_cart)
 
-        self.__swap_operations(event.from_idx, event.to_idx)
+        self.app.profile_data.operations_cart.swap_order(event.from_idx, event.to_idx)
         self.app.update_reactive("profile_data")
 
     def on_detailed_cart_operation_focus(self, event: DetailedCartOperation.Focus) -> None:
         for detailed in self.query(DetailedCartOperation):
             if event.target_idx == detailed.idx:
                 detailed.focus()
-
-    def __swap_operations(self, first_index: int, second_index: int) -> None:
-        self.app.profile_data.operations_cart[first_index], self.app.profile_data.operations_cart[second_index] = (
-            self.app.profile_data.operations_cart[second_index],
-            self.app.profile_data.operations_cart[first_index],
-        )
 
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummary())

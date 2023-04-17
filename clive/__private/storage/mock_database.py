@@ -9,12 +9,11 @@ from typing import TYPE_CHECKING
 from urllib.parse import urlparse
 
 from clive.__private.config import DATA_DIRECTORY
+from clive.__private.core.operations_cart import OperationsCart
 from clive.exceptions import NodeAddressError, PrivateKeyError
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from clive.models.operation import Operation
 
 
 class AccountType(str, Enum):
@@ -120,7 +119,7 @@ class ProfileData:
     # TODO: Should be None if not set, since we'll allow for using app without a working account
     working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", []))
     watched_accounts: list[Account] = field(default_factory=list)
-    operations_cart: list[Operation] = field(default_factory=list)
+    operations_cart = OperationsCart()
 
     backup_node_addresses: list[NodeAddress] = field(init=False)
     node_address: NodeAddress = field(init=False)
