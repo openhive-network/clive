@@ -83,6 +83,9 @@ class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
 
         self.text = self._selected.text if self._selected is not None else ""
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(selected={self._selected}, items={self.__items})"
+
     @property
     def select_list(self) -> _SelectList:
         return self.__select_list

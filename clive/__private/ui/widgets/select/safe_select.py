@@ -40,6 +40,7 @@ class SafeSelect(Widget, Generic[SelectItemValueType]):
     ) -> None:
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
+        self.__items = items
         self.__selected: SelectItem[SelectItemValueType] | None = None
         self.__content: Select[SelectItemValueType] | Static = Static(empty_string, classes="-empty-list")
 
@@ -48,6 +49,9 @@ class SafeSelect(Widget, Generic[SelectItemValueType]):
         elif items:
             self.__selected = items[0]
             self.__content = Static(self.__selected.text)
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(selected={self.__selected}, items={self.__items})"
 
     @property
     def selected(self) -> SelectItem[SelectItemValueType]:
