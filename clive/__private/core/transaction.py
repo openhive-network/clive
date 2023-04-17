@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import json
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.logger import logger
 
@@ -47,3 +49,18 @@ class Transaction:
     def sign(self, key: PrivateKey) -> None:
         self.__signatures.append(key)
         logger.info(f"Signed {self} with key: {key.key_name}")
+
+    def save_to_file(self, file_path: Path) -> None:
+        logger.info(f"Saving transaction to file: {file_path}")
+        with Path(file_path).open("w") as file:
+            json.dump(
+                self.__get_transaction_file_format(),
+                file,
+                default=vars,
+            )
+
+    def __get_transaction_file_format(self) -> dict[str, Any]:
+        return {
+            "ops_in_trx": self.operations,
+            "signatures": self.__signatures,
+        }

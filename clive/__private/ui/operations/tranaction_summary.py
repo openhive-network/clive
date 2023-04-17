@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Label, Static
 
+from clive.__private.core.commands.save import SaveToFile
+from clive.__private.core.commands.sign import Sign
 from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -96,12 +96,10 @@ class TransactionSummary(BaseScreen):
 
     def on_select_file_saved(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
-        with Path(file_path).open("w") as file:
-            json.dump(
-                self.__get_transaction_file_format(),
-                file,
-                default=vars,
-            )
+        if selected := self.__select_key.selected:
+            key = selected.value
+            Sign(self.app.profile_data.transaction, key=key)
+        SaveToFile(self.app.profile_data.transaction, file_path).execute()
         Notification(f"Transaction saved to [bold blue]'{file_path}'[/]", category="success").show()
 
     def action_dashboard(self) -> None:
@@ -127,10 +125,3 @@ class TransactionSummary(BaseScreen):
     def __clear_all(self) -> None:
         self.app.profile_data.transaction.clear()
         self.__scrollable_part.add_class("-hidden")
-
-    def __get_transaction_file_format(self) -> dict[str, Any]:
-        selected_authority = str(self.__select_key.selected.value)
-        return {
-            "ops_in_trx": self.app.profile_data.transaction.operations,
-            "selected_authority": selected_authority,
-        }
