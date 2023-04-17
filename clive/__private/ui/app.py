@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Literal, overload
 
@@ -10,7 +11,8 @@ from textual.reactive import reactive, var
 from clive.__private.config import settings
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import World
-from clive.__private.ui.background_tasks import BackgroundTasks
+from clive.__private.logger import logger
+from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
@@ -24,7 +26,6 @@ from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from datetime import timedelta
 
     from rich.console import RenderableType
     from textual.message import Message
@@ -35,7 +36,6 @@ if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.mock_database import NodeData
     from clive.__private.ui.app_messages import ProfileDataUpdated
-    from clive.__private.ui.background_tasks import BackgroundErrorOccurred
     from clive.__private.ui.types import NamespaceBindingsMapType
 
 
@@ -79,7 +79,11 @@ class Clive(App[int]):
         self.console.set_window_title("Clive")
 
         Communication.start()
-        self.background_tasks = BackgroundTasks(self)
+
+        self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
+        self.background_tasks.run_every(timedelta(seconds=3), self.__update_data_from_node)
+        if settings.LOG_DEBUG_LOOP:
+            self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
         self.push_screen(DashboardInactive())
         if (
@@ -275,6 +279,27 @@ class Clive(App[int]):
 
         sorted_keys = non_fn_keys + fn_keys
         return {key: data[key] for key in sorted_keys}
+
+    def __handle_background_error(self, error: Exception) -> None:
+        self.post_message(BackgroundErrorOccurred(error))
+
+    def __update_data_from_node(self) -> None:
+        logger.info("Updating mock data...")
+        self.node_data.recalc()
+        self.update_reactive("node_data")
+
+    async def __debug_log(self) -> None:
+        logger.debug("===================== DEBUG =====================")
+        logger.debug(f"Currently focused: {self.focused}")
+        logger.debug(f"Screen stack: {self.screen_stack}")
+        logger.debug(f"Background tasks: { {name: task._state for name, task in self.background_tasks.tasks.items()} }")
+
+        query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
+        response = await Communication.arequest(str(self.profile_data.node_address), data=query)
+        result = response.json()
+        logger.debug(f'Current block: {result["result"]["head_block_number"]}')
+
+        logger.debug("=================================================")
 
 
 clive_app = Clive()

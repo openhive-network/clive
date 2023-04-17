@@ -2,20 +2,17 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import Task
-from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from textual.message import Message
 
-from clive.__private.config import settings
 from clive.__private.core.callback import invoke
-from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from datetime import timedelta
 
-    from clive.__private.ui.app import Clive
 
 TasksDict = dict[str, Task[Any]]
 
@@ -27,13 +24,10 @@ class BackgroundErrorOccurred(Message):
 
 
 class BackgroundTasks:
-    def __init__(self, app: Clive) -> None:
-        self.__app = app
-        self.__tasks: TasksDict = {}
+    def __init__(self, *, exception_handler: Callable[[Exception], None] | None = None) -> None:
+        self.__exception_handler = exception_handler
 
-        self.run_every(timedelta(seconds=3), self.__update_data_from_node)
-        if settings.LOG_DEBUG_LOOP:
-            self.run_every(timedelta(seconds=1), self.__debug_log)
+        self.__tasks: TasksDict = {}
 
     @property
     def tasks(self) -> TasksDict:
@@ -75,22 +69,7 @@ class BackgroundTasks:
         try:
             await invoke(function)
         except Exception as error:  # noqa: BLE001
-            self.__app.post_message(BackgroundErrorOccurred(error))
-
-    def __update_data_from_node(self) -> None:
-        logger.info("Updating mock data...")
-        self.__app.node_data.recalc()
-        self.__app.update_reactive("node_data")
-
-    async def __debug_log(self) -> None:
-        logger.debug("===================== DEBUG =====================")
-        logger.debug(f"Currently focused: {self.__app.focused}")
-        logger.debug(f"Screen stack: {self.__app.screen_stack}")
-        logger.debug(f"Background tasks: { {name: task._state for name, task in self.__tasks.items()} }")
-
-        query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
-        response = await Communication.arequest(str(self.__app.profile_data.node_address), data=query)
-        result = response.json()
-        logger.debug(f'Current block: {result["result"]["head_block_number"]}')
-
-        logger.debug("=================================================")
+            if self.__exception_handler:
+                self.__exception_handler(error)
+            else:
+                logger.error(f"Unhandled exception in background tasks: {error}")  # noqa: TRY400
