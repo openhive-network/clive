@@ -29,11 +29,8 @@ class FirstFormScreen(FormScreenBase[ContextT]):
         Binding("ctrl+n", "next_screen", "Next screen"),
     ]
 
-    def _perform_next_screen(self) -> None:
-        self._owner.action_next_screen()
-
     def action_next_screen(self) -> None:
-        self._perform_next_screen()
+        self._owner.action_next_screen()
 
 
 class LastFormScreen(FormScreenBase[ContextT]):
@@ -50,13 +47,13 @@ class LastFormScreen(FormScreenBase[ContextT]):
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
-    def _perform_next_screen(self) -> None:
+    def action_next_screen(self) -> None:
         try:
             self.apply_and_validate()
         except FormValidationError as e:
             self.validation_failure(e)
         else:
-            super()._perform_next_screen()
+            super().action_next_screen()
             self.validation_success()
 
     def validation_failure(self, exception: FormValidationError) -> None:
