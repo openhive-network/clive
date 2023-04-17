@@ -7,6 +7,7 @@ from textual.widgets import Static
 
 from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem, SelectItemValueType
+from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -52,7 +53,8 @@ class SafeSelect(Widget, Generic[SelectItemValueType]):
     @property
     def selected(self) -> SelectItem[SelectItemValueType]:
         if isinstance(self.__content, Static):
-            assert self.__selected is not None
+            if self.__selected is None:
+                raise NoItemSelectedError(f"No item is selected yet from {self}.")
             return self.__selected
         if isinstance(self.__content, Select):
             return self.__content.selected
