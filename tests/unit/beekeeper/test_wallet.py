@@ -15,8 +15,8 @@ def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
     # ASSERT
     wallets = beekeeper.api.list_wallets().wallets
     assert len(wallets) == 1
-    assert wallets[0].startswith(wallet_name)
-    assert wallets[0].endswith("*")
+    assert wallets[0].name == wallet_name
+    assert wallets[0].unlocked
 
 
 @pytest.mark.parametrize("wallet_name", (",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37})))

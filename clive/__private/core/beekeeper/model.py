@@ -1,8 +1,11 @@
 from __future__ import annotations
 
-from typing import Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class BeekeeperResponse(BaseModel):
@@ -22,7 +25,11 @@ class ListKeys(BeekeeperResponse):
 
 
 class ListWallets(BeekeeperResponse):
-    wallets: list[str]
+    class WalletDetails(BaseModel):
+        name: str
+        unlocked: bool
+
+    wallets: list[ListWallets.WalletDetails]
 
 
 class GetPublicKeys(BeekeeperResponse):
@@ -33,7 +40,12 @@ class SignDigest(BeekeeperResponse):
     signature: str
 
 
-T = TypeVar("T", Create, CreateKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, None)
+class GetInfo(BeekeeperResponse):
+    now: datetime
+    timeout_time: datetime
+
+
+T = TypeVar("T", Create, CreateKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, None)
 
 
 class HiveResponse(BaseModel, Generic[T]):

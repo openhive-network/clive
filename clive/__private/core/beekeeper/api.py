@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from clive.__private.core.beekeeper.model import (
     Create,  # noqa: TCH001
     CreateKey,  # noqa: TCH001
+    GetInfo,  # noqa: TCH001
     GetPublicKeys,  # noqa: TCH001
     ListKeys,  # noqa: TCH001
     ListWallets,  # noqa: TCH001
@@ -30,7 +31,7 @@ def api(foo: FooT) -> FooT:
 
         return this._owner._send(
             response=__get_type_from_typename_workaround(signature(foo).return_annotation),
-            endpoint=f"clive_api.{foo.__name__}",
+            endpoint=f"beekeeper_api.{foo.__name__}",
             **kwargs,
         ).result
 
@@ -91,4 +92,8 @@ class BeekeeperApi:
 
     @api
     def sign_digest(self, *, digest: str, public_key: str) -> SignDigest:
+        raise NotImplementedError()
+
+    @api
+    def get_info(self) -> GetInfo:
         raise NotImplementedError()
