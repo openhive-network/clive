@@ -33,7 +33,7 @@ class BeekeeperConfig(BaseModel):
     webserver_thread_pool_size: int = 32
     notifications_endpoint: Url | None = None
     backtrace: bool = True
-    plugin: list[str] = Field(default_factory=lambda: ["clive", "clive_api", "json_rpc", "webserver"])
+    plugin: list[str] = Field(default_factory=lambda: ["json_rpc", "webserver"])
 
     class Config:
         arbitrary_types_allowed = True
