@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from datetime import datetime
+from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel
-
-if TYPE_CHECKING:
-    from datetime import datetime
+from pydantic import BaseModel, validator
 
 
 class EmptyResponse(BaseModel):
@@ -47,6 +45,16 @@ class SignDigest(BeekeeperResponse):
 class GetInfo(BeekeeperResponse):
     now: datetime
     timeout_time: datetime
+
+    class Config:
+        json_encoders = {
+            datetime: lambda v: v.isoformat(),
+        }
+
+    @validator("now", "timeout_time", pre=True)
+    @classmethod
+    def time_validate(cls, v: str) -> datetime:
+        return datetime.fromisoformat(v)
 
 
 T = TypeVar("T", Create, CreateKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, EmptyResponse)
