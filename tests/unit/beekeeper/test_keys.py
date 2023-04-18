@@ -32,14 +32,18 @@ PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
 ]
 
 
+def assert_keys(given: list[str], valid: list[str]) -> None:
+    assert len(given) == len(valid)
+    for given_key in given:
+        assert given_key in valid
+
+
 def test_key_create(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     # ARRANGE & ACT
     pubkey = beekeeper.api.create_key(wallet_name=wallet.name).public_key
 
     # ASSERT
-    keys = beekeeper.api.get_public_keys().keys
-    assert len(keys) == 1
-    assert keys[0] == pubkey
+    assert_keys(beekeeper.api.get_public_keys().keys, [pubkey])
 
 
 @pytest.mark.parametrize("prv_pub", PRIVATE_AND_PUBLIC_KEYS)
@@ -48,20 +52,15 @@ def test_key_import(beekeeper: Beekeeper, prv_pub: tuple[str, str], wallet: Wall
     beekeeper.api.import_key(wallet_name=wallet.name, wif_key=prv_pub[0])
 
     # ASSERT
-    keys = beekeeper.api.get_public_keys().keys
-    assert len(keys) == 1
-    assert keys[0] == prv_pub[1]
+    assert_keys(beekeeper.api.get_public_keys().keys, [prv_pub[1]])
 
 
 def test_import_multiple_keys(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     # ARRANGE & ACT
-    public_keys = set()
+    public_keys = []
     for prv, pub in PRIVATE_AND_PUBLIC_KEYS:
         beekeeper.api.import_key(wallet_name=wallet.name, wif_key=prv)
-        public_keys.add(pub)
+        public_keys.append(pub)
 
     # ASSERT
-    keys = beekeeper.api.get_public_keys().keys
-    assert len(public_keys) == len(keys)
-    for key in keys:
-        assert key in public_keys
+    assert_keys(beekeeper.api.get_public_keys().keys, public_keys)
