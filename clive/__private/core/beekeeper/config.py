@@ -23,7 +23,7 @@ def webserver_default() -> Url:
 
 
 class BeekeeperConfig(BaseModel):
-    wallet_dir: Path = Path(f"{DATA_DIRECTORY}/beekeeper")
+    wallet_dir: Path = Field(default_factory=lambda: Path(f"{DATA_DIRECTORY}/beekeeper"))
     unlock_timeout: int = 900
     log_json_rpc: Path | None = None
     webserver_http_endpoint: Url | None = Field(default_factory=webserver_default)
