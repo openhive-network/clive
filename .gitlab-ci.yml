@@ -1,9 +1,10 @@
-image: "$CI_REGISTRY_IMAGE/ci-base-image@sha256:5bb28104ea74f8f2d1e6e3fd1fe860383a9ac72ba73eaa55bd14496b52fd7441"
+image: "$CI_REGISTRY_IMAGE/ci-base-image@sha256:77727fd98414cf36b7e2059895fd00ab918686534945638c2aa1c32cea7070f2"
 
 stages:
   - static_code_analysis
-  - tests
   - build
+  - tests
+  - build_docker
 
 
 variables:
@@ -11,6 +12,7 @@ variables:
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
+  BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
 
 
 .shared_tags: &shared_tags
@@ -19,6 +21,7 @@ variables:
 
 .configuration:
   before_script:
+    # configure python
     - python3 -V
     - poetry self update
     - python3 -m venv venv/
@@ -66,15 +69,35 @@ type_check_with_mypy:
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+build_beekeeper:
+  stage: build
+  needs: [ ]
+  script:
+    - git clone https://gitlab.syncad.com/hive/hive.git -b mt-secure-wallet -j8 --recurse-submodules && cd hive
+    - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -GNinja .. && ninja beekeeper
+    - cp programs/beekeeper/beekeeper $BEEKEEPER_BINARY
+  artifacts:
+    paths:
+      - $BEEKEEPER_BINARY
+  tags: *shared_tags
+
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 tests_launch:
   stage: tests
   extends: .configuration
-  needs: [ ]  # to start immediately, without waiting for previous stages
+  needs:
+    - job: build_beekeeper
+      artifacts: true
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}" &&
-      python3 -m pytest -n auto --junitxml=report.xml tests/
+      python3 -m pytest -n auto --junitxml=report.xml --beekeeper $BEEKEEPER_BINARY tests/
   artifacts:
     reports:
       junit: report.xml
@@ -86,7 +109,7 @@ tests_launch:
 
 build_and_push_docker_image:
   image: docker:20.10.13
-  stage: build
+  stage: build_docker
   needs: [ "pre_commit_checks", "tests_launch" ]
   variables:
     DOCKER_DRIVER: overlay2

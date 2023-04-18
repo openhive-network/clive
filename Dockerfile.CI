@@ -8,13 +8,13 @@
 # - `build-ci-base-image.sh`, which builds the image and tags it with the MANUALLY GIVEN version.
 # - `push-ci-base-image.sh`, which pushes the image and will make sure you won't overwrite an existing image.
 
-FROM ubuntu:22.04
+FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN \
-    apt-get update && \
-    apt-get install -y \
+    sudo apt update -y && \
+    sudo apt install -y \
       python3 \
       python3-pip \
       python3-venv \

@@ -2,7 +2,7 @@
 
 REGISTRY="registry.gitlab.syncad.com/hive/clive"
 BASE_IMAGE="ubuntu22.04"
-VERSION="2"
+VERSION="3"
 
 URL="${REGISTRY}/ci-base-image:${BASE_IMAGE}-${VERSION}"
 
