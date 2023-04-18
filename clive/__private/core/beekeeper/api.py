@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from clive.__private.core.beekeeper.model import (
     Create,  # noqa: TCH001
     CreateKey,  # noqa: TCH001
+    EmptyResponse,  # noqa: TCH001
     GetInfo,  # noqa: TCH001
     GetPublicKeys,  # noqa: TCH001
     ListKeys,  # noqa: TCH001
@@ -25,8 +26,6 @@ def api(foo: FooT) -> FooT:
     @wraps(foo)
     def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
         def __get_type_from_typename_workaround(typename: str) -> type:
-            if typename == "None":
-                return dict
             return cast(type, globals()[typename])
 
         return this._owner._send(
@@ -47,31 +46,31 @@ class BeekeeperApi:
         raise NotImplementedError()
 
     @api
-    def open(self, *, wallet_name: str) -> None:  # noqa: A003
+    def open(self, *, wallet_name: str) -> EmptyResponse:  # noqa: A003
         raise NotImplementedError()
 
     @api
-    def set_timeout(self, *, seconds: int) -> None:
+    def set_timeout(self, *, seconds: int) -> EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def lock_all(self) -> None:
+    def lock_all(self) -> EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def lock(self, *, wallet_name: str) -> None:
+    def lock(self, *, wallet_name: str) -> EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def unlock(self, *, wallet_name: str, password: str) -> None:
+    def unlock(self, *, wallet_name: str, password: str) -> EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def import_key(self, *, wallet_name: str, wif_key: str) -> None:
+    def import_key(self, *, wallet_name: str, wif_key: str) -> EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> None:
+    def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> EmptyResponse:
         raise NotImplementedError()
 
     @api

@@ -8,6 +8,10 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+class EmptyResponse(BaseModel):
+    pass
+
+
 class BeekeeperResponse(BaseModel):
     pass
 
@@ -45,7 +49,7 @@ class GetInfo(BeekeeperResponse):
     timeout_time: datetime
 
 
-T = TypeVar("T", Create, CreateKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, None)
+T = TypeVar("T", Create, CreateKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, EmptyResponse)
 
 
 class HiveResponse(BaseModel, Generic[T]):
