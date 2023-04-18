@@ -52,4 +52,3 @@ class HiveResponse(BaseModel, Generic[T]):
     id: Any  # noqa: A003
     jsonrpc: str
     result: T
-    error: dict[str, Any] | None = None

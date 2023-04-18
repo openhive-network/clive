@@ -57,10 +57,11 @@ Got error response: {response}
         if result.status_code != codes.OK:
             raise Beekeeper.Non200StatusCodeError()
 
-        return_value = HiveResponse[T](**result.json())
+        json = result.json()
+        if "error" in json:
+            raise Beekeeper.ErrorResponseError(request, json)
 
-        if return_value.error is not None:
-            raise Beekeeper.ErrorResponseError(request, result.json())
+        return_value = HiveResponse[T](**json)
 
         if return_value.id != request["id"]:
             raise Beekeeper.NotMatchingIdJsonRPCError(request["id"], return_value.id)
