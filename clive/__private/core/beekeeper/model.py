@@ -17,11 +17,11 @@ class CreateKey(BeekeeperResponse):
     public_key: str
 
 
-class ListWallets(BeekeeperResponse):
+class ListKeys(BeekeeperResponse):
     keys: dict[str, str]
 
 
-class ListKeys(BeekeeperResponse):
+class ListWallets(BeekeeperResponse):
     wallets: list[str]
 
 
