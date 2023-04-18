@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from time import sleep
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -45,18 +46,30 @@ def test_wallet_open(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     check_wallets(beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
 
 
-def test_wallet_unlock(beekeeper: Beekeeper) -> None:
-    wallet_name: Final[str] = "test"
-
+def test_wallet_unlock(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     # ARRANGE
-    password = beekeeper.api.create(wallet_name=wallet_name).password
     beekeeper.api.lock_all()  # after creation wallet is opened and unlocked by default
 
     # ACT
-    beekeeper.api.unlock(wallet_name=wallet_name, password=password)
+    beekeeper.api.unlock(wallet_name=wallet.name, password=wallet.password)
 
     # ASSERT
-    wallets = beekeeper.api.list_wallets().wallets
-    assert len(wallets) == 1
-    assert wallets[0].name == wallet_name
-    assert wallets[0].unlocked
+    check_wallets(beekeeper.api.list_wallets(), [wallet.name])
+
+
+def test_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
+    timeout: Final[int] = 2
+
+    # ARRANGE
+    beekeeper.api.set_timeout(seconds=timeout)
+
+    # ASSERT
+    info = beekeeper.api.get_info()
+    assert (info.timeout_time - info.now).seconds == timeout
+    check_wallets(beekeeper.api.list_wallets(), [wallet.name])
+
+    # ACT
+    sleep(timeout)
+
+    # ASSERT
+    check_wallets(beekeeper.api.list_wallets(), [wallet.name], unlocked=False)

@@ -64,3 +64,11 @@ def test_import_multiple_keys(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
 
     # ASSERT
     assert_keys(beekeeper.api.get_public_keys().keys, public_keys)
+
+
+def test_remove_key(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
+    # ARRANGE, ACT & ASSERT
+    pub = beekeeper.api.create_key(wallet_name=wallet.name).public_key
+    assert_keys(beekeeper.api.get_public_keys().keys, [pub])
+    beekeeper.api.remove_key(wallet_name=wallet.name, password=wallet.password, public_key=pub)
+    assert_keys(beekeeper.api.get_public_keys().keys, [])
