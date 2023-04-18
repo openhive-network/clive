@@ -6,9 +6,10 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-import clive.__private.config as config  # noqa: PLR0402
+from clive.__private import config
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.profile_data import ProfileData
+from tests import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -58,3 +59,13 @@ def beekeeper(working_directory: Path, beekeeper_executable_path: Path) -> Itera
     keeper.run()
     yield keeper
     keeper.close()
+
+
+@pytest.fixture
+def wallet_name() -> str:
+    return "wallet"
+
+
+@pytest.fixture
+def wallet(beekeeper: Beekeeper, wallet_name: str) -> WalletInfo:
+    return WalletInfo(password=beekeeper.api.create(wallet_name=wallet_name).password, name=wallet_name)
