@@ -104,3 +104,8 @@ class Beekeeper(BeekeeperRemote):
         finally:
             self.config.notifications_endpoint = None
             self.config.webserver_http_endpoint = webserver_default()
+            self.__notification_server.close()
+
+    def restart(self) -> None:
+        self.close()
+        self.run()
