@@ -105,12 +105,16 @@ tests_launch:
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
-#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 build_and_push_docker_image:
   image: docker:20.10.13
   stage: build_docker
-  needs: [ "pre_commit_checks", "tests_launch" ]
+  needs:
+      - job: pre_commit_checks
+      - job: tests_launch
+      - job: build_beekeeper
+        artifacts: true
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
@@ -121,7 +125,7 @@ build_and_push_docker_image:
   script:
     - echo -e "${TXT_BLUE}Building a docker image started...${TXT_CLEAR}"
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile .
+    - docker build --build-arg BEEKEEPER_LOCATION=$BEEKEEPER_BINARY -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile .
     - docker push $TAG_COMMIT
     - docker push $TAG_LATEST
   only:
@@ -129,4 +133,4 @@ build_and_push_docker_image:
     - master
   tags: *shared_tags
 
-#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

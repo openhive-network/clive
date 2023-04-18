@@ -3,6 +3,9 @@ FROM registry.gitlab.syncad.com/hive/clive/ci-base-image@sha256:5bb28104ea74f8f2
 ADD . /clive
 WORKDIR /clive
 
+ARG BEEKEEPER_LOCATION
+ADD ${BEEKEEPER_LOCATION} /clive/beekeeper
+
 RUN poetry self update
 
 RUN poetry install --only main
