@@ -1364,6 +1364,23 @@ files = [
 ]
 
 [[package]]
+name = "schemas"
+version = "0.0.0"
+description = "Tools for checking if message fits expected format"
+category = "main"
+optional = false
+python-versions = "^3.10"
+files = []
+develop = false
+
+[package.dependencies]
+pydantic = "1.10.7"
+
+[package.source]
+type = "directory"
+url = "schemas"
+
+[[package]]
 name = "setuptools"
 version = "67.4.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
@@ -1650,4 +1667,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "53092dbb12e775ba98b433ba2e42c05e205979b1a747063de25571beadcaff0c"
+content-hash = "5be1de8011ee13048f674ff0a34d0741152e650a9d12d3f9d7df1a1dea34c436"

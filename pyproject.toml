@@ -32,6 +32,8 @@ httpx = { extras = ["http2"], version = "0.23.3" }
 pydantic = "1.10.7"
 merge-args = "0.1.5"
 
+schemas = { path = "schemas" }
+
 # TODO: Specify exact version of typer instead the git revision when typer will allow for rich 13.x.x (https://github.com/tiangolo/typer/pull/524)
 typer = { extras = ["all"], git = "https://github.com/musicinmybrain/typer.git", rev = "5bf232" }
 
