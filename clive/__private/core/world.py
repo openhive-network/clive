@@ -21,7 +21,7 @@ class World:
     def __init__(self, profile_name: str | None = None) -> None:
         self.__node_data = NodeData()
         self.__profile_data = ProfileData.load(profile_name)
-        self.__app_state = AppState()
+        self.__app_state = AppState(self)
         self.__commands = Commands(self)
         self.__background_tasks = BackgroundTasks()
         self.__setup_beekeeper()

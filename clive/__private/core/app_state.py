@@ -1,21 +1,24 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from clive.__private.enums import AppMode
+import cachetools
+
+if TYPE_CHECKING:
+    from clive.__private.core.world import World
 
 
 @dataclass
 class AppState:
     """A class that holds information about the current state of an application."""
 
-    mode: AppMode = AppMode.INACTIVE
+    world: World
 
+    @cachetools.cached(cache=cachetools.TTLCache(maxsize=1, ttl=1.0))
     def is_active(self) -> bool:
-        return self.mode == AppMode.ACTIVE
-
-    def activate(self) -> None:
-        self.mode = AppMode.ACTIVE
-
-    def deactivate(self) -> None:
-        self.mode = AppMode.INACTIVE
+        wallets = self.world.beekeeper.api.list_wallets().wallets
+        for wallet in wallets:
+            if wallet.name == self.world.profile_data.name:
+                return wallet.unlocked
+        return False
