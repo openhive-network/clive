@@ -30,7 +30,7 @@ class BeekeeperConfig(BaseModel):
     webserver_unix_endpoint: Url | None = None
     webserver_ws_endpoint: Url | None = None
     webserver_ws_deflate: int = 0
-    webserver_thread_pool_size: int = 32
+    webserver_thread_pool_size: int = 1
     notifications_endpoint: Url | None = None
     backtrace: bool = True
     plugin: list[str] = Field(default_factory=lambda: ["json_rpc", "webserver"])
