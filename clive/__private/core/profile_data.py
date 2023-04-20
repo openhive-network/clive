@@ -5,8 +5,8 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from clive.__private import config
-from clive.__private.core.transaction import Transaction
 from clive.__private.storage.mock_database import Account, NodeAddress, WorkingAccount
+from clive.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from pathlib import Path

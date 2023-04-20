@@ -8,7 +8,7 @@ from clive.__private.core.mockcpp import serialize_transaction
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.transaction import Transaction
+    from clive.models.transaction import Transaction
 
 
 class SaveToFile(Command[None]):

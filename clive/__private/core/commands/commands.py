@@ -12,9 +12,9 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
-    from clive.__private.core.transaction import Transaction
     from clive.__private.storage.mock_database import PrivateKeyAlias
     from clive.models.operation import Operation
+    from clive.models.transaction import Transaction
 
 
 class Commands:

@@ -49,7 +49,7 @@ class CartItemsAmount(DynamicLabel):
         super().__init__(self.app, "profile_data", self.__get_cart_item_count)
 
     def __get_cart_item_count(self, profile_data: ProfileData) -> str:
-        amount = len(profile_data.transaction)
+        amount = len(profile_data.transaction.operations)
         if amount > 0:
             return f"{amount} OPERATIONS IN THE CART"
         return "CART IS EMPTY"

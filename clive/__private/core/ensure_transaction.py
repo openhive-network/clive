@@ -3,8 +3,8 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, TypeAlias
 
-from clive.__private.core.transaction import Transaction
 from clive.models.operation import Operation
+from clive.models.transaction import Transaction
 
 if TYPE_CHECKING:
     TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
