@@ -23,7 +23,7 @@ class ProfileData:
     # TODO: Should be None if not set, since we'll allow for using app without a working account
     working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", []))
     watched_accounts: list[Account] = field(default_factory=list)
-    transaction = Transaction()
+    transaction = Transaction(operations=[])
 
     backup_node_addresses: list[NodeAddress] = field(init=False)
     node_address: NodeAddress = field(init=False)
