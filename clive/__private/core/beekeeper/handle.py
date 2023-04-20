@@ -22,6 +22,7 @@ if TYPE_CHECKING:
 class BeekeeperRemote:
     def __init__(self, address: Url | None) -> None:
         self.__address = address
+        self.api = BeekeeperApi(self)
 
     class UrlNotSetError(CommunicationError):
         pass
@@ -78,7 +79,6 @@ class Beekeeper(BeekeeperRemote):
         self.__executable = BeekeeperExecutable(executable=executable)
         self.__notification_server = BeekeeperNotificationsServer()
         self.config = BeekeeperConfig()
-        self.api = BeekeeperApi(self)
         super().__init__(None)
 
     def _get_request_url(self) -> Url | None:
