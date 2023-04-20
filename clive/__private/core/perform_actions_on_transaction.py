@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save import SaveToFile
 from clive.__private.core.commands.sign import Sign
@@ -10,13 +11,16 @@ from clive.__private.core.ensure_transaction import ensure_transaction
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from clive.__private.core.beekeeper.handle import BeekeeperRemote
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
-    from clive.__private.storage.mock_database import PrivateKey
+    from clive.__private.storage.mock_database import NodeAddress, PrivateKey
 
 
 def perform_actions_on_transaction(
     content: TransactionConvertibleType,
     *,
+    beekeeper: BeekeeperRemote,
+    node_address: NodeAddress,
     sign_key: PrivateKey | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
@@ -33,10 +37,10 @@ def perform_actions_on_transaction(
     transaction = ensure_transaction(content)
 
     if sign_key:
-        Sign(transaction, key=sign_key).execute()
+        transaction = execute_with_result(Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key))
 
     if save_file_path:
-        SaveToFile(transaction, save_file_path).execute()
+        SaveToFile(transaction=transaction, file_path=save_file_path).execute()
 
     if transaction.signed and broadcast:
-        Broadcast(transaction).execute()
+        Broadcast(address=node_address, transaction=transaction).execute()

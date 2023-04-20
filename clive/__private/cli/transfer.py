@@ -28,11 +28,17 @@ def _main(
     memo: Optional[str] = typer.Option(None, help="The memo to attach to the transfer."),
 ) -> None:
     common = Common(**ctx.params)
+    if common.world is None:
+        typer.echo("world is none")
+        return
+    typer.echo(f"{common.world.profile_data.name=}")
 
     value, asset = amount.split(" ")
 
     perform_actions_on_transaction(
         TransferOperation(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo),
+        beekeeper=common.world.beekeeper,
+        node_address=common.world.profile_data.node_address,
         sign_key=PrivateKey("temporary", common.sign) if common.sign else None,
         save_file_path=Path(common.save_file) if common.save_file else None,
         broadcast=common.broadcast,
