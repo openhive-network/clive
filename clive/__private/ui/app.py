@@ -68,10 +68,10 @@ class Clive(App[int]):
 
     __app_instance: ClassVar[Clive | None] = None
 
-    world: ClassVar[World] = World()
-    node_data: NodeData = var(world.node_data)  # type: ignore[assignment]
-    profile_data: ProfileData = var(world.profile_data)  # type: ignore[assignment]
-    app_state: AppState = var(world.app_state)  # type: ignore[assignment]
+    world: ClassVar[World] = None  # type: ignore
+    node_data: NodeData = var(world)  # type: ignore[assignment]
+    profile_data: ProfileData = var(world)  # type: ignore[assignment]
+    app_state: AppState = var(world)  # type: ignore[assignment]
 
     logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
@@ -306,6 +306,10 @@ class Clive(App[int]):
     @classmethod
     def app_instance(cls) -> Clive:
         if not cls.is_app_exist():
+            cls.world = World()
             cls.__app_instance = Clive()
+            cls.__app_instance.profile_data = cls.world.profile_data
+            cls.__app_instance.node_data = cls.world.node_data
+            cls.__app_instance.app_state = cls.world.app_state
         assert cls.__app_instance is not None
         return cls.__app_instance
