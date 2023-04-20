@@ -22,3 +22,6 @@ class AppState:
             if wallet.name == self.world.profile_data.name:
                 return wallet.unlocked
         return False
+
+    def __hash__(self) -> int:
+        return id(self.world)

@@ -1,5 +1,5 @@
 from __future__ import annotations
 
-from .handle import Beekeeper
+from .handle import Beekeeper, BeekeeperRemote
 
-__all__ = ["Beekeeper"]
+__all__ = ["Beekeeper", "BeekeeperRemote"]
