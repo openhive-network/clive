@@ -97,12 +97,16 @@ class TransactionSummary(BaseScreen):
 
     def on_select_file_saved(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
-        signed = self.__sign_transaction()
-        SaveToFile(self.app.profile_data.transaction, file_path).execute()
-        Notification(
-            f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}",
-            category="success",
-        ).show()
+
+        if (signed := self.__sign_transaction()) is not None:
+            self.app.world.commands.save_to_file(transaction=signed, path=file_path)
+            Notification(
+                f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}",
+                category="success",
+            ).show()
+        else:
+            self.app.world.commands.save_to_file(transaction=self.__build_transaction(), path=file_path)
+            Notification("Unable to save signed transaction, saved successfully unsigned one", category="warning").show()
 
     def action_dashboard(self) -> None:
         from clive.__private.ui.dashboard.dashboard_base import DashboardBase
@@ -128,7 +132,7 @@ class TransactionSummary(BaseScreen):
         self.app.profile_data.transaction.clear()
         self.__scrollable_part.add_class("-hidden")
 
-    def __sign_transaction(self) -> bool:
+    def __sign_transaction(self) -> Transaction | None:
         """
         Tries to sign the transaction with the selected key.
 
@@ -137,9 +141,11 @@ class TransactionSummary(BaseScreen):
         """
         try:
             selected = self.__select_key.selected
+            return self.app.world.commands.sign(  # noqa: TRY300
+                transaction=self.__build_transaction(), sign_with=selected.value
+            )
         except NoItemSelectedError:
-            return False
-        else:
-            key = selected.value
-            Sign(self.app.profile_data.transaction, key=key).execute()
-            return True
+            return None
+
+    def __build_transaction(self) -> Transaction:
+        return self.app.world.commands.build_transaction(operations=self.app.profile_data.cart)
