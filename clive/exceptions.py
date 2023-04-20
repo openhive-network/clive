@@ -64,3 +64,7 @@ class InputTooShortError(FormValidationError):
 class RepeatedPasswordIsDifferentError(FormValidationError):
     def __init__(self) -> None:
         super().__init__("Repeated password is different than original one")
+
+
+class CannotActivateError(CliveError):
+    pass

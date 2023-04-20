@@ -12,6 +12,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.notification import Notification
+from clive.exceptions import CannotActivateError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -79,8 +80,12 @@ class Activate(BaseScreen):
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)
 
-        self.app.activate(active_mode_time)
-        self.app.pop_screen()
+        try:
+            self.app.activate(self.__password_input.value, active_mode_time)
+        except CannotActivateError as e:
+            Notification(f"Cannot activate, reason: {e}", category="error").show()
+        else:
+            self.app.pop_screen()
 
     def __get_active_mode_time(self) -> int | None:
         try:

@@ -9,6 +9,7 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.communication import Communication
@@ -184,27 +185,15 @@ class Clive(App[int]):
 
         self.logs += [text]
 
-    def activate(self, active_mode_time: timedelta | None = None) -> None:
-        def __auto_deactivate() -> None:
-            self.deactivate()
-            message = "Mode switched to [bold red]inactive[/] because the active mode time has expired."
-            logger.info(message)
-            Notification(message, category="info").show()
-
-        command = Activate(
-            self.app_state, self.background_tasks, active_mode_time=active_mode_time, auto_deactivate=__auto_deactivate
-        )
-        command.execute()
-        if command.result:
-            self.update_reactive("app_state")
-            self.post_message_to_everyone(ActivateScreen.Succeeded())
+    def activate(self, password: str, active_mode_time: timedelta | None = None) -> None:  # noqa: ARG002
+        execute_with_result(Activate(beekeeper=self.world.beekeeper, wallet=self.profile_data.name, password=password))
+        self.update_reactive("app_state")
+        self.post_message_to_everyone(ActivateScreen.Succeeded())
 
     def deactivate(self) -> None:
-        command = Deactivate(self.app_state, self.background_tasks)
-        command.execute()
-        if command.result:
-            self.update_reactive("app_state")
-            self.switch_screen("dashboard_inactive")
+        execute_with_result(Deactivate(beekeeper=self.world.beekeeper, wallet=self.profile_data.name))
+        self.update_reactive("app_state")
+        self.switch_screen("dashboard_inactive")
 
     def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
         """
