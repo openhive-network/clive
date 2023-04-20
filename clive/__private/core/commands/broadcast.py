@@ -1,31 +1,50 @@
 from __future__ import annotations
+from json import JSONEncoder, dumps
+from typing import Any
 
+import httpx
+from clive.__private.core.beekeeper.handle import BeekeeperRemote
+from clive.__private.core.beekeeper.url import Url
 from clive.__private.core.commands.command import Command
-from clive.__private.core.transaction import Transaction
+from clive.__private.core.mockcpp import serialize_transaction
+from clive.__private.storage.mock_database import NodeAddress
+from clive.exceptions import CliveError
 from clive.models.operation import Operation
+from clive.models.transaction import Transaction
 
 
-class Broadcast(Command[bool]):
+class AlreadySerialized(str):
+    pass
+
+
+class PartiallySerializedEncoder(JSONEncoder):
+    def encode(self, o: Any) -> str:
+        if isinstance(o, AlreadySerialized):
+            return o
+        return super().encode(o)
+
+
+class Broadcast(Command[None]):
     """Broadcasts the given operations/transactions to the blockchain."""
 
-    def __init__(self, *content: Operation | Transaction) -> None:
-        super().__init__(result_default=False)
-        self.__content = content
-        self.__transactions = [t for t in content if isinstance(t, Transaction)]
+    class TransactionNotSignedError(CliveError):
+        pass
 
-        if transaction := self.__gather_operations_in_transaction():
-            self.__transactions.append(transaction)
+    def __init__(self, *, address: NodeAddress, transaction: Transaction) -> None:
+        super().__init__(result_default=None)
+        self.__transaction = transaction
+        self.__address = address
 
     def execute(self) -> None:
-        for transaction in self.__transactions:
-            transaction.broadcast()
-        self._result = True
-
-    def __gather_operations_in_transaction(self) -> Transaction | None:
-        transaction = Transaction()
-
-        for something in self.__content:
-            if isinstance(something, Operation):
-                transaction.add(something)
-
-        return transaction if len(transaction) > 0 else None
+        if not self.__transaction.signed:
+            raise self.TransactionNotSignedError()
+        httpx.post(
+            str(self.__address),
+            json={
+                "id": 0,
+                "jsonrpc": "2.0",
+                "method": "network_broadcast_api.broadcast_transaction",
+                "params": {"trx": AlreadySerialized(serialize_transaction(self.__transaction))},
+            },
+        )
+        # TODO: some checks

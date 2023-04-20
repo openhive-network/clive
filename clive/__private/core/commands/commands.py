@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.activate import Activate
+from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.save import SaveToFile
@@ -39,3 +40,6 @@ class Commands:
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
         SaveToFile(transaction=transaction, file_path=path).execute()
+
+    def broadcast(self, *, transaction: Transaction) -> None:
+        Broadcast(address=self.__world.profile_data.node_address, transaction=transaction).execute()
