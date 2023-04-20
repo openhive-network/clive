@@ -26,8 +26,12 @@ class Account:
 
 
 @dataclass
-class PrivateKey:
+class PrivateKeyAlias:
     key_name: str
+
+
+@dataclass
+class PrivateKey(PrivateKeyAlias):
     key: str
     file_path: Path | None = None
 
