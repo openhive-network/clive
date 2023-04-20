@@ -30,9 +30,11 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     if isinstance(content, Operation):
         command = BuildTransaction(operations=[content])
     elif isinstance(content, Iterable):
+
         def assure_operation(item: Any) -> Operation:
             assert isinstance(item, Operation)
             return item
+
         command = BuildTransaction(operations=[assure_operation(x) for x in content])
 
     if command is None:

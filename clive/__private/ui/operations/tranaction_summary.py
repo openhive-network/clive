@@ -6,8 +6,6 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Label, Static
 
-from clive.__private.core.commands.save import SaveToFile
-from clive.__private.core.commands.sign import Sign
 from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -19,10 +17,11 @@ from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import NoItemSelectedError
-from clive.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from clive.models.transaction import Transaction
 
 
 class StaticPart(Static):
@@ -107,7 +106,9 @@ class TransactionSummary(BaseScreen):
             ).show()
         else:
             self.app.world.commands.save_to_file(transaction=self.__build_transaction(), path=file_path)
-            Notification("Unable to save signed transaction, saved successfully unsigned one", category="warning").show()
+            Notification(
+                "Unable to save signed transaction, saved successfully unsigned one", category="warning"
+            ).show()
 
     def action_dashboard(self) -> None:
         from clive.__private.ui.dashboard.dashboard_base import DashboardBase
