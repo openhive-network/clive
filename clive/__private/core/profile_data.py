@@ -33,9 +33,9 @@ class ProfileData:
         self.node_address = self.backup_node_addresses[0]
 
     def save(self) -> None:
-        from clive.__private.ui.app import clive_app
+        from clive.__private.ui.app import Clive
 
-        clive_app.update_reactive("profile_data")
+        Clive.app_instance().update_reactive("profile_data")
 
         with shelve.open(str(self._STORAGE_FILE_PATH)) as db:
             db[self.name] = self

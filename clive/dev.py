@@ -7,7 +7,7 @@ def main() -> None:
     from clive.__private.util import prepare_before_launch
 
     prepare_before_launch()
-    run_app(["--dev", "clive.__private.ui.app:clive_app"])
+    run_app(["--dev", "clive.dev_import:clive_app"])
 
 
 if __name__ == "__main__":

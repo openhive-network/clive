@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
 
 from textual.app import App
 from textual.binding import Binding
@@ -65,6 +65,8 @@ class Clive(App[int]):
     header_expanded = var(False)
     """Synchronize the expanded header state in all created header objects."""
 
+    __app_instance: ClassVar[Clive | None] = None
+
     world: ClassVar[World] = World()
     node_data: NodeData = var(world.node_data)  # type: ignore[assignment]
     profile_data: ProfileData = var(world.profile_data)  # type: ignore[assignment]
@@ -103,6 +105,7 @@ class Clive(App[int]):
 
     async def on_unmount(self) -> None:
         await Communication.close()
+        self.world.close()
 
     def push_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
@@ -307,5 +310,13 @@ class Clive(App[int]):
 
         logger.debug("=================================================")
 
+    @classmethod
+    def is_app_exist(cls) -> bool:
+        return cls.__app_instance is not None
 
-clive_app = Clive()
+    @classmethod
+    def app_instance(cls) -> Clive:
+        if not cls.is_app_exist():
+            cls.__app_instance = Clive()
+        assert cls.__app_instance is not None
+        return cls.__app_instance
