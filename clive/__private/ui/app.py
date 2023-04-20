@@ -65,7 +65,7 @@ class Clive(App[int]):
     header_expanded = var(False)
     """Synchronize the expanded header state in all created header objects."""
 
-    world = World()
+    world: ClassVar[World] = World()
     node_data: NodeData = var(world.node_data)  # type: ignore[assignment]
     profile_data: ProfileData = var(world.profile_data)  # type: ignore[assignment]
     app_state: AppState = var(world.app_state)  # type: ignore[assignment]
