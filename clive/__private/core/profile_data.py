@@ -6,10 +6,15 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private import config
 from clive.__private.storage.mock_database import Account, NodeAddress, WorkingAccount
-from clive.models.transaction import Transaction
+from clive.models.operation import Operation
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+
+class Cart(list[Operation]):
+    def swap(self, index_1: int, index_2: int) -> None:
+        self[index_1], self[index_2] = self[index_2], self[index_1]
 
 
 @dataclass
@@ -23,7 +28,7 @@ class ProfileData:
     # TODO: Should be None if not set, since we'll allow for using app without a working account
     working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", []))
     watched_accounts: list[Account] = field(default_factory=list)
-    transaction = Transaction(operations=[])
+    cart = Cart()
 
     backup_node_addresses: list[NodeAddress] = field(init=False)
     node_address: NodeAddress = field(init=False)

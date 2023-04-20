@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from types import TracebackType
 from typing import TYPE_CHECKING
 
 from clive.__private.config import settings
@@ -14,6 +13,8 @@ from clive.__private.storage.mock_database import NodeData
 from clive.__private.ui.background_tasks import BackgroundTasks
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
     from typing_extensions import Self
 
 
@@ -59,7 +60,6 @@ class World:
 
     def __exit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
         self.close()
-
 
     def __setup_beekeeper(self) -> None:
         beekeeper_path: Path | None = None

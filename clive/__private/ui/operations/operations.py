@@ -37,7 +37,7 @@ class Operations(CartBasedScreen):
             Notification("Not implemented yet!", category="error").show()
 
     def action_cart(self) -> None:
-        if not self.app.profile_data.transaction.operations:
+        if not self.app.profile_data.cart:
             Notification("There are no operations in the cart! Cannot continue.", category="warning").show()
             return
 

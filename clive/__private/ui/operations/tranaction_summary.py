@@ -19,6 +19,7 @@ from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import NoItemSelectedError
+from clive.models.transaction import Transaction
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -88,7 +89,7 @@ class TransactionSummary(BaseScreen):
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
-                for idx, operation in enumerate(self.app.profile_data.transaction.operations):
+                for idx, operation in enumerate(self.app.profile_data.cart):
                     yield OperationItem(operation.as_json(), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
@@ -129,7 +130,7 @@ class TransactionSummary(BaseScreen):
         self.app.push_screen(SelectFile(file_must_exist=False))
 
     def __clear_all(self) -> None:
-        self.app.profile_data.transaction.clear()
+        self.app.profile_data.cart.clear()
         self.__scrollable_part.add_class("-hidden")
 
     def __sign_transaction(self) -> Transaction | None:

@@ -1,16 +1,17 @@
 from __future__ import annotations
-from json import JSONEncoder, dumps
-from typing import Any
+
+from json import JSONEncoder
+from typing import TYPE_CHECKING, Any
 
 import httpx
-from clive.__private.core.beekeeper.handle import BeekeeperRemote
-from clive.__private.core.beekeeper.url import Url
+
 from clive.__private.core.commands.command import Command
 from clive.__private.core.mockcpp import serialize_transaction
-from clive.__private.storage.mock_database import NodeAddress
 from clive.exceptions import CliveError
-from clive.models.operation import Operation
-from clive.models.transaction import Transaction
+
+if TYPE_CHECKING:
+    from clive.__private.storage.mock_database import NodeAddress
+    from clive.models.transaction import Transaction
 
 
 class AlreadySerialized(str):
