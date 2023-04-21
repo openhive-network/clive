@@ -77,8 +77,9 @@ def wallet(beekeeper: Beekeeper, wallet_name: str) -> WalletInfo:
 
 
 @pytest.fixture
-def pubkey(beekeeper:Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
+def pubkey(beekeeper: Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
     return PrivateKeyAlias(beekeeper.api.create_key(wallet_name=wallet.name).public_key)
+
 
 @pytest.fixture
 def world(wallet_name: str, beekeeper: Beekeeper) -> Iterator[World]:

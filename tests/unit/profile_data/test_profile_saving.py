@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-import clive
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from clive.__private.core.world import World
 
 
-def test_if_profile_is_saved() -> None:
-    # ARRANGE
-    expected_profile_name = "first"
-
-    # ACT
-    world = clive.World(expected_profile_name)
+def test_if_profile_is_saved(world: World, wallet_name: str) -> None:
     world.profile_data.save()
 
-    # ASSERT
-    assert world.profile_data.list_profiles() == [expected_profile_name]
+    # ARRANGE, ACT & ASSERT
+    assert world.profile_data.list_profiles() == [wallet_name]
