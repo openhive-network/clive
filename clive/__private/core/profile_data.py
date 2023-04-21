@@ -44,7 +44,8 @@ class ProfileData:
     def save(self) -> None:
         from clive.__private.ui.app import Clive
 
-        Clive.app_instance().update_reactive("profile_data")
+        if Clive.is_app_exist():
+            Clive.app_instance().update_reactive("profile_data")
 
         with shelve.open(str(self._STORAGE_FILE_PATH)) as db:
             db[self.name] = self
