@@ -32,14 +32,10 @@ class Commands:
         Deactivate(self.__world.beekeeper, wallet=self.__world.profile_data.name).execute()
 
     def build_transaction(self, *, operations: list[Operation]) -> Transaction:
-        bt = BuildTransaction(operations=operations)
-        bt.execute()
-        return bt.result
+        return execute_with_result(BuildTransaction(operations=operations))
 
     def sign(self, *, transaction: Transaction, sign_with: PrivateKeyAlias) -> Transaction:
-        sign = Sign(beekeeper=self.__world.beekeeper, transaction=transaction, key=sign_with)
-        sign.execute()
-        return sign.result
+        return execute_with_result(Sign(beekeeper=self.__world.beekeeper, transaction=transaction, key=sign_with))
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
         SaveToFile(transaction=transaction, file_path=path).execute()
