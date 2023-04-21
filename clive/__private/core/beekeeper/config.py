@@ -7,7 +7,7 @@ from typing import get_args
 from pydantic import BaseModel, Field
 from typing_extensions import TypeVar
 
-from clive.__private.config import DATA_DIRECTORY
+from clive.__private.config import settings
 from clive.__private.core.beekeeper.url import Url
 
 AllowedTypesT = str | list[str] | bool | int | Url | Path
@@ -23,7 +23,7 @@ def webserver_default() -> Url:
 
 
 class BeekeeperConfig(BaseModel):
-    wallet_dir: Path = Field(default_factory=lambda: Path(f"{DATA_DIRECTORY}/beekeeper"))
+    wallet_dir: Path = Field(default_factory=lambda: Path(f"{settings.data_path}/beekeeper"))
     unlock_timeout: int = 900
     log_json_rpc: Path | None = None
     webserver_http_endpoint: Url | None = Field(default_factory=webserver_default)

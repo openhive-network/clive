@@ -46,7 +46,7 @@ class BeekeeperExecutable:
         if not config.wallet_dir.exists():
             config.wallet_dir.mkdir()
         elif self.__lock_file.exists():
-            raise self.BeekeeperAlreadyRunningError()
+            raise self.BeekeeperAlreadyRunningError(self.__lock_file)
         config_filename = config.wallet_dir / "config.ini"
         config.save(config_filename)
 

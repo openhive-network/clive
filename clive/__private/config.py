@@ -18,4 +18,5 @@ settings = Dynaconf(
     root_path=ROOT_DIRECTORY,
     settings_files=SETTINGS_FILES,
     environments=True,
+    data_path=DATA_DIRECTORY,
 )

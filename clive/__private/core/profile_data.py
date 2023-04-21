@@ -24,7 +24,7 @@ class Cart(list[Operation]):
 
 @dataclass
 class ProfileData:
-    _STORAGE_FILE_PATH: Final[Path] = field(init=False, default=config.DATA_DIRECTORY / "profile_data")
+    _STORAGE_FILE_PATH: Final[Path] = field(init=False, default=config.settings.data_path / "profile_data")
     _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
 
     name: str = ""
