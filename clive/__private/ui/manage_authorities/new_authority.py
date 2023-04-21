@@ -7,6 +7,7 @@ from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
+from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -62,9 +63,10 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
         super().__init__(owner=owner)
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        if self.context.working_account.keys:
-            assert len(self.context.working_account.keys) == 1
-            self.context.working_account.keys[0] = event.private_key
+        if self.context.working_account.keys and len(self.context.working_account.keys) != len(
+            self.app.profile_data.working_account.keys
+        ):
+            self.context.working_account.keys[-1] = event.private_key
         else:
             self.context.working_account.keys.append(event.private_key)
 
@@ -76,4 +78,6 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
         return "(Optional step, could be done later)"
 
     def _default_key(self) -> str:
-        return self.context.working_account.keys[0].key if self.context.working_account.keys else super()._default_key()
+        if self.context.working_account.keys and isinstance((key := self.context.working_account.keys[0]), PrivateKey):
+            return key.key
+        return super()._default_key()
