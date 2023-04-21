@@ -49,9 +49,10 @@ def test_key_create(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
 @pytest.mark.parametrize("prv_pub", PRIVATE_AND_PUBLIC_KEYS)
 def test_key_import(beekeeper: Beekeeper, prv_pub: tuple[str, str], wallet: WalletInfo) -> None:
     # ARRANGE & ACT
-    beekeeper.api.import_key(wallet_name=wallet.name, wif_key=prv_pub[0])
+    pub_key = beekeeper.api.import_key(wallet_name=wallet.name, wif_key=prv_pub[0]).public_key
 
     # ASSERT
+    assert_keys([pub_key], [prv_pub[1]])
     assert_keys(beekeeper.api.get_public_keys().keys, [prv_pub[1]])
 
 

@@ -22,6 +22,10 @@ class CreateKey(BeekeeperResponse):
     public_key: str
 
 
+class ImportKey(CreateKey):
+    pass
+
+
 class ListKeys(BeekeeperResponse):
     keys: dict[str, str]
 
@@ -57,7 +61,7 @@ class GetInfo(BeekeeperResponse):
         return datetime.fromisoformat(v)
 
 
-T = TypeVar("T", Create, CreateKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, EmptyResponse)
+T = TypeVar("T", Create, CreateKey, ImportKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, EmptyResponse)
 
 
 class HiveResponse(BaseModel, Generic[T]):

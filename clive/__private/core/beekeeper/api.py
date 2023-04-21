@@ -11,6 +11,7 @@ from clive.__private.core.beekeeper.model import (
     EmptyResponse,  # noqa: TCH001
     GetInfo,  # noqa: TCH001
     GetPublicKeys,  # noqa: TCH001
+    ImportKey,  # noqa: TCH001
     ListKeys,  # noqa: TCH001
     ListWallets,  # noqa: TCH001
     SignDigest,  # noqa: TCH001
@@ -66,7 +67,7 @@ class BeekeeperApi:
         raise NotImplementedError()
 
     @api
-    def import_key(self, *, wallet_name: str, wif_key: str) -> EmptyResponse:
+    def import_key(self, *, wallet_name: str, wif_key: str) -> ImportKey:
         raise NotImplementedError()
 
     @api
