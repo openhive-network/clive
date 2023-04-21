@@ -1,11 +1,16 @@
 from __future__ import annotations
 
 import shelve
+from contextlib import suppress
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Final
 
 from clive.__private import config
-from clive.__private.storage.mock_database import Account, NodeAddress, WorkingAccount
+from clive.__private.core.beekeeper.handle import BeekeeperRemote
+from clive.__private.core.commands import execute_with_result
+from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.storage.mock_database import Account, NodeAddress, PrivateKey, WorkingAccount
+from clive.exceptions import CliveError
 from clive.models.operation import Operation
 
 if TYPE_CHECKING:
@@ -23,7 +28,6 @@ class ProfileData:
     _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
 
     name: str = ""
-    password: str = ""  # yes, yes, plaintext
 
     # TODO: Should be None if not set, since we'll allow for using app without a working account
     working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", []))
@@ -74,3 +78,17 @@ class ProfileData:
             NodeAddress("http", "localhost", 8090),
             NodeAddress("http", "hive-6.pl.syncad.com", 18090),
         ]
+
+    def write_to_beekeeper(self, beekeeper: BeekeeperRemote, password: str) -> None:
+        try:
+            beekeeper.api.open(wallet_name=self.name)
+            with suppress(CliveError):  # make sure wallet is open
+                beekeeper.api.unlock(wallet_name=self.name, password=password)
+        except BeekeeperRemote.ErrorResponseError:
+            beekeeper.api.create(wallet_name=self.name, password=password)
+
+        for i, key in enumerate(self.working_account.keys):
+            if isinstance(key, PrivateKey):
+                self.working_account.keys[i] = execute_with_result(
+                    ImportKey(wallet=self.name, key_to_import=key, beekeeper=beekeeper)
+                )

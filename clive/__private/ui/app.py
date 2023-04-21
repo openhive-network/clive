@@ -9,9 +9,6 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.commands import execute_with_result
-from clive.__private.core.commands.activate import Activate
-from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import World
 from clive.__private.logger import logger
@@ -96,8 +93,6 @@ class Clive(App[int]):
             not (
                 self.profile_data.name is not None
                 and len(self.profile_data.name) > 0
-                and self.profile_data.password is not None
-                and len(self.profile_data.password) > 0
                 and self.profile_data.node_address is not None
             )
             or settings.FORCE_ONBOARDING
@@ -186,12 +181,12 @@ class Clive(App[int]):
         self.logs += [text]
 
     def activate(self, password: str, active_mode_time: timedelta | None = None) -> None:  # noqa: ARG002
-        execute_with_result(Activate(beekeeper=self.world.beekeeper, wallet=self.profile_data.name, password=password))
+        self.world.commands.activate(password=password)
         self.update_reactive("app_state")
         self.post_message_to_everyone(ActivateScreen.Succeeded())
 
     def deactivate(self) -> None:
-        execute_with_result(Deactivate(beekeeper=self.world.beekeeper, wallet=self.profile_data.name))
+        self.world.commands.deactivate()
         self.update_reactive("app_state")
         self.switch_screen("dashboard_inactive")
 
@@ -254,7 +249,9 @@ class Clive(App[int]):
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception
 
-    def on_profile_data_updated(self, _: ProfileDataUpdated) -> None:
+    def on_profile_data_updated(self, e: ProfileDataUpdated) -> None:
+        if e.password is not None:
+            self.profile_data.write_to_beekeeper(self.world.beekeeper, e.password)
         self.update_reactive("profile_data")
 
     @staticmethod

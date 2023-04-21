@@ -70,7 +70,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
         profile_name, password = self._get_valid_args()
         self.context.name = profile_name
-        self.context.password = password
+        self.password = password
 
 
 class CreateProfile(CreateProfileCommon):
@@ -98,7 +98,7 @@ class CreateProfile(CreateProfileCommon):
         except FormValidationError as error:
             Notification(f"Failed the validation process! Reason: {error.reason}", category="error").show()
         else:
-            self.app.post_message_to_everyone(ProfileDataUpdated())
+            self.app.post_message_to_everyone(ProfileDataUpdated(self.password))
             self.app.pop_screen()
             Notification("Profile created successfully!", category="success").show()
 

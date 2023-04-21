@@ -8,6 +8,10 @@ class NodeDataUpdated(Message):
 
 
 class ProfileDataUpdated(Message):
+    def __init__(self, password: str | None = None) -> None:
+        self.password = password
+        super().__init__()
+
     """Emitted when app.profile_data has been updated"""
 
 
