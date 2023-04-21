@@ -67,7 +67,7 @@ class Header(TextualHeader, CliveWidget):
                 "Mode",
                 obj_to_watch=self.app,
                 attribute_name="app_state",
-                callback=lambda app_state: app_state.mode,
+                callback=lambda app_state: "active" if app_state.is_active() else "inactive",
                 id_="mode-label",
             )
         with Vertical(id="expandable"):
