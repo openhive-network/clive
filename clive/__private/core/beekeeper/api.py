@@ -43,7 +43,7 @@ class BeekeeperApi:
         self._owner = owner
 
     @api
-    def create(self, *, wallet_name: str) -> Create:
+    def create(self, *, wallet_name: str, password: str | None = None) -> Create:
         raise NotImplementedError()
 
     @api

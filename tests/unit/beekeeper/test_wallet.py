@@ -73,3 +73,11 @@ def test_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
 
     # ASSERT
     check_wallets(beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
+
+
+def test_create_wallet_with_custom_password(beekeeper: Beekeeper, wallet_name: str) -> None:
+    # ARRANGE & ACT
+    password = beekeeper.api.create(wallet_name=wallet_name, password=wallet_name).password
+
+    # ASSERT
+    assert password == wallet_name
