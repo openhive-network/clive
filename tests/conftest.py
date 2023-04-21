@@ -9,6 +9,7 @@ import pytest
 from clive.__private import config
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.world import World
 from clive.__private.storage.mock_database import PrivateKeyAlias
 from tests import WalletInfo
 
@@ -72,5 +73,17 @@ def wallet(beekeeper: Beekeeper, wallet_name: str) -> WalletInfo:
     return WalletInfo(
         password=beekeeper.api.create(wallet_name=wallet_name).password,
         name=wallet_name,
-        pub=PrivateKeyAlias(key_name=beekeeper.api.get_public_keys().keys[0])
     )
+
+
+@pytest.fixture
+def pubkey(beekeeper:Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
+    return PrivateKeyAlias(beekeeper.api.create_key(wallet_name=wallet.name).public_key)
+
+@pytest.fixture
+def world(wallet_name: str, beekeeper: Beekeeper) -> Iterator[World]:
+    w = World(profile_name=wallet_name)
+    # TODO: instead of reopening, pass argument through Dynaconf
+    w._debug_replace_beekeeper(beekeeper)
+    yield w
+    w.close()
