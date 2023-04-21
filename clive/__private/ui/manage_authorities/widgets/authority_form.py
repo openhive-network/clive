@@ -80,7 +80,7 @@ class AuthorityForm(BaseScreen):
         return ""
 
     def _default_key(self) -> str:
-        return ""
+        return "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
 
     def _default_file_path(self) -> str:
         return ""
