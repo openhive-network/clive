@@ -2,11 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
+from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.save import SaveToFile
 from clive.__private.core.commands.sign import Sign
 
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
-    from clive.__private.storage.mock_database import PrivateKeyAlias
+    from clive.__private.storage.mock_database import PrivateKey, PrivateKeyAlias
     from clive.models.operation import Operation
     from clive.models.transaction import Transaction
 
@@ -52,3 +54,8 @@ class Commands:
             sign_with=sign_with,
             node_address=self.__world.profile_data.node_address,
         ).execute()
+
+    def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:
+        return execute_with_result(
+            ImportKey(wallet=self.__world.profile_data.name, key_to_import=wif, beekeeper=self.__world.beekeeper)
+        )
