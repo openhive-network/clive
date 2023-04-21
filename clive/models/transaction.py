@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import BaseModel, Field
 
-if TYPE_CHECKING:
-    from clive.models.operation import Operation
+from clive.models.operation import Operation  # noqa: TCH001
 
 
 class Transaction(BaseModel):
