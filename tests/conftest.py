@@ -9,6 +9,7 @@ import pytest
 from clive.__private import config
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.profile_data import ProfileData
+from clive.__private.storage.mock_database import PrivateKeyAlias
 from tests import WalletInfo
 
 if TYPE_CHECKING:
@@ -68,4 +69,8 @@ def wallet_name() -> str:
 
 @pytest.fixture
 def wallet(beekeeper: Beekeeper, wallet_name: str) -> WalletInfo:
-    return WalletInfo(password=beekeeper.api.create(wallet_name=wallet_name).password, name=wallet_name)
+    return WalletInfo(
+        password=beekeeper.api.create(wallet_name=wallet_name).password,
+        name=wallet_name,
+        pub=PrivateKeyAlias(key_name=beekeeper.api.get_public_keys().keys[0])
+    )
