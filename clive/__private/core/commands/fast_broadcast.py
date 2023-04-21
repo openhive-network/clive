@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
@@ -11,22 +12,19 @@ if TYPE_CHECKING:
     from clive.models.operation import Operation
 
 
+@dataclass
 class FastBroadcast(Command[None]):
-    def __init__(
-        self, *, operation: Operation, beekeeper: BeekeeperRemote, sign_with: PrivateKeyAlias, address: NodeAddress
-    ) -> None:
-        super().__init__()
-        self.__operation = operation
-        self.__sign_with = sign_with
-        self.__node_address = address
-        self.__beekeeper = beekeeper
+    operation: Operation
+    beekeeper: BeekeeperRemote
+    sign_with: PrivateKeyAlias
+    node_address: NodeAddress
 
     def execute(self) -> None:
         perform_actions_on_transaction(
-            content=self.__operation,
-            beekeeper=self.__beekeeper,
-            node_address=self.__node_address,
-            sign_key=self.__sign_with,
+            content=self.operation,
+            beekeeper=self.beekeeper,
+            node_address=self.node_address,
+            sign_key=self.sign_with,
             save_file_path=None,
             broadcast=True,
         )

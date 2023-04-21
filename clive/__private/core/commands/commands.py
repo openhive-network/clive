@@ -43,12 +43,12 @@ class Commands:
         SaveToFile(transaction=transaction, file_path=path).execute()
 
     def broadcast(self, *, transaction: Transaction) -> None:
-        Broadcast(address=self.__world.profile_data.node_address, transaction=transaction).execute()
+        Broadcast(node_address=self.__world.profile_data.node_address, transaction=transaction).execute()
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PrivateKeyAlias) -> None:
         FastBroadcast(
             operation=operation,
             beekeeper=self.__world.beekeeper,
             sign_with=sign_with,
-            address=self.__world.profile_data.node_address,
+            node_address=self.__world.profile_data.node_address,
         ).execute()

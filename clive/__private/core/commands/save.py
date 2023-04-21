@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
@@ -11,14 +12,13 @@ if TYPE_CHECKING:
     from clive.models.transaction import Transaction
 
 
+@dataclass
 class SaveToFile(Command[None]):
-    def __init__(self, *, transaction: Transaction, file_path: Path, legacy: bool = False) -> None:
-        super().__init__()
-        self.__transaction = transaction
-        self.__file_path = file_path
-        self.__legacy = legacy
+    transaction: Transaction
+    file_path: Path
+    legacy: bool = False
 
     def execute(self) -> None:
-        serialized = serialize_transaction(self.__transaction, legacy=self.__legacy)
-        with self.__file_path.open("wt", encoding="utf-8") as file:
+        serialized = serialize_transaction(self.transaction, legacy=self.legacy)
+        with self.file_path.open("wt", encoding="utf-8") as file:
             file.write(serialized)

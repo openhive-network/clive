@@ -43,4 +43,4 @@ def perform_actions_on_transaction(
         SaveToFile(transaction=transaction, file_path=save_file_path).execute()
 
     if transaction.signed and broadcast:
-        Broadcast(address=node_address, transaction=transaction).execute()
+        Broadcast(node_address=node_address, transaction=transaction).execute()

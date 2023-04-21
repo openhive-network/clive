@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
@@ -10,23 +11,16 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import BeekeeperRemote
 
 
+@dataclass
 class Activate(Command[None]):
-    def __init__(
-        self,
-        beekeeper: BeekeeperRemote,
-        *,
-        wallet: str,
-        password: str,
-    ) -> None:
-        super().__init__(result_default=None)
-        self.__beekeeper = beekeeper
-        self.__wallet = wallet
-        self.__password = password
+    beekeeper: BeekeeperRemote
+    wallet: str
+    password: str
 
     def execute(self) -> None:
         try:
-            self.__beekeeper.api.open(wallet_name=self.__wallet)
-            self.__beekeeper.api.unlock(wallet_name=self.__wallet, password=self.__password)
+            self.beekeeper.api.open(wallet_name=self.wallet)
+            self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
         except CommunicationError as e:
             raise CannotActivateError(e) from e
 

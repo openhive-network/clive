@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from json import JSONEncoder
 from typing import TYPE_CHECKING, Any, Final
 
@@ -30,29 +31,28 @@ class PartiallySerializedEncoder(JSONEncoder):
         return super().encode(o)
 
 
+@dataclass
 class Broadcast(Command[None]):
     """Broadcasts the given operations/transactions to the blockchain."""
 
     class TransactionNotSignedError(CliveError):
         pass
 
-    def __init__(self, *, address: NodeAddress, transaction: Transaction) -> None:
-        super().__init__(result_default=None)
-        self.__transaction = transaction
-        self.__address = address
+    node_address: NodeAddress
+    transaction: Transaction
 
     def execute(self) -> None:
-        if not self.__transaction.signed:
+        if not self.transaction.signed:
             raise self.TransactionNotSignedError()
 
         if NODE_COMMUNICATION_ENABLED:  # TODO: remove it when support for node communication will be granted
             httpx.post(
-                str(self.__address),
+                str(self.node_address),
                 json={
                     "id": 0,
                     "jsonrpc": "2.0",
                     "method": "network_broadcast_api.broadcast_transaction",
-                    "params": {"trx": AlreadySerialized(serialize_transaction(self.__transaction))},
+                    "params": {"trx": AlreadySerialized(serialize_transaction(self.transaction))},
                 },
             )
             # TODO: some checks

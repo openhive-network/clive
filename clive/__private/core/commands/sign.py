@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
@@ -11,17 +12,14 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import PrivateKeyAlias
 
 
+@dataclass
 class Sign(Command[Transaction]):
-    def __init__(self, *, beekeeper: BeekeeperRemote, transaction: Transaction, key: PrivateKeyAlias) -> None:
-        super().__init__(result_default=None)
-        self.__beekeeper = beekeeper
-        self.__transaction = transaction
-        self.__key = key
+    beekeeper: BeekeeperRemote
+    transaction: Transaction
+    key: PrivateKeyAlias
 
     def execute(self) -> None:
-        self.__transaction.transaction_id = calculate_digest(self.__transaction)
-        result = self.__beekeeper.api.sign_digest(
-            digest=self.__transaction.transaction_id, public_key=self.__key.key_name
-        )
-        self.__transaction.signatures = [result.signature]
-        self._result = self.__transaction
+        self.transaction.transaction_id = calculate_digest(self.transaction)
+        result = self.beekeeper.api.sign_digest(digest=self.transaction.transaction_id, public_key=self.key.key_name)
+        self.transaction.signatures = [result.signature]
+        self._result = self.transaction

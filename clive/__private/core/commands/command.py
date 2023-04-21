@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from dataclasses import dataclass
 from typing import Generic, TypeVar
 
 from clive.__private.abstract_class import AbstractClass
@@ -8,6 +9,7 @@ from clive.__private.abstract_class import AbstractClass
 T = TypeVar("T")
 
 
+@dataclass
 class Command(Generic[T], AbstractClass):
     """Command is an abstract class that defines a common interface for executing commands. The execute() method should
     be overridden by subclasses to implement the specific functionality of the command. The result property can be used
@@ -18,9 +20,6 @@ class Command(Generic[T], AbstractClass):
         result_default: The default (initial) value for the result property.
     """
 
-    def __init__(self, *, result_default: T | None = None) -> None:
-        self._result = result_default
-
     @property
     def result(self) -> T:
         """Get the result of the command.
@@ -30,7 +29,8 @@ class Command(Generic[T], AbstractClass):
         Raises:
             ValueError: If the result has not been set before.
         """
-        if self._result is None:
+        self._result: T | None
+        if not hasattr(self, "_result") or self._result is None:
             raise ValueError("The result is not set yet.")
         return self._result
 

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
@@ -9,12 +10,11 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import BeekeeperRemote
 
 
+@dataclass
 class Deactivate(Command[None]):
-    def __init__(self, beekeeper: BeekeeperRemote, *, wallet: str) -> None:
-        super().__init__(result_default=None)
-        self.__beekeeper = beekeeper
-        self.__wallet = wallet
+    beekeeper: BeekeeperRemote
+    wallet: str
 
     def execute(self) -> None:
-        self.__beekeeper.api.lock(wallet_name=self.__wallet)
+        self.beekeeper.api.lock(wallet_name=self.wallet)
         logger.info("Deactivated")
