@@ -6,6 +6,7 @@ from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.deactivate import Deactivate
+from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.save import SaveToFile
 from clive.__private.core.commands.sign import Sign
 
@@ -45,4 +46,9 @@ class Commands:
         Broadcast(address=self.__world.profile_data.node_address, transaction=transaction).execute()
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PrivateKeyAlias) -> None:
-        FastBroadcast(operation=operation, sign_with=sign_with).execute()
+        FastBroadcast(
+            operation=operation,
+            beekeeper=self.__world.beekeeper,
+            sign_with=sign_with,
+            address=self.__world.profile_data.node_address,
+        ).execute()
