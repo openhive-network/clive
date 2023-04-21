@@ -1,26 +1,20 @@
 from __future__ import annotations
 
 import shutil
+import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
 import pytest
 
-from clive.__private import config
+from clive.__private.config import settings
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.storage.mock_database import PrivateKeyAlias
 from tests import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-
-
-@pytest.fixture(autouse=True)
-def mock_data_directory(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.setattr(config, "DATA_DIRECTORY", tmp_path)
-    monkeypatch.setattr(ProfileData, "_STORAGE_FILE_PATH", tmp_path)
 
 
 @pytest.fixture
@@ -40,6 +34,7 @@ def working_directory(request: pytest.FixtureRequest) -> Path:
 
     test_path = generated_directory / test_signature
     if test_path.exists():
+        warnings.warn("removing datadir", stacklevel=1)
         shutil.rmtree(test_path)
     test_path.mkdir()
     return test_path
@@ -55,25 +50,8 @@ def beekeeper_executable_path(request: pytest.FixtureRequest) -> Path:
 
 
 @pytest.fixture
-def beekeeper(working_directory: Path, beekeeper_executable_path: Path) -> Iterator[Beekeeper]:
-    keeper = Beekeeper(executable=beekeeper_executable_path)
-    keeper.config.wallet_dir = working_directory
-    keeper.run()
-    yield keeper
-    keeper.close()
-
-
-@pytest.fixture
 def wallet_name() -> str:
     return "wallet"
-
-
-@pytest.fixture
-def wallet(beekeeper: Beekeeper, wallet_name: str) -> WalletInfo:
-    return WalletInfo(
-        password=beekeeper.api.create(wallet_name=wallet_name).password,
-        name=wallet_name,
-    )
 
 
 @pytest.fixture
@@ -82,9 +60,22 @@ def pubkey(beekeeper: Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
 
 
 @pytest.fixture
-def world(wallet_name: str, beekeeper: Beekeeper) -> Iterator[World]:
+def world(wallet_name: str, working_directory: Path, beekeeper_executable_path: Path) -> Iterator[World]:
+    settings.beekeeper = {"path": beekeeper_executable_path}
+    settings.data_path = working_directory
     w = World(profile_name=wallet_name)
-    # TODO: instead of reopening, pass argument through Dynaconf
-    w._debug_replace_beekeeper(beekeeper)
     yield w
     w.close()
+
+
+@pytest.fixture
+def wallet(world: World, wallet_name: str) -> WalletInfo:
+    return WalletInfo(
+        password=world.beekeeper.api.create(wallet_name=wallet_name).password,
+        name=wallet_name,
+    )
+
+
+@pytest.fixture
+def beekeeper(world: World) -> Beekeeper:
+    return cast(Beekeeper, world.beekeeper)

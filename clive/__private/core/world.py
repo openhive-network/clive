@@ -51,10 +51,6 @@ class World:
     def beekeeper(self) -> BeekeeperRemote:
         return self.__beekeeper
 
-    def _debug_replace_beekeeper(self, beekeeper: BeekeeperRemote) -> None:
-        self.close()
-        self.__beekeeper = beekeeper
-
     def close(self) -> None:
         if isinstance(self.beekeeper, Beekeeper):
             self.beekeeper.close()
