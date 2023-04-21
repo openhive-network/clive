@@ -53,12 +53,14 @@ class PrivateKey(PrivateKeyAlias):
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, PrivateKey):
             return self.key == __value.key and self.key_name == __value.key_name
+        if isinstance(__value, PrivateKeyAlias):
+            return self.key_name == __value.key_name
         return super().__eq__(__value)
 
 
 @dataclass
 class WorkingAccount(Account):
-    keys: list[PrivateKey]
+    keys: list[PrivateKeyAlias]
 
 
 @dataclass

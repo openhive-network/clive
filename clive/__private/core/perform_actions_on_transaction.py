@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper.handle import BeekeeperRemote
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
-    from clive.__private.storage.mock_database import NodeAddress, PrivateKey
+    from clive.__private.storage.mock_database import NodeAddress, PrivateKeyAlias
 
 
 def perform_actions_on_transaction(
@@ -21,7 +21,7 @@ def perform_actions_on_transaction(
     *,
     beekeeper: BeekeeperRemote,
     node_address: NodeAddress,
-    sign_key: PrivateKey | None = None,
+    sign_key: PrivateKeyAlias | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
 ) -> None:

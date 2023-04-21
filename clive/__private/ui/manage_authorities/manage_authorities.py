@@ -19,7 +19,7 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.storage.mock_database import PrivateKey
+    from clive.__private.storage.mock_database import PrivateKeyAlias
 
 
 class DynamicColumn(DynamicLabel):
@@ -42,7 +42,7 @@ class Authority(ColumnLayout, CliveWidget):
     class AuthoritiesChanged(Message):
         """Emitted when authorities have been changed"""
 
-    def __init__(self, authority: PrivateKey) -> None:
+    def __init__(self, authority: PrivateKeyAlias) -> None:
         self.__authority = authority
         self.__index = self.app.profile_data.working_account.keys.index(self.__authority)
         super().__init__()

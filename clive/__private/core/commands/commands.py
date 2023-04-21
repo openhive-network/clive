@@ -43,3 +43,6 @@ class Commands:
 
     def broadcast(self, *, transaction: Transaction) -> None:
         Broadcast(address=self.__world.profile_data.node_address, transaction=transaction).execute()
+
+    def fast_broadcast(self, *, operation: Operation, sign_with: PrivateKeyAlias) -> None:
+        FastBroadcast(operation=operation, sign_with=sign_with).execute()

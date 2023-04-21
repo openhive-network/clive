@@ -8,7 +8,7 @@ from clive.__private.ui.manage_authorities.widgets.authority_form import Authori
 from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
-    from clive.__private.storage.mock_database import PrivateKey
+    from clive.__private.storage.mock_database import PrivateKeyAlias
 
 
 class EditAuthority(AuthorityForm):
@@ -18,7 +18,7 @@ class EditAuthority(AuthorityForm):
         Binding("f10", "save", "Save"),
     ]
 
-    def __init__(self, authority: PrivateKey) -> None:
+    def __init__(self, authority: PrivateKeyAlias) -> None:
         self.authority = authority
         super().__init__()
 
@@ -39,9 +39,3 @@ class EditAuthority(AuthorityForm):
 
     def _default_authority_name(self) -> str:
         return self.authority.key_name
-
-    def _default_key(self) -> str:
-        return self.authority.key
-
-    def _default_file_path(self) -> str:
-        return str(self.authority.file_path) if self.authority.file_path else ""

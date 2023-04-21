@@ -5,7 +5,7 @@ import typer
 
 from clive.__private.cli.common import Common, common_options
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
-from clive.__private.storage.mock_database import PrivateKey
+from clive.__private.storage.mock_database import PrivateKeyAlias
 from clive.models.transfer_operation import TransferOperation
 
 HELP: Final[str] = """
@@ -39,7 +39,7 @@ def _main(
         TransferOperation(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo),
         beekeeper=common.world.beekeeper,
         node_address=common.world.profile_data.node_address,
-        sign_key=PrivateKey("temporary", common.sign) if common.sign else None,
+        sign_key=PrivateKeyAlias(common.sign) if common.sign else None,
         save_file_path=Path(common.save_file) if common.save_file else None,
         broadcast=common.broadcast,
     )
