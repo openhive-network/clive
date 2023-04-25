@@ -1,32 +1,12 @@
 from collections.abc import Callable
 from functools import wraps
-from os import environ
 from typing import Any, Optional
 
 import typer
 from merge_args import merge_args  # type: ignore
 from pydantic import BaseModel
-from typing_extensions import Self
 
 from clive.__private.core.world import World
-from clive.__private.ui.app import Clive
-
-
-class DummyOpen:
-    def __enter__(self) -> Self:
-        return self
-
-    def __exit__(self, *_: Any, **__: Any) -> None:
-        """TODO document why this method is empty"""
-
-
-def get_world(profile: str) -> World | DummyOpen:
-    if "_CLIVE_COMPLETE" in environ:
-        return DummyOpen()
-
-    if not Clive.is_app_exist():
-        return World(profile_name=profile)
-    return Clive.app_instance().world
 
 
 class Common(BaseModel):
@@ -60,7 +40,7 @@ def common_options(func: Callable[..., None]) -> Any:
         save_file: Optional[str] = common.save_file,  # noqa: ARG001
         **kwargs: Any,
     ) -> None:
-        with get_world(profile) as world:
+        with World(profile_name=profile) as world:
             return func(ctx=ctx, **kwargs, world=world)
 
     return wrapper
