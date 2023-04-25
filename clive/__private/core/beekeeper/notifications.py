@@ -3,8 +3,8 @@ from __future__ import annotations
 from threading import Event
 
 from clive.__private.core.beekeeper.notification_http_server import HttpServer, JsonT
-from clive.__private.core.beekeeper.url import Url
 from clive.__private.logger import logger
+from clive.core.url import Url
 
 
 class BeekeeperNotificationsServer:

@@ -9,8 +9,8 @@ from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_def
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
 from clive.__private.core.beekeeper.model import HiveResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
-from clive.__private.core.beekeeper.url import Url
 from clive.__private.logger import logger
+from clive.core.url import Url
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:

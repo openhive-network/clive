@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 from clive.__private.config import settings
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper.handle import Beekeeper, BeekeeperRemote
-from clive.__private.core.beekeeper.url import Url
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.mock_database import NodeData
 from clive.__private.ui.background_tasks import BackgroundTasks
+from clive.core.url import Url
 
 if TYPE_CHECKING:
     from types import TracebackType
