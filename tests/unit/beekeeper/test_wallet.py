@@ -29,11 +29,11 @@ def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
     check_wallets(beekeeper.api.list_wallets(), [wallet_name])
 
 
-@pytest.mark.parametrize("wallet_name", (",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37})))
-def test_invalid_wallet_names(beekeeper: Beekeeper, wallet_name: str) -> None:
+@pytest.mark.parametrize("invalid_wallet_name", (",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37})))
+def test_invalid_wallet_names(beekeeper: Beekeeper, invalid_wallet_name: str) -> None:
     # ARRANGE, ACT & ASSERT
     with pytest.raises(Beekeeper.ErrorResponseError):
-        beekeeper.api.create(wallet_name=wallet_name)
+        beekeeper.api.create(wallet_name=invalid_wallet_name)
 
 
 def test_wallet_open(beekeeper: Beekeeper, wallet: WalletInfo) -> None:

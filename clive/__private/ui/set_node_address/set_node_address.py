@@ -11,7 +11,6 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
-from clive.__private.storage.mock_database import NodeAddress
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -22,6 +21,7 @@ from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.core.url import Url
 from clive.exceptions import NodeAddressError
 
 if TYPE_CHECKING:
@@ -52,7 +52,7 @@ class SelectedNodeAddress(Static, CliveWidget):
 class NodesList(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
-        yield Select[NodeAddress](
+        yield Select[Url](
             items=[SelectItem(node, str(node)) for idx, node in enumerate(self.app.profile_data.backup_node_addresses)],
             selected=self.app.profile_data.node_address,
             list_mount="ViewBag",
@@ -135,10 +135,10 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
     def _valid_and_save_address(self) -> None:
         if self._in_nodes_list_mode():
-            selected: SelectItem[NodeAddress] = self.query_one(Select).selected
+            selected: SelectItem[Url] = self.query_one(Select).selected
             address = selected.value
         else:
-            address = NodeAddress.parse(self.app.query_one("#node-address-input", Input).value)
+            address = Url.parse(self.app.query_one("#node-address-input", Input).value)
         self.app.profile_data.node_address = address
         self.app.post_message_to_everyone(ProfileDataUpdated())
         self.__selected_node.refresh()

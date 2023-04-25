@@ -5,9 +5,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING
-from urllib.parse import urlparse
 
-from clive.exceptions import NodeAddressError, PrivateKeyError
+from clive.exceptions import PrivateKeyError
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -61,30 +60,6 @@ class PrivateKey(PrivateKeyAlias):
 @dataclass
 class WorkingAccount(Account):
     keys: list[PrivateKeyAlias]
-
-
-@dataclass
-class NodeAddress:
-    proto: str
-    host: str
-    port: int | None = None
-
-    def __str__(self) -> str:
-        return f"{self.proto}://{self.host}" + ("" if self.port is None else f":{self.port}")
-
-    def __repr__(self) -> str:
-        return str(self)
-
-    @classmethod
-    def parse(cls, address: str) -> NodeAddress:
-        try:
-            url = urlparse(address)
-            if url.hostname is None:
-                raise ValueError  # noqa TRY301 TODO: Refactor
-        except ValueError:
-            raise NodeAddressError(f"Invalid address: {address}") from None
-        else:
-            return cls(url.scheme, str(url.hostname), url.port)
 
 
 @dataclass

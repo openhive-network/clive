@@ -25,7 +25,7 @@ class BeekeeperNotificationsServer:
             details: dict[str, str] = message["value"]
             if details["type"] == "HTTP":
                 endpoint = f'{details["address"].replace("0.0.0.0", "127.0.0.1")}:{details["port"]}'
-                self.http_endpoint = Url(endpoint, protocol="http")
+                self.http_endpoint = Url.parse(endpoint, protocol="http")
                 logger.debug(f"Got notification with http address on: {endpoint}")
                 self.http_listening_event.set()
 

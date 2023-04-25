@@ -19,7 +19,7 @@ class InvalidOptionError(Exception):
 
 
 def webserver_default() -> Url:
-    return Url("0.0.0.0:0")
+    return Url("", "0.0.0.0", 0)
 
 
 class BeekeeperConfig(BaseModel):
@@ -113,4 +113,7 @@ class BeekeeperConfig(BaseModel):
 
             raise InvalidOptionError(f"Expected `yes` or `no`, got: `{config_value}`")
 
-        return expected(config_value) if expected is not None else None
+        if expected == Url:
+            return Url.parse(config_value)
+
+        return expected(config_value) if expected is not None else None  # type: ignore[call-arg]

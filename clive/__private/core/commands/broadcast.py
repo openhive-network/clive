@@ -16,7 +16,7 @@ if NODE_COMMUNICATION_ENABLED:
 
 
 if TYPE_CHECKING:
-    from clive.__private.storage.mock_database import NodeAddress
+    from clive.core.url import Url
     from clive.models.transaction import Transaction
 
 
@@ -38,7 +38,7 @@ class Broadcast(Command[None]):
     class TransactionNotSignedError(CliveError):
         pass
 
-    node_address: NodeAddress
+    node_address: Url
     transaction: Transaction
 
     def execute(self) -> None:
@@ -47,7 +47,7 @@ class Broadcast(Command[None]):
 
         if NODE_COMMUNICATION_ENABLED:  # TODO: remove it when support for node communication will be granted
             httpx.post(
-                str(self.node_address),
+                self.node_address.as_string(),
                 json={
                     "id": 0,
                     "jsonrpc": "2.0",

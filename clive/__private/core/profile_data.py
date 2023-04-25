@@ -3,18 +3,17 @@ from __future__ import annotations
 import shelve
 from contextlib import suppress
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, Final
+from pathlib import Path
+from typing import Final, cast
 
 from clive.__private import config
 from clive.__private.core.beekeeper.handle import BeekeeperRemote
 from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.storage.mock_database import Account, NodeAddress, PrivateKey, WorkingAccount
+from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
+from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.operation import Operation
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 class Cart(list[Operation]):
@@ -24,7 +23,6 @@ class Cart(list[Operation]):
 
 @dataclass
 class ProfileData:
-    _STORAGE_FILE_PATH: Final[Path] = field(init=False, default=config.settings.data_path / "profile_data")
     _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
 
     name: str = ""
@@ -34,8 +32,12 @@ class ProfileData:
     watched_accounts: list[Account] = field(default_factory=list)
     cart = Cart()
 
-    backup_node_addresses: list[NodeAddress] = field(init=False)
-    node_address: NodeAddress = field(init=False)
+    backup_node_addresses: list[Url] = field(init=False)
+    node_address: Url = field(init=False)
+
+    @classmethod
+    def _get_file_storage_path(cls) -> Path:
+        return cast(Path, config.settings.data_path) / "profile_data"
 
     def __post_init__(self) -> None:
         self.backup_node_addresses = self.__default_node_address()
@@ -47,7 +49,7 @@ class ProfileData:
         if Clive.is_app_exist():
             Clive.app_instance().update_reactive("profile_data")
 
-        with shelve.open(str(self._STORAGE_FILE_PATH)) as db:
+        with shelve.open(str(self._get_file_storage_path())) as db:
             db[self.name] = self
             db[self._LAST_USED_IDENTIFIER] = self.name
 
@@ -60,24 +62,24 @@ class ProfileData:
         :return: Profile data.
         """
         # create data directory if it doesn't exist
-        cls._STORAGE_FILE_PATH.mkdir(parents=True, exist_ok=True)
+        cls._get_file_storage_path().mkdir(parents=True, exist_ok=True)
 
-        with shelve.open(str(cls._STORAGE_FILE_PATH)) as db:
+        with shelve.open(str(cls._get_file_storage_path())) as db:
             if name is None:
                 name = db.get(cls._LAST_USED_IDENTIFIER, "")
             return db.get(name, cls(name))
 
     @classmethod
     def list_profiles(cls) -> list[str]:
-        with shelve.open(str(cls._STORAGE_FILE_PATH)) as db:
+        with shelve.open(str(cls._get_file_storage_path())) as db:
             return list(db.keys() - {cls._LAST_USED_IDENTIFIER})
 
     @staticmethod
-    def __default_node_address() -> list[NodeAddress]:
+    def __default_node_address() -> list[Url]:
         return [
-            NodeAddress("https", "api.hive.blog"),
-            NodeAddress("http", "localhost", 8090),
-            NodeAddress("http", "hive-6.pl.syncad.com", 18090),
+            Url("https", "api.hive.blog"),
+            Url("http", "localhost", 8090),
+            Url("http", "hive-6.pl.syncad.com", 18090),
         ]
 
     def write_to_beekeeper(self, beekeeper: BeekeeperRemote, password: str) -> None:

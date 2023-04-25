@@ -8,7 +8,8 @@ from clive.__private.core.perform_actions_on_transaction import perform_actions_
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import BeekeeperRemote
-    from clive.__private.storage.mock_database import NodeAddress, PrivateKeyAlias
+    from clive.__private.storage.mock_database import PrivateKeyAlias
+    from clive.core.url import Url
     from clive.models.operation import Operation
 
 
@@ -17,7 +18,7 @@ class FastBroadcast(Command[None]):
     operation: Operation
     beekeeper: BeekeeperRemote
     sign_with: PrivateKeyAlias
-    node_address: NodeAddress
+    node_address: Url
 
     def execute(self) -> None:
         perform_actions_on_transaction(

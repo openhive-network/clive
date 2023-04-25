@@ -85,7 +85,7 @@ class Beekeeper(BeekeeperRemote):
         return self.config.webserver_http_endpoint
 
     def run(self, *, timeout: float = 5.0) -> None:
-        self.config.notifications_endpoint = Url(f"127.0.0.1:{self.__notification_server.listen()}")
+        self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server.listen())
         self.__executable.run(self.config)
 
         is_listening = self.__notification_server.http_listening_event.wait(timeout)

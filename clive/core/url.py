@@ -1,37 +1,31 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from urllib.parse import urlparse
 
+from clive.exceptions import NodeAddressError
 
+
+@dataclass
 class Url:
-    def __init__(self, url: str, *, protocol: str = "") -> None:
+    proto: str
+    host: str
+    port: int | None = None
+
+    @classmethod
+    def parse(cls, url: str, *, protocol: str = "") -> Url:
         parsed_url = urlparse(url, scheme=protocol)
 
         if not parsed_url.netloc:
             parsed_url = urlparse(f"//{url}", scheme=protocol)
 
-        self.__protocol: str = parsed_url.scheme
+        if not parsed_url.hostname:
+            raise NodeAddressError("Address was not specified.")
 
-        self.__address: str | None = parsed_url.hostname
-        if not self.__address:
-            raise ValueError("Address was not specified.")
-
-        self.__port: int | None = parsed_url.port
-
-    @property
-    def protocol(self) -> str:
-        return self.__protocol
-
-    @property
-    def address(self) -> str | None:
-        return self.__address
-
-    @property
-    def port(self) -> int | None:
-        return self.__port
+        return Url(parsed_url.scheme, parsed_url.hostname, parsed_url.port)
 
     def as_string(self, *, with_protocol: bool = True) -> str:
-        protocol_prefix = f"{self.protocol}://" if with_protocol else ""
+        protocol_prefix = f"{self.proto}://" if with_protocol else ""
         port_suffix = f":{self.port}" if self.port is not None else ""
 
-        return f"{protocol_prefix}{self.address}{port_suffix}"
+        return f"{protocol_prefix}{self.host}{port_suffix}"

@@ -65,7 +65,7 @@ class World:
         beekeeper_path: Path | None = None
         if (beekeeper_config := settings.get("beekeeper")) is not None:
             if (beekeeper_remote_address := beekeeper_config.get("remote_address")) is not None:
-                self.__beekeeper = BeekeeperRemote(Url(beekeeper_remote_address))
+                self.__beekeeper = BeekeeperRemote(Url.parse(beekeeper_remote_address))
                 return
 
             if (beekeeper_path_from_settings := beekeeper_config.get("path")) is not None:

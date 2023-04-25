@@ -13,14 +13,15 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper.handle import BeekeeperRemote
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
-    from clive.__private.storage.mock_database import NodeAddress, PrivateKeyAlias
+    from clive.__private.storage.mock_database import PrivateKeyAlias
+    from clive.core.url import Url
 
 
 def perform_actions_on_transaction(
     content: TransactionConvertibleType,
     *,
     beekeeper: BeekeeperRemote,
-    node_address: NodeAddress,
+    node_address: Url,
     sign_key: PrivateKeyAlias | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
