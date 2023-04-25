@@ -87,16 +87,17 @@ class Beekeeper(BeekeeperRemote):
     def run(self, *, timeout: float = 5.0) -> None:
         self.config.notifications_endpoint = Url(f"127.0.0.1:{self.__notification_server.listen()}")
         self.__executable.run(self.config)
-        try:
-            if not self.__notification_server.http_listening_event.wait(timeout):
-                raise TimeoutError()  # noqa: TRY301
-            logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
-            self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
-        except TimeoutError:
+
+        is_listening = self.__notification_server.http_listening_event.wait(timeout)
+        if not is_listening:
             self.__executable.close()
             self.__notification_server.close()
-            logger.error("Beekeeper didn't start on time")  # noqa: TRY400
-            raise
+            error_message = "Beekeeper didn't start on time"
+            logger.error(error_message)
+            raise TimeoutError(error_message)
+
+        logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
+        self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
 
     def close(self) -> None:
         try:
