@@ -4,7 +4,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
 
-from textual.app import App
+from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.reactive import reactive, var
 
@@ -78,6 +78,18 @@ class Clive(App[int]):
         """Provides the ability to control the binding order in the footer"""
         return self.__sort_bindings(super().namespace_bindings)
 
+    def run(
+        self,
+        *,
+        headless: bool = False,
+        size: tuple[int, int] | None = None,
+        auto_pilot: AutopilotCallbackType | None = None,
+    ) -> int | None:
+        try:
+            return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
+        finally:
+            self.world.close()
+
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
 
@@ -101,7 +113,6 @@ class Clive(App[int]):
 
     async def on_unmount(self) -> None:
         await Communication.close()
-        self.world.close()
 
     def push_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
