@@ -3,14 +3,14 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, validator
-
-
-class EmptyResponse(BaseModel):
-    pass
+from pydantic import BaseModel, Field, validator
 
 
 class BeekeeperResponse(BaseModel):
+    pass
+
+
+class EmptyResponse(BeekeeperResponse):
     pass
 
 
@@ -64,7 +64,15 @@ class GetInfo(BeekeeperResponse):
 T = TypeVar("T", Create, CreateKey, ImportKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, EmptyResponse)
 
 
-class HiveResponse(BaseModel, Generic[T]):
-    id: Any  # noqa: A003
-    jsonrpc: str
+class JSONRPCProtocol(BaseModel):
+    id_: int | None = Field(0, alias="id")
+    jsonrpc: str = "2.0"
+
+
+class JSONRPCRequest(JSONRPCProtocol):
+    method: str
+    params: dict[str, Any]
+
+
+class JSONRPCResponse(JSONRPCProtocol, Generic[T]):
     result: T

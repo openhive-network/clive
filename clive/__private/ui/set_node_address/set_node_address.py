@@ -11,6 +11,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
+from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -80,7 +81,7 @@ class NodeUrlHighlighter(Highlighter):
             return (
                 httpx.post(
                     url,
-                    data={"jsonrpc": "2.0", "method": "condenser_api.get_config", "params": [], "id": 1},
+                    json=JSONRPCRequest(method="database_api.get_config", params={}),
                     headers={"Content-Type": "application/json"},
                     timeout=0.5,
                 ).status_code

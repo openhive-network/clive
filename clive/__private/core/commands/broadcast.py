@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from json import JSONEncoder
 from typing import TYPE_CHECKING, Any, Final
 
+from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.core.commands.command import Command
 from clive.exceptions import CliveError
 
@@ -48,11 +49,9 @@ class Broadcast(Command[None]):
         if NODE_COMMUNICATION_ENABLED:  # TODO: remove it when support for node communication will be granted
             httpx.post(
                 self.node_address.as_string(),
-                json={
-                    "id": 0,
-                    "jsonrpc": "2.0",
-                    "method": "network_broadcast_api.broadcast_transaction",
-                    "params": {"trx": AlreadySerialized(serialize_transaction(self.transaction))},
-                },
+                json=JSONRPCRequest(
+                    method="network_broadcast_api.broadcast_transaction",
+                    params={"trx": AlreadySerialized(serialize_transaction(self.transaction))},
+                ).dict(by_alias=True),
             )
             # TODO: some checks

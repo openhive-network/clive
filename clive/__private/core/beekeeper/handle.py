@@ -7,7 +7,7 @@ from httpx import codes, post
 from clive.__private.core.beekeeper.api import BeekeeperApi
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
-from clive.__private.core.beekeeper.model import HiveResponse, T
+from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
 from clive.__private.logger import logger
 from clive.core.url import Url
@@ -31,7 +31,7 @@ class BeekeeperRemote:
         pass
 
     class ErrorResponseError(CommunicationError):
-        def __init__(self, request: JsonT, response: JsonT) -> None:
+        def __init__(self, request: JSONRPCRequest, response: JsonT) -> None:
             logger.error(
                 f"""
 For request: {request}
@@ -46,14 +46,14 @@ Got error response: {response}
             logger.error(f"Id sent: `{given}`, got: `{got}`")
             super().__init__(given, got)
 
-    def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> HiveResponse[T]:  # noqa: ARG002, RUF100
+    def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
         url = self._get_request_url()
 
         if url is None:
             raise Beekeeper.UrlNotSetError()
 
-        request = {"id": 0, "jsonrpc": "2.0", "method": endpoint, "params": kwargs}
-        result = post(url.as_string(), json=request)
+        request = JSONRPCRequest(method=endpoint, params=kwargs)
+        result = post(url.as_string(), json=request.dict(by_alias=True))
 
         if result.status_code != codes.OK:
             raise Beekeeper.Non200StatusCodeError()
@@ -62,10 +62,10 @@ Got error response: {response}
         if "error" in json:
             raise Beekeeper.ErrorResponseError(request, json)
 
-        return_value = HiveResponse[T](**json)
+        return_value = JSONRPCResponse[T](**json)
 
-        if return_value.id != request["id"]:
-            raise Beekeeper.NotMatchingIdJsonRPCError(request["id"], return_value.id)
+        if return_value.id_ != request.id_:
+            raise Beekeeper.NotMatchingIdJsonRPCError(request.id_, return_value.id_)
 
         logger.info(f"Returning model: {return_value}")
         return return_value
