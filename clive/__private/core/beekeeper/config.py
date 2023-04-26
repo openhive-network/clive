@@ -5,13 +5,11 @@ from types import UnionType
 from typing import get_args
 
 from pydantic import BaseModel, Field
-from typing_extensions import TypeVar
 
 from clive.__private.config import settings
 from clive.core.url import Url
 
 AllowedTypesT = str | list[str] | bool | int | Url | Path
-T = TypeVar("T", bound=AllowedTypesT)
 
 
 class InvalidOptionError(Exception):
