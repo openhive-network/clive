@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import shutil
 import warnings
 from pathlib import Path
@@ -17,16 +18,24 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
+def __convert_test_name_to_directory_name(test_name: str) -> str:
+    parametrized_test_match = re.match(r"([\w_]+)\[(.*)\]", test_name)
+    if parametrized_test_match:
+        test_name = f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
+    final_test_name = ""
+
+    for character in test_name:
+        char = character
+        if not (character.isalnum() or character in "-_"):
+            char = f"-0x{ord(character):X}-"
+        final_test_name += char
+
+    return final_test_name
+
+
 @pytest.fixture
 def working_directory(request: pytest.FixtureRequest) -> Path:
-    test_hash = abs(hash(request.node.name))
-    test_signature: Final[str] = (
-        request.node.name.translate({ord(char): ord("_") for char in list("[]; {}<>!@#$%^&*-/*-+,./?:;'\"~`")}).strip(
-            "_"
-        )
-        + "_"
-        + str(test_hash)[:8]
-    )
+    test_signature: Final[str] = __convert_test_name_to_directory_name(request.node.name)
     test_path_directory: Final[Path] = request.path.parent
 
     generated_directory = test_path_directory / "generated"
