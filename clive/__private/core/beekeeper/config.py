@@ -8,11 +8,12 @@ from pydantic import BaseModel, Field
 
 from clive.__private.config import settings
 from clive.core.url import Url
+from clive.exceptions import CliveError
 
 AllowedTypesT = str | list[str] | bool | int | Url | Path
 
 
-class InvalidOptionError(Exception):
+class InvalidOptionError(CliveError):
     pass
 
 

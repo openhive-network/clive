@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Final, cast
 
 from clive.__private import config
-from clive.__private.core.beekeeper.handle import BeekeeperRemote
+from clive.__private.core.beekeeper.handle import BeekeeperRemote, ErrorResponseError
 from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
@@ -87,7 +87,7 @@ class ProfileData:
             beekeeper.api.open(wallet_name=self.name)
             with suppress(CliveError):  # make sure wallet is open
                 beekeeper.api.unlock(wallet_name=self.name, password=password)
-        except BeekeeperRemote.ErrorResponseError:
+        except ErrorResponseError:
             beekeeper.api.create(wallet_name=self.name, password=password)
 
         for i, key in enumerate(self.working_account.keys):

@@ -1,14 +1,16 @@
 from __future__ import annotations
 
 import json
+from math import ceil
 from time import sleep
 from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.beekeeper.handle import ErrorResponseError
 
 if TYPE_CHECKING:
+    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.beekeeper.model import ListWallets
     from tests import WalletInfo
 
@@ -32,7 +34,7 @@ def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
 @pytest.mark.parametrize("invalid_wallet_name", (",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37})))
 def test_invalid_wallet_names(beekeeper: Beekeeper, invalid_wallet_name: str) -> None:
     # ARRANGE, ACT & ASSERT
-    with pytest.raises(Beekeeper.ErrorResponseError):
+    with pytest.raises(ErrorResponseError):
         beekeeper.api.create(wallet_name=invalid_wallet_name)
 
 
@@ -59,13 +61,16 @@ def test_wallet_unlock(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
 
 def test_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     timeout: Final[int] = 2
+    amount_of_microseconds_in_second: Final[int] = 1_000_000
 
     # ARRANGE
     beekeeper.api.set_timeout(seconds=timeout)
 
     # ASSERT
     info = beekeeper.api.get_info()
-    assert (info.timeout_time - info.now).seconds == timeout
+    time_diff = info.timeout_time - info.now
+    precise_amount_of_time = time_diff.seconds + (time_diff.microseconds / amount_of_microseconds_in_second)
+    assert ceil(precise_amount_of_time) == timeout
     check_wallets(beekeeper.api.list_wallets(), [wallet.name])
 
     # ACT

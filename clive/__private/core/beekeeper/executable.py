@@ -12,19 +12,23 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.config import BeekeeperConfig
 
 
+class BeekeeperAlreadyRunningError(Exception):
+    pass
+
+
+class BeekeeperNotificationServerNotConfiguredError(CliveError):
+    pass
+
+
+class BeekeeperNonZeroExitCodeError(CliveError):
+    pass
+
+
+class BeekeeperDidNotClosedError(CliveError):
+    pass
+
+
 class BeekeeperExecutable:
-    class BeekeeperAlreadyRunningError(Exception):
-        pass
-
-    class BeekeeperNotificationServerNotConfiguredError(CliveError):
-        pass
-
-    class BeekeeperNonZeroExitCodeError(CliveError):
-        pass
-
-    class BeekeeperDidNotClosedError(CliveError):
-        pass
-
     DEFAULT_EXECUTABLE_PATH: Final[str] = "./beekeeper"
 
     def __init__(self, *, executable: Path | None = None) -> None:
@@ -36,17 +40,17 @@ class BeekeeperExecutable:
 
     def run(self, config: BeekeeperConfig) -> None:
         if self.__process is not None:
-            raise self.BeekeeperAlreadyRunningError()
+            raise BeekeeperAlreadyRunningError()
 
         if config.notifications_endpoint is None:
-            raise self.BeekeeperNotificationServerNotConfiguredError()
+            raise BeekeeperNotificationServerNotConfiguredError()
 
         # prepare config
         self.__lock_file = config.wallet_dir / "__lock"
         if not config.wallet_dir.exists():
             config.wallet_dir.mkdir()
         elif self.__lock_file.exists():
-            raise self.BeekeeperAlreadyRunningError(self.__lock_file)
+            raise BeekeeperAlreadyRunningError(self.__lock_file)
         config_filename = config.wallet_dir / "config.ini"
         config.save(config_filename)
 
@@ -68,7 +72,7 @@ class BeekeeperExecutable:
 
         def wait_for_kill() -> None:
             if self.__process is not None and self.__process.wait(5.0) != 0:
-                raise self.BeekeeperNonZeroExitCodeError()
+                raise BeekeeperNonZeroExitCodeError()
 
         try:
             self.__process.send_signal(SIGINT)
@@ -82,7 +86,7 @@ class BeekeeperExecutable:
                     self.__process.terminate()
                     wait_for_kill()
                 except TimeoutError as e:
-                    raise self.BeekeeperDidNotClosedError() from e
+                    raise BeekeeperDidNotClosedError() from e
         finally:
             if self.__stderr is not None:
                 self.__stderr.close()
