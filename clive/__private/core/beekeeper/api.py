@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from functools import wraps
-from inspect import signature
-from typing import TYPE_CHECKING, Any, TypeVar, cast
+from typing import TYPE_CHECKING, Any, TypeVar, get_type_hints
 
 from clive.__private.core.beekeeper.model import (
     Create,  # noqa: TCH001
@@ -26,11 +25,8 @@ FooT = TypeVar("FooT", bound=Callable[..., object])
 def api(foo: FooT) -> FooT:
     @wraps(foo)
     def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
-        def __get_type_from_typename_workaround(typename: str) -> type:
-            return cast(type, globals()[typename])
-
         return this._owner._send(
-            response=__get_type_from_typename_workaround(signature(foo).return_annotation),
+            response=get_type_hints(foo)["return"],
             endpoint=f"beekeeper_api.{foo.__name__}",
             **kwargs,
         ).result
