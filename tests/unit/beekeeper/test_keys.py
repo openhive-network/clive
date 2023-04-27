@@ -34,9 +34,7 @@ PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
 
 
 def assert_keys(given: list[str], valid: list[str]) -> None:
-    assert len(given) == len(valid)
-    for given_key in given:
-        assert given_key in valid
+    assert sorted(valid) == sorted(given)
 
 
 def test_key_create(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
