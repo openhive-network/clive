@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Final, cast
 
 from clive.__private import config
 from clive.__private.core.beekeeper.handle import ErrorResponseError
-from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
 from clive.core.url import Url
@@ -95,6 +94,6 @@ class ProfileData:
 
         for i, key in enumerate(self.working_account.keys):
             if isinstance(key, PrivateKey):
-                self.working_account.keys[i] = execute_with_result(
+                self.working_account.keys[i] = ImportKey.execute_with_result(
                     ImportKey(wallet=self.name, key_to_import=key, beekeeper=beekeeper)
                 )

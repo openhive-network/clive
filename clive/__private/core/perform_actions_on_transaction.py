@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save import SaveToFile
 from clive.__private.core.commands.sign import Sign
@@ -38,7 +37,7 @@ def perform_actions_on_transaction(
     transaction = ensure_transaction(content)
 
     if sign_key:
-        transaction = execute_with_result(Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key))
+        transaction = Sign.execute_with_result(Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key))
 
     if save_file_path:
         SaveToFile(transaction=transaction, file_path=save_file_path).execute()

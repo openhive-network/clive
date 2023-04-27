@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
@@ -32,10 +31,10 @@ class Commands:
         Deactivate(self.__world.beekeeper, wallet=self.__world.profile_data.name).execute()
 
     def build_transaction(self, *, operations: list[Operation]) -> Transaction:
-        return execute_with_result(BuildTransaction(operations=operations))
+        return BuildTransaction.execute_with_result(BuildTransaction(operations=operations))
 
     def sign(self, *, transaction: Transaction, sign_with: PrivateKeyAlias) -> Transaction:
-        return execute_with_result(Sign(beekeeper=self.__world.beekeeper, transaction=transaction, key=sign_with))
+        return Sign.execute_with_result(Sign(beekeeper=self.__world.beekeeper, transaction=transaction, key=sign_with))
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
         SaveToFile(transaction=transaction, file_path=path).execute()
@@ -52,6 +51,6 @@ class Commands:
         ).execute()
 
     def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:
-        return execute_with_result(
+        return ImportKey.execute_with_result(
             ImportKey(wallet=self.__world.profile_data.name, key_to_import=wif, beekeeper=self.__world.beekeeper)
         )
