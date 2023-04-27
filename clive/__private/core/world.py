@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.app_state import AppState
+from clive.__private.core.beekeeper import Beekeeper, BeekeeperRemote
 from clive.__private.core.beekeeper.executable import BeekeeperNotConfiguredError
-from clive.__private.core.beekeeper.handle import Beekeeper, BeekeeperRemote
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.mock_database import NodeData

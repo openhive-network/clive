@@ -8,7 +8,7 @@ from clive.__private.logger import logger
 from clive.exceptions import CannotActivateError, CommunicationError
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.handle import BeekeeperRemote
+    from clive.__private.core.beekeeper import BeekeeperRemote
 
 
 @dataclass

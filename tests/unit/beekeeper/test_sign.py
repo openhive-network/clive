@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Final
 
-    from clive.__private.core.beekeeper.handle import Beekeeper
+    from clive.__private.core.beekeeper import Beekeeper
     from tests import WalletInfo
 
 

@@ -11,7 +11,7 @@ from clive.__private.core.ensure_transaction import ensure_transaction
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.beekeeper.handle import BeekeeperRemote
+    from clive.__private.core.beekeeper import BeekeeperRemote
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.storage.mock_database import PrivateKeyAlias
     from clive.core.url import Url

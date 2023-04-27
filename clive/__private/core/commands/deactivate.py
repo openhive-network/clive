@@ -7,7 +7,7 @@ from clive.__private.core.commands.command import Command
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.handle import BeekeeperRemote
+    from clive.__private.core.beekeeper import BeekeeperRemote
 
 
 @dataclass

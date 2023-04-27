@@ -7,7 +7,7 @@ from clive.__private.core.commands.command import Command
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.handle import BeekeeperRemote
+    from clive.__private.core.beekeeper import BeekeeperRemote
     from clive.__private.storage.mock_database import PrivateKeyAlias
     from clive.core.url import Url
     from clive.models.operation import Operation

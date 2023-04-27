@@ -17,7 +17,7 @@ from clive.__private.core.beekeeper.model import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.handle import BeekeeperRemote
+    from clive.__private.core.beekeeper import BeekeeperRemote
 
 FooT = TypeVar("FooT", bound=Callable[..., object])
 

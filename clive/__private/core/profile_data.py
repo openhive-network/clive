@@ -4,16 +4,19 @@ import shelve
 from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Final, cast
+from typing import TYPE_CHECKING, Final, cast
 
 from clive.__private import config
-from clive.__private.core.beekeeper.handle import BeekeeperRemote, ErrorResponseError
+from clive.__private.core.beekeeper.handle import ErrorResponseError
 from clive.__private.core.commands import execute_with_result
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.operation import Operation
+
+if TYPE_CHECKING:
+    from clive.__private.core.beekeeper import BeekeeperRemote
 
 
 class Cart(list[Operation]):
