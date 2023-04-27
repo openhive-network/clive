@@ -50,11 +50,6 @@ class GetInfo(BeekeeperResponse):
     now: datetime
     timeout_time: datetime
 
-    class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat(),
-        }
-
     @validator("now", "timeout_time", pre=True)
     @classmethod
     def time_validate(cls, v: str) -> datetime:
