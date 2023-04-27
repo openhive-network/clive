@@ -4,7 +4,7 @@ import shelve
 from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final, cast
+from typing import TYPE_CHECKING, Final
 
 from clive.__private import config
 from clive.__private.core.beekeeper.handle import ErrorResponseError
@@ -39,7 +39,7 @@ class ProfileData:
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:
-        return cast(Path, config.settings.data_path) / "profile_data"
+        return Path(config.settings.data_path) / "profile_data"
 
     def __post_init__(self) -> None:
         self.backup_node_addresses = self.__default_node_address()
