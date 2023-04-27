@@ -72,26 +72,31 @@ class BeekeeperExecutable:
         with self.__pid_file.open(mode="w") as file:
             file.write(f"{self.__process.pid}")
 
+    def __wait_for_kill(self) -> None:
+        if self.__process is not None and self.__process.wait(5.0) != 0:
+            if self.__process.stderr is not None:
+                self.__process.stderr.flush()
+
+            if self.__process.stdout is not None:
+                self.__process.stdout.flush()
+
+            raise BeekeeperNonZeroExitCodeError()
+
     def close(self) -> None:
         if self.__process is None:
             assert self.__pid_file is None
             return
-
-        def wait_for_kill() -> None:
-            if self.__process is not None and self.__process.wait(5.0) != 0:
-                raise BeekeeperNonZeroExitCodeError()
-
         try:
             self.__process.send_signal(SIGINT)
-            wait_for_kill()
+            self.__wait_for_kill()
         except TimeoutExpired:
             try:
                 self.__process.kill()
-                wait_for_kill()
+                self.__wait_for_kill()
             except TimeoutExpired:
                 try:
                     self.__process.terminate()
-                    wait_for_kill()
+                    self.__wait_for_kill()
                 except TimeoutError as e:
                     raise BeekeeperDidNotClosedError() from e
         finally:
