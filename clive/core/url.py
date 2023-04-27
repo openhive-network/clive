@@ -29,3 +29,6 @@ class Url:
         port_suffix = f":{self.port}" if self.port is not None else ""
 
         return f"{protocol_prefix}{self.host}{port_suffix}"
+
+    def __str__(self) -> str:
+        return self.as_string()
