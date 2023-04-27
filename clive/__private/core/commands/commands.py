@@ -9,6 +9,7 @@ from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.save import SaveToFile
+from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 
 if TYPE_CHECKING:
@@ -29,6 +30,9 @@ class Commands:
 
     def deactivate(self) -> None:
         Deactivate(self.__world.beekeeper, wallet=self.__world.profile_data.name).execute()
+
+    def set_timeout(self, *, seconds: int) -> None:
+        SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds).execute()
 
     def build_transaction(self, *, operations: list[Operation]) -> Transaction:
         return BuildTransaction.execute_with_result(BuildTransaction(operations=operations))
