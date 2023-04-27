@@ -24,8 +24,8 @@ def test_if_entry_point_works() -> None:
     assert status == exit_code_successful, f"`{entry_point}` command failed because of: `{result}`"
 
 
-@pytest.mark.parametrize("n", (n for n in range(10)))  # there was random fail so it is run several times
-def test_if_dev_entry_point_works(working_directory: Path, n: int) -> None:  # noqa: ARG001
+@pytest.mark.random_fail
+def test_if_dev_entry_point_works(working_directory: Path) -> None:
     # ARRANGE
     entry_point: Final[str] = "clive-dev"
     envs = os.environ

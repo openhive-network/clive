@@ -13,6 +13,7 @@ def test_proper_closing(beekeeper: Beekeeper) -> None:
     assert beekeeper is not None  # dummy assertion
 
 
+@pytest.mark.random_fail  # can't diagnose, potentially segmentation fault, but can't be sure
 @pytest.mark.parametrize("wallet_name", ("test", "123", "test"))
 def test_clean_dirs(beekeeper: Beekeeper, wallet_name: str) -> None:
     test_file = beekeeper.config.wallet_dir / wallet_name

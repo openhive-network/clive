@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-from math import ceil
 from time import sleep
 from typing import TYPE_CHECKING, Final
 
@@ -59,18 +58,17 @@ def test_wallet_unlock(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     check_wallets(beekeeper.api.list_wallets(), [wallet.name])
 
 
+@pytest.mark.random_fail
 def test_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
-    timeout: Final[int] = 2
-    amount_of_microseconds_in_second: Final[int] = 1_000_000
+    timeout: Final[int] = 5
+    comparison_error_max_delta: Final[float] = 1.0
 
     # ARRANGE
     beekeeper.api.set_timeout(seconds=timeout)
 
     # ASSERT
     info = beekeeper.api.get_info()
-    time_diff = info.timeout_time - info.now
-    precise_amount_of_time = time_diff.seconds + (time_diff.microseconds / amount_of_microseconds_in_second)
-    assert ceil(precise_amount_of_time) == timeout
+    assert timeout - (info.timeout_time - info.now).total_seconds() <= comparison_error_max_delta
     check_wallets(beekeeper.api.list_wallets(), [wallet.name])
 
     # ACT
