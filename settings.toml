@@ -1,5 +1,8 @@
 [default]
+FORCE_ONBOARDING = false
+LOG_DEBUG_LOOP = false
 LOG_LEVEL = "INFO"
 LOG_LEVEL_3RD_PARTY = "WARNING"
-LOG_DEBUG_LOOP = false
-FORCE_ONBOARDING = false
+[default.beekeeper]
+path = "../beekeeper"
+remote_address = ""

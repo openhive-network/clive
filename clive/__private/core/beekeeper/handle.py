@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from httpx import codes, post
 
+from clive.__private.config import settings
 from clive.__private.core.beekeeper.api import BeekeeperApi
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
@@ -46,8 +47,8 @@ class NotMatchingIdJsonRPCError(CommunicationError):
 
 
 class BeekeeperRemote:
-    def __init__(self, address: Url | None) -> None:
-        self.__address = address
+    def __init__(self) -> None:
+        self.__address = self.get_address_from_settings()
         self.api = BeekeeperApi(self)
 
     def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
@@ -77,13 +78,18 @@ class BeekeeperRemote:
     def _get_request_url(self) -> Url | None:
         return self.__address
 
+    @classmethod
+    def get_address_from_settings(cls) -> Url | None:
+        raw_address = settings.get("beekeeper.remote_address")
+        return Url.parse(raw_address) if raw_address else None
+
 
 class Beekeeper(BeekeeperRemote):
-    def __init__(self, *, executable: Path | None = None) -> None:
-        self.__executable = BeekeeperExecutable(executable=executable)
+    def __init__(self) -> None:
+        self.__executable = BeekeeperExecutable()
         self.__notification_server = BeekeeperNotificationsServer()
         self.config = BeekeeperConfig()
-        super().__init__(None)
+        super().__init__()
 
     def _get_request_url(self) -> Url | None:
         return self.config.webserver_http_endpoint
@@ -114,3 +120,7 @@ class Beekeeper(BeekeeperRemote):
     def restart(self) -> None:
         self.close()
         self.run()
+
+    @classmethod
+    def get_path_from_settings(cls) -> Path | None:
+        return BeekeeperExecutable.get_path_from_settings()

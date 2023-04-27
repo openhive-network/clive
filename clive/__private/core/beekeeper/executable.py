@@ -1,14 +1,14 @@
 from __future__ import annotations
 
+from pathlib import Path
 from signal import SIGINT
 from subprocess import Popen, TimeoutExpired
-from typing import TYPE_CHECKING, Final, TextIO
+from typing import TYPE_CHECKING, TextIO
 
+from clive.__private.config import settings
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from clive.__private.core.beekeeper.config import BeekeeperConfig
 
 
@@ -28,12 +28,17 @@ class BeekeeperDidNotClosedError(CliveError):
     pass
 
 
-class BeekeeperExecutable:
-    DEFAULT_EXECUTABLE_PATH: Final[str] = "./beekeeper"
+class BeekeeperNotConfiguredError(CliveError):
+    pass
 
-    def __init__(self, *, executable: Path | None = None) -> None:
-        self.__executable = executable or self.DEFAULT_EXECUTABLE_PATH
-        self.__process: Popen | None = None  # type: ignore
+
+class BeekeeperExecutable:
+    def __init__(self) -> None:
+        self.__executable: Path = self.get_path_from_settings()  # type: ignore
+        if self.__executable is None:
+            raise BeekeeperNotConfiguredError()
+
+        self.__process: Popen[bytes] | None = None
         self.__stderr: TextIO | None = None
         self.__stdout: TextIO | None = None
         self.__lock_file: Path | None = None
@@ -59,7 +64,7 @@ class BeekeeperExecutable:
         self.__stderr = (config.wallet_dir / "stderr.log").open("wt", encoding="utf-8")
 
         self.__lock_file.touch(exist_ok=False)
-        self.__process = Popen[str](
+        self.__process = Popen[bytes](
             [self.__executable, "--data-dir", config.wallet_dir.as_posix()],
             stdout=self.__stdout,
             stderr=self.__stderr,
@@ -97,3 +102,8 @@ class BeekeeperExecutable:
             assert self.__lock_file is not None and self.__lock_file.exists()
             self.__lock_file.unlink()
             self.__lock_file = None
+
+    @classmethod
+    def get_path_from_settings(cls) -> Path | None:
+        path_raw = settings.get("beekeeper.path")
+        return Path(path_raw) if path_raw is not None else None

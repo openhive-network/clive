@@ -1,16 +1,14 @@
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
-from clive.__private.config import settings
 from clive.__private.core.app_state import AppState
+from clive.__private.core.beekeeper.executable import BeekeeperNotConfiguredError
 from clive.__private.core.beekeeper.handle import Beekeeper, BeekeeperRemote
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.mock_database import NodeData
 from clive.__private.ui.background_tasks import BackgroundTasks
-from clive.core.url import Url
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -62,14 +60,10 @@ class World:
         self.close()
 
     def __setup_beekeeper(self) -> None:
-        beekeeper_path: Path | None = None
-        if (beekeeper_config := settings.get("beekeeper")) is not None:
-            if (beekeeper_remote_address := beekeeper_config.get("remote_address")) is not None:
-                self.__beekeeper = BeekeeperRemote(Url.parse(beekeeper_remote_address))
-                return
-
-            if (beekeeper_path_from_settings := beekeeper_config.get("path")) is not None:
-                beekeeper_path = Path(beekeeper_path_from_settings)
-
-        self.__beekeeper = Beekeeper(executable=beekeeper_path)
-        self.__beekeeper.run()
+        if BeekeeperRemote.get_address_from_settings() is not None:
+            self.__beekeeper = BeekeeperRemote()
+        elif Beekeeper.get_path_from_settings() is not None:
+            self.__beekeeper = Beekeeper()
+            self.__beekeeper.run()
+        else:
+            raise BeekeeperNotConfiguredError()

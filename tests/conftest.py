@@ -3,7 +3,6 @@ from __future__ import annotations
 import re
 import shutil
 import warnings
-from pathlib import Path
 from typing import TYPE_CHECKING, Final, cast
 
 import pytest
@@ -16,6 +15,7 @@ from tests import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from pathlib import Path
 
 
 def __convert_test_name_to_directory_name(test_name: str) -> str:
@@ -49,15 +49,6 @@ def working_directory(request: pytest.FixtureRequest) -> Path:
     return test_path
 
 
-def pytest_addoption(parser: pytest.Parser) -> None:
-    parser.addoption("--beekeeper", default="/workspace/clive/clive/beekeeper", help="path to beekeeper executable")
-
-
-@pytest.fixture
-def beekeeper_executable_path(request: pytest.FixtureRequest) -> Path:
-    return Path(request.config.getoption("--beekeeper"))
-
-
 @pytest.fixture
 def wallet_name() -> str:
     return "wallet"
@@ -69,8 +60,7 @@ def pubkey(beekeeper: Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
 
 
 @pytest.fixture
-def world(wallet_name: str, working_directory: Path, beekeeper_executable_path: Path) -> Iterator[World]:
-    settings.beekeeper = {"path": beekeeper_executable_path}
+def world(wallet_name: str, working_directory: Path) -> Iterator[World]:
     settings.data_path = working_directory
     w = World(profile_name=wallet_name)
     yield w

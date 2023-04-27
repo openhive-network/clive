@@ -11,7 +11,6 @@ from clive.__private.core.beekeeper.raise_exception_helper import RaiseException
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-
 JsonT = dict[str, Any]
 
 
