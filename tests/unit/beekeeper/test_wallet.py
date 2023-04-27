@@ -22,7 +22,7 @@ def check_wallets(given: ListWallets, valid: list[str], *, unlocked: bool = True
         assert given_wallet.unlocked == unlocked
 
 
-@pytest.mark.parametrize("wallet_name", ("test", "123", "test"))
+@pytest.mark.parametrize("wallet_name", ("test", "123"))
 def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
     # ARRANGE & ACT
     beekeeper.api.create(wallet_name=wallet_name)
