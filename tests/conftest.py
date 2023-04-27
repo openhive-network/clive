@@ -11,6 +11,7 @@ from clive.__private.config import settings
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.world import World
 from clive.__private.storage.mock_database import PrivateKeyAlias
+from clive.__private.util import prepare_before_launch
 from tests import WalletInfo
 
 if TYPE_CHECKING:
@@ -44,6 +45,13 @@ def __convert_test_name_to_directory_name(test_name: str) -> str:
     return final_test_name
 
 
+@pytest.fixture(autouse=True, scope="function")
+def run_prepare_before_launch(working_directory: Path) -> None:
+    settings.data_path = working_directory
+    settings.log_path = working_directory / "logs"
+    prepare_before_launch()
+
+
 @pytest.fixture
 def working_directory(request: pytest.FixtureRequest) -> Path:
     test_signature: Final[str] = __convert_test_name_to_directory_name(request.node.name)
@@ -71,8 +79,7 @@ def pubkey(beekeeper: Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
 
 
 @pytest.fixture
-def world(wallet_name: str, working_directory: Path) -> Iterator[World]:
-    settings.data_path = working_directory
+def world(wallet_name: str) -> Iterator[World]:
     w = World(profile_name=wallet_name)
     yield w
     w.close()
