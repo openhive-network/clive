@@ -95,9 +95,11 @@ tests_launch:
   needs:
     - job: build_beekeeper
       artifacts: true
+  variables:
+    CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
   script:
     - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}" &&
-      python3 -m pytest -n auto --junitxml=report.xml --beekeeper $BEEKEEPER_BINARY tests/
+      python3 -m pytest -n auto --junitxml=report.xml tests/
   artifacts:
     reports:
       junit: report.xml
