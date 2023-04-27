@@ -103,6 +103,10 @@ tests_launch:
   artifacts:
     reports:
       junit: report.xml
+    paths:
+      - "**/generated"
+    when: always
+    expire_in: 7 days
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
