@@ -28,17 +28,18 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
 
     command = None
     if isinstance(content, Operation):
-        command = BuildTransaction(operations=[content])
+    def __ensure_operation(item: Any) -> Operation:
+        assert isinstance(item, Operation)
+        return item
+    
+    if isinstance(content, Transaction):
+        return content
+
+    if isinstance(content, Operation):
+        operations = [content]
     elif isinstance(content, Iterable):
-
-        def assure_operation(item: Any) -> Operation:
-            assert isinstance(item, Operation)
-            return item
-
-        command = BuildTransaction(operations=[assure_operation(x) for x in content])
-
-    if command is None:
+        operations = [__ensure_operation(x) for x in content]
+    else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
 
-    command.execute()
-    return command.result
+    return execute_with_result(BuildTransaction(operations))
