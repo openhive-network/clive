@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING, Any
 
 from textual.containers import Grid
 from textual.message import Message
 from textual.widgets import Input, Static
 
+from clive.__private.core.profile_data import ProfileData
+from clive.__private.storage.contextual import Contextual
 from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -27,7 +30,7 @@ class SubTitle(Static):
     pass
 
 
-class AuthorityForm(BaseScreen):
+class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     class Saved(Message, bubble=True):
         """Emitted when user Saves the form"""
 
@@ -98,4 +101,4 @@ class AuthorityForm(BaseScreen):
         PrivateKey.validate_key(self._get_key())
 
     def __generate_key_alias(self) -> str:
-        return f"{self.app.profile_data.working_account.name}@active"
+        return f"{self.context.working_account.name}@active"

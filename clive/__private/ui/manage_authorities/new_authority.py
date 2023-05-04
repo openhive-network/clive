@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.storage.contextual import Contextual
 from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
@@ -18,7 +17,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class NewAuthorityBase(AuthorityForm, Contextual[ProfileData], ABC):
+class NewAuthorityBase(AuthorityForm, ABC):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]

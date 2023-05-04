@@ -9,6 +9,7 @@ from clive.__private.ui.manage_authorities.widgets.authority_form import Authori
 from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
+    from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.mock_database import PrivateKeyAlias
 
 
@@ -22,6 +23,10 @@ class EditAuthority(AuthorityForm):
     def __init__(self, authority: PrivateKeyAlias) -> None:
         self.authority = authority
         super().__init__()
+
+    @property
+    def context(self) -> ProfileData:
+        return self.app.profile_data
 
     def action_save(self) -> None:
         self._save()
