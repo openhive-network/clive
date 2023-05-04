@@ -189,7 +189,7 @@ class Clive(App[int], ManualReactive):
     def activate(self, password: str, active_mode_time: timedelta | None = None) -> None:
         if active_mode_time is not None:
             self.world.commands.set_timeout(seconds=int(active_mode_time.total_seconds()))
-        self.world.commands.activate(password=password)
+        self.world.commands.activate(password=password, time=active_mode_time)
         self.world.update_reactive("app_state")
         self.post_message_to_everyone(ActivateScreen.Succeeded())
 

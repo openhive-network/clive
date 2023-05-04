@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from time import sleep
 from typing import TYPE_CHECKING, Final
 
@@ -38,16 +39,15 @@ def test_reactivate(world: clive.World, wallet: WalletInfo) -> None:
     assert world.app_state.is_active()
 
 
-def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001
-    time_to_sleep: Final[int] = 2
-
+def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE
-    assert world.app_state.is_active()
-    world.beekeeper.api.set_timeout(seconds=time_to_sleep)
-    assert world.app_state.is_active()
+    time_to_sleep: Final[timedelta] = timedelta(seconds=2)
+    world.beekeeper.api.lock_all()
 
     # ACT
-    sleep(time_to_sleep + 1)
+    world.commands.activate(password=wallet.password, time=time_to_sleep)
+    assert world.app_state.is_active()
+    sleep(time_to_sleep.total_seconds())
 
     # ASSERT
     assert not world.app_state.is_active()

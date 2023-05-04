@@ -13,6 +13,7 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from pathlib import Path
 
     from clive import World
@@ -25,8 +26,8 @@ class Commands:
     def __init__(self, world: World) -> None:
         self.__world = world
 
-    def activate(self, *, password: str) -> None:
-        Activate(self.__world.beekeeper, wallet=self.__world.profile_data.name, password=password).execute()
+    def activate(self, *, password: str, time: timedelta | None = None) -> None:
+        Activate(self.__world.beekeeper, wallet=self.__world.profile_data.name, password=password, time=time).execute()
 
     def deactivate(self) -> None:
         Deactivate(self.__world.beekeeper, wallet=self.__world.profile_data.name).execute()
