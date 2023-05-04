@@ -8,12 +8,12 @@ from clive.__private.logger import logger
 from clive.exceptions import CannotActivateError, CommunicationError
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
+    from clive.__private.core.beekeeper import Beekeeper
 
 
 @dataclass
 class Activate(Command[None]):
-    beekeeper: BeekeeperRemote
+    beekeeper: Beekeeper
     wallet: str
     password: str
 

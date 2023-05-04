@@ -7,7 +7,7 @@ from clive.__private.core.commands.command import Command
 from clive.__private.storage.mock_database import PrivateKeyAlias
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
+    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.storage.mock_database import PrivateKey
 
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 class ImportKey(Command[PrivateKeyAlias]):
     wallet: str
     key_to_import: PrivateKey
-    beekeeper: BeekeeperRemote
+    beekeeper: Beekeeper
 
     def execute(self) -> None:
         self._result = PrivateKeyAlias(

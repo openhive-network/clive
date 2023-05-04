@@ -16,7 +16,7 @@ from clive.exceptions import CliveError
 from clive.models.operation import Operation
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
+    from clive.__private.core.beekeeper import Beekeeper
 
 
 class Cart(list[Operation]):
@@ -85,7 +85,7 @@ class ProfileData(Context):
             Url("http", "hive-6.pl.syncad.com", 18090),
         ]
 
-    def write_to_beekeeper(self, beekeeper: BeekeeperRemote, password: str) -> None:
+    def write_to_beekeeper(self, beekeeper: Beekeeper, password: str) -> None:
         try:
             beekeeper.api.open(wallet_name=self.name)
             with suppress(CliveError):  # make sure wallet is open

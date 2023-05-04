@@ -7,12 +7,12 @@ from clive.__private.core.commands.command import Command
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
+    from clive.__private.core.beekeeper import Beekeeper
 
 
 @dataclass
 class Deactivate(Command[None]):
-    beekeeper: BeekeeperRemote
+    beekeeper: Beekeeper
     wallet: str
 
     def execute(self) -> None:

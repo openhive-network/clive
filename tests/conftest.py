@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Final, cast
 import pytest
 
 from clive.__private.config import settings
-from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.beekeeper import BeekeeperLocal
 from clive.__private.core.world import World
 from clive.__private.storage.mock_database import PrivateKeyAlias
 from clive.__private.util import prepare_before_launch
@@ -74,7 +74,7 @@ def wallet_name() -> str:
 
 
 @pytest.fixture
-def pubkey(beekeeper: Beekeeper, wallet: WalletInfo) -> PrivateKeyAlias:
+def pubkey(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> PrivateKeyAlias:
     return PrivateKeyAlias(beekeeper.api.create_key(wallet_name=wallet.name).public_key)
 
 
@@ -94,5 +94,5 @@ def wallet(world: World, wallet_name: str) -> WalletInfo:
 
 
 @pytest.fixture
-def beekeeper(world: World) -> Beekeeper:
-    return cast(Beekeeper, world.beekeeper)
+def beekeeper(world: World) -> BeekeeperLocal:
+    return cast(BeekeeperLocal, world.beekeeper)

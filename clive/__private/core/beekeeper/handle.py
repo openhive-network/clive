@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from httpx import codes, post
@@ -46,10 +47,13 @@ class NotMatchingIdJsonRPCError(CommunicationError):
         super().__init__(given, got)
 
 
-class BeekeeperRemote:
+class Beekeeper(ABC):
     def __init__(self) -> None:
-        self.__address = self.get_address_from_settings()
         self.api = BeekeeperApi(self)
+
+    @abstractmethod
+    def _get_request_url(self) -> Url | None:
+        """Should return the url to send the request to"""
 
     def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
         url = self._get_request_url()
@@ -75,8 +79,10 @@ class BeekeeperRemote:
         logger.info(f"Returning model: {return_value}")
         return return_value
 
+
+class BeekeeperRemote(Beekeeper):
     def _get_request_url(self) -> Url | None:
-        return self.__address
+        return self.get_address_from_settings()
 
     @classmethod
     def get_address_from_settings(cls) -> Url | None:
@@ -84,7 +90,7 @@ class BeekeeperRemote:
         return Url.parse(raw_address) if raw_address else None
 
 
-class Beekeeper(BeekeeperRemote):
+class BeekeeperLocal(Beekeeper):
     def __init__(self) -> None:
         self.__executable = BeekeeperExecutable()
         self.__notification_server = BeekeeperNotificationsServer()

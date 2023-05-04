@@ -17,7 +17,7 @@ from clive.__private.core.beekeeper.model import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
+    from clive.__private.core.beekeeper import Beekeeper
 
 FooT = TypeVar("FooT", bound=Callable[..., object])
 
@@ -35,7 +35,7 @@ def api(foo: FooT) -> FooT:
 
 
 class BeekeeperApi:
-    def __init__(self, owner: BeekeeperRemote) -> None:
+    def __init__(self, owner: Beekeeper) -> None:
         self._owner = owner
 
     @api

@@ -10,7 +10,7 @@ from clive.__private.core.ensure_transaction import ensure_transaction
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.beekeeper import BeekeeperRemote
+    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.storage.mock_database import PrivateKeyAlias
     from clive.core.url import Url
@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 def perform_actions_on_transaction(
     content: TransactionConvertibleType,
     *,
-    beekeeper: BeekeeperRemote,
+    beekeeper: Beekeeper,
     node_address: Url,
     sign_key: PrivateKeyAlias | None = None,
     save_file_path: Path | None = None,
