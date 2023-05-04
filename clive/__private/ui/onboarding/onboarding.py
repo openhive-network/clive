@@ -27,7 +27,7 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
         for screen in self.app.screen_stack:
             if isinstance(screen, CreateProfileForm):
-                self.app.profile_data = self.context
+                self.app.profile_data.update_from_context(self.context)
                 self.app.post_message_to_everyone(ProfileDataUpdated(screen.password))
                 super().action_finish()
                 return

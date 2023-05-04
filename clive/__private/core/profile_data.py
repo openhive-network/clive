@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Final
 from clive.__private import config
 from clive.__private.core.beekeeper.handle import ErrorResponseError
 from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.storage.contextual import Context
 from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -24,7 +25,7 @@ class Cart(list[Operation]):
 
 
 @dataclass
-class ProfileData:
+class ProfileData(Context):
     _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
 
     name: str = ""

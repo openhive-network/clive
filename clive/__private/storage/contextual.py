@@ -1,11 +1,24 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 
-ContextT = TypeVar("ContextT")
+if TYPE_CHECKING:
+    from typing_extensions import Self
+
+
+class Context:
+    """A class that could be used as a context"""
+
+    def update_from_context(self, context: Self) -> None:
+        """Updates self from other context"""
+        for attribute in self.__dict__:
+            setattr(self, attribute, getattr(context, attribute))
+
+
+ContextT = TypeVar("ContextT", bound=Context | None)
 
 
 class Contextual(Generic[ContextT], AbstractClassMessagePump):
