@@ -57,7 +57,7 @@ class SelectKey(SafeSelect[PrivateKeyAlias], CliveWidget):
 
     def __init__(self) -> None:
         super().__init__(
-            [SelectItem(x, x.key_name) for x in self.app.profile_data.working_account.keys],
+            [SelectItem(x, x.key_name) for x in self.app.world.profile_data.working_account.keys],
             list_mount="ViewBag",
             selected=0,
             empty_string="no private key found",
@@ -88,7 +88,7 @@ class TransactionSummary(BaseScreen):
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
-                for idx, operation in enumerate(self.app.profile_data.cart):
+                for idx, operation in enumerate(self.app.world.profile_data.cart):
                     yield OperationItem(operation.as_json(), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
@@ -116,7 +116,7 @@ class TransactionSummary(BaseScreen):
         self.app.pop_screen_until(DashboardBase)
 
     def action_broadcast(self) -> None:
-        if not self.app.app_state.is_active():
+        if not self.app.world.app_state.is_active():
             self.app.push_screen(Activate())
             return
 
@@ -131,7 +131,7 @@ class TransactionSummary(BaseScreen):
         self.app.push_screen(SelectFile(file_must_exist=False))
 
     def __clear_all(self) -> None:
-        self.app.profile_data.cart.clear()
+        self.app.world.profile_data.cart.clear()
         self.__scrollable_part.add_class("-hidden")
 
     def __sign_transaction(self) -> Transaction | None:
@@ -150,4 +150,4 @@ class TransactionSummary(BaseScreen):
             return None
 
     def __build_transaction(self) -> Transaction:
-        return self.app.world.commands.build_transaction(operations=self.app.profile_data.cart)
+        return self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)

@@ -44,7 +44,7 @@ class Activate(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Profile name", classes="label")
-            yield Input(self.app.profile_data.name, disabled=True)
+            yield Input(self.app.world.profile_data.name, disabled=True)
             yield Static("Password", classes="label", id="password-label")
             yield self.__password_input
             yield self.__permanent_active_mode_switch

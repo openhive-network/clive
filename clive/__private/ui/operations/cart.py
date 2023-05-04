@@ -123,12 +123,16 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
             return ""
 
         yield DynamicColumn(
-            self.app, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell cell-middle"
+            self.app.world, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell cell-middle"
         )
         yield DynamicColumn(
-            self.app, "profile_data", operation_name, id_="operation_type", classes="cell cell-variant cell-middle"
+            self.app.world,
+            "profile_data",
+            operation_name,
+            id_="operation_type",
+            classes="cell cell-variant cell-middle",
         )
-        yield DynamicColumn(self.app, "profile_data", operation_details, id_="operation_details", classes="cell")
+        yield DynamicColumn(self.app.world, "profile_data", operation_details, id_="operation_details", classes="cell")
         yield ButtonMoveUp(disabled=self.__is_first)
         yield ButtonMoveDown(disabled=self.__is_last)
         yield ButtonDelete()
@@ -160,12 +164,12 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
     @property
     def __operations_count(self) -> int:
-        return len(self.app.profile_data.cart)
+        return len(self.app.world.profile_data.cart)
 
     @property
     def __operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.app.profile_data.cart[self.__idx]
+        return self.app.world.profile_data.cart[self.__idx]
 
     @property
     def __is_first(self) -> bool:
@@ -187,7 +191,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
         if event.to_idx == self.__idx:
             self.__idx = event.from_idx
-        self.app.update_reactive("profile_data")
+        self.app.world.update_reactive("profile_data")
 
 
 class CartOperationsHeader(ColumnLayout):
@@ -218,23 +222,23 @@ class Cart(BaseScreen):
                 yield CartOperationsHeader()
 
             with self.__scrollable_part:
-                for idx in range(len(self.app.profile_data.cart)):
+                for idx in range(len(self.app.world.profile_data.cart)):
                     yield DetailedCartOperation(idx)
 
             yield Static()
 
     def on_detailed_cart_operation_deleted(self, event: DetailedCartOperation.Deleted) -> None:
         widget = self.query(DetailedCartOperation).last()
-        self.app.profile_data.cart.remove(event.deleted)
+        self.app.world.profile_data.cart.remove(event.deleted)
         widget.add_class("deleted")
         widget.remove()
-        self.app.update_reactive("profile_data")
+        self.app.world.update_reactive("profile_data")
 
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
-        assert event.to_idx >= 0 and event.to_idx < len(self.app.profile_data.cart)
+        assert event.to_idx >= 0 and event.to_idx < len(self.app.world.profile_data.cart)
 
-        self.app.profile_data.cart.swap(event.from_idx, event.to_idx)
-        self.app.update_reactive("profile_data")
+        self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
+        self.app.world.update_reactive("profile_data")
 
     def on_detailed_cart_operation_focus(self, event: DetailedCartOperation.Focus) -> None:
         for detailed in self.query(DetailedCartOperation):
@@ -245,6 +249,6 @@ class Cart(BaseScreen):
         self.app.push_screen(TransactionSummary())
 
     def action_clear_all(self) -> None:
-        self.app.profile_data.cart.clear()
-        self.app.update_reactive("profile_data")
+        self.app.world.profile_data.cart.clear()
+        self.app.world.update_reactive("profile_data")
         self.__scrollable_part.add_class("-hidden")

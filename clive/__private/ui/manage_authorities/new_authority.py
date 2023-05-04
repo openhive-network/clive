@@ -34,7 +34,7 @@ class NewAuthority(NewAuthorityBase):
 
     @property
     def context(self) -> ProfileData:
-        return self.app.profile_data
+        return self.app.world.profile_data
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         if event.private_key not in self.context.working_account.keys:
@@ -63,7 +63,7 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         if self.context.working_account.keys and len(self.context.working_account.keys) != len(
-            self.app.profile_data.working_account.keys
+            self.app.world.profile_data.working_account.keys
         ):
             self.context.working_account.keys[-1] = event.private_key
         else:

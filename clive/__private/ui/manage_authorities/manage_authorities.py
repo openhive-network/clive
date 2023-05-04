@@ -44,7 +44,7 @@ class Authority(ColumnLayout, CliveWidget):
 
     def __init__(self, authority: PrivateKeyAlias) -> None:
         self.__authority = authority
-        self.__index = self.app.profile_data.working_account.keys.index(self.__authority)
+        self.__index = self.app.world.profile_data.working_account.keys.index(self.__authority)
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -57,7 +57,7 @@ class Authority(ColumnLayout, CliveWidget):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "remove_authority_button":
-            self.app.profile_data.working_account.keys.remove(self.__authority)
+            self.app.world.profile_data.working_account.keys.remove(self.__authority)
             Notification(f"Authority `{self.__authority.key_name}` was removed.", category="success").show()
             self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
         if event.button.id == "edit_authority_button":
@@ -87,7 +87,7 @@ class ManageAuthorities(BaseScreen):
         with self.__mount_point:
             yield BigTitle("authorities")
             yield AuthorityHeader()
-            for key in self.app.profile_data.working_account.keys:
+            for key in self.app.world.profile_data.working_account.keys:
                 yield Authority(key)
 
     def action_new_authority(self) -> None:
@@ -102,5 +102,5 @@ class ManageAuthorities(BaseScreen):
     def __rebuild_authorities(self) -> None:
         self.query(Authority).remove()
 
-        for key in self.app.profile_data.working_account.keys:
+        for key in self.app.world.profile_data.working_account.keys:
             self.__mount_point.mount(Authority(key))

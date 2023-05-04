@@ -49,15 +49,15 @@ class Header(TextualHeader, CliveWidget):
 
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.on_header_expanded)
-        self.watch(self.app, "app_state", self.on_app_state)
+        self.watch(self.app.world, "app_state", self.on_app_state)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            if self.app.profile_data.name:
+            if self.app.world.profile_data.name:
                 yield TitledLabel(
                     "Profile",
-                    obj_to_watch=self.app,
+                    obj_to_watch=self.app.world,
                     attribute_name="profile_data",
                     callback=self.__get_profile_name,
                     id_="profile-label",
@@ -65,7 +65,7 @@ class Header(TextualHeader, CliveWidget):
             yield AlarmsSummary()
             yield TitledLabel(
                 "Mode",
-                obj_to_watch=self.app,
+                obj_to_watch=self.app.world,
                 attribute_name="app_state",
                 callback=lambda app_state: "active" if app_state.is_active() else "inactive",
                 id_="mode-label",
@@ -74,7 +74,7 @@ class Header(TextualHeader, CliveWidget):
             yield HeaderTitle()
             yield TitledLabel(
                 "node address",
-                obj_to_watch=self.app,
+                obj_to_watch=self.app.world,
                 attribute_name="profile_data",
                 callback=self.__get_node_address,
                 id_="node-address-label",

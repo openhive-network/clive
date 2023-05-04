@@ -50,7 +50,7 @@ class ProfileData(Context):
         from clive.__private.ui.app import Clive
 
         if Clive.is_app_exist():
-            Clive.app_instance().update_reactive("profile_data")
+            Clive.app_instance().world.update_reactive("profile_data")
 
         with shelve.open(str(self._get_file_storage_path())) as db:
             db[self.name] = self

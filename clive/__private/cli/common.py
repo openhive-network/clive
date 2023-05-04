@@ -7,6 +7,7 @@ from merge_args import merge_args  # type: ignore
 from pydantic import BaseModel
 
 from clive.__private.core.world import World
+from clive.__private.util import ExitCallHandler
 
 
 class Common(BaseModel):
@@ -40,7 +41,7 @@ def common_options(func: Callable[..., None]) -> Any:
         save_file: Optional[str] = common.save_file,  # noqa: ARG001
         **kwargs: Any,
     ) -> None:
-        with World(profile_name=profile) as world:
+        with ExitCallHandler(World(profile_name=profile), lambda w: w.close()) as world:
             return func(ctx=ctx, **kwargs, world=world)
 
     return wrapper

@@ -62,7 +62,7 @@ class TransferToAccount(CartBasedScreen):
             yield BigTitle("Transfer to account")
             with Body():
                 yield Static("from", classes="label")
-                yield EllipsedStatic(str(self.app.profile_data.working_account.name), id_="from-label")
+                yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="from-label")
                 yield PlaceTaker()
                 yield Static("to", classes="label")
                 yield self.__to_input
@@ -88,7 +88,7 @@ class TransferToAccount(CartBasedScreen):
         if not self.__create_operation():  # For faster validation feedback to the user
             return
 
-        if not self.app.app_state.is_active():
+        if not self.app.world.app_state.is_active():
             self.app.push_screen(Activate())
             return
 
@@ -110,7 +110,7 @@ class TransferToAccount(CartBasedScreen):
 
         try:
             return TransferOperation(
-                from_=str(self.app.profile_data.working_account.name),
+                from_=str(self.app.world.profile_data.working_account.name),
                 to=self.__to_input.value,
                 amount=self.__amount_input.value,
                 asset=self.__currency_selector.text,
@@ -129,6 +129,6 @@ class TransferToAccount(CartBasedScreen):
         if not operation:
             return False
 
-        self.app.profile_data.cart.append(operation)
-        self.app.update_reactive("profile_data")
+        self.app.world.profile_data.cart.append(operation)
+        self.app.world.update_reactive("profile_data")
         return True

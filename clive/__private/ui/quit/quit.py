@@ -36,5 +36,5 @@ class Quit(BaseScreen):
 
     def action_exit_cleanly(self) -> None:
         self.log("Exiting cleanly")
-        self.app.profile_data.save()
+        self.app.world.profile_data.save()
         self.app.exit(0, "CLIVE says goodbye!")

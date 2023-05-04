@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, ClassVar, Literal, overload
+from typing import TYPE_CHECKING, overload
 
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
@@ -10,12 +10,13 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core.communication import Communication
-from clive.__private.core.world import World
+from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.shared.help import Help
@@ -26,21 +27,18 @@ from clive.exceptions import ScreenNotFoundError
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from typing import ClassVar, Literal
 
     from rich.console import RenderableType
     from textual.message import Message
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
-    from clive.__private.core.app_state import AppState
-    from clive.__private.core.profile_data import ProfileData
-    from clive.__private.storage.mock_database import NodeData
     from clive.__private.ui.app_messages import ProfileDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
 
-class Clive(App[int]):
+class Clive(App[int], ManualReactive):
     """A singleton instance of the Clive app."""
 
     SUB_TITLE = VERSION_INFO
@@ -65,10 +63,7 @@ class Clive(App[int]):
 
     __app_instance: ClassVar[Clive | None] = None
 
-    world: ClassVar[World] = None  # type: ignore
-    node_data: NodeData = var(world)  # type: ignore[assignment]
-    profile_data: ProfileData = var(world)  # type: ignore[assignment]
-    app_state: AppState = var(world)  # type: ignore[assignment]
+    world: ClassVar[TextualWorld] = None  # type: ignore
 
     logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
@@ -103,9 +98,9 @@ class Clive(App[int]):
         self.push_screen(DashboardInactive())
         if (
             not (
-                self.profile_data.name is not None
-                and len(self.profile_data.name) > 0
-                and self.profile_data.node_address is not None
+                self.world.profile_data.name is not None
+                and len(self.world.profile_data.name) > 0
+                and self.world.profile_data.node_address is not None
             )
             or settings.FORCE_ONBOARDING
         ):
@@ -195,41 +190,13 @@ class Clive(App[int]):
         if active_mode_time is not None:
             self.world.commands.set_timeout(seconds=int(active_mode_time.total_seconds()))
         self.world.commands.activate(password=password)
-        self.update_reactive("app_state")
+        self.world.update_reactive("app_state")
         self.post_message_to_everyone(ActivateScreen.Succeeded())
 
     def deactivate(self) -> None:
         self.world.commands.deactivate()
-        self.update_reactive("app_state")
+        self.world.update_reactive("app_state")
         self.switch_screen("dashboard_inactive")
-
-    def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
-        """
-        Reactive attributes of Textual are unable to detect changes to their own attributes
-        (if we are dealing with a non-primitive type like a custom class).
-        In order to notify watchers of a reactive attribute, it would have to be re-instantiated with the modified
-        attributes. (See https://github.com/Textualize/textual/discussions/1099#discussioncomment-4047932)
-        This is where this method comes in handy.
-        """
-        try:
-            attribute = getattr(self, attribute_name)
-        except AttributeError as error:
-            raise AttributeError(f"{error}. Available ones are: {list(self._reactives)}") from error
-
-        descriptor = self.__class__.__dict__[attribute_name]
-
-        if update_function is not None:
-            update_function(attribute)  # modify attributes of the reactive attribute
-
-        # now we trigger the descriptor.__set__ method like the `self.attribute_name = value` would do
-        if not descriptor._always_update:
-            # that means, watchers won't be notified unless __ne__ returns False, we could bypass with `always_update`
-            descriptor._always_update = True
-            setattr(self, attribute_name, attribute)
-            descriptor._always_update = False
-        else:
-            # we just need to trigger descriptor.__set__
-            setattr(self, attribute_name, attribute)
 
     def post_message_to_everyone(self, message: Message) -> None:
         """Post a message to all screens in the stack."""
@@ -263,9 +230,10 @@ class Clive(App[int]):
         raise event.exception
 
     def on_profile_data_updated(self, e: ProfileDataUpdated) -> None:
+        if e.profile_data is not None:
+            self.world.profile_data = e.profile_data
         if e.password is not None:
-            self.profile_data.write_to_beekeeper(self.world.beekeeper, e.password)
-        self.update_reactive("profile_data")
+            self.world.profile_data.write_to_beekeeper(self.world.beekeeper, e.password)
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
@@ -293,8 +261,8 @@ class Clive(App[int]):
 
     def __update_data_from_node(self) -> None:
         logger.info("Updating mock data...")
-        self.node_data.recalc()
-        self.update_reactive("node_data")
+        self.world.node_data.recalc()
+        self.world.update_reactive("node_data")
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
@@ -303,7 +271,7 @@ class Clive(App[int]):
         logger.debug(f"Background tasks: { {name: task._state for name, task in self.background_tasks.tasks.items()} }")
 
         query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
-        response = await Communication.arequest(str(self.profile_data.node_address), data=query)
+        response = await Communication.arequest(str(self.world.profile_data.node_address), data=query)
         result = response.json()
         logger.debug(f'Current block: {result["result"]["head_block_number"]}')
 
@@ -316,10 +284,7 @@ class Clive(App[int]):
     @classmethod
     def app_instance(cls) -> Clive:
         if not cls.is_app_exist():
-            cls.world = World()
+            cls.world = TextualWorld()
             cls.__app_instance = Clive()
-            cls.__app_instance.profile_data = cls.world.profile_data
-            cls.__app_instance.node_data = cls.world.node_data
-            cls.__app_instance.app_state = cls.world.app_state
         assert cls.__app_instance is not None
         return cls.__app_instance

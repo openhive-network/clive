@@ -81,7 +81,7 @@ class CreateProfile(CreateProfileCommon):
 
     @property
     def context(self) -> ProfileData:
-        return self.app.profile_data
+        return self.app.world.profile_data
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "create-button":

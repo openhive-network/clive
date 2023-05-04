@@ -4,13 +4,15 @@ from typing import TYPE_CHECKING, Any
 
 from textual.widgets import Label
 
+from clive.__private.ui.widgets.clive_widget import CliveWidget
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from textual.reactive import Reactable
 
 
-class DynamicLabel(Label):
+class DynamicLabel(Label, CliveWidget):
     """A label that can be updated dynamically when a reactive variable changes."""
 
     def __init__(

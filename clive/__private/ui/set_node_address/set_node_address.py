@@ -47,15 +47,18 @@ class SelectedNodeAddress(Static, CliveWidget):
     """The currently selected node address."""
 
     def render(self) -> RenderableType:
-        return f"Selected node address: {self.app.profile_data.node_address}"
+        return f"Selected node address: {self.app.world.profile_data.node_address}"
 
 
 class NodesList(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
         yield Select[Url](
-            items=[SelectItem(node, str(node)) for idx, node in enumerate(self.app.profile_data.backup_node_addresses)],
-            selected=self.app.profile_data.node_address,
+            items=[
+                SelectItem(node, str(node))
+                for idx, node in enumerate(self.app.world.profile_data.backup_node_addresses)
+            ],
+            selected=self.app.world.profile_data.node_address,
             list_mount="ViewBag",
         )
 
@@ -102,7 +105,7 @@ class ManualNode(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please manually enter the node address you want to connect to.")
         yield Input(
-            placeholder=f"e.g.: {self.app.profile_data.node_address}",
+            placeholder=f"e.g.: {self.app.world.profile_data.node_address}",
             id="node-address-input",
             highlighter=NodeUrlHighlighter(self.log),
         )
@@ -140,7 +143,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
             address = selected.value
         else:
             address = Url.parse(self.app.query_one("#node-address-input", Input).value)
-        self.app.profile_data.node_address = address
+        self.app.world.profile_data.node_address = address
         self.app.post_message_to_everyone(ProfileDataUpdated())
         self.__selected_node.refresh()
 
@@ -161,7 +164,9 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 category="error",
             ).show()
         else:
-            Notification(f"Node address set to `{self.app.profile_data.node_address}`.", category="success").show()
+            Notification(
+                f"Node address set to `{self.app.world.profile_data.node_address}`.", category="success"
+            ).show()
 
     def on_switch_changed(self) -> None:
         self.__nodes_list.toggle_class("-hidden")

@@ -26,15 +26,15 @@ class EditAuthority(AuthorityForm):
 
     @property
     def context(self) -> ProfileData:
-        return self.app.profile_data
+        return self.app.world.profile_data
 
     def action_save(self) -> None:
         self._save()
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        idx = self.app.profile_data.working_account.keys.index(self.authority)
-        self.app.profile_data.working_account.keys[idx] = event.private_key
-        self.app.update_reactive("profile_data")
+        idx = self.app.world.profile_data.working_account.keys.index(self.authority)
+        self.app.world.profile_data.working_account.keys[idx] = event.private_key
+        self.app.world.update_reactive("profile_data")
 
         self.app.pop_screen()
         Notification(f"Authority `{event.private_key.key_name}` was edited.", category="success").show()

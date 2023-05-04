@@ -31,7 +31,9 @@ class CartItem(DynamicLabel):
         self, operation: Operation, *, prefix: str = "", id_: str | None = None, classes: str | None = None
     ) -> None:
         self._operation = operation
-        super().__init__(self.app, "profile_data", self.__fetch_operation_info, prefix=prefix, id_=id_, classes=classes)
+        super().__init__(
+            self.app.world, "profile_data", self.__fetch_operation_info, prefix=prefix, id_=id_, classes=classes
+        )
 
     def __fetch_operation_info(self, profile_data: ProfileData) -> str:
         if self._operation in profile_data.cart:
@@ -46,7 +48,7 @@ class CartItemsAmount(DynamicLabel):
     """Holds the cart items amount info."""
 
     def __init__(self) -> None:
-        super().__init__(self.app, "profile_data", self.__get_cart_item_count)
+        super().__init__(self.app.world, "profile_data", self.__get_cart_item_count)
 
     def __get_cart_item_count(self, profile_data: ProfileData) -> str:
         amount = len(profile_data.cart)
@@ -69,13 +71,13 @@ class CartOverview(CliveWidget):
     def compose(self) -> ComposeResult:
         with Resources():
             yield Static("Resource credits (RC):")
-            yield DynamicLabel(self.app, "node_data", self.__get_rc)
+            yield DynamicLabel(self.app.world, "node_data", self.__get_rc)
             yield Static("Enough RC for approx.:")
             yield Static("17 transfers")
             yield Static("HIVE balance:")
-            yield DynamicLabel(self.app, "node_data", self.__get_hive_balance)
+            yield DynamicLabel(self.app.world, "node_data", self.__get_hive_balance)
             yield Static("HBD balance:")
-            yield DynamicLabel(self.app, "node_data", self.__get_hbd_balance)
+            yield DynamicLabel(self.app.world, "node_data", self.__get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount()
             with self.__cart_items_container:
@@ -83,7 +85,7 @@ class CartOverview(CliveWidget):
         yield Static()
 
     def on_mount(self) -> None:
-        self.watch(self.app, "profile_data", callback=self.__sync_cart_items)
+        self.watch(self.app.world, "profile_data", callback=self.__sync_cart_items)
 
     def __sync_cart_items(self, _: ProfileData) -> None:
         current_ops = self.__get_operations_from_cart()
@@ -124,4 +126,4 @@ class CartOverview(CliveWidget):
         return f"{node_data.hive_dollars:.2f} HBD"
 
     def __get_operations_from_cart(self) -> list[CartItem]:
-        return [CartItem(op) for op in self.app.profile_data.cart]
+        return [CartItem(op) for op in self.app.world.profile_data.cart]
