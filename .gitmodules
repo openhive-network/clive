@@ -1,0 +1,3 @@
+[submodule "hive"]
+	path = hive
+	url = ../hive.git
