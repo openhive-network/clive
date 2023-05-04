@@ -25,7 +25,6 @@ def test_deactivate(world: clive.World, wallet: WalletInfo) -> None:  # noqa: AR
     world.commands.deactivate()
 
     # ASSERT
-    sleep(1.0)  # this wait is because of cache TODO: think about reducing cache time?
     assert not world.app_state.is_active()
 
 
