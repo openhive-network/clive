@@ -10,7 +10,6 @@ ROOT_DIRECTORY: Final[Path] = Path(__file__).parent.parent
 TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"
 LAUNCH_TIME: Final[datetime] = datetime.now()
 _DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
-_LOG_DIRECTORY: Final[Path] = _DATA_DIRECTORY / "logs"
 
 SETTINGS_FILES: Final[list[str]] = ["settings.toml"]
 
@@ -21,5 +20,7 @@ settings = Dynaconf(
     environments=True,
     # preconfigured settings
     data_path=_DATA_DIRECTORY,
-    log_path=_LOG_DIRECTORY,
 )
+
+settings.LOG_PATH = _DATA_DIRECTORY if not settings.LOG_DIRECTORY else Path(settings.LOG_DIRECTORY)
+settings.LOG_PATH /= "logs/"
