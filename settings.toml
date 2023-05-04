@@ -3,6 +3,8 @@ FORCE_ONBOARDING = false
 LOG_DEBUG_LOOP = false
 LOG_LEVEL = "INFO"
 LOG_LEVEL_3RD_PARTY = "WARNING"
+
+
 [default.beekeeper]
-path = "./beekeeper"
-remote_address = ""
+PATH = "./beekeeper"
+REMOTE_ADDRESS = ""
