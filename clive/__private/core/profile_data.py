@@ -40,7 +40,7 @@ class ProfileData(Context):
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:
-        return Path(config.settings.data_path) / "profile_data"
+        return Path(config.settings.data_path) / "data/profile"
 
     def __post_init__(self) -> None:
         self.backup_node_addresses = self.__default_node_address()
@@ -65,7 +65,7 @@ class ProfileData(Context):
         :return: Profile data.
         """
         # create data directory if it doesn't exist
-        cls._get_file_storage_path().mkdir(parents=True, exist_ok=True)
+        cls._get_file_storage_path().parent.mkdir(parents=True, exist_ok=True)
 
         with shelve.open(str(cls._get_file_storage_path())) as db:
             if name is None:
