@@ -6,8 +6,6 @@ import subprocess
 import time
 from typing import TYPE_CHECKING, Final
 
-import pytest
-
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -24,7 +22,6 @@ def test_if_entry_point_works() -> None:
     assert status == exit_code_successful, f"`{entry_point}` command failed because of: `{result}`"
 
 
-@pytest.mark.random_fail
 def test_if_dev_entry_point_works(working_directory: Path) -> None:
     # ARRANGE
     entry_point: Final[str] = "clive-dev"

@@ -58,7 +58,6 @@ def test_wallet_unlock(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> None:
     check_wallets(beekeeper.api.list_wallets(), [wallet.name])
 
 
-@pytest.mark.random_fail
 def test_timeout(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> None:
     timeout: Final[int] = 5
     comparison_error_max_delta: Final[float] = 1.0

@@ -19,17 +19,6 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def pytest_generate_tests(metafunc: pytest.Metafunc) -> None:
-    fixture_name: Final[str] = f"random_fail_fixture_{hash(metafunc)}"
-    random_fail_fixture_name: Final[str] = "random_fail"
-    amount_of_retries: Final[int] = 10
-
-    for marker in metafunc.definition.own_markers:
-        if random_fail_fixture_name == marker.name:
-            metafunc.fixturenames.append(fixture_name)
-            metafunc.parametrize(fixture_name, range(amount_of_retries))
-
-
 def __convert_test_name_to_directory_name(test_name: str) -> str:
     parametrized_test_match = re.match(r"([\w_]+)\[(.*)\]", test_name)
     if parametrized_test_match:
