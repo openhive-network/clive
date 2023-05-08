@@ -11,7 +11,8 @@ TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"
 LAUNCH_TIME: Final[datetime] = datetime.now()
 _DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
 
-SETTINGS_FILES: Final[list[str]] = ["settings.toml"]
+# order matters - later paths override earlier values for the same key of earlier paths
+SETTINGS_FILES: Final[list[str]] = ["settings.toml", str(_DATA_DIRECTORY / "settings.toml")]
 
 settings = Dynaconf(
     envvar_prefix="CLIVE",
