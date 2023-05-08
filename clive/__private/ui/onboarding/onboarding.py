@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
 from clive.__private.ui.manage_authorities import NewAuthorityForm
 from clive.__private.ui.quit.quit import Quit
@@ -24,9 +23,8 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
 
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
-        super().action_finish()
         self.app.world.profile_data = self.context
-        self.app.post_message_to_everyone(ProfileDataUpdated())
+        super().action_finish()
 
 
 class Onboarding(Form[ProfileData]):
