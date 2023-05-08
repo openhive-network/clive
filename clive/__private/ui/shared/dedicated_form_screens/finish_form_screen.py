@@ -53,4 +53,8 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
         while not isinstance(self.app.pop_screen(), WelcomeFormScreen):
             self.log.debug("popping screens in form!")
         self.app.pop_screen()  # and finally pop WelcomeFormScreen
-        self.app.switch_screen("dashboard_inactive")
+
+        if self.app.world.app_state.is_active():
+            self.app.switch_screen("dashboard_active")
+        else:
+            self.app.switch_screen("dashboard_inactive")
