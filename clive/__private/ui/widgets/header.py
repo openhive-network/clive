@@ -46,10 +46,11 @@ class AlarmsSummary(Container):
 class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
+        self.on_app_state(self.app.world.app_state)
 
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.on_header_expanded)
-        self.watch(self.app.world, "app_state", self.on_app_state)
+        self.watch(self.app.world, "app_state", self.on_app_state, init=False)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
