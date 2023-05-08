@@ -3,7 +3,8 @@ from __future__ import annotations
 import re
 import shutil
 import warnings
-from typing import TYPE_CHECKING, Final, cast
+from pathlib import Path
+from typing import TYPE_CHECKING, cast
 
 import pytest
 
@@ -16,7 +17,6 @@ from tests import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-    from pathlib import Path
 
 
 def __convert_test_name_to_directory_name(test_name: str) -> str:
@@ -43,18 +43,18 @@ def run_prepare_before_launch(working_directory: Path) -> None:
 
 @pytest.fixture
 def working_directory(request: pytest.FixtureRequest) -> Path:
-    test_signature: Final[str] = __convert_test_name_to_directory_name(request.node.name)
-    test_path_directory: Final[Path] = request.path.parent
+    test_location = request.path.parent
+    test_module_name = Path(request.module.__file__).stem
+    final_path = (
+        test_location / "generated" / test_module_name / __convert_test_name_to_directory_name(request.node.name)
+    )
 
-    generated_directory = test_path_directory / "generated"
-    generated_directory.mkdir(exist_ok=True)
+    if final_path.exists():
+        warnings.warn("Test directory already exists, removing...", stacklevel=1)
+        shutil.rmtree(final_path)  # delete non-empty directory
 
-    test_path = generated_directory / test_signature
-    if test_path.exists():
-        warnings.warn("removing datadir", stacklevel=1)
-        shutil.rmtree(test_path)
-    test_path.mkdir()
-    return test_path
+    final_path.mkdir(parents=True)
+    return final_path
 
 
 @pytest.fixture
