@@ -111,7 +111,8 @@ class Logger:
     """Logger used to log into both Textual (textual console) and Loguru (file located in logs/)."""
 
     def __getattr__(self, item: str) -> Callable[..., None]:
-        loguru_attr = getattr(loguru_logger, item, None)
+        patched = loguru_logger.opt(depth=1)
+        loguru_attr = getattr(patched, item, None)
         textual_log_attr = getattr(textual_logger, item, None)
 
         if not callable(loguru_attr) or not callable(textual_log_attr):
