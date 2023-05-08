@@ -12,7 +12,6 @@ from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressF
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.shared.form import Form, ScreenBuilder
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -25,12 +24,9 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
 
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
-        for screen in self.app.screen_stack:
-            if isinstance(screen, CreateProfileForm):
-                self.app.post_message_to_everyone(ProfileDataUpdated(screen.password, self.context))
-                super().action_finish()
-                return
-        Notification("Oooops! Something gone really wrong, data wasn't saved", category="error").show()
+        super().action_finish()
+        self.app.world.profile_data = self.context
+        self.app.post_message_to_everyone(ProfileDataUpdated())
 
 
 class Onboarding(Form[ProfileData]):

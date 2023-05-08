@@ -229,11 +229,8 @@ class Clive(App[int], ManualReactive):
     def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception
 
-    def on_profile_data_updated(self, e: ProfileDataUpdated) -> None:
-        if e.profile_data is not None:
-            self.world.profile_data = e.profile_data
-        if e.password is not None:
-            self.world.profile_data.write_to_beekeeper(self.world.beekeeper, e.password)
+    def on_profile_data_updated(self, _: ProfileDataUpdated) -> None:
+        self.world.update_reactive("profile_data")
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:

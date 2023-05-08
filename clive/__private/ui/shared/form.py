@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
-from typing import Final
+from queue import Queue
+from typing import Any, Final
 
+from clive.__private.core.commands.command import Command
 from clive.__private.storage.contextual import ContextT, Contextual
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
@@ -25,6 +27,7 @@ class Form(Contextual[ContextT], CliveScreen):
         ]
         assert len(self.__screens) > self.AMOUNT_OF_DEFAULT_SCREENS, "no screen given to display"
         self._rebuild_context()
+        self._post_actions = Queue[Command[Any]]()
 
         super().__init__()
 
@@ -77,3 +80,10 @@ class Form(Contextual[ContextT], CliveScreen):
 
     def create_finish_screen(self) -> ScreenBuilder[ContextT]:
         return lambda owner: FinishFormScreen(owner, "Hope it didn't take too long")
+
+    def add_post_action(self, command: Command[Any]) -> None:
+        self._post_actions.put_nowait(command)
+
+    def execute_post_actions(self) -> None:
+        while not self._post_actions.empty():
+            self._post_actions.get_nowait().execute()

@@ -1,11 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from textual.message import Message
-
-if TYPE_CHECKING:
-    from clive.__private.core.profile_data import ProfileData
 
 
 class NodeDataUpdated(Message):
@@ -13,9 +8,7 @@ class NodeDataUpdated(Message):
 
 
 class ProfileDataUpdated(Message):
-    def __init__(self, password: str | None = None, profile_data: ProfileData | None = None) -> None:
-        self.password = password
-        self.profile_data = profile_data
+    def __init__(self) -> None:
         super().__init__()
 
     """Emitted when app.profile_data has been updated"""

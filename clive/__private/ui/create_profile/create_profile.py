@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static
 
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.app_messages import ProfileDataUpdated
@@ -62,7 +63,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
         return profile_name, password
 
-    def _create_profile(self) -> None:
+    def _create_profile(self) -> CreateWallet:
         """
         Collects the data from the form and creates a profile.
         :return: True if the profile was created successfully, False otherwise.
@@ -71,6 +72,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         profile_name, password = self._get_valid_args()
         self.context.name = profile_name
         self.password = password
+        return CreateWallet(beekeeper=self.app.world.beekeeper, wallet=profile_name, password=password)
 
 
 class CreateProfile(CreateProfileCommon):
@@ -94,11 +96,11 @@ class CreateProfile(CreateProfileCommon):
 
     def action_create_profile(self) -> None:
         try:
-            self._create_profile()
+            self._create_profile().execute()
         except FormValidationError as error:
             Notification(f"Failed the validation process! Reason: {error.reason}", category="error").show()
         else:
-            self.app.post_message_to_everyone(ProfileDataUpdated(self.password))
+            self.app.post_message_to_everyone(ProfileDataUpdated())
             self.app.pop_screen()
             Notification("Profile created successfully!", category="success").show()
 
@@ -111,4 +113,4 @@ class CreateProfile(CreateProfileCommon):
 
 class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
     def apply_and_validate(self) -> None:
-        self._create_profile()
+        self._owner.add_post_action(self._create_profile())

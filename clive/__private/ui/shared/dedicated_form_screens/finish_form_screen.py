@@ -48,6 +48,8 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
             self.action_finish()
 
     def action_finish(self) -> None:
+        self._owner.execute_post_actions()
+
         while not isinstance(self.app.pop_screen(), WelcomeFormScreen):
             self.log.debug("popping screens in form!")
         self.app.pop_screen()  # and finally pop WelcomeFormScreen
