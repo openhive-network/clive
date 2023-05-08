@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.logger import logger
 from clive.exceptions import CannotActivateError, CommunicationError
 
@@ -25,7 +26,7 @@ class Activate(Command[None]):
             self.beekeeper.api.open(wallet_name=self.wallet)
             self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
             if self.time is not None:
-                self.beekeeper.api.set_timeout(seconds=int(self.time.total_seconds()))
+                SetTimeout(self.beekeeper, int(self.time.total_seconds())).execute()
         except CommunicationError as e:
             raise CannotActivateError(e) from e
 
