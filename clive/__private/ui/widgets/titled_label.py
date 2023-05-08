@@ -30,6 +30,7 @@ class TitledLabel(CliveWidget):
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
         callback: Callable[[Any], Any] | None = None,
+        init: str | None = None,
         id_: str | None = None,
     ) -> None:
         super().__init__(id=id_)
@@ -37,7 +38,9 @@ class TitledLabel(CliveWidget):
         self.__value = value
 
         self.__value_label = (
-            DynamicLabel(obj_to_watch, attribute_name, callback, prefix=self.__formatted_value(), id_="value")
+            DynamicLabel(
+                obj_to_watch, attribute_name, callback, prefix=self.__formatted_value(), init=init, id_="value"
+            )
             if obj_to_watch and attribute_name and callback
             else Label(self.__formatted_value(), id="value")
         )

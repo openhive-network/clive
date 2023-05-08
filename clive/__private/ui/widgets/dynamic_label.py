@@ -22,17 +22,19 @@ class DynamicLabel(Label, CliveWidget):
         callback: Callable[[Any], Any],
         *,
         prefix: str = "",
+        init: str | None = None,
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
-        super().__init__("DynamicLabel was not updated!", id=id_, classes=classes)
+        super().__init__(init if init else "DynamicLabel was not updated!", id=id_, classes=classes)
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__callback = callback
         self.__prefix = prefix
+        self.__init = init
 
     def on_mount(self) -> None:
-        self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed)
+        self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed, init=not bool(self.__init))
 
     def on_attribute_changed(self, attribute: Any) -> None:
         self.update(f"{self.__prefix}{self.__callback(attribute)}")
