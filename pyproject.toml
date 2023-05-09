@@ -47,6 +47,8 @@ ruff = "0.0.259"
 types-pyyaml = "6.0.12.4"
 textual = { extras = ["dev"], version = "0.17.3" }
 
+test-tools = { path = "hive/tests/hive-local-tools/test-tools", develop = true }
+
 
 [tool.poetry.scripts]
 clive = "clive.main:main"
