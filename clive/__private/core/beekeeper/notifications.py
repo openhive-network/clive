@@ -12,6 +12,7 @@ class BeekeeperNotificationsServer:
         self.server = HttpServer(self, name="NotificationsServer")
 
         self.http_listening_event = Event()
+        self.ready = Event()
         self.http_endpoint: Url | None = None
 
     def listen(self) -> int:
@@ -21,13 +22,16 @@ class BeekeeperNotificationsServer:
 
     def notify(self, message: JsonT) -> None:
         logger.info(f"Got notification: {message}")
+        details: dict[str, str] = message["value"]
         if message["name"] == "webserver listening":
-            details: dict[str, str] = message["value"]
             if details["type"] == "HTTP":
                 endpoint = f'{details["address"].replace("0.0.0.0", "127.0.0.1")}:{details["port"]}'
                 self.http_endpoint = Url.parse(endpoint, protocol="http")
                 logger.debug(f"Got notification with http address on: {endpoint}")
                 self.http_listening_event.set()
+        elif message["name"] == "status" and details["current_status"] == "signals attached":
+            logger.debug("Beekeeper reports to be ready")
+            self.ready.set()
 
         logger.info(f"Received message: {message}")
 

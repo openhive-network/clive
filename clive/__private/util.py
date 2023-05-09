@@ -35,12 +35,23 @@ T = TypeVar("T")
 
 
 class ExitCallHandler(Generic[T]):
-    def __init__(self, obj: T, exit_callback: Callable[[T], None]) -> None:
+    def __init__(
+        self,
+        obj: T,
+        *,
+        exception_callback: Callable[[T, Exception], None] = lambda _, __: None,
+        finally_callback: Callable[[T], None] = lambda _: None,
+    ) -> None:
         self.__obj = obj
-        self.__exit_callback = exit_callback
+        self.__exception_callback = exception_callback
+        self.__finally_callback = finally_callback
 
     def __enter__(self) -> T:
         return self.__obj
 
-    def __exit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
-        self.__exit_callback(self.__obj)
+    def __exit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+        try:
+            if ex is not None:
+                self.__exception_callback(self.__obj, ex)
+        finally:
+            self.__finally_callback(self.__obj)
