@@ -9,9 +9,6 @@ from clive.__private.abstract_class import AbstractClass
 
 
 class Operation(BaseModel, AbstractClass):
-    class Config:
-        allow_population_by_field_name = True
-
     def as_json(self, indent: int = 4) -> str:
         return json.dumps(self.dict(by_alias=True), indent=indent)
 

@@ -112,8 +112,7 @@ class TransferToAccount(CartBasedScreen):
             return TransferOperation(
                 from_=str(self.app.world.profile_data.working_account.name),
                 to=self.__to_input.value,
-                amount=self.__amount_input.value,
-                asset=self.__currency_selector.text,
+                amount=f"{self.__amount_input.value} {self.__currency_selector.text}",
                 memo=self.__memo_input.value,
             )
         except ValidationError as error:

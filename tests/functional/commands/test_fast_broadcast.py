@@ -10,8 +10,15 @@ if TYPE_CHECKING:
 
 
 def test_fast_broadcast_smoke_test(world: clive.World, pubkey: PrivateKeyAlias) -> None:
-    # ARRANGE, ACT & ASSERT
+    # ARRANGE
+    amount = {
+        "amount": 1,
+        "precision": 3,
+        "nai": "@@000000013",
+    }
+
+    # ACT & ASSERT
     world.commands.fast_broadcast(
-        operation=TransferOperation(from_="initminer", to="alice", amount="1.000", asset="HIVE"),
+        operation=TransferOperation(from_="initminer", to="alice", amount=amount, memo=""),
         sign_with=pubkey,
     )

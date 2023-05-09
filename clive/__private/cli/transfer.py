@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Final, Optional
+from typing import Final
 
 import typer
 
@@ -25,7 +25,7 @@ def _main(
     from_: str = typer.Option(..., "--from", help="The account to transfer from."),
     to: str = typer.Option(..., help="The account to transfer to."),
     amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)"),
-    memo: Optional[str] = typer.Option(None, help="The memo to attach to the transfer."),
+    memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
     common = Common(**ctx.params)
     if common.world is None:
@@ -33,10 +33,8 @@ def _main(
         return
     typer.echo(f"{common.world.profile_data.name=}")
 
-    value, asset = amount.split(" ")
-
     perform_actions_on_transaction(
-        TransferOperation(from_=from_, to=to, amount=value, asset=asset.upper(), memo=memo),
+        TransferOperation(from_=from_, to=to, amount=amount, memo=memo),
         beekeeper=common.world.beekeeper,
         node_address=common.world.profile_data.node_address,
         sign_key=PrivateKeyAlias(common.sign) if common.sign else None,
