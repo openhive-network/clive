@@ -29,7 +29,7 @@ class BeekeeperNotificationsServer:
                 self.http_endpoint = Url.parse(endpoint, protocol="http")
                 logger.debug(f"Got notification with http address on: {endpoint}")
                 self.http_listening_event.set()
-        elif message["name"] == "status" and details["current_status"] == "signals attached":
+        elif message["name"] == "hived_status" and details["current_status"] == "signals attached":
             logger.debug("Beekeeper reports to be ready")
             self.ready.set()
 
