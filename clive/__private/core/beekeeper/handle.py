@@ -12,7 +12,6 @@ from clive.__private.core.beekeeper.executable import BeekeeperExecutable
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
 from clive.__private.logger import logger
-from clive.__private.util import ExitCallHandler
 from clive.core.url import Url
 from clive.exceptions import CommunicationError
 
@@ -105,9 +104,12 @@ class BeekeeperLocal(Beekeeper):
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server.listen())
         self.__executable.run(self.config)
 
-        with ExitCallHandler(self, exception_callback=lambda s, _: s.close()):
+        try:
             self.__notification_server.http_listening_event.wait(timeout)
             self.__notification_server.ready.wait(timeout)
+        except TimeoutError:
+            self.close()
+            raise
 
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
