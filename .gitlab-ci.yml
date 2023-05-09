@@ -130,9 +130,10 @@ build_and_push_docker_image:
   services:
     - docker:20.10.13-dind
   script:
+    - ls -la
     - echo -e "${TXT_BLUE}Building a docker image started...${TXT_CLEAR}"
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker build --build-arg BEEKEEPER_LOCATION=$BEEKEEPER_BINARY -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile .
+    - docker build --build-arg BEEKEEPER_LOCATION=./beekeeper  -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile .
     - docker push $TAG_COMMIT
     - docker push $TAG_LATEST
   only:
