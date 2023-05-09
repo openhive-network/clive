@@ -9,3 +9,7 @@ LOG_LEVEL_3RD_PARTY = "WARNING"
 [default.beekeeper]
 PATH = "./beekeeper"
 REMOTE_ADDRESS = ""
+
+
+[default.node]
+chain_id = "beeab0de00000000000000000000000000000000000000000000000000000000"
