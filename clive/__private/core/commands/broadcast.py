@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.core.commands.command import Command
-from clive.exceptions import CliveError
+from clive.exceptions import TransactionNotSignedError
 
 NODE_COMMUNICATION_ENABLED: Final[bool] = False
 
@@ -36,15 +36,12 @@ class PartiallySerializedEncoder(JSONEncoder):
 class Broadcast(Command[None]):
     """Broadcasts the given operations/transactions to the blockchain."""
 
-    class TransactionNotSignedError(CliveError):
-        pass
-
     node_address: Url
     transaction: Transaction
 
     def execute(self) -> None:
         if not self.transaction.signed:
-            raise self.TransactionNotSignedError()
+            raise TransactionNotSignedError()
 
         if NODE_COMMUNICATION_ENABLED:  # TODO: remove it when support for node communication will be granted
             httpx.post(
