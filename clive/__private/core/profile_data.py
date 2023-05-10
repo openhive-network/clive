@@ -109,6 +109,6 @@ class ProfileData(Context):
 
         for i, key in enumerate(self.working_account.keys):
             if isinstance(key, PrivateKey):
-                self.working_account.keys[i] = ImportKey.execute_with_result(
-                    ImportKey(wallet=self.name, key_to_import=key, beekeeper=beekeeper)
-                )
+                self.working_account.keys[i] = ImportKey(
+                    wallet=self.name, key_to_import=key, beekeeper=beekeeper
+                ).execute_with_result()

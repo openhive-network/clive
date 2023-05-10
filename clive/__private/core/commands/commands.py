@@ -36,17 +36,15 @@ class Commands:
         SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds).execute()
 
     def build_transaction(self, *, operations: list[Operation]) -> Transaction:
-        return BuildTransaction.execute_with_result(BuildTransaction(operations=operations))
+        return BuildTransaction(operations=operations).execute_with_result()
 
     def sign(self, *, transaction: Transaction, sign_with: PrivateKeyAlias) -> Transaction:
-        return Sign.execute_with_result(
-            Sign(
-                beekeeper=self.__world.beekeeper,
-                transaction=transaction,
-                key=sign_with,
-                chain_id=self.__world.profile_data.chain_id,
-            )
-        )
+        return Sign(
+            beekeeper=self.__world.beekeeper,
+            transaction=transaction,
+            key=sign_with,
+            chain_id=self.__world.profile_data.chain_id,
+        ).execute_with_result()
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
         SaveToFileAsBinary(transaction=transaction, file_path=path).execute()
@@ -64,6 +62,6 @@ class Commands:
         ).execute()
 
     def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:
-        return ImportKey.execute_with_result(
-            ImportKey(wallet=self.__world.profile_data.name, key_to_import=wif, beekeeper=self.__world.beekeeper)
-        )
+        return ImportKey(
+            wallet=self.__world.profile_data.name, key_to_import=wif, beekeeper=self.__world.beekeeper
+        ).execute_with_result()

@@ -39,4 +39,4 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
 
-    return BuildTransaction.execute_with_result(BuildTransaction(operations))
+    return BuildTransaction(operations).execute_with_result()

@@ -38,7 +38,6 @@ class Command(Generic[T], AbstractClass):
     def execute(self) -> None:
         """Executes the command. The result could be set and accessed via the `result` property."""
 
-    @classmethod
-    def execute_with_result(cls, command: Command[T]) -> T:
-        command.execute()
-        return command.result
+    def execute_with_result(self) -> T:
+        self.execute()
+        return self.result
