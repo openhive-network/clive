@@ -68,3 +68,7 @@ class RepeatedPasswordIsDifferentError(FormValidationError):
 
 class CannotActivateError(CliveError):
     pass
+
+
+class TransactionNotSignedError(CliveError):
+    pass
