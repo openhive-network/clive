@@ -37,7 +37,7 @@ def perform_actions_on_transaction(
     transaction = ensure_transaction(content)
 
     if sign_key:
-        transaction = Sign.execute_with_result(Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key))
+        transaction = Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key).execute_with_result()
 
     if save_file_path:
         SaveToFile(transaction=transaction, file_path=save_file_path).execute()
