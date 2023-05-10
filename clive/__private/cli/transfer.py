@@ -36,7 +36,7 @@ def _main(
     perform_actions_on_transaction(
         TransferOperation(from_=from_, to=to, amount=amount, memo=memo),
         beekeeper=common.world.beekeeper,
-        node_address=common.world.profile_data.node_address,
+        node=common.world.node,
         sign_key=PrivateKeyAlias(common.sign) if common.sign else None,
         save_file_path=Path(common.save_file) if common.save_file else None,
         broadcast=common.broadcast,

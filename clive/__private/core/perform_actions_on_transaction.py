@@ -12,15 +12,15 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
+    from clive.__private.core.node.node import Node
     from clive.__private.storage.mock_database import PrivateKeyAlias
-    from clive.core.url import Url
 
 
 def perform_actions_on_transaction(
     content: TransactionConvertibleType,
     *,
+    node: Node,
     beekeeper: Beekeeper,
-    node_address: Url,
     sign_key: PrivateKeyAlias | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
@@ -30,6 +30,8 @@ def perform_actions_on_transaction(
     Args:
         content: The content to be converted to a transaction.
             (This can be a transaction object, a list of operations, or a single operation.)
+        node: The node which will be used for transaction broadcasting.
+        beekeeper: The beekeeper to use to sign the transaction.
         sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
         save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         broadcast: Whether to broadcast the transaction.
@@ -43,4 +45,4 @@ def perform_actions_on_transaction(
         SaveToFile(transaction=transaction, file_path=save_file_path).execute()
 
     if transaction.signed and broadcast:
-        Broadcast(node_address=node_address, transaction=transaction).execute()
+        Broadcast(node=node, transaction=transaction).execute()

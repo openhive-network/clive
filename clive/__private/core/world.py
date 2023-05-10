@@ -6,6 +6,7 @@ from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import BeekeeperLocal, BeekeeperRemote
 from clive.__private.core.beekeeper.executable import BeekeeperNotConfiguredError
 from clive.__private.core.commands.commands import Commands
+from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.mock_database import NodeData
 from clive.__private.ui.background_tasks import BackgroundTasks
@@ -20,6 +21,7 @@ class World:
         self._commands = Commands(self)
         self._background_tasks = BackgroundTasks()
         self._beekeeper = self.__setup_beekeeper()
+        self._node = Node(self._profile_data)
 
     @property
     def commands(self) -> Commands:
@@ -32,6 +34,10 @@ class World:
     @property
     def beekeeper(self) -> BeekeeperLocal | BeekeeperRemote:
         return self._beekeeper
+
+    @property
+    def node(self) -> Node:
+        return self._node
 
     def close(self) -> None:
         if isinstance(self.beekeeper, BeekeeperLocal):
