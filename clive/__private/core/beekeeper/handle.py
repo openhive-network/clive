@@ -104,12 +104,12 @@ class BeekeeperLocal(Beekeeper):
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server.listen())
         self.__executable.run(self.config)
 
-        try:
+        if not (
             self.__notification_server.http_listening_event.wait(timeout)
-            self.__notification_server.ready.wait(timeout)
-        except TimeoutError:
+            and self.__notification_server.ready.wait(timeout)
+        ):
             self.close()
-            raise
+            return
 
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
