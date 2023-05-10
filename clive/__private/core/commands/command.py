@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Generic, TypeVar
 
 from clive.__private.abstract_class import AbstractClass
@@ -15,10 +15,9 @@ class Command(Generic[T], AbstractClass):
     be overridden by subclasses to implement the specific functionality of the command. The result property can be used
     to set and access the result of the command, which is initially set to None. Subclasses should set the result
     property with the output, if any.
-
-    Args:
-        result_default: The default (initial) value for the result property.
     """
+
+    _result: T | None = field(default=None, init=False)
 
     @property
     def result(self) -> T:
@@ -29,8 +28,7 @@ class Command(Generic[T], AbstractClass):
         Raises:
             ValueError: If the result has not been set before.
         """
-        self._result: T | None
-        if not hasattr(self, "_result") or self._result is None:
+        if self._result is None:
             raise ValueError("The result is not set yet.")
         return self._result
 
