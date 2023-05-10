@@ -50,14 +50,14 @@ class Commands:
         SaveToFileAsBinary(transaction=transaction, file_path=path).execute()
 
     def broadcast(self, *, transaction: Transaction) -> None:
-        Broadcast(node_address=self.__world.profile_data.node_address, transaction=transaction).execute()
+        Broadcast(node=self.__world.node, transaction=transaction).execute()
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PrivateKeyAlias) -> None:
         FastBroadcast(
+            node=self.__world.node,
             operation=operation,
             beekeeper=self.__world.beekeeper,
             sign_with=sign_with,
-            node_address=self.__world.profile_data.node_address,
             chain_id=self.__world.profile_data.chain_id,
         ).execute()
 

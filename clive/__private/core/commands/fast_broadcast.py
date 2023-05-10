@@ -8,24 +8,24 @@ from clive.__private.core.perform_actions_on_transaction import perform_actions_
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
+    from clive.__private.core.node.node import Node
     from clive.__private.storage.mock_database import PrivateKeyAlias
-    from clive.core.url import Url
     from clive.models.operation import Operation
 
 
 @dataclass
 class FastBroadcast(Command[None]):
+    node: Node
     operation: Operation
     beekeeper: Beekeeper
     sign_with: PrivateKeyAlias
-    node_address: Url
     chain_id: str
 
     def execute(self) -> None:
         perform_actions_on_transaction(
             content=self.operation,
+            node=self.node,
             beekeeper=self.beekeeper,
-            node_address=self.node_address,
             chain_id=self.chain_id,
             sign_key=self.sign_with,
             save_file_path=None,
