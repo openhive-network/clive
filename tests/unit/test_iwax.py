@@ -11,9 +11,7 @@ if TYPE_CHECKING:
     from clive.models.operation import Operation
 
 
-operations: Final[list[Operation]] = [
-    TransferOperation(from_="alice", to="bob", amount=Asset(amount="10", precision=3, nai="@@000000013"), memo="aaa")
-]
+operations: Final[list[Operation]] = [TransferOperation(from_="alice", to="bob", amount=Asset.hive(10), memo="aaa")]
 
 
 def test_valid_transaction() -> None:
