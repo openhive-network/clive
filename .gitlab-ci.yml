@@ -14,6 +14,7 @@ variables:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
+  WAX_DIR: "$CI_PROJECT_DIR/wax"
 
 
 .shared_tags: &shared_tags
@@ -21,7 +22,7 @@ variables:
 
 
 .configuration:
-  before_script:
+  before_script: &configuration_before_script
     # configure python
     - python3 -V
     - poetry self update
@@ -85,29 +86,62 @@ build_beekeeper:
   tags: *shared_tags
 
 
+build_wax:
+  stage: build
+  needs: [ ]
+  script:
+    - cd hive
+    - python3 -m venv .venv && source .venv/bin/activate
+    - cd hive/tests/hive-local-tools && poetry install && cd shared-tools && poetry install && cd wax
+    - python3 setup.py build && rm -rf .build
+    - cp -r . $WAX_DIR
+  artifacts:
+    paths:
+      - $WAX_DIR
+    when: always
+  tags: *shared_tags
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-tests_launch:
+.testing:
   stage: tests
   extends: .configuration
   needs:
     - job: build_beekeeper
       artifacts: true
+    - job: build_wax
+      artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
-  script:
-    - echo -e "${TXT_BLUE}Launching tests...${TXT_CLEAR}" &&
-      python3 -m pytest -n auto --junitxml=report.xml tests/
+    WAX_SKIP_BUILD: 1
+    PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
+  before_script:
+    - *configuration_before_script
+    - cd $WAX_DIR && pip install . && cd $CI_PROJECT_DIR
   artifacts:
     reports:
-      junit: report.xml
+      junit: $PATH_TO_REPORT
     paths:
       - "**/generated"
     when: always
     expire_in: 7 days
+
+testing_clive:
+  extends: .testing
+  script:
+    - echo -e "${TXT_BLUE}Launching clive tests...${TXT_CLEAR}"
+    - python3 -m pytest -n auto --junitxml=report.xml tests/
+
+testing_wax:
+  extends: .testing
+  variables:
+    PATH_TO_REPORT: "$WAX_DIR/report.xml"
+  script:
+    - echo -e "${TXT_BLUE}Launching wax tests...${TXT_CLEAR}"
+    - cd $WAX_DIR && python3 -m pytest -n auto --junitxml=report.xml tests/
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -119,9 +153,10 @@ build_and_push_docker_image:
   stage: build_docker
   needs:
       - job: pre_commit_checks
-      - job: tests_launch
       - job: build_beekeeper
         artifacts: true
+      - job: testing_clive
+      - job: testing_wax
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""

@@ -60,7 +60,7 @@ T = TypeVar("T", Create, CreateKey, ImportKey, ListWallets, ListKeys, GetPublicK
 
 
 class JSONRPCProtocol(BaseModel):
-    id_: int | None = Field(0, alias="id")
+    id_: int = Field(alias="id", default=0)
     jsonrpc: str = "2.0"
 
 

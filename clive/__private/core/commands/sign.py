@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
-from clive.__private.core.mockcpp import calculate_digest
+from clive.__private.core.iwax import calculate_digest
 from clive.models.transaction import Transaction
 
 if TYPE_CHECKING:

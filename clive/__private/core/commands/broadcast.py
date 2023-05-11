@@ -13,7 +13,7 @@ NODE_COMMUNICATION_ENABLED: Final[bool] = False
 if NODE_COMMUNICATION_ENABLED:
     import httpx
 
-    from clive.__private.core.mockcpp import serialize_transaction
+    from clive.__private.core.iwax import serialize_transaction
 
 
 if TYPE_CHECKING:

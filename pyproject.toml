@@ -64,6 +64,9 @@ strict = true
 disallow_untyped_decorators = false
 plugins = "pydantic.mypy"
 
+[[tool.mypy.overrides]]
+module = ["wax"]
+ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120

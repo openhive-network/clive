@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
-from clive.__private.core.mockcpp import serialize_transaction
+from clive.__private.core.iwax import serialize_transaction
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -16,9 +16,8 @@ if TYPE_CHECKING:
 class SaveToFile(Command[None]):
     transaction: Transaction
     file_path: Path
-    legacy: bool = False
 
     def execute(self) -> None:
-        serialized = serialize_transaction(self.transaction, legacy=self.legacy)
+        serialized = serialize_transaction(self.transaction)
         with self.file_path.open("wt", encoding="utf-8") as file:
             file.write(serialized)
