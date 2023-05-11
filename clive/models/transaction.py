@@ -17,6 +17,11 @@ class Transaction(BaseModel):
     extensions: list[Any] = Field(default_factory=list)
     transaction_id: str = ""
 
+    class Config:
+        json_encoders = {
+            Operation: lambda obj: obj.json(by_alias=True),
+        }
+
     @property
     def signed(self) -> bool:
         return bool(self.signatures)

@@ -8,6 +8,9 @@ from typing import TYPE_CHECKING, cast
 
 import pytest
 
+from clive.core.url import Url
+import test_tools as tt
+
 from clive.__private.config import settings
 from clive.__private.core.beekeeper import BeekeeperLocal
 from clive.__private.core.world import World
@@ -17,6 +20,8 @@ from tests import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    WorldWithNodeT = tuple[World, tt.InitNode]
 
 
 def __convert_test_name_to_directory_name(test_name: str) -> str:
@@ -69,9 +74,18 @@ def pubkey(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> PrivateKeyAlias:
 
 @pytest.fixture
 def world(wallet_name: str) -> Iterator[World]:
-    w = World(profile_name=wallet_name)
-    yield w
-    w.close()
+    world = World(profile_name=wallet_name)
+    yield world
+    world.close()
+
+
+@pytest.fixture
+def world_with_node(world: World) -> WorldWithNodeT:
+    init_node = tt.InitNode()
+    init_node.run()
+    world.profile_data.node_address = Url.parse(init_node.http_endpoint, protocol="http")
+    yield world, init_node
+    world.close()
 
 
 @pytest.fixture
