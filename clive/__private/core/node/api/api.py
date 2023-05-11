@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-import re
 from functools import wraps
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
+
+import inflection
 
 from clive.__private.abstract_class import AbstractClass
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse
@@ -34,9 +35,4 @@ class Api(AbstractClass):
         return wrapper  # type: ignore
 
     def __get_endpoint(self, func: Callable[..., Any]) -> str:
-        return f"{self.__to_snake_case(self.__class__.__name__)}.{func.__name__}"
-
-    @staticmethod
-    def __to_snake_case(name: str) -> str:
-        name = re.sub("(.)([A-Z][a-z]+)", r"\1_\2", name)
-        return re.sub("([a-z0-9])([A-Z])", r"\1_\2", name).lower()
+        return f"{inflection.underscore(self.__class__.__name__)}.{func.__name__}"
