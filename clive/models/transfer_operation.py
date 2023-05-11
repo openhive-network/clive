@@ -6,7 +6,7 @@ from schemas.operations import TransferOperation as TransferOperationSchema
 
 class TransferOperation(Operation, TransferOperationSchema):
     def get_name(self) -> str:
-        return "transfer"
+        return "transfer_operation"
 
     def pretty(self, *, separator: str = "\n") -> str:
-        return f"to={self.to}{separator}amount={self.amount}{separator}memo={self.memo}"
+        return separator.join((f"{self.to=}", f"{self.amount=}", f"{self.memo=}"))

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
@@ -17,6 +18,7 @@ from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.models.asset import Asset, AssetT
 from clive.models.transfer_operation import TransferOperation
 
 if TYPE_CHECKING:
@@ -31,10 +33,14 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select[int]):
+class CurrencySelector(Select[Callable[[int], AssetT]]):
     def __init__(self) -> None:
+        def _assset_factory(symbol: str) -> Callable[[int], AssetT]:
+            asset = Asset.resolve_symbol(symbol)
+            return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
+
         super().__init__(
-            items=[SelectItem(0, "HIVE"), SelectItem(1, "HBD")],
+            items=[SelectItem(_assset_factory(symbol), symbol) for symbol in ["HIVE", "HBD"]],
             list_mount="ViewBag",
             placeholder="Select currency",
             selected=1,
@@ -112,7 +118,7 @@ class TransferToAccount(CartBasedScreen):
             return TransferOperation(
                 from_=str(self.app.world.profile_data.working_account.name),
                 to=self.__to_input.value,
-                amount=f"{self.__amount_input.value} {self.__currency_selector.text}",
+                amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
                 memo=self.__memo_input.value,
             )
         except ValidationError as error:
