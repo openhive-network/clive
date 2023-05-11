@@ -19,12 +19,14 @@ class FastBroadcast(Command[None]):
     beekeeper: Beekeeper
     sign_with: PrivateKeyAlias
     node_address: Url
+    chain_id: str
 
     def execute(self) -> None:
         perform_actions_on_transaction(
             content=self.operation,
             beekeeper=self.beekeeper,
             node_address=self.node_address,
+            chain_id=self.chain_id,
             sign_key=self.sign_with,
             save_file_path=None,
             broadcast=True,

@@ -16,7 +16,7 @@ def validate_operation(operation: Operation) -> bool | None:  # noqa: ARG001
     return True
 
 
-def calculate_digest(transaction: Transaction) -> str:  # noqa: ARG001
+def calculate_digest(transaction: Transaction, chain_id: str) -> str:  # noqa: ARG001
     return "9b29ba0710af3918e81d7b935556d7ab205d8a8f5ca2e2427535980c2e8bdaff"
 
 

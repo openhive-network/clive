@@ -8,7 +8,9 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private import config
 from clive.__private.core.beekeeper.handle import ErrorResponseError
+from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.core.communication import Communication
 from clive.__private.storage.contextual import Context
 from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
 from clive.core.url import Url
@@ -37,6 +39,18 @@ class ProfileData(Context):
 
     backup_node_addresses: list[Url] = field(init=False)
     node_address: Url = field(init=False)
+
+    @property
+    def chain_id(self) -> str:
+        chain_id: str = config.settings.get("node.chain_id")
+        if bool(chain_id):
+            return chain_id
+        assert self.node_address
+        config.settings["node.chain_id"] = Communication.request(
+            self.node_address.as_string(),
+            data=JSONRPCRequest(method="database_api.get_config", params={}).dict(by_alias=True),
+        ).json()["result"]["HIVE_CHAIN_ID"]
+        return self.chain_id
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:

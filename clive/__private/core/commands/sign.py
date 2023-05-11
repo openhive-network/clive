@@ -17,9 +17,10 @@ class Sign(Command[Transaction]):
     beekeeper: Beekeeper
     transaction: Transaction
     key: PrivateKeyAlias
+    chain_id: str
 
     def execute(self) -> None:
-        self.transaction.transaction_id = calculate_digest(self.transaction)
-        result = self.beekeeper.api.sign_digest(digest=self.transaction.transaction_id, public_key=self.key.key_name)
+        sig_digest = calculate_digest(self.transaction, self.chain_id)
+        result = self.beekeeper.api.sign_digest(digest=sig_digest, public_key=self.key.key_name)
         self.transaction.signatures = [result.signature]
         self._result = self.transaction

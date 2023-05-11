@@ -39,7 +39,14 @@ class Commands:
         return BuildTransaction.execute_with_result(BuildTransaction(operations=operations))
 
     def sign(self, *, transaction: Transaction, sign_with: PrivateKeyAlias) -> Transaction:
-        return Sign.execute_with_result(Sign(beekeeper=self.__world.beekeeper, transaction=transaction, key=sign_with))
+        return Sign.execute_with_result(
+            Sign(
+                beekeeper=self.__world.beekeeper,
+                transaction=transaction,
+                key=sign_with,
+                chain_id=self.__world.profile_data.chain_id,
+            )
+        )
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
         SaveToFile(transaction=transaction, file_path=path).execute()
@@ -53,6 +60,7 @@ class Commands:
             beekeeper=self.__world.beekeeper,
             sign_with=sign_with,
             node_address=self.__world.profile_data.node_address,
+            chain_id=self.__world.profile_data.chain_id,
         ).execute()
 
     def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:

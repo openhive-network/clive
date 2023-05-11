@@ -21,6 +21,7 @@ def perform_actions_on_transaction(
     *,
     beekeeper: Beekeeper,
     node_address: Url,
+    chain_id: str,
     sign_key: PrivateKeyAlias | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
@@ -37,7 +38,9 @@ def perform_actions_on_transaction(
     transaction = ensure_transaction(content)
 
     if sign_key:
-        transaction = Sign.execute_with_result(Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key))
+        transaction = Sign.execute_with_result(
+            Sign(beekeeper=beekeeper, transaction=transaction, key=sign_key, chain_id=chain_id)
+        )
 
     if save_file_path:
         SaveToFile(transaction=transaction, file_path=save_file_path).execute()
