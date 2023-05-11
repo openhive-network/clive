@@ -90,10 +90,8 @@ build_wax:
   stage: build
   needs: [ ]
   script:
-    - cd hive
-    - python3 -m venv .venv && source .venv/bin/activate
-    - cd hive/tests/hive-local-tools && poetry install && cd shared-tools && poetry install && cd wax
-    - python3 setup.py build && rm -rf .build
+    - cd hive/tests/hive-local-tools/shared-tools/wax
+    - pip install .
     - cp -r . $WAX_DIR
   artifacts:
     paths:
