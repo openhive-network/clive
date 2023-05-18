@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.broadcast import Broadcast
-from clive.__private.core.commands.save import SaveToFile
+from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.ensure_transaction import ensure_transaction
 
@@ -43,7 +43,7 @@ def perform_actions_on_transaction(
         )
 
     if save_file_path:
-        SaveToFile(transaction=transaction, file_path=save_file_path).execute()
+        SaveToFileAsBinary(transaction=transaction, file_path=save_file_path).execute()
 
     if transaction.signed and broadcast:
         Broadcast(node_address=node_address, transaction=transaction).execute()

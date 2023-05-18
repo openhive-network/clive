@@ -8,7 +8,7 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.commands.save import SaveToFile
+from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 
@@ -49,7 +49,7 @@ class Commands:
         )
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
-        SaveToFile(transaction=transaction, file_path=path).execute()
+        SaveToFileAsBinary(transaction=transaction, file_path=path).execute()
 
     def broadcast(self, *, transaction: Transaction) -> None:
         Broadcast(node_address=self.__world.profile_data.node_address, transaction=transaction).execute()

@@ -13,11 +13,11 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class SaveToFile(Command[None]):
+class SaveToFileAsBinary(Command[None]):
     transaction: Transaction
     file_path: Path
 
     def execute(self) -> None:
         serialized = serialize_transaction(self.transaction)
-        with self.file_path.open("wt", encoding="utf-8") as file:
+        with self.file_path.open("wb", encoding="utf-8") as file:
             file.write(serialized)
