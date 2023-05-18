@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from consts import ENCODING, VALID_TRXS
 
 import wax
+
+from .consts import ENCODING, VALID_TRXS
 
 
 @pytest.mark.parametrize("key", list(VALID_TRXS.keys()))

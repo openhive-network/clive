@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from consts import ENCODING, VALID_OPERATIONS
 
 import wax
+
+from .consts import ENCODING, VALID_OPERATIONS
 
 
 @pytest.mark.parametrize("operation_name", list(VALID_OPERATIONS.keys()))

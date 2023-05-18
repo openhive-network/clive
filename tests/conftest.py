@@ -4,7 +4,7 @@ import re
 import shutil
 import warnings
 from pathlib import Path
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING, Final, cast
 
 import pytest
 
@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 
 def __convert_test_name_to_directory_name(test_name: str) -> str:
+    max_dir_name: Final[int] = 64
     parametrized_test_match = re.match(r"([\w_]+)\[(.*)\]", test_name)
     if parametrized_test_match:
         test_name = f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
@@ -31,7 +32,7 @@ def __convert_test_name_to_directory_name(test_name: str) -> str:
             char = f"-0x{ord(character):X}-"
         final_test_name += char
 
-    return final_test_name
+    return final_test_name[:max_dir_name]
 
 
 @pytest.fixture(autouse=True, scope="function")

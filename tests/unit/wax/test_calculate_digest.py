@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import pytest
-from consts import ENCODING, MAINNET_CHAIN_ID, VALID_IDS_WITH_TRANSACTIONS
 
 import wax
+
+from .consts import ENCODING, MAINNET_CHAIN_ID, VALID_IDS_WITH_TRANSACTIONS
 
 
 @pytest.mark.parametrize("trx_id", list(VALID_IDS_WITH_TRANSACTIONS.keys()))

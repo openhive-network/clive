@@ -6,7 +6,6 @@ stages:
   - tests
   - build_docker
 
-
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   PACKAGES_TO_CHECK: "clive/ tests/"
@@ -14,16 +13,12 @@ variables:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
-  WAX_DIR: "$CI_PROJECT_DIR/wax"
-
 
 .shared_tags: &shared_tags
   - hived-for-tests
 
-
 .configuration:
-  before_script: &configuration_before_script
-    # configure python
+  before_script: &configuration_before_script # configure python
     - python3 -V
     - poetry self update
     - python3 -m venv venv/
@@ -31,7 +26,6 @@ variables:
     - poetry install
     - pip list
   tags: *shared_tags
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -42,7 +36,6 @@ pre_commit_checks:
     - echo -e "${TXT_BLUE}Checking all files with pre-commit hooks...${TXT_CLEAR}" &&
       pre-commit run --all-files
 
-
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .configuration
@@ -52,14 +45,12 @@ lint_code_with_ruff:
     - echo -e "${TXT_BLUE}Linting all sources with Ruff (diff)...${TXT_CLEAR}" &&
       ruff ${PACKAGES_TO_CHECK} --diff
 
-
 formatting_with_black_check:
   stage: static_code_analysis
   extends: .configuration
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Black...${TXT_CLEAR}" &&
       black ${PACKAGES_TO_CHECK} --check --diff --color
-
 
 type_check_with_mypy:
   stage: static_code_analysis
@@ -70,12 +61,11 @@ type_check_with_mypy:
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
-
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 build_beekeeper:
   stage: build
-  needs: [ ]
+  needs: []
   script:
     - cd hive
     - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -GNinja .. && ninja beekeeper
@@ -85,22 +75,7 @@ build_beekeeper:
       - $BEEKEEPER_BINARY
   tags: *shared_tags
 
-
-build_wax:
-  stage: build
-  needs: [ ]
-  script:
-    - cd hive/tests/hive-local-tools/shared-tools/wax
-    - pip install .
-    - cp -r . $WAX_DIR
-  artifacts:
-    paths:
-      - $WAX_DIR
-    when: always
-  tags: *shared_tags
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -110,15 +85,9 @@ build_wax:
   needs:
     - job: build_beekeeper
       artifacts: true
-    - job: build_wax
-      artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
-    WAX_SKIP_BUILD: 1
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
-  before_script:
-    - *configuration_before_script
-    - cd $WAX_DIR && pip install . && cd $CI_PROJECT_DIR
   artifacts:
     reports:
       junit: $PATH_TO_REPORT
@@ -133,16 +102,7 @@ testing_clive:
     - echo -e "${TXT_BLUE}Launching clive tests...${TXT_CLEAR}"
     - python3 -m pytest -n auto --junitxml=report.xml tests/
 
-testing_wax:
-  extends: .testing
-  variables:
-    PATH_TO_REPORT: "$WAX_DIR/report.xml"
-  script:
-    - echo -e "${TXT_BLUE}Launching wax tests...${TXT_CLEAR}"
-    - cd $WAX_DIR && python3 -m pytest -n auto --junitxml=report.xml tests/
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -150,11 +110,10 @@ build_and_push_docker_image:
   image: docker:20.10.13
   stage: build_docker
   needs:
-      - job: pre_commit_checks
-      - job: build_beekeeper
-        artifacts: true
-      - job: testing_clive
-      - job: testing_wax
+    - job: pre_commit_checks
+    - job: build_beekeeper
+      artifacts: true
+    - job: testing_clive
   variables:
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ""
@@ -173,5 +132,4 @@ build_and_push_docker_image:
     - develop
     - master
   tags: *shared_tags
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
