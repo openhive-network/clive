@@ -36,7 +36,7 @@ schemas = { path = "schemas" }
 
 # TODO: Specify exact version of typer instead the git revision when typer will allow for rich 13.x.x (https://github.com/tiangolo/typer/pull/524)
 typer = { extras = ["all"], git = "https://github.com/musicinmybrain/typer.git", rev = "5bf232" }
-wax = {path = "hive/tests/hive-local-tools/shared-tools/wax"}
+wax = {path = "wax"}
 
 
 [tool.poetry.group.dev.dependencies]

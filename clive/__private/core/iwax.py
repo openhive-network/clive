@@ -3,32 +3,38 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import wax
+from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from clive.models.operation import Operation
     from clive.models.transaction import Transaction
 
 
-def validate_transaction(transaction: Transaction) -> bool | None:
-    return wax.validate_transaction(serialize_transaction_to_bytes(transaction))  # type: ignore[no-any-return]
+class WaxOperationFailedError(CliveError):
+    pass
 
 
-def validate_operation(operation: Operation) -> bool | None:
-    return wax.validate_operation(operation.as_json().encode())  # type: ignore[no-any-return]
+def __validate_wax_response(response: wax.python_result) -> bool:
+    if response.status == wax.python_error_code.fail:
+        raise WaxOperationFailedError(response.exception_message.decode())
+    return True
+
+
+def validate_transaction(transaction: Transaction) -> bool:
+    return __validate_wax_response(wax.validate_transaction(transaction.as_json().encode()))
+
+
+def validate_operation(operation: Operation) -> bool:
+    return __validate_wax_response(wax.validate_operation(operation.as_json().encode()))
 
 
 def calculate_digest(transaction: Transaction, chain_id: str) -> str:
-    trx = serialize_transaction_to_bytes(transaction)
-    result = wax.calculate_digest(trx, chain_id.encode())
-    assert result is not None
-    success, digest = result
-    assert success is True
-    return digest  # type: ignore[no-any-return]
+    result = wax.calculate_digest(transaction.as_json().encode(), chain_id.encode())
+    __validate_wax_response(result)
+    return result.result.decode()
 
 
-def serialize_transaction(transaction: Transaction) -> str:
-    return transaction.as_json(by_alias=True, exclude_none=True)
-
-
-def serialize_transaction_to_bytes(transaction: Transaction) -> bytes:
-    return serialize_transaction(transaction).encode()
+def serialize_transaction(transaction: Transaction) -> bytes:
+    result = wax.serialize_transaction(transaction.as_json().encode())
+    __validate_wax_response(result)
+    return result.result
