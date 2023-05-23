@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 def test_sign_digest(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> None:
     private_key: Final[str] = "5HwHC7y2WtCL18J9QMqX7awDe1GDsUTg7cfw734m2qFkdMQK92q"
-    public_key: Final[str] = "STM6jACfK3P5xYFJQvavCwz5M8KR5EW3TcmSesArj9LJVGAq85qor"
+    public_key: Final[str] = "TST6jACfK3P5xYFJQvavCwz5M8KR5EW3TcmSesArj9LJVGAq85qor"
     digest_to_sign: Final[str] = "9b29ba0710af3918e81d7b935556d7ab205d8a8f5ca2e2427535980c2e8bdaff"
     expected_signature: Final[
         str
