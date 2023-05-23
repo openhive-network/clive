@@ -4,7 +4,7 @@ import re
 from datetime import timedelta
 from typing import Any, ClassVar, Literal, TypeAlias
 
-from pydantic import Field
+from pydantic import Field, validator
 
 from schemas.__private.hive_fields_basic_schemas import (
     AssetHbdHF26,
@@ -14,7 +14,7 @@ from schemas.__private.hive_fields_basic_schemas import (
     HiveInt,
 )
 from schemas.__private.hive_fields_custom_schemas import Signature as SchemasSignature
-from schemas.__private.operations import Hf26OperationType, Hf26VirtualOperationType
+from schemas.__private.operations import Hf26OperationType, HF26OperationTypes, Hf26VirtualOperationType
 from schemas.__private.preconfigured_base_model import Operation as SchemasBaseOperationType
 from schemas.__private.preconfigured_base_model import VirtualOperation as SchemasBaseVirtualOperationType
 from schemas.transaction_model.transaction import Hf26Transaction
@@ -33,6 +33,19 @@ class Transaction(Hf26Transaction):
     expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
     extensions: list[Any] = Field(default_factory=list)
     signatures: list[Signature] = Field(default_factory=list)
+
+    @validator("operations", pre=True)
+    def convert_operations(cls, value: Any) -> list[Operation]:  # noqa: N805
+        assert isinstance(value, list)
+        return [cls.__convert_to_h26(op) for op in value]
+
+    def add_operation(self, operation: Operation) -> None:
+        self.operations.append(self.__convert_to_h26(operation))
+
+    @classmethod
+    def __convert_to_h26(cls, operation: Operation) -> Operation:
+        op_name = operation.get_name()
+        return HF26OperationTypes[op_name](type=op_name, value=operation)  # type: ignore[call-arg]
 
     def is_signed(self) -> bool:
         return bool(self.signatures)
