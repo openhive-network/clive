@@ -21,7 +21,7 @@ from clive.exceptions import NoItemSelectedError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models.transaction import Transaction
+    from clive.models import Transaction
 
 
 class StaticPart(Static):
@@ -89,7 +89,7 @@ class TransactionSummary(BaseScreen):
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
                 for idx, operation in enumerate(self.app.world.profile_data.cart):
-                    yield OperationItem(operation.as_json(), classes="-even" if idx % 2 == 0 else "")
+                    yield OperationItem(operation.json(by_alias=True), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
     def on_activate_succeeded(self) -> None:

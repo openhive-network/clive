@@ -9,7 +9,7 @@ from clive.__private.core.iwax import serialize_transaction
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.models.transaction import Transaction
+    from clive.models import Transaction
 
 
 @dataclass

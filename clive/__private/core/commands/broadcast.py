@@ -8,7 +8,7 @@ from clive.exceptions import TransactionNotSignedError
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
-    from clive.models.transaction import Transaction
+    from clive.models import Transaction
 
 
 @dataclass
@@ -19,7 +19,7 @@ class Broadcast(Command[None]):
     transaction: Transaction
 
     def execute(self) -> None:
-        if not self.transaction.signed:
+        if not self.transaction.is_signed():
             raise TransactionNotSignedError()
 
         self.node.api.network_broadcast.broadcast_transaction(trx=self.transaction)

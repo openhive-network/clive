@@ -20,8 +20,6 @@ from tests import WalletInfo
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
-    WorldWithNodeT = tuple[World, tt.InitNode]
-
 
 def __convert_test_name_to_directory_name(test_name: str) -> str:
     max_dir_name: Final[int] = 64
@@ -80,12 +78,12 @@ def world(wallet_name: str) -> Iterator[World]:
 
 
 @pytest.fixture
-def world_with_node(world: World) -> Iterator[WorldWithNodeT]:
+def init_node(world: World) -> Iterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
     world.profile_data.node_address = Url.parse(init_node.http_endpoint, protocol="http")
-    yield world, init_node
-    world.close()
+    yield init_node
+    init_node.close()
 
 
 @pytest.fixture

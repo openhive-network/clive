@@ -4,8 +4,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 from clive.__private.core.commands.build_transaction import BuildTransaction
-from clive.models.operation import Operation
-from clive.models.transaction import Transaction
+from clive.models import Operation, OperationBaseClass, Transaction
 
 if TYPE_CHECKING:
     TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
@@ -25,13 +24,13 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     """
 
     def __ensure_operation(item: Any) -> Operation:
-        assert isinstance(item, Operation)
-        return item
+        assert isinstance(item, OperationBaseClass)
+        return item  # type: ignore[return-value]
 
     if isinstance(content, Transaction):
         return content
 
-    if isinstance(content, Operation):
+    if isinstance(content, OperationBaseClass):
         operations = [content]
 
     elif isinstance(content, Iterable):

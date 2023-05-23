@@ -18,8 +18,7 @@ if TYPE_CHECKING:
 
     from clive import World
     from clive.__private.storage.mock_database import PrivateKey, PrivateKeyAlias
-    from clive.models.operation import Operation
-    from clive.models.transaction import Transaction
+    from clive.models import Operation, Transaction
 
 
 class Commands:

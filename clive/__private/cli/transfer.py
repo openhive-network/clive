@@ -6,8 +6,8 @@ import typer
 from clive.__private.cli.common import Common, common_options
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.__private.storage.mock_database import PrivateKeyAlias
-from clive.models.asset import Asset
-from clive.models.transfer_operation import TransferOperation
+from clive.models import Asset
+from schemas.operations import TransferOperation
 
 HELP: Final[str] = """
 Transfer some funds to another account.

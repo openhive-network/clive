@@ -18,8 +18,8 @@ from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models.asset import Asset, AssetT
-from clive.models.transfer_operation import TransferOperation
+from clive.models import Asset, Operation
+from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -33,9 +33,9 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select[Callable[[float], AssetT]]):
+class CurrencySelector(Select[Callable[[float], Asset.ANY]]):
     def __init__(self) -> None:
-        def _asset_factory(symbol: str) -> Callable[[float], AssetT]:
+        def _asset_factory(symbol: str) -> Callable[[float], Asset.ANY]:
             asset = Asset.resolve_symbol(symbol)
             return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
 
@@ -108,7 +108,7 @@ class TransferToAccount(CartBasedScreen):
                 f"Operation `{operation.__class__.__name__}` broadcast succesfully.", category="success"
             ).show()
 
-    def __create_operation(self) -> TransferOperation | None:
+    def __create_operation(self) -> Operation | None:
         """
         Collects data from the screen and creates a new operation based on it.
         :return: Operation if the operation is valid, None otherwise.

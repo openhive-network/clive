@@ -6,8 +6,7 @@ import wax
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from clive.models.operation import Operation
-    from clive.models.transaction import Transaction
+    from clive.models import Operation, Transaction
 
 
 class WaxOperationFailedError(CliveError):
@@ -20,21 +19,25 @@ def __validate_wax_response(response: wax.python_result) -> bool:
     return True
 
 
+def __as_binary_json(item: Operation | Transaction) -> bytes:
+    return item.json(by_alias=True).encode()
+
+
 def validate_transaction(transaction: Transaction) -> bool:
-    return __validate_wax_response(wax.validate_transaction(transaction.as_json().encode()))
+    return __validate_wax_response(wax.validate_transaction(__as_binary_json(transaction)))
 
 
 def validate_operation(operation: Operation) -> bool:
-    return __validate_wax_response(wax.validate_operation(operation.as_json().encode()))
+    return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
 
 
 def calculate_digest(transaction: Transaction, chain_id: str) -> str:
-    result = wax.calculate_digest(transaction.as_json().encode(), chain_id.encode())
+    result = wax.calculate_digest(__as_binary_json(transaction), chain_id.encode())
     __validate_wax_response(result)
     return result.result.decode()
 
 
 def serialize_transaction(transaction: Transaction) -> bytes:
-    result = wax.serialize_transaction(transaction.as_json().encode())
+    result = wax.serialize_transaction(__as_binary_json(transaction))
     __validate_wax_response(result)
     return result.result

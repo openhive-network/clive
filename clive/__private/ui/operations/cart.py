@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.profile_data import ProfileData
-    from clive.models.operation import Operation
+    from clive.models import Operation
 
 
 class DynamicColumn(DynamicLabel):
@@ -119,7 +119,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
         def operation_details(_: ProfileData) -> str:
             if self.is_valid():
-                return self.__operation.json(by_alias=True)
+                return str(self.__operation)
             return ""
 
         yield DynamicColumn(

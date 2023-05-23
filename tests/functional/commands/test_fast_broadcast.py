@@ -2,21 +2,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.models.asset import Asset
-from clive.models.transfer_operation import TransferOperation
+from clive.__private.storage.mock_database import PrivateKey
+from clive.models import Asset
+from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
-    from clive.__private.storage.mock_database import PrivateKeyAlias
-    from tests.conftest import WorldWithNodeT
+    import test_tools as tt
+
+    from clive.__private.core.world import World
+    from tests import WalletInfo
 
 
-def test_fast_broadcast_smoke_test(world_with_node: WorldWithNodeT, pubkey: PrivateKeyAlias) -> None:
+def test_fast_broadcast_smoke_test(world: World, init_node: tt.InitNode, wallet: WalletInfo) -> None:  # noqa: ARG001
     # ARRANGE
-
-    world, node = world_with_node
+    pubkey = world.commands.import_key(wif=PrivateKey(key_name="", key=str(init_node.config.private_key[0])))
 
     # ACT & ASSERT
     world.commands.fast_broadcast(
-        operation=TransferOperation(from_="initminer", to="alice", amount=Asset.hive(1), memo="aaaaa"),
+        operation=TransferOperation(from_="initminer", to="null", amount=Asset.hive(1), memo=""),
         sign_with=pubkey,
     )

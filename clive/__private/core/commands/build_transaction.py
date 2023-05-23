@@ -4,10 +4,10 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
-from clive.models.transaction import Transaction
+from clive.models import Transaction
 
 if TYPE_CHECKING:
-    from clive.models.operation import Operation
+    from clive.models import Operation
 
 
 @dataclass

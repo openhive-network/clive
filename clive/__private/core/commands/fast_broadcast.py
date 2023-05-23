@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.node.node import Node
     from clive.__private.storage.mock_database import PrivateKeyAlias
-    from clive.models.operation import Operation
+    from clive.models import Operation
 
 
 @dataclass

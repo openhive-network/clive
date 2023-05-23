@@ -15,7 +15,7 @@ from clive.__private.storage.contextual import Context
 from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
 from clive.core.url import Url
 from clive.exceptions import CliveError
-from clive.models.operation import Operation
+from clive.models import Operation
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper

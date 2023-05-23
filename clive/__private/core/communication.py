@@ -93,9 +93,10 @@ class Communication:
         result: dict[str, Any] = {}
         post_method: Callable[..., httpx.Response] = httpx.post if sync else cls.get_async_client().post  # type: ignore
 
+        if not isinstance(data, str):
+            data = json.dumps(data, cls=CustomJSONEncoder)
         for attempts_left in reversed(range(max_attempts)):
-            serialized = json.dumps(data, cls=CustomJSONEncoder)
-            response: httpx.Response = await invoke(callback=partial(post_method, url, json=serialized))
+            response: httpx.Response = await invoke(callback=partial(post_method, url, data=data))
             result = response.json()
 
             if response.is_success:

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.mock_database import NodeData
-    from clive.models.operation import Operation
+    from clive.models import Operation
 
 
 class Resources(Grid):
