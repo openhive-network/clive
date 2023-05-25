@@ -43,7 +43,7 @@ class ProfileData(Context):
     @property
     def chain_id(self) -> str:
         chain_id: str = config.settings.get("node.chain_id")
-        if bool(chain_id):
+        if chain_id:
             return chain_id
         assert self.node_address
         config.settings["node.chain_id"] = Communication.request(
