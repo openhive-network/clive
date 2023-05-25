@@ -1643,7 +1643,7 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.3)", "coverage-enable-subprocess
 
 [[package]]
 name = "wax"
-version = "2023.5.25+c50222e8"
+version = "0.0.0"
 description = ""
 category = "main"
 optional = false

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import datetime
+import json
 from distutils.command.build import build
 from multiprocessing import cpu_count
 from os import environ
@@ -23,6 +24,7 @@ class CustomBuild(build):
     wax_package_shared_lib = packages_dir / output_binary_name
     build_dir = current_dir / ".build"
     logs_dir = build_dir / "logs"
+    build_info = packages_dir / "info.json"
 
     def __configure_project(self, cmake_command: str, ninja_command: str | None, make_command: str | None) -> str:
         configure_args = ["-GNinja"]
@@ -84,12 +86,24 @@ class CustomBuild(build):
         return cmake, ninja, make
 
     @classmethod
-    def git_revision(cls) -> str:
-        git_directory = cls.current_dir.parent / ".git"
+    def __git_revision_from_repo_dir(cls, repo: Path) -> str:
+        git_directory = repo / ".git"
         head: str = (git_directory / "HEAD").read_text().split(" ")[-1].strip("\n")
         if (branch_ref := (git_directory / head)).exists():
             head = branch_ref.read_text()
-        return head[:8]
+        return head  # noqa: RET504
+
+    @classmethod
+    def generate_build_info(cls) -> None:
+        with cls.build_info.open() as file:
+            json.dump(
+                {
+                    "build_time": datetime.datetime.now(),
+                    "clive_rev": cls.__git_revision_from_repo_dir(cls.current_dir.parent),
+                    "hive_rev": cls.__git_revision_from_repo_dir(cls.current_dir.parent / "hive"),
+                },
+                file,
+            )
 
     def __copy_binary_to_package_dir(self) -> None:
         output_binary = self.build_dir / self.output_binary_name
@@ -107,13 +121,14 @@ class CustomBuild(build):
 
 
 if __name__ == "__main__":
-    now = datetime.datetime.now()
     setup(
         name="wax",
-        version=f"{now.year}.{now.month :02}.{now.day :02}+{CustomBuild.git_revision()}",
+        version="0.0.0",
         packages=["wax"],
         package_dir={"wax": "package"},
-        package_data={"wax": [CustomBuild.wax_package_shared_lib.name, "wax.pyi", "py.typed"]},
+        package_data={
+            "wax": [CustomBuild.wax_package_shared_lib.name, "wax.pyi", "py.typed", CustomBuild.build_info.name]
+        },
         cmdclass={"build": CustomBuild},  # type: ignore[dict-item]
         install_requires=[
             "cython==0.29.34",
