@@ -1,10 +1,11 @@
 from __future__ import annotations
 
+import datetime
 from distutils.command.build import build
 from multiprocessing import cpu_count
 from os import environ
 from pathlib import Path
-from shutil import copyfile, which
+from shutil import copyfile, rmtree, which
 from subprocess import run as run_process
 from typing import Any
 
@@ -16,7 +17,7 @@ def log(*args: Any) -> None:
 
 
 class CustomBuild(build):
-    output_binary_name = "libwax.so"
+    output_binary_name = "wax.cpython-310-x86_64-linux-gnu.so"
     current_dir = Path(__file__).parent.absolute()
     packages_dir = current_dir / "package"
     wax_package_shared_lib = packages_dir / output_binary_name
@@ -34,6 +35,9 @@ class CustomBuild(build):
 
         if "BUILD_HIVE_TESTNET" in environ:
             configure_args.append("-DBUILD_HIVE_TESTNET=ON")
+
+        if self.build_dir.exists():
+            rmtree(self.build_dir)
 
         self.build_dir.mkdir(exist_ok=True)
         log(f"build will be performed in: {self.build_dir}")
@@ -80,23 +84,18 @@ class CustomBuild(build):
         return cmake, ninja, make
 
     @classmethod
-    def __git_revision(cls) -> str:
+    def git_revision(cls) -> str:
         git_directory = cls.current_dir.parent / ".git"
         head: str = (git_directory / "HEAD").read_text().split(" ")[-1].strip("\n")
         if (branch_ref := (git_directory / head)).exists():
             head = branch_ref.read_text()
         return head[:8]
 
-    @classmethod
-    def package_binary_path(cls) -> Path:
-        return cls.wax_package_shared_lib.with_stem(cls.wax_package_shared_lib.stem + "-" + cls.__git_revision())
-
     def __copy_binary_to_package_dir(self) -> None:
         output_binary = self.build_dir / self.output_binary_name
         assert output_binary.exists()
-        dest = self.package_binary_path()
-        log(f"copying library from {output_binary} to {dest}")
-        copyfile(output_binary, dest)
+        log(f"copying library from {output_binary} to {self.wax_package_shared_lib}")
+        copyfile(output_binary, self.wax_package_shared_lib)
 
     def run(self) -> None:
         if "WAX_SKIP_BUILD" not in environ:
@@ -108,17 +107,18 @@ class CustomBuild(build):
 
 
 if __name__ == "__main__":
+    now = datetime.datetime.now()
     setup(
         name="wax",
-        version="0.0.0",
+        version=f"{now.year}.{now.month :02}.{now.day :02}+{CustomBuild.git_revision()}",
         packages=["wax"],
         package_dir={"wax": "package"},
-        package_data={"wax": [CustomBuild.package_binary_path().name, "wax.pyi", "py.typed"]},
+        package_data={"wax": [CustomBuild.wax_package_shared_lib.name, "wax.pyi", "py.typed"]},
         cmdclass={"build": CustomBuild},  # type: ignore[dict-item]
         install_requires=[
             "cython==0.29.34",
             "setuptools==59.6.0",
-            "scikit-build==0.17.2",
+            "scikit-build>=0.17.4",
             "types-setuptools==67.7.0.2",
         ],
     )
