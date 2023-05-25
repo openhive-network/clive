@@ -3,27 +3,27 @@ from __future__ import annotations
 import re
 from typing import Literal
 
-from schemas.__private.hive_fields_schemas import AssetHbdNai, AssetHiveNai, AssetVestsNai
+from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
-AssetT = AssetHiveNai | AssetHbdNai | AssetVestsNai
+AssetT = AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26
 
 
 class Asset:
     @classmethod
-    def hive(cls, amount: float) -> AssetHiveNai:
-        return AssetHiveNai(amount=cls.float_to_nai_int(amount, AssetHiveNai))
+    def hive(cls, amount: float) -> AssetHiveHF26:
+        return AssetHiveHF26(amount=cls.float_to_nai_int(amount, AssetHiveHF26))
 
     @classmethod
-    def hbd(cls, amount: float) -> AssetHbdNai:
-        return AssetHbdNai(amount=cls.float_to_nai_int(amount, AssetHbdNai))
+    def hbd(cls, amount: float) -> AssetHbdHF26:
+        return AssetHbdHF26(amount=cls.float_to_nai_int(amount, AssetHbdHF26))
 
     @classmethod
-    def vests(cls, amount: float) -> AssetVestsNai:
-        return AssetVestsNai(amount=cls.float_to_nai_int(amount, AssetVestsNai))
+    def vests(cls, amount: float) -> AssetVestsHF26:
+        return AssetVestsHF26(amount=cls.float_to_nai_int(amount, AssetVestsHF26))
 
     @classmethod
     def float_to_nai_int(cls, number: float, asset_type: type[AssetT]) -> int:
-        result = number * (10 ** asset_type.get_precision())
+        result = number * (10 ** asset_type.get_asset_information().precision)
         assert result == int(result), "invalid precision"
         return int(result)
 
@@ -31,11 +31,11 @@ class Asset:
     def resolve_symbol(cls, symbol: Literal["HIVE", "TESTS", "HBD", "TBD", "VESTS"] | str) -> type[AssetT]:
         match symbol:
             case ["HIVE", "TESTS"]:
-                return AssetHiveNai
+                return AssetHiveHF26
             case ["HBD", "TBD"]:
-                return AssetHbdNai
+                return AssetHbdHF26
             case "VESTS":
-                return AssetVestsNai
+                return AssetVestsHF26
         raise ValueError(f"Unknown asset type: '{symbol}'")
 
     @classmethod

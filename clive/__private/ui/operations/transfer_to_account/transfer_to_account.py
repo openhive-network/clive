@@ -37,7 +37,7 @@ class CurrencySelector(Select[Callable[[float], AssetT]]):
     def __init__(self) -> None:
         def _asset_factory(symbol: str) -> Callable[[float], AssetT]:
             asset = Asset.resolve_symbol(symbol)
-            return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))  # type: ignore[misc]
+            return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
 
         super().__init__(
             items=[SelectItem(_asset_factory(symbol), symbol) for symbol in ["HIVE", "HBD"]],

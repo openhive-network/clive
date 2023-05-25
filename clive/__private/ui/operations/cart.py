@@ -114,12 +114,12 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
 
         def operation_name(_: ProfileData) -> str:
             if self.is_valid():
-                return self.__operation.get_name()
+                return self.__operation.__class__.__name__
             return ""
 
         def operation_details(_: ProfileData) -> str:
             if self.is_valid():
-                return self.__operation.pretty()
+                return self.__operation.json(by_alias=True)
             return ""
 
         yield DynamicColumn(
