@@ -37,7 +37,7 @@ def perform_actions_on_transaction(
         save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         broadcast: Whether to broadcast the transaction.
     """
-    transaction = ensure_transaction(content)
+    transaction = ensure_transaction(content, node=node)
 
     if sign_key:
         transaction = Sign(

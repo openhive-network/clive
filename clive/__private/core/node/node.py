@@ -43,3 +43,7 @@ class Node:
             return JSONRPCResponse(**data)
 
         return expect_type(**data)
+
+    @property
+    def chain_id(self) -> str:
+        return self.api.database_api.get_config().HIVE_CHAIN_ID

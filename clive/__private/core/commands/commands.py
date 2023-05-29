@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.activate import Activate
@@ -13,7 +14,6 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 
 if TYPE_CHECKING:
-    from datetime import timedelta
     from pathlib import Path
 
     from clive import World
@@ -34,15 +34,19 @@ class Commands:
     def set_timeout(self, *, seconds: int) -> None:
         SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds).execute()
 
-    def build_transaction(self, *, operations: list[Operation]) -> Transaction:
-        return BuildTransaction(operations=operations).execute_with_result()
+    def build_transaction(
+        self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
+    ) -> Transaction:
+        return BuildTransaction(
+            operations=operations, node=self.__world.node, expiration=expiration
+        ).execute_with_result()
 
     def sign(self, *, transaction: Transaction, sign_with: PrivateKeyAlias) -> Transaction:
         return Sign(
             beekeeper=self.__world.beekeeper,
             transaction=transaction,
             key=sign_with,
-            chain_id=self.__world.profile_data.chain_id,
+            chain_id=self.__world.node.chain_id,
         ).execute_with_result()
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> None:
@@ -57,7 +61,7 @@ class Commands:
             operation=operation,
             beekeeper=self.__world.beekeeper,
             sign_with=sign_with,
-            chain_id=self.__world.profile_data.chain_id,
+            chain_id=self.__world.node.chain_id,
         ).execute()
 
     def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:

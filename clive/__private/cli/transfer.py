@@ -41,5 +41,5 @@ def _main(
         sign_key=PrivateKeyAlias(common.sign) if common.sign else None,
         save_file_path=Path(common.save_file) if common.save_file else None,
         broadcast=common.broadcast,
-        chain_id=common.world.profile_data.chain_id,
+        chain_id=common.world.node.chain_id,
     )
