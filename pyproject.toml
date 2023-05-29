@@ -34,7 +34,7 @@ typer = { extras = ["all"], version = "0.8.0" }
 inflection = "0.5.1"
 
 schemas = { path = "schemas" }
-wax = {path = "wax"}
+wax = { path = "wax" }
 
 
 [tool.poetry.group.dev.dependencies]
@@ -71,7 +71,7 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120
-select = [  # https://beta.ruff.rs/docs/rules/
+select = [# https://beta.ruff.rs/docs/rules/
     "F",
     "E",
     "W",
@@ -108,7 +108,7 @@ required-imports = ["from __future__ import annotations"]
 
 [tool.ruff.per-file-ignores]
 "clive/__private/cli/**" = [
-    "I002",  # TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
-    "UP007",  # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
-    "PLR0913",  # too restrictive
+    "I002", # TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
+    "UP007", # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
+    "PLR0913", # too restrictive
 ]
