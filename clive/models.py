@@ -77,14 +77,14 @@ class Asset:
         return int(result)
 
     @classmethod
-    def resolve_symbol(cls, symbol: ALLOWED_SYMBOLS) -> type[Asset.ANY]:
+    def resolve_symbol(cls, symbol: ALLOWED_SYMBOLS) -> Asset.ANY:
         match symbol:
-            case ["HIVE", "TESTS"]:
+            case "HIVE" | "TESTS":
                 return Asset.HIVE
-            case ["HBD", "TBD"]:
+            case "HBD" | "TBD":
                 return Asset.HBD
             case "VESTS":
-                return Asset.VESTS  # type: ignore[no-any-return]
+                return Asset.VESTS
             case _:
                 raise ValueError(f"Unknown asset type: '{symbol}'")
 
