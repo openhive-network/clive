@@ -1411,7 +1411,7 @@ category = "main"
 optional = false
 python-versions = "^3.10"
 files = []
-develop = false
+develop = true
 
 [package.dependencies]
 pydantic = "1.10.7"
@@ -1781,4 +1781,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "8c76a6388de1a2882eba5524b7409288260bd25c57ff421cb21bf47591898253"
+content-hash = "b9863a258d5f2a89627283cd68426d0246dc00fdea1c8039aa919349fadc32ed"

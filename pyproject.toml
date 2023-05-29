@@ -33,7 +33,7 @@ merge-args = "0.1.5"
 typer = { extras = ["all"], version = "0.8.0" }
 inflection = "0.5.1"
 
-schemas = { path = "schemas" }
+schemas = { path = "schemas", develop=true }
 wax = { path = "wax" }
 
 
