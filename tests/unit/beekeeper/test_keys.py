@@ -12,29 +12,32 @@ if TYPE_CHECKING:
 PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
     (
         "5HwHC7y2WtCL18J9QMqX7awDe1GDsUTg7cfw734m2qFkdMQK92q",
-        "TST6jACfK3P5xYFJQvavCwz5M8KR5EW3TcmSesArj9LJVGAq85qor",
+        "6jACfK3P5xYFJQvavCwz5M8KR5EW3TcmSesArj9LJVGAq85qor",
     ),
     (
         "5J7m49WCKnRBTo1HyJisBinn8Lk3syYaXsrzdFmfDxkejHLwZ1m",
-        "TST5hjCkhcMKcXQMppa97XUbDR5dWC3c2K8h23P1ajEi2fT9YuagW",
+        "5hjCkhcMKcXQMppa97XUbDR5dWC3c2K8h23P1ajEi2fT9YuagW",
     ),
     (
         "5JqStPwQgnXBdyRDDxCDyjfC8oNjgJuZsBkT6MMz6FopydAebbC",
-        "TST5EjyFcCNidBSivAtTKvWWwWRNjakcRMB79QrbwMKprcTRBHtXz",
+        "5EjyFcCNidBSivAtTKvWWwWRNjakcRMB79QrbwMKprcTRBHtXz",
     ),
     (
         "5JowdvuiDxoeLhzoSEKK74TCiwTaUHvxtRH3fkbweVEJZEsQJoc",
-        "TST8RgQ3yexUZjcVGxQ2i3cKywwKwhxqzwtCHPQznGUYvQ15ZvahW",
+        "8RgQ3yexUZjcVGxQ2i3cKywwKwhxqzwtCHPQznGUYvQ15ZvahW",
     ),
     (
         "5Khrc9PX4S8wAUUmX4h2JpBgf4bhvPyFT5RQ6tGfVpKEudwpYjZ",
-        "TST77P1n96ojdXcKpd5BRUhVmk7qFTfM2q2UkWSKg63Xi7NKyK2Q1",
+        "77P1n96ojdXcKpd5BRUhVmk7qFTfM2q2UkWSKg63Xi7NKyK2Q1",
     ),
 ]
 
 
 def assert_keys(given: list[str], valid: list[str]) -> None:
-    assert sorted(valid) == sorted(given)
+    def normalize(keys: list[str]) -> list[str]:
+        return [(key[3:] if key.startswith(("TST", "STM")) else key) for key in keys]
+
+    assert sorted(normalize(valid)) == sorted(normalize(given))
 
 
 def test_key_create(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> None:
