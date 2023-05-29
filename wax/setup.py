@@ -133,7 +133,6 @@ if __name__ == "__main__":
         install_requires=[
             "cython==0.29.34",
             "setuptools==59.6.0",
-            "scikit-build>=0.17.4",
             "types-setuptools==67.7.0.2",
         ],
     )
