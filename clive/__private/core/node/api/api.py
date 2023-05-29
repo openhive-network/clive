@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
 import inflection
 
 from clive.__private.abstract_class import AbstractClass
-from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse
+from clive.__private.core.beekeeper.model import JSONRPCProtocol, JSONRPCRequest
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -24,13 +24,21 @@ class Api(AbstractClass):
         self._node = node
 
     @staticmethod
-    def method(func: Callable[P, R]) -> Callable[P, R | JSONRPCResponse[Any]]:
+    def method(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
-        def wrapper(this: Self, /, **kwargs: P.kwargs) -> R | JSONRPCResponse[Any]:
+        def wrapper(this: Self, /, **kwargs: P.kwargs) -> R:
             return_type: type[R] = get_type_hints(func)["return"]
             endpoint = this.__get_endpoint(func)
+            for key in list(kwargs.keys()):
+                if key.endswith("_"):
+                    kwargs[key.rstrip("_")] = kwargs.pop(key)
             request = JSONRPCRequest(method=endpoint, params=kwargs)
-            return this._node.send(request, expect_type=return_type)
+
+            class LocalRsponse(JSONRPCProtocol):
+                result: return_type  # type: ignore[valid-type]
+
+            LocalRsponse.update_forward_refs(**locals())
+            return this._node.send(request, expect_type=LocalRsponse).result
 
         return wrapper  # type: ignore
 
