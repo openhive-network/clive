@@ -13,6 +13,7 @@ variables:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
+  HIVED_BINARY: "$CI_PROJECT_DIR/hived"
 
 .shared_tags: &shared_tags
   - hived-for-tests
@@ -63,17 +64,37 @@ type_check_with_mypy:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-build_beekeeper:
+.hive_based_build:
   stage: build
   needs: []
+  variables:
+    TARGET: ""
+    SOURCE: ""
+    DESTINATION: ""
   script:
     - cd hive
-    - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_HIVE_TESTNET=ON -GNinja .. && ninja beekeeper
-    - cp programs/beekeeper/beekeeper $BEEKEEPER_BINARY
+    - mkdir build && cd build
+    - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_HIVE_TESTNET=ON -GNinja ..
+    - ninja $TARGET
+    - cp $SOURCE $DESTINATION
   artifacts:
     paths:
-      - $BEEKEEPER_BINARY
+      - $DESTINATION
   tags: *shared_tags
+
+build_beekeeper:
+  extends: .hive_based_build
+  variables:
+    TARGET: "beekeeper"
+    SOURCE: "programs/beekeeper/beekeeper"
+    DESTINATION: "$BEEKEEPER_BINARY"
+
+build_hived:
+  extends: .hive_based_build
+  variables:
+    TARGET: "hived"
+    SOURCE: "programs/hived/hived"
+    DESTINATION: "$HIVED_BINARY"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -85,8 +106,11 @@ build_beekeeper:
   needs:
     - job: build_beekeeper
       artifacts: true
+    - job: build_hived
+      artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
+    HIVED_PATH: $HIVED_BINARY
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   artifacts:
     reports:
