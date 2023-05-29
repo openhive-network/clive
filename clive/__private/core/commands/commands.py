@@ -12,6 +12,7 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
+from clive.__private.core.commands.write_profile_data_to_beekeeper import WriteProfileDataToBeekeeper
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -67,4 +68,9 @@ class Commands:
     def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:
         return ImportKey(
             wallet=self.__world.profile_data.name, key_to_import=wif, beekeeper=self.__world.beekeeper
+        ).execute_with_result()
+
+    def write_profile_data_to_beekeeper(self, *, password: str) -> None:
+        WriteProfileDataToBeekeeper(
+            profile_data=self.__world.profile_data, beekeeper=self.__world.beekeeper, password=password
         ).execute_with_result()

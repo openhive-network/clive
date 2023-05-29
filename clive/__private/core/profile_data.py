@@ -1,22 +1,15 @@
 from __future__ import annotations
 
 import shelve
-from contextlib import suppress
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
 from clive.__private import config
-from clive.__private.core.beekeeper.handle import ErrorResponseError
-from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.storage.contextual import Context
-from clive.__private.storage.mock_database import Account, PrivateKey, WorkingAccount
+from clive.__private.storage.mock_database import Account, WorkingAccount
 from clive.core.url import Url
-from clive.exceptions import CliveError
 from clive.models import Operation
-
-if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
 
 
 class Cart(list[Operation]):
@@ -84,17 +77,3 @@ class ProfileData(Context):
             Url("http", "localhost", 8090),
             Url("http", "hive-6.pl.syncad.com", 18090),
         ]
-
-    def write_to_beekeeper(self, beekeeper: Beekeeper, password: str) -> None:
-        try:
-            beekeeper.api.open(wallet_name=self.name)
-            with suppress(CliveError):  # make sure wallet is open
-                beekeeper.api.unlock(wallet_name=self.name, password=password)
-        except ErrorResponseError:
-            beekeeper.api.create(wallet_name=self.name, password=password)
-
-        for i, key in enumerate(self.working_account.keys):
-            if isinstance(key, PrivateKey):
-                self.working_account.keys[i] = ImportKey(
-                    wallet=self.name, key_to_import=key, beekeeper=beekeeper
-                ).execute_with_result()
