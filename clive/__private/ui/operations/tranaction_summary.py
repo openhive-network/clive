@@ -123,6 +123,10 @@ class TransactionSummary(BaseScreen):
         self.__broadcast()
 
     def __broadcast(self) -> None:
+        signed = self.__sign_transaction()
+        assert signed is not None and signed.is_signed(), "Transaction is not signed!"
+        self.app.world.commands.broadcast(transaction=signed)
+
         self.__clear_all()
         self.action_dashboard()
         Notification("Transaction broadcast successfully!", category="success").show()
