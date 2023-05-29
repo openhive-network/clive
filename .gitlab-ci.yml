@@ -68,7 +68,7 @@ build_beekeeper:
   needs: []
   script:
     - cd hive
-    - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -GNinja .. && ninja beekeeper
+    - mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_HIVE_TESTNET=ON -GNinja .. && ninja beekeeper
     - cp programs/beekeeper/beekeeper $BEEKEEPER_BINARY
   artifacts:
     paths:
