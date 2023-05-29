@@ -34,11 +34,11 @@ class Api(AbstractClass):
                     kwargs[key.rstrip("_")] = kwargs.pop(key)
             request = JSONRPCRequest(method=endpoint, params=kwargs)
 
-            class LocalRsponse(JSONRPCProtocol):
+            class Response(JSONRPCProtocol):
                 result: return_type  # type: ignore[valid-type]
 
-            LocalRsponse.update_forward_refs(**locals())
-            return this._node.send(request, expect_type=LocalRsponse).result
+            Response.update_forward_refs(**locals())
+            return this._node.send(request, expect_type=Response).result
 
         return wrapper  # type: ignore
 
