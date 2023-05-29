@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
-from clive.models.operation import Operation  # noqa: TCH001
+from clive.models.operation import Operation
 
 
 class Transaction(BaseModel):
@@ -15,6 +15,11 @@ class Transaction(BaseModel):
     expiration: datetime = Field(default_factory=lambda: datetime.now() + timedelta(minutes=30))
     extensions: list[Any] = Field(default_factory=list)
     signatures: list[str] | None = None
+
+    class Config:
+        json_encoders = {
+            Operation: lambda obj: obj.json(by_alias=True),
+        }
 
     @property
     def signed(self) -> bool:

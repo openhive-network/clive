@@ -54,7 +54,7 @@ class Communication:
         cls,
         url: str,
         *,
-        data: dict[str, Any],
+        data: Any,
         max_attempts: int = DEFAULT_ATTEMPTS,
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> httpx.Response:
@@ -68,7 +68,7 @@ class Communication:
         cls,
         url: str,
         *,
-        data: dict[str, Any],
+        data: Any,
         max_attempts: int = DEFAULT_ATTEMPTS,
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> httpx.Response:
@@ -80,7 +80,7 @@ class Communication:
         url: str,
         *,
         sync: bool,
-        data: dict[str, Any],
+        data: Any,
         max_attempts: int,
         pool_time: timedelta,
     ) -> httpx.Response:
