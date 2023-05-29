@@ -39,6 +39,9 @@ def __convert_test_name_to_directory_name(test_name: str) -> str:
 
 @pytest.fixture(autouse=True, scope="function")
 def run_prepare_before_launch(working_directory: Path) -> None:
+    # this is workaround because test_tools does not provide interface to change this path
+    (Path(__file__).absolute().parent.parent / "generated").mkdir(exist_ok=True)
+
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
     prepare_before_launch()
