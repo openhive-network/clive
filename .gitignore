@@ -197,4 +197,4 @@ pyrightconfig.json
 
 # Custom
 logs/
-**/generated
+**/generated*
