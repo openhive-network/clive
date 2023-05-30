@@ -4,10 +4,9 @@ import os
 import signal
 import subprocess
 import time
-from typing import TYPE_CHECKING, Final
+from typing import Final
 
-if TYPE_CHECKING:
-    from pathlib import Path
+import test_tools as tt
 
 
 def test_if_entry_point_works() -> None:
@@ -22,8 +21,9 @@ def test_if_entry_point_works() -> None:
     assert status == exit_code_successful, f"`{entry_point}` command failed because of: `{result}`"
 
 
-def test_if_dev_entry_point_works(working_directory: Path) -> None:
+def test_if_dev_entry_point_works() -> None:
     # ARRANGE
+    working_directory = tt.context.get_current_directory()
     entry_point: Final[str] = "clive-dev"
     envs = os.environ
     envs["CLIVE_DATA_PATH"] = working_directory.as_posix()

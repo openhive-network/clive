@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import re
 import shutil
-import warnings
-from pathlib import Path
-from typing import TYPE_CHECKING, Final, cast
+from typing import TYPE_CHECKING, cast
 
 import pytest
 import test_tools as tt
+from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.config import settings
 from clive.__private.core.beekeeper import BeekeeperLocal
@@ -21,46 +19,17 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-def __convert_test_name_to_directory_name(test_name: str) -> str:
-    max_dir_name: Final[int] = 64
-    parametrized_test_match = re.match(r"([\w_]+)\[(.*)\]", test_name)
-    if parametrized_test_match:
-        test_name = f"{parametrized_test_match[1]}_with_parameters_{parametrized_test_match[2]}"
-    final_test_name = ""
-
-    for character in test_name:
-        char = character
-        if not (character.isalnum() or character in "-_"):
-            char = f"-0x{ord(character):X}-"
-        final_test_name += char
-
-    return final_test_name[:max_dir_name]
-
-
 @pytest.fixture(autouse=True, scope="function")
-def run_prepare_before_launch(working_directory: Path) -> None:
-    # this is workaround because test_tools does not provide interface to change this path
-    (Path(__file__).absolute().parent.parent / "generated").mkdir(exist_ok=True)
+def run_prepare_before_launch() -> None:
+    working_directory = tt.context.get_current_directory()
+
+    beekeeper_directory = working_directory / "beekeeper"
+    if beekeeper_directory.exists():
+        shutil.rmtree(beekeeper_directory)
 
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
     prepare_before_launch()
-
-
-@pytest.fixture
-def working_directory(request: pytest.FixtureRequest) -> Path:
-    test_location = request.path.parent
-    test_module_name = Path(request.module.__file__).stem
-    final_path = (
-        test_location / "generated" / test_module_name / __convert_test_name_to_directory_name(request.node.name)
-    )
-
-    if final_path.exists():
-        warnings.warn("Test directory already exists, removing...", stacklevel=1)
-        shutil.rmtree(final_path)  # delete non-empty directory
-
-    final_path.mkdir(parents=True)
-    return final_path
 
 
 @pytest.fixture
