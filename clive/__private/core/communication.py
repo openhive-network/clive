@@ -96,7 +96,7 @@ class Communication:
         if not isinstance(data, str):
             data = json.dumps(data, cls=CustomJSONEncoder)
         for attempts_left in reversed(range(max_attempts)):
-            response: httpx.Response = await invoke(callback=partial(post_method, url, data=data))
+            response: httpx.Response = await invoke(callback=partial(post_method, url, content=data))
             result = response.json()
 
             if response.is_success:
