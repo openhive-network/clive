@@ -1,4 +1,5 @@
 SET(HIVE_ROOT_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../hive")
+SET(WAX_CPP_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../wax/wax.cpp")
 
 LIST(APPEND CMAKE_MODULE_PATH
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake"
@@ -11,7 +12,6 @@ project(wax)
 cmake_minimum_required(VERSION 3.22.1)
 
 find_package(PythonExtensions REQUIRED)
-find_package(Cython REQUIRED)
 
 SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -28,9 +28,7 @@ add_subdirectory("${HIVE_ROOT_PATH}/libraries/protocol" ${CMAKE_CURRENT_BINARY_D
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/fc" ${CMAKE_CURRENT_BINARY_DIR}/fc)
 add_subdirectory("${HIVE_ROOT_PATH}/libraries/schema" ${CMAKE_CURRENT_BINARY_DIR}/schema)
 
-add_cython_target(${PROJECT_NAME} CXX PY3)
-
-add_python_library(${PROJECT_NAME} MODULE SOURCES ${${PROJECT_NAME}} cpython_interface.cpp LINK_LIBRARIES hive_protocol)
+add_python_library(${PROJECT_NAME} MODULE SOURCES ${WAX_CPP_PATH} cpython_interface.cpp LINK_LIBRARIES hive_protocol)
 
 python_extension_module(${PROJECT_NAME})
 

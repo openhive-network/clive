@@ -23,7 +23,6 @@ generate-setup-file = true
 
 [tool.poetry.dependencies]
 python = "^3.10"
-cython = "0.29.34"
 
 [tool.poetry.dev-dependencies]
 types-setuptools = ">=67.8.0"

@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from Cython.Build import cythonize  # type: ignore
 from setuptools.command.build_ext import build_ext
 from setuptools.extension import Extension
 
@@ -142,9 +143,13 @@ def build(setup_kwargs: dict[str, Any]) -> None:
     log("Build with Cython")
     setup_kwargs.update(
         {
-            "ext_modules": [
-                Extension("wax", []),  # There has to be at least one extension, instead CustomBuild.run won't be called
-            ],
+            "ext_modules": cythonize(
+                [
+                    Extension(
+                        "wax", ["wax.pyx"]
+                    ),  # There has to be at least one extension, instead CustomBuild.run won't be called
+                ]
+            ),
             "cmdclass": {"build_ext": CustomBuild},
         }
     )
