@@ -14,6 +14,7 @@ variables:
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
   HIVED_BINARY: "$CI_PROJECT_DIR/hived"
+  WAX_WHEEL: "dist/*.whl"
 
 .shared_tags: &shared_tags
   - hived-for-tests
@@ -96,6 +97,26 @@ build_hived:
     SOURCE: "programs/hived/hived"
     DESTINATION: "$HIVED_BINARY"
 
+build_wax_wheel:
+  stage: build
+  needs: [ ]
+  before_script:
+    - python3 -V
+    - poetry self update
+    - python3 -m venv venv/
+    - source venv/bin/activate
+    - pip list
+  script:
+    - cd wax
+    - pip install cython
+    - poetry build
+    - ls -al dist/
+  artifacts:
+    when: always
+    paths:
+      - dist/
+  tags: *shared_tags
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -125,6 +146,18 @@ testing_clive:
   script:
     - echo -e "${TXT_BLUE}Launching clive tests...${TXT_CLEAR}"
     - python3 -m pytest -n auto --junitxml=report.xml tests/
+
+
+test_installing_wax_from_wheel:
+  extends: .testing
+  needs:
+    - job: build_wax_wheel
+      artifacts: true
+  script:
+    - echo -e "${TXT_BLUE}Installing wax from wheel...${TXT_CLEAR}"
+    - pip uninstall -y wax
+    - pip install $WAX_WHEEL
+    - pytest -n auto --junitxml=report.xml tests/unit/wax/
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
