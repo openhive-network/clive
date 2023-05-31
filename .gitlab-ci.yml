@@ -1,6 +1,7 @@
 image: "$CI_REGISTRY_IMAGE/ci-base-image@sha256:77727fd98414cf36b7e2059895fd00ab918686534945638c2aa1c32cea7070f2"
 
 stages:
+  - build_wax
   - static_code_analysis
   - build
   - tests
@@ -14,33 +15,58 @@ variables:
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
   HIVED_BINARY: "$CI_PROJECT_DIR/hived"
-  WAX_WHEEL: "dist/*.whl"
 
 .shared_tags: &shared_tags
   - hived-for-tests
 
-.configuration:
-  before_script: &configuration_before_script # configure python
+.configuration_venv:
+  before_script:
     - python3 -V
     - poetry self update
     - python3 -m venv venv/
     - source venv/bin/activate
-    - poetry install
-    - pip list
   tags: *shared_tags
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD WAX |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+build_wax_wheel:
+  stage: build_wax
+  extends: .configuration_venv
+  script:
+    - cd wax
+    - poetry build
+    - ls -al dist/
+  artifacts:
+    when: always
+    paths:
+      - "wax/dist/.*whl"
+  tags: *shared_tags
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD WAX |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+.configuration_python:
+  extends: .configuration_venv
+  needs:
+    - job: build_wax_wheel
+      artifacts: true
+  before_script:
+    - !reference [.configuration_venv, before_script]
+    - poetry install  # here wax should be omitted
+    - pip install wax/dist/*.whl
+    - pip list
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 pre_commit_checks:
   stage: static_code_analysis
-  extends: .configuration
+  extends: .configuration_python
   script:
     - echo -e "${TXT_BLUE}Checking all files with pre-commit hooks...${TXT_CLEAR}" &&
       pre-commit run --all-files
 
 lint_code_with_ruff:
   stage: static_code_analysis
-  extends: .configuration
+  extends: .configuration_python
   script:
     - echo -e "${TXT_BLUE}Linting all sources with Ruff (check)...${TXT_CLEAR}" &&
       ruff ${PACKAGES_TO_CHECK}
@@ -49,14 +75,14 @@ lint_code_with_ruff:
 
 formatting_with_black_check:
   stage: static_code_analysis
-  extends: .configuration
+  extends: .configuration_python
   script:
     - echo -e "${TXT_BLUE}Checking code formatting with Black...${TXT_CLEAR}" &&
       black ${PACKAGES_TO_CHECK} --check --diff --color
 
 type_check_with_mypy:
   stage: static_code_analysis
-  extends: .configuration
+  extends: .configuration_python
   script:
     - echo -e "${TXT_BLUE}Checking types with mypy...${TXT_CLEAR}" &&
       mypy ${PACKAGES_TO_CHECK}
@@ -97,33 +123,13 @@ build_hived:
     SOURCE: "programs/hived/hived"
     DESTINATION: "$HIVED_BINARY"
 
-build_wax_wheel:
-  stage: build
-  needs: [ ]
-  before_script:
-    - python3 -V
-    - poetry self update
-    - python3 -m venv venv/
-    - source venv/bin/activate
-    - pip list
-  script:
-    - cd wax
-    - pip install cython
-    - poetry build
-    - ls -al dist/
-  artifacts:
-    when: always
-    paths:
-      - dist/
-  tags: *shared_tags
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 .testing:
   stage: tests
-  extends: .configuration
+  extends: .configuration_python
   needs:
     - job: build_beekeeper
       artifacts: true
@@ -156,7 +162,7 @@ test_installing_wax_from_wheel:
   script:
     - echo -e "${TXT_BLUE}Installing wax from wheel...${TXT_CLEAR}"
     - pip uninstall -y wax
-    - pip install $WAX_WHEEL
+    - pip install *.whl
     - pytest -n auto --junitxml=report.xml tests/unit/wax/
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
