@@ -1,3 +1,4 @@
 # Wax build directories
 **/.build
 **/wax.egg-info
+wax.cpp

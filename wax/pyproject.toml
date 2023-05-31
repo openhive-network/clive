@@ -1,0 +1,29 @@
+[build-system]
+requires = [
+    "poetry-core>=1.1.0",
+    "cython==0.29.34",
+    "setuptools>=67.8.0"
+]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.poetry]
+name = "wax"
+version = "0.0.0"
+description = ""
+repository = "https://gitlab.syncad.com/hive/clive"
+authors = []
+packages = [
+    { include = "wax" },
+]
+
+[tool.poetry.build]
+script = "build.py"
+generate-setup-file = true
+
+[tool.poetry.dependencies]
+python = "^3.10"
+cython = "0.29.34"
+
+[tool.poetry.dev-dependencies]
+types-setuptools = ">=67.8.0"
