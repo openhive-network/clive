@@ -24,15 +24,15 @@ transfer = typer.Typer(
 @common_options
 def _main(
     ctx: typer.Context,
-    from_: str = typer.Option(..., "--from", help="The account to transfer from."),
-    to: str = typer.Option(..., help="The account to transfer to."),
-    amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)"),
+    from_: str = typer.Option(..., "--from", help="The account to transfer from.", show_default=False),
+    to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
+    amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
     memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
     common = Common(**ctx.params)
     if common.world is None:
         raise ClickException("World is not set.")
-    typer.echo(f"{common.world.profile_data.name=}")
+    typer.echo(f"{locals()=}")
 
     perform_actions_on_transaction(
         TransferOperation(from_=from_, to=to, amount=Asset.from_legacy(amount.upper()), memo=memo),
