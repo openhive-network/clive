@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Final
 
 import typer
+from click import ClickException
 
 from clive.__private.cli.common import Common, common_options
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
@@ -30,8 +31,7 @@ def _main(
 ) -> None:
     common = Common(**ctx.params)
     if common.world is None:
-        typer.echo("world is none")
-        return
+        raise ClickException("World is not set.")
     typer.echo(f"{common.world.profile_data.name=}")
 
     perform_actions_on_transaction(

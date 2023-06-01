@@ -47,6 +47,7 @@ def common_options(func: Callable[..., None]) -> Any:
         with ExitCallHandler(World(profile_name=profile), finally_callback=lambda w: w.close()) as world:
             if chain_id is not None:
                 config.settings["node.chain_id"] = chain_id
-            return func(ctx=ctx, **kwargs, world=world)
+            ctx.params.update(world=world)
+            return func(ctx=ctx, **kwargs)
 
     return wrapper
