@@ -42,54 +42,6 @@ def create_log_file(log_name: str, log_group: str | None = None) -> tuple[Path, 
     return log_file_path, latest_log_file_path
 
 
-def configure_logger() -> None:
-    def make_filter(*, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
-        level_no = getattr(logging, level) if isinstance(level, str) else level
-        level_no_3rd_party = getattr(logging, level_3rd_party) if isinstance(level_3rd_party, str) else level_3rd_party
-
-        def __filter(record: dict[str, Any]) -> bool:
-            is_3rd_party = ROOT_DIRECTORY not in Path(record["file"].path).parents
-            if level_no_3rd_party is not None and is_3rd_party:
-                return bool(record["level"].no >= level_no_3rd_party)
-            return bool(record["level"].no >= level_no)
-
-        return __filter
-
-    log_file_path, latest_log_file_path = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
-    log_file_path_debug, latest_log_file_path_debug = create_log_file(log_name="debug", log_group="debug")
-
-    logging.root.handlers = [InterceptHandler()]
-    logging.root.setLevel(logging.DEBUG)
-
-    # Remove all log handlers and propagate everything to root logger
-    for name in logging.root.manager.loggerDict:
-        logging.getLogger(name).handlers = []
-        logging.getLogger(name).propagate = True
-        logging.getLogger(name).setLevel(logging.DEBUG)
-
-    loguru_logger.remove()
-    loguru_logger.add(
-        sink=log_file_path,
-        format=LOG_FORMAT,
-        filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
-    )
-    loguru_logger.add(
-        sink=latest_log_file_path,
-        format=LOG_FORMAT,
-        filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
-    )
-    loguru_logger.add(
-        sink=log_file_path_debug,
-        format=LOG_FORMAT,
-        filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
-    )
-    loguru_logger.add(
-        sink=latest_log_file_path_debug,
-        format=LOG_FORMAT,
-        filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
-    )
-
-
 class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         # Get corresponding Loguru level if it exists
@@ -110,6 +62,10 @@ class InterceptHandler(logging.Handler):
 class Logger:
     """Logger used to log into both Textual (textual console) and Loguru (file located in logs/)."""
 
+    def __init__(self) -> None:
+        self.__enabled_loguru = True
+        self.__enabled_textual = True
+
     def __getattr__(self, item: str) -> Callable[..., None]:
         patched = loguru_logger.opt(depth=1)
         loguru_attr = getattr(patched, item, None)
@@ -119,10 +75,69 @@ class Logger:
             raise TypeError(f"Callable `{item}` not found in either Textual or Loguru loggers.")
 
         def __hooked(*args: Any, **kwargs: Any) -> None:
-            loguru_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
-            textual_log_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
+            if self.__enabled_loguru:
+                loguru_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
+            if self.__enabled_textual:
+                textual_log_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
 
         return __hooked
+
+    def setup(self, *, enable_loguru: bool = True, enable_textual: bool = True) -> None:
+        self.__enabled_loguru = enable_loguru
+        self.__enabled_textual = enable_textual
+
+        if enable_loguru:
+            self.__configure_loguru()
+
+    @staticmethod
+    def __configure_loguru() -> None:
+        def make_filter(*, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
+            level_no = getattr(logging, level) if isinstance(level, str) else level
+            level_no_3rd_party = (
+                getattr(logging, level_3rd_party) if isinstance(level_3rd_party, str) else level_3rd_party
+            )
+
+            def __filter(record: dict[str, Any]) -> bool:
+                is_3rd_party = ROOT_DIRECTORY not in Path(record["file"].path).parents
+                if level_no_3rd_party is not None and is_3rd_party:
+                    return bool(record["level"].no >= level_no_3rd_party)
+                return bool(record["level"].no >= level_no)
+
+            return __filter
+
+        log_file_path, latest_log_file_path = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
+        log_file_path_debug, latest_log_file_path_debug = create_log_file(log_name="debug", log_group="debug")
+
+        logging.root.handlers = [InterceptHandler()]
+        logging.root.setLevel(logging.DEBUG)
+
+        # Remove all log handlers and propagate everything to root logger
+        for name in logging.root.manager.loggerDict:
+            logging.getLogger(name).handlers = []
+            logging.getLogger(name).propagate = True
+            logging.getLogger(name).setLevel(logging.DEBUG)
+
+        loguru_logger.remove()
+        loguru_logger.add(
+            sink=log_file_path,
+            format=LOG_FORMAT,
+            filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
+        )
+        loguru_logger.add(
+            sink=latest_log_file_path,
+            format=LOG_FORMAT,
+            filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
+        )
+        loguru_logger.add(
+            sink=log_file_path_debug,
+            format=LOG_FORMAT,
+            filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
+        )
+        loguru_logger.add(
+            sink=latest_log_file_path_debug,
+            format=LOG_FORMAT,
+            filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
+        )
 
 
 logger = Logger()

@@ -4,17 +4,15 @@ import shutil
 from pathlib import Path
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from loguru import logger
-
 from clive.__private.config import ROOT_DIRECTORY, settings
-from clive.__private.logger import configure_logger
+from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
 
-def prepare_before_launch() -> None:
+def prepare_before_launch(*, enable_textual_logger: bool = True) -> None:
     def _create_clive_data_directory() -> None:
         Path(settings.DATA_PATH).mkdir(parents=True, exist_ok=True)
 
@@ -23,7 +21,7 @@ def prepare_before_launch() -> None:
         if not user_settings_path.is_file():
             shutil.copy(ROOT_DIRECTORY.parent / "settings.toml", user_settings_path)
 
-    configure_logger()
+    logger.setup(enable_textual=enable_textual_logger)
 
     _create_clive_data_directory()
     _copy_settings()
