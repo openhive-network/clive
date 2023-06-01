@@ -16,12 +16,18 @@ from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.exceptions import NoItemSelectedError
+from clive.exceptions import CliveError, NoItemSelectedError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models import Transaction
+
+
+class TransactionCouldNotBeSignedError(CliveError):
+    def __init__(self, transaction: Transaction, reason: str = "") -> None:
+        self.transaction = transaction
+        super().__init__(f"Transaction could not be signed: {transaction}, reason: {reason}")
 
 
 class StaticPart(Static):
@@ -98,17 +104,18 @@ class TransactionSummary(BaseScreen):
     def on_select_file_saved(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
 
-        if (signed := self.__sign_transaction()) is not None:
-            self.app.world.commands.save_to_file(transaction=signed, path=file_path)
-            Notification(
-                f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}",
-                category="success",
-            ).show()
+        signed = None
+        try:
+            signed = self.__sign_transaction()
+        except TransactionCouldNotBeSignedError as error:
+            self.app.world.commands.save_to_file(transaction=error.transaction, path=file_path)
         else:
-            self.app.world.commands.save_to_file(transaction=self.__build_transaction(), path=file_path)
-            Notification(
-                "Unable to save signed transaction, saved successfully unsigned one", category="warning"
-            ).show()
+            self.app.world.commands.save_to_file(transaction=signed, path=file_path)
+
+        Notification(
+            f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}",
+            category="success",
+        ).show()
 
     def action_dashboard(self) -> None:
         from clive.__private.ui.dashboard.dashboard_base import DashboardBase
@@ -124,7 +131,6 @@ class TransactionSummary(BaseScreen):
 
     def __broadcast(self) -> None:
         signed = self.__sign_transaction()
-        assert signed is not None and signed.is_signed(), "Transaction is not signed!"
         self.app.world.commands.broadcast(transaction=signed)
 
         self.__clear_all()
@@ -138,20 +144,15 @@ class TransactionSummary(BaseScreen):
         self.app.world.profile_data.cart.clear()
         self.__scrollable_part.add_class("-hidden")
 
-    def __sign_transaction(self) -> Transaction | None:
-        """
-        Tries to sign the transaction with the selected key.
+    def __sign_transaction(self) -> Transaction:
+        transaction = self.__build_transaction()
 
-        Returns:
-            True if the transaction was signed, False otherwise.
-        """
         try:
             selected = self.__select_key.selected
-            return self.app.world.commands.sign(  # noqa: TRY300
-                transaction=self.__build_transaction(), sign_with=selected.value
-            )
-        except NoItemSelectedError:
-            return None
+        except NoItemSelectedError as error:
+            raise TransactionCouldNotBeSignedError(transaction, "No key was selected!") from error
+        else:
+            return self.app.world.commands.sign(transaction=transaction, sign_with=selected.value)
 
     def __build_transaction(self) -> Transaction:
         return self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)
