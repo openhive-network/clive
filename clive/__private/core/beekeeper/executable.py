@@ -46,7 +46,6 @@ class BeekeeperExecutable:
             "stdout": None,
             "stderr": None,
         }
-        self.__pid_file: Path | None = None
 
     def run(self, config: BeekeeperConfig) -> None:
         if self.__process is not None:
@@ -56,28 +55,21 @@ class BeekeeperExecutable:
             raise BeekeeperNotificationServerNotConfiguredError()
 
         # prepare config
-        self.__pid_file = config.wallet_dir / "beekeeper.pid"
         if not config.wallet_dir.exists():
             config.wallet_dir.mkdir()
-        elif self.__pid_file.exists():
-            raise BeekeeperAlreadyRunningError(self.__pid_file)
         config_filename = config.wallet_dir / "config.ini"
         config.save(config_filename)
 
         self.__prepare_files_for_streams(config.wallet_dir)
 
-        self.__pid_file.touch(exist_ok=False)
         self.__process = Popen(
             [self.__executable, "--data-dir", config.wallet_dir.as_posix()],
             stdout=self.__files["stdout"],
             stderr=self.__files["stderr"],
         )
-        with self.__pid_file.open(mode="w") as file:
-            file.write(f"{self.__process.pid}")
 
     def close(self) -> None:
         if self.__process is None:
-            assert self.__pid_file is None
             return
 
         self.__process.send_signal(signal.SIGINT)
@@ -92,9 +84,6 @@ class BeekeeperExecutable:
             )
         self.__close_files_for_streams()
 
-        assert self.__pid_file is not None and self.__pid_file.exists()
-        self.__pid_file.unlink()
-        self.__pid_file = None
         self.__process = None
 
     @classmethod
