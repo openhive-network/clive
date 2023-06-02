@@ -3,12 +3,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.activate import Activate
+from clive.__private.core.commands.activate import Activate, WalletDoesNotExistsError
 from clive.__private.core.commands.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.storage.mock_database import PrivateKey
-from clive.exceptions import CannotActivateError
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import BeekeeperRemote
@@ -26,7 +25,7 @@ class WriteProfileDataToBeekeeper(Command[str]):
         wallet_name = self.profile_data.name
         try:
             Activate(beekeeper=self.beekeeper, wallet=wallet_name, password=self.password).execute()
-        except CannotActivateError:
+        except WalletDoesNotExistsError:
             self.password = CreateWallet(
                 beekeeper=self.beekeeper, wallet=wallet_name, password=self.password
             ).execute_with_result()

@@ -4,6 +4,10 @@ from datetime import timedelta
 from time import sleep
 from typing import TYPE_CHECKING, Final
 
+import pytest
+
+from clive.__private.core.commands.activate import Activate, WalletDoesNotExistsError
+
 if TYPE_CHECKING:
     import clive
     from tests import WalletInfo
@@ -18,6 +22,12 @@ def test_activate(world: clive.World, wallet: WalletInfo) -> None:
 
     # ASSERT
     assert world.app_state.is_active()
+
+
+def test_activate_non_existing_wallet(world: clive.World) -> None:
+    # ARRANGE, ACT & ASSERT
+    with pytest.raises(WalletDoesNotExistsError):
+        Activate(beekeeper=world.beekeeper, wallet="blabla", password="blabla").execute_with_result()
 
 
 def test_deactivate(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001
