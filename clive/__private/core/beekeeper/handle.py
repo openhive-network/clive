@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from httpx import codes, post
+from httpx import codes
 
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.api import BeekeeperApi
@@ -11,6 +11,7 @@ from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_def
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
+from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
 from clive.exceptions import CommunicationError
@@ -62,7 +63,7 @@ class Beekeeper(ABC):
             raise UrlNotSetError()
 
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        result = post(url.as_string(), json=request.dict(by_alias=True))
+        result = Communication.request(url.as_string(), data=request.json(by_alias=True))
 
         if result.status_code != codes.OK:
             raise Non200StatusCodeError()
