@@ -4,17 +4,7 @@ from collections.abc import Callable
 from functools import wraps
 from typing import TYPE_CHECKING, Any, TypeVar, get_type_hints
 
-from clive.__private.core.beekeeper.model import (
-    Create,  # noqa: TCH001
-    CreateKey,  # noqa: TCH001
-    EmptyResponse,  # noqa: TCH001
-    GetInfo,  # noqa: TCH001
-    GetPublicKeys,  # noqa: TCH001
-    ImportKey,  # noqa: TCH001
-    ListKeys,  # noqa: TCH001
-    ListWallets,  # noqa: TCH001
-    SignDigest,  # noqa: TCH001
-)
+from clive.__private.core.beekeeper import model  # noqa: TCH001
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -39,57 +29,67 @@ class BeekeeperApi:
         self._owner = owner
 
     @api
-    def create(self, *, wallet_name: str, password: str | None = None) -> Create:
+    def create(self, *, wallet_name: str, password: str | None = None) -> model.Create:
         raise NotImplementedError()
 
     @api
-    def open(self, *, wallet_name: str) -> EmptyResponse:  # noqa: A003
+    def open(self, *, wallet_name: str) -> model.EmptyResponse:  # noqa: A003
         raise NotImplementedError()
 
     @api
-    def set_timeout(self, *, seconds: int) -> EmptyResponse:
+    def set_timeout(self, *, seconds: int) -> model.EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def lock_all(self) -> EmptyResponse:
+    def lock_all(self) -> model.EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def lock(self, *, wallet_name: str) -> EmptyResponse:
+    def lock(self, *, wallet_name: str) -> model.EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def unlock(self, *, wallet_name: str, password: str) -> EmptyResponse:
+    def unlock(self, *, wallet_name: str, password: str) -> model.EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def import_key(self, *, wallet_name: str, wif_key: str) -> ImportKey:
+    def import_key(self, *, wallet_name: str, wif_key: str) -> model.ImportKey:
         raise NotImplementedError()
 
     @api
-    def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> EmptyResponse:
+    def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> model.EmptyResponse:
         raise NotImplementedError()
 
     @api
-    def create_key(self, *, wallet_name: str) -> CreateKey:
+    def list_wallets(self) -> model.ListWallets:
         raise NotImplementedError()
 
     @api
-    def list_wallets(self) -> ListWallets:
+    def list_keys(self, *, wallet_name: str, password: str) -> model.ListKeys:
         raise NotImplementedError()
 
     @api
-    def list_keys(self, *, wallet_name: str, password: str) -> ListKeys:
+    def get_public_keys(self) -> model.GetPublicKeys:
         raise NotImplementedError()
 
     @api
-    def get_public_keys(self) -> GetPublicKeys:
+    def sign_digest(self, *, sig_digest: str, public_key: str) -> model.SignDigest:
         raise NotImplementedError()
 
     @api
-    def sign_digest(self, *, digest: str, public_key: str) -> SignDigest:
+    def sign_transaction(
+        self, *, transaction: dict[str, Any], chain_id: str, public_key: str, sig_digest: str
+    ) -> model.SignTransaction:
         raise NotImplementedError()
 
     @api
-    def get_info(self) -> GetInfo:
+    def get_info(self) -> model.GetInfo:
+        raise NotImplementedError()
+
+    @api
+    def create_session(self, *, notifications_endpoint: str, salt: str) -> model.CreateSession:
+        raise NotImplementedError()
+
+    @api
+    def close_session(self) -> model.EmptyResponse:
         raise NotImplementedError()

@@ -14,16 +14,20 @@ class EmptyResponse(BeekeeperResponse):
     pass
 
 
+class BeekeeperSession(BeekeeperResponse):
+    token: str
+
+
+class CreateSession(BeekeeperSession):
+    pass
+
+
 class Create(BeekeeperResponse):
     password: str
 
 
-class CreateKey(BeekeeperResponse):
+class ImportKey(BeekeeperResponse):
     public_key: str
-
-
-class ImportKey(CreateKey):
-    pass
 
 
 class ListKeys(BeekeeperResponse):
@@ -46,6 +50,10 @@ class SignDigest(BeekeeperResponse):
     signature: str
 
 
+class SignTransaction(SignDigest):
+    pass
+
+
 class GetInfo(BeekeeperResponse):
     now: datetime
     timeout_time: datetime
@@ -56,7 +64,20 @@ class GetInfo(BeekeeperResponse):
         return datetime.fromisoformat(v)
 
 
-T = TypeVar("T", Create, CreateKey, ImportKey, ListWallets, ListKeys, GetPublicKeys, SignDigest, GetInfo, EmptyResponse)
+T = TypeVar(
+    "T",
+    Create,
+    CreateSession,
+    ImportKey,
+    ListWallets,
+    ListKeys,
+    GetPublicKeys,
+    SignDigest,
+    SignTransaction,
+    GetInfo,
+    EmptyResponse,
+    BeekeeperSession,
+)
 
 
 class JSONRPCProtocol(BaseModel):
