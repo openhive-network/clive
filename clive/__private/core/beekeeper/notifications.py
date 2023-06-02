@@ -11,6 +11,7 @@ class BeekeeperNotificationsServer:
     def __init__(self) -> None:
         self.server = HttpServer(self, name="NotificationsServer")
 
+        self.opening_beekeeper_failed = Event()
         self.http_listening_event = Event()
         self.ready = Event()
         self.http_endpoint: Url | None = None
@@ -25,15 +26,24 @@ class BeekeeperNotificationsServer:
         details: dict[str, str] = message["value"]
         if message["name"] == "webserver listening":
             if details["type"] == "HTTP":
-                endpoint = f'{details["address"].replace("0.0.0.0", "127.0.0.1")}:{details["port"]}'
-                self.http_endpoint = Url.parse(endpoint, protocol="http")
-                logger.debug(f"Got notification with http address on: {endpoint}")
+                self.http_endpoint = self.__parse_endpoint_notification(details)
+                logger.debug(f"Got notification with http address on: {self.http_endpoint}")
                 self.http_listening_event.set()
         elif message["name"] == "hived_status" and details["current_status"] == "signals attached":
             logger.debug("Beekeeper reports to be ready")
             self.ready.set()
-
+        elif message["name"] == "opening_beekeeper_failed":
+            assert details["type"] == "HTTP"
+            self.http_endpoint = self.__parse_endpoint_notification(details)
+            logger.debug(f"Got notification with http address because of beekeeper fail on: {self.http_endpoint}")
+            self.opening_beekeeper_failed.set()
         logger.info(f"Received message: {message}")
+
+    @classmethod
+    def __parse_endpoint_notification(cls, details: dict[str, str]) -> Url:
+        return Url.parse(
+            f"{details['address'].replace('0.0.0.0', '127.0.0.1')}:{details['port']}", protocol=details["type"].lower()
+        )
 
     def close(self) -> None:
         self.server.close()
