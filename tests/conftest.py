@@ -8,15 +8,17 @@ import test_tools as tt
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.config import settings
+from clive.__private.core import iwax
 from clive.__private.core.beekeeper import BeekeeperLocal
 from clive.__private.core.world import World
-from clive.__private.storage.mock_database import PrivateKeyAlias
 from clive.__private.util import prepare_before_launch
 from clive.core.url import Url
 from tests import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    from clive.__private.storage.mock_database import PrivateKey
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -38,8 +40,8 @@ def wallet_name() -> str:
 
 
 @pytest.fixture
-def pubkey(beekeeper: BeekeeperLocal, wallet: WalletInfo) -> PrivateKeyAlias:
-    return PrivateKeyAlias(beekeeper.api.create_key(wallet_name=wallet.name).public_key)
+def key_pair() -> PrivateKey:
+    return iwax.generate_private_key()
 
 
 @pytest.fixture
