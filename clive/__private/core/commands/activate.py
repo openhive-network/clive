@@ -32,8 +32,11 @@ class Activate(Command[None]):
             if self.time is not None:
                 SetTimeout(self.beekeeper, int(self.time.total_seconds())).execute()
         except CommunicationError as e:
-            if WalletDoesNotExistsError.ERROR_MESSAGE in e.args[1]["error"]["message"]:
-                raise WalletDoesNotExistsError(e) from e
+            for arg in e.args:
+                if isinstance(arg, dict):
+                    arg = arg["error"]["message"]  # noqa: PLW2901
+                if WalletDoesNotExistsError.ERROR_MESSAGE in arg:
+                    raise WalletDoesNotExistsError(e) from e
             raise CannotActivateError(e) from e
 
         logger.info("Mode switched to [bold green]active[/].")
