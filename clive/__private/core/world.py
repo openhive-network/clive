@@ -3,7 +3,7 @@ from __future__ import annotations
 from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
-from clive.__private.core.beekeeper import BeekeeperLocal, BeekeeperRemote
+from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.beekeeper.executable import BeekeeperNotConfiguredError
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.node.node import Node
@@ -32,7 +32,7 @@ class World:
         return self._background_tasks
 
     @property
-    def beekeeper(self) -> BeekeeperLocal | BeekeeperRemote:
+    def beekeeper(self) -> Beekeeper:
         return self._beekeeper
 
     @property
@@ -40,18 +40,13 @@ class World:
         return self._node
 
     def close(self) -> None:
-        if isinstance(self.beekeeper, BeekeeperLocal):
-            self.beekeeper.close()
+        self.beekeeper.stop()
 
-    def __setup_beekeeper(self) -> BeekeeperLocal | BeekeeperRemote:
-        if BeekeeperRemote.get_address_from_settings() is not None:
-            return BeekeeperRemote()
-
-        if BeekeeperLocal.get_path_from_settings() is not None:
-            __beekeeper = BeekeeperLocal()
-            __beekeeper.run()
-            return __beekeeper
-
+    def __setup_beekeeper(self) -> Beekeeper:
+        if Beekeeper.get_address_from_settings() or Beekeeper.get_path_from_settings():
+            keeper = Beekeeper()
+            keeper.start()
+            return keeper
         raise BeekeeperNotConfiguredError()
 
     @property

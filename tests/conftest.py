@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shutil
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
@@ -9,7 +9,6 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.config import settings
 from clive.__private.core import iwax
-from clive.__private.core.beekeeper import BeekeeperLocal
 from clive.__private.core.world import World
 from clive.__private.util import prepare_before_launch
 from clive.core.url import Url
@@ -18,6 +17,7 @@ from tests import WalletInfo
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.storage.mock_database import PrivateKey
 
 
@@ -69,5 +69,5 @@ def wallet(world: World, wallet_name: str) -> WalletInfo:
 
 
 @pytest.fixture
-def beekeeper(world: World) -> BeekeeperLocal:
-    return cast(BeekeeperLocal, world.beekeeper)
+def beekeeper(world: World) -> Beekeeper:
+    return world.beekeeper

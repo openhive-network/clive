@@ -5,16 +5,16 @@ from typing import TYPE_CHECKING
 import pytest
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperLocal
+    from clive.__private.core.beekeeper import Beekeeper
 
 
-def test_proper_closing(beekeeper: BeekeeperLocal) -> None:
+def test_proper_closing(beekeeper: Beekeeper) -> None:
     # ARRANGE, ACT & ASSERT
     assert beekeeper is not None  # dummy assertion
 
 
 @pytest.mark.parametrize("wallet_name", ("test", "123", "test"))
-def test_clean_dirs(beekeeper: BeekeeperLocal, wallet_name: str) -> None:
+def test_clean_dirs(beekeeper: Beekeeper, wallet_name: str) -> None:
     test_file = beekeeper.config.wallet_dir / wallet_name
     assert not test_file.exists()
     test_file.touch()

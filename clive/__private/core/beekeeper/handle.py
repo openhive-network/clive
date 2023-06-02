@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from httpx import codes
@@ -48,16 +47,31 @@ class NotMatchingIdJsonRPCError(CommunicationError):
         super().__init__(given, got)
 
 
-class Beekeeper(ABC):
+class Beekeeper:
     def __init__(self) -> None:
+        self.config = BeekeeperConfig()
+        self.__notification_server = BeekeeperNotificationsServer()
+        self.__notification_server_port: int | None = None
         self.api = BeekeeperApi(self)
+        self.__executable = BeekeeperExecutable()
+        self.__token: str | None = None
 
-    @abstractmethod
-    def _get_request_url(self) -> Url | None:
-        """Should return the url to send the request to"""
+    @property
+    def token(self) -> str:
+        if self.__token is None:
+            self.__token = self.api.create_session(
+                notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
+            ).token
+        return self.__token
+
+    def __get_request_url(self) -> Url:
+        if self.config.webserver_http_endpoint is None and self.get_address_from_settings() is not None:
+            self.config.webserver_http_endpoint = self.get_address_from_settings()
+        assert self.config.webserver_http_endpoint is not None, "http webserver not set"
+        return self.config.webserver_http_endpoint
 
     def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
-        url = self._get_request_url()
+        url = self.__get_request_url()
 
         if url is None:
             raise UrlNotSetError()
@@ -80,53 +94,54 @@ class Beekeeper(ABC):
         logger.info(f"Returning model: {return_value}")
         return return_value
 
+    def stop(self) -> None:
+        self.api.close_session()
+        self.__token = None
+        self.__close_beekeeper()
 
-class BeekeeperRemote(Beekeeper):
-    def _get_request_url(self) -> Url | None:
-        return self.get_address_from_settings()
+    def start(self, *, timeout: float = 5.0) -> None:
+        self.__notification_server_port = self.__notification_server.listen()
+        if self.get_address_from_settings() is None:
+            self.__run_beekeeper(timeout=timeout)
+        else:
+            self.config.webserver_http_endpoint = self.get_address_from_settings()
 
-    @classmethod
-    def get_address_from_settings(cls) -> Url | None:
-        raw_address = settings.get("beekeeper.remote_address")
-        return Url.parse(raw_address) if raw_address else None
+        assert self.config.webserver_http_endpoint is not None
+        assert self.token is not None
 
+    def restart(self) -> None:
+        self.stop()
+        self.start()
 
-class BeekeeperLocal(Beekeeper):
-    def __init__(self) -> None:
-        self.__executable = BeekeeperExecutable()
-        self.__notification_server = BeekeeperNotificationsServer()
-        self.config = BeekeeperConfig()
-        super().__init__()
-
-    def _get_request_url(self) -> Url | None:
-        return self.config.webserver_http_endpoint
-
-    def run(self, *, timeout: float = 5.0) -> None:
-        self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server.listen())
+    def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
+        self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         self.__executable.run(self.config)
 
-        if not (
+        if self.__notification_server.opening_beekeeper_failed.wait(timeout):
+            self.__close_beekeeper()
+        elif not (
             self.__notification_server.http_listening_event.wait(timeout)
             and self.__notification_server.ready.wait(timeout)
         ):
-            self.close()
+            self.__close_beekeeper()
             return
 
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
 
-    def close(self) -> None:
+    def __close_beekeeper(self) -> None:
         try:
             self.__executable.close()
         finally:
-            self.config.notifications_endpoint = None
+            self.__notification_server_port = None
             self.config.webserver_http_endpoint = webserver_default()
             self.__notification_server.close()
-
-    def restart(self) -> None:
-        self.close()
-        self.run()
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
         return BeekeeperExecutable.get_path_from_settings()
+
+    @classmethod
+    def get_address_from_settings(cls) -> Url | None:
+        raw_address = settings.get("beekeeper.remote_address")
+        return Url.parse(raw_address) if raw_address else None

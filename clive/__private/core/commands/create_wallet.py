@@ -6,13 +6,12 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.command import Command
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
-    from clive.__private.core.beekeeper.handle import BeekeeperLocal
+    from clive.__private.core.beekeeper.handle import Beekeeper
 
 
 @dataclass
 class CreateWallet(Command[str]):
-    beekeeper: BeekeeperLocal | BeekeeperRemote
+    beekeeper: Beekeeper
     wallet: str
     password: str | None
 

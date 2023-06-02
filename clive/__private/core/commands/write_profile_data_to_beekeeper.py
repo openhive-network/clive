@@ -10,15 +10,14 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.storage.mock_database import PrivateKey
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import BeekeeperRemote
-    from clive.__private.core.beekeeper.handle import BeekeeperLocal
+    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive.__private.core.profile_data import ProfileData
 
 
 @dataclass
 class WriteProfileDataToBeekeeper(Command[str]):
     profile_data: ProfileData
-    beekeeper: BeekeeperLocal | BeekeeperRemote
+    beekeeper: Beekeeper
     password: str
 
     def execute(self) -> None:

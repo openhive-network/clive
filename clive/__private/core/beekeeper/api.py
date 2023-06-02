@@ -15,6 +15,8 @@ FooT = TypeVar("FooT", bound=Callable[..., object])
 def api(foo: FooT) -> FooT:
     @wraps(foo)
     def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
+        if foo.__name__ not in ["create_session"]:
+            kwargs["token"] = this._owner.token
         return this._owner._send(
             response=get_type_hints(foo)["return"],
             endpoint=f"beekeeper_api.{foo.__name__}",
