@@ -1,4 +1,4 @@
-FROM registry.gitlab.syncad.com/hive/clive/ci-base-image@sha256:5bb28104ea74f8f2d1e6e3fd1fe860383a9ac72ba73eaa55bd14496b52fd7441
+FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3
 
 ADD . /clive
 WORKDIR /clive

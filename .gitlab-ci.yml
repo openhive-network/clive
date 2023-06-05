@@ -1,4 +1,4 @@
-image: "$CI_REGISTRY_IMAGE/ci-base-image@sha256:77727fd98414cf36b7e2059895fd00ab918686534945638c2aa1c32cea7070f2"
+image: "registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3"
 
 stages:
   - static_code_analysis
