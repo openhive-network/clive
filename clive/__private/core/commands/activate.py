@@ -31,12 +31,11 @@ class Activate(Command[None]):
             self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
             if self.time is not None:
                 SetTimeout(self.beekeeper, int(self.time.total_seconds())).execute()
-        except CommunicationError as e:
-            for arg in e.args:
-                if isinstance(arg, dict):
-                    arg = arg["error"]["message"]  # noqa: PLW2901
+        except CommunicationError as error:
+            for arg_raw in error.args:
+                arg = arg_raw["error"]["message"] if isinstance(arg_raw, dict) else arg_raw
                 if WalletDoesNotExistsError.ERROR_MESSAGE in arg:
-                    raise WalletDoesNotExistsError(e) from e
-            raise CannotActivateError(e) from e
+                    raise WalletDoesNotExistsError(error) from error
+            raise CannotActivateError(error) from error
 
         logger.info("Mode switched to [bold green]active[/].")
