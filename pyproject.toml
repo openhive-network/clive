@@ -36,7 +36,7 @@ pydantic = "1.10.7"
 merge-args = "0.1.5"
 typer = { extras = ["all"], version = "0.8.0" }
 inflection = "0.5.1"
-wax = "0.0.1.dev0"
+wax = "0.0.1.dev2+20f62ea"
 
 schemas = { path = "schemas", develop = true }
 
