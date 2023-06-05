@@ -107,7 +107,7 @@ ignore = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["clive"]
+known-first-party = ["clive", "wax"]
 required-imports = ["from __future__ import annotations"]
 
 
