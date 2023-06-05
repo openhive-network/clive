@@ -35,7 +35,7 @@ class BeekeeperNotificationsServer:
         elif message["name"] == "opening_beekeeper_failed":
             assert details["type"] == "HTTP"
             self.http_endpoint = self.__parse_endpoint_notification(details)
-            logger.debug(f"Got notification with http address because of beekeeper fail on: {self.http_endpoint}")
+            logger.debug(f"Got notification with http address, but beekeeper failed when opening: {self.http_endpoint}")
             self.opening_beekeeper_failed.set()
         logger.info(f"Received message: {message}")
 
