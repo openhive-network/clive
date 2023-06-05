@@ -94,7 +94,7 @@ class Beekeeper:
         logger.info(f"Returning model: {return_value}")
         return return_value
 
-    def stop(self) -> None:
+    def close(self) -> None:
         self.api.close_session()
         self.__token = None
         self.__close_beekeeper()
@@ -110,7 +110,7 @@ class Beekeeper:
         assert self.token is not None
 
     def restart(self) -> None:
-        self.stop()
+        self.close()
         self.start()
 
     def __run_beekeeper(self, *, timeout: float = 5.0) -> None:

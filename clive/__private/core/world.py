@@ -40,7 +40,7 @@ class World:
         return self._node
 
     def close(self) -> None:
-        self.beekeeper.stop()
+        self.beekeeper.close()
 
     def __setup_beekeeper(self) -> Beekeeper:
         if Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings():
