@@ -19,11 +19,10 @@ packages = [
 include = [
     "settings.toml",
 ]
-
-[[tool.poetry.source]]
-name = "gitlab"
-url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple"
-priority = "supplemental"
+source = [
+    { name = "PyPI", priority = "primary" },
+    { name = "gitlab", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
+]
 
 
 [tool.poetry.dependencies]
@@ -39,7 +38,7 @@ typer = { extras = ["all"], version = "0.8.0" }
 inflection = "0.5.1"
 wax = "0.0.1.dev0"
 
-schemas = { path = "schemas", develop=true }
+schemas = { path = "schemas", develop = true }
 
 
 [tool.poetry.group.dev.dependencies]
