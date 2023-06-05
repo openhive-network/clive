@@ -4,7 +4,6 @@ from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.beekeeper.executable import BeekeeperNotConfiguredError
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData
@@ -43,11 +42,9 @@ class World:
         self.beekeeper.close()
 
     def __setup_beekeeper(self) -> Beekeeper:
-        if Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings():
-            keeper = Beekeeper()
-            keeper.start()
-            return keeper
-        raise BeekeeperNotConfiguredError()
+        keeper = Beekeeper()
+        keeper.start()
+        return keeper
 
     @property
     def node_data(self) -> NodeData:

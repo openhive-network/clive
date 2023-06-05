@@ -7,7 +7,7 @@ from httpx import codes
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.api import BeekeeperApi
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
-from clive.__private.core.beekeeper.executable import BeekeeperExecutable
+from clive.__private.core.beekeeper.executable import BeekeeperExecutable, BeekeeperNotConfiguredError
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
 from clive.__private.core.communication import Communication
@@ -49,6 +49,9 @@ class NotMatchingIdJsonRPCError(CommunicationError):
 
 class Beekeeper:
     def __init__(self) -> None:
+        if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
+            raise BeekeeperNotConfiguredError()
+
         self.config = BeekeeperConfig()
         self.__notification_server = BeekeeperNotificationsServer()
         self.__notification_server_port: int | None = None
