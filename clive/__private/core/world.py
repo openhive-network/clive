@@ -43,7 +43,7 @@ class World:
         self.beekeeper.stop()
 
     def __setup_beekeeper(self) -> Beekeeper:
-        if Beekeeper.get_address_from_settings() or Beekeeper.get_path_from_settings():
+        if Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings():
             keeper = Beekeeper()
             keeper.start()
             return keeper

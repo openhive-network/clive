@@ -65,8 +65,8 @@ class Beekeeper:
         return self.__token
 
     def __get_request_url(self) -> Url:
-        if self.config.webserver_http_endpoint is None and self.get_address_from_settings() is not None:
-            self.config.webserver_http_endpoint = self.get_address_from_settings()
+        if not self.config.webserver_http_endpoint and (remote := self.get_remote_address_from_settings()):
+            self.config.webserver_http_endpoint = remote
         assert self.config.webserver_http_endpoint is not None, "http webserver not set"
         return self.config.webserver_http_endpoint
 
@@ -101,10 +101,10 @@ class Beekeeper:
 
     def start(self, *, timeout: float = 5.0) -> None:
         self.__notification_server_port = self.__notification_server.listen()
-        if self.get_address_from_settings() is None:
+        if not (remote := self.get_remote_address_from_settings()):
             self.__run_beekeeper(timeout=timeout)
         else:
-            self.config.webserver_http_endpoint = self.get_address_from_settings()
+            self.config.webserver_http_endpoint = remote
 
         assert self.config.webserver_http_endpoint is not None
         assert self.token is not None
@@ -142,6 +142,6 @@ class Beekeeper:
         return BeekeeperExecutable.get_path_from_settings()
 
     @classmethod
-    def get_address_from_settings(cls) -> Url | None:
+    def get_remote_address_from_settings(cls) -> Url | None:
         raw_address = settings.get("beekeeper.remote_address")
         return Url.parse(raw_address) if raw_address else None
