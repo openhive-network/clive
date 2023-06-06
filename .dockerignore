@@ -7,3 +7,5 @@ logs/
 *.log
 .python-version
 .vscode/
+*venv
+**/generated
