@@ -7,6 +7,14 @@ ARG HIVED_LOCATION "./hived"
 ENV HIVED_PATH=/clive/hived
 ADD --chown=hived_admin:users $HIVED_LOCATION "$HIVED_PATH/.."
 
+ARG CLI_WALLET_LOCATION "./cli_wallet"
+ENV CLI_WALLET_PATH=/clive/cli_wallet
+ADD --chown=hived_admin:users $CLI_WALLET_LOCATION "$CLI_WALLET_PATH/.."
+
+ARG GET_DEV_KEY_LOCATION "./get_dev_key"
+ENV GET_DEV_KEY_PATH=/clive/get_dev_key
+ADD --chown=hived_admin:users $GET_DEV_KEY_LOCATION "$GET_DEV_KEY_PATH/.."
+
 ARG BEEKEEPER_LOCATION "./beekeeper"
 ENV BEEKEEPER_PATH=/clive/beekeeper
 ADD --chown=hived_admin:users ${BEEKEEPER_LOCATION} "$BEEKEEPER_PATH/.."
@@ -17,5 +25,6 @@ RUN poetry install
 
 # crucial for proper display
 ENV COLORTERM=truecolor
+ENV CLIVE_BEEKEEPER__PATH=${BEEKEEPER_PATH}
 
 ENTRYPOINT [ "poetry", "run", "python", "testnet_node.py", "&>", "/dev/null", "&", "poetry", "run", "clive" ]
