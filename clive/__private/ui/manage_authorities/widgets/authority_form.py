@@ -83,7 +83,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         return ""
 
     def _default_key(self) -> str:
-        return "5JNHfZYKGaomSFvd4NUdQ9qMcEAC43kujbfjueTHpVapX1Kzq2n"
+        return "5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"  # generated: alice secret
 
     def _default_file_path(self) -> str:
         return ""
