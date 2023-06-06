@@ -62,18 +62,24 @@ class BeekeeperExecutable:
 
         self.__prepare_files_for_streams(config.wallet_dir)
 
-        self.__process = Popen(
-            [self.__executable, "--data-dir", config.wallet_dir.as_posix()],
-            stdout=self.__files["stdout"],
-            stderr=self.__files["stderr"],
-        )
+        try:
+            self.__process = Popen(
+                [self.__executable, "--data-dir", config.wallet_dir.as_posix()],
+                stdout=self.__files["stdout"],
+                stderr=self.__files["stderr"],
+            )
+        except Exception as e:
+            logger.debug(f"Caught exception during start, closing: {e}")
+            self.close()
+            raise e from e
 
     def close(self) -> None:
         if self.__process is None:
+            self.__close_files_for_streams()
             return
 
-        self.__process.send_signal(signal.SIGINT)
         try:
+            self.__process.send_signal(signal.SIGINT)
             return_code = self.__process.wait(timeout=10)
             logger.debug(f"Beekeeper closed with return code of `{return_code}`.")
         except subprocess.TimeoutExpired:
@@ -82,9 +88,9 @@ class BeekeeperExecutable:
             warnings.warn(
                 "Beekeeper process was force-closed with SIGKILL, because didn't close before timeout", stacklevel=2
             )
-        self.__close_files_for_streams()
-
-        self.__process = None
+        finally:
+            self.__close_files_for_streams()
+            self.__process = None
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
