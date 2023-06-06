@@ -26,5 +26,6 @@ RUN poetry install
 # crucial for proper display
 ENV COLORTERM=truecolor
 ENV CLIVE_BEEKEEPER__PATH=${BEEKEEPER_PATH}
+ENV SERVE_FOREVER=1
 
-ENTRYPOINT [ "poetry", "run", "python", "testnet_node.py", "&>", "/dev/null", "&", "poetry", "run", "clive" ]
+ENTRYPOINT bash ./entrypoint.bash
