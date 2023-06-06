@@ -124,7 +124,7 @@ testing_clive:
   extends: .testing
   script:
     - echo -e "${TXT_BLUE}Launching clive tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --junitxml=report.xml tests/
+    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
