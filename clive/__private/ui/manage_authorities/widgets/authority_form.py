@@ -65,7 +65,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
                 yield self.__key_input
 
     def action_load_from_file(self) -> None:
-        self.app.push_screen(SelectFile(self._default_file_path()))
+        self.app.push_screen(SelectFile())
 
     def on_select_file_saved(self, event: SelectFile.Saved) -> None:
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
@@ -99,9 +99,6 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
 
     def _default_key(self) -> str:
         return typing.cast(str, settings.get("secrets.default_key", ""))
-
-    def _default_file_path(self) -> str:
-        return ""
 
     def __get_authority_name(self) -> str:
         return self.__key_alias_input.value

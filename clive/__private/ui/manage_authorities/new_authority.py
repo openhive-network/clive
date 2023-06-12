@@ -7,7 +7,6 @@ from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.mock_database import PublicKeyAliased
-from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -64,8 +63,3 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
 
     def _subtitle(self) -> str:
         return "(Optional step, could be done later)"
-
-    def _default_key(self) -> str:
-        if self.context.working_account.keys and isinstance((key := self.context.working_account.keys[0]), PrivateKey):
-            return key.value
-        return super()._default_key()
