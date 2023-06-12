@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class WriteProfileDataToBeekeeper(Command[str]):
+class WriteProfileDataToBeekeeper(Command[None]):
     profile_data: ProfileData
     beekeeper: Beekeeper
     password: str
