@@ -152,13 +152,13 @@ testing_clive:
   after_script:
     - docker push $TAG_COMMIT
     - docker push $TAG_LATEST
-#  only:
-#    - develop
-#    - master
   tags: *shared_tags
 
 build_and_push_docker_image:
   extends: .build_and_push_base
+  only:
+    - develop
+    - master
   script:
     - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile ..
 
@@ -171,6 +171,10 @@ build_and_push_docker_testnet_image:
       artifacts: true
     - job: build_hived
       artifacts: true
+  rules:
+    - if: '$CI_COMMIT_REF_NAME != "master" && $CI_COMMIT_REF_NAME != "develop"'
+      when: manual
+    - when: always
   variables:
     BUILD_SUFFIX: "-testnet"
   script:
