@@ -13,7 +13,7 @@ variables:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
-  HIVED_BINARY: "$CI_PROJECT_DIR/hived"
+  HIVE_BUILD_ROOT_PATH: "$CI_PROJECT_DIR/hived"
 
 .shared_tags: &shared_tags
   - hived-for-tests
@@ -76,7 +76,7 @@ type_check_with_mypy:
     - mkdir build && cd build
     - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_HIVE_TESTNET=ON -GNinja ..
     - ninja $TARGET
-    - cp $SOURCE $DESTINATION
+    - cp -r $SOURCE $DESTINATION
   artifacts:
     paths:
       - $DESTINATION
@@ -93,8 +93,8 @@ build_hived:
   extends: .hive_based_build
   variables:
     TARGET: "hived"
-    SOURCE: "programs/hived/hived"
-    DESTINATION: "$HIVED_BINARY"
+    SOURCE: "."
+    DESTINATION: "$HIVE_BUILD_ROOT_PATH"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -110,7 +110,6 @@ build_hived:
       artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
-    HIVED_PATH: $HIVED_BINARY
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   artifacts:
     reports:
@@ -174,6 +173,6 @@ build_and_push_docker_testnet_image:
   variables:
     BUILD_SUFFIX: "-testnet"
   script:
-    - docker build --build-arg HIVED_LOCATION=./hived --build-arg BEEKEEPER_LOCATION=./beekeeper -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET .
+    - docker build --build-arg HIVE_BUILD_ROOT_LOCATION=./hived --build-arg BEEKEEPER_LOCATION=./beekeeper -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET .
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

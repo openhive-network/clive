@@ -3,17 +3,9 @@ FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3
 ADD --chown=hived_admin:users . /clive
 WORKDIR /clive
 
-ARG HIVED_LOCATION "./hived"
-ENV HIVED_PATH=/clive/hived
-ADD --chown=hived_admin:users $HIVED_LOCATION "$HIVED_PATH/.."
-
-ARG CLI_WALLET_LOCATION "./cli_wallet"
-ENV CLI_WALLET_PATH=/clive/cli_wallet
-ADD --chown=hived_admin:users $CLI_WALLET_LOCATION "$CLI_WALLET_PATH/.."
-
-ARG GET_DEV_KEY_LOCATION "./get_dev_key"
-ENV GET_DEV_KEY_PATH=/clive/get_dev_key
-ADD --chown=hived_admin:users $GET_DEV_KEY_LOCATION "$GET_DEV_KEY_PATH/.."
+ARG HIVE_BUILD_ROOT_LOCATION="./hived/"
+ENV HIVE_BUILD_ROOT_PATH="/clive/hived/"
+ADD --chown=hived_admin:users "${HIVE_BUILD_ROOT_LOCATION}" "${HIVE_BUILD_ROOT_PATH}"
 
 ARG BEEKEEPER_LOCATION "./beekeeper"
 ENV BEEKEEPER_PATH=/clive/beekeeper
