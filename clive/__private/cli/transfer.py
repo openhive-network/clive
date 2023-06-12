@@ -6,7 +6,7 @@ from click import ClickException
 
 from clive.__private.cli.common import Common, common_options
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
-from clive.__private.storage.mock_database import PrivateKeyAlias
+from clive.__private.storage.mock_database import PublicKey
 from clive.models import Asset
 from schemas.operations import TransferOperation
 
@@ -38,7 +38,7 @@ def _main(
         TransferOperation(from_=from_, to=to, amount=Asset.from_legacy(amount.upper()), memo=memo),
         beekeeper=common.world.beekeeper,
         node=common.world.node,
-        sign_key=PrivateKeyAlias(common.sign) if common.sign else None,
+        sign_key=PublicKey(common.sign) if common.sign else None,
         save_file_path=Path(common.save_file) if common.save_file else None,
         broadcast=common.broadcast,
         chain_id=common.world.node.chain_id,

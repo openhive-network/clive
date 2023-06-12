@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PrivateKey
+    from clive.__private.storage.mock_database import PrivateKey, PublicKey
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -40,8 +40,10 @@ def wallet_name() -> str:
 
 
 @pytest.fixture
-def key_pair() -> PrivateKey:
-    return iwax.generate_private_key()
+def key_pair() -> tuple[PublicKey, PrivateKey]:
+    private_key = iwax.generate_private_key()
+    public_key = private_key.calculate_public_key()
+    return public_key, private_key
 
 
 @pytest.fixture

@@ -6,7 +6,7 @@ import pytest
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PrivateKey
+    from clive.__private.storage.mock_database import PrivateKey, PublicKey
     from tests import WalletInfo
 
 PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
@@ -61,11 +61,12 @@ def test_import_multiple_keys(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     assert_keys(beekeeper.api.get_public_keys().keys, public_keys)
 
 
-def test_remove_key(beekeeper: Beekeeper, wallet: WalletInfo, key_pair: PrivateKey) -> None:
+def test_remove_key(beekeeper: Beekeeper, wallet: WalletInfo, key_pair: tuple[PublicKey, PrivateKey]) -> None:
     # ARRANGE
-    beekeeper.api.import_key(wallet_name=wallet.name, wif_key=key_pair.value)
+    public_key, private_key = key_pair
+    beekeeper.api.import_key(wallet_name=wallet.name, wif_key=private_key.value)
 
     # ACT & ASSERT
-    assert_keys(beekeeper.api.get_public_keys().keys, [key_pair.alias])
-    beekeeper.api.remove_key(wallet_name=wallet.name, password=wallet.password, public_key=key_pair.alias)
+    assert_keys(beekeeper.api.get_public_keys().keys, [public_key.value])
+    beekeeper.api.remove_key(wallet_name=wallet.name, password=wallet.password, public_key=public_key.value)
     assert_keys(beekeeper.api.get_public_keys().keys, [])

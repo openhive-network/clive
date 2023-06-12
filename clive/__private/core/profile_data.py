@@ -24,7 +24,7 @@ class ProfileData(Context):
     name: str = ""
 
     # TODO: Should be None if not set, since we'll allow for using app without a working account
-    working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", []))
+    working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", [], {}))
     watched_accounts: list[Account] = field(default_factory=list)
     cart = Cart()
 

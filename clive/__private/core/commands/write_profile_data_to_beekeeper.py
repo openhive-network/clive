@@ -7,7 +7,6 @@ from clive.__private.core.commands.activate import Activate, WalletDoesNotExists
 from clive.__private.core.commands.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.storage.mock_database import PrivateKey
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper
@@ -29,8 +28,9 @@ class WriteProfileDataToBeekeeper(Command[None]):
                 beekeeper=self.beekeeper, wallet=wallet_name, password=self.password
             ).execute_with_result()
 
-        for i, key in enumerate(self.profile_data.working_account.keys):
-            if isinstance(key, PrivateKey):
-                self.profile_data.working_account.keys[i] = ImportKey(
-                    wallet=wallet_name, key_to_import=key, beekeeper=self.beekeeper
-                ).execute_with_result()
+        for alias, key in self.profile_data.working_account.keys_to_import.items():
+            imported = ImportKey(
+                wallet=wallet_name, alias=alias, key_to_import=key, beekeeper=self.beekeeper
+            ).execute_with_result()
+            self.profile_data.working_account.keys.append(imported)
+        self.profile_data.working_account.keys_to_import.clear()

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
-    from clive.__private.storage.mock_database import PrivateKey, PrivateKeyAlias
+    from clive.__private.storage.mock_database import PrivateKey, PublicKey
     from clive.models import Operation, Transaction
 
 
@@ -42,7 +42,7 @@ class Commands:
             operations=operations, node=self.__world.node, expiration=expiration
         ).execute_with_result()
 
-    def sign(self, *, transaction: Transaction, sign_with: PrivateKeyAlias) -> Transaction:
+    def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> Transaction:
         return Sign(
             beekeeper=self.__world.beekeeper,
             transaction=transaction,
@@ -56,7 +56,7 @@ class Commands:
     def broadcast(self, *, transaction: Transaction) -> None:
         Broadcast(node=self.__world.node, transaction=transaction).execute()
 
-    def fast_broadcast(self, *, operation: Operation, sign_with: PrivateKeyAlias) -> None:
+    def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> None:
         FastBroadcast(
             node=self.__world.node,
             operation=operation,
@@ -65,9 +65,9 @@ class Commands:
             chain_id=self.__world.node.chain_id,
         ).execute()
 
-    def import_key(self, *, wif: PrivateKey) -> PrivateKeyAlias:
+    def import_key(self, *, alias: str, wif: PrivateKey) -> PublicKey:
         return ImportKey(
-            wallet=self.__world.profile_data.name, key_to_import=wif, beekeeper=self.__world.beekeeper
+            wallet=self.__world.profile_data.name, alias=alias, key_to_import=wif, beekeeper=self.__world.beekeeper
         ).execute_with_result()
 
     def write_profile_data_to_beekeeper(self, *, password: str) -> None:

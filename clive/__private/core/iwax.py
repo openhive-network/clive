@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import wax
-from clive.__private.storage.mock_database import PrivateKey, PrivateKeyAlias
+from clive.__private.storage.mock_database import PrivateKey, PublicKey
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
@@ -44,14 +44,13 @@ def serialize_transaction(transaction: Transaction) -> bytes:
     return result.result
 
 
-def calculate_public_key(wif: str) -> PrivateKeyAlias:
+def calculate_public_key(wif: str) -> PublicKey:
     result = wax.calculate_public_key(wif.encode())
     __validate_wax_response(result)
-    return PrivateKeyAlias(alias=result.result.decode())
+    return PublicKey(result.result.decode())
 
 
 def generate_private_key() -> PrivateKey:
     result = wax.generate_private_key()
     __validate_wax_response(result)
-    wif = result.result.decode()
-    return PrivateKey(alias=calculate_public_key(wif=wif).alias, value=wif)
+    return PrivateKey(value=result.result.decode())

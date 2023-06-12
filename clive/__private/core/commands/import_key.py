@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command
-from clive.__private.storage.mock_database import PrivateKeyAlias
+from clive.__private.storage.mock_database import PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -12,12 +12,12 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class ImportKey(Command[PrivateKeyAlias]):
+class ImportKey(Command[PublicKeyAliased]):
     wallet: str
+    alias: str
     key_to_import: PrivateKey
     beekeeper: Beekeeper
 
     def execute(self) -> None:
-        self._result = PrivateKeyAlias(
-            self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.value).public_key
-        )
+        imported = self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.value)
+        self._result = PublicKeyAliased(alias=self.alias, value=imported.public_key)
