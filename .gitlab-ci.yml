@@ -6,6 +6,13 @@ stages:
   - tests
   - build_docker
 
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   PACKAGES_TO_CHECK: "clive/ tests/"
