@@ -49,7 +49,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self.__key_alias_input = Input(self.__generate_key_alias(), placeholder="e.g. My active key", disabled=True)
+        self.__key_alias_input = Input(self.__generate_key_alias(), placeholder="e.g. My active key")
         self.__key_input = Input(self._default_key(), placeholder="You can paste your key here")
         self.__key_file_path: Path | None = None
 
