@@ -19,5 +19,6 @@ RUN poetry install
 ENV COLORTERM=truecolor
 
 ENV CLIVE_BEEKEEPER__PATH="${BEEKEEPER_PATH}"
+ENV CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 
 ENTRYPOINT bash docker/entrypoint-testnet.bash

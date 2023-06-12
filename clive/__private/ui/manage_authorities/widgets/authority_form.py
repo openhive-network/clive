@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import typing
 from abc import ABC
 from typing import TYPE_CHECKING, Any
 
@@ -7,6 +8,7 @@ from textual.containers import Grid
 from textual.message import Message
 from textual.widgets import Input, Static
 
+from clive.__private.config import settings
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.storage.mock_database import PrivateKey
@@ -96,7 +98,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         return ""
 
     def _default_key(self) -> str:
-        return "5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"  # generated: alice secret
+        return typing.cast(str, settings.get("secrets.default_key", ""))
 
     def _default_file_path(self) -> str:
         return ""
