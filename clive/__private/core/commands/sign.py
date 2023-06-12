@@ -9,18 +9,18 @@ from clive.models import Signature, Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PrivateKeyAlias
+    from clive.__private.storage.mock_database import PublicKey
 
 
 @dataclass
 class Sign(Command[Transaction]):
     beekeeper: Beekeeper
     transaction: Transaction
-    key: PrivateKeyAlias
+    key: PublicKey
     chain_id: str
 
     def execute(self) -> None:
         sig_digest = calculate_digest(self.transaction, self.chain_id)
-        result = self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.alias)
+        result = self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.value)
         self.transaction.signatures = [Signature(result.signature)]
         self._result = self.transaction

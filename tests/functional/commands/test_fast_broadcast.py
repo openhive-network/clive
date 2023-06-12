@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 def test_fast_broadcast_smoke_test(world: World, init_node: tt.InitNode, wallet: WalletInfo) -> None:  # noqa: ARG001
     # ARRANGE
-    pubkey = world.commands.import_key(wif=PrivateKey(alias="", value=str(init_node.config.private_key[0])))
+    pubkey = world.commands.import_key(alias="some-alias", wif=PrivateKey(value=str(init_node.config.private_key[0])))
 
     # ACT & ASSERT
     world.commands.fast_broadcast(

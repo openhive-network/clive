@@ -15,6 +15,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.exceptions import AliasAlreadyInUseError, FormValidationError, PrivateKeyAlreadyInUseError, PrivateKeyError
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -34,7 +35,8 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     class Saved(Message, bubble=True):
         """Emitted when user Saves the form"""
 
-        def __init__(self, private_key: PrivateKey) -> None:
+        def __init__(self, key_alias: str, private_key: PrivateKey) -> None:
+            self.key_alias = key_alias
             self.private_key = private_key
             super().__init__()
 
@@ -69,9 +71,20 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
 
     def _save(self) -> None:
-        self._validate()
-        private_key = PrivateKey(self.__get_authority_name(), self._get_key(), self.__key_file_path)
-        self.app.post_message_to_everyone(self.Saved(private_key))
+        if not self._is_key_provided():
+            Notification("Not saving any private key, because none has been provided", category="warning").show()
+            return
+
+        try:
+            self._validate()
+        except FormValidationError as error:
+            Notification(
+                f"Failed the validation process! Could not continue. Reason: {error.reason}", category="error"
+            ).show()
+            return
+
+        private_key = PrivateKey(self._get_key(), self.__key_file_path)
+        self.app.post_message_to_everyone(self.Saved(key_alias=self.__get_authority_name(), private_key=private_key))
 
     def _title(self) -> str:
         return ""
@@ -98,7 +111,30 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         return bool(self._get_key())
 
     def _validate(self) -> None:
-        PrivateKey.validate_key(self._get_key())
+        """
+        Raises:
+            PrivateKeyError: if key is invalid
+            AliasAlreadyInUseError: if alias is already in use
+            PrivateKeyAlreadyInUseError: if private key is already in use
+        """
+        private_key_raw = self._get_key()
+        if not PrivateKey.validate_key(private_key_raw):
+            raise PrivateKeyError(private_key_raw)
+
+        self.__check_if_authority_already_exists(self.__get_authority_name(), PrivateKey(private_key_raw))
 
     def __generate_key_alias(self) -> str:
         return f"{self.context.working_account.name}@active"
+
+    def __check_if_authority_already_exists(self, key_alias: str, private_key: PrivateKey) -> None:
+        def __alias_already_exists() -> bool:
+            return key_alias in (key.alias for key in self.context.working_account.keys)
+
+        def __private_key_already_exists() -> bool:
+            return private_key in self.app.world.profile_data.working_account.keys
+
+        if __alias_already_exists():
+            raise AliasAlreadyInUseError(key_alias)
+
+        if __private_key_already_exists():
+            raise PrivateKeyAlreadyInUseError()

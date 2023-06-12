@@ -9,7 +9,7 @@ from clive.__private.core.perform_actions_on_transaction import perform_actions_
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.node.node import Node
-    from clive.__private.storage.mock_database import PrivateKeyAlias
+    from clive.__private.storage.mock_database import PublicKey
     from clive.models import Operation
 
 
@@ -18,7 +18,7 @@ class FastBroadcast(Command[None]):
     node: Node
     operation: Operation
     beekeeper: Beekeeper
-    sign_with: PrivateKeyAlias
+    sign_with: PublicKey
     chain_id: str
 
     def execute(self) -> None:

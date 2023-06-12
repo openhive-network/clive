@@ -6,7 +6,7 @@ from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any
 
-from clive.exceptions import PrivateKeyError
+from clive.__private.core import iwax
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -25,41 +25,65 @@ class Account:
 
 
 @dataclass
-class PrivateKeyAlias:
-    alias: str
+class PublicKey:
+    value: str
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, PublicKey):
+            return self.value == other.value
+        if isinstance(other, PrivateKey):
+            return self == other.calculate_public_key()
+        return super().__eq__(other)
 
 
 @dataclass
-class PrivateKey(PrivateKeyAlias):
+class PublicKeyAliased(PublicKey):
+    alias: str
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, PublicKeyAliased):
+            return self.alias == other.alias and super().__eq__(other)
+        return super().__eq__(other)
+
+
+@dataclass
+class PrivateKey:
     value: str
     file_path: Path | None = None
 
     @classmethod
-    def from_file(cls, key_name: str, file_path: Path) -> PrivateKey:
+    def from_file(cls, file_path: Path) -> PrivateKey:
         key = cls.read_key_from_file(file_path)
-        return cls(key_name, key, file_path)
+        return cls(key, file_path)
 
     @classmethod
     def read_key_from_file(cls, file_path: Path) -> str:
         return file_path.read_text().strip()
 
-    @staticmethod
-    def validate_key(key: str) -> str:
-        if key == "error":
-            raise PrivateKeyError(key)
-        return key
+    @classmethod
+    def validate_key(cls, key: str) -> bool:
+        try:
+            cls(key).calculate_public_key()
+        except iwax.WaxOperationFailedError:
+            return False
+        return True
+
+    def calculate_public_key(self) -> PublicKey:
+        return iwax.calculate_public_key(self.value)
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, PrivateKey):
-            return self.value == other.value and self.alias == other.alias
-        if isinstance(other, PrivateKeyAlias):
-            return self.alias == other.alias
+            return self.value == other.value
+        if isinstance(other, PublicKey):
+            my_public_key = self.calculate_public_key()
+            return my_public_key.value == other.value
         return super().__eq__(other)
 
 
 @dataclass
 class WorkingAccount(Account):
-    keys: list[PrivateKeyAlias]
+    keys: list[PublicKeyAliased]
+    keys_to_import: dict[str, PrivateKey]
 
 
 @dataclass

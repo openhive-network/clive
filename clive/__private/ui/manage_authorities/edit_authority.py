@@ -10,7 +10,7 @@ from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
-    from clive.__private.storage.mock_database import PrivateKeyAlias
+    from clive.__private.storage.mock_database import PublicKeyAliased
 
 
 class EditAuthority(AuthorityForm):
@@ -20,7 +20,7 @@ class EditAuthority(AuthorityForm):
         Binding("f10", "save", "Save"),
     ]
 
-    def __init__(self, authority: PrivateKeyAlias) -> None:
+    def __init__(self, authority: PublicKeyAliased) -> None:
         self.authority = authority
         super().__init__()
 
@@ -32,12 +32,11 @@ class EditAuthority(AuthorityForm):
         self._save()
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        idx = self.app.world.profile_data.working_account.keys.index(self.authority)
-        self.app.world.profile_data.working_account.keys[idx] = event.private_key
+        self.app.world.profile_data.working_account.keys_to_import[event.key_alias] = event.private_key
         self.app.world.update_reactive("profile_data")
 
         self.app.pop_screen()
-        Notification(f"Authority `{event.private_key.alias}` was edited.", category="success").show()
+        Notification(f"Authority `{event.key_alias}` was edited.", category="success").show()
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
 
     def _title(self) -> str:
