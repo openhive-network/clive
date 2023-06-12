@@ -54,4 +54,4 @@ def generate_private_key() -> PrivateKey:
     result = wax.generate_private_key()
     __validate_wax_response(result)
     wif = result.result.decode()
-    return PrivateKey(alias=calculate_public_key(wif=wif).alias, key=wif)
+    return PrivateKey(alias=calculate_public_key(wif=wif).alias, value=wif)

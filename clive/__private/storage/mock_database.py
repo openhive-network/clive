@@ -31,7 +31,7 @@ class PrivateKeyAlias:
 
 @dataclass
 class PrivateKey(PrivateKeyAlias):
-    key: str
+    value: str
     file_path: Path | None = None
 
     @classmethod
@@ -51,7 +51,7 @@ class PrivateKey(PrivateKeyAlias):
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, PrivateKey):
-            return self.key == other.key and self.alias == other.alias
+            return self.value == other.value and self.alias == other.alias
         if isinstance(other, PrivateKeyAlias):
             return self.alias == other.alias
         return super().__eq__(other)

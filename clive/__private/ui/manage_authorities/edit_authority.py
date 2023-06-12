@@ -48,7 +48,7 @@ class EditAuthority(AuthorityForm):
 
     def _default_key(self) -> str:
         if isinstance(self.authority, PrivateKey):
-            return self.authority.key
+            return self.authority.value
         return super()._default_key()
 
     def _default_file_path(self) -> str:

@@ -19,5 +19,5 @@ class ImportKey(Command[PrivateKeyAlias]):
 
     def execute(self) -> None:
         self._result = PrivateKeyAlias(
-            self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.key).public_key
+            self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.value).public_key
         )

@@ -63,7 +63,7 @@ def test_import_multiple_keys(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
 
 def test_remove_key(beekeeper: Beekeeper, wallet: WalletInfo, key_pair: PrivateKey) -> None:
     # ARRANGE
-    beekeeper.api.import_key(wallet_name=wallet.name, wif_key=key_pair.key)
+    beekeeper.api.import_key(wallet_name=wallet.name, wif_key=key_pair.value)
 
     # ACT & ASSERT
     assert_keys(beekeeper.api.get_public_keys().keys, [key_pair.alias])
