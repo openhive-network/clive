@@ -146,6 +146,7 @@ testing_clive:
     - docker:20.10.13-dind
   before_script:
     - ls -la
+    - cd docker/
     - echo -e "${TXT_BLUE}Building a docker image started...${TXT_CLEAR}"
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
   after_script:
@@ -159,7 +160,7 @@ testing_clive:
 build_and_push_docker_image:
   extends: .build_and_push_base
   script:
-    - docker build --build-arg BEEKEEPER_LOCATION=./beekeeper  -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile .
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile ..
 
 build_and_push_docker_testnet_image:
   extends: .build_and_push_base
@@ -173,6 +174,6 @@ build_and_push_docker_testnet_image:
   variables:
     BUILD_SUFFIX: "-testnet"
   script:
-    - docker build --build-arg HIVE_BUILD_ROOT_LOCATION=./hived --build-arg BEEKEEPER_LOCATION=./beekeeper -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET .
+    - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET ..
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

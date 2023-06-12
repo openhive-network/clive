@@ -21,4 +21,4 @@ ENV COLORTERM=truecolor
 ENV CLIVE_BEEKEEPER__PATH="${BEEKEEPER_PATH}"
 ENV SERVE_FOREVER=1
 
-ENTRYPOINT bash ./entrypoint.bash
+ENTRYPOINT bash docker/entrypoint.bash
