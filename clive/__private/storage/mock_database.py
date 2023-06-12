@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from clive.exceptions import PrivateKeyError
 
@@ -49,12 +49,12 @@ class PrivateKey(PrivateKeyAlias):
             raise PrivateKeyError(key)
         return key
 
-    def __eq__(self, __value: object) -> bool:
-        if isinstance(__value, PrivateKey):
-            return self.key == __value.key and self.alias == __value.alias
-        if isinstance(__value, PrivateKeyAlias):
-            return self.alias == __value.alias
-        return super().__eq__(__value)
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, PrivateKey):
+            return self.key == other.key and self.alias == other.alias
+        if isinstance(other, PrivateKeyAlias):
+            return self.alias == other.alias
+        return super().__eq__(other)
 
 
 @dataclass
