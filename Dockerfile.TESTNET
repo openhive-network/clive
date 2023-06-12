@@ -7,9 +7,9 @@ ARG HIVE_BUILD_ROOT_LOCATION="./hived/"
 ENV HIVE_BUILD_ROOT_PATH="/clive/hived/"
 ADD --chown=hived_admin:users "${HIVE_BUILD_ROOT_LOCATION}" "${HIVE_BUILD_ROOT_PATH}"
 
-ARG BEEKEEPER_LOCATION "./beekeeper"
-ENV BEEKEEPER_PATH=/clive/beekeeper
-ADD --chown=hived_admin:users ${BEEKEEPER_LOCATION} "$BEEKEEPER_PATH/.."
+ARG BEEKEEPER_LOCATION="./beekeeper"
+ENV BEEKEEPER_PATH="/clive/beekeeper"
+ADD --chown=hived_admin:users "${BEEKEEPER_LOCATION}" "${BEEKEEPER_PATH}"
 
 RUN poetry self update
 
@@ -17,7 +17,8 @@ RUN poetry install
 
 # crucial for proper display
 ENV COLORTERM=truecolor
-ENV CLIVE_BEEKEEPER__PATH=${BEEKEEPER_PATH}
+
+ENV CLIVE_BEEKEEPER__PATH="${BEEKEEPER_PATH}"
 ENV SERVE_FOREVER=1
 
 ENTRYPOINT bash ./entrypoint.bash
