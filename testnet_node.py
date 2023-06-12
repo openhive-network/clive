@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import os
 import time
-from collections.abc import Callable  # noqa: TCH003
 
 import test_tools as tt
 
@@ -30,12 +28,7 @@ tt.logger.info(f"{alice.name} public key: {alice.public_key}")
 tt.logger.info(f"{alice.name} private key: {alice.private_key}")
 tt.logger.info("done!")
 
+tt.logger.info("serving forever... press Ctrl+C to exit")
 
-# wait
-should_continue: Callable[[], bool] = lambda: input("type 'exit' to exit: ") != "exit"  # noqa: E731
-if os.environ.get("SERVE_FOREVER", False):
-    tt.logger.info("serving forever... press Ctrl+C to exit")
-    should_continue = lambda: True  # noqa: E731
-
-while should_continue():
+while True:
     time.sleep(1)
