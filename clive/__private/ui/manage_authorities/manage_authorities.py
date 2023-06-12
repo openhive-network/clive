@@ -49,7 +49,7 @@ class Authority(ColumnLayout, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield StaticColumn(str(self.__index + 1), id="authority_row_number", classes=even)
-        yield StaticColumn(self.__authority.key_name, id="authority_name", classes=odd)
+        yield StaticColumn(self.__authority.alias, id="authority_name", classes=odd)
         yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", classes=even)
         yield CliveButton("✏️", id_="edit_authority_button", classes=odd)
         yield CliveButton("🗑️", id_="remove_authority_button", classes=even)
@@ -58,7 +58,7 @@ class Authority(ColumnLayout, CliveWidget):
         """Event handler called when a button is pressed."""
         if event.button.id == "remove_authority_button":
             self.app.world.profile_data.working_account.keys.remove(self.__authority)
-            Notification(f"Authority `{self.__authority.key_name}` was removed.", category="success").show()
+            Notification(f"Authority `{self.__authority.alias}` was removed.", category="success").show()
             self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
         if event.button.id == "edit_authority_button":
             self.app.push_screen(EditAuthority(self.__authority))

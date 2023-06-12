@@ -26,7 +26,7 @@ class Account:
 
 @dataclass
 class PrivateKeyAlias:
-    key_name: str
+    alias: str
 
 
 @dataclass
@@ -51,9 +51,9 @@ class PrivateKey(PrivateKeyAlias):
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, PrivateKey):
-            return self.key == __value.key and self.key_name == __value.key_name
+            return self.key == __value.key and self.alias == __value.alias
         if isinstance(__value, PrivateKeyAlias):
-            return self.key_name == __value.key_name
+            return self.alias == __value.alias
         return super().__eq__(__value)
 
 

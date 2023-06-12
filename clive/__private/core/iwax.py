@@ -47,11 +47,11 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 def calculate_public_key(wif: str) -> PrivateKeyAlias:
     result = wax.calculate_public_key(wif.encode())
     __validate_wax_response(result)
-    return PrivateKeyAlias(key_name=result.result.decode())
+    return PrivateKeyAlias(alias=result.result.decode())
 
 
 def generate_private_key() -> PrivateKey:
     result = wax.generate_private_key()
     __validate_wax_response(result)
     wif = result.result.decode()
-    return PrivateKey(key_name=calculate_public_key(wif=wif).key_name, key=wif)
+    return PrivateKey(alias=calculate_public_key(wif=wif).alias, key=wif)

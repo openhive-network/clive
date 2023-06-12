@@ -63,7 +63,7 @@ class SelectKey(SafeSelect[PrivateKeyAlias], CliveWidget):
 
     def __init__(self) -> None:
         super().__init__(
-            [SelectItem(x, x.key_name) for x in self.app.world.profile_data.working_account.keys],
+            [SelectItem(x, x.alias) for x in self.app.world.profile_data.working_account.keys],
             list_mount="ViewBag",
             selected=0,
             empty_string="no private key found",

@@ -37,14 +37,14 @@ class EditAuthority(AuthorityForm):
         self.app.world.update_reactive("profile_data")
 
         self.app.pop_screen()
-        Notification(f"Authority `{event.private_key.key_name}` was edited.", category="success").show()
+        Notification(f"Authority `{event.private_key.alias}` was edited.", category="success").show()
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
 
     def _title(self) -> str:
         return "edit authority"
 
     def _default_authority_name(self) -> str:
-        return self.authority.key_name
+        return self.authority.alias
 
     def _default_key(self) -> str:
         if isinstance(self.authority, PrivateKey):
