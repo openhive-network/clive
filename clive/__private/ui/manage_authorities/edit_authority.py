@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.widgets.notification import Notification
 
@@ -44,13 +43,3 @@ class EditAuthority(AuthorityForm):
 
     def _default_authority_name(self) -> str:
         return self.authority.alias
-
-    def _default_key(self) -> str:
-        if isinstance(self.authority, PrivateKey):
-            return self.authority.value
-        return super()._default_key()
-
-    def _default_file_path(self) -> str:
-        if isinstance(self.authority, PrivateKey) and self.authority.file_path:
-            return str(self.authority.file_path)
-        return super()._default_key()
