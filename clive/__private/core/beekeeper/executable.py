@@ -64,7 +64,7 @@ class BeekeeperExecutable:
 
         try:
             self.__process = Popen(
-                [self.__executable, "--data-dir", config.wallet_dir.as_posix()],
+                [self.__executable.absolute(), "--data-dir", config.wallet_dir.as_posix()],
                 stdout=self.__files["stdout"],
                 stderr=self.__files["stderr"],
             )
