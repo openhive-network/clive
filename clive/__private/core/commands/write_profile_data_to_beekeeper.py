@@ -19,7 +19,13 @@ class WriteProfileDataToBeekeeper(CommandInActive[None]):
     def _execute(self) -> None:
         for alias, key in self.profile_data.working_account.keys_to_import.items():
             imported = ImportKey(
-                wallet=self.profile_data.name, alias=alias, key_to_import=key, beekeeper=self.beekeeper
+                app_state=self.app_state,
+                activate_callback=self.activate_callback,
+                skip_activate=self.skip_activate,
+                wallet=self.profile_data.name,
+                alias=alias,
+                key_to_import=key,
+                beekeeper=self.beekeeper,
             ).execute_with_result()
             self.profile_data.working_account.keys.append(imported)
         self.profile_data.working_account.keys_to_import.clear()
