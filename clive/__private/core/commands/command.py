@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import dataclass, field
-from typing import Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 from clive.__private.abstract_class import AbstractClass
 
@@ -46,3 +46,8 @@ class Command(Generic[CommandT], AbstractClass):
     def execute_with_result(self) -> CommandT:
         self.execute()
         return self.result
+
+    @staticmethod
+    def execute_multiple(*commands: Command[Any]) -> None:
+        for command in commands:
+            command.execute()
