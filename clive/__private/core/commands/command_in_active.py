@@ -1,15 +1,16 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Callable
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.command import Command, CommandT
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from clive.__private.core.app_state import AppState
+
+ActivateCallbackT = Callable[[], None] | None
 
 
 @dataclass(kw_only=True)
@@ -21,7 +22,7 @@ class CommandInActive(Command[CommandT], ABC):
     """
 
     app_state: AppState
-    activate_callback: Callable[[], None] | None = None
+    activate_callback: ActivateCallbackT = None
     skip_activate: bool = False
 
     def __post_init__(self) -> None:

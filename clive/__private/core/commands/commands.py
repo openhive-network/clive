@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
+    from clive.__private.core.commands.command_in_active import ActivateCallbackT
     from clive.__private.storage.mock_database import PrivateKey, PublicKey
     from clive.models import Operation, Transaction
 
@@ -65,9 +66,17 @@ class Commands:
             chain_id=self.__world.node.chain_id,
         ).execute()
 
-    def import_key(self, *, alias: str, wif: PrivateKey) -> PublicKey:
+    def import_key(
+        self, *, activate_callback: ActivateCallbackT = None, skip_activate: bool = False, alias: str, wif: PrivateKey
+    ) -> PublicKey:
         return ImportKey(
-            wallet=self.__world.profile_data.name, alias=alias, key_to_import=wif, beekeeper=self.__world.beekeeper
+            app_state=self.__world.app_state,
+            activate_callback=activate_callback,
+            skip_activate=skip_activate,
+            wallet=self.__world.profile_data.name,
+            alias=alias,
+            key_to_import=wif,
+            beekeeper=self.__world.beekeeper,
         ).execute_with_result()
 
     def write_profile_data_to_beekeeper(self) -> None:
