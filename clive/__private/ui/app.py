@@ -9,6 +9,7 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core.commands.command_in_active import CommandInActive
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
@@ -88,6 +89,7 @@ class Clive(App[int], ManualReactive):
     def on_mount(self) -> None:
         self.console.set_window_title("Clive")
 
+        CommandInActive.register_activate_callback(self.push_activation_screen)
         Communication.start()
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)

@@ -20,7 +20,6 @@ class WriteProfileDataToBeekeeper(CommandInActive[None]):
         for alias, key in self.profile_data.working_account.keys_to_import.items():
             imported = ImportKey(
                 app_state=self.app_state,
-                activate_callback=self.activate_callback,
                 skip_activate=self.skip_activate,
                 wallet=self.profile_data.name,
                 alias=alias,

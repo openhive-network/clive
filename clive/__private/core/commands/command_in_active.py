@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.command import Command, CommandT
 
@@ -22,12 +22,12 @@ class CommandInActive(Command[CommandT], ABC):
     """
 
     app_state: AppState
-    activate_callback: ActivateCallbackT = None
     skip_activate: bool = False
+    activate_callback: ClassVar[ActivateCallbackT] = None
 
-    def __post_init__(self) -> None:
-        if not self.skip_activate and not self.activate_callback:
-            raise ValueError(f"Either `{self.skip_activate=}` or `{self.activate_callback=}` must be set.")
+    @classmethod
+    def register_activate_callback(cls, callback: ActivateCallbackT) -> None:
+        cls.activate_callback = callback
 
     def execute(self) -> None:
         if not self.app_state.is_active():
