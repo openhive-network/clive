@@ -33,8 +33,15 @@ class Command(Generic[T], AbstractClass):
         return self._result
 
     @abstractmethod
+    def _execute(self) -> None:
+        """
+        Proxy method for the execute() method. This method should be overridden by subclasses to implement the specific
+        functionality of the command. The result could be set via the `result` property.
+        """
+
     def execute(self) -> None:
-        """Executes the command. The result could be set and accessed via the `result` property."""
+        """Executes the command. The result could be accessed via the `result` property."""
+        self._execute()
 
     def execute_with_result(self) -> T:
         self.execute()

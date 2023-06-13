@@ -25,7 +25,7 @@ class Activate(Command[None]):
     password: str
     time: timedelta | None = None
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         try:
             self.beekeeper.api.open(wallet_name=self.wallet)
             self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)

@@ -15,6 +15,6 @@ class Deactivate(Command[None]):
     beekeeper: Beekeeper
     wallet: str
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         self.beekeeper.api.lock(wallet_name=self.wallet)
         logger.info("Deactivated")
