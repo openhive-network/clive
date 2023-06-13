@@ -193,6 +193,9 @@ class Clive(App[int], ManualReactive):
         self.world.update_reactive("app_state")
         self.post_message_to_everyone(ActivateScreen.Succeeded())
 
+    def push_activation_screen(self) -> None:
+        self.push_screen(ActivateScreen())
+
     def deactivate(self) -> None:
         self.world.commands.deactivate()
         self.world.update_reactive("app_state")

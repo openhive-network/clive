@@ -79,7 +79,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
             app_state=self.app.world.app_state,
             profile_data=self.context,
             beekeeper=self.app.world.beekeeper,
-            password=password,
+            skip_activate=True,
         )
         return create_wallet, write_data
 
