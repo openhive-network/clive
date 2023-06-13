@@ -6,21 +6,21 @@ from typing import Generic, TypeVar
 
 from clive.__private.abstract_class import AbstractClass
 
-T = TypeVar("T")
+CommandT = TypeVar("CommandT")
 
 
 @dataclass
-class Command(Generic[T], AbstractClass):
+class Command(Generic[CommandT], AbstractClass):
     """Command is an abstract class that defines a common interface for executing commands. The execute() method should
     be overridden by subclasses to implement the specific functionality of the command. The result property can be used
     to set and access the result of the command, which is initially set to None. Subclasses should set the result
     property with the output, if any.
     """
 
-    _result: T | None = field(default=None, init=False)
+    _result: CommandT | None = field(default=None, init=False)
 
     @property
-    def result(self) -> T:
+    def result(self) -> CommandT:
         """Get the result of the command.
         Returns:
             The result of the command.
@@ -43,6 +43,6 @@ class Command(Generic[T], AbstractClass):
         """Executes the command. The result could be accessed via the `result` property."""
         self._execute()
 
-    def execute_with_result(self) -> T:
+    def execute_with_result(self) -> CommandT:
         self.execute()
         return self.result
