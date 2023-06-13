@@ -21,7 +21,7 @@ class FastBroadcast(Command[None]):
     sign_with: PublicKey
     chain_id: str
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         perform_actions_on_transaction(
             content=self.operation,
             node=self.node,

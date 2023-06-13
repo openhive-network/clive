@@ -19,7 +19,7 @@ class WriteProfileDataToBeekeeper(Command[None]):
     beekeeper: Beekeeper
     password: str
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         wallet_name = self.profile_data.name
         try:
             Activate(beekeeper=self.beekeeper, wallet=wallet_name, password=self.password).execute()

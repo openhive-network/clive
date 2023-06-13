@@ -18,7 +18,7 @@ class Broadcast(Command[None]):
     node: Node
     transaction: Transaction
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         if not self.transaction.is_signed():
             raise TransactionNotSignedError()
 

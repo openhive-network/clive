@@ -18,7 +18,7 @@ class BuildTransaction(Command[Transaction]):
     node: Node
     expiration: timedelta = timedelta(minutes=30)
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         self._result = Transaction(operations=self.operations)
 
         # get dynamic global properties
