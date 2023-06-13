@@ -70,10 +70,10 @@ class Commands:
             wallet=self.__world.profile_data.name, alias=alias, key_to_import=wif, beekeeper=self.__world.beekeeper
         ).execute_with_result()
 
-    def write_profile_data_to_beekeeper(self, *, password: str) -> None:
+    def write_profile_data_to_beekeeper(self) -> None:
         WriteProfileDataToBeekeeper(
             app_state=self.__world.app_state,
             profile_data=self.__world.profile_data,
             beekeeper=self.__world.beekeeper,
-            password=password,
+            skip_activate=True,
         ).execute_with_result()
