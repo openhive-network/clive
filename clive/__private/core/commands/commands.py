@@ -72,5 +72,8 @@ class Commands:
 
     def write_profile_data_to_beekeeper(self, *, password: str) -> None:
         WriteProfileDataToBeekeeper(
-            profile_data=self.__world.profile_data, beekeeper=self.__world.beekeeper, password=password
+            app_state=self.__world.app_state,
+            profile_data=self.__world.profile_data,
+            beekeeper=self.__world.beekeeper,
+            password=password,
         ).execute_with_result()
