@@ -73,7 +73,10 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         self.context.name = profile_name
         self.password = password
         return WriteProfileDataToBeekeeper(
-            profile_data=self.context, beekeeper=self.app.world.beekeeper, password=password
+            app_state=self.app.world.app_state,
+            profile_data=self.context,
+            beekeeper=self.app.world.beekeeper,
+            password=password,
         )
 
 
