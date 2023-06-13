@@ -7,6 +7,8 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static
 
+from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.write_profile_data_to_beekeeper import WriteProfileDataToBeekeeper
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
@@ -63,7 +65,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
         return profile_name, password
 
-    def _create_profile(self) -> WriteProfileDataToBeekeeper:
+    def _create_profile(self) -> tuple[CreateWallet, WriteProfileDataToBeekeeper]:
         """
         Collects the data from the form and creates a profile.
         :return: True if the profile was created successfully, False otherwise.
@@ -71,13 +73,15 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
         profile_name, password = self._get_valid_args()
         self.context.name = profile_name
-        self.password = password
-        return WriteProfileDataToBeekeeper(
+
+        create_wallet = CreateWallet(beekeeper=self.app.world.beekeeper, wallet=profile_name, password=password)
+        write_data = WriteProfileDataToBeekeeper(
             app_state=self.app.world.app_state,
             profile_data=self.context,
             beekeeper=self.app.world.beekeeper,
             password=password,
         )
+        return create_wallet, write_data
 
 
 class CreateProfile(CreateProfileCommon):
@@ -101,7 +105,7 @@ class CreateProfile(CreateProfileCommon):
 
     def action_create_profile(self) -> None:
         try:
-            self._create_profile().execute()
+            Command.execute_multiple(*self._create_profile())
         except FormValidationError as error:
             Notification(f"Failed the validation process! Reason: {error.reason}", category="error").show()
         else:
@@ -118,4 +122,4 @@ class CreateProfile(CreateProfileCommon):
 
 class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
     def apply_and_validate(self) -> None:
-        self._owner.add_post_action(self._create_profile())
+        self._owner.add_post_action(*self._create_profile())

@@ -4,9 +4,8 @@ from abc import ABC
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.activate import Activate, WalletDoesNotExistsError
+from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.command import Command, CommandT
-from clive.__private.core.commands.create_wallet import CreateWallet
 
 if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
@@ -33,9 +32,4 @@ class CommandInActive(Command[CommandT], ABC):
         self._execute()
 
     def __activate(self) -> None:
-        try:
-            Activate(beekeeper=self.beekeeper, wallet=self.wallet, password=self.password).execute()
-        except WalletDoesNotExistsError:
-            self.password = CreateWallet(
-                beekeeper=self.beekeeper, wallet=self.wallet, password=self.password
-            ).execute_with_result()
+        Activate(beekeeper=self.beekeeper, wallet=self.wallet, password=self.password).execute()

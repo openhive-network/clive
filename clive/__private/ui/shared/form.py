@@ -81,8 +81,9 @@ class Form(Contextual[ContextT], CliveScreen):
     def create_finish_screen(self) -> ScreenBuilder[ContextT]:
         return lambda owner: FinishFormScreen(owner, "Hope it didn't take too long")
 
-    def add_post_action(self, command: Command[Any]) -> None:
-        self._post_actions.put_nowait(command)
+    def add_post_action(self, *commands: Command[Any]) -> None:
+        for command in commands:
+            self._post_actions.put_nowait(command)
 
     def execute_post_actions(self) -> None:
         while not self._post_actions.empty():
