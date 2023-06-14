@@ -26,9 +26,10 @@ class CommandInActive(CommandSafe[CommandT], ABC):
     and then command can be executed once again manually.
     """
 
+    activate_callback: ClassVar[ExecutionNotPossibleCallbackOptionalT] = None
+
     app_state: AppState
     skip_activate: bool = False
-    activate_callback: ClassVar[ExecutionNotPossibleCallbackOptionalT] = None
 
     skip_execution_not_possible_callback: bool = field(init=False)
     execution_not_possible_callback: ExecutionNotPossibleCallbackOptionalT = field(init=False)
