@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
@@ -22,17 +23,21 @@ class ButtonsContainer(Horizontal):
     """Container for the buttons."""
 
 
+ActivationResultCallbackT = Callable[[bool], None]
+
+
 class Activate(BaseScreen):
     BINDINGS = [
-        Binding("escape", "dashboard", "Cancel"),
+        Binding("escape", "cancel", "Cancel"),
         Binding("f2", "activate", "Ok"),
     ]
 
     class Succeeded(Message):
         """Emitted when application goes into the active state."""
 
-    def __init__(self) -> None:
+    def __init__(self, result_callback: ActivationResultCallbackT | None = None) -> None:
         super().__init__()
+        self.__result_callback = result_callback
         self.__password_input = Input(placeholder="Password", password=True)
         self.__permanent_active_mode_switch = Checkbox("Permanent active mode")
         self.__temporary_active_mode_label = Static("Active mode time (minutes)", classes="label")
@@ -59,13 +64,14 @@ class Activate(BaseScreen):
         if event.button.id == "activate-button":
             self.action_activate()
         elif event.button.id == "cancel-button":
-            self.action_dashboard()
+            self.action_cancel()
 
     def on_checkbox_changed(self) -> None:
         self.__temporary_active_mode_label.toggle_class("-hidden")
         self.__temporary_active_mode_input.toggle_class("-hidden")
 
-    def action_dashboard(self) -> None:
+    def action_cancel(self) -> None:
+        self.__notify_about_result(False)
         self.app.pop_screen()
 
     def action_activate(self) -> None:
@@ -85,7 +91,12 @@ class Activate(BaseScreen):
         except CannotActivateError as e:
             Notification(f"Cannot activate, reason: {e}", category="error").show()
         else:
+            self.__notify_about_result(True)
             self.app.pop_screen()
+
+    def __notify_about_result(self, result: bool) -> None:
+        if self.__result_callback:
+            self.__result_callback(result)
 
     def __get_active_mode_time(self) -> int | None:
         try:

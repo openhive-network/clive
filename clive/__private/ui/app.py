@@ -9,11 +9,13 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core import iwax
 from clive.__private.core.commands.command_in_active import CommandInActive
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
+from clive.__private.ui.activate.activate import ActivationResultCallbackT
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -51,6 +53,7 @@ class Clive(App[int], ManualReactive):
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("l", "mock_log", "Mock log", show=False),
         Binding("f1", "help", "Help"),
+        Binding("f8", "test", "test"),
     ]
 
     SCREENS = {
@@ -68,6 +71,13 @@ class Clive(App[int], ManualReactive):
 
     logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
+
+    async def action_test(self) -> None:
+        wallet_name = self.world.profile_data.name
+        self.world.beekeeper.api.open(wallet_name=wallet_name)
+        self.world.beekeeper.api.unlock(wallet_name=wallet_name, password="aaa")
+        self.world.beekeeper.api.lock(wallet_name=wallet_name)
+        await self.world.commands.import_key(alias="new", wif=iwax.generate_private_key())
 
     @property
     def namespace_bindings(self) -> NamespaceBindingsMapType:
@@ -195,8 +205,8 @@ class Clive(App[int], ManualReactive):
         self.world.update_reactive("app_state")
         self.post_message_to_everyone(ActivateScreen.Succeeded())
 
-    def push_activation_screen(self) -> None:
-        self.push_screen(ActivateScreen())
+    def push_activation_screen(self, result_callback: ActivationResultCallbackT) -> None:
+        self.push_screen(ActivateScreen(result_callback))
 
     def deactivate(self) -> None:
         self.world.commands.deactivate()

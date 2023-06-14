@@ -21,3 +21,4 @@ class ImportKey(CommandInActive[PublicKeyAliased]):
     def _execute(self) -> None:
         imported = self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.value)
         self._result = PublicKeyAliased(alias=self.alias, value=imported.public_key)
+        self._result_set_event.set()

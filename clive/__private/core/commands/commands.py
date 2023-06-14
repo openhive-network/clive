@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from clive.__private.core._async import asyncio_run
+from clive.__private.core.callback import invoke
 from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
@@ -65,8 +67,8 @@ class Commands:
             chain_id=self.__world.node.chain_id,
         ).execute()
 
-    def import_key(self, *, skip_activate: bool = False, alias: str, wif: PrivateKey) -> PublicKey:
-        return ImportKey(
+    async def import_key(self, *, skip_activate: bool = False, alias: str, wif: PrivateKey) -> PublicKey:
+        return await ImportKey(
             app_state=self.__world.app_state,
             skip_activate=skip_activate,
             wallet=self.__world.profile_data.name,
