@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
@@ -13,8 +12,7 @@ from clive.__private.ui.widgets.notification import Notification
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-
-PasswordResultCallbackType = Callable[[str], None]
+    from clive.__private.core.commands.command_secured import PasswordResultCallbackT
 
 
 class ConfirmWithPassword(BaseScreen):
@@ -23,11 +21,7 @@ class ConfirmWithPassword(BaseScreen):
         Binding("f2", "confirm", "Ok"),
     ]
 
-    def __init__(
-        self,
-        result_callback: PasswordResultCallbackType,
-        action_name: str = "",
-    ) -> None:
+    def __init__(self, result_callback: PasswordResultCallbackT, action_name: str = "") -> None:
         self.__result_callback = result_callback
         self.__action_name = action_name
         self.__password_input = Input(placeholder="Password", password=True, id="password_input")

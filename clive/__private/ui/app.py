@@ -10,11 +10,13 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core.commands.command_in_active import CommandInActive
+from clive.__private.core.commands.command_secured import CommandSecured, PasswordResultCallbackT
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
+from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -96,6 +98,7 @@ class Clive(App[int], ManualReactive):
         self.console.set_window_title("Clive")
 
         CommandInActive.register_activate_callback(self.push_activation_screen)
+        CommandSecured.register_confirmation_callback(self.push_confirmation_screen)
         Communication.start()
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
@@ -203,6 +206,10 @@ class Clive(App[int], ManualReactive):
 
     def push_activation_screen(self) -> None:
         self.push_screen(ActivateScreen())
+
+    def push_confirmation_screen(self, result_callback: PasswordResultCallbackT, action_name: str) -> None:
+        confirmation_screen = ConfirmWithPassword(result_callback, action_name)
+        self.push_screen(confirmation_screen)
 
     def deactivate(self) -> None:
         self.world.commands.deactivate()
