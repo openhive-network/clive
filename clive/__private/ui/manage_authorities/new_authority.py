@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
+from clive.__private.logger import logger
 from clive.__private.storage.mock_database import PublicKeyAliased
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
@@ -56,6 +57,7 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.context.working_account.keys_to_import = {event.key_alias: event.private_key}
+        logger.debug("New authority is waiting to be imported...")
 
     def apply_and_validate(self) -> None:
         if self._is_key_provided():  # NewAuthorityForm step is optional, so we can skip it when no key is provided

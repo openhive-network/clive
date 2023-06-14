@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar
 
 from clive.__private.abstract_class import AbstractClass
+from clive.__private.logger import logger
 
 CommandT = TypeVar("CommandT")
 
@@ -41,6 +42,7 @@ class Command(Generic[CommandT], AbstractClass):
 
     def execute(self) -> None:
         """Executes the command. The result could be accessed via the `result` property."""
+        logger.info(f"Executing command: {self.__class__.__name__}")
         self._execute()
 
     def execute_with_result(self) -> CommandT:
