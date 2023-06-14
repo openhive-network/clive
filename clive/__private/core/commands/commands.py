@@ -12,7 +12,7 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
-from clive.__private.core.commands.write_profile_data_to_beekeeper import WriteProfileDataToBeekeeper
+from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -77,8 +77,8 @@ class Commands:
             beekeeper=self.__world.beekeeper,
         ).execute_with_result()
 
-    def write_profile_data_to_beekeeper(self) -> None:
-        WriteProfileDataToBeekeeper(
+    def sync_data_with_beekeeper(self) -> None:
+        SyncDataWithBeekeeper(
             app_state=self.__world.app_state,
             profile_data=self.__world.profile_data,
             beekeeper=self.__world.beekeeper,
