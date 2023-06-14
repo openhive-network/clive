@@ -5,8 +5,10 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.command import (
-    Command,
     CommandT,
+)
+from clive.__private.core.commands.command_safe import (
+    CommandSafe,
     ExecutionNotPossibleCallbackOptionalT,
     ExecutionNotPossibleCallbackT,
 )
@@ -17,7 +19,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class CommandInActive(Command[CommandT], ABC):
+class CommandInActive(CommandSafe[CommandT], ABC):
     """
     CommandInActive is an abstract class that defines a common interface for executing commands that require the
     application to be in active mode. If the application is not in active mode, the command will try to activate
