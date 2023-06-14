@@ -72,7 +72,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         self.__key_file_path = event.file_path
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
 
-    def _save(self) -> None:
+    def _save(self, reraise_exception: bool = False) -> None:
         if not self._is_key_provided():
             Notification("Not saving any private key, because none has been provided", category="warning").show()
             return
@@ -83,6 +83,8 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
             Notification(
                 f"Failed the validation process! Could not continue. Reason: {error.reason}", category="error"
             ).show()
+            if reraise_exception:
+                raise
             return
 
         private_key = PrivateKey(self._get_key(), self.__key_file_path)
