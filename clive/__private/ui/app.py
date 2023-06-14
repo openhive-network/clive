@@ -63,6 +63,10 @@ class Clive(App[int], ManualReactive):
     """Synchronize the expanded header state in all created header objects."""
 
     __app_instance: ClassVar[Clive | None] = None
+    """The singleton instance of the Clive app."""
+
+    is_launched: ClassVar[bool] = False
+    """Whether the Clive app is currently launched."""
 
     world: ClassVar[TextualWorld] = None  # type: ignore
 
@@ -82,8 +86,10 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
+            self.__class__.is_launched = True
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
         finally:
+            self.__class__.is_launched = False
             self.world.close()
 
     def on_mount(self) -> None:
