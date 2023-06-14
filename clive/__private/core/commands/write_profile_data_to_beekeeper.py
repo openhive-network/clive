@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
 
 
-@dataclass
+@dataclass(kw_only=True)
 class WriteProfileDataToBeekeeper(Command[None]):
     profile_data: ProfileData
     beekeeper: Beekeeper

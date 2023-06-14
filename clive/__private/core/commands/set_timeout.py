@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SetTimeout(Command[None]):
     beekeeper: Beekeeper
     seconds: int

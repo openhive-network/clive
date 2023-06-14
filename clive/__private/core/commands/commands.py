@@ -27,10 +27,12 @@ class Commands:
         self.__world = world
 
     def activate(self, *, password: str, time: timedelta | None = None) -> None:
-        Activate(self.__world.beekeeper, wallet=self.__world.profile_data.name, password=password, time=time).execute()
+        Activate(
+            beekeeper=self.__world.beekeeper, wallet=self.__world.profile_data.name, password=password, time=time
+        ).execute()
 
     def deactivate(self) -> None:
-        Deactivate(self.__world.beekeeper, wallet=self.__world.profile_data.name).execute()
+        Deactivate(beekeeper=self.__world.beekeeper, wallet=self.__world.profile_data.name).execute()
 
     def set_timeout(self, *, seconds: int) -> None:
         SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds).execute()

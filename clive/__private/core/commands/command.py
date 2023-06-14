@@ -10,7 +10,7 @@ from clive.__private.logger import logger
 CommandT = TypeVar("CommandT")
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Command(Generic[CommandT], AbstractClass):
     """Command is an abstract class that defines a common interface for executing commands. The execute() method should
     be overridden by subclasses to implement the specific functionality of the command. The result property can be used

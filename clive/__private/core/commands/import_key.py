@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import PrivateKey
 
 
-@dataclass
+@dataclass(kw_only=True)
 class ImportKey(Command[PublicKeyAliased]):
     wallet: str
     alias: str

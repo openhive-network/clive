@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.models import Operation
 
 
-@dataclass
+@dataclass(kw_only=True)
 class BuildTransaction(Command[Transaction]):
     operations: list[Operation]
     node: Node

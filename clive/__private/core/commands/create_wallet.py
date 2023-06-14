@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper
 
 
-@dataclass
+@dataclass(kw_only=True)
 class CreateWallet(Command[str]):
     beekeeper: Beekeeper
     wallet: str

@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from clive.models import Operation
 
 
-@dataclass
+@dataclass(kw_only=True)
 class FastBroadcast(Command[None]):
     node: Node
     operation: Operation

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Deactivate(Command[None]):
     beekeeper: Beekeeper
     wallet: str
