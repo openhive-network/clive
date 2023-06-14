@@ -26,6 +26,7 @@ class CommandSafe(Command[CommandT], ABC):
     A command that requires some conditions to be met before it can be executed.
     """
 
+    skip_execution_not_possible_callback: bool = False
     execution_not_possible_callback: ExecutionNotPossibleCallbackOptionalT = None
     _exception: ClassVar[CliveError] = CommandSafeExecutionError()
 
@@ -44,9 +45,10 @@ class CommandSafe(Command[CommandT], ABC):
             # handle situation when command execution succeeded
         """
         if not self._is_execution_possible():
+            self._before_execution_not_possible_callback()
             if callback := self.execution_not_possible_callback:
                 callback()
-            self._on_execution_failed()
+            self._after_execution_not_possible_callback()
             raise self._exception
 
         self.execute()
@@ -54,8 +56,19 @@ class CommandSafe(Command[CommandT], ABC):
     def _is_execution_possible(self) -> bool:
         return True
 
-    def _on_execution_failed(self) -> None:
-        """Called when the execution of the command has failed, after calling the execution_not_possible_callback."""
+    def _before_execution_not_possible_callback(self) -> None:
+        """
+        Called when the execution of the command is not possible, before calling the execution_not_possible_callback.
+        """
+        if self.skip_execution_not_possible_callback:
+            raise RuntimeError(
+                "Execution of the command is not possible, but the execution_not_possible_callback has been skipped."
+            )
+
+    def _after_execution_not_possible_callback(self) -> None:
+        """
+        Called when the execution of the command is not possible, after calling the execution_not_possible_callback.
+        """
         self._notify()
 
     def _notify(self) -> None:

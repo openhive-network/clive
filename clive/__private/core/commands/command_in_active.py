@@ -29,9 +29,12 @@ class CommandInActive(CommandSafe[CommandT], ABC):
     app_state: AppState
     skip_activate: bool = False
     activate_callback: ClassVar[ExecutionNotPossibleCallbackOptionalT] = None
+
+    skip_execution_not_possible_callback: bool = field(init=False)
     execution_not_possible_callback: ExecutionNotPossibleCallbackOptionalT = field(init=False)
 
     def __post_init__(self) -> None:
+        self.skip_execution_not_possible_callback = self.skip_activate
         self.execution_not_possible_callback = self.activate_callback
 
     @classmethod
@@ -39,7 +42,7 @@ class CommandInActive(CommandSafe[CommandT], ABC):
         cls.activate_callback = callback
 
     def _is_execution_possible(self) -> bool:
-        return self.app_state.is_active() or self.skip_activate
+        return self.app_state.is_active()
 
     def _notify_tui(self) -> None:
         Notification(
