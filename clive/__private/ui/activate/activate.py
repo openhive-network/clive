@@ -24,7 +24,7 @@ class ButtonsContainer(Horizontal):
 
 class Activate(BaseScreen):
     BINDINGS = [
-        Binding("escape", "dashboard", "Cancel"),
+        Binding("escape", "cancel", "Cancel"),
         Binding("f2", "activate", "Ok"),
     ]
 
@@ -59,13 +59,13 @@ class Activate(BaseScreen):
         if event.button.id == "activate-button":
             self.action_activate()
         elif event.button.id == "cancel-button":
-            self.action_dashboard()
+            self.action_cancel()
 
     def on_checkbox_changed(self) -> None:
         self.__temporary_active_mode_label.toggle_class("-hidden")
         self.__temporary_active_mode_input.toggle_class("-hidden")
 
-    def action_dashboard(self) -> None:
+    def action_cancel(self) -> None:
         self.app.pop_screen()
 
     def action_activate(self) -> None:
