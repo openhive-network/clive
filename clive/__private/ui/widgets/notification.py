@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING, Final, Literal
 
 from textual.widgets import Static
 
+from clive.__private.logger import logger
+
 if TYPE_CHECKING:
     from rich.console import RenderableType
 
@@ -24,6 +26,9 @@ class Notification(Static):
         if category:
             self.add_class(category)
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}(renderable={self.renderable}, classes={list(self.classes)})"
+
     def on_mount(self) -> None:
         self.set_timer(3, self.remove)
 
@@ -31,6 +36,7 @@ class Notification(Static):
         self.remove()
 
     def show(self) -> None:
+        logger.info(f"Showing notification: {self}")
         self.app.mount(self)
 
     @classmethod
