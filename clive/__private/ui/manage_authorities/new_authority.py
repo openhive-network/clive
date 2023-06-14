@@ -58,8 +58,8 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
         self.context.working_account.keys_to_import = {event.key_alias: event.private_key}
 
     def apply_and_validate(self) -> None:
-        if self._is_key_provided():
-            self._save()  # this (NewAuthorityForm) step is optional, so we can skip it when no key is provided
+        if self._is_key_provided():  # NewAuthorityForm step is optional, so we can skip it when no key is provided
+            self._save(reraise_exception=True)
 
     def _subtitle(self) -> str:
         return "(Optional step, could be done later)"
