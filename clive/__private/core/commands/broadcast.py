@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from clive.models import Transaction
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Broadcast(Command[None]):
     """Broadcasts the given operations/transactions to the blockchain."""
 

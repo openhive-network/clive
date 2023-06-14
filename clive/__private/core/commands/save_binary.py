@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.models import Transaction
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SaveToFileAsBinary(Command[None]):
     transaction: Transaction
     file_path: Path

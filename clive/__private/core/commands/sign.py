@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import PublicKey
 
 
-@dataclass
+@dataclass(kw_only=True)
 class Sign(Command[Transaction]):
     beekeeper: Beekeeper
     transaction: Transaction

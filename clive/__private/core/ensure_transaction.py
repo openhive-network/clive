@@ -43,4 +43,4 @@ def ensure_transaction(
     else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
 
-    return BuildTransaction(operations, node=node, expiration=expiration).execute_with_result()
+    return BuildTransaction(operations=operations, node=node, expiration=expiration).execute_with_result()
