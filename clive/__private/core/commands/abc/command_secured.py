@@ -5,7 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.commands.command import (
+from clive.__private.core.commands.abc.command import (
     Command,
     CommandT,
 )

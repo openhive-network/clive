@@ -12,7 +12,7 @@ from clive.__private.ui.widgets.notification import Notification
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.commands.command_secured import PasswordResultCallbackT
+    from clive.__private.core.commands.abc.command_secured import PasswordResultCallbackT
 
 
 class ConfirmWithPassword(BaseScreen):

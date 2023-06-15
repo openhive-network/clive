@@ -4,10 +4,10 @@ from abc import ABC
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.commands.command import (
+from clive.__private.core.commands.abc.command import (
     CommandT,
 )
-from clive.__private.core.commands.command_safe import (
+from clive.__private.core.commands.abc.command_safe import (
     CommandSafe,
     ExecutionNotPossibleCallbackOptionalT,
     ExecutionNotPossibleCallbackT,

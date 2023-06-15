@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.abc.command import Command
 from clive.models import Transaction
 
 if TYPE_CHECKING:

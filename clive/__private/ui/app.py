@@ -9,8 +9,8 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.commands.command_in_active import CommandInActive
-from clive.__private.core.commands.command_secured import CommandSecured, PasswordResultCallbackT
+from clive.__private.core.commands.abc.command_in_active import CommandInActive
+from clive.__private.core.commands.abc.command_secured import CommandSecured, PasswordResultCallbackT
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger

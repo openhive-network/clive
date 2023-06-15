@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static
 
-from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.profile_data import ProfileData

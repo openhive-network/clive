@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.command_in_active import CommandInActive
+from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.storage.mock_database import PublicKey

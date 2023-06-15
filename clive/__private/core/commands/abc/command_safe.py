@@ -5,7 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import ClassVar, TypeVar
 
-from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.abc.command import Command
 from clive.exceptions import CliveError
 
 CommandT = TypeVar("CommandT")

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.clive_import import get_clive
-from clive.__private.core.commands.command_safe import CommandSafeExecutionError
+from clive.__private.core.commands.abc.command_safe import CommandSafeExecutionError
 from clive.__private.logger import logger
 from clive.__private.ui.widgets.notification import Notification
 
