@@ -1,0 +1,13 @@
+WitnessBlockApprove Body {
+  grid-size: 2;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 5 4 4 4 4;
+  height: 10;
+  margin: 0 4;
+  background: $panel;
+}
+
+WitnessBlockApprove .label {
+  padding: 1 2;
+  text-align: right;
+}

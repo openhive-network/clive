@@ -30,6 +30,7 @@ class Operations(CartBasedScreen):
             yield CliveButton("Vote", id_="vote-button")
             yield CliveButton("Convert", id_="convert-button")
             yield CliveButton("Account witness vote", id_="account-witness-vote-button")
+            yield CliveButton("Witness block approve", id_="witness-block-approve-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
