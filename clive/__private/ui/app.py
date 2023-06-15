@@ -92,6 +92,9 @@ class Clive(App[int], ManualReactive):
             self.world.close()
 
     def on_mount(self) -> None:
+        def __should_enter_onboarding() -> bool:
+            return not (self.world.profile_data.name and self.world.profile_data.node_address)
+
         self.console.set_window_title("Clive")
 
         Communication.start()
@@ -102,14 +105,7 @@ class Clive(App[int], ManualReactive):
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
         self.push_screen(DashboardInactive())
-        if (
-            not (
-                self.world.profile_data.name is not None
-                and len(self.world.profile_data.name) > 0
-                and self.world.profile_data.node_address is not None
-            )
-            or settings.FORCE_ONBOARDING
-        ):
+        if __should_enter_onboarding():
             self.push_screen(Onboarding())
 
     async def on_unmount(self) -> None:
