@@ -27,6 +27,7 @@ class Operations(CartBasedScreen):
             yield Static("Select one of the following operations:", id="hint")
             yield CliveButton("Transfer to account", id_="account-transfer-button")
             yield CliveButton("Transfer to savings", id_="savings-transfer-button")
+            yield CliveButton("Transfer to vesting", id_="vesting-transfer-button")
             yield CliveButton("Vote", id_="vote-button")
             yield CliveButton("Convert", id_="convert-button")
             yield CliveButton("Account witness vote", id_="account-witness-vote-button")

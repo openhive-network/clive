@@ -12,21 +12,25 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.tranaction_summary import TransactionSummary
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
-from schemas.operations import WitnessBlockApproveOperation
+from clive.models import Asset, Operation
+from schemas.operations import TransferToVestingOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-    from clive.models import Operation
 
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
 
 
-class WitnessBlockApprove(CartBasedScreen):
+class PlaceTaker(Static):
+    """Container used for making correct layout of a grid."""
+
+
+class TransferToVesting(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f2", "add_to_cart", "Add to cart"),
@@ -37,17 +41,20 @@ class WitnessBlockApprove(CartBasedScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__witness_input = Input(placeholder="e.g.: hiveio")
-        self.__block_id_input = Input(placeholder="e.g.: 10000")
+        self.__to_input = Input(placeholder="e.g.: alice")
+        self.__amount_input = Input(placeholder="e.g.: 5.000")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("Witness block approve")
+            yield BigTitle("Transfer to vesting")
             with Body():
-                yield Static("witness", classes="label")
-                yield self.__witness_input
-                yield Static("block_id", classes="label")
-                yield self.__block_id_input
+                yield Static("from", classes="label")
+                yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="from-label")
+                yield PlaceTaker()
+                yield Static("to", classes="label")
+                yield self.__to_input
+                yield Static("amount", classes="label")
+                yield self.__amount_input
 
     def on_activate_succeeded(self) -> None:
         self.__fast_broadcast()
@@ -88,10 +95,11 @@ class WitnessBlockApprove(CartBasedScreen):
         """
 
         try:
-            return WitnessBlockApproveOperation(
-                witness=self.__witness_input.value, block_id=self.__block_id_input.value
+            return TransferToVestingOperation(
+                from_=str(self.app.world.profile_data.working_account.name),
+                to=self.__to_input.value,
+                amount=Asset.hive(float(self.__amount_input.value)),
             )
-
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
             return None
