@@ -106,12 +106,12 @@ class Vote(CartBasedScreen):
                     voter=str(self.app.world.profile_data.working_account.name),
                     author=self.__author_input.value,
                     permlink=self.__permlink_input.value,
+                    weight=Int16t(self.__weight_input.value),
                 )
             return VoteOperation(  # noqa: TRY300
                 voter=str(self.app.world.profile_data.working_account.name),
                 author=self.__author_input.value,
                 permlink=self.__permlink_input.value,
-                weight=Int16t(self.__weight_input.value),
             )
 
         except ValidationError as error:
