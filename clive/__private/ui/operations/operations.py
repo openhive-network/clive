@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 from textual.widgets import Button, Static
 
+from clive.__private.ui.operations.account_witness_vote.account_witnes_vote import AccountWitnessVote
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.covnert.covnert import Convert
@@ -32,6 +33,7 @@ class Operations(CartBasedScreen):
             yield CliveButton("Transfer to savings", id_="savings-transfer-button")
             yield CliveButton("Vote", id_="vote-button")
             yield CliveButton("Convert", id_="convert-button")
+            yield CliveButton("Account witness vote", id_="account-witness-vote-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
@@ -44,6 +46,8 @@ class Operations(CartBasedScreen):
             self.app.push_screen(Vote())
         elif event.button.id == "convert-button":
             self.app.push_screen(Convert())
+        elif event.button.id == "account-witness-vote-button":
+            self.app.push_screen(AccountWitnessVote())
         else:
             Notification("Not implemented yet!", category="error").show()
 
