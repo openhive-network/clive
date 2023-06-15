@@ -8,6 +8,7 @@ from textual.widgets import Button, Static
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
+from clive.__private.ui.operations.transfer_to_savings.transfer_to_savings import TransferToSavings
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.notification import Notification
@@ -33,6 +34,8 @@ class Operations(CartBasedScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account-transfer-button":
             self.app.push_screen(TransferToAccount())
+        elif event.button.id == "savings-transfer-button":
+            self.app.push_screen(TransferToSavings())
         else:
             Notification("Not implemented yet!", category="error").show()
 
