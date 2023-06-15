@@ -9,7 +9,7 @@ from clive.__private.core.commands.command import (
     Command,
     CommandT,
 )
-from clive.__private.ui.widgets.notification import Notification
+from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
@@ -48,9 +48,7 @@ class CommandSecured(Command[CommandT], ABC):
         if result:
             self._password = result
             assert self.app_state.is_active(), "App must be in active mode to execute command secured with password!"
+            self._log_execution_info()
             self._execute()
         else:
-            self._notify_tui()
-
-    def _notify_tui(self) -> None:
-        Notification(f"Action '{self.action_name}' requires a password! Please try again...", category="error").show()
+            logger.info(f"Command: {self.__class__.__name__} failed!")

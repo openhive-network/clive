@@ -3,11 +3,9 @@ from __future__ import annotations
 from abc import ABC
 from collections.abc import Callable
 from dataclasses import dataclass
-from typing import TypeVar, ClassVar
+from typing import ClassVar, TypeVar
 
-from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.command import Command
-from clive.__private.ui.widgets.notification import Notification
 from clive.exceptions import CliveError
 
 CommandT = TypeVar("CommandT")
@@ -48,7 +46,6 @@ class CommandSafe(Command[CommandT], ABC):
             self._before_execution_not_possible_callback()
             if callback := self.execution_not_possible_callback:
                 callback()
-            self._after_execution_not_possible_callback()
             raise self._exception
 
         self.execute()
@@ -64,16 +61,3 @@ class CommandSafe(Command[CommandT], ABC):
             raise RuntimeError(
                 "Execution of the command is not possible, but the execution_not_possible_callback has been skipped."
             )
-
-    def _after_execution_not_possible_callback(self) -> None:
-        """
-        Called when the execution of the command is not possible, after calling the execution_not_possible_callback.
-        """
-        self._notify()
-
-    def _notify(self) -> None:
-        if get_clive().is_launched:
-            self._notify_tui()
-
-    def _notify_tui(self) -> None:
-        Notification("Action failed. Please try again...", category="error").show()

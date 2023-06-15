@@ -43,7 +43,7 @@ class Command(Generic[CommandT], AbstractClass):
 
     def execute(self) -> None:
         """Executes the command. The result could be accessed via the `result` property."""
-        logger.info(f"Executing command: {self.__class__.__name__}")
+        self._log_execution_info()
         self._execute()
 
     def execute_with_result(self) -> CommandT:
@@ -54,3 +54,6 @@ class Command(Generic[CommandT], AbstractClass):
     def execute_multiple(*commands: Command[Any]) -> None:
         for command in commands:
             command.execute()
+
+    def _log_execution_info(self) -> None:
+        logger.info(f"Executing command: {self.__class__.__name__}")

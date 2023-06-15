@@ -12,7 +12,6 @@ from clive.__private.core.commands.command_safe import (
     ExecutionNotPossibleCallbackOptionalT,
     ExecutionNotPossibleCallbackT,
 )
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
@@ -44,8 +43,3 @@ class CommandInActive(CommandSafe[CommandT], ABC):
 
     def _is_execution_possible(self) -> bool:
         return self.app_state.is_active()
-
-    def _notify_tui(self) -> None:
-        Notification(
-            "Active mode is required for this action! Please activate, and try again...", category="error"
-        ).show()
