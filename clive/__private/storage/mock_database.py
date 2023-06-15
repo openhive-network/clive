@@ -4,7 +4,7 @@ import random
 from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, overload
 
 from clive.__private.core import iwax
 
@@ -33,7 +33,12 @@ class PublicKey:
             return self.value == other.value
         if isinstance(other, PrivateKey):
             return self == other.calculate_public_key()
+        if isinstance(other, str):
+            return self.value == other
         return super().__eq__(other)
+
+    def with_alias(self, alias: str) -> PublicKeyAliased:
+        return PublicKeyAliased(alias=alias, value=self.value)
 
 
 @dataclass
@@ -44,6 +49,9 @@ class PublicKeyAliased(PublicKey):
         if isinstance(other, PublicKeyAliased):
             return self.alias == other.alias and super().__eq__(other)
         return super().__eq__(other)
+
+    def without_alias(self) -> PublicKey:
+        return PublicKey(value=self.value)
 
 
 @dataclass
@@ -57,7 +65,13 @@ class PrivateKey:
         if isinstance(other, PublicKey):
             my_public_key = self.calculate_public_key()
             return my_public_key.value == other.value
+        if isinstance(other, str):
+            return self.value == other
         return super().__eq__(other)
+
+    @staticmethod
+    def create() -> PrivateKey:
+        return iwax.generate_private_key()
 
     @classmethod
     def from_file(cls, file_path: Path) -> PrivateKey:
@@ -76,8 +90,20 @@ class PrivateKey:
             return False
         return True
 
+    @overload
     def calculate_public_key(self) -> PublicKey:
-        return iwax.calculate_public_key(self.value)
+        ...
+
+    @overload
+    def calculate_public_key(self, *, with_alias: str) -> PublicKeyAliased:
+        ...
+
+    def calculate_public_key(self, *, with_alias: str = "") -> PublicKey | PublicKeyAliased:
+        public_key = iwax.calculate_public_key(self.value)
+
+        if with_alias:
+            return public_key.with_alias(with_alias)
+        return public_key
 
 
 @dataclass
