@@ -7,6 +7,7 @@ from textual.widgets import Button, Static
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.operations.covnert.covnert import Convert
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.__private.ui.operations.transfer_to_savings.transfer_to_savings import TransferToSavings
 from clive.__private.ui.operations.vote.vote import Vote
@@ -30,6 +31,7 @@ class Operations(CartBasedScreen):
             yield CliveButton("Transfer to account", id_="account-transfer-button")
             yield CliveButton("Transfer to savings", id_="savings-transfer-button")
             yield CliveButton("Vote", id_="vote-button")
+            yield CliveButton("Convert", id_="convert-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
@@ -40,6 +42,8 @@ class Operations(CartBasedScreen):
             self.app.push_screen(TransferToSavings())
         elif event.button.id == "vote-button":
             self.app.push_screen(Vote())
+        elif event.button.id == "convert-button":
+            self.app.push_screen(Convert())
         else:
             Notification("Not implemented yet!", category="error").show()
 
