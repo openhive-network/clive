@@ -40,6 +40,11 @@ def wallet_name() -> str:
 
 
 @pytest.fixture
+def wallet_password() -> str:
+    return "password"
+
+
+@pytest.fixture
 def key_pair() -> tuple[PublicKey, PrivateKey]:
     private_key = iwax.generate_private_key()
     public_key = private_key.calculate_public_key()
@@ -63,9 +68,11 @@ def init_node(world: World) -> Iterator[tt.InitNode]:
 
 
 @pytest.fixture
-def wallet(world: World, wallet_name: str) -> WalletInfo:
+def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
+    world.beekeeper.api.create(wallet_name=wallet_name, password=wallet_password)
+
     return WalletInfo(
-        password=world.beekeeper.api.create(wallet_name=wallet_name).password,
+        password=wallet_password,
         name=wallet_name,
     )
 
