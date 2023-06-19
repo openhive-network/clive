@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, overload
+from time import sleep
+from typing import TYPE_CHECKING, Final, overload
 
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
@@ -90,26 +91,31 @@ class Clive(App[int], ManualReactive):
         finally:
             self.__class__.is_launched = False
             self.world.close()
+            Communication.close()
 
     def on_mount(self) -> None:
+        refresh_interval: Final[int] = 3
+        self.console.set_window_title("Clive")
+
+        def update_data_worker(closed: Communication.IS_CLOSED_CALLBACK_T) -> None:
+            while not closed():
+                self.__update_data_from_node()
+                sleep(refresh_interval)
+
         def __should_enter_onboarding() -> bool:
             return not (self.world.profile_data.name and self.world.profile_data.node_address)
 
-        self.console.set_window_title("Clive")
-
-        Communication.start()
-
+        Communication.submit(update_data_worker)
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
-        self.background_tasks.run_every(timedelta(seconds=3), self.__update_data_from_node)
+        self.background_tasks.run_every(
+            timedelta(seconds=refresh_interval / 2), lambda: self.world.update_reactive("profile_data")
+        )
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
         self.push_screen(DashboardInactive())
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
-
-    async def on_unmount(self) -> None:
-        await Communication.close()
 
     def replace_screen(self, old: str | type[Screen], new: str | Screen) -> None:
         new_, _ = self._get_screen(new)
@@ -280,9 +286,10 @@ class Clive(App[int], ManualReactive):
         self.post_message(BackgroundErrorOccurred(error))
 
     def __update_data_from_node(self) -> None:
-        logger.info("Updating mock data...")
-        self.world.node_data.recalc()
-        self.world.update_reactive("node_data")
+        for account in [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]:
+            if account.name:
+                logger.debug(f"Updating account: {account.name}")
+                self.world.commands.update_node_data(account=account)
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")

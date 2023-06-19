@@ -10,7 +10,7 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 from clive.__private.config import settings
 from clive.__private.core import iwax
 from clive.__private.core.world import World
-from clive.__private.util import prepare_before_launch
+from clive.__private.util import prepare_before_launch, spawn_thread_pool
 from clive.core.url import Url
 from tests import WalletInfo
 
@@ -31,7 +31,8 @@ def run_prepare_before_launch() -> None:
 
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
-    prepare_before_launch()
+    with spawn_thread_pool() as executor:
+        prepare_before_launch(executor=executor)
 
 
 @pytest.fixture

@@ -4,9 +4,10 @@ import asyncio
 import json
 import time
 import typing
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from functools import partial
-from typing import Any, Final
+from typing import Any, ClassVar, Final, TypeAlias
 
 import httpx
 
@@ -16,7 +17,7 @@ from clive.__private.logger import logger
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
 
 if typing.TYPE_CHECKING:
-    from collections.abc import Callable
+    from concurrent.futures import ThreadPoolExecutor
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -30,19 +31,34 @@ class CustomJSONEncoder(json.JSONEncoder):
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 3
+    IS_CLOSED_CALLBACK_T: ClassVar[TypeAlias] = Callable[[], bool]
 
-    __async_client: httpx.AsyncClient | None = None
+    __async_client: ClassVar[httpx.AsyncClient | None] = None
+    __thread_pool: ClassVar[ThreadPoolExecutor | None] = None
 
     @classmethod
-    def start(cls) -> None:
+    def submit(cls, fn: Callable[[Communication.IS_CLOSED_CALLBACK_T], None]) -> None:
+        cls.__get_thread_pool().submit(fn, lambda: cls.__get_thread_pool()._shutdown)
+
+    @classmethod
+    def __get_thread_pool(cls) -> ThreadPoolExecutor:
+        assert cls.__thread_pool is not None, "Thread pool was not set, please call start()"
+        return cls.__thread_pool
+
+    @classmethod
+    def start(cls, thread_pool: ThreadPoolExecutor) -> None:
+        cls.__thread_pool = thread_pool
         if cls.__async_client is None:
             cls.__async_client = httpx.AsyncClient(timeout=2, http2=True)
 
     @classmethod
-    async def close(cls) -> None:
-        if cls.__async_client is not None:
-            await cls.__async_client.aclose()
-            cls.__async_client = None
+    def close(cls) -> None:
+        async def __close() -> None:
+            if cls.__async_client is not None:
+                await cls.__async_client.aclose()
+                cls.__async_client = None
+
+        asyncio_run(__close(), cls.__get_thread_pool())
 
     @classmethod
     def get_async_client(cls) -> httpx.AsyncClient:
@@ -60,7 +76,10 @@ class Communication:
     ) -> httpx.Response:
         return typing.cast(
             httpx.Response,
-            asyncio_run(cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time)),
+            asyncio_run(
+                cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time),
+                cls.__get_thread_pool(),
+            ),
         )
 
     @classmethod
@@ -114,4 +133,4 @@ class Communication:
             if attempts_left > 0:
                 await __sleep()
 
-        raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}, {result=}")
+        raise CommunicationError("Problem occurred during communication", url, data, result)
