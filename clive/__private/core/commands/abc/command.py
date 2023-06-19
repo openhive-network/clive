@@ -1,38 +1,17 @@
 from __future__ import annotations
 
-from abc import abstractmethod
-from dataclasses import dataclass, field
-from typing import Any, Generic, TypeVar
+from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
-from clive.__private.abstract_class import AbstractClass
 from clive.__private.logger import logger
-
-CommandT = TypeVar("CommandT")
 
 
 @dataclass(kw_only=True)
-class Command(Generic[CommandT], AbstractClass):
-    """Command is an abstract class that defines a common interface for executing commands. The execute() method should
-    be overridden by subclasses to implement the specific functionality of the command. The result property can be used
-    to set and access the result of the command, which is initially set to None. Subclasses should set the result
-    property with the output, if any.
+class Command(ABC):
     """
-
-    _result: CommandT | None = field(default=None, init=False)
-
-    @property
-    def result(self) -> CommandT:
-        """Get the result of the command.
-        Returns:
-            The result of the command.
-
-        Raises:
-            ValueError: If the result has not been set before.
-        """
-        if self._result is None:
-            logger.error(f"{self.__class__.__name__} command result has not been set when accessed!")
-            raise ValueError("The result is not set yet.")
-        return self._result
+    Command is an abstract class that defines a common interface for executing commands. The execute() method should
+    be overridden by subclasses to implement the specific functionality of the command.
+    """
 
     @abstractmethod
     def _execute(self) -> None:
@@ -46,12 +25,8 @@ class Command(Generic[CommandT], AbstractClass):
         self._log_execution_info()
         self._execute()
 
-    def execute_with_result(self) -> CommandT:
-        self.execute()
-        return self.result
-
     @staticmethod
-    def execute_multiple(*commands: Command[Any]) -> None:
+    def execute_multiple(*commands: Command) -> None:
         for command in commands:
             command.execute()
 

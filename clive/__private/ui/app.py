@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Any, overload
 
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.commands.abc.command_in_active import CommandInActive
-from clive.__private.core.commands.abc.command_secured import CommandSecured, PasswordResultCallbackT
+from clive.__private.core.commands.abc.command_secured import CommandSecured
+from clive.__private.core.commands.activate_extended import ActivateExtended
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
@@ -37,6 +37,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
+    from clive.__private.core.commands.abc.command_observable import CommandObservable
     from clive.__private.ui.app_messages import ProfileDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
@@ -100,7 +101,7 @@ class Clive(App[int], ManualReactive):
 
         self.console.set_window_title("Clive")
 
-        CommandInActive.register_activate_callback(self.push_activation_screen)
+        ActivateExtended.register_activate_callback(self.push_activation_screen)
         CommandSecured.register_confirmation_callback(self.push_confirmation_screen)
         Communication.start()
 
@@ -200,12 +201,11 @@ class Clive(App[int], ManualReactive):
         self.world.update_reactive("app_state")
         self.post_message_to_everyone(ActivateScreen.Succeeded())
 
-    def push_activation_screen(self) -> None:
-        self.push_screen(ActivateScreen())
+    def push_activation_screen(self, command: CommandObservable[Any]) -> None:
+        self.push_screen(ActivateScreen(command))
 
-    def push_confirmation_screen(self, result_callback: PasswordResultCallbackT, action_name: str) -> None:
-        confirmation_screen = ConfirmWithPassword(result_callback, action_name)
-        self.push_screen(confirmation_screen)
+    def push_confirmation_screen(self, command: CommandSecured[Any]) -> None:
+        self.push_screen(ConfirmWithPassword(command))
 
     def deactivate(self) -> None:
         self.world.commands.deactivate()

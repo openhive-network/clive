@@ -1,45 +1,42 @@
 from __future__ import annotations
 
 from abc import ABC
-from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, ClassVar
+from collections.abc import Callable
+from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command import (
-    CommandT,
-)
-from clive.__private.core.commands.abc.command_safe import (
-    CommandSafe,
-    ExecutionNotPossibleCallbackOptionalT,
-    ExecutionNotPossibleCallbackT,
-)
+from clive.__private.core.commands.abc.command_observable import CommandObservable, SenderT
+from clive.__private.core.commands.abc.command_with_result import CommandResultT
+from clive.__private.core.commands.activate_extended import ActivateExtended
+from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
 
 
-@dataclass(kw_only=True)
-class CommandInActive(CommandSafe[CommandT], ABC):
-    """
-    CommandInActive is an abstract class that defines a common interface for executing commands that require the
-    application to be in active mode. If the application is not in active mode, the command will try to activate
-    and then command can be executed once again manually.
-    """
+ActivationCallbackT = Callable[["CommandObservable"], None]
+ActivationCallbackOptionalT = ActivationCallbackT | None
 
-    activate_callback: ClassVar[ExecutionNotPossibleCallbackOptionalT] = None
+
+@dataclass(kw_only=True)
+class CommandInActive(CommandObservable[CommandResultT], ABC):
+    """
+    A command that require the application to be in active mode. If the application is not in active mode, the command
+    will try to activate and then command can be executed.
+    """
 
     app_state: AppState
     skip_activate: bool = False
 
-    skip_execution_not_possible_callback: bool = field(init=False)
-    execution_not_possible_callback: ExecutionNotPossibleCallbackOptionalT = field(init=False)
+    def execute(self) -> None:
+        command = ActivateExtended(app_state=self.app_state, skip_activate=self.skip_activate)
+        command.observe_result(self.__on_activation_result)
+        command.execute()
 
-    def __post_init__(self) -> None:
-        self.skip_execution_not_possible_callback = self.skip_activate
-        self.execution_not_possible_callback = self.activate_callback
+    def __on_activation_result(
+        self, _: SenderT, result: bool | None, exception: Exception | None  # noqa: ARG002
+    ) -> None:
+        logger.debug(f"Command {self.__class__.__name__} activation result: {result}")
 
-    @classmethod
-    def register_activate_callback(cls, callback: ExecutionNotPossibleCallbackT) -> None:
-        cls.activate_callback = callback
-
-    def _is_execution_possible(self) -> bool:
-        return self.app_state.is_active()
+        if result:
+            self.fire()

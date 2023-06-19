@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class SetTimeout(Command[None]):
+class SetTimeout(Command):
     beekeeper: Beekeeper
     seconds: int
 

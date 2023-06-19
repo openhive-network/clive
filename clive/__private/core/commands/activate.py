@@ -19,7 +19,7 @@ class WalletDoesNotExistsError(CannotActivateError):
 
 
 @dataclass(kw_only=True)
-class Activate(Command[None]):
+class Activate(Command):
     beekeeper: Beekeeper
     wallet: str
     password: str

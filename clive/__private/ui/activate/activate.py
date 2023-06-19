@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
 from textual.containers import Horizontal
@@ -17,6 +17,8 @@ from clive.exceptions import CannotActivateError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.commands.abc.command_observable import CommandObservable
+
 
 class ButtonsContainer(Horizontal):
     """Container for the buttons."""
@@ -31,8 +33,9 @@ class Activate(BaseScreen):
     class Succeeded(Message):
         """Emitted when application goes into the active state."""
 
-    def __init__(self) -> None:
+    def __init__(self, command: CommandObservable[Any] | None = None) -> None:
         super().__init__()
+        self.__command = command
         self.__password_input = Input(placeholder="Password", password=True)
         self.__permanent_active_mode_switch = Checkbox("Permanent active mode")
         self.__temporary_active_mode_label = Static("Active mode time (minutes)", classes="label")
@@ -85,7 +88,13 @@ class Activate(BaseScreen):
         except CannotActivateError as e:
             Notification(f"Cannot activate, reason: {e}", category="error").show()
         else:
-            self.app.pop_screen()
+            self.__exit_with_success()
+
+    def __exit_with_success(self) -> None:
+        self.app.pop_screen()
+
+        if self.__command:
+            self.__command.execute()
 
     def __get_active_mode_time(self) -> int | None:
         try:

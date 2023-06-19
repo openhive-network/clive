@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class Deactivate(Command[None]):
+class Deactivate(Command):
     beekeeper: Beekeeper
     wallet: str
 

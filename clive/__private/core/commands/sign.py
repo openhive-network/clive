@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import calculate_digest
 from clive.models import Signature, Transaction
 
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class Sign(Command[Transaction]):
+class Sign(CommandWithResult[Transaction]):
     beekeeper: Beekeeper
     transaction: Transaction
     key: PublicKey

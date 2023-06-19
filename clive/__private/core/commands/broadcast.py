@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class Broadcast(Command[None]):
+class Broadcast(Command):
     """Broadcasts the given operations/transactions to the blockchain."""
 
     node: Node

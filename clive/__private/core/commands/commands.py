@@ -67,7 +67,7 @@ class Commands:
             chain_id=self.__world.node.chain_id,
         ).execute()
 
-    def import_key(self, *, skip_activate: bool = False, alias: str, wif: PrivateKey) -> PublicKey:
+    def import_key(self, *, skip_activate: bool = False, alias: str, wif: PrivateKey) -> ImportKey:
         return ImportKey(
             app_state=self.__world.app_state,
             skip_activate=skip_activate,
@@ -75,12 +75,12 @@ class Commands:
             alias=alias,
             key_to_import=wif,
             beekeeper=self.__world.beekeeper,
-        ).execute_with_result()
+        )
 
-    def sync_data_with_beekeeper(self) -> None:
-        SyncDataWithBeekeeper(
+    def sync_data_with_beekeeper(self) -> SyncDataWithBeekeeper:
+        return SyncDataWithBeekeeper(
             app_state=self.__world.app_state,
             profile_data=self.__world.profile_data,
             beekeeper=self.__world.beekeeper,
             skip_activate=True,
-        ).execute_with_result()
+        )

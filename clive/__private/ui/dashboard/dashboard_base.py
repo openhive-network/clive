@@ -111,7 +111,10 @@ class DashboardBase(BaseScreen):
             yield CommandLine(focus_on_cancel=body)
 
     def on_activate_succeeded(self) -> None:
-        self.app.switch_screen("dashboard_active")
+        if self.app.screen.__class__.__name__ == "ConfirmWithPassword":
+            self.app.push_screen_at(-1, "dashboard_active")
+        else:
+            self.app.switch_screen("dashboard_active")
 
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
