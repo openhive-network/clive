@@ -11,8 +11,34 @@ from clive.models import Asset  # noqa: TCH001
 from schemas.database_api.fundaments_of_reponses import AccountItemFundament
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
+    from typing_extensions import Self
+
     from clive.__private.core.node.node import Node
     from clive.__private.storage.mock_database import Account
+
+
+class SuppressNotExistingApi:
+    def __init__(self, api: str) -> None:
+        self.__api_name = api
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, _: type[Exception] | None, ex: Exception | None, __: TracebackType | None) -> bool:
+        return ex is None or (  # if false, rethrows
+            ex is not None
+            and isinstance(ex, CommunicationError)
+            and (
+                isinstance(error_dict := ex.args[-1], dict)
+                and (error := error_dict.get("error", {}))
+                and (error_data := error.get("data", {}))
+                and (stack := error_data.get("stack", [{}])[0])
+                and (data := stack.get("data", {}))
+                and (data.get("api", False) == self.__api_name)
+            )
+        )
 
 
 @dataclass
@@ -21,23 +47,38 @@ class UpdateNodeData(Command[None]):
     node: Node
 
     def execute(self) -> None:
-        try:
-            # try to get reputation
+        with SuppressNotExistingApi("reputation_api"):
             reputation = self.node.api.reputation_api.get_account_reputations(
                 account_lower_bound=self.account.name, limit=1
             ).reputations
             assert len(reputation) == 1 and reputation[0].account == self.account.name
             self.account.data.reputation = int(reputation[0].reputation)
-        except CommunicationError as e:
-            if not (
-                isinstance(error_dict := e.args[-1], dict)
-                and (error := error_dict.get("error", {}))
-                and (error_data := error.get("data", {}))
-                and (stack := error_data.get("stack", [{}])[0])
-                and (data := stack.get("data", {}))
-                and (data.get("api", False) == "reputation_api")
-            ):
-                raise e from e
+
+        percent_100: Final[int] = 100
+        with SuppressNotExistingApi("rc_api"):
+            rc_accounts = self.node.api.rc_api.find_rc_accounts(accounts=[self.account.name]).rc_accounts
+            refreshed_rc_accounts = self.node.api.rc_api.find_rc_accounts(
+                accounts=[self.account.name], refresh_mana=True
+            ).rc_accounts
+            assert rc_accounts[0].account == self.account.name
+            assert refreshed_rc_accounts[0].account == self.account.name
+            crca, rrca = rc_accounts[0], refreshed_rc_accounts[0]  # current rc account, refreshed rc account
+            max_rc = int(crca.max_rc)
+            current_rc = int(crca.rc_manabar.current_mana)
+            self.account.data.rc = (current_rc * percent_100) // max_rc
+
+            seconds_since_last_refresh = int(rrca.rc_manabar.last_update_time) - int(crca.rc_manabar.last_update_time)
+            self.account.data.hours_until_full_refresh_rc = 0
+            if seconds_since_last_refresh > 0:
+                refreshed_rc = int(rrca.rc_manabar.current_mana)
+                regenerated_mana_since_last_refresh = refreshed_rc - current_rc
+                rc_mana_regen_per_second = regenerated_mana_since_last_refresh / seconds_since_last_refresh
+                missing_rc_mana = max_rc - current_rc
+                amount_of_seconds_in_hour: Final[int] = 3600
+
+                self.account.data.hours_until_full_refresh_rc = (
+                    int(missing_rc_mana / rc_mana_regen_per_second) // amount_of_seconds_in_hour
+                )
 
         response = self.node.api.database_api.find_accounts(accounts=[self.account.name]).accounts
         accounts = list(filter(lambda x: isinstance(x, AccountItemFundament) and x.name == self.account.name, response))
@@ -54,13 +95,10 @@ class UpdateNodeData(Command[None]):
 
         # max manabars
         downvote_vote_ratio: Final[int] = 4
-        # TODO: add rc
         max_voting_manabar = int(account.post_voting_power.amount)
         max_downvoting_manabar = max_voting_manabar // downvote_vote_ratio
 
         # manabars current fulfillment
-        percent_100: Final[int] = 100
-        # TODO: add rc
         self.account.data.voting_power = int(account.voting_manabar.current_mana) * percent_100 // max_voting_manabar
         self.account.data.down_vote_power = (
             int(account.downvote_manabar.current_mana) * percent_100 // max_downvoting_manabar
@@ -71,8 +109,6 @@ class UpdateNodeData(Command[None]):
         amount_of_days_to_fully_regen: Final[int] = 5
         amount_of_hours_in_day: Final[int] = 24
         hours_to_filly_regen = amount_of_days_to_fully_regen * amount_of_hours_in_day
-
-        # TODO: add rc
 
         # voting manabar regen
         self.account.data.hours_until_full_refresh_voting_power = int(

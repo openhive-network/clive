@@ -7,7 +7,7 @@ from schemas import rc_api  # noqa: TCH001
 
 class RcApi(Api):
     @Api.method
-    def find_rc_accounts(self, accounts: list[str]) -> rc_api.FindRcAccounts[Asset.VESTS]:
+    def find_rc_accounts(self, accounts: list[str], refresh_mana: bool = False) -> rc_api.FindRcAccounts[Asset.VESTS]:
         raise NotImplementedError()
 
     @Api.method
@@ -19,7 +19,7 @@ class RcApi(Api):
         raise NotImplementedError()
 
     @Api.method
-    def list_rc_accounts(self, accounts: list[str]) -> rc_api.ListRcAccounts[Asset.VESTS]:
+    def list_rc_accounts(self, accounts: list[str], refresh_mana: bool = False) -> rc_api.ListRcAccounts[Asset.VESTS]:
         raise NotImplementedError()
 
     @Api.method
