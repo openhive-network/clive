@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shutil
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import pytest
 import test_tools as tt
@@ -9,6 +9,8 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.config import settings
 from clive.__private.core import iwax
+from clive.__private.core.commands.abc.command_secured import CommandSecured
+from clive.__private.core.commands.activate_extended import ActivateExtended
 from clive.__private.core.world import World
 from clive.__private.util import prepare_before_launch
 from clive.core.url import Url
@@ -18,6 +20,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from clive.__private.core.beekeeper import Beekeeper
+    from clive.__private.core.commands.abc.command_observable import CommandObservable
     from clive.__private.storage.mock_database import PrivateKey, PublicKey
 
 
@@ -32,6 +35,26 @@ def run_prepare_before_launch() -> None:
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
     prepare_before_launch()
+
+
+@pytest.fixture(autouse=True)
+def register_commands_callbacks(
+    run_prepare_before_launch: Any,  # without this, working_directory is not set  # noqa: ARG001
+    world: World,
+    wallet_password: str,
+) -> None:
+    @staticmethod  # type: ignore[misc]
+    def _activate(command: CommandObservable[Any]) -> None:
+        world.commands.activate(password=wallet_password)
+        command.fire()
+
+    @staticmethod  # type: ignore[misc]
+    def _confirm(command: CommandSecured[Any]) -> None:
+        command.arm(password=wallet_password)
+        command.fire()
+
+    ActivateExtended.register_activate_callback(_activate)
+    CommandSecured.register_confirmation_callback(_confirm)
 
 
 @pytest.fixture
