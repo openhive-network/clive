@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(autouse=True, scope="function")
-def run_prepare_before_launch() -> None:
+def run_prepare_before_launch() -> Iterator[None]:
     working_directory = tt.context.get_current_directory()
 
     beekeeper_directory = working_directory / "beekeeper"
@@ -33,6 +33,7 @@ def run_prepare_before_launch() -> None:
     settings.log_path = working_directory / "logs"
     with spawn_thread_pool() as executor:
         prepare_before_launch(executor=executor)
+        yield
 
 
 @pytest.fixture
