@@ -56,9 +56,14 @@ DashboardBase BalanceStats {
   layout: grid;
   grid-size: 7 2;
   height: 2;
+  margin-left: 2;
 }
 
 DashboardBase BalanceStats Static {
+  text-align: center;
+}
+
+DashboardBase BalanceStats DynamicLabel {
   text-align: center;
 }
 
@@ -73,14 +78,17 @@ DashboardBase BalanceStats .title-variant {
 }
 
 DashboardBase BalanceStats .percentage {
+  width: 1fr;
   background: $panel-lighten-1;
 }
 
 DashboardBase BalanceStats .time {
+  width: 1fr;
   background: $panel-lighten-2;
 }
 
-DashboardBase BalanceStats #hivepower-value {
+DashboardBase BalanceStats .hivepower-value {
+  width: 1fr;
   background: $panel-lighten-1;
 }
 
@@ -96,6 +104,10 @@ DashboardBase ActivityStats Static {
   text-align: center;
 }
 
+DashboardBase ActivityStats DynamicLabel {
+  text-align: center;
+}
+
 DashboardBase ActivityStats .title {
   color: $text;
   background: $accent-lighten-3;
@@ -106,6 +118,7 @@ DashboardBase ActivityStats .title-variant {
 }
 
 DashboardBase ActivityStats .token {
+  margin-left: 2;
   background: $accent-lighten-1;
 }
 
@@ -114,6 +127,7 @@ DashboardBase ActivityStats .token-variant {
 }
 
 DashboardBase ActivityStats .amount {
+  width: 1fr;
   background: $panel-lighten-1;
 }
 

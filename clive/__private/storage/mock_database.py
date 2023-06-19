@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-import random
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from enum import Enum
 from typing import TYPE_CHECKING, Any, overload
 
 from clive.__private.core import iwax
+from clive.models import Asset
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -19,9 +19,42 @@ class AccountType(str, Enum):
     WATCHED = "watched"
 
 
+def default_hive() -> Asset.HIVE:
+    return Asset.hive(0)
+
+
+def default_hbd() -> Asset.HBD:
+    return Asset.hbd(0)
+
+
+def default_vests() -> Asset.HIVE:
+    return Asset.vests(0)
+
+
+@dataclass
+class NodeData:
+    reputation: int = 0
+    hive_balance: Asset.HIVE = field(default_factory=default_hive)
+    hive_dollars: Asset.HBD = field(default_factory=default_hbd)
+    hive_savings: Asset.HIVE = field(default_factory=default_hive)
+    hbd_savings: Asset.HBD = field(default_factory=default_hbd)
+    hive_unclaimed: Asset.HIVE = field(default_factory=default_hive)
+    hbd_unclaimed: Asset.HBD = field(default_factory=default_hbd)
+    hp_unclaimed: Asset.VESTS = field(default_factory=default_vests)
+    voting_power: int = 0
+    down_vote_power: int = 0
+    rc: int = 0
+    hive_power_balance: int = 0
+    hours_until_full_refresh_voting_power: int = 0
+    hours_until_full_refresh_downvoting_power: int = 0
+    hours_until_full_refresh_rc: int = 0
+    last_refresh: datetime = datetime.now()
+
+
 @dataclass
 class Account:
     name: str
+    data: NodeData = field(default_factory=NodeData)
 
 
 @dataclass
@@ -108,32 +141,5 @@ class PrivateKey:
 
 @dataclass
 class WorkingAccount(Account):
-    keys: list[PublicKeyAliased]
-    keys_to_import: dict[str, PrivateKey]
-
-
-@dataclass
-class NodeData:
-    reputation: float = random.uniform(0, 100)
-    hive_balance: float = random.uniform(0, 100)
-    hive_power_balance: float = random.uniform(0, 100)
-    hive_dollars: float = random.uniform(0, 100)
-    hive_savings: float = random.uniform(0, 100)
-    hbd_savings: float = random.uniform(0, 100)
-    hbd_unclaimed: float = random.uniform(0, 100)
-    hp_unclaimed: float = random.uniform(0, 100)
-    hive_unclaimed: float = random.uniform(0, 100)
-    rc: int = random.randint(0, 100)
-    voting_power: int = random.randint(0, 100)
-    down_vote_power: int = random.randint(0, 100)
-
-    last_refresh: datetime = datetime.now()
-
-    def recalc(self) -> None:
-        self.last_refresh: datetime = datetime.now()
-
-        for key, value in self.__dict__.items():
-            if isinstance(value, float):
-                setattr(self, key, random.uniform(0, 100))
-            elif isinstance(value, int):
-                setattr(self, key, random.randint(0, 100))
+    keys: list[PublicKeyAliased] = field(default_factory=list)
+    keys_to_import: dict[str, PrivateKey] = field(default_factory=dict)

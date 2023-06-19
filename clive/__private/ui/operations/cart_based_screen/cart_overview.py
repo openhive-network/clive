@@ -7,12 +7,12 @@ from textual.widgets import Static
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.profile_data import ProfileData
-    from clive.__private.storage.mock_database import NodeData
     from clive.models import Operation
 
 
@@ -71,13 +71,13 @@ class CartOverview(CliveWidget):
     def compose(self) -> ComposeResult:
         with Resources():
             yield Static("Resource credits (RC):")
-            yield DynamicLabel(self.app.world, "node_data", self.__get_rc)
+            yield DynamicLabel(self.app.world, "profile_data", self.__get_rc)
             yield Static("Enough RC for approx.:")
             yield Static("17 transfers")
             yield Static("HIVE balance:")
-            yield DynamicLabel(self.app.world, "node_data", self.__get_hive_balance)
+            yield DynamicLabel(self.app.world, "profile_data", self.__get_hive_balance)
             yield Static("HBD balance:")
-            yield DynamicLabel(self.app.world, "node_data", self.__get_hbd_balance)
+            yield DynamicLabel(self.app.world, "profile_data", self.__get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount()
             with self.__cart_items_container:
@@ -114,16 +114,16 @@ class CartOverview(CliveWidget):
         self.__current_cart_operations = self.__get_operations_from_cart()
 
     @staticmethod
-    def __get_rc(node_data: NodeData) -> str:
-        return f"{node_data.rc:.2f}%"
+    def __get_rc(profile_data: ProfileData) -> str:
+        return f"{profile_data.working_account.data.rc:.2f}%"
 
     @staticmethod
-    def __get_hive_balance(node_data: NodeData) -> str:
-        return f"{node_data.hive_balance:.2f} HIVE"
+    def __get_hive_balance(profile_data: ProfileData) -> str:
+        return Asset.to_legacy(profile_data.working_account.data.hive_balance)
 
     @staticmethod
-    def __get_hbd_balance(node_data: NodeData) -> str:
-        return f"{node_data.hive_dollars:.2f} HBD"
+    def __get_hbd_balance(profile_data: ProfileData) -> str:
+        return Asset.to_legacy(profile_data.working_account.data.hive_dollars)
 
     def __get_operations_from_cart(self) -> list[CartItem]:
         return [CartItem(op) for op in self.app.world.profile_data.cart]

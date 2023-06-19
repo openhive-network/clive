@@ -7,14 +7,12 @@ from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.storage.mock_database import NodeData
 from clive.__private.ui.background_tasks import BackgroundTasks
 from clive.__private.ui.manual_reactive import ManualReactive
 
 
 class World:
     def __init__(self, profile_name: str | None = None) -> None:
-        self._node_data = NodeData()
         self._profile_data = ProfileData.load(profile_name)
         self._app_state = AppState(self)
         self._commands = Commands(self)
@@ -47,10 +45,6 @@ class World:
         return keeper
 
     @property
-    def node_data(self) -> NodeData:
-        return self._node_data
-
-    @property
     def profile_data(self) -> ProfileData:
         return self._profile_data
 
@@ -60,12 +54,10 @@ class World:
 
 
 class TextualWorld(World, ManualReactive):
-    node_data: NodeData = var(None)  # type: ignore[assignment]
     profile_data: ProfileData = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
 
     def __init__(self, profile_name: str | None = None) -> None:
         super().__init__(profile_name)
-        self.node_data = self._node_data
         self.profile_data = self._profile_data
         self.app_state = self._app_state

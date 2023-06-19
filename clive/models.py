@@ -108,3 +108,11 @@ class Asset:
         amount = int(parsed.group(1).replace(".", ""))
         symbol: Asset.ALLOWED_SYMBOLS = parsed.group(2)
         return cls.resolve_symbol(symbol)(amount=amount)
+
+    @classmethod
+    def to_legacy(cls, asset: Asset.ANY) -> str:
+        return f"{cls.pretty_amount(asset)} {asset.get_asset_information().symbol[0]}"
+
+    @classmethod
+    def pretty_amount(cls, asset: Asset.ANY) -> str:
+        return f"{int(asset.amount) / 10**asset.precision :.{asset.precision}f}"

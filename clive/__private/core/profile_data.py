@@ -7,7 +7,7 @@ from typing import Final
 
 from clive.__private import config
 from clive.__private.storage.contextual import Context
-from clive.__private.storage.mock_database import Account, WorkingAccount
+from clive.__private.storage.mock_database import Account, NodeData, WorkingAccount
 from clive.core.url import Url
 from clive.models import Operation
 
@@ -24,7 +24,7 @@ class ProfileData(Context):
     name: str = ""
 
     # TODO: Should be None if not set, since we'll allow for using app without a working account
-    working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount("", [], {}))
+    working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount(""))
     watched_accounts: list[Account] = field(default_factory=list)
     cart = Cart()
 
@@ -73,7 +73,7 @@ class ProfileData(Context):
     @staticmethod
     def __default_node_address() -> list[Url]:
         return [
-            Url("https", "api.hive.blog"),
             Url("http", "localhost", 8090),
+            Url("https", "api.hive.blog"),
             Url("http", "hive-6.pl.syncad.com", 18090),
         ]
