@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import uuid
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, overload
@@ -11,9 +12,12 @@ from textual.reactive import reactive, var
 from clive.__private.config import settings
 from clive.__private.core.commands.abc.command_secured import CommandSecured
 from clive.__private.core.commands.activate_extended import ActivateExtended
+from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
+from clive.__private.storage.mock_database import PrivateKey, PublicKeyAliased
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
@@ -37,7 +41,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen
     from textual.widget import AwaitMount
 
-    from clive.__private.core.commands.abc.command_observable import CommandObservable
+    from clive.__private.core.commands.abc.command_observable import CommandObservable, SenderT
     from clive.__private.ui.app_messages import ProfileDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
@@ -54,6 +58,7 @@ class Clive(App[int], ManualReactive):
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("l", "mock_log", "Mock log", show=False),
         Binding("f1", "help", "Help"),
+        Binding("f8", "test", "test"),
     ]
 
     SCREENS = {
@@ -75,6 +80,45 @@ class Clive(App[int], ManualReactive):
 
     logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
+
+    def action_test(self) -> None:
+        wallet_name = self.world.profile_data.name
+        new_alias = uuid.uuid4().hex[:8]
+        private_key = PrivateKey.create()
+
+        ik_command = ImportKey(
+            app_state=self.world.app_state,
+            wallet=wallet_name,
+            alias=new_alias,
+            key_to_import=private_key,
+            beekeeper=self.world.beekeeper,
+        )
+
+        def __on_import_key_result(_: SenderT, result: PublicKeyAliased | None, exception: Exception | None) -> None:
+            if not result:
+                logger.error(f"Failed to import key: {result=}, {exception=}")
+                return
+
+            logger.info(f"Imported key {new_alias} into wallet {wallet_name}")
+
+            imported = result
+
+            logger.info(f"Removing key {imported.alias}")
+            rk_command = RemoveKey(
+                beekeeper=self.world.beekeeper,
+                wallet=wallet_name,
+                key_to_remove=imported,
+                app_state=self.world.app_state,
+            )
+
+            def __on_remove_key_result(_: SenderT, result: Any, exception: Exception | None) -> None:
+                logger.info(f"Key Removed {result=}, {exception=}")
+
+            rk_command.observe_result(__on_remove_key_result)
+            rk_command.execute()
+
+        ik_command.observe_result(__on_import_key_result)
+        ik_command.execute()
 
     @property
     def namespace_bindings(self) -> NamespaceBindingsMapType:
