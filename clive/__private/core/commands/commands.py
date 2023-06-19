@@ -14,12 +14,13 @@ from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
+from clive.__private.core.commands.update_node_data import UpdateNodeData
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
-    from clive.__private.storage.mock_database import PrivateKey, PublicKey, PublicKeyAliased
+    from clive.__private.storage.mock_database import Account, PrivateKey, PublicKey, PublicKeyAliased
     from clive.models import Operation, Transaction
 
 
@@ -92,3 +93,6 @@ class Commands:
             profile_data=self.__world.profile_data,
             beekeeper=self.__world.beekeeper,
         ).execute()
+
+    def update_node_data(self, *, account: Account) -> None:
+        UpdateNodeData(account=account, node=self.__world.node).execute()
