@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.node.api.account_history_api import AccountHistoryApi
 from clive.__private.core.node.api.database_api import DatabaseApi
 from clive.__private.core.node.api.network_broadcast_api import NetworkBroadcastApi
+from clive.__private.core.node.api.reputation_api import ReputationApi
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
@@ -15,3 +16,4 @@ class Apis:
         self.network_broadcast = NetworkBroadcastApi(node)
         self.database_api = DatabaseApi(node)
         self.account_history_api = AccountHistoryApi(node)
+        self.reputation_api = ReputationApi(node)
