@@ -51,7 +51,7 @@ class CommandSecured(CommandObservable[CommandResultT], ABC):
         self._password = kwargs.get("password", "")
 
     def __on_activation_result(
-            self, _: SenderT, result: bool | None, exception: Exception | None    # noqa: ARG002
+        self, _: SenderT, result: bool | None, exception: Exception | None  # noqa: ARG002
     ) -> None:
         logger.debug(f"Command requires confirmation: {self.__class__.__name__}")
         if result:

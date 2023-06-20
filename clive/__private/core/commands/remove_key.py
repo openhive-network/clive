@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class RemoveKey(CommandSecured[None]):
+class RemoveKey(CommandSecured[bool]):
     beekeeper: Beekeeper
     wallet: str
     key_to_remove: PublicKey | PublicKeyAliased
@@ -23,6 +23,7 @@ class RemoveKey(CommandSecured[None]):
     def _execute(self) -> None:
         public_key = self.key_to_remove.value
         self.beekeeper.api.remove_key(wallet_name=self.wallet, password=self._password, public_key=public_key)
+        self._result = True
 
     def __get_key_description(self) -> str:
         if isinstance(self.key_to_remove, PublicKey):

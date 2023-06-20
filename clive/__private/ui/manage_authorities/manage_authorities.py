@@ -19,6 +19,7 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.commands.abc.command_observable import SenderT
     from clive.__private.storage.mock_database import PublicKeyAliased
 
 
@@ -56,10 +57,22 @@ class Authority(ColumnLayout, CliveWidget):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
-        if event.button.id == "remove_authority_button":
-            self.app.world.profile_data.working_account.keys.remove(self.__authority)
+
+        def __on_sync_result(_: SenderT, result: bool | None, exception: Exception | None) -> None:
+            if not result:
+                self.app.world.profile_data.working_account.keys.append(self.__authority)
+                Notification(f"Failed to sync profile data: {exception}", category="error").show()
+                return
+
             Notification(f"Authority `{self.__authority.alias}` was removed.", category="success").show()
             self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
+
+        if event.button.id == "remove_authority_button":
+            self.app.world.profile_data.working_account.keys.remove(self.__authority)
+            command = self.app.world.commands.sync_data_with_beekeeper()
+            command.observe_result(__on_sync_result)
+            command.execute()
+
         if event.button.id == "edit_authority_button":
             self.app.push_screen(EditAuthority(self.__authority))
 

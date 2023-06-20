@@ -36,21 +36,27 @@ class ConfirmWithPassword(BaseScreen):
 
     def action_cancel(self) -> None:
         self.app.pop_screen()
+        self.__confirmed_command.interrupt()
 
     def action_confirm(self) -> None:
         if not self.__validate_password():
             Notification("Invalid password", category="error").show()
             return
 
-        self.__confirmed_command.observe_result(self.__on_confirmation_result)
+        self.__exit_with_success()
+
+    def __exit_with_success(self) -> None:
+        def __on_confirmation_result(
+            _: SenderT, result: Any | None, exception: Exception | None  # noqa: ARG001
+        ) -> None:
+            Notification(
+                f"Password is correct. Action: `{self.__confirmed_command.action_name}` succeeded.", category="success"
+            ).show()
+
+        self.__confirmed_command.observe_result(__on_confirmation_result)
         self.__confirmed_command.arm(password=self.__get_password_input())
         self.app.pop_screen()
         self.__confirmed_command.fire()
-
-    def __on_confirmation_result(self, _: SenderT, __: Any | None, exception: Exception | None) -> None:  # noqa: ARG002
-        Notification(
-            f"Password is correct. Action: `{self.__confirmed_command.action_name}` succeeded.", category="success"
-        ).show()
 
     def __validate_password(self) -> bool:
         # TODO: Make a call to beekeeper to validate the password
