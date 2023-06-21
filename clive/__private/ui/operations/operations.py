@@ -6,7 +6,7 @@ from textual.binding import Binding
 from textual.widgets import Button, Static
 
 from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreenOperation
+from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_with_buttons_list import OPERATIONS_AND_BUTTONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
@@ -15,8 +15,10 @@ from clive.__private.ui.widgets.notification import Notification
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.models import Operation
 
-class Operations(CartBasedScreenOperation):
+
+class Operations(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f2", "cart", "Cart"),
@@ -34,6 +36,9 @@ class Operations(CartBasedScreenOperation):
             yield CliveButton("Witness block approve", id_="witness-block-approve-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
+
+    def create_operation(self) -> Operation | None:
+        """Not implemented here"""
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id in OPERATIONS_AND_BUTTONS:
