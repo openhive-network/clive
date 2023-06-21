@@ -9,6 +9,7 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
@@ -71,6 +72,14 @@ class Commands:
         return ImportKey(
             wallet=self.__world.profile_data.name, alias=alias, key_to_import=wif, beekeeper=self.__world.beekeeper
         ).execute_with_result()
+
+    def remove_key(self, *, password: str, key_to_remove: PublicKey) -> None:
+        RemoveKey(
+            wallet=self.__world.profile_data.name,
+            beekeeper=self.__world.beekeeper,
+            key_to_remove=key_to_remove,
+            password=password,
+        ).execute()
 
     def write_profile_data_to_beekeeper(self, *, password: str) -> None:
         WriteProfileDataToBeekeeper(
