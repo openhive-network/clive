@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
@@ -9,17 +8,17 @@ from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.operations.currency_selector.currency_selector import CurrencySelector
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.notification import Notification
-from clive.__private.ui.widgets.select.select import Select
-from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from clive.models import Operation
 
 
 class Body(Grid):
@@ -30,18 +29,9 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select[Callable[[float], Asset.ANY]]):
+class CurrencySelectorTransferToAccount(CurrencySelector):
     def __init__(self) -> None:
-        def _asset_factory(symbol: str) -> Callable[[float], Asset.ANY]:
-            asset = Asset.resolve_symbol(symbol)
-            return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
-
-        super().__init__(
-            items=[SelectItem(_asset_factory(symbol), symbol) for symbol in ["HIVE", "HBD"]],
-            list_mount="ViewBag",
-            placeholder="Select currency",
-            selected=1,
-        )
+        super().__init__("HIVE", "HBD")
 
 
 class TransferToAccount(CartBasedScreen):
@@ -58,7 +48,7 @@ class TransferToAccount(CartBasedScreen):
         self.__to_input = Input(placeholder="e.g.: some-account")
         self.__amount_input = Input(placeholder="e.g.: 5.000")
         self.__memo_input = Input(placeholder="e.g.: For the coffee!")
-        self.__currency_selector = CurrencySelector()
+        self.__currency_selector = CurrencySelectorTransferToAccount()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
