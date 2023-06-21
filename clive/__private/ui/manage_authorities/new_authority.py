@@ -10,6 +10,7 @@ from clive.__private.logger import logger
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.form_screen import FormScreen
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
@@ -35,6 +36,7 @@ class NewAuthority(NewAuthorityBase):
     def context(self) -> ProfileData:
         return self.app.world.profile_data
 
+    @CliveScreen.try_again_after_activation
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.context.working_account.keys_to_import = {event.key_alias: event.private_key}
 
