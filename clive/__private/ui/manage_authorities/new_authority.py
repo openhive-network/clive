@@ -7,7 +7,6 @@ from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
-from clive.__private.storage.mock_database import PublicKeyAliased
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -37,11 +36,9 @@ class NewAuthority(NewAuthorityBase):
         return self.app.world.profile_data
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        imported = self.app.world.commands.import_key(alias=event.key_alias, wif=event.private_key)
-        self.app.world.profile_data.working_account.keys.append(
-            PublicKeyAliased(alias=event.key_alias, value=imported.value)
-        )
+        self.context.working_account.keys_to_import = {event.key_alias: event.private_key}
 
+        self.app.world.commands.sync_data_with_beekeeper()
         self.app.post_message_to_everyone(ProfileDataUpdated())
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
