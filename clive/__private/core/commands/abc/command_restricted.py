@@ -1,0 +1,38 @@
+from __future__ import annotations
+
+from abc import ABC, abstractmethod
+from typing import ClassVar, Final
+
+from clive.__private.core.commands.abc.command import Command, CommandError
+
+
+class CommandExecutionNotPossibleError(CommandError):
+    _DEFAULT_MESSAGE: Final[str] = "does not met the requirements to be executed."
+
+    def __init__(self, command: CommandRestricted, *, message: str = _DEFAULT_MESSAGE) -> None:
+        super().__init__(command, message)
+
+
+class CommandRestricted(Command, ABC):
+    """
+    A command that is conditioned before it can be executed.
+    """
+
+    _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandExecutionNotPossibleError
+
+    def execute(self) -> None:
+        """
+        Execute the command if the conditions are met.
+
+        Raises:
+            CommandExecutionNotPossibleError: If the command cannot be executed.
+        """
+        if not self._is_execution_possible():
+            raise self._execution_impossible_error(self)
+        super().execute()
+
+    @abstractmethod
+    def _is_execution_possible(self) -> bool:
+        """
+        The condition that must be met for the command to be executed. When execution is not possible, error is raised.
+        """

@@ -4,6 +4,14 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
 from clive.__private.logger import logger
+from clive.exceptions import CliveError
+
+
+class CommandError(CliveError):
+    def __init__(self, command: Command, message: str = "") -> None:
+        self.command = command
+        self.message = f"Command {command.__class__.__name__} failed. Reason: {message}"
+        super().__init__(self.message)
 
 
 @dataclass(kw_only=True)
