@@ -41,16 +41,16 @@ class ConfirmWithPassword(BaseScreen):
             yield self.__password_input
 
     def action_cancel(self) -> None:
-        self.__result_callback("")
         self.app.pop_screen()
+        self.__result_callback("")
 
     def action_confirm(self) -> None:
         if not self.__validate_password():
             Notification("Invalid password", category="error").show()
             return
 
-        self.__result_callback(self.__get_password_input())
         self.app.pop_screen()
+        self.__result_callback(self.__get_password_input())
 
     def __validate_password(self) -> bool:
         # TODO: Make a call to beekeeper to validate the password
