@@ -111,6 +111,27 @@ class Clive(App[int], ManualReactive):
     async def on_unmount(self) -> None:
         await Communication.close()
 
+    def replace_screen(self, old: str | type[Screen], new: str | Screen) -> None:
+        new_, _ = self._get_screen(new)
+
+        if self.is_screen_on_top(old):
+            self.switch_screen(new_)
+            return
+
+        old_screen_index = self.__get_screen_index(old)
+        self.app._screen_stack.pop(old_screen_index)
+        self.push_screen_at(old_screen_index, new_)
+
+    def __get_screen_index(self, screen: str | type[Screen]) -> int:
+        for index, screen_on_stack in enumerate(self.app._screen_stack):
+            if self.__screen_eq(screen_on_stack, screen):
+                return index
+
+        raise ScreenNotFoundError(f"Screen {screen} is not in the screen stack.\nScreen stack: {self.screen_stack}")
+
+    def is_screen_on_top(self, screen: str | type[Screen]) -> bool:
+        return self.__screen_eq(self.screen, screen)
+
     def push_screen(self, screen: Screen | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
 

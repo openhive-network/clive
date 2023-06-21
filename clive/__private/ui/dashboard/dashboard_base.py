@@ -110,8 +110,5 @@ class DashboardBase(BaseScreen):
                 yield WatchedAccountContainer()
             yield CommandLine(focus_on_cancel=body)
 
-    def on_activate_succeeded(self) -> None:
-        self.app.switch_screen("dashboard_active")
-
     def action_operations(self) -> None:
         self.app.push_screen(Operations())

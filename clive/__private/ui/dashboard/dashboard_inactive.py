@@ -23,3 +23,6 @@ class DashboardInactive(DashboardBase):
 
     def action_create_profile(self) -> None:
         self.app.push_screen(CreateProfile())
+
+    def on_activate_succeeded(self) -> None:
+        self.app.replace_screen("DashboardInactive", "dashboard_active")
