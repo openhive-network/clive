@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 
 if TYPE_CHECKING:

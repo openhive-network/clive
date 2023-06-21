@@ -5,7 +5,7 @@ from collections.abc import Callable, Iterator
 from queue import Queue
 from typing import Any, Final
 
-from clive.__private.core.commands.command import Command
+from clive.__private.core.commands.abc.command import Command
 from clive.__private.storage.contextual import ContextT, Contextual
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
