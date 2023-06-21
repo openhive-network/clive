@@ -51,6 +51,14 @@ class PrivateKey:
     value: str
     file_path: Path | None = None
 
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, PrivateKey):
+            return self.value == other.value
+        if isinstance(other, PublicKey):
+            my_public_key = self.calculate_public_key()
+            return my_public_key.value == other.value
+        return super().__eq__(other)
+
     @classmethod
     def from_file(cls, file_path: Path) -> PrivateKey:
         key = cls.read_key_from_file(file_path)
@@ -70,14 +78,6 @@ class PrivateKey:
 
     def calculate_public_key(self) -> PublicKey:
         return iwax.calculate_public_key(self.value)
-
-    def __eq__(self, other: Any) -> bool:
-        if isinstance(other, PrivateKey):
-            return self.value == other.value
-        if isinstance(other, PublicKey):
-            my_public_key = self.calculate_public_key()
-            return my_public_key.value == other.value
-        return super().__eq__(other)
 
 
 @dataclass
