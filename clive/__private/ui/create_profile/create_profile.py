@@ -76,6 +76,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
         create_wallet = CreateWallet(beekeeper=self.app.world.beekeeper, wallet=profile_name, password=password)
         write_data = SyncDataWithBeekeeper(
+            app_state=self.app.world.app_state,
             profile_data=self.context,
             beekeeper=self.app.world.beekeeper,
         )

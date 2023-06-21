@@ -70,11 +70,16 @@ class Commands:
 
     def import_key(self, *, alias: str, wif: PrivateKey) -> PublicKeyAliased:
         return ImportKey(
-            wallet=self.__world.profile_data.name, alias=alias, key_to_import=wif, beekeeper=self.__world.beekeeper
+            app_state=self.__world.app_state,
+            wallet=self.__world.profile_data.name,
+            alias=alias,
+            key_to_import=wif,
+            beekeeper=self.__world.beekeeper,
         ).execute_with_result()
 
     def remove_key(self, *, password: str, key_to_remove: PublicKey) -> None:
         RemoveKey(
+            app_state=self.__world.app_state,
             wallet=self.__world.profile_data.name,
             beekeeper=self.__world.beekeeper,
             key_to_remove=key_to_remove,
@@ -83,6 +88,7 @@ class Commands:
 
     def sync_data_with_beekeeper(self) -> None:
         SyncDataWithBeekeeper(
+            app_state=self.__world.app_state,
             profile_data=self.__world.profile_data,
             beekeeper=self.__world.beekeeper,
         ).execute()
