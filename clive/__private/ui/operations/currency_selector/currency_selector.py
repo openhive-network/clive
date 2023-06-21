@@ -9,7 +9,8 @@ from clive.models import Asset
 
 class CurrencySelector(Select[Callable[[float], Asset.ANY]]):
     """Base Currency Selector for operations, which require to choose type of Assets"""
-    def __init__(self, *args) -> None:
+
+    def __init__(self, *args: str) -> None:
         def _asset_factory(symbol: str) -> Callable[[float], Asset.ANY]:
             asset = Asset.resolve_symbol(symbol)
             return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
@@ -18,4 +19,5 @@ class CurrencySelector(Select[Callable[[float], Asset.ANY]]):
             items=[SelectItem(_asset_factory(symbol), symbol) for symbol in args],
             list_mount="ViewBag",
             placeholder="Select currency",
-            selected=1,)
+            selected=1,
+        )
