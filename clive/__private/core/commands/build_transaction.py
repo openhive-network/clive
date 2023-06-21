@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.models import Transaction
 
 if TYPE_CHECKING:
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class BuildTransaction(Command[Transaction]):
+class BuildTransaction(CommandWithResult[Transaction]):
     operations: list[Operation]
     node: Node
     expiration: timedelta = timedelta(minutes=30)

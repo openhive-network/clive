@@ -85,4 +85,4 @@ class Commands:
         SyncDataWithBeekeeper(
             profile_data=self.__world.profile_data,
             beekeeper=self.__world.beekeeper,
-        ).execute_with_result()
+        ).execute()

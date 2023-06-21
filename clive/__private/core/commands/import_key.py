@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.storage.mock_database import PublicKeyAliased
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class ImportKey(Command[PublicKeyAliased]):
+class ImportKey(CommandWithResult[PublicKeyAliased]):
     wallet: str
     alias: str
     key_to_import: PrivateKey

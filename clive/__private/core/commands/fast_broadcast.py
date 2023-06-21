@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class FastBroadcast(Command[None]):
+class FastBroadcast(Command):
     node: Node
     operation: Operation
     beekeeper: Beekeeper

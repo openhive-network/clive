@@ -27,7 +27,7 @@ def test_activate(world: clive.World, wallet: WalletInfo) -> None:
 def test_activate_non_existing_wallet(world: clive.World) -> None:
     # ARRANGE, ACT & ASSERT
     with pytest.raises(WalletDoesNotExistsError):
-        Activate(beekeeper=world.beekeeper, wallet="blabla", password="blabla").execute_with_result()
+        Activate(beekeeper=world.beekeeper, wallet="blabla", password="blabla").execute()
 
 
 def test_deactivate(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001

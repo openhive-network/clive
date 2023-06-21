@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class RemoveKey(Command[None]):
+class RemoveKey(Command):
     beekeeper: Beekeeper
     wallet: str
     password: str

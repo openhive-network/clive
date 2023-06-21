@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class SaveToFileAsBinary(Command[None]):
+class SaveToFileAsBinary(Command):
     transaction: Transaction
     file_path: Path
 

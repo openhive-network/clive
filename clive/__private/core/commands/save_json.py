@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class SaveToFileAsJson(Command[None]):
+class SaveToFileAsJson(Command):
     transaction: Transaction
     file_path: Path
 
