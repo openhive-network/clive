@@ -6,7 +6,7 @@ from textual.binding import Binding
 from textual.widgets import Button, Static
 
 from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreenOperation
 from clive.__private.ui.operations.operations_with_buttons_list import OPERATIONS_AND_BUTTONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Operations(CartBasedScreen):
+class Operations(CartBasedScreenOperation):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f2", "cart", "Cart"),
