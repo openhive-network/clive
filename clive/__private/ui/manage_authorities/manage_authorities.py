@@ -6,11 +6,13 @@ from textual.binding import Binding
 from textual.message import Message
 from textual.widgets import Button, Static
 
+from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.manage_authorities.edit_authority import EditAuthority
 from clive.__private.ui.manage_authorities.new_authority import NewAuthority
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.notification import Notification
@@ -57,11 +59,27 @@ class Authority(ColumnLayout, CliveWidget):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "remove_authority_button":
+            self.__remove_authority()
+        if event.button.id == "edit_authority_button":
+            self.app.push_screen(EditAuthority(self.__authority))
+
+    def __remove_authority(self) -> None:
+        @CliveScreen.try_again_after_activation
+        def __on_confirmation_result(result: str) -> None:
+            if not result:
+                return
+
+            self.app.world.commands.remove_key(password=result, key_to_remove=self.__authority)
+
             self.app.world.profile_data.working_account.keys.remove(self.__authority)
             Notification(f"Authority `{self.__authority.alias}` was removed.", category="success").show()
             self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
-        if event.button.id == "edit_authority_button":
-            self.app.push_screen(EditAuthority(self.__authority))
+
+        self.app.push_screen(
+            ConfirmWithPassword(
+                result_callback=__on_confirmation_result, action_name=f"Remove a `{self.__authority.alias}` key."
+            )
+        )
 
 
 class AuthorityHeader(ColumnLayout):
