@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class WriteProfileDataToBeekeeper(Command[None]):
+class SyncDataWithBeekeeper(Command[None]):
     profile_data: ProfileData
     beekeeper: Beekeeper
 

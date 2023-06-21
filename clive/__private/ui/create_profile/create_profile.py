@@ -7,9 +7,9 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Button, Input, Static
 
-from clive.__private.core.commands.write_profile_data_to_beekeeper import WriteProfileDataToBeekeeper
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.app_messages import ProfileDataUpdated
@@ -65,7 +65,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
         return profile_name, password
 
-    def _create_profile(self) -> tuple[CreateWallet, WriteProfileDataToBeekeeper]:
+    def _create_profile(self) -> tuple[CreateWallet, SyncDataWithBeekeeper]:
         """
         Collects the data from the form and creates a profile.
         :return: True if the profile was created successfully, False otherwise.
@@ -75,7 +75,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         self.context.name = profile_name
 
         create_wallet = CreateWallet(beekeeper=self.app.world.beekeeper, wallet=profile_name, password=password)
-        write_data = WriteProfileDataToBeekeeper(
+        write_data = SyncDataWithBeekeeper(
             profile_data=self.context,
             beekeeper=self.app.world.beekeeper,
         )
