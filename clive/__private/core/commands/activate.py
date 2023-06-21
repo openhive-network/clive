@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.logger import logger
 from clive.exceptions import CannotActivateError, CommunicationError
@@ -19,10 +19,9 @@ class WalletDoesNotExistsError(CannotActivateError):
 
 
 @dataclass(kw_only=True)
-class Activate(Command):
+class Activate(CommandPasswordSecured):
     beekeeper: Beekeeper
     wallet: str
-    password: str
     time: timedelta | None = None
 
     def _execute(self) -> None:
