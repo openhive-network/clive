@@ -12,7 +12,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
-from schemas.operations import CancelTransferFromSavingsOperation
+from schemas.operations import UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -28,7 +28,7 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CancelTransferFromSavings(CartBasedScreen):
+class UpdateProposalVotes(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f2", "add_to_cart", "Add to cart"),
@@ -39,27 +39,36 @@ class CancelTransferFromSavings(CartBasedScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__request_id_input = Input(placeholder="e.g.: 1000. Notice: default value is 0")
+        self.__proposal_ids = Input(placeholder="e.g.: 10,11,12")
+        self.__approve_input = Input(placeholder="e.g.: True. Notice - default value is False")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("Cancel transfer from savings")
+            yield BigTitle("Update proposal votes")
             with Body():
-                yield Static("from", classes="label")
-                yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="from-label")
+                yield Static("voter", classes="label")
+                yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="voter-label")
                 yield PlaceTaker()
-                yield Static("request_id", classes="label")
-                yield self.__request_id_input
+                yield Static("proposal ids", classes="label")
+                yield self.__proposal_ids
+                yield Static("approve", classes="label")
+                yield self.__approve_input
 
     def create_operation(self) -> Operation | None:
         try:
-            if self.__request_id_input.value:
-                return CancelTransferFromSavingsOperation(
-                    From=str(self.app.world.profile_data.working_account.name),
-                    request_id=int(self.__request_id_input.value),
+            split_ids: list[str] = self.__proposal_ids.value.split(",")
+            proposal_ids_list: list[int] = [int(v) for v in split_ids]
+
+            if self.__approve_input.value:
+                """Default value of approve is True, so if empty auto-fill with this"""
+                return UpdateProposalVotesOperation(
+                    voter=str(self.app.world.profile_data.working_account.name),
+                    proposal_ids=proposal_ids_list,
+                    approve=bool(self.__approve_input.value),
                 )
-            return CancelTransferFromSavingsOperation(  # noqa: TRY300
-                From=str(self.app.world.profile_data.working_account.name)
+            return UpdateProposalVotesOperation(  # noqa: TRY300
+                voter=str(self.app.world.profile_data.working_account.name),
+                proposal_ids=proposal_ids_list,
             )
 
         except ValidationError as error:
