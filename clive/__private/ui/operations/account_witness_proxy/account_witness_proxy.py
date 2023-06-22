@@ -23,10 +23,6 @@ class Body(Grid):
     """All the content of the screen, excluding the title"""
 
 
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
-
-
 class AccountWitnessProxy(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),

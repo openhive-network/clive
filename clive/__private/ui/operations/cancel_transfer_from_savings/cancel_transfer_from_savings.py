@@ -23,10 +23,6 @@ class Body(Grid):
     """All the content of the screen, excluding the title"""
 
 
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
-
-
 class CancelTransferFromSavings(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -54,9 +50,9 @@ class CancelTransferFromSavings(CartBasedScreen):
         try:
             if self.__request_id_input.value:
                 return CancelTransferFromSavingsOperation(
-                    From=self.__from_input.value, request_id=self.__request_id_input.value
+                    From=str(self.__from_input.value), request_id=self.__request_id_input.value
                 )
-            return CancelTransferFromSavingsOperation(From=int(self.__from_input.value))  # noqa: TRY300
+            return CancelTransferFromSavingsOperation(From=str(self.__from_input.value))  # noqa: TRY300
 
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
