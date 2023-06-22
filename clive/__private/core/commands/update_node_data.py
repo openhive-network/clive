@@ -52,14 +52,14 @@ class UpdateNodeData(Command):
     accounts: list[Account]
     node: Node
 
-    def execute(self) -> None:
-        @dataclass
-        class AccountApiInfo:
-            core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS] | None = None
-            rc: RcAccount[Asset.VESTS] | None = None
+    @dataclass
+    class AccountApiInfo:
+        core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS] | None = None
+        rc: RcAccount[Asset.VESTS] | None = None
 
+    def execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
-        api_accounts: dict[str, AccountApiInfo] = defaultdict(lambda: AccountApiInfo())
+        api_accounts: dict[str, UpdateNodeData.AccountApiInfo] = defaultdict(lambda: UpdateNodeData.AccountApiInfo())
         account_names = [acc.name for acc in self.accounts]
 
         with SuppressNotExistingApi("rc_api"):
@@ -103,57 +103,46 @@ class UpdateNodeData(Command):
 
             self.accounts[idx].data.hive_power_balance = self.__calculate_hive_power(dgpo, info.core)
             self.accounts[idx].data.reputation = self.__get_account_reputation(account.name)
+            self.accounts[idx].data.warnings = self.__count_warning(account, info)
 
-            try:
-                with SuppressNotExistingApi("account_history_api"):
-                    self.accounts[idx].data.warnings = self.__count_warning(account)
-                    self.accounts[idx].data.last_transaction = self.__get_newest_account_interactions(
-                        account.name
-                    ).replace(microsecond=0)
-            except Exception as e:
-                raise e from e
+            with SuppressNotExistingApi("account_history_api"):
+                self.accounts[idx].data.last_transaction = self.__get_newest_account_interactions(account.name).replace(
+                    microsecond=0
+                )
 
             self.accounts[idx].data.last_refresh = datetime.utcnow().replace(microsecond=0)
 
-    def __count_warning(self, account: Account) -> int:
+    def __count_warning(self, account: Account, account_info: AccountApiInfo) -> int:
+        assert account_info.core is not None, "account_info.core cannot be None"
+
         warning_recovery_accounts: Final[set[str]] = {"steem"}
         warnings = int(account.data.recovery_account in warning_recovery_accounts)
 
-        warning_period_in_days: Final[int] = 31
-        last_vote_operation_filter: Final[int] = 4096
-        last_vote_operation_history = self.node.api.account_history_api.get_account_history(
-            account=account.name, operation_filter_low=last_vote_operation_filter, limit=1
-        ).history
-        # if moment of last voting is x, then raise warning if (x + 1y) > now() > x + (1y - warning period)
-        if last_vote_operation_history:
-            last_vote_operation_timestamp = last_vote_operation_history[0][1].timestamp
-            warnings += int(
-                (
-                    (
-                        year_from_last_vote := last_vote_operation_timestamp.replace(
-                            year=last_vote_operation_timestamp.year + 1
-                        )
-                    )
-                    - timedelta(days=warning_period_in_days)
-                )
-                < datetime.utcnow()
-                < year_from_last_vote
-            )
+        # create one api call instead of N for M accounts at once database_api.find_warnings_for_accounts
+        ldvtr = self.node.api.database_api.list_decline_voting_rights_requests(
+            start=account.name, limit=1, order="by_account"
+        ).requests
+        if ldvtr and ldvtr[0].account == account.name:
+            warnings += 1
 
-        warnings_high_filter, warnings_low_filter = 2048, 571814833029120
-        history = self.node.api.account_history_api.get_account_history(
-            account=account.name,
-            operation_filter_high=warnings_high_filter,
-            operation_filter_low=warnings_low_filter,
-        ).history
-        warnings += len(
-            list(
-                filter(
-                    lambda aop: aop[1].timestamp >= datetime.utcnow().replace(year=datetime.utcnow().year - 1),
-                    history,
-                )
-            )
-        )
+        lcrar = self.node.api.database_api.list_change_recovery_account_requests(
+            start=account.name, limit=1, order="by_account"
+        ).requests
+        if lcrar and lcrar[0].account_to_recover == account.name:
+            warnings += 1
+
+        loh = self.node.api.database_api.list_owner_histories(
+            start=(account.name, datetime.fromtimestamp(0)), limit=1
+        ).owner_auths
+        if loh and loh[0].account == account.name:
+            warnings += 1
+
+        warning_period_in_days: Final[int] = 31
+        if account_info.core.governance_vote_expiration_ts - timedelta(days=warning_period_in_days) > datetime.utcnow():
+            warnings += 1
+
+        if account_info.core.open_recurrent_transfers:
+            warnings += 1
 
         return warnings
 
