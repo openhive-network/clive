@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.storage.mock_database import PublicKeyAliased
+from clive.__private.core.keys.keys import PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper

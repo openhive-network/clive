@@ -9,9 +9,9 @@ from textual.message import Message
 from textual.widgets import Input, Static
 
 from clive.__private.config import settings
+from clive.__private.core.keys.keys import PrivateKey
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
-from clive.__private.storage.mock_database import PrivateKey
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.notification import Notification

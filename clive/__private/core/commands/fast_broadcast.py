@@ -8,8 +8,8 @@ from clive.__private.core.perform_actions_on_transaction import perform_actions_
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
+    from clive.__private.core.keys.keys import PublicKey
     from clive.__private.core.node.node import Node
-    from clive.__private.storage.mock_database import PublicKey
     from clive.models import Operation
 
 

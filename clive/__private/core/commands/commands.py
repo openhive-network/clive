@@ -20,7 +20,8 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
-    from clive.__private.storage.mock_database import Account, PrivateKey, PublicKey, PublicKeyAliased
+    from clive.__private.core.keys.keys import PrivateKey, PublicKey, PublicKeyAliased
+    from clive.__private.storage.mock_database import Account
     from clive.models import Operation, Transaction
 
 

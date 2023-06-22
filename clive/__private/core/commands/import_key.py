@@ -5,11 +5,10 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.storage.mock_database import PublicKeyAliased
+from clive.__private.core.keys.keys import PrivateKey, PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PrivateKey
 
 
 @dataclass(kw_only=True)

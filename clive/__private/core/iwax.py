@@ -4,7 +4,7 @@ import datetime
 from typing import TYPE_CHECKING
 
 import wax
-from clive.__private.storage.mock_database import PrivateKey, PublicKey
+from clive.__private.core.keys.keys import PrivateKey, PublicKey
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

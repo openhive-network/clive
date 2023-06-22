@@ -9,7 +9,7 @@ from clive.models import Signature, Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PublicKey
+    from clive.__private.core.keys.keys import PublicKey
 
 
 @dataclass(kw_only=True)

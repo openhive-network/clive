@@ -5,8 +5,8 @@ import typer
 from click import ClickException
 
 from clive.__private.cli.common import Common, common_options
+from clive.__private.core.keys.keys import PublicKey
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
-from clive.__private.storage.mock_database import PublicKey
 from clive.models import Asset
 from schemas.operations import TransferOperation
 

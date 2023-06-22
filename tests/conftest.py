@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PrivateKey, PublicKey
+    from clive.__private.core.keys.keys import PrivateKey, PublicKey
 
 
 @pytest.fixture(autouse=True, scope="session")

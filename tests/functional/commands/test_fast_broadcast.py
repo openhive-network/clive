@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.storage.mock_database import PrivateKey
+from clive.__private.core.keys.keys import PrivateKey
 from clive.models import Asset
 from schemas.operations import TransferOperation
 

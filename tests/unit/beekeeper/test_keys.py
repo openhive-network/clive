@@ -6,7 +6,7 @@ import pytest
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.storage.mock_database import PrivateKey, PublicKey
+    from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from tests import WalletInfo
 
 PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
