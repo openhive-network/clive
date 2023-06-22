@@ -1,0 +1,13 @@
+ClaimAccount Body {
+  grid-size: 2;
+  grid-columns: 17 2fr 1fr;
+  grid-rows: 6 5 4 4 4;
+  height: 12;
+  margin: 0 4;
+  background: $panel;
+}
+
+ClaimAccount .label {
+  padding: 1 1;
+  text-align: left;
+}

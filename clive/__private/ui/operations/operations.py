@@ -36,6 +36,8 @@ class Operations(CartBasedScreen):
             yield CliveButton("Witness block approve", id_="witness-block-approve-button")
             yield CliveButton("Account witness proxy", id_="account-witness-proxy-button")
             yield CliveButton("Cancel transfer from savings", id_="cancel-transfer-from-savings-button")
+            yield CliveButton("Change recovery account", id_="change-recovery-account-button")
+            yield CliveButton("Claim account", id_="claim-account-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 

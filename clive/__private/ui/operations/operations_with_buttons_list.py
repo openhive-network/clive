@@ -8,6 +8,8 @@ from clive.__private.ui.operations.account_witness_vote.account_witnes_vote impo
 from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
+from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
+from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
 from clive.__private.ui.operations.covnert.covnert import Convert
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.__private.ui.operations.transfer_to_savings.transfer_to_savings import TransferToSavings
@@ -25,4 +27,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "vesting-transfer-button": TransferToVesting,
     "account-witness-proxy-button": AccountWitnessProxy,
     "cancel-transfer-from-savings-button": CancelTransferFromSavings,
+    "change-recovery-account-button": ChangeRecoveryAccount,
+    "claim-account-button": ClaimAccount,
 }
