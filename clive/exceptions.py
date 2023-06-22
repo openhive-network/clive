@@ -49,7 +49,7 @@ class NodeAddressError(FormValidationError):
     """Base class for all node address exceptions."""
 
 
-class PrivateKeyError(FormValidationError):
+class PrivateKeyInvalidFormatFormError(FormValidationError):
     def __init__(self, given_key: str | None = None) -> None:
         super().__init__(f"Given key is in invalid form: `{given_key}`", given_value=given_key)
 

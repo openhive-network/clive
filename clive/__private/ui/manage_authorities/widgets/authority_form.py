@@ -9,7 +9,7 @@ from textual.message import Message
 from textual.widgets import Input, Static
 
 from clive.__private.config import settings
-from clive.__private.core.keys.keys import PrivateKey
+from clive.__private.core.keys.keys import PrivateKey, PrivateKeyInvalidFormatError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -17,7 +17,12 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.exceptions import AliasAlreadyInUseError, FormValidationError, PrivateKeyAlreadyInUseError, PrivateKeyError
+from clive.exceptions import (
+    AliasAlreadyInUseError,
+    FormValidationError,
+    PrivateKeyAlreadyInUseError,
+    PrivateKeyInvalidFormatFormError,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -79,12 +84,12 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
 
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input == self.__key_input:
-            key_raw = self._get_key()
-
-            if PrivateKey.validate(key_raw):
-                self.__public_key_input.value = PrivateKey(key_raw).calculate_public_key().value
-            else:
+            try:
+                private_key = PrivateKey(self._get_key())
+            except PrivateKeyInvalidFormatError:
                 self.__public_key_input.value = "Invalid form of private key"
+            else:
+                self.__public_key_input.value = private_key.calculate_public_key().value
 
     def _save(self, reraise_exception: bool = False) -> None:
         if not self._is_key_provided():
@@ -131,15 +136,16 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     def _validate(self) -> None:
         """
         Raises:
-            PrivateKeyError: if key is invalid
+            PrivateKeyInvalidFormatFormError: if key is invalid
             AliasAlreadyInUseError: if alias is already in use
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
-        private_key_raw = self._get_key()
-        if not PrivateKey.validate(private_key_raw):
-            raise PrivateKeyError(private_key_raw)
-
-        self.__check_if_authority_already_exists(self.__get_authority_name(), PrivateKey(private_key_raw))
+        try:
+            private_key = PrivateKey(self._get_key())
+        except PrivateKeyInvalidFormatError:
+            raise PrivateKeyInvalidFormatFormError("Invalid form of private key") from None
+        else:
+            self.__check_if_authority_already_exists(self.__get_authority_name(), private_key)
 
     def __generate_key_alias(self) -> str:
         return f"{self.context.working_account.name}@active"

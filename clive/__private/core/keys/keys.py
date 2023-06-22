@@ -4,9 +4,18 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, overload
 
 from clive.__private.core import iwax
+from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from pathlib import Path
+
+
+class PrivateKeyError(CliveError):
+    """A PrivateKey related error"""
+
+
+class PrivateKeyInvalidFormatError(PrivateKeyError):
+    """A PrivateKey has an invalid format"""
 
 
 @dataclass
@@ -41,8 +50,18 @@ class PublicKeyAliased(PublicKey):
 
 @dataclass
 class PrivateKey:
+    """
+    A container for a private key.
+
+    Raises:
+         PrivateKeyInvalidFormatError: if private key is not in valid format
+    """
+
     value: str
     file_path: Path | None = None
+
+    def __post_init__(self) -> None:
+        self.validate(self.value)
 
     def __eq__(self, other: Any) -> bool:
         if isinstance(other, PrivateKey):
@@ -67,13 +86,16 @@ class PrivateKey:
     def read_key_from_file(cls, file_path: Path) -> str:
         return file_path.read_text().strip()
 
-    @classmethod
-    def validate(cls, key: str) -> bool:
+    @staticmethod
+    def validate(key: str) -> None:
+        """
+        Raises:
+            PrivateKeyInvalidFormatError: if private key is not in valid format
+        """
         try:
-            cls(key).calculate_public_key()
+            iwax.calculate_public_key(key)
         except iwax.WaxOperationFailedError:
-            return False
-        return True
+            raise PrivateKeyInvalidFormatError() from None
 
     @overload
     def calculate_public_key(self) -> PublicKey:
