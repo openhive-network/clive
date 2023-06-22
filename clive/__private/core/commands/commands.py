@@ -94,5 +94,5 @@ class Commands:
             beekeeper=self.__world.beekeeper,
         ).execute()
 
-    def update_node_data(self, *, account: Account) -> None:
-        UpdateNodeData(account=account, node=self.__world.node).execute()
+    def update_node_data(self, *, accounts: list[Account]) -> None:
+        UpdateNodeData(accounts=accounts, node=self.__world.node).execute()

@@ -286,10 +286,9 @@ class Clive(App[int], ManualReactive):
         self.post_message(BackgroundErrorOccurred(error))
 
     def __update_data_from_node(self) -> None:
-        for account in [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]:
-            if account.name:
-                logger.debug(f"Updating account: {account.name}")
-                self.world.commands.update_node_data(account=account)
+        self.world.commands.update_node_data(
+            accounts=[self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+        )
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")

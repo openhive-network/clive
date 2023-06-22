@@ -1,30 +1,33 @@
 from __future__ import annotations
 
+from collections import defaultdict
 from dataclasses import dataclass
-from datetime import datetime
 from math import ceil
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, cast
 
 from clive.__private.core.commands.command import Command
+from clive.__private.core.iwax import calculate_current_manabar_value, calculate_manabar_full_regeneration_time
 from clive.exceptions import CommunicationError
 from clive.models import Asset  # noqa: TCH001
-from schemas.database_api.fundaments_of_reponses import AccountItemFundament
 
 if TYPE_CHECKING:
+    from datetime import datetime
     from types import TracebackType
-
-    from typing_extensions import Self
 
     from clive.__private.core.node.node import Node
     from clive.__private.storage.mock_database import Account
+    from schemas.__private.hive_fields_custom_schemas import Manabar
+    from schemas.database_api.fundaments_of_reponses import AccountItemFundament
+    from schemas.database_api.response_schemas import GetDynamicGlobalProperties
+    from schemas.rc_api.fundaments_of_responses import RcAccount
 
 
 class SuppressNotExistingApi:
     def __init__(self, api: str) -> None:
         self.__api_name = api
 
-    def __enter__(self) -> Self:
-        return self
+    def __enter__(self) -> None:
+        return None
 
     def __exit__(self, _: type[Exception] | None, ex: Exception | None, __: TracebackType | None) -> bool:
         return ex is None or (  # if false, rethrows
@@ -43,95 +46,117 @@ class SuppressNotExistingApi:
 
 @dataclass
 class UpdateNodeData(Command[None]):
-    account: Account
+    accounts: list[Account]
     node: Node
 
     def execute(self) -> None:
+        @dataclass
+        class AccountApiInfo:
+            core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS] | None = None
+            rc: RcAccount[Asset.VESTS] | None = None
+
+        downvote_vote_ratio: Final[int] = 4
+        api_accounts: dict[str, AccountApiInfo] = defaultdict(lambda: AccountApiInfo())
+        account_names = [acc.name for acc in self.accounts]
+
+        with SuppressNotExistingApi("rc_api"):
+            rc_accounts = self.node.api.rc_api.find_rc_accounts(accounts=account_names).rc_accounts
+            for rc_account in rc_accounts:
+                api_accounts[rc_account.account].rc = rc_account
+            assert len(api_accounts) == len(self.accounts), "invalid amount of accounts after rc api call"
+
+        for core_account in self.node.api.database_api.find_accounts(accounts=account_names).accounts:
+            api_accounts[core_account.name].core = core_account
+        assert len(api_accounts) == len(self.accounts), "invalid amount of accounts after database api call"
+
+        dgpo = self.node.api.database_api.get_dynamic_global_properties()
+        for idx, account in enumerate(self.accounts):
+            assert account.name in api_accounts, "account is not present in queried collection"
+            info = api_accounts[account.name]
+            assert info.core is not None, "database did not returned any data?"
+
+            self.accounts[idx].data.hive_balance = info.core.balance
+            self.accounts[idx].data.hive_dollars = info.core.hbd_balance
+            self.accounts[idx].data.hive_savings = info.core.savings_balance
+            self.accounts[idx].data.hbd_savings = info.core.savings_hbd_balance
+            self.accounts[idx].data.hive_unclaimed = info.core.reward_hive_balance
+            self.accounts[idx].data.hbd_unclaimed = info.core.reward_hbd_balance
+            self.accounts[idx].data.hp_unclaimed = info.core.reward_vesting_balance
+            self.accounts[idx].data.recovery_account = info.core.recovery_account
+
+            (
+                self.accounts[idx].data.voting_power,
+                self.accounts[idx].data.hours_until_full_refresh_voting_power,
+            ) = self.__calculate_manabar(dgpo.time, int(info.core.post_voting_power.amount), info.core.voting_manabar)
+
+            (
+                self.accounts[idx].data.down_vote_power,
+                self.accounts[idx].data.hours_until_full_refresh_downvoting_power,
+            ) = self.__calculate_manabar(
+                dgpo.time, int(info.core.post_voting_power.amount) // downvote_vote_ratio, info.core.downvote_manabar
+            )
+
+            if info.rc is not None:
+                (
+                    self.accounts[idx].data.rc,
+                    self.accounts[idx].data.hours_until_full_refresh_rc,
+                ) = self.__calculate_manabar(dgpo.time, int(info.rc.max_rc), info.rc.rc_manabar)
+
+            self.accounts[idx].data.hive_power_balance = self.__calculate_hive_power(dgpo, info.core)
+            self.accounts[idx].data.reputation = self.__get_account_reputation(account.name)
+
+    def __get_account_reputation(self, account_name: str) -> int:
         with SuppressNotExistingApi("reputation_api"):
             reputation = self.node.api.reputation_api.get_account_reputations(
-                account_lower_bound=self.account.name, limit=1
+                account_lower_bound=account_name, limit=1
             ).reputations
-            assert len(reputation) == 1 and reputation[0].account == self.account.name
-            self.account.data.reputation = int(reputation[0].reputation)
+            assert len(reputation) == 1 and reputation[0].account == account_name, "reputation data malformed"
+            return int(reputation[0].reputation)
+        return 0
 
-        percent_100: Final[int] = 100
-        with SuppressNotExistingApi("rc_api"):
-            rc_accounts = self.node.api.rc_api.find_rc_accounts(accounts=[self.account.name]).rc_accounts
-            refreshed_rc_accounts = self.node.api.rc_api.find_rc_accounts(
-                accounts=[self.account.name], refresh_mana=True
-            ).rc_accounts
-            assert rc_accounts[0].account == self.account.name
-            assert refreshed_rc_accounts[0].account == self.account.name
-            crca, rrca = rc_accounts[0], refreshed_rc_accounts[0]  # current rc account, refreshed rc account
-            max_rc = int(crca.max_rc)
-            current_rc = int(crca.rc_manabar.current_mana)
-            self.account.data.rc = (current_rc * percent_100) // max_rc
-
-            seconds_since_last_refresh = int(rrca.rc_manabar.last_update_time) - int(crca.rc_manabar.last_update_time)
-            self.account.data.hours_until_full_refresh_rc = 0
-            if seconds_since_last_refresh > 0:
-                refreshed_rc = int(rrca.rc_manabar.current_mana)
-                regenerated_mana_since_last_refresh = refreshed_rc - current_rc
-                rc_mana_regen_per_second = regenerated_mana_since_last_refresh / seconds_since_last_refresh
-                missing_rc_mana = max_rc - current_rc
-                amount_of_seconds_in_hour: Final[int] = 3600
-
-                self.account.data.hours_until_full_refresh_rc = (
-                    int(missing_rc_mana / rc_mana_regen_per_second) // amount_of_seconds_in_hour
-                )
-
-        response = self.node.api.database_api.find_accounts(accounts=[self.account.name]).accounts
-        accounts = list(filter(lambda x: isinstance(x, AccountItemFundament) and x.name == self.account.name, response))
-        assert len(accounts) == 1 and isinstance(accounts[0], AccountItemFundament)
-        account: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS] = accounts[0]
-
-        self.account.data.hive_balance = account.balance
-        self.account.data.hive_dollars = account.hbd_balance
-        self.account.data.hive_savings = account.savings_balance
-        self.account.data.hbd_savings = account.savings_hbd_balance
-        self.account.data.hive_unclaimed = account.reward_hive_balance
-        self.account.data.hbd_unclaimed = account.reward_hbd_balance
-        self.account.data.hp_unclaimed = account.reward_vesting_balance
-
-        # max manabars
-        downvote_vote_ratio: Final[int] = 4
-        max_voting_manabar = int(account.post_voting_power.amount)
-        max_downvoting_manabar = max_voting_manabar // downvote_vote_ratio
-
-        # manabars current fulfillment
-        self.account.data.voting_power = int(account.voting_manabar.current_mana) * percent_100 // max_voting_manabar
-        self.account.data.down_vote_power = (
-            int(account.downvote_manabar.current_mana) * percent_100 // max_downvoting_manabar
-        )
-
-        # time to fully refresh
-        # change after merge: https://gitlab.syncad.com/hive/hive/-/issues/507
-        amount_of_days_to_fully_regen: Final[int] = 5
-        amount_of_hours_in_day: Final[int] = 24
-        hours_to_filly_regen = amount_of_days_to_fully_regen * amount_of_hours_in_day
-
-        # voting manabar regen
-        self.account.data.hours_until_full_refresh_voting_power = int(
-            (1.0 - (self.account.data.voting_power / percent_100)) * hours_to_filly_regen
-        )
-
-        # downvoting manabar regen
-        self.account.data.hours_until_full_refresh_downvoting_power = int(
-            (1.0 - (self.account.data.down_vote_power / percent_100)) * hours_to_filly_regen
-        )
-
-        # calculate hive_power_balance
-        dgpo = self.node.api.database_api.get_dynamic_global_properties()
+    def __calculate_hive_power(
+        self,
+        dgpo: GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS],
+        account: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS],
+    ) -> int:
         account_vesting_shares = (
             int(account.vesting_shares.amount)
             - int(account.delegated_vesting_shares.amount)
             + int(account.received_vesting_shares.amount)
         )
-        self.account.data.hive_power_balance = ceil(
-            int(account_vesting_shares)
-            * int(dgpo.total_vesting_fund_hive.amount)
-            / int(dgpo.total_vesting_shares.amount)
-            / 10 ** dgpo.total_reward_fund_hive.get_asset_information().precision
+        return cast(
+            int,
+            ceil(
+                int(account_vesting_shares)
+                * int(dgpo.total_vesting_fund_hive.amount)
+                / int(dgpo.total_vesting_shares.amount)
+                / (10 ** dgpo.total_reward_fund_hive.get_asset_information().precision)
+            ),
         )
 
-        self.account.data.last_refresh = datetime.now().replace(microsecond=0)
+    def __calculate_manabar(self, now: datetime, max_mana: int, manabar: Manabar) -> tuple[int, float]:
+        amount_of_seconds_in_hour: Final[int] = 3600
+        percent_100: Final[int] = 100
+
+        voting_power_from_api = int(manabar.current_mana)
+        voting_power_last_update = int(manabar.last_update_time)
+        current_value = (
+            calculate_current_manabar_value(
+                now=int(now.timestamp()),
+                max_mana=max_mana,
+                current_mana=voting_power_from_api,
+                last_update_time=voting_power_last_update,
+            )
+            * percent_100
+        ) // max_mana
+
+        hours_to_replenish = (
+            calculate_manabar_full_regeneration_time(
+                now=int(now.timestamp()),
+                max_mana=max_mana,
+                current_mana=voting_power_from_api,
+                last_update_time=voting_power_last_update,
+            )
+            - now
+        ).total_seconds() / amount_of_seconds_in_hour
+        return current_value, hours_to_replenish
