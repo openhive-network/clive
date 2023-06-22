@@ -61,6 +61,17 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         )
         self.__key_file_path: Path | None = None
 
+    @property
+    def _private_key_raw(self) -> str:
+        return self.__key_input.value
+
+    @property
+    def _private_key(self) -> PrivateKey:
+        """
+        :raises PrivateKeyInvalidFormatError: if private key is not in valid format
+        """
+        return PrivateKey(value=self._private_key_raw, file_path=self.__key_file_path)
+
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle(self._title())
@@ -85,11 +96,9 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     def on_input_changed(self, event: Input.Changed) -> None:
         if event.input == self.__key_input:
             try:
-                private_key = PrivateKey(self._get_key())
+                self.__public_key_input.value = self._private_key.calculate_public_key().value
             except PrivateKeyInvalidFormatError:
                 self.__public_key_input.value = "Invalid form of private key"
-            else:
-                self.__public_key_input.value = private_key.calculate_public_key().value
 
     def _save(self, reraise_exception: bool = False) -> None:
         if not self._is_key_provided():
@@ -106,8 +115,9 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
                 raise
             return
 
-        private_key = PrivateKey(self._get_key(), self.__key_file_path)
-        self.app.post_message_to_everyone(self.Saved(key_alias=self.__get_authority_name(), private_key=private_key))
+        self.app.post_message_to_everyone(
+            self.Saved(key_alias=self.__get_authority_name(), private_key=self._private_key)
+        )
 
     def _title(self) -> str:
         return ""
@@ -127,11 +137,8 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     def __get_authority_name(self) -> str:
         return self.__key_alias_input.value
 
-    def _get_key(self) -> str:
-        return self.__key_input.value
-
     def _is_key_provided(self) -> bool:
-        return bool(self._get_key())
+        return bool(self._private_key_raw)
 
     def _validate(self) -> None:
         """
@@ -141,16 +148,20 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
         try:
-            private_key = PrivateKey(self._get_key())
+            self.__check_if_authority_already_exists(self.__get_authority_name(), self._private_key)
         except PrivateKeyInvalidFormatError:
             raise PrivateKeyInvalidFormatFormError("Invalid form of private key") from None
-        else:
-            self.__check_if_authority_already_exists(self.__get_authority_name(), private_key)
 
     def __generate_key_alias(self) -> str:
         return f"{self.context.working_account.name}@active"
 
     def __check_if_authority_already_exists(self, key_alias: str, private_key: PrivateKey) -> None:
+        """
+        Raises:
+            AliasAlreadyInUseError: if alias is already in use
+            PrivateKeyAlreadyInUseError: if private key is already in use
+        """
+
         def __alias_already_exists() -> bool:
             return key_alias in (key.alias for key in self.context.working_account.keys)
 
