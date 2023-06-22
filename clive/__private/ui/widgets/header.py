@@ -4,19 +4,22 @@ from typing import TYPE_CHECKING
 
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Header as TextualHeader
-from textual.widgets import Label
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from textual import events
     from textual.app import ComposeResult
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.profile_data import ProfileData
+    from clive.__private.storage.mock_database import Account
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -30,17 +33,34 @@ class HeaderIcon(TextualHeaderIcon):
         self.icon = "-" if expanded else "+"
 
 
-class AlarmsSummary(Container):
+class AlarmDisplay(DynamicLabel):
+    def __init__(
+        self,
+        account_getter: Callable[[ProfileData], list[Account]],
+        init: str | None = None,
+        id_: str | None = None,
+        classes: str | None = None,
+    ) -> None:
+        def update_callback(pd: ProfileData) -> str:
+            class_name = "-no-alarm"
+            alarm_count = sum([acc.data.warnings for acc in account_getter(pd)])
+            if alarm_count:
+                self.remove_class(class_name)
+                return f"!{alarm_count}x ALARMS!"
+            self.add_class(class_name)
+            return "No alarms"
+
+        super().__init__(self.app.world, "profile_data", update_callback, init=init, id_=id_, classes=classes)
+
+
+class AlarmsSummary(Container, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
-        self.label = Label("!6x ALARMS!")
+
+        self.__label = AlarmDisplay(lambda pd: [pd.working_account, *pd.watched_accounts])
 
     def compose(self) -> ComposeResult:
-        yield self.label
-
-    def __set_no_alarms(self) -> None:
-        self.label.update("No alarms")
-        self.label.toggle_class("-no-alarms")
+        yield self.__label
 
 
 class Header(TextualHeader, CliveWidget):

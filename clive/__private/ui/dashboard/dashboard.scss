@@ -45,11 +45,6 @@ DashboardBase AccountInfo {
   width: auto;
 }
 
-DashboardBase AccountInfo #account-alarms {
-  color: $error;
-  text-style: bold;
-}
-
 /* BalanceStats */
 
 DashboardBase BalanceStats {

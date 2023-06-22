@@ -13,6 +13,7 @@ from clive.__private.ui.terminal.command_line import CommandLine
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.header import AlarmDisplay
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 
@@ -68,7 +69,7 @@ class BalanceStats(AccountReferencingWidget):
         yield create_dynamic_label(
             self.app.world,
             self._account,
-            lambda _, acc: f"{acc.data.hours_until_full_refresh_rc}h"
+            lambda _, acc: f"{acc.data.hours_until_full_refresh_rc :.2f}h"
             if acc.data.hours_until_full_refresh_rc
             else self.full_caption,
             "time",
@@ -84,7 +85,7 @@ class BalanceStats(AccountReferencingWidget):
         yield create_dynamic_label(
             self.app.world,
             self._account,
-            lambda _, acc: f"{acc.data.hours_until_full_refresh_voting_power}h"
+            lambda _, acc: f"{acc.data.hours_until_full_refresh_voting_power :.2f}h"
             if acc.data.hours_until_full_refresh_voting_power
             else self.full_caption,
             "time",
@@ -100,7 +101,7 @@ class BalanceStats(AccountReferencingWidget):
         yield create_dynamic_label(
             self.app.world,
             self._account,
-            lambda _, acc: f"{acc.data.hours_until_full_refresh_downvoting_power}h"
+            lambda _, acc: f"{acc.data.hours_until_full_refresh_downvoting_power :.2f}h"
             if acc.data.hours_until_full_refresh_downvoting_power
             else self.full_caption,
             "time",
@@ -148,10 +149,12 @@ class ActivityStats(AccountReferencingWidget):
 class AccountInfo(Container, AccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield EllipsedStatic(f"{self._account.name}")
-        yield Label("2x ALARMS!", id="account-alarms")
+        yield AlarmDisplay(lambda _: [self._account], id_="account-alarms")
         yield Static()
         yield Label("LAST:")
-        yield Label("Transaction: 10.01.23")
+        yield DynamicLabel(
+            self.app.world, "profile_data", lambda _: f"Transaction: {self._account.data.last_transaction}"
+        )
         yield DynamicLabel(self.app.world, "profile_data", lambda _: f"Update: {self._account.data.last_refresh}")
 
 

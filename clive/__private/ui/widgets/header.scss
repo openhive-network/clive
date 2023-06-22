@@ -41,14 +41,3 @@ Header AlarmsSummary {
   width: 1fr;
   align: center middle;
 }
-
-Header AlarmsSummary Label {
-  text-style: bold;
-  color: $text;
-  background: $error-lighten-3;
-  padding: 0 1;
-}
-
-Header AlarmsSummary Label.-no-alarms {
-  background: $success-lighten-3;
-}

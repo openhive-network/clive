@@ -9,3 +9,14 @@ Footer {
 .-hidden {
     display: none;
 }
+
+AlarmDisplay {
+  text-style: bold;
+  color: $text;
+  background: $error-lighten-3;
+  padding: 0 1;
+}
+
+.-no-alarm {
+  background: $success-lighten-3;
+}
