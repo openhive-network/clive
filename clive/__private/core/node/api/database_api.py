@@ -206,7 +206,9 @@ class DatabaseApi(Api):
         raise NotImplementedError()
 
     @Api.method
-    def list_change_recovery_account_requests(self) -> database_api.ListChangeRecoveryAccountRequests:
+    def list_change_recovery_account_requests(
+        self, start: str | tuple[datetime, str], limit: int, order: DatabaseApi.SORT_TYPES
+    ) -> database_api.ListChangeRecoveryAccountRequests:
         raise NotImplementedError()
 
     @Api.method
