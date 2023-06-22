@@ -62,6 +62,14 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         self.__key_file_path: Path | None = None
 
     @property
+    def _is_key_provided(self) -> bool:
+        return bool(self._private_key_raw)
+
+    @property
+    def _key_alias_raw(self) -> str:
+        return self.__key_alias_input.value
+
+    @property
     def _private_key_raw(self) -> str:
         return self.__key_input.value
 
@@ -101,7 +109,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
                 self.__public_key_input.value = "Invalid form of private key"
 
     def _save(self, reraise_exception: bool = False) -> None:
-        if not self._is_key_provided():
+        if not self._is_key_provided:
             Notification("Not saving any private key, because none has been provided", category="warning").show()
             return
 
@@ -115,9 +123,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
                 raise
             return
 
-        self.app.post_message_to_everyone(
-            self.Saved(key_alias=self.__get_authority_name(), private_key=self._private_key)
-        )
+        self.app.post_message_to_everyone(self.Saved(key_alias=self._key_alias_raw, private_key=self._private_key))
 
     def _title(self) -> str:
         return ""
@@ -134,12 +140,6 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     def _default_key(self) -> str:
         return typing.cast(str, settings.get("secrets.default_key", ""))
 
-    def __get_authority_name(self) -> str:
-        return self.__key_alias_input.value
-
-    def _is_key_provided(self) -> bool:
-        return bool(self._private_key_raw)
-
     def _validate(self) -> None:
         """
         Raises:
@@ -148,7 +148,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
         try:
-            self.__check_if_authority_already_exists(self.__get_authority_name(), self._private_key)
+            self.__check_if_authority_already_exists(self._key_alias_raw, self._private_key)
         except PrivateKeyInvalidFormatError:
             raise PrivateKeyInvalidFormatFormError("Invalid form of private key") from None
 
