@@ -33,22 +33,25 @@ def default_vests() -> Asset.HIVE:
 
 @dataclass
 class NodeData:
-    reputation: int = 0
+    down_vote_power: int = 0
+    hbd_savings: Asset.HBD = field(default_factory=default_hbd)
+    hbd_unclaimed: Asset.HBD = field(default_factory=default_hbd)
     hive_balance: Asset.HIVE = field(default_factory=default_hive)
     hive_dollars: Asset.HBD = field(default_factory=default_hbd)
-    hive_savings: Asset.HIVE = field(default_factory=default_hive)
-    hbd_savings: Asset.HBD = field(default_factory=default_hbd)
-    hive_unclaimed: Asset.HIVE = field(default_factory=default_hive)
-    hbd_unclaimed: Asset.HBD = field(default_factory=default_hbd)
-    hp_unclaimed: Asset.VESTS = field(default_factory=default_vests)
-    voting_power: int = 0
-    down_vote_power: int = 0
-    rc: int = 0
     hive_power_balance: int = 0
-    hours_until_full_refresh_voting_power: int = 0
-    hours_until_full_refresh_downvoting_power: int = 0
-    hours_until_full_refresh_rc: int = 0
-    last_refresh: datetime = datetime.now()
+    hive_savings: Asset.HIVE = field(default_factory=default_hive)
+    hive_unclaimed: Asset.HIVE = field(default_factory=default_hive)
+    hours_until_full_refresh_downvoting_power: float = 0
+    hours_until_full_refresh_rc: float = 0
+    hours_until_full_refresh_voting_power: float = 0
+    hp_unclaimed: Asset.VESTS = field(default_factory=default_vests)
+    last_refresh: datetime = field(default_factory=lambda: datetime.now())
+    last_transaction: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
+    rc: int = 0
+    recovery_account: str = ""
+    reputation: int = 0
+    voting_power: int = 0
+    warnings: int = 0
 
 
 @dataclass
