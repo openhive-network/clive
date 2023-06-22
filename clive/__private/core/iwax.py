@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import datetime
 from typing import TYPE_CHECKING
 
 import wax
@@ -54,3 +55,21 @@ def generate_private_key() -> PrivateKey:
     result = wax.generate_private_key()
     __validate_wax_response(result)
     return PrivateKey(value=result.result.decode())
+
+
+def calculate_manabar_full_regeneration_time(
+    now: int, max_mana: int, current_mana: int, last_update_time: int
+) -> datetime.datetime:
+    result = wax.calculate_manabar_full_regeneration_time(
+        now=now, max_mana=max_mana, current_mana=current_mana, last_update_time=last_update_time
+    )
+    __validate_wax_response(result)
+    return datetime.datetime.utcfromtimestamp(int(result.result.decode()))
+
+
+def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, last_update_time: int) -> int:
+    result = wax.calculate_current_manabar_value(
+        now=now, max_mana=max_mana, current_mana=current_mana, last_update_time=last_update_time
+    )
+    __validate_wax_response(result)
+    return int(result.result.decode())
