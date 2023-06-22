@@ -60,12 +60,12 @@ class AccountWitnessVote(CartBasedScreen):
                 """Default value of approve is True, so if empty auto-fill with this"""
                 return AccountWitnessVoteOperation(
                     account=str(self.app.world.profile_data.working_account.name),
-                    witness=self.__witness_input.value,
-                    approve=self.__approve_input.value,
+                    witness=str(self.__witness_input.value),
+                    approve=bool(self.__approve_input.value),
                 )
             return AccountWitnessVoteOperation(  # noqa: TRY300
                 account=str(self.app.world.profile_data.working_account.name),
-                witness=self.__witness_input.value,
+                witness=str(self.__witness_input.value),
             )
 
         except ValidationError as error:

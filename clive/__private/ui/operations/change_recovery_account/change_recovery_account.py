@@ -49,8 +49,8 @@ class ChangeRecoveryAccount(CartBasedScreen):
     def create_operation(self) -> Operation | None:
         try:
             return ChangeRecoveryAccountOperation(
-                account_to_recover=str(self.__account_to_recover_input),
-                new_recovery_account=str(self.__new_recovery_account_input),
+                account_to_recover=str(self.__account_to_recover_input.value),
+                new_recovery_account=str(self.__new_recovery_account_input.value),
             )
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()

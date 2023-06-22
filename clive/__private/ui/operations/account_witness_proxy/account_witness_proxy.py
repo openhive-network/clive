@@ -49,8 +49,8 @@ class AccountWitnessProxy(CartBasedScreen):
     def create_operation(self) -> Operation | None:
         try:
             return AccountWitnessProxyOperation(
-                account=self.__account_input,
-                proxy=self.__proxy_input,
+                account=str(self.__account_input.value),
+                proxy=str(self.__proxy_input.value),
             )
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
