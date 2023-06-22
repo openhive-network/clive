@@ -81,7 +81,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         if event.input == self.__key_input:
             key_raw = self._get_key()
 
-            if PrivateKey.validate_key(key_raw):
+            if PrivateKey.validate(key_raw):
                 self.__public_key.value = PrivateKey(key_raw).calculate_public_key().value
             else:
                 self.__public_key.value = "Invalid form of private key"
@@ -136,7 +136,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
         private_key_raw = self._get_key()
-        if not PrivateKey.validate_key(private_key_raw):
+        if not PrivateKey.validate(private_key_raw):
             raise PrivateKeyError(private_key_raw)
 
         self.__check_if_authority_already_exists(self.__get_authority_name(), PrivateKey(private_key_raw))

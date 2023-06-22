@@ -68,7 +68,7 @@ class PrivateKey:
         return file_path.read_text().strip()
 
     @classmethod
-    def validate_key(cls, key: str) -> bool:
+    def validate(cls, key: str) -> bool:
         try:
             cls(key).calculate_public_key()
         except iwax.WaxOperationFailedError:
