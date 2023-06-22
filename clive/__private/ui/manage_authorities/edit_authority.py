@@ -43,3 +43,6 @@ class EditAuthority(AuthorityForm):
 
     def _default_authority_name(self) -> str:
         return self.authority.alias
+
+    def _default_public_key(self) -> str:
+        return self.authority.value

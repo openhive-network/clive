@@ -51,6 +51,9 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
 
         self.__key_alias_input = Input(self.__generate_key_alias(), placeholder="e.g. My active key")
         self.__key_input = Input(self._default_key(), placeholder="You can paste your key here")
+        self.__public_key = Input(
+            self._default_public_key(), placeholder="Public key will be calculated here", disabled=True
+        )
         self.__key_file_path: Path | None = None
 
     def create_main_panel(self) -> ComposeResult:
@@ -63,6 +66,8 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
                 yield self.__key_alias_input
                 yield Static("Key:", classes="label")
                 yield self.__key_input
+                yield Static("Public key:", classes="label")
+                yield self.__public_key
 
     def action_load_from_file(self) -> None:
         self.app.push_screen(SelectFile())
@@ -71,6 +76,15 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
+
+    def on_input_changed(self, event: Input.Changed) -> None:
+        if event.input == self.__key_input:
+            key_raw = self._get_key()
+
+            if PrivateKey.validate_key(key_raw):
+                self.__public_key.value = PrivateKey(key_raw).calculate_public_key().value
+            else:
+                self.__public_key.value = "Invalid form of private key"
 
     def _save(self, reraise_exception: bool = False) -> None:
         if not self._is_key_provided():
@@ -97,6 +111,9 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         return ""
 
     def _default_authority_name(self) -> str:
+        return ""
+
+    def _default_public_key(self) -> str:
         return ""
 
     def _default_key(self) -> str:
