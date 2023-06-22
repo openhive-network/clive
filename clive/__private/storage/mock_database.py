@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from typing import TYPE_CHECKING, Any, overload
 
@@ -32,8 +32,19 @@ def default_vests() -> Asset.HIVE:
 
 
 @dataclass
+class Manabar:
+    value: int = 0
+    max_value: int = 1
+    full_regeneration: timedelta = field(default_factory=timedelta)
+
+    @property
+    def percentage(self) -> float:
+        assert self.max_value > 0
+        return (self.value * 100.0) / self.max_value
+
+
+@dataclass
 class NodeData:
-    down_vote_power: int = 0
     hbd_savings: Asset.HBD = field(default_factory=default_hbd)
     hbd_unclaimed: Asset.HBD = field(default_factory=default_hbd)
     hive_balance: Asset.HIVE = field(default_factory=default_hive)
@@ -41,17 +52,15 @@ class NodeData:
     hive_power_balance: int = 0
     hive_savings: Asset.HIVE = field(default_factory=default_hive)
     hive_unclaimed: Asset.HIVE = field(default_factory=default_hive)
-    hours_until_full_refresh_downvoting_power: float = 0
-    hours_until_full_refresh_rc: float = 0
-    hours_until_full_refresh_voting_power: float = 0
     hp_unclaimed: Asset.VESTS = field(default_factory=default_vests)
     last_refresh: datetime = field(default_factory=lambda: datetime.now())
     last_transaction: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
-    rc: int = 0
     recovery_account: str = ""
     reputation: int = 0
-    voting_power: int = 0
     warnings: int = 0
+    rc_manabar: Manabar = field(default_factory=Manabar)
+    vote_manabar: Manabar = field(default_factory=Manabar)
+    downvote_manabar: Manabar = field(default_factory=Manabar)
 
 
 @dataclass

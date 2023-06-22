@@ -9,17 +9,20 @@ from typing import TYPE_CHECKING, Final, cast
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.iwax import calculate_current_manabar_value, calculate_manabar_full_regeneration_time
 from clive.exceptions import CommunicationError
-from clive.models import Asset  # noqa: TCH001
+from clive.models import Asset
 
 if TYPE_CHECKING:
     from types import TracebackType
 
     from clive.__private.core.node.node import Node
+    from clive.__private.storage import mock_database
     from clive.__private.storage.mock_database import Account
     from schemas.__private.hive_fields_custom_schemas import Manabar
     from schemas.database_api.fundaments_of_reponses import AccountItemFundament
     from schemas.database_api.response_schemas import GetDynamicGlobalProperties
     from schemas.rc_api.fundaments_of_responses import RcAccount
+
+    dgpo_t = GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS]
 
 
 class SuppressNotExistingApi:
@@ -84,23 +87,19 @@ class UpdateNodeData(Command):
             self.accounts[idx].data.hp_unclaimed = info.core.reward_vesting_balance
             self.accounts[idx].data.recovery_account = info.core.recovery_account
 
-            (
-                self.accounts[idx].data.voting_power,
-                self.accounts[idx].data.hours_until_full_refresh_voting_power,
-            ) = self.__calculate_manabar(dgpo.time, int(info.core.post_voting_power.amount), info.core.voting_manabar)
+            self.__update_manabar(
+                dgpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
+            )
 
-            (
-                self.accounts[idx].data.down_vote_power,
-                self.accounts[idx].data.hours_until_full_refresh_downvoting_power,
-            ) = self.__calculate_manabar(
-                dgpo.time, int(info.core.post_voting_power.amount) // downvote_vote_ratio, info.core.downvote_manabar
+            self.__update_manabar(
+                dgpo,
+                int(info.core.post_voting_power.amount) // downvote_vote_ratio,
+                info.core.downvote_manabar,
+                account.data.downvote_manabar,
             )
 
             if info.rc is not None:
-                (
-                    self.accounts[idx].data.rc,
-                    self.accounts[idx].data.hours_until_full_refresh_rc,
-                ) = self.__calculate_manabar(dgpo.time, int(info.rc.max_rc), info.rc.rc_manabar)
+                self.__update_manabar(dgpo, int(info.rc.max_rc), info.rc.rc_manabar, account.data.rc_manabar)
 
             self.accounts[idx].data.hive_power_balance = self.__calculate_hive_power(dgpo, info.core)
             self.accounts[idx].data.reputation = self.__get_account_reputation(account.name)
@@ -182,7 +181,7 @@ class UpdateNodeData(Command):
 
     def __calculate_hive_power(
         self,
-        dgpo: GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS],
+        dgpo: dgpo_t,
         account: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS],
     ) -> int:
         account_vesting_shares = (
@@ -193,36 +192,40 @@ class UpdateNodeData(Command):
         return cast(
             int,
             ceil(
-                int(account_vesting_shares)
-                * int(dgpo.total_vesting_fund_hive.amount)
-                / int(dgpo.total_vesting_shares.amount)
+                int(self.__vests_to_hive(account_vesting_shares, dgpo).amount)
                 / (10 ** dgpo.total_reward_fund_hive.get_asset_information().precision)
             ),
         )
 
-    def __calculate_manabar(self, now: datetime, max_mana: int, manabar: Manabar) -> tuple[int, float]:
-        amount_of_seconds_in_hour: Final[int] = 3600
-        percent_100: Final[int] = 100
+    def __update_manabar(self, dgpo: dgpo_t, max_mana: int, manabar: Manabar, dest: mock_database.Manabar) -> None:
+        power_from_api = int(manabar.current_mana)
+        last_update = int(manabar.last_update_time)
+        dest.max_value = int(self.__vests_to_hive(max_mana, dgpo).amount)
+        dest.value = int(
+            self.__vests_to_hive(
+                calculate_current_manabar_value(
+                    now=int(dgpo.time.timestamp()),
+                    max_mana=max_mana,
+                    current_mana=power_from_api,
+                    last_update_time=last_update,
+                ),
+                dgpo,
+            ).amount
+        )
 
-        voting_power_from_api = int(manabar.current_mana)
-        voting_power_last_update = int(manabar.last_update_time)
-        current_value = (
-            calculate_current_manabar_value(
-                now=int(now.timestamp()),
-                max_mana=max_mana,
-                current_mana=voting_power_from_api,
-                last_update_time=voting_power_last_update,
-            )
-            * percent_100
-        ) // max_mana
-
-        hours_to_replenish = (
+        dest.full_regeneration = (
             calculate_manabar_full_regeneration_time(
-                now=int(now.timestamp()),
+                now=int(dgpo.time.timestamp()),
                 max_mana=max_mana,
-                current_mana=voting_power_from_api,
-                last_update_time=voting_power_last_update,
+                current_mana=power_from_api,
+                last_update_time=last_update,
             )
-            - now
-        ).total_seconds() / amount_of_seconds_in_hour
-        return current_value, hours_to_replenish
+            - dgpo.time
+        )
+
+    def __vests_to_hive(self, amount: int | Asset.VESTS, dgpo: dgpo_t) -> Asset.HIVE:
+        if isinstance(amount, Asset.VESTS):
+            amount = int(amount.amount)
+        return Asset.HIVE(
+            amount=int(amount * int(dgpo.total_vesting_fund_hive.amount) / int(dgpo.total_vesting_shares.amount))
+        )

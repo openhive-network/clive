@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+import humanize
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
 from textual.widgets import Label, Static
 
-from clive.__private.storage.mock_database import Account, AccountType, WorkingAccount
+from clive.__private.storage.mock_database import Account, AccountType, Manabar, WorkingAccount
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
@@ -51,69 +52,44 @@ def create_dynamic_label(
     return DynamicLabel(world, "profile_data", lambda pd: foo(pd, account) if account.name else "NULL", classes=classes)
 
 
+class ManabarRepresentation(Container, CliveWidget):
+    def __init__(self, manabar: Manabar, name: str, id_: str | None = None, classes: str | None = None) -> None:
+        self.__manabar = manabar
+        self.__name = name
+        super().__init__(id=id_, classes=classes)
+
+    def compose(self) -> ComposeResult:
+        suppressed_units: Final[list[str]] = ["minutes", "seconds", "microseconds"]
+        yield DynamicLabel(
+            self.app.world,
+            "profile_data",
+            lambda _: f"{self.__manabar.percentage :.2f}% {self.__name}",
+            classes="percentage",
+        )
+        yield DynamicLabel(
+            self.app.world,
+            "profile_data",
+            lambda _: f"{humanize.naturalsize(self.__manabar.value, binary=False)}".replace("B", "")
+            .upper()
+            .replace(" ", "")
+            + " HP",
+            classes="hivepower-value",
+        )
+        yield DynamicLabel(
+            self.app.world,
+            "profile_data",
+            lambda _: f"{humanize.precisedelta(self.__manabar.full_regeneration, suppress=suppressed_units)}",
+            classes="time",
+        )
+
+
 class BalanceStats(AccountReferencingWidget):
     full_caption: Final[str] = "full!"
 
     def compose(self) -> ComposeResult:
-        yield Static("RC", classes="title")
-        yield EllipsedStatic("VOTING", classes="title title-variant")
-        yield EllipsedStatic("DOWNVOTING", classes="title")
-        yield EllipsedStatic("HIVEPOWER", classes="title title-variant")
-        # RC
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.rc}%",
-            "percentage",
-        )
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.hours_until_full_refresh_rc :.2f}h"
-            if acc.data.hours_until_full_refresh_rc
-            else self.full_caption,
-            "time",
-        )
-
-        # VOTING
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.voting_power}%",
-            "percentage",
-        )
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.hours_until_full_refresh_voting_power :.2f}h"
-            if acc.data.hours_until_full_refresh_voting_power
-            else self.full_caption,
-            "time",
-        )
-
-        # DOWNVOTING
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.down_vote_power}%",
-            "percentage",
-        )
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.hours_until_full_refresh_downvoting_power :.2f}h"
-            if acc.data.hours_until_full_refresh_downvoting_power
-            else self.full_caption,
-            "time",
-        )
-
-        # HIVEPOWER
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
-            lambda _, acc: f"{acc.data.hive_power_balance:_} HP".replace("_", " "),
-            "hivepower-value",
-        )
+        yield ManabarRepresentation(self._account.data.rc_manabar, "RC", classes="even-manabar")
+        yield ManabarRepresentation(self._account.data.vote_manabar, "VOTING", classes="odd-manabar")
+        yield ManabarRepresentation(self._account.data.downvote_manabar, "DOWNVOTING", classes="even-manabar")
 
 
 class ActivityStats(AccountReferencingWidget):

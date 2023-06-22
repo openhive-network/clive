@@ -32,7 +32,7 @@ DashboardBase AccountRow {
 
 
 DashboardBase AccountRow.watched {
-  border-bottom:  $primary-lighten-1;
+  border-bottom: $primary-lighten-1;
 }
 
 DashboardBase AccountRow #tables {
@@ -48,43 +48,45 @@ DashboardBase AccountInfo {
 /* BalanceStats */
 
 DashboardBase BalanceStats {
-  layout: grid;
-  grid-size: 7 2;
   height: 2;
   margin-left: 2;
+  layout: grid;
+  grid-size: 3 1;
 }
 
-DashboardBase BalanceStats Static {
+
+DashboardBase BalanceStats .even-manabar {
+  background: $primary-lighten-1;
+}
+
+DashboardBase BalanceStats .odd-manabar {
+  background: $primary-lighten-2;
+}
+
+DashboardBase ManabarRepresentation {
+  layout: grid;
+  grid-size: 10 2;
+  width: 100%;
+  height: 2;
+}
+
+DashboardBase ManabarRepresentation DynamicLabel {
   text-align: center;
+  width: 100%;
 }
 
-DashboardBase BalanceStats DynamicLabel {
-  text-align: center;
+DashboardBase ManabarRepresentation .percentage {
+  column-span: 10;
 }
 
-DashboardBase BalanceStats .title {
-  color: $text;
-  column-span: 2;
-  background: $accent-lighten-3;
-}
-
-DashboardBase BalanceStats .title-variant {
-  background: $accent-lighten-2;
-}
-
-DashboardBase BalanceStats .percentage {
-  width: 1fr;
-  background: $panel-lighten-1;
-}
-
-DashboardBase BalanceStats .time {
-  width: 1fr;
+DashboardBase ManabarRepresentation .time {
   background: $panel-lighten-2;
+  column-span: 6;
 }
 
-DashboardBase BalanceStats .hivepower-value {
-  width: 1fr;
+DashboardBase ManabarRepresentation .hivepower-value {
   background: $panel-lighten-1;
+  column-span: 4;
 }
 
 /* ActivityStats */
