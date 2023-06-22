@@ -1,0 +1,19 @@
+UpdateProposal Body {
+  grid-size: 2;
+  grid-columns: 20 2fr 1fr;
+  grid-rows: 4 4 4 4 4;
+  height: 28;
+  margin: 0 4;
+  background: $panel;
+}
+
+UpdateProposal .label {
+  padding: 0 3;
+  text-align: right;
+  margin: 3 1;
+}
+
+UpdateProposal Input{
+    margin: 2 0;
+    width: 120;
+}

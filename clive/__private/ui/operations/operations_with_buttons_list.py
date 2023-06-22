@@ -14,6 +14,7 @@ from clive.__private.ui.operations.covnert.covnert import Convert
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.__private.ui.operations.transfer_to_savings.transfer_to_savings import TransferToSavings
 from clive.__private.ui.operations.transfer_to_vesting.transfer_to_vesting import TransferToVesting
+from clive.__private.ui.operations.update_proposal.update_proposal import UpdateProposal
 from clive.__private.ui.operations.update_proposal_votes.update_proposal_votes import UpdateProposalVotes
 from clive.__private.ui.operations.vote.vote import Vote
 from clive.__private.ui.operations.withdraw_vesting.withdraw_vesting import WithdrawVesting
@@ -33,4 +34,5 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "claim-account-button": ClaimAccount,
     "withdraw-vesting-button": WithdrawVesting,
     "update-proposal-votes-button": UpdateProposalVotes,
+    "update-proposal-button": UpdateProposal,
 }

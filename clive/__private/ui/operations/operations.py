@@ -40,6 +40,7 @@ class Operations(CartBasedScreen):
             yield CliveButton("Claim account", id_="claim-account-button")
             yield CliveButton("Withdraw vesting", id_="withdraw-vesting-button")
             yield CliveButton("Update proposal votes", id_="update-proposal-votes-button")
+            yield CliveButton("Update proposal", id_="update-proposal-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
