@@ -65,7 +65,7 @@ class UpdateProposal(CartBasedScreen):
                 daily_pay=Asset.hbd(float(self.__daily_pay_input.value)),
                 subject=str(self.__subject_input.value),
                 permlink=str(self.__permlink_input.value),
-                extensions=self.__extensions_input.value,
+                extensions=self.__extensions_input.value,  # Notice: this operation is not working, cause it was mistake in schemas, need to update schemas
             )
 
         except ValidationError as error:

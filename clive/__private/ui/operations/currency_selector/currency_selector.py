@@ -8,7 +8,9 @@ from clive.models import Asset
 
 
 class CurrencySelector(Select[Callable[[float], Asset.ANY]]):
-    """Base Currency Selector for operations, which require to choose type of Assets"""
+    """Base Currency Selector for operations, which require to choose type of Assets
+    To use type symbols of assets in args e.g. super().__init__("HIVE")
+    """
 
     def __init__(self, *args: str) -> None:
         def _asset_factory(symbol: str) -> Callable[[float], Asset.ANY]:

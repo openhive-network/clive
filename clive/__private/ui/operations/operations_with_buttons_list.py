@@ -11,6 +11,8 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
 from clive.__private.ui.operations.covnert.covnert import Convert
+from clive.__private.ui.operations.set_withdraw_vesting_route.set_withdraw_vesting_route import SetWithdrawVestingRoute
+from clive.__private.ui.operations.transfer_from_savings.transfer_from_savings import TransferFromSavings
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.__private.ui.operations.transfer_to_savings.transfer_to_savings import TransferToSavings
 from clive.__private.ui.operations.transfer_to_vesting.transfer_to_vesting import TransferToVesting
@@ -35,4 +37,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "withdraw-vesting-button": WithdrawVesting,
     "update-proposal-votes-button": UpdateProposalVotes,
     "update-proposal-button": UpdateProposal,
+    "transfer-from-savings-button": TransferFromSavings,
+    "set-withdraw-vesting-route-button": SetWithdrawVestingRoute,
 }
