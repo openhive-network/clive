@@ -11,6 +11,7 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
 from clive.__private.ui.operations.covnert.covnert import Convert
+from clive.__private.ui.operations.limit_order_cancel.limit_order_cancel import LimitOrderCancel
 from clive.__private.ui.operations.limit_order_create.limit_order_create import LimitOrderCreate
 from clive.__private.ui.operations.recurrent_transfer.recurrent_transfer import RecurrentTransfer
 from clive.__private.ui.operations.remove_proposal.remove_proposal import RemoveProposal
@@ -47,4 +48,5 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "remove-proposal-button": RemoveProposal,
     "recurrent-transfer-button": RecurrentTransfer,
     "limit-order-create-button": LimitOrderCreate,
+    "limit-order-cancel-button": LimitOrderCancel,
 }
