@@ -9,6 +9,7 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessProxyOperation
@@ -23,6 +24,10 @@ class Body(Grid):
     """All the content of the screen, excluding the title"""
 
 
+class PlaceTaker(Static):
+    """Container used for making correct layout of a grid."""
+
+
 class AccountWitnessProxy(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -34,7 +39,6 @@ class AccountWitnessProxy(CartBasedScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__account_input = Input(placeholder="e.g.: alice")
         self.__proxy_input = Input(placeholder="e.g.: hiveio")
 
     def create_left_panel(self) -> ComposeResult:
@@ -42,14 +46,15 @@ class AccountWitnessProxy(CartBasedScreen):
             yield BigTitle("Account witness proxy")
             with Body():
                 yield Static("account", classes="label")
-                yield self.__account_input
+                yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="account-label")
+                yield PlaceTaker()
                 yield Static("proxy", classes="label")
                 yield self.__proxy_input
 
     def create_operation(self) -> Operation | None:
         try:
             return AccountWitnessProxyOperation(
-                account=str(self.__account_input.value),
+                account=str(self.app.world.profile_data.name),
                 proxy=str(self.__proxy_input.value),
             )
         except ValidationError as error:
