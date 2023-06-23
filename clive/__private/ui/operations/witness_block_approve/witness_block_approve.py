@@ -49,7 +49,7 @@ class WitnessBlockApprove(CartBasedScreen):
     def create_operation(self) -> Operation | None:
         try:
             return WitnessBlockApproveOperation(
-                witness=str(self.__witness_input.value), block_id=str(self.__block_id_input.value)
+                witness=self.__witness_input.value, block_id=self.__block_id_input.value
             )
 
         except ValidationError as error:

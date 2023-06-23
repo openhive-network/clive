@@ -71,7 +71,7 @@ class TransferToAccount(CartBasedScreen):
                 from_=str(self.app.world.profile_data.working_account.name),
                 to=self.__to_input.value,
                 amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
-                memo=str(self.__memo_input.value),
+                memo=self.__memo_input.value,
             )
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()

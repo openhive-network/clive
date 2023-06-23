@@ -64,14 +64,14 @@ class Vote(CartBasedScreen):
                 """Default value of weight is 0, so if empty auto-fill with this"""
                 return VoteOperation(
                     voter=str(self.app.world.profile_data.working_account.name),
-                    author=str(self.__author_input.value),
-                    permlink=str(self.__permlink_input.value),
+                    author=self.__author_input.value,
+                    permlink=self.__permlink_input.value,
                     weight=Int16t(self.__weight_input.value),
                 )
             return VoteOperation(  # noqa: TRY300
                 voter=str(self.app.world.profile_data.working_account.name),
-                author=str(self.__author_input.value),
-                permlink=str(self.__permlink_input.value),
+                author=self.__author_input.value,
+                permlink=self.__permlink_input.value,
             )
 
         except ValidationError as error:

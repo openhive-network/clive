@@ -55,7 +55,7 @@ class AccountWitnessProxy(CartBasedScreen):
         try:
             return AccountWitnessProxyOperation(
                 account=str(self.app.world.profile_data.name),
-                proxy=str(self.__proxy_input.value),
+                proxy=self.__proxy_input.value,
             )
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()

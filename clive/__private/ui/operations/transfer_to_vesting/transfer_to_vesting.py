@@ -57,7 +57,7 @@ class TransferToVesting(CartBasedScreen):
         try:
             return TransferToVestingOperation(
                 from_=str(self.app.world.profile_data.working_account.name),
-                to=str(self.__to_input.value),
+                to=self.__to_input.value,
                 amount=Asset.hive(float(self.__amount_input.value)),
             )
         except ValidationError as error:

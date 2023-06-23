@@ -61,10 +61,10 @@ class UpdateProposal(CartBasedScreen):
         try:
             return UpdateProposalOperation(
                 proposal_id=int(self.__proposal_id_input.value),
-                creator=str(self.__creator_input.value),
+                creator=self.__creator_input.value,
                 daily_pay=Asset.hbd(float(self.__daily_pay_input.value)),
-                subject=str(self.__subject_input.value),
-                permlink=str(self.__permlink_input.value),
+                subject=self.__subject_input.value,
+                permlink=self.__permlink_input.value,
                 extensions=self.__extensions_input.value,  # Notice: this operation is not working, cause it was mistake in schemas, need to update schemas
             )
 

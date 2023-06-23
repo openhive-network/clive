@@ -48,7 +48,7 @@ class WithdrawVesting(CartBasedScreen):
     def create_operation(self) -> Operation | None:
         try:
             return WithdrawVestingOperation(
-                account=str(self.__account_input.value),
+                account=self.__account_input.value,
                 vesting_shares=Asset.vests(float(self.__vesting_shares_input.value)),
             )
 

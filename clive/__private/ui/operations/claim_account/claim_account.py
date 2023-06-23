@@ -48,7 +48,7 @@ class ClaimAccount(CartBasedScreen):
     def create_operation(self) -> Operation | None:
         try:
             return ClaimAccountOperation(
-                creator=str(self.__creator_input.value), fee=Asset.hive(float(self.__fee_input.value))
+                creator=self.__creator_input.value, fee=Asset.hive(float(self.__fee_input.value))
             )
         except ValidationError as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
