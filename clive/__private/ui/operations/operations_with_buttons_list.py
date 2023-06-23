@@ -11,6 +11,8 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
 from clive.__private.ui.operations.covnert.covnert import Convert
+from clive.__private.ui.operations.limit_order_create.limit_order_create import LimitOrderCreate
+from clive.__private.ui.operations.recurrent_transfer.recurrent_transfer import RecurrentTransfer
 from clive.__private.ui.operations.remove_proposal.remove_proposal import RemoveProposal
 from clive.__private.ui.operations.set_reset_account.set_reset_account import SetResetAccount
 from clive.__private.ui.operations.set_withdraw_vesting_route.set_withdraw_vesting_route import SetWithdrawVestingRoute
@@ -43,4 +45,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "set-withdraw-vesting-route-button": SetWithdrawVestingRoute,
     "set-reset-account-button": SetResetAccount,
     "remove-proposal-button": RemoveProposal,
+    "recurrent-transfer-button": RecurrentTransfer,
+    "limit-order-create-button": LimitOrderCreate,
 }
