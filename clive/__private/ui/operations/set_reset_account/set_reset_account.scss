@@ -1,0 +1,25 @@
+SetResetAccount Body {
+  grid-size: 3;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 3 5 4 4 4;
+  height: 13;
+  margin: 0 4;
+  background: $panel;
+}
+
+SetResetAccount PlaceTaker {
+  row-span: 2;
+}
+
+SetResetAccount .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+SetResetAccount #account-label {
+  padding: 1 1;
+}
+
+SetResetAccount Input{
+    margin: 1 0;
+}

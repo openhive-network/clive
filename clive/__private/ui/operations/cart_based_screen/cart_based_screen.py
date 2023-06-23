@@ -28,7 +28,7 @@ class RightContainer(Container):
 
 
 class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
-    """Base class for all screens which all Operations screen"""
+    """Base class for all screens with operations"""
 
     def create_main_panel(self) -> ComposeResult:
         with Horizontal():
