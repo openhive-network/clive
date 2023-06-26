@@ -56,8 +56,8 @@ class Operations(CartBasedScreen):
             yield CliveButton("Delegate vesting shares", id_="delegate-vesting-shares-button")
             yield CliveButton("Decline voting rights", id_="decline-voting-rights-button")
             yield CliveButton("Custom", id_="custom-button")
-            yield CliveButton("CustomJson", id_="custom-json-button")
-            yield CliveButton("CreateProposal", id_="create-proposal-button")
+            yield CliveButton("Custom json", id_="custom-json-button")
+            yield CliveButton("Create proposal", id_="create-proposal-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 

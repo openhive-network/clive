@@ -57,6 +57,7 @@ class UpdateProposalVotes(CartBasedScreen):
     def create_operation(self) -> Operation | None:
         try:
             split_ids: list[str] = self.__proposal_ids.value.split(",")
+            split_ids = [x.strip(" ") for x in split_ids]
             proposal_ids_list: list[int] = [int(v) for v in split_ids]
 
             if self.__approve_input.value:
