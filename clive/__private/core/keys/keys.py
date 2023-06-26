@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, overload
 
@@ -18,38 +19,60 @@ class PrivateKeyInvalidFormatError(PrivateKeyError):
     """A PrivateKey has an invalid format"""
 
 
-@dataclass
-class PublicKey:
+@dataclass(kw_only=True)
+class Key(ABC):
     value: str
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, PublicKey):
+        if isinstance(other, Key):
             return self.value == other.value
+        return super().__eq__(other)
+
+    @abstractmethod
+    def with_alias(self, alias: str) -> KeyAliased:
+        """Should return a new instance of the key with the given alias."""
+
+
+@dataclass(kw_only=True)
+class KeyAliased(Key, ABC):
+    alias: str
+
+    def __eq__(self, other: Any) -> bool:
+        if isinstance(other, KeyAliased):
+            return self.alias == other.alias and super().__eq__(other)
+        return super().__eq__(other)
+
+    @abstractmethod
+    def without_alias(self) -> Key:
+        """Should return a new instance of the key without the alias."""
+
+
+@dataclass(kw_only=True)
+class PublicKey(Key):
+    value: str
+
+    def __eq__(self, other: Any) -> bool:
         if isinstance(other, PrivateKey):
             return self == other.calculate_public_key()
         if isinstance(other, str):
-            return self.value == other
+            return self.value == other or self == PrivateKey(value=other)
         return super().__eq__(other)
 
     def with_alias(self, alias: str) -> PublicKeyAliased:
         return PublicKeyAliased(alias=alias, value=self.value)
 
 
-@dataclass
-class PublicKeyAliased(PublicKey):
-    alias: str
-
+@dataclass(kw_only=True)
+class PublicKeyAliased(KeyAliased, PublicKey):
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, PublicKeyAliased):
-            return self.alias == other.alias and super().__eq__(other)
         return super().__eq__(other)
 
     def without_alias(self) -> PublicKey:
         return PublicKey(value=self.value)
 
 
-@dataclass
-class PrivateKey:
+@dataclass(kw_only=True)
+class PrivateKey(Key):
     """
     A container for a private key.
 
@@ -57,20 +80,16 @@ class PrivateKey:
          PrivateKeyInvalidFormatError: if private key is not in valid format
     """
 
-    value: str
     file_path: Path | None = None
 
     def __post_init__(self) -> None:
         self.validate(self.value)
 
     def __eq__(self, other: Any) -> bool:
-        if isinstance(other, PrivateKey):
-            return self.value == other.value
         if isinstance(other, PublicKey):
-            my_public_key = self.calculate_public_key()
-            return my_public_key.value == other.value
+            return self.calculate_public_key() == other
         if isinstance(other, str):
-            return self.value == other
+            return self.value == other or self.calculate_public_key() == other
         return super().__eq__(other)
 
     @staticmethod
@@ -80,7 +99,7 @@ class PrivateKey:
     @classmethod
     def from_file(cls, file_path: Path) -> PrivateKey:
         key = cls.read_key_from_file(file_path)
-        return cls(key, file_path)
+        return cls(value=key, file_path=file_path)
 
     @classmethod
     def read_key_from_file(cls, file_path: Path) -> str:
@@ -111,3 +130,20 @@ class PrivateKey:
         if with_alias:
             return public_key.with_alias(with_alias)
         return public_key
+
+    def with_alias(self, alias: str) -> PrivateKeyAliased:
+        return PrivateKeyAliased(alias=alias, value=self.value, file_path=self.file_path)
+
+
+@dataclass(kw_only=True)
+class PrivateKeyAliased(KeyAliased, PrivateKey):
+    def __eq__(self, other: Any) -> bool:
+        return super().__eq__(other)
+
+    def calculate_public_key(self, *, with_alias: bool = True) -> PublicKey | PublicKeyAliased:  # type: ignore[override]
+        if with_alias:
+            return super().calculate_public_key(with_alias=self.alias)
+        return super().calculate_public_key()
+
+    def without_alias(self) -> PrivateKey:
+        return PrivateKey(value=self.value, file_path=self.file_path)
