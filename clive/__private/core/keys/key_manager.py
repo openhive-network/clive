@@ -4,6 +4,7 @@ from collections.abc import Callable, Iterator, Sequence
 from typing import Literal
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
+from clive.__private.logger import logger
 from clive.exceptions import CliveError
 
 ImportCallbackT = Callable[[PrivateKeyAliased], PublicKeyAliased]
@@ -76,6 +77,7 @@ class KeyManager:
             imported = import_callback(key)
             self.add(imported)
         self.__keys_to_import.clear()
+        logger.debug("Imported all pending keys to beekeeper.")
 
     @staticmethod
     def __is_alias_available(alias: str, keys: Sequence[KeyAliased]) -> bool:
