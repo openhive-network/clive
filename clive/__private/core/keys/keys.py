@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 
 from clive.__private.core import iwax
 from clive.exceptions import CliveError
@@ -169,7 +169,15 @@ class PrivateKeyAliased(KeyAliased, PrivateKey):
     def __eq__(self, other: Any) -> bool:
         return super().__eq__(other)
 
-    def calculate_public_key(self, *, with_alias: bool = True) -> PublicKey | PublicKeyAliased:  # type: ignore[override]
+    @overload  # type: ignore[override]
+    def calculate_public_key(self, *, with_alias: Literal[False]) -> PublicKey:
+        ...
+
+    @overload
+    def calculate_public_key(self, *, with_alias: Literal[True] = True) -> PublicKeyAliased:
+        ...
+
+    def calculate_public_key(self, *, with_alias: bool = True) -> PublicKey | PublicKeyAliased:
         if with_alias:
             return super().calculate_public_key(with_alias=self.alias)
         return super().calculate_public_key()
