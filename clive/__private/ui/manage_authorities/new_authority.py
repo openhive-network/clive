@@ -114,7 +114,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
     def __check_if_authority_already_exists(self, private_key: PrivateKeyAliased) -> None:
         """
         Raises:
-            AliasAlreadyInUseError: if alias is already in use
+            AliasAlreadyInUseFormError: if alias is already in use
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
 

@@ -14,6 +14,10 @@ class KeyAliasAlreadyInUseError(CliveError):
     pass
 
 
+class KeyNotFoundError(CliveError):
+    pass
+
+
 class KeyManager:
     """
     An object that manages a number of keys. A container-like object which you iterate over to see all the public keys.
@@ -92,3 +96,11 @@ class KeyManager:
 
         if not fun[key_type](alias):
             raise KeyAliasAlreadyInUseError(f"Alias '{alias}' is already in use.")
+
+    def rename(self, old_alias: str, new_alias: str) -> None:
+        """Rename a key alias."""
+        for key in self.__keys:
+            if key.alias == old_alias:
+                key.alias = new_alias
+                return
+        raise KeyNotFoundError(f"Key with alias '{old_alias}' not found.")

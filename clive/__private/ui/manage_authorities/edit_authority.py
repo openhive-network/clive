@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.message import Message
 
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.widgets.notification import Notification
+from clive.exceptions import AliasAlreadyInUseFormError, FormValidationError
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
@@ -20,9 +21,6 @@ class EditAuthority(AuthorityForm):
         Binding("f10", "save", "Save"),
     ]
 
-    class Saved(Message):
-        """Emitted when user Saves the form"""
-
     def __init__(self, authority: PublicKeyAliased) -> None:
         self.authority = authority
         super().__init__()
@@ -34,17 +32,36 @@ class EditAuthority(AuthorityForm):
     def action_save(self) -> None:
         self._save()
 
-    def on_edit_authority_saved(self) -> None:
-        # TODO: We should allow for alias editing
-        self.app.world.update_reactive("profile_data")
+    def _save(self) -> None:
+        old_alias = self.authority.alias
+        new_alias = self._key_alias_raw
 
+        if old_alias == new_alias:
+            Notification("No changes to save", category="warning").show()
+            return
+
+        try:
+            self._validate()
+        except FormValidationError as error:
+            Notification(
+                f"Failed the validation process! Could not continue. Reason: {error.reason}", category="error"
+            ).show()
+            return
+
+        self.app.world.profile_data.working_account.keys.rename(old_alias, new_alias)
+
+        self.app.post_message_to_everyone(ProfileDataUpdated())
+        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
         Notification(f"Authority `{self.authority.alias}` was edited.", category="success").show()
-        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
 
-    def _save(self) -> None:
-        # TODO: Implement Edit functionality
-        self.app.post_message_to_everyone(self.Saved())
+    def _validate(self) -> None:
+        """
+        Raises:
+            AliasAlreadyInUseFormError: if alias is already in use
+        """
+        if not self.context.working_account.keys.is_public_alias_available(self._key_alias_raw):
+            raise AliasAlreadyInUseFormError(self._key_alias_raw)
 
     def _title(self) -> str:
         return "edit authority"
