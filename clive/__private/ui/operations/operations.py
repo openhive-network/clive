@@ -50,6 +50,8 @@ class Operations(CartBasedScreen):
             yield CliveButton("Limit order cancel", id_="limit-order-cancel-button")
             yield CliveButton("Escrow transfer", id_="escrow-transfer-button")
             yield CliveButton("Escrow release", id_="escrow-release-button")
+            yield CliveButton("Escrow dispute", id_="escrow-dispute-button")
+            yield CliveButton("Escrow approve", id_="escrow-approve-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
