@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Any
+
 from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
@@ -12,7 +14,10 @@ from clive.__private.ui.manual_reactive import ManualReactive
 
 
 class World:
-    def __init__(self, profile_name: str | None = None) -> None:
+    def __init__(self, profile_name: str | None = None, *args: Any, **kwargs: Any) -> None:
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(*args, **kwargs)
+
         self._profile_data = ProfileData.load(profile_name)
         self._app_state = AppState(self)
         self._commands = Commands(self)
