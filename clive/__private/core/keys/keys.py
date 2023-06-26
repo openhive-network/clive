@@ -32,6 +32,22 @@ class Key(ABC):
     def with_alias(self, alias: str) -> KeyAliased:
         """Should return a new instance of the key with the given alias."""
 
+    @staticmethod
+    def determine_key_type(key: str) -> type[PublicKey] | type[PrivateKey]:
+        """
+        Determines the type of the key from the given key raw string.
+
+        Info:
+            This method requires the key to be in the correct format - because key in the wrong format will be
+            determined as a public key also.
+        """
+        try:
+            iwax.calculate_public_key(key)
+        except iwax.WaxOperationFailedError:
+            return PublicKey
+        else:
+            return PrivateKey
+
 
 @dataclass(kw_only=True)
 class KeyAliased(Key, ABC):
@@ -55,7 +71,9 @@ class PublicKey(Key):
         if isinstance(other, PrivateKey):
             return self == other.calculate_public_key()
         if isinstance(other, str):
-            return self.value == other or self == PrivateKey(value=other)
+            return (
+                self.value == other if self.determine_key_type(other) is PublicKey else self == PrivateKey(value=other)
+            )
         return super().__eq__(other)
 
     def with_alias(self, alias: str) -> PublicKeyAliased:

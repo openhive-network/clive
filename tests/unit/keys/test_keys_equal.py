@@ -74,3 +74,8 @@ def test_different_alias_private_key() -> None:
     # ACT & ASSERT
     assert private_key_alias_other != PUBLIC_KEY_ALIAS
     assert private_key_alias_other != PRIVATE_KEY_ALIAS
+
+
+def test_comparing_public_key_to_other_public_key_raw() -> None:
+    # ACT & ASSERT
+    assert PrivateKey.create().calculate_public_key().value != PUBLIC_KEY
