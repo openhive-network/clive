@@ -9,7 +9,7 @@ from textual.message import Message
 from textual.widgets import Input, Static
 
 from clive.__private.config import settings
-from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
+from clive.__private.core.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.shared.base_screen import BaseScreen

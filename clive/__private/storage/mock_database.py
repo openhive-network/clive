@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
 
-from clive.__private.core.keys.key_manager import KeyManager
+from clive.__private.core.keys import KeyManager
 from clive.models import Asset
 
 

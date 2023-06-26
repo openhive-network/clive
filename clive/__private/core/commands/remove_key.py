@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
-from clive.__private.core.keys.keys import PublicKey, PublicKeyAliased
+from clive.__private.core.keys import PublicKey, PublicKeyAliased
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

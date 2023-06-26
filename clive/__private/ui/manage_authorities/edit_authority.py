@@ -8,7 +8,7 @@ from clive.__private.ui.manage_authorities.widgets.authority_form import Authori
 from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
-    from clive.__private.core.keys.keys import PublicKeyAliased
+    from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile_data import ProfileData
 
 

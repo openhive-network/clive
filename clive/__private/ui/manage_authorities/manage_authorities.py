@@ -21,7 +21,7 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.keys.keys import PublicKeyAliased
+    from clive.__private.core.keys import PublicKeyAliased
 
 
 class DynamicColumn(DynamicLabel):
