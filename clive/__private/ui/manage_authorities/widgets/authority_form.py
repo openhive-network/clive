@@ -162,7 +162,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         """
 
         def __private_key_already_exists() -> bool:
-            return private_key in self.app.world.profile_data.working_account.keys
+            return private_key.without_alias() in self.app.world.profile_data.working_account.keys
 
         if not self.context.working_account.keys.is_public_alias_available(private_key.alias):
             raise AliasAlreadyInUseFormError(private_key.alias)
