@@ -7,6 +7,8 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 )
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
+from clive.__private.ui.operations.comment.comment import Comment
+from clive.__private.ui.operations.comment_options.comment_options import CommentOptions
 from clive.__private.ui.operations.covnert.covnert import Convert
 from clive.__private.ui.operations.create_proposal.create_proposal import CreateProposal
 from clive.__private.ui.operations.custom.custom import Custom
@@ -66,4 +68,6 @@ __all__ = [
     "Custom",
     "CustomJson",
     "CreateProposal",
+    "CommentOptions",
+    "Comment",
 ]

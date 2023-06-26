@@ -1,0 +1,18 @@
+Comment Body {
+  grid-size: 2;
+  grid-columns: 24 2fr 1fr;
+  grid-rows: 4 4 4 4 4 4;
+  height: 30;
+  margin: 0 4;
+  background: $panel;
+}
+
+Comment .label {
+  padding: 1 1;
+  text-align: right;
+}
+
+Comment Input{
+    width: 120;
+    margin: 0 0;
+}

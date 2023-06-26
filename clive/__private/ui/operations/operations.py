@@ -58,6 +58,8 @@ class Operations(CartBasedScreen):
             yield CliveButton("Custom", id_="custom-button")
             yield CliveButton("Custom json", id_="custom-json-button")
             yield CliveButton("Create proposal", id_="create-proposal-button")
+            yield CliveButton("Comment options", id_="comment-options-button")
+            yield CliveButton("Comment", id_="comment-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
