@@ -64,7 +64,7 @@ class Authority(ColumnLayout, CliveWidget):
             self.app.push_screen(EditAuthority(self.__authority))
 
     def __remove_authority(self) -> None:
-        @CliveScreen.try_again_after_activation
+        @CliveScreen.try_again_after_activation(app=self.app)
         def __on_confirmation_result(result: str) -> None:
             if not result:
                 return

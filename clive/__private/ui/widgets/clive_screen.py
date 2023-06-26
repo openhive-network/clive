@@ -24,27 +24,30 @@ class CliveScreen(Screen, CliveWidget):
     """
 
     @staticmethod
-    def try_again_after_activation(func: Callable[P, None]) -> Callable[P, None]:
-        @wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-            self = args[0]
-            assert isinstance(self, DOMNode)
+    def try_again_after_activation(*, app: DOMNode | None = None) -> Callable[[Callable[P, None]], Callable[P, None]]:
+        def decorator(func: Callable[P, None]) -> Callable[P, None]:
+            @wraps(func)
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+                self = app or args[0]
+                assert isinstance(self, DOMNode), f"`{type(self)}` is not a DOMNode instance."
 
-            try:
-                func(*args, **kwargs)
-            except CommandRequiresActiveModeError:
-                from clive.__private.ui.activate.activate import Activate
-
-                def _on_activation_result(value: bool) -> None:
-                    if not value:
-                        Notification("Aborted. Active mode is required for this action.", category="warning").show()
-                        return
-
+                try:
                     func(*args, **kwargs)
+                except CommandRequiresActiveModeError:
+                    from clive.__private.ui.activate.activate import Activate
 
-                self.app.push_screen(Activate(activation_result_callback=_on_activation_result))
+                    def _on_activation_result(value: bool) -> None:
+                        if not value:
+                            Notification("Aborted. Active mode is required for this action.", category="warning").show()
+                            return
 
-        return wrapper
+                        func(*args, **kwargs)
+
+                    self.app.push_screen(Activate(activation_result_callback=_on_activation_result))
+
+            return wrapper
+
+        return decorator
 
     def on_mount(self) -> None:
         if self.app.focused is None:

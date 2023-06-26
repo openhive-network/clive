@@ -36,7 +36,7 @@ class NewAuthority(NewAuthorityBase):
     def context(self) -> ProfileData:
         return self.app.world.profile_data
 
-    @CliveScreen.try_again_after_activation
+    @CliveScreen.try_again_after_activation()
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])
 
