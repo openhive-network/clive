@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.keys.keys import PrivateKey, PublicKeyAliased
+from clive.__private.core.keys.keys import PrivateKeyAliased, PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper
@@ -23,12 +23,11 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
         self.__sync_missing_keys()
 
     def __import_pending_keys(self) -> None:
-        def import_key(alias: str, key: PrivateKey) -> PublicKeyAliased:
+        def import_key(key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
             return ImportKey(
                 app_state=self.app_state,
                 wallet=self.profile_data.name,
-                alias=alias,
-                key_to_import=key,
+                key_to_import=key_to_import,
                 beekeeper=self.beekeeper,
             ).execute_with_result()
 

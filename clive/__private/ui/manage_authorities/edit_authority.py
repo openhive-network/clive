@@ -35,7 +35,7 @@ class EditAuthority(AuthorityForm):
         self.app.world.update_reactive("profile_data")
 
         self.app.pop_screen()
-        Notification(f"Authority `{event.key_alias}` was edited.", category="success").show()
+        Notification(f"Authority `{event.private_key.alias}` was edited.", category="success").show()
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
 
     def _title(self) -> str:

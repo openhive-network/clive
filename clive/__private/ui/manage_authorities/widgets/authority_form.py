@@ -9,7 +9,7 @@ from textual.message import Message
 from textual.widgets import Input, Static
 
 from clive.__private.config import settings
-from clive.__private.core.keys.keys import PrivateKey, PrivateKeyInvalidFormatError
+from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -42,8 +42,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     class Saved(Message, bubble=True):
         """Emitted when user Saves the form"""
 
-        def __init__(self, key_alias: str, private_key: PrivateKey) -> None:
-            self.key_alias = key_alias
+        def __init__(self, private_key: PrivateKeyAliased) -> None:
             self.private_key = private_key
             super().__init__()
 
@@ -74,11 +73,11 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         return self.__key_input.value
 
     @property
-    def _private_key(self) -> PrivateKey:
+    def _private_key(self) -> PrivateKeyAliased:
         """
         :raises PrivateKeyInvalidFormatError: if private key is not in valid format
         """
-        return PrivateKey(value=self._private_key_raw, file_path=self.__key_file_path)
+        return PrivateKeyAliased(value=self._private_key_raw, file_path=self.__key_file_path, alias=self._key_alias_raw)
 
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
@@ -123,7 +122,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
                 raise
             return
 
-        self.app.post_message_to_everyone(self.Saved(key_alias=self._key_alias_raw, private_key=self._private_key))
+        self.app.post_message_to_everyone(self.Saved(private_key=self._private_key))
 
     def _title(self) -> str:
         return ""
@@ -148,14 +147,14 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
         try:
-            self.__check_if_authority_already_exists(self._key_alias_raw, self._private_key)
+            self.__check_if_authority_already_exists(self._private_key)
         except PrivateKeyInvalidFormatError:
             raise PrivateKeyInvalidFormatFormError("Invalid form of private key") from None
 
     def __generate_key_alias(self) -> str:
         return f"{self.context.working_account.name}@active"
 
-    def __check_if_authority_already_exists(self, key_alias: str, private_key: PrivateKey) -> None:
+    def __check_if_authority_already_exists(self, private_key: PrivateKeyAliased) -> None:
         """
         Raises:
             AliasAlreadyInUseError: if alias is already in use
@@ -163,13 +162,13 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         """
 
         def __alias_already_exists() -> bool:
-            return key_alias in (key.alias for key in self.context.working_account.keys)
+            return private_key.alias in (key.alias for key in self.context.working_account.keys)
 
         def __private_key_already_exists() -> bool:
             return private_key in self.app.world.profile_data.working_account.keys
 
         if __alias_already_exists():
-            raise AliasAlreadyInUseError(key_alias)
+            raise AliasAlreadyInUseError(private_key.alias)
 
         if __private_key_already_exists():
             raise PrivateKeyAlreadyInUseError()

@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive import World
-    from clive.__private.core.keys.keys import PrivateKey, PublicKey, PublicKeyAliased
+    from clive.__private.core.keys.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.storage.mock_database import Account
     from clive.models import Operation, Transaction
 
@@ -70,12 +70,11 @@ class Commands:
             chain_id=self.__world.node.chain_id,
         ).execute()
 
-    def import_key(self, *, alias: str, wif: PrivateKey) -> PublicKeyAliased:
+    def import_key(self, *, key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
         return ImportKey(
             app_state=self.__world.app_state,
             wallet=self.__world.profile_data.name,
-            alias=alias,
-            key_to_import=wif,
+            key_to_import=key_to_import,
             beekeeper=self.__world.beekeeper,
         ).execute_with_result()
 

@@ -38,7 +38,7 @@ class NewAuthority(NewAuthorityBase):
 
     @CliveScreen.try_again_after_activation
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.context.working_account.keys.set_to_import({event.key_alias: event.private_key})
+        self.context.working_account.keys.set_to_import([event.private_key])
 
         self.app.world.commands.sync_data_with_beekeeper()
         self.app.post_message_to_everyone(ProfileDataUpdated())
@@ -55,7 +55,7 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
         super().__init__(owner=owner)
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.context.working_account.keys.set_to_import({event.key_alias: event.private_key})
+        self.context.working_account.keys.set_to_import([event.private_key])
         logger.debug("New authority is waiting to be imported...")
 
     def apply_and_validate(self) -> None:

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Sequence
 
-from clive.__private.core.keys.keys import PrivateKey, PublicKey, PublicKeyAliased
+from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 
-ImportCallbackT = Callable[[str, PrivateKey], PublicKeyAliased]
+ImportCallbackT = Callable[[PrivateKeyAliased], PublicKeyAliased]
 
 
 class KeyManager:
@@ -14,7 +14,7 @@ class KeyManager:
 
     def __init__(self) -> None:
         self.__keys: list[PublicKeyAliased] = []
-        self.__keys_to_import: dict[str, PrivateKey] = {}
+        self.__keys_to_import: list[PrivateKeyAliased] = []
 
     def __iter__(self) -> Iterator[PublicKeyAliased]:
         return iter(self.__keys)
@@ -28,7 +28,7 @@ class KeyManager:
     def __bool__(self) -> bool:
         return bool(self.__keys)
 
-    def __contains__(self, key: str | PublicKey | PublicKeyAliased | PrivateKey) -> bool:
+    def __contains__(self, key: str | PublicKey | PublicKeyAliased | PrivateKey | PrivateKeyAliased) -> bool:
         """Check if a key is in the key manager. Possible types are determined by the __eq__ of keys."""
         return key in self.__keys
 
@@ -49,16 +49,14 @@ class KeyManager:
         for key in keys:
             self.__keys.remove(key)
 
-    def add_to_import(self, key: PrivateKey, alias: str) -> None:
-        if alias in self.__keys_to_import:
-            raise ValueError(f"Key with alias {alias} already exists in pending keys.")
-        self.__keys_to_import[alias] = key
+    def add_to_import(self, *keys: PrivateKeyAliased) -> None:
+        self.__keys_to_import.extend(keys)
 
-    def set_to_import(self, keys: dict[str, PrivateKey]) -> None:
-        self.__keys_to_import = keys
+    def set_to_import(self, keys: Sequence[PrivateKeyAliased]) -> None:
+        self.__keys_to_import = list(keys)
 
     def import_pending_to_beekeeper(self, import_callback: ImportCallbackT) -> None:
-        for alias, key in self.__keys_to_import.items():
-            imported = import_callback(alias, key)
+        for key in self.__keys_to_import:
+            imported = import_callback(key)
             self.add(imported)
         self.__keys_to_import.clear()

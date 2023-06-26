@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.keys.keys import PrivateKey
+from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.models import Asset
 from schemas.operations import TransferOperation
 
@@ -15,7 +15,9 @@ if TYPE_CHECKING:
 
 def test_fast_broadcast_smoke_test(world: World, init_node: tt.InitNode, wallet: WalletInfo) -> None:  # noqa: ARG001
     # ARRANGE
-    pubkey = world.commands.import_key(alias="some-alias", wif=PrivateKey(value=str(init_node.config.private_key[0])))
+    pubkey = world.commands.import_key(
+        key_to_import=PrivateKeyAliased(value=str(init_node.config.private_key[0]), alias="some-alias")
+    )
 
     # ACT & ASSERT
     world.commands.fast_broadcast(
