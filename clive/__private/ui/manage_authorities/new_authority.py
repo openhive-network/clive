@@ -20,7 +20,6 @@ from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.exceptions import (
     AliasAlreadyInUseFormError,
-    FormValidationError,
     PrivateKeyAlreadyInUseError,
     PrivateKeyInvalidFormatFormError,
 )
@@ -82,19 +81,12 @@ class NewAuthorityBase(AuthorityForm, ABC):
             except PrivateKeyInvalidFormatError:
                 self._public_key_input.value = "Invalid form of private key"
 
-    def _save(self, reraise_exception: bool = False) -> None:
+    def _save(self, *, reraise_exception: bool = False) -> None:
         if not self._is_key_provided:
             Notification("Not saving any private key, because none has been provided", category="warning").show()
             return
 
-        try:
-            self._validate()
-        except FormValidationError as error:
-            Notification(
-                f"Failed the validation process! Could not continue. Reason: {error.reason}", category="error"
-            ).show()
-            if reraise_exception:
-                raise
+        if not self._validate_with_notification(reraise_exception=reraise_exception):
             return
 
         self.app.post_message_to_everyone(self.Saved(private_key=self._private_key))

@@ -7,7 +7,7 @@ from textual.binding import Binding
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.widgets.notification import Notification
-from clive.exceptions import AliasAlreadyInUseFormError, FormValidationError
+from clive.exceptions import AliasAlreadyInUseFormError
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
@@ -40,12 +40,7 @@ class EditAuthority(AuthorityForm):
             Notification("No changes to save", category="warning").show()
             return
 
-        try:
-            self._validate()
-        except FormValidationError as error:
-            Notification(
-                f"Failed the validation process! Could not continue. Reason: {error.reason}", category="error"
-            ).show()
+        if not self._validate_with_notification():
             return
 
         self.app.world.profile_data.working_account.keys.rename(old_alias, new_alias)
