@@ -23,10 +23,10 @@ class KeyManager:
         self.__keys_to_import: list[PrivateKeyAliased] = []
 
     def __iter__(self) -> Iterator[PublicKeyAliased]:
-        return iter(self.__keys)
+        return iter(sorted(self.__keys, key=lambda key: key.alias))
 
     def __reversed__(self) -> Iterator[PublicKeyAliased]:
-        return iter(reversed(self.__keys))
+        return iter(sorted(self.__keys, key=lambda key: key.alias, reverse=True))
 
     def __len__(self) -> int:
         return len(self.__keys)
