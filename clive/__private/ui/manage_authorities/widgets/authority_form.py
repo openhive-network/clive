@@ -18,7 +18,7 @@ from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import (
-    AliasAlreadyInUseError,
+    AliasAlreadyInUseFormError,
     FormValidationError,
     PrivateKeyAlreadyInUseError,
     PrivateKeyInvalidFormatFormError,
@@ -161,14 +161,11 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
             PrivateKeyAlreadyInUseError: if private key is already in use
         """
 
-        def __alias_already_exists() -> bool:
-            return private_key.alias in (key.alias for key in self.context.working_account.keys)
-
         def __private_key_already_exists() -> bool:
             return private_key in self.app.world.profile_data.working_account.keys
 
-        if __alias_already_exists():
-            raise AliasAlreadyInUseError(private_key.alias)
+        if not self.context.working_account.keys.is_public_alias_available(private_key.alias):
+            raise AliasAlreadyInUseFormError(private_key.alias)
 
         if __private_key_already_exists():
             raise PrivateKeyAlreadyInUseError()

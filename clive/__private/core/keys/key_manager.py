@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Iterator, Sequence
+from typing import Literal
 
-from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
+from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
+from clive.exceptions import CliveError
 
 ImportCallbackT = Callable[[PrivateKeyAliased], PublicKeyAliased]
+
+
+class KeyAliasAlreadyInUseError(CliveError):
+    pass
 
 
 class KeyManager:
@@ -41,8 +47,16 @@ class KeyManager:
     def first(self) -> PublicKeyAliased:
         return self.__keys[0]
 
+    def is_public_alias_available(self, alias: str) -> bool:
+        return self.__is_alias_available(alias, self.__keys)
+
+    def is_key_to_import_alias_available(self, alias: str) -> bool:
+        return self.__is_alias_available(alias, self.__keys_to_import)
+
     def add(self, *keys: PublicKeyAliased) -> None:
-        self.__keys.extend(keys)
+        for key in keys:
+            self.__assert_no_alias_conflict(key.alias, "public")
+            self.__keys.append(key)
 
     def remove(self, *keys: PublicKeyAliased) -> None:
         """Remove a key alias from the Clive's key manager. Still remains in the beekeeper."""
@@ -50,7 +64,9 @@ class KeyManager:
             self.__keys.remove(key)
 
     def add_to_import(self, *keys: PrivateKeyAliased) -> None:
-        self.__keys_to_import.extend(keys)
+        for key in keys:
+            self.__assert_no_alias_conflict(key.alias, "to_import")
+            self.__keys_to_import.append(key)
 
     def set_to_import(self, keys: Sequence[PrivateKeyAliased]) -> None:
         self.__keys_to_import = list(keys)
@@ -60,3 +76,17 @@ class KeyManager:
             imported = import_callback(key)
             self.add(imported)
         self.__keys_to_import.clear()
+
+    @staticmethod
+    def __is_alias_available(alias: str, keys: Sequence[KeyAliased]) -> bool:
+        known_aliases = [key.alias for key in keys]
+        return alias not in known_aliases
+
+    def __assert_no_alias_conflict(self, alias: str, key_type: Literal["public", "to_import"]) -> None:
+        fun: dict[str, Callable[[str], bool]] = {
+            "public": self.is_public_alias_available,
+            "to_import": self.is_key_to_import_alias_available,
+        }
+
+        if not fun[key_type](alias):
+            raise KeyAliasAlreadyInUseError(f"Alias '{alias}' is already in use.")

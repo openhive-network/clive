@@ -66,7 +66,7 @@ class RepeatedPasswordIsDifferentError(FormValidationError):
         super().__init__("Repeated password is different than original one")
 
 
-class AliasAlreadyInUseError(FormValidationError):
+class AliasAlreadyInUseFormError(FormValidationError):
     def __init__(self, alias: str) -> None:
         super().__init__(f"Alias `{alias}` is already in use.", given_value=alias)
 
