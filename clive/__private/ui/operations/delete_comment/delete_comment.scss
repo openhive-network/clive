@@ -1,0 +1,21 @@
+DeleteComment Body {
+  grid-size: 3;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 5;
+  height: 9;
+  margin: 0 4;
+  background: $panel;
+}
+
+DeleteComment PlaceTaker {
+  row-span: 1;
+}
+
+DeleteComment .label {
+  padding: 1 1;
+  text-align: right;
+}
+
+DeleteComment #author-label {
+  padding: 1 1;
+}
