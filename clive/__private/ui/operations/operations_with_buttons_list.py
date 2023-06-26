@@ -11,6 +11,8 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
 from clive.__private.ui.operations.covnert.covnert import Convert
+from clive.__private.ui.operations.escrow_release.escrow_release import EscrowRelease
+from clive.__private.ui.operations.escrow_transfer.escrow_transfer import EscrowTransfer
 from clive.__private.ui.operations.limit_order_cancel.limit_order_cancel import LimitOrderCancel
 from clive.__private.ui.operations.limit_order_create.limit_order_create import LimitOrderCreate
 from clive.__private.ui.operations.recurrent_transfer.recurrent_transfer import RecurrentTransfer
@@ -49,4 +51,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "recurrent-transfer-button": RecurrentTransfer,
     "limit-order-create-button": LimitOrderCreate,
     "limit-order-cancel-button": LimitOrderCancel,
+    "escrow-transfer-button": EscrowTransfer,
+    "escrow-release-button": EscrowRelease,
 }
