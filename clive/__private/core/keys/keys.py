@@ -111,8 +111,19 @@ class PrivateKey(Key):
         return super().__eq__(other)
 
     @staticmethod
+    @overload
     def create() -> PrivateKey:
-        return iwax.generate_private_key()
+        ...
+
+    @staticmethod
+    @overload
+    def create(*, with_alias: str) -> PrivateKeyAliased:
+        ...
+
+    @staticmethod
+    def create(*, with_alias: str = "") -> PrivateKey | PrivateKeyAliased:
+        private_key = iwax.generate_private_key()
+        return private_key.with_alias(with_alias) if with_alias else private_key
 
     @classmethod
     def from_file(cls, file_path: Path) -> PrivateKey:
