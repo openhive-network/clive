@@ -8,6 +8,8 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
 from clive.__private.ui.operations.covnert.covnert import Convert
+from clive.__private.ui.operations.custom.custom import Custom
+from clive.__private.ui.operations.decline_voting_rights.decline_voting_rights import DeclineVotingRights
 from clive.__private.ui.operations.delegate_vesting_shares.delegate_vesting_shares import DelegateVestingShares
 from clive.__private.ui.operations.delete_comment.delete_comment import DeleteComment
 from clive.__private.ui.operations.escrow_approve.escrow_approve import EscrowApprove
@@ -58,4 +60,6 @@ __all__ = [
     "Vote",
     "WithdrawVesting",
     "WitnessBlockApprove",
+    "DeclineVotingRights",
+    "Custom",
 ]
