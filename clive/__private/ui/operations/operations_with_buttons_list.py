@@ -27,6 +27,7 @@ from clive.__private.ui.operations import (
     LimitOrderCreate,
     RecurrentTransfer,
     RemoveProposal,
+    ResetAccount,
     SetResetAccount,
     SetWithdrawVestingRoute,
     TransferFromSavings,
@@ -38,6 +39,7 @@ from clive.__private.ui.operations import (
     Vote,
     WithdrawVesting,
     WitnessBlockApprove,
+    WitnessSetProperties,
     WitnessUpdate,
 )
 
@@ -77,4 +79,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "comment-button": Comment,
     "claim-reward-balance-button": ClaimRewardBalance,
     "witness-update-button": WitnessUpdate,
+    "witness-set-properties-button": WitnessSetProperties,
+    "reset-account-button": ResetAccount,
 }

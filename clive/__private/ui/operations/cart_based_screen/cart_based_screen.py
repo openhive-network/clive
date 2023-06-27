@@ -92,3 +92,17 @@ class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
         self.app.world.profile_data.cart.append(operation)
         self.app.world.update_reactive("profile_data")
         return True
+
+    @staticmethod
+    def _split_auths_fields(auths: str) -> list[tuple[str, int]]:
+        """To create valid format of auths like key_auths, to create pydantic operation model"""
+        valid_auths_format = []
+
+        split_auths = auths.split(";")
+        for pair in split_auths:
+            string_part, number = pair.split(",")
+
+            string_part = string_part.strip()
+            valid_auths_format.append((string_part, int(number)))
+
+        return valid_auths_format

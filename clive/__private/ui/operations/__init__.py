@@ -25,6 +25,7 @@ from clive.__private.ui.operations.limit_order_cancel.limit_order_cancel import 
 from clive.__private.ui.operations.limit_order_create.limit_order_create import LimitOrderCreate
 from clive.__private.ui.operations.recurrent_transfer.recurrent_transfer import RecurrentTransfer
 from clive.__private.ui.operations.remove_proposal.remove_proposal import RemoveProposal
+from clive.__private.ui.operations.reset_account.reset_account import ResetAccount
 from clive.__private.ui.operations.set_reset_account.set_reset_account import SetResetAccount
 from clive.__private.ui.operations.set_withdraw_vesting_route.set_withdraw_vesting_route import SetWithdrawVestingRoute
 from clive.__private.ui.operations.transfer_from_savings.transfer_from_savings import TransferFromSavings
@@ -36,6 +37,7 @@ from clive.__private.ui.operations.update_proposal_votes.update_proposal_votes i
 from clive.__private.ui.operations.vote.vote import Vote
 from clive.__private.ui.operations.withdraw_vesting.withdraw_vesting import WithdrawVesting
 from clive.__private.ui.operations.witness_block_approve.witness_block_approve import WitnessBlockApprove
+from clive.__private.ui.operations.witness_set_properties.witness_set_properties import WitnessSetProperties
 from clive.__private.ui.operations.witness_update.witness_update import WitnessUpdate
 
 __all__ = [
@@ -74,4 +76,6 @@ __all__ = [
     "Comment",
     "ClaimRewardBalance",
     "WitnessUpdate",
+    "WitnessSetProperties",
+    "ResetAccount",
 ]
