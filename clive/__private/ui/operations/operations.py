@@ -64,6 +64,8 @@ class Operations(CartBasedScreen):
             yield CliveButton("Witness update", id_="witness-update-button")
             yield CliveButton("Witness set properties", id_="witness-set-properties-button")
             yield CliveButton("Reset account", id_="reset-account-button")
+            yield CliveButton("Request account recovery", id_="request-account-recovery-button")
+            yield CliveButton("Recover account", id_="recover-account-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 

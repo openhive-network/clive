@@ -25,8 +25,10 @@ from clive.__private.ui.operations import (
     EscrowTransfer,
     LimitOrderCancel,
     LimitOrderCreate,
+    RecoverAccount,
     RecurrentTransfer,
     RemoveProposal,
+    RequestAccountRecovery,
     ResetAccount,
     SetResetAccount,
     SetWithdrawVestingRoute,
@@ -81,4 +83,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "witness-update-button": WitnessUpdate,
     "witness-set-properties-button": WitnessSetProperties,
     "reset-account-button": ResetAccount,
+    "request-account-recovery-button": RequestAccountRecovery,
+    "recover-account-button": RecoverAccount,
 }

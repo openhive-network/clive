@@ -23,8 +23,10 @@ from clive.__private.ui.operations.escrow_release.escrow_release import EscrowRe
 from clive.__private.ui.operations.escrow_transfer.escrow_transfer import EscrowTransfer
 from clive.__private.ui.operations.limit_order_cancel.limit_order_cancel import LimitOrderCancel
 from clive.__private.ui.operations.limit_order_create.limit_order_create import LimitOrderCreate
+from clive.__private.ui.operations.recover_account.recover_account import RecoverAccount
 from clive.__private.ui.operations.recurrent_transfer.recurrent_transfer import RecurrentTransfer
 from clive.__private.ui.operations.remove_proposal.remove_proposal import RemoveProposal
+from clive.__private.ui.operations.request_account_recovery.request_account_recovery import RequestAccountRecovery
 from clive.__private.ui.operations.reset_account.reset_account import ResetAccount
 from clive.__private.ui.operations.set_reset_account.set_reset_account import SetResetAccount
 from clive.__private.ui.operations.set_withdraw_vesting_route.set_withdraw_vesting_route import SetWithdrawVestingRoute
@@ -78,4 +80,6 @@ __all__ = [
     "WitnessUpdate",
     "WitnessSetProperties",
     "ResetAccount",
+    "RequestAccountRecovery",
+    "RecoverAccount",
 ]
