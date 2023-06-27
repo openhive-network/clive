@@ -7,6 +7,7 @@ from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_
 )
 from clive.__private.ui.operations.change_recovery_account.change_recovery_account import ChangeRecoveryAccount
 from clive.__private.ui.operations.claim_account.claim_account import ClaimAccount
+from clive.__private.ui.operations.claim_reward_balance.claim_reward_balance import ClaimRewardBalance
 from clive.__private.ui.operations.comment.comment import Comment
 from clive.__private.ui.operations.comment_options.comment_options import CommentOptions
 from clive.__private.ui.operations.covnert.covnert import Convert
@@ -70,4 +71,5 @@ __all__ = [
     "CreateProposal",
     "CommentOptions",
     "Comment",
+    "ClaimRewardBalance",
 ]

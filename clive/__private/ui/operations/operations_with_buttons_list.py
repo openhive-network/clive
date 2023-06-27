@@ -9,6 +9,7 @@ from clive.__private.ui.operations import (
     CancelTransferFromSavings,
     ChangeRecoveryAccount,
     ClaimAccount,
+    ClaimRewardBalance,
     Comment,
     CommentOptions,
     Convert,
@@ -73,4 +74,5 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "create-proposal-button": CreateProposal,
     "comment-options-button": CommentOptions,
     "comment-button": Comment,
+    "claim-reward-balance-button": ClaimRewardBalance,
 }
