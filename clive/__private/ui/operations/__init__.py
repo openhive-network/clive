@@ -36,6 +36,7 @@ from clive.__private.ui.operations.update_proposal_votes.update_proposal_votes i
 from clive.__private.ui.operations.vote.vote import Vote
 from clive.__private.ui.operations.withdraw_vesting.withdraw_vesting import WithdrawVesting
 from clive.__private.ui.operations.witness_block_approve.witness_block_approve import WitnessBlockApprove
+from clive.__private.ui.operations.witness_update.witness_update import WitnessUpdate
 
 __all__ = [
     "AccountWitnessProxy",
@@ -72,4 +73,5 @@ __all__ = [
     "CommentOptions",
     "Comment",
     "ClaimRewardBalance",
+    "WitnessUpdate",
 ]

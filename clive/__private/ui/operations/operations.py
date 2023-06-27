@@ -61,6 +61,7 @@ class Operations(CartBasedScreen):
             yield CliveButton("Comment options", id_="comment-options-button")
             yield CliveButton("Comment", id_="comment-button")
             yield CliveButton("Claim reward balance", id_="claim-reward-balance-button")
+            yield CliveButton("Witness update", id_="witness-update-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 

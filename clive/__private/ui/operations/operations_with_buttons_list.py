@@ -38,6 +38,7 @@ from clive.__private.ui.operations import (
     Vote,
     WithdrawVesting,
     WitnessBlockApprove,
+    WitnessUpdate,
 )
 
 OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
@@ -75,4 +76,5 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "comment-options-button": CommentOptions,
     "comment-button": Comment,
     "claim-reward-balance-button": ClaimRewardBalance,
+    "witness-update-button": WitnessUpdate,
 }
