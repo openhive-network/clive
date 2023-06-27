@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 from textual.widgets import Input, Static
 
+from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.notification import Notification
@@ -45,16 +46,14 @@ class ConfirmWithPassword(BaseScreen):
         self.__result_callback("")
 
     def action_confirm(self) -> None:
-        if not self.__validate_password():
-            Notification("Invalid password", category="error").show()
-            return
+        with self.app.batch_update():
+            self.app.pop_screen()
 
-        self.app.pop_screen()
-        self.__result_callback(self.__get_password_input())
-
-    def __validate_password(self) -> bool:
-        # TODO: Make a call to beekeeper to validate the password
-        return True
+            try:
+                self.__result_callback(self.__get_password_input())
+            except InvalidPasswordError:
+                self.app.push_screen(ConfirmWithPassword(self.__result_callback, self.__action_name))
+                Notification("Invalid password", category="error").show()
 
     def __get_password_input(self) -> str:
         return self.__password_input.value
