@@ -1,4 +1,6 @@
+import inspect
 from collections.abc import Callable
+from dataclasses import dataclass
 from functools import wraps
 from inspect import signature
 from typing import Any, Optional
@@ -47,18 +49,12 @@ def common_options(func: Callable[..., None]) -> Any:
     return wrapper
 
 
-def get_args_from_typer_function(function: Callable[..., None]) -> list[tuple[str, str]]:
-    """Get the arguments from a typer function.
+def get_function_parameters(function: Callable[..., None]) -> list[inspect.Parameter]:
+    return list(signature(function).parameters.values())
 
-    Args:
-        function: The typer function to get the arguments from.
 
-    Returns:
-        A list of tuples containing the argument name and help text.
-    """
-    collected = []
-    for k, v in signature(function).parameters.items():
-        option_info = v.default
-        collected.append((k, option_info.help))
+if __name__ == "__main__":
+    from clive.__private.cli.transfer import _main
 
-    return collected
+    ret = get_function_parameters(_main)
+    print(ret)
