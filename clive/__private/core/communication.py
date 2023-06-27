@@ -29,7 +29,7 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
-    DEFAULT_ATTEMPTS: Final[int] = 3
+    DEFAULT_ATTEMPTS: Final[int] = 1
 
     __async_client: ClassVar[httpx.AsyncClient | None] = None
 
