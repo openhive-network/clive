@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.profile_data import ProfileData
-    from clive.__private.core.world import TextualWorld
 
 
 class ContainerTitle(Static):
@@ -45,11 +44,15 @@ class AccountReferencingWidget(CliveWidget):
         self._account = account
         super().__init__(name=name, classes=classes)
 
-
-def create_dynamic_label(
-    world: TextualWorld, account: Account, foo: Callable[[ProfileData, Account], str], classes: str | None = None
-) -> DynamicLabel:
-    return DynamicLabel(world, "profile_data", lambda pd: foo(pd, account) if account.name else "NULL", classes=classes)
+    def create_dynamic_label(
+        self, foo: Callable[[ProfileData, Account], str], classes: str | None = None
+    ) -> DynamicLabel:
+        return DynamicLabel(
+            self.app.world,
+            "profile_data",
+            lambda pd: foo(pd, self._account) if self._account.name else "NULL",
+            classes=classes,
+        )
 
 
 class ManabarRepresentation(Container, CliveWidget):
@@ -98,25 +101,17 @@ class ActivityStats(AccountReferencingWidget):
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield create_dynamic_label(
-            self.app.world, self._account, lambda _, acc: Asset.pretty_amount(acc.data.hive_balance), "amount"
-        )
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
+        yield self.create_dynamic_label(lambda _, acc: Asset.pretty_amount(acc.data.hive_balance), "amount")
+        yield self.create_dynamic_label(
             lambda _, acc: Asset.pretty_amount(acc.data.hive_savings),
             "amount amount-variant",
         )
         yield Static("HBD", classes="token token-variant")
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
+        yield self.create_dynamic_label(
             lambda _, acc: Asset.pretty_amount(acc.data.hive_dollars),
             "amount amount-variant",
         )
-        yield create_dynamic_label(
-            self.app.world,
-            self._account,
+        yield self.create_dynamic_label(
             lambda _, acc: Asset.pretty_amount(acc.data.hbd_savings),
             "amount",
         )
