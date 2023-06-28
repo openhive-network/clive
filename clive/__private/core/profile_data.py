@@ -7,7 +7,7 @@ from typing import Final
 
 from clive.__private import config
 from clive.__private.storage.contextual import Context
-from clive.__private.storage.mock_database import Account, NodeData, WorkingAccount
+from clive.__private.storage.mock_database import Account, WorkingAccount
 from clive.core.url import Url
 from clive.models import Operation
 

@@ -57,7 +57,7 @@ class UpdateNodeData(Command):
         core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS] | None = None
         rc: RcAccount[Asset.VESTS] | None = None
 
-    def execute(self) -> None:
+    def _execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
         api_accounts: dict[str, UpdateNodeData.AccountApiInfo] = defaultdict(lambda: UpdateNodeData.AccountApiInfo())
         account_names = [acc.name for acc in self.accounts]
