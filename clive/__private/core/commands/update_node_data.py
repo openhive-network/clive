@@ -113,38 +113,49 @@ class UpdateNodeData(Command):
             self.accounts[idx].data.last_refresh = datetime.utcnow().replace(microsecond=0)
 
     def __count_warning(self, account: Account, account_info: AccountApiInfo) -> int:
-        assert account_info.core is not None, "account_info.core cannot be None"
+        return sum(
+            [
+                self.__check_is_recovery_account_not_warning_listed(account),
+                self.__check_is_declining_voting_rights_in_progress(account),
+                self.__check_is_changing_recovery_account_is_in_progress(account),
+                self.__check_is_owner_key_change_is_in_progress(account),
+                self.__check_for_recurrent_transfers(account_info),
+                self.__check_is_governance_is_expiring(account_info),
+            ]
+        )
 
+    def __check_is_recovery_account_not_warning_listed(self, account: Account) -> int:
         warning_recovery_accounts: Final[set[str]] = {"steem"}
-        warnings = int(account.data.recovery_account in warning_recovery_accounts)
+        return int(account.data.recovery_account in warning_recovery_accounts)
 
-        # create one api call instead of N for M accounts at once database_api.find_warnings_for_accounts
-        ldvtr = self.node.api.database_api.list_decline_voting_rights_requests(
+    def __check_is_declining_voting_rights_in_progress(self, account: Account) -> int:
+        requests = self.node.api.database_api.list_decline_voting_rights_requests(
             start=account.name, limit=1, order="by_account"
         ).requests
-        if ldvtr and ldvtr[0].account == account.name:
-            warnings += 1
+        return int(bool(requests) and requests[0].account == account.name)
 
-        lcrar = self.node.api.database_api.list_change_recovery_account_requests(
+    def __check_is_changing_recovery_account_is_in_progress(self, account: Account) -> int:
+        requests = self.node.api.database_api.list_change_recovery_account_requests(
             start=account.name, limit=1, order="by_account"
         ).requests
-        if lcrar and lcrar[0].account_to_recover == account.name:
-            warnings += 1
+        return int(bool(requests) and requests[0].account_to_recover == account.name)
 
-        loh = self.node.api.database_api.list_owner_histories(
+    def __check_is_owner_key_change_is_in_progress(self, account: Account) -> int:
+        owner_auths = self.node.api.database_api.list_owner_histories(
             start=(account.name, datetime.fromtimestamp(0)), limit=1
         ).owner_auths
-        if loh and loh[0].account == account.name:
-            warnings += 1
+        return int(bool(owner_auths) and owner_auths[0].account == account.name)
 
+    def __check_for_recurrent_transfers(self, account_info: AccountApiInfo) -> int:
+        assert account_info.core is not None, "account_info.core cannot be None"
+        return int(account_info.core.open_recurrent_transfers > 0)
+
+    def __check_is_governance_is_expiring(self, account_info: AccountApiInfo) -> int:
+        assert account_info.core is not None, "account_info.core cannot be None"
         warning_period_in_days: Final[int] = 31
-        if account_info.core.governance_vote_expiration_ts - timedelta(days=warning_period_in_days) > datetime.utcnow():
-            warnings += 1
-
-        if account_info.core.open_recurrent_transfers:
-            warnings += 1
-
-        return warnings
+        return int(
+            account_info.core.governance_vote_expiration_ts - timedelta(days=warning_period_in_days) > datetime.utcnow()
+        )
 
     def __get_newest_account_interactions(self, account_name: str) -> datetime:
         non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
