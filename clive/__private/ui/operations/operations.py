@@ -7,7 +7,7 @@ from textual.widgets import Button, Static
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen, OperationBase
-from clive.__private.ui.operations.operations_with_buttons_list import OPERATIONS
+from clive.__private.ui.operations.operations_list import OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.notification import Notification
