@@ -15,8 +15,6 @@ from clive.__private.ui.widgets.notification import Notification
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Operations(CartBasedScreen):
     BINDINGS = [
@@ -70,9 +68,6 @@ class Operations(CartBasedScreen):
             yield CliveButton("Feed publish", id_="feed-publish-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
-
-    def _create_operation(self) -> Operation | None:
-        """Not implemented here"""
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id in OPERATIONS_AND_BUTTONS:

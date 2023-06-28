@@ -2,11 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
-from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.operations.cart_based_screen.cart_based_screen import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecoverAccountOperation
@@ -29,14 +28,7 @@ class AdditionalPlaceTaker(Static):
     """Container used for making correct layout after BigTitle Recent owner authority"""
 
 
-class RecoverAccount(CartBasedScreen):
-    BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
-        Binding("f2", "add_to_cart", "Add to cart"),
-        Binding("f5", "fast_broadcast", "Fast broadcast"),
-        Binding("f10", "finalize", "Finalize transaction"),
-    ]
-
+class RecoverAccount(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
@@ -80,11 +72,11 @@ class RecoverAccount(CartBasedScreen):
                 yield self.__key_auths_recent_input
 
     def _create_operation(self) -> Operation | None:
-        valid_new_account_auths = CartBasedScreen._split_auths_fields(self.__account_auths_new_input.value)
-        valid_new_key_auths = CartBasedScreen._split_auths_fields(self.__key_auths_new_input.value)
+        valid_new_account_auths = OperationBase._split_auths_fields(self.__account_auths_new_input.value)
+        valid_new_key_auths = OperationBase._split_auths_fields(self.__key_auths_new_input.value)
 
-        valid_recent_account_auths = CartBasedScreen._split_auths_fields(self.__account_auths_recent_input.value)
-        valid_recent_key_auths = CartBasedScreen._split_auths_fields(self.__key_auths_recent_input.value)
+        valid_recent_account_auths = OperationBase._split_auths_fields(self.__account_auths_recent_input.value)
+        valid_recent_key_auths = OperationBase._split_auths_fields(self.__key_auths_recent_input.value)
 
         new_authority_field = {
             "weight_threshold": int(self.__weight_threshold_new_input.value),
