@@ -129,19 +129,15 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield DynamicLabel(self.app.world, "profile_data", lambda _: f"Update: {self._account.data.last_refresh}")
 
 
-class AccountRow(Container):
-    def __init__(self, account: Account) -> None:
-        self.__account = account
-        self.__account_type = AccountType.WORKING if isinstance(account, WorkingAccount) else AccountType.WATCHED
-        super().__init__(classes=self.__account_type)
-
+class AccountRow(AccountReferencingWidget):
     def compose(self) -> ComposeResult:
+        self.add_class(AccountType.WORKING if isinstance(self._account, WorkingAccount) else AccountType.WATCHED)
         with Horizontal():
-            yield AccountInfo(self.__account)
+            yield AccountInfo(self._account)
             with Container(id="tables"):
-                yield BalanceStats(self.__account)
+                yield BalanceStats(self._account)
                 yield Static()
-                yield ActivityStats(self.__account)
+                yield ActivityStats(self._account)
 
 
 class WorkingAccountContainer(Static, CliveWidget):
