@@ -8,7 +8,7 @@ from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.currency_selector.currency_selector import CurrencySelector
+from clive.__private.ui.operations.currency_selector_liquid.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.notification import Notification
@@ -32,11 +32,6 @@ class AdditionalPlaceTaker(Static):
     """Additional container for making correct layout for Inputs, except fee"""
 
 
-class CurrencySelectorEscrowTransfer(CurrencySelector):
-    def __init__(self) -> None:
-        super().__init__("HIVE", "HBD")
-
-
 class EscrowTransfer(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -56,7 +51,7 @@ class EscrowTransfer(CartBasedScreen):
         self.__ratification_deadline_input = Input(placeholder="e.g: 2023-07-26T11:22:39")
         self.__escrow_expiration_input = Input(placeholder="e.g: 2023-07-26T11:22:39")
         self.__json_meta_input = Input(placeholder="e.g: {}")
-        self.__currency_selector = CurrencySelectorEscrowTransfer()
+        self.__currency_selector = CurrencySelectorLiquid()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

@@ -28,7 +28,7 @@ class PlaceTaker(Static):
 
 
 class AdditionalPlaceTaker(Static):
-    """ "sth"""
+    """Container used for making correct layout after BigTitle Recent owner authority"""
 
 
 class RecoverAccount(CartBasedScreen):
