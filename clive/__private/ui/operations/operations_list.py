@@ -48,8 +48,7 @@ from clive.__private.ui.operations import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.ui.operations.cart_based_screen.cart_based_screen import OperationBase
-
+    from clive.__private.ui.operations.operation_base import OperationBase
 
 OPERATIONS: Final[list[type[OperationBase]]] = [
     TransferToAccount,

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
-from clive.__private.ui.operations.cart_based_screen.cart_based_screen import OperationBase
+from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecoverAccountOperation
