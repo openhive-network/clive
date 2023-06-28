@@ -75,7 +75,7 @@ class Header(TextualHeader, CliveWidget):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            if self.app.world.profile_data.name:
+            if not self.__is_in_onboarding_mode():
                 yield TitledLabel(
                     "Profile",
                     obj_to_watch=self.app.world,
@@ -83,14 +83,15 @@ class Header(TextualHeader, CliveWidget):
                     callback=self.__get_profile_name,
                     id_="profile-label",
                 )
-            yield AlarmsSummary()
-            yield TitledLabel(
-                "Mode",
-                obj_to_watch=self.app.world,
-                attribute_name="app_state",
-                callback=lambda app_state: "active" if app_state.is_active() else "inactive",
-                id_="mode-label",
-            )
+                yield AlarmsSummary()
+
+                yield TitledLabel(
+                    "Mode",
+                    obj_to_watch=self.app.world,
+                    attribute_name="app_state",
+                    callback=lambda app_state: "active" if app_state.is_active() else "inactive",
+                    id_="mode-label",
+                )
         with Vertical(id="expandable"):
             yield HeaderTitle()
             yield TitledLabel(
@@ -122,3 +123,6 @@ class Header(TextualHeader, CliveWidget):
     @staticmethod
     def __get_profile_name(profile_data: ProfileData) -> str:
         return profile_data.name
+
+    def __is_in_onboarding_mode(self) -> bool:
+        return not self.app.world.profile_data.name
