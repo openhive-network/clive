@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from typing import Any
 
     from test_tools.__private.asset import AssetBase
@@ -32,8 +31,12 @@ wallet.create_account(
 
 # setup watching accounts
 watched_accounts = [tt.Account(name) for name in ("gtg", "god")]
+
+
 def random_assets(asset: type[AssetBase]) -> dict[str, Any]:
-    return asset(randint(1_000, 5_000)).as_nai()
+    return asset(randint(1_000, 5_000)).as_nai()  # type: ignore[no-any-return]
+
+
 for account in watched_accounts:
     wallet.create_account(
         account.name,
