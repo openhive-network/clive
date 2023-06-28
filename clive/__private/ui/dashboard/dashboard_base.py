@@ -64,16 +64,17 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
             classes="percentage",
         )
         yield self.create_dynamic_label(
-            lambda: f"{humanize.naturalsize(self.__manabar.value, binary=False)}".replace(" Bytes", "")
-            .upper()
-            .replace(" ", "")
-            + " HP",
+            self.__pretty_hivepower,
             classes="hivepower-value",
         )
         yield self.create_dynamic_label(
-            lambda: f"{humanize.precisedelta(self.__manabar.full_regeneration, suppress=suppressed_units)}",
+            lambda: humanize.precisedelta(self.__manabar.full_regeneration, suppress=suppressed_units),
             classes="time",
         )
+
+    def __pretty_hivepower(self) -> str:
+        formated_size = humanize.naturalsize(self.__manabar.value, binary=False)
+        return formated_size.replace(" Bytes", "").upper().replace(" ", "") + " HP"
 
 
 class BalanceStats(AccountReferencingWidget):
