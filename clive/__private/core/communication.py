@@ -133,4 +133,4 @@ class Communication:
             if attempts_left > 0:
                 await __sleep()
 
-        raise CommunicationError("Problem occurred during communication", url, data, result)
+        raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}, {result=}")
