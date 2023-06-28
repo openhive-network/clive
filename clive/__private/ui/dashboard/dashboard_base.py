@@ -69,7 +69,7 @@ class ManabarRepresentation(Container, CliveWidget):
         yield DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: f"{humanize.naturalsize(self.__manabar.value, binary=False)}".replace("B", "")
+            lambda _: f"{humanize.naturalsize(self.__manabar.value, binary=False)}".replace(" Bytes", "")
             .upper()
             .replace(" ", "")
             + " HP",
