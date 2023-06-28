@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from schemas.database_api.response_schemas import GetDynamicGlobalProperties
     from schemas.rc_api.fundaments_of_responses import RcAccount
 
-    dgpo_t = GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS]
+    GDPOT = GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS]
 
 
 class SuppressNotExistingApi:
@@ -63,7 +63,7 @@ class UpdateNodeData(Command):
         downvote_vote_ratio: Final[int] = 4
 
         api_accounts = self.__harvest_data_from_api()
-        dgpo = self.node.api.database_api.get_dynamic_global_properties()
+        gdpo = self.node.api.database_api.get_dynamic_global_properties()
 
         for account, info in api_accounts.items():
             account.data.reputation = info.reputation
@@ -79,21 +79,21 @@ class UpdateNodeData(Command):
             account.data.hp_unclaimed = info.core.reward_vesting_balance
             account.data.recovery_account = info.core.recovery_account
 
-            account.data.hive_power_balance = self.__calculate_hive_power(dgpo, info.core)
+            account.data.hive_power_balance = self.__calculate_hive_power(gdpo, info.core)
 
             self.__update_manabar(
-                dgpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
+                gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
             )
 
             self.__update_manabar(
-                dgpo,
+                gdpo,
                 int(info.core.post_voting_power.amount) // downvote_vote_ratio,
                 info.core.downvote_manabar,
                 account.data.downvote_manabar,
             )
 
             if info.rc is not None:
-                self.__update_manabar(dgpo, int(info.rc.max_rc), info.rc.rc_manabar, account.data.rc_manabar)
+                self.__update_manabar(gdpo, int(info.rc.max_rc), info.rc.rc_manabar, account.data.rc_manabar)
 
             account.data.last_refresh = self.__normalize_datetime(datetime.utcnow())
 
@@ -195,7 +195,7 @@ class UpdateNodeData(Command):
 
     def __calculate_hive_power(
         self,
-        dgpo: dgpo_t,
+        gdpo: GDPOT,
         account: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS],
     ) -> int:
         account_vesting_shares = (
@@ -206,42 +206,42 @@ class UpdateNodeData(Command):
         return cast(
             int,
             ceil(
-                int(self.__vests_to_hive(account_vesting_shares, dgpo).amount)
-                / (10 ** dgpo.total_reward_fund_hive.get_asset_information().precision)
+                int(self.__vests_to_hive(account_vesting_shares, gdpo).amount)
+                / (10 ** gdpo.total_reward_fund_hive.get_asset_information().precision)
             ),
         )
 
-    def __update_manabar(self, dgpo: dgpo_t, max_mana: int, manabar: Manabar, dest: mock_database.Manabar) -> None:
+    def __update_manabar(self, gdpo: GDPOT, max_mana: int, manabar: Manabar, dest: mock_database.Manabar) -> None:
         power_from_api = int(manabar.current_mana)
         last_update = int(manabar.last_update_time)
-        dest.max_value = int(self.__vests_to_hive(max_mana, dgpo).amount)
+        dest.max_value = int(self.__vests_to_hive(max_mana, gdpo).amount)
         dest.value = int(
             self.__vests_to_hive(
                 calculate_current_manabar_value(
-                    now=int(dgpo.time.timestamp()),
+                    now=int(gdpo.time.timestamp()),
                     max_mana=max_mana,
                     current_mana=power_from_api,
                     last_update_time=last_update,
                 ),
-                dgpo,
+                gdpo,
             ).amount
         )
 
         dest.full_regeneration = (
             calculate_manabar_full_regeneration_time(
-                now=int(dgpo.time.timestamp()),
+                now=int(gdpo.time.timestamp()),
                 max_mana=max_mana,
                 current_mana=power_from_api,
                 last_update_time=last_update,
             )
-            - dgpo.time
+            - gdpo.time
         )
 
-    def __vests_to_hive(self, amount: int | Asset.VESTS, dgpo: dgpo_t) -> Asset.HIVE:
+    def __vests_to_hive(self, amount: int | Asset.VESTS, gdpo: GDPOT) -> Asset.HIVE:
         if isinstance(amount, Asset.VESTS):
             amount = int(amount.amount)
         return Asset.HIVE(
-            amount=int(amount * int(dgpo.total_vesting_fund_hive.amount) / int(dgpo.total_vesting_shares.amount))
+            amount=int(amount * int(gdpo.total_vesting_fund_hive.amount) / int(gdpo.total_vesting_shares.amount))
         )
 
     def __normalize_datetime(self, date: datetime) -> datetime:
