@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CommentOperation
 
@@ -61,17 +59,13 @@ class Comment(CartBasedScreen):
                 yield Static("json metadata", classes="label")
                 yield self.__json_metadata_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            return CommentOperation(
-                author=self.__author_input.value,
-                permlink=self.__permlink_input.value,
-                title=self.__title_input.value,
-                body=self.__body_input.value,
-                parent_author=self.__parent_author_input.value,
-                parent_permlink=self.__parent_permlink_input.value,
-                json_metadata=self.__json_metadata_input.value,
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return CommentOperation(
+            author=self.__author_input.value,
+            permlink=self.__permlink_input.value,
+            title=self.__title_input.value,
+            body=self.__body_input.value,
+            parent_author=self.__parent_author_input.value,
+            parent_permlink=self.__parent_permlink_input.value,
+            json_metadata=self.__json_metadata_input.value,
+        )

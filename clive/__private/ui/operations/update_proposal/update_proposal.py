@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import UpdateProposalOperation
@@ -57,17 +55,12 @@ class UpdateProposal(CartBasedScreen):
                 yield Static("extensions", classes="label")
                 yield self.__extensions_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            return UpdateProposalOperation(
-                proposal_id=int(self.__proposal_id_input.value),
-                creator=self.__creator_input.value,
-                daily_pay=Asset.hbd(float(self.__daily_pay_input.value)),
-                subject=self.__subject_input.value,
-                permlink=self.__permlink_input.value,
-                extensions=self.__extensions_input.value,  # Notice: this operation is not working, cause it was mistake in schemas, need to update schemas
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return UpdateProposalOperation(
+            proposal_id=int(self.__proposal_id_input.value),
+            creator=self.__creator_input.value,
+            daily_pay=Asset.hbd(float(self.__daily_pay_input.value)),
+            subject=self.__subject_input.value,
+            permlink=self.__permlink_input.value,
+            extensions=self.__extensions_input.value,  # Notice: this operation is not working, cause it was mistake in schemas, need to update schemas
+        )

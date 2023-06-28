@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import WitnessBlockApproveOperation
 
@@ -46,12 +44,5 @@ class WitnessBlockApprove(CartBasedScreen):
                 yield Static("block_id", classes="label")
                 yield self.__block_id_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            return WitnessBlockApproveOperation(
-                witness=self.__witness_input.value, block_id=self.__block_id_input.value
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return WitnessBlockApproveOperation(witness=self.__witness_input.value, block_id=self.__block_id_input.value)

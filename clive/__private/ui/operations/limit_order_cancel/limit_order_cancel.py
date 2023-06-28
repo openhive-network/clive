@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCancelOperation
 
@@ -46,16 +44,8 @@ class LimitOrderCancel(CartBasedScreen):
                 yield Static("order_id", classes="label")
                 yield self.__order_id_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__order_id_input.value:
-                return LimitOrderCancelOperation(
-                    owner=str(self.app.world.profile_data.working_account.name),
-                    order_id=int(self.__order_id_input.value),
-                )
-            return LimitOrderCancelOperation(  # noqa: TRY300
-                owner=str(self.app.world.profile_data.working_account.name)
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return LimitOrderCancelOperation(
+            owner=str(self.app.world.profile_data.working_account.name),
+            order_id=int(self.__order_id_input.value),
+        )

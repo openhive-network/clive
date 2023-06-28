@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RemoveProposalOperation
 
@@ -51,15 +49,11 @@ class RemoveProposal(CartBasedScreen):
                 yield Static("proposal ids", classes="label")
                 yield self.__proposal_ids_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            split_ids: list[str] = self.__proposal_ids_input.value.split(",")
-            split_ids = [x.strip(" ") for x in split_ids]
-            proposal_ids_list: list[int] = [int(v) for v in split_ids]
-            return RemoveProposalOperation(  # noqa: TRY300
-                proposal_owner=str(self.app.world.profile_data.name), proposal_ids=proposal_ids_list
-            )
+    def _create_operation(self) -> Operation | None:
+        split_ids: list[str] = self.__proposal_ids_input.value.split(",")
+        split_ids = [x.strip(" ") for x in split_ids]
+        proposal_ids_list: list[int] = [int(v) for v in split_ids]
 
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+        return RemoveProposalOperation(
+            proposal_owner=str(self.app.world.profile_data.name), proposal_ids=proposal_ids_list
+        )

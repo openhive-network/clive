@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import EscrowReleaseOperation
@@ -67,30 +65,14 @@ class EscrowRelease(CartBasedScreen):
                 yield Static("hive amount", classes="label")
                 yield self.__hive_amount_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__escrow_id_input.value:
-                return EscrowReleaseOperation(
-                    from_=str(self.app.world.profile_data.name),
-                    to=self.__to_input.value,
-                    agent=self.__agent_input.value,
-                    escrow_id=int(self.__escrow_id_input.value),
-                    hbd_amount=Asset.hbd(float(self.__hbd_amount_input.value)),
-                    hive_amount=Asset.hive(float(self.__hive_amount_input.value)),
-                    receiver=self.__receiver_input.value,
-                    who=self.__who_input.value,
-                )
-
-            return EscrowReleaseOperation(  # noqa: TRY300
-                from_=str(self.app.world.profile_data.name),
-                to=self.__to_input.value,
-                agent=self.__agent_input.value,
-                hbd_amount=Asset.hbd(float(self.__hbd_amount_input.value)),
-                hive_amount=Asset.hive(float(self.__hive_amount_input.value)),
-                receiver=self.__receiver_input.value,
-                who=self.__who_input.value,
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return EscrowReleaseOperation(
+            from_=str(self.app.world.profile_data.name),
+            to=self.__to_input.value,
+            agent=self.__agent_input.value,
+            escrow_id=int(self.__escrow_id_input.value),
+            hbd_amount=Asset.hbd(float(self.__hbd_amount_input.value)),
+            hive_amount=Asset.hive(float(self.__hive_amount_input.value)),
+            receiver=self.__receiver_input.value,
+            who=self.__who_input.value,
+        )

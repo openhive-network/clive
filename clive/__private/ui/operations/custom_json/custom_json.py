@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomJsonOperation
 
@@ -52,19 +50,15 @@ class CustomJson(CartBasedScreen):
                 yield Static("json", classes="label")
                 yield self.__json_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            required_auths_in_list = self.__required_auths_input.value.split(",")
-            required_auths_in_list = [x.strip(" ") for x in required_auths_in_list]
+    def _create_operation(self) -> Operation | None:
+        required_auths_in_list = self.__required_auths_input.value.split(",")
+        required_auths_in_list = [x.strip(" ") for x in required_auths_in_list]
 
-            required_posting_auths_in_list = self.__required_posting_auths_input.value.split(",")
-            required_posting_auths_in_list = [x.strip(" ") for x in required_posting_auths_in_list]
-            return CustomJsonOperation(  # noqa: TRY300
-                required_auths=required_auths_in_list,
-                required_posting_auths=required_posting_auths_in_list,
-                id_=int(self.__id_input.value),
-                json_=self.__json_input.value,
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+        required_posting_auths_in_list = self.__required_posting_auths_input.value.split(",")
+        required_posting_auths_in_list = [x.strip(" ") for x in required_posting_auths_in_list]
+        return CustomJsonOperation(
+            required_auths=required_auths_in_list,
+            required_posting_auths=required_posting_auths_in_list,
+            id_=int(self.__id_input.value),
+            json_=self.__json_input.value,
+        )

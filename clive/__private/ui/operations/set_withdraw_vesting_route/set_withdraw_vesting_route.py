@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import SetWithdrawVestingRouteOperation
 
@@ -57,34 +55,10 @@ class SetWithdrawVestingRoute(CartBasedScreen):
                 yield Static("auto vest", classes="label")
                 yield self.__auto_vest_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__auto_vest_input.value and self.__percent_input.value:
-                return SetWithdrawVestingRouteOperation(
-                    from_account=str(self.app.world.profile_data.name),
-                    to_account=self.__to_account_input.value,
-                    auto_vest=bool(self.__auto_vest_input.value),
-                    percent=int(self.__percent_input.value),
-                )
-            elif self.__auto_vest_input.value or self.__percent_input.value:  # noqa: RET505
-                return (
-                    SetWithdrawVestingRouteOperation(
-                        from_account=str(self.app.world.profile_data.name),
-                        to_account=self.__to_account_input.value,
-                        auto_vest=bool(self.__auto_vest_input.value),
-                    )
-                    if self.__auto_vest_input.value
-                    else SetWithdrawVestingRouteOperation(
-                        from_account=str(self.app.world.profile_data.name),
-                        to_account=self.__to_account_input.value,
-                        percent=int(self.__percent_input.value),
-                    )
-                )
-            return SetWithdrawVestingRouteOperation(  # noqa: TRY300
-                from_account=str(self.app.world.profile_data.name),
-                to_account=self.__to_account_input.value,
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return SetWithdrawVestingRouteOperation(
+            from_account=str(self.app.world.profile_data.name),
+            to_account=self.__to_account_input.value,
+            auto_vest=bool(self.__auto_vest_input.value),
+            percent=int(self.__percent_input.value),
+        )

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessVoteOperation
 
@@ -54,20 +52,9 @@ class AccountWitnessVote(CartBasedScreen):
                 yield Static("approve", classes="label")
                 yield self.__approve_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__approve_input.value:
-                """Default value of approve is True, so if empty auto-fill with this"""
-                return AccountWitnessVoteOperation(
-                    account=str(self.app.world.profile_data.working_account.name),
-                    witness=self.__witness_input.value,
-                    approve=bool(self.__approve_input.value),
-                )
-            return AccountWitnessVoteOperation(  # noqa: TRY300
-                account=str(self.app.world.profile_data.working_account.name),
-                witness=str(self.__witness_input.value),
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return AccountWitnessVoteOperation(
+            account=str(self.app.world.profile_data.working_account.name),
+            witness=self.__witness_input.value,
+            approve=bool(self.__approve_input.value),
+        )

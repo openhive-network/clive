@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -11,7 +10,6 @@ from clive.__private.ui.operations.cart_based_screen.cart_based_screen import Ca
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import LimitOrderCreate2Operation
@@ -86,23 +84,19 @@ class LimitOrderCreate2(CartBasedScreen):
                 yield Static("quote", classes="label")
                 yield self.__quote_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            exchange_rate = {
-                "base": self.__currency_selector_base.selected.value(float(self.__base_input.value)),
-                "quote": Asset.hive(float(self.__quote_input.value)),
-            }
+    def _create_operation(self) -> Operation | None:
+        exchange_rate = {
+            "base": self.__currency_selector_base.selected.value(float(self.__base_input.value)),
+            "quote": Asset.hive(float(self.__quote_input.value)),
+        }
 
-            return LimitOrderCreate2Operation(  # noqa: TRY300
-                owner=str(self.app.world.profile_data.name),
-                order_id=int(self.__order_id_input.value),
-                fill_or_kill=bool(self.__fill_or_kill_input.value),
-                expiration=self.__expiration_input.value,
-                amount_to_sell=self.__currency_selector_amount_to_sell.selected.value(
-                    float(self.__amount_to_sell_input.value)
-                ),
-                exchange_rate=exchange_rate,
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+        return LimitOrderCreate2Operation(
+            owner=str(self.app.world.profile_data.name),
+            order_id=int(self.__order_id_input.value),
+            fill_or_kill=bool(self.__fill_or_kill_input.value),
+            expiration=self.__expiration_input.value,
+            amount_to_sell=self.__currency_selector_amount_to_sell.selected.value(
+                float(self.__amount_to_sell_input.value)
+            ),
+            exchange_rate=exchange_rate,
+        )

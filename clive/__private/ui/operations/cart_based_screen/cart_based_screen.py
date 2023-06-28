@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
+from pydantic import ValidationError
 from textual.containers import Container, Horizontal
 
 from clive.__private.abstract_class import AbstractClassMessagePump
@@ -42,11 +43,21 @@ class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
         """Should yield the left panel widgets."""
 
     @abstractmethod
+    def _create_operation(self) -> Operation | None:
+        """Should return a new operation based on the data from screen"""
+
     def create_operation(self) -> Operation | None:
         """
-        Collects data from the screen and creates a new operation based on it.
-        :return: Operation if the operation is valid, None otherwise.
+        Tries to create a new operation
+
+        Returns:
+            Operation if the operation is valid, None otherwise.
         """
+        try:
+            return self._create_operation()
+        except ValidationError as error:
+            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
+            return None
 
     def on_activate_succeeded(self) -> None:
         self.__fast_broadcast()

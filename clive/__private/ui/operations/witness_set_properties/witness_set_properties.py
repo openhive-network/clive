@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import WitnessSetPropertiesOperation
@@ -57,15 +55,11 @@ class WitnessSetProperties(CartBasedScreen):
                 yield Static("hbd interest rate", classes="label")
                 yield self.__hbd_interest_rate_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            props_field = {
-                "account_creation_fee": Asset.hive(float(self.__account_creation_fee_input.value)),
-                "maximum_block_size": int(self.__maximum_block_size_input.value),
-                "hbd_interest_rate": int(self.__hbd_interest_rate_input.value),
-            }
+    def _create_operation(self) -> Operation | None:
+        props_field = {
+            "account_creation_fee": Asset.hive(float(self.__account_creation_fee_input.value)),
+            "maximum_block_size": int(self.__maximum_block_size_input.value),
+            "hbd_interest_rate": int(self.__hbd_interest_rate_input.value),
+        }
 
-            return WitnessSetPropertiesOperation(witness=self.__witness_input.value, props=props_field)  # noqa: TRY300
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+        return WitnessSetPropertiesOperation(witness=self.__witness_input.value, props=props_field)

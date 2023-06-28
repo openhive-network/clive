@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import WitnessUpdateOperation
@@ -66,21 +64,17 @@ class WitnessUpdate(CartBasedScreen):
                 yield Static("hbd interest rate", classes="label")
                 yield self.__hbd_interest_rate_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            props_field = {
-                "account_creation_fee": Asset.hive(float(self.__account_creation_fee_input.value)),
-                "maximum_block_size": int(self.__maximum_block_size_input.value),
-                "hbd_interest_rate": int(self.__hbd_interest_rate_input.value),
-            }
+    def _create_operation(self) -> Operation | None:
+        props_field = {
+            "account_creation_fee": Asset.hive(float(self.__account_creation_fee_input.value)),
+            "maximum_block_size": int(self.__maximum_block_size_input.value),
+            "hbd_interest_rate": int(self.__hbd_interest_rate_input.value),
+        }
 
-            return WitnessUpdateOperation(  # noqa: TRY300
-                owner=str(self.app.world.profile_data.name),
-                url=self.__url_input.value,
-                block_signing_key=self.__block_signing_key_input.value,
-                props=props_field,
-                fee=Asset.hive(float(self.__fee_input.value)),
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+        return WitnessUpdateOperation(
+            owner=str(self.app.world.profile_data.name),
+            url=self.__url_input.value,
+            block_signing_key=self.__block_signing_key_input.value,
+            props=props_field,
+            fee=Asset.hive(float(self.__fee_input.value)),
+        )

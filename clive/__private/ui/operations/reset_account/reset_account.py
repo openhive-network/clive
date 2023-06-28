@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import ResetAccountOperation
 
@@ -64,22 +62,18 @@ class ResetAccount(CartBasedScreen):
                 yield Static("key auths", classes="label")
                 yield self.__key_auths_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            valid_account_auths = CartBasedScreen._split_auths_fields(self.__account_auths_input.value)
-            split_key_auths = CartBasedScreen._split_auths_fields(self.__key_auths_input.value)
+    def _create_operation(self) -> Operation | None:
+        valid_account_auths = CartBasedScreen._split_auths_fields(self.__account_auths_input.value)
+        split_key_auths = CartBasedScreen._split_auths_fields(self.__key_auths_input.value)
 
-            authority_field = {
-                "weight_threshold": int(self.__weight_threshold_input.value),
-                "account_auths": valid_account_auths,
-                "key_auths": split_key_auths,
-            }
+        authority_field = {
+            "weight_threshold": int(self.__weight_threshold_input.value),
+            "account_auths": valid_account_auths,
+            "key_auths": split_key_auths,
+        }
 
-            return ResetAccountOperation(  # noqa: TRY300
-                reset_account=self.__reset_account_input.value,
-                account_to_reset=self.__account_to_reset_input.value,
-                new_owner_authority=authority_field,
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+        return ResetAccountOperation(
+            reset_account=self.__reset_account_input.value,
+            account_to_reset=self.__account_to_reset_input.value,
+            new_owner_authority=authority_field,
+        )

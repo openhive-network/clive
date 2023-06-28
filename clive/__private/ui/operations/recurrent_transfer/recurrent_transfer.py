@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -11,7 +10,6 @@ from clive.__private.ui.operations.cart_based_screen.cart_based_screen import Ca
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecurrentTransferOperation
 
@@ -71,42 +69,12 @@ class RecurrentTransfer(CartBasedScreen):
                 yield Static("executions", classes="label")
                 yield self.__executions_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__executions_input.value and self.__recurrence_input.value:
-                return RecurrentTransferOperation(
-                    from_=str(self.app.world.profile_data.name),
-                    to=self.__to_input.value,
-                    amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
-                    memo=self.__memo_input.value,
-                    recurrence=int(self.__recurrence_input.value),
-                    executions=int(self.__executions_input.value),
-                )
-            elif self.__executions_input.value or self.__recurrence_input.value:  # noqa: RET505
-                return (
-                    RecurrentTransferOperation(
-                        from_=str(self.app.world.profile_data.name),
-                        to=self.__to_input.value,
-                        amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
-                        memo=self.__memo_input.value,
-                        recurrence=int(self.__recurrence_input.value),
-                    )
-                    if self.__recurrence_input.value
-                    else RecurrentTransferOperation(
-                        from_=str(self.app.world.profile_data.name),
-                        to=self.__to_input.value,
-                        amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
-                        memo=self.__memo_input.value,
-                        executions=int(self.__executions_input.value),
-                    )
-                )
-            return RecurrentTransferOperation(  # noqa: TRY300
-                from_=str(self.app.world.profile_data.name),
-                to=self.__to_input.value,
-                amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
-                memo=self.__memo_input.value,
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return RecurrentTransferOperation(
+            from_=str(self.app.world.profile_data.name),
+            to=self.__to_input.value,
+            amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
+            memo=self.__memo_input.value,
+            recurrence=int(self.__recurrence_input.value),
+            executions=int(self.__executions_input.value),
+        )

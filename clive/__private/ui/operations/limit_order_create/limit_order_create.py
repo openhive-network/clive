@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -11,7 +10,6 @@ from clive.__private.ui.operations.cart_based_screen.cart_based_screen import Ca
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCreateOperation
 
@@ -68,59 +66,12 @@ class LimitOrderCreate(CartBasedScreen):
                 yield self.__min_to_receive_input
                 yield self.__currency_selector_to_receive
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__fill_or_kill_input.value and self.__request_id_input.value:
-                return LimitOrderCreateOperation(
-                    owner=str(self.app.world.profile_data.name),
-                    order_id=int(self.__request_id_input.value),
-                    amount_to_sell=self.__currency_selector_to_sell.selected.value(
-                        float(self.__amount_to_sell_input.value)
-                    ),
-                    min_to_receive=self.__currency_selector_to_receive.selected.value(
-                        float(self.__min_to_receive_input.value)
-                    ),
-                    fill_or_kill=bool(self.__fill_or_kill_input.value),
-                    time_point_sec=self.__time_point_sec_input.value,
-                )
-            elif self.__fill_or_kill_input.value or self.__request_id_input.value:  # noqa: RET505
-                return (
-                    LimitOrderCreateOperation(
-                        owner=str(self.app.world.profile_data.name),
-                        amount_to_sell=self.__currency_selector_to_sell.selected.value(
-                            float(self.__amount_to_sell_input.value)
-                        ),
-                        min_to_receive=self.__currency_selector_to_receive.selected.value(
-                            float(self.__min_to_receive_input.value)
-                        ),
-                        fill_or_kill=bool(self.__fill_or_kill_input.value),
-                        time_point_sec=self.__time_point_sec_input.value,
-                    )
-                    if self.__fill_or_kill_input.value
-                    else LimitOrderCreateOperation(
-                        owner=str(self.app.world.profile_data.name),
-                        order_id=int(self.__request_id_input.value),
-                        amount_to_sell=self.__currency_selector_to_sell.selected.value(
-                            float(self.__amount_to_sell_input.value)
-                        ),
-                        min_to_receive=self.__currency_selector_to_receive.selected.value(
-                            float(self.__min_to_receive_input.value)
-                        ),
-                        time_point_sec=self.__time_point_sec_input.value,
-                    )
-                )
-
-            return LimitOrderCreateOperation(  # noqa: TRY300
-                owner=str(self.app.world.profile_data.name),
-                amount_to_sell=self.__currency_selector_to_sell.selected.value(
-                    float(self.__amount_to_sell_input.value)
-                ),
-                min_to_receive=self.__currency_selector_to_receive.selected.value(
-                    float(self.__min_to_receive_input.value)
-                ),
-                time_point_sec=self.__time_point_sec_input.value,
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return LimitOrderCreateOperation(
+            owner=str(self.app.world.profile_data.name),
+            order_id=int(self.__request_id_input.value),
+            amount_to_sell=self.__currency_selector_to_sell.selected.value(float(self.__amount_to_sell_input.value)),
+            min_to_receive=self.__currency_selector_to_receive.selected.value(float(self.__min_to_receive_input.value)),
+            fill_or_kill=bool(self.__fill_or_kill_input.value),
+            time_point_sec=self.__time_point_sec_input.value,
+        )

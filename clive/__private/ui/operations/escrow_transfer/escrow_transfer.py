@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -11,7 +10,6 @@ from clive.__private.ui.operations.cart_based_screen.cart_based_screen import Ca
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import EscrowTransferOperation
@@ -81,32 +79,16 @@ class EscrowTransfer(CartBasedScreen):
                 yield self.__fee_input
                 yield self.__currency_selector
 
-    def create_operation(self) -> Operation | None:
-        try:
-            if self.__escrow_id_input.value:
-                return EscrowTransferOperation(
-                    from_=str(self.app.world.profile_data.name),
-                    to=self.__to_input.value,
-                    agent=self.__agent_input.value,
-                    escrow_id=int(self.__escrow_id_input.value),
-                    hbd_amount=Asset.hbd(float(self.__hbd_amount_input.value)),
-                    hive_amount=Asset.hive(float(self.__hive_amount_input.value)),
-                    ratification_deadline=self.__ratification_deadline_input.value,
-                    escrow_expiration=self.__ratification_deadline_input.value,
-                    json_meta=self.__json_meta_input.value,
-                    fee=self.__currency_selector.selected.value(float(self.__fee_input.value)),
-                )
-            return EscrowTransferOperation(  # noqa: TRY300
-                from_=str(self.app.world.profile_data.name),
-                to=self.__to_input.value,
-                agent=self.__agent_input.value,
-                hbd_amount=Asset.hbd(float(self.__hbd_amount_input.value)),
-                hive_amount=Asset.hive(float(self.__hive_amount_input.value)),
-                ratification_deadline=self.__ratification_deadline_input.value,
-                escrow_expiration=self.__ratification_deadline_input.value,
-                json_meta=self.__json_meta_input.value,
-                fee=self.__currency_selector.selected.value(float(self.__fee_input.value)),
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return EscrowTransferOperation(
+            from_=str(self.app.world.profile_data.name),
+            to=self.__to_input.value,
+            agent=self.__agent_input.value,
+            escrow_id=int(self.__escrow_id_input.value),
+            hbd_amount=Asset.hbd(float(self.__hbd_amount_input.value)),
+            hive_amount=Asset.hive(float(self.__hive_amount_input.value)),
+            ratification_deadline=self.__ratification_deadline_input.value,
+            escrow_expiration=self.__ratification_deadline_input.value,
+            json_meta=self.__json_meta_input.value,
+            fee=self.__currency_selector.selected.value(float(self.__fee_input.value)),
+        )

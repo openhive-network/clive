@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
@@ -10,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import ClaimRewardBalanceOperation
@@ -56,14 +54,10 @@ class ClaimRewardBalance(CartBasedScreen):
                 yield Static("reward vests", classes="label")
                 yield self.__reward_vests_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            return ClaimRewardBalanceOperation(
-                account=str(self.app.world.profile_data.name),
-                reward_hive=Asset.hive(float(self.__reward_hive_input.value)),
-                reward_hbd=Asset.hbd(float(self.__reward_hbd_input.value)),
-                reward_vests=Asset.vests(float(self.__reward_vests_input.value)),
-            )
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return ClaimRewardBalanceOperation(
+            account=str(self.app.world.profile_data.name),
+            reward_hive=Asset.hive(float(self.__reward_hive_input.value)),
+            reward_hbd=Asset.hbd(float(self.__reward_hbd_input.value)),
+            reward_vests=Asset.vests(float(self.__reward_vests_input.value)),
+        )

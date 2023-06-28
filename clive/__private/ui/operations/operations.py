@@ -71,7 +71,7 @@ class Operations(CartBasedScreen):
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
-    def create_operation(self) -> Operation | None:
+    def _create_operation(self) -> Operation | None:
         """Not implemented here"""
 
     def on_button_pressed(self, event: Button.Pressed) -> None:

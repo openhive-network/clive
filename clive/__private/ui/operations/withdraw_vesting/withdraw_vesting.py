@@ -2,14 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from pydantic import ValidationError
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
 from schemas.operations import WithdrawVestingOperation
@@ -45,13 +43,8 @@ class WithdrawVesting(CartBasedScreen):
                 yield Static("vesting shares", classes="label")
                 yield self.__vesting_shares_input
 
-    def create_operation(self) -> Operation | None:
-        try:
-            return WithdrawVestingOperation(
-                account=self.__account_input.value,
-                vesting_shares=Asset.vests(float(self.__vesting_shares_input.value)),
-            )
-
-        except ValidationError as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
-            return None
+    def _create_operation(self) -> Operation | None:
+        return WithdrawVestingOperation(
+            account=self.__account_input.value,
+            vesting_shares=Asset.vests(float(self.__vesting_shares_input.value)),
+        )
