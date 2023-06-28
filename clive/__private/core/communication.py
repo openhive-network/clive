@@ -7,7 +7,7 @@ import typing
 from collections.abc import Callable
 from datetime import datetime, timedelta
 from functools import partial
-from typing import Any, ClassVar, Final, TypeAlias
+from typing import Any, ClassVar, Final
 
 import httpx
 
@@ -18,6 +18,8 @@ from clive.exceptions import CommunicationError, UnknownResponseFormatError
 
 if typing.TYPE_CHECKING:
     from concurrent.futures import ThreadPoolExecutor
+
+CommunicationClosedCallbackT = Callable[[], bool]
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -31,13 +33,12 @@ class CustomJSONEncoder(json.JSONEncoder):
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 3
-    IS_CLOSED_CALLBACK_T: ClassVar[TypeAlias] = Callable[[], bool]
 
     __async_client: ClassVar[httpx.AsyncClient | None] = None
     __thread_pool: ClassVar[ThreadPoolExecutor | None] = None
 
     @classmethod
-    def submit(cls, fn: Callable[[Communication.IS_CLOSED_CALLBACK_T], None]) -> None:
+    def submit(cls, fn: Callable[[CommunicationClosedCallbackT], None]) -> None:
         cls.__get_thread_pool().submit(fn, lambda: cls.__get_thread_pool()._shutdown)
 
     @classmethod

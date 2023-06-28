@@ -10,7 +10,7 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.communication import Communication
+from clive.__private.core.communication import Communication, CommunicationClosedCallbackT
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
@@ -97,7 +97,7 @@ class Clive(App[int], ManualReactive):
         refresh_interval: Final[int] = 3
         self.console.set_window_title("Clive")
 
-        def update_data_worker(closed: Communication.IS_CLOSED_CALLBACK_T) -> None:
+        def update_data_worker(closed: CommunicationClosedCallbackT) -> None:
             while not closed():
                 self.__update_data_from_node()
                 sleep(refresh_interval)
