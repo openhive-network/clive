@@ -29,7 +29,7 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelectorRecurrentTransfer(CurrencySelector):
+class CurrencySelectorLimitOrderCreate(CurrencySelector):
     def __init__(self) -> None:
         super().__init__("HIVE", "HBD")
 
@@ -50,8 +50,8 @@ class LimitOrderCreate(CartBasedScreen):
         self.__min_to_receive_input = Input(placeholder="e.g.: 1.000")
         self.__fill_or_kill_input = Input(placeholder="e.g.: True. Notice: default value is False")
         self.__time_point_sec_input = Input(placeholder="e.g.: 1970-01-01T00:00:00")
-        self.__currency_selector_to_sell = CurrencySelectorRecurrentTransfer()
-        self.__currency_selector_to_receive = CurrencySelectorRecurrentTransfer()
+        self.__currency_selector_to_sell = CurrencySelectorLimitOrderCreate()
+        self.__currency_selector_to_receive = CurrencySelectorLimitOrderCreate()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

@@ -23,8 +23,10 @@ from clive.__private.ui.operations import (
     EscrowDispute,
     EscrowRelease,
     EscrowTransfer,
+    FeedPublish,
     LimitOrderCancel,
     LimitOrderCreate,
+    LimitOrderCreate2,
     RecoverAccount,
     RecurrentTransfer,
     RemoveProposal,
@@ -85,4 +87,6 @@ OPERATIONS_AND_BUTTONS: Final[dict[str, Any]] = {
     "reset-account-button": ResetAccount,
     "request-account-recovery-button": RequestAccountRecovery,
     "recover-account-button": RecoverAccount,
+    "limit-order-create2-button": LimitOrderCreate2,
+    "feed-publish-button": FeedPublish,
 }

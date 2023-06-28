@@ -66,6 +66,8 @@ class Operations(CartBasedScreen):
             yield CliveButton("Reset account", id_="reset-account-button")
             yield CliveButton("Request account recovery", id_="request-account-recovery-button")
             yield CliveButton("Recover account", id_="recover-account-button")
+            yield CliveButton("Limit order create 2", id_="limit-order-create2-button")
+            yield CliveButton("Feed publish", id_="feed-publish-button")
             yield CliveButton("Power up", id_="power-up-button")
             yield CliveButton("Power down", id_="power-down-button")
 
