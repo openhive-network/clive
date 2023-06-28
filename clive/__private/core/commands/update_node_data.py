@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from math import ceil
 from typing import TYPE_CHECKING, Final, cast
@@ -54,38 +53,33 @@ class UpdateNodeData(Command):
 
     @dataclass
     class AccountApiInfo:
-        core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS] | None = None
+        core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS]
+        latest_interaction: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
         rc: RcAccount[Asset.VESTS] | None = None
+        warnings: int = 0
+        reputation: int = 0
 
     def _execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
-        api_accounts: dict[str, UpdateNodeData.AccountApiInfo] = defaultdict(lambda: UpdateNodeData.AccountApiInfo())
-        account_names = [acc.name for acc in self.accounts]
 
-        with SuppressNotExistingApi("rc_api"):
-            rc_accounts = self.node.api.rc_api.find_rc_accounts(accounts=account_names).rc_accounts
-            for rc_account in rc_accounts:
-                api_accounts[rc_account.account].rc = rc_account
-            assert len(api_accounts) == len(self.accounts), "invalid amount of accounts after rc api call"
-
-        for core_account in self.node.api.database_api.find_accounts(accounts=account_names).accounts:
-            api_accounts[core_account.name].core = core_account
-        assert len(api_accounts) == len(self.accounts), "invalid amount of accounts after database api call"
-
+        api_accounts = self.__harvest_data_from_api()
         dgpo = self.node.api.database_api.get_dynamic_global_properties()
-        for idx, account in enumerate(self.accounts):
-            assert account.name in api_accounts, "account is not present in queried collection"
-            info = api_accounts[account.name]
-            assert info.core is not None, "database did not returned any data?"
 
-            self.accounts[idx].data.hive_balance = info.core.balance
-            self.accounts[idx].data.hive_dollars = info.core.hbd_balance
-            self.accounts[idx].data.hive_savings = info.core.savings_balance
-            self.accounts[idx].data.hbd_savings = info.core.savings_hbd_balance
-            self.accounts[idx].data.hive_unclaimed = info.core.reward_hive_balance
-            self.accounts[idx].data.hbd_unclaimed = info.core.reward_hbd_balance
-            self.accounts[idx].data.hp_unclaimed = info.core.reward_vesting_balance
-            self.accounts[idx].data.recovery_account = info.core.recovery_account
+        for account, info in api_accounts.items():
+            account.data.reputation = info.reputation
+            account.data.last_transaction = info.latest_interaction
+            account.data.warnings = info.warnings
+
+            account.data.hive_balance = info.core.balance
+            account.data.hive_dollars = info.core.hbd_balance
+            account.data.hive_savings = info.core.savings_balance
+            account.data.hbd_savings = info.core.savings_hbd_balance
+            account.data.hive_unclaimed = info.core.reward_hive_balance
+            account.data.hbd_unclaimed = info.core.reward_hbd_balance
+            account.data.hp_unclaimed = info.core.reward_vesting_balance
+            account.data.recovery_account = info.core.recovery_account
+
+            account.data.hive_power_balance = self.__calculate_hive_power(dgpo, info.core)
 
             self.__update_manabar(
                 dgpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
@@ -101,16 +95,36 @@ class UpdateNodeData(Command):
             if info.rc is not None:
                 self.__update_manabar(dgpo, int(info.rc.max_rc), info.rc.rc_manabar, account.data.rc_manabar)
 
-            self.accounts[idx].data.hive_power_balance = self.__calculate_hive_power(dgpo, info.core)
-            self.accounts[idx].data.reputation = self.__get_account_reputation(account.name)
-            self.accounts[idx].data.warnings = self.__count_warning(account, info)
+            account.data.last_refresh = self.__normalize_datetime(datetime.utcnow())
 
+    def __harvest_data_from_api(self) -> dict[Account, AccountApiInfo]:
+        account_names = [acc.name for acc in self.accounts]
+        core_accounts_info: dict[str, AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS]] = {
+            str(acc.name): acc for acc in self.node.api.database_api.find_accounts(accounts=account_names).accounts
+        }
+        assert len(core_accounts_info) == len(self.accounts), "invalid amount of accounts after rc api call"
+
+        rc_accounts_info: dict[str, RcAccount[Asset.VESTS]] = {}
+        with SuppressNotExistingApi("rc_api"):
+            rc_accounts_info = {
+                acc.account: acc for acc in self.node.api.rc_api.find_rc_accounts(accounts=account_names).rc_accounts
+            }
+            assert len(rc_accounts_info) == len(self.accounts), "invalid amount of accounts after database api call"
+
+        result = {}
+        for account in self.accounts:
+            info = self.AccountApiInfo(
+                core=core_accounts_info[account.name],
+                rc=rc_accounts_info.get(account.name),
+                reputation=self.__get_account_reputation(account.name),
+            )
+            info.warnings = self.__count_warning(account, info)
             with SuppressNotExistingApi("account_history_api"):
-                self.accounts[idx].data.last_transaction = self.__get_newest_account_interactions(account.name).replace(
-                    microsecond=0
+                info.latest_interaction = self.__normalize_datetime(
+                    self.__get_newest_account_interactions(account.name)
                 )
-
-            self.accounts[idx].data.last_refresh = datetime.utcnow().replace(microsecond=0)
+            result[account] = info
+        return result
 
     def __count_warning(self, account: Account, account_info: AccountApiInfo) -> int:
         return sum(
@@ -229,3 +243,6 @@ class UpdateNodeData(Command):
         return Asset.HIVE(
             amount=int(amount * int(dgpo.total_vesting_fund_hive.amount) / int(dgpo.total_vesting_shares.amount))
         )
+
+    def __normalize_datetime(self, date: datetime) -> datetime:
+        return date.replace(microsecond=0)
