@@ -100,6 +100,7 @@ class Clive(App[int], ManualReactive):
         def update_data_worker(closed: CommunicationClosedCallbackT) -> None:
             while not closed():
                 self.__update_data_from_node()
+                self.world.update_reactive("profile_data")
                 sleep(refresh_interval)
 
         def __should_enter_onboarding() -> bool:
@@ -107,9 +108,6 @@ class Clive(App[int], ManualReactive):
 
         Communication.submit(update_data_worker)
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
-        self.background_tasks.run_every(
-            timedelta(seconds=refresh_interval / 2), lambda: self.world.update_reactive("profile_data")
-        )
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
