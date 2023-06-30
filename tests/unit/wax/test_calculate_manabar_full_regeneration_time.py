@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from datetime import datetime
-from typing import Final
+from datetime import timedelta
 
 import pytest
 
@@ -9,11 +8,8 @@ import wax
 
 
 def date(*, day: int, hour: int = 0, minute: int = 0, second: int = 0) -> int:
-    minimal_day_value: Final[int] = 1
     return int(
-        datetime.utcnow()
-        .replace(day=minimal_day_value + day, hour=hour, minute=minute, second=second, microsecond=0)
-        .timestamp()
+        timedelta(days=day, hours=hour, minutes=minute, seconds=second, microseconds=0, milliseconds=0).total_seconds()
     )
 
 
