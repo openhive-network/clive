@@ -38,12 +38,12 @@ class SuppressNotExistingApi:
             and (
                 isinstance(error_dict := ex.args[-1], dict)
                 and (error := error_dict.get("error", {}))
-                and (error_data := error.get("data", {}))
-                and (stack := error_data.get("stack", [{}])[0])
-                and (data := stack.get("data", {}))
-                and (data.get("api", False) == self.__api_name)
+                and self.__get_formatted_error_message() == error.get("message", "")
             )
         )
+
+    def __get_formatted_error_message(self) -> str:
+        return f"Assert Exception:api_itr != data._registered_apis.end(): Could not find API {self.__api_name}"
 
 
 @dataclass
