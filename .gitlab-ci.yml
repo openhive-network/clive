@@ -13,15 +13,24 @@ workflow:
       when: never
     - if: $CI_COMMIT_BRANCH
 
+include:
+  - template: Workflows/Branch-Pipelines.gitlab-ci.yml
+  - project: "hive/haf"
+    ref: c39e423fa50caf134356de467af8c6ea8170bc43 # develop
+    file: "/scripts/ci-helpers/prepare_data_image_job.yml"
+
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
   PACKAGES_TO_CHECK: "clive/ tests/"
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
-  BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
-  HIVE_BUILD_ROOT_PATH: "$CI_PROJECT_DIR/hived"
-
+  HIVED_BINARIES: "$CI_PROJECT_DIR/hived-binaries"
+  BEEKEEPER_BINARY: "$HIVED_BINARIES/beekeeper"
+  HIVED_PATH: "$HIVED_BINARIES/hived"
+  CLI_WALLET_PATH: "$HIVED_BINARIES/cli_wallet"
+  GET_DEV_KEY_PATH: "$HIVED_BINARIES/get_dev_key"
+  COMPRESS_BLOCK_LOG_PATH: "$HIVED_BINARIES/compress_block_log"
 .shared_tags: &shared_tags
   - hived-for-tests
 
@@ -71,37 +80,16 @@ type_check_with_mypy:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-.hive_based_build:
+prepare_hived_image:
+  extends: .prepare_hived_image
   stage: build
-  needs: []
   variables:
-    TARGET: ""
-    SOURCE: ""
-    DESTINATION: ""
-  script:
-    - cd hive
-    - mkdir build && cd build
-    - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_HIVE_TESTNET=ON -GNinja ..
-    - ninja $TARGET
-    - cp -r $SOURCE $DESTINATION
-  artifacts:
-    paths:
-      - $DESTINATION
-  tags: *shared_tags
-
-build_beekeeper:
-  extends: .hive_based_build
-  variables:
-    TARGET: "beekeeper"
-    SOURCE: "programs/beekeeper/beekeeper"
-    DESTINATION: "$BEEKEEPER_BINARY"
-
-build_hived:
-  extends: .hive_based_build
-  variables:
-    TARGET: "hived"
-    SOURCE: "."
-    DESTINATION: "$HIVE_BUILD_ROOT_PATH"
+    SUBMODULE_DIR: "$CI_PROJECT_DIR/hive"
+    REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
+    REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
+  tags:
+    - public-runner-docker
+    - hived-for-tests
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
@@ -111,9 +99,7 @@ build_hived:
   stage: tests
   extends: .configuration
   needs:
-    - job: build_beekeeper
-      artifacts: true
-    - job: build_hived
+    - job: prepare_hived_image
       artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
@@ -129,6 +115,8 @@ build_hived:
 testing_clive:
   extends: .testing
   script:
+    - ls -la "$CI_PROJECT_DIR"
+    - ls -la "$HIVED_BINARIES"
     - echo -e "${TXT_BLUE}Launching clive tests...${TXT_CLEAR}"
     - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/
 
@@ -141,7 +129,7 @@ testing_clive:
   stage: build_docker
   needs:
     - job: pre_commit_checks
-    - job: build_beekeeper
+    - job: prepare_hived_image
       artifacts: true
     - job: testing_clive
   variables:
@@ -174,9 +162,7 @@ build_and_push_docker_testnet_image:
   needs:
     - job: pre_commit_checks
     - job: testing_clive
-    - job: build_beekeeper
-      artifacts: true
-    - job: build_hived
+    - job: prepare_hived_image
       artifacts: true
   rules:
     - if: '$CI_COMMIT_REF_NAME != "master" && $CI_COMMIT_REF_NAME != "develop"'
@@ -187,5 +173,4 @@ build_and_push_docker_testnet_image:
     BUILD_SUFFIX: "-testnet"
   script:
     - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET ..
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
