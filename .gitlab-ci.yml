@@ -83,6 +83,7 @@ type_check_with_mypy:
 prepare_hived_image:
   extends: .prepare_hived_image
   stage: build
+  needs: []
   variables:
     SUBMODULE_DIR: "$CI_PROJECT_DIR/hive"
     REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
