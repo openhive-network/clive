@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.ui.operations import (
     AccountCreate,
+    AccountUpdate,
+    AccountUpdate2,
     AccountWitnessProxy,
     AccountWitnessVote,
     CancelTransferFromSavings,
@@ -96,4 +98,6 @@ OPERATIONS: Final[list[type[OperationBase]]] = [
     FeedPublish,
     CreateClaimedAccount,
     AccountCreate,
+    AccountUpdate,
+    AccountUpdate2,
 ]

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from clive.__private.ui.operations.account_create.account_create import AccountCreate
+from clive.__private.ui.operations.account_update.account_update import AccountUpdate
+from clive.__private.ui.operations.account_update2.account_update2 import AccountUpdate2
 from clive.__private.ui.operations.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.operations.account_witness_vote.account_witnes_vote import AccountWitnessVote
 from clive.__private.ui.operations.cancel_transfer_from_savings.cancel_transfer_from_savings import (
@@ -90,4 +92,6 @@ __all__ = [
     "FeedPublish",
     "CreateClaimedAccount",
     "AccountCreate",
+    "AccountUpdate",
+    "AccountUpdate2",
 ]

@@ -1,17 +1,17 @@
-AccountUpdate Body {
+AccountUpdate2 Body {
   grid-size: 2;
-  grid-columns: 22 2fr 1fr;
+  grid-columns: 26 2fr 1fr;
   grid-rows: 4 4 4 4;
-  height: 63;
+  height: 66;
   margin: 0 4;
   background: $panel;
 }
 
-AccountUpdate .label {
+AccountUpdate2 .label {
   padding: 1 2;
   text-align: right;
 }
 
-AccountUpdate Input{
+AccountUpdate2 Input{
     width: 120;
 }

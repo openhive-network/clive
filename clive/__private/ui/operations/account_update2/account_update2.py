@@ -8,7 +8,7 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
-from schemas.operations import AccountUpdateOperation
+from schemas.operations import AccountUpdate2Operation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -30,13 +30,14 @@ class AdditionalPlaceTaker2(Static):
     """Container used for making correct layout of posting authority part"""
 
 
-class AccountUpdate(OperationBase):
+class AccountUpdate2(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
         self.__account_input = Input(placeholder="e.g: alice")
         self.__memo_key_input = Input(placeholder="e.g: STM8ZSyzjPm48GmUuMSRufkVYkwYbZzbxeMysAVp7KFQwbTf98TcG")
         self.__json_metadata_input = Input(placeholder="e.g: {}")
+        self.__posting_json_metadata = Input(placeholder="e.g: {}")
 
         self.__weight_threshold_owner_input = Input("None", placeholder="e.g: 1")
         self.__account_auths_owner_input = Input(
@@ -69,7 +70,7 @@ class AccountUpdate(OperationBase):
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("Account update")
+            yield BigTitle("Account update2")
             with Body():
                 yield Static("account", classes="label")
                 yield self.__account_input
@@ -77,6 +78,8 @@ class AccountUpdate(OperationBase):
                 yield self.__memo_key_input
                 yield Static("json metadata", classes="label")
                 yield self.__json_metadata_input
+                yield Static("posting json metadata", classes="label")
+                yield self.__posting_json_metadata
                 yield PlaceTaker()
                 yield BigTitle("owner authority")
                 yield Static("weight threshold", classes="label")
@@ -102,7 +105,7 @@ class AccountUpdate(OperationBase):
                 yield Static("key auths", classes="label")
                 yield self.__key_auths_posting_input
 
-    def _create_operation(self) -> AccountUpdateOperation:
+    def _create_operation(self) -> AccountUpdate2Operation:
         valid_owner_account_auths = OperationBase._split_auths_fields(self.__account_auths_owner_input.value)
         valid_owner_key_auths = OperationBase._split_auths_fields(self.__key_auths_owner_input.value)
 
@@ -139,11 +142,12 @@ class AccountUpdate(OperationBase):
         else:
             posting_authority_field = None
 
-        return AccountUpdateOperation(
+        return AccountUpdate2Operation(
             account=self.__account_input.value,
             memo_key=self.__memo_key_input.value,
             active=active_authority_field,
             posting=posting_authority_field,
             owner=owner_authority_field,
             json_metadata=self.__json_metadata_input.value,
+            posting_json_metadata=self.__posting_json_metadata.value,
         )

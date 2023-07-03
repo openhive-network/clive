@@ -92,7 +92,7 @@ class OperationBase(CartBasedScreen, AbstractClassMessagePump):
     @staticmethod
     def _split_auths_fields(auths: str) -> list[tuple[str, int]]:
         """To create valid format of auths like key_auths, to create pydantic operation model"""
-        if not auths:
+        if not auths or auths == "None":
             return []
 
         valid_auths_format = []
