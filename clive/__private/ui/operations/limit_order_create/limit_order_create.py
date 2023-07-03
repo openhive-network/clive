@@ -31,10 +31,10 @@ class LimitOrderCreate(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
-        default_request_id = str(get_default_from_model(LimitOrderCreateOperation, "request_id"))
+        default_order_id = str(get_default_from_model(LimitOrderCreateOperation, "order_id"))
         default_fill_or_kill = str(get_default_from_model(LimitOrderCreateOperation, "fill_or_kill"))
 
-        self.__request_id_input = Input(default_request_id, placeholder="e.g.: 1000")
+        self.__order_id_input = Input(default_order_id, placeholder="e.g.: 1000")
         self.__amount_to_sell_input = Input(placeholder="e.g.: 1.000")
         self.__min_to_receive_input = Input(placeholder="e.g.: 1.000")
         self.__fill_or_kill_input = Input(default_fill_or_kill, placeholder="e.g.: True")
@@ -49,8 +49,8 @@ class LimitOrderCreate(OperationBase):
                 yield Static("owner", classes="label")
                 yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="owner-label")
                 yield PlaceTaker()
-                yield Static("request id", classes="label")
-                yield self.__request_id_input
+                yield Static("order id", classes="label")
+                yield self.__order_id_input
                 yield Static("fill or kill", classes="label")
                 yield self.__fill_or_kill_input
                 yield Static("time point sec", classes="label")
@@ -65,7 +65,7 @@ class LimitOrderCreate(OperationBase):
     def _create_operation(self) -> LimitOrderCreateOperation[AssetHiveHF26, AssetHbdHF26]:
         return LimitOrderCreateOperation(
             owner=str(self.app.world.profile_data.name),
-            order_id=int(self.__request_id_input.value),
+            order_id=int(self.__order_id_input.value),
             amount_to_sell=self.__currency_selector_to_sell.selected.value(float(self.__amount_to_sell_input.value)),
             min_to_receive=self.__currency_selector_to_receive.selected.value(float(self.__min_to_receive_input.value)),
             fill_or_kill=bool(self.__fill_or_kill_input.value),
