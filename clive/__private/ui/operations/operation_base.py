@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError
 from textual.binding import Binding
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
@@ -16,7 +17,7 @@ if TYPE_CHECKING:
     from clive.models import Operation
 
 
-class OperationBase(CartBasedScreen):
+class OperationBase(CartBasedScreen, AbstractClassMessagePump):
     """Base class for all screens that represent operations"""
 
     BINDINGS = [
