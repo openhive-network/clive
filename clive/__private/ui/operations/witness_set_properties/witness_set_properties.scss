@@ -1,19 +1,20 @@
 WitnessSetProperties Body {
   grid-size: 2;
   grid-columns: 24 2fr 1fr;
-  grid-rows: 3 4 4 4 4;
-  height: 19;
+  grid-rows: 5;
+  height: 26;
   margin: 0 4;
   background: $panel;
 }
 
 WitnessSetProperties .label {
-  padding: 1 2;
+  padding: 2 2;
   text-align: right;
 }
 
 WitnessSetProperties Input{
     width: 120;
+    margin: 1 0;
 }
 
 WitnessSetProperties PlaceTaker{

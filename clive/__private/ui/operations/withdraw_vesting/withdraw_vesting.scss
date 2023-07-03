@@ -1,6 +1,6 @@
 WithdrawVesting Body {
   grid-size: 2;
-  grid-columns: 20 2fr 1fr;
+  grid-columns: 27 2fr 1fr;
   grid-rows: 6 6 5 4 4;
   height: 13;
   margin: 0 4;
@@ -8,7 +8,7 @@ WithdrawVesting Body {
 }
 
 WithdrawVesting .label {
-  padding: 0 4;
+  padding: 1 4;
   text-align: right;
   margin: 2 2;
 }

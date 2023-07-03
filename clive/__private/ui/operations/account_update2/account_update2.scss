@@ -1,17 +1,18 @@
 AccountUpdate2 Body {
   grid-size: 2;
   grid-columns: 26 2fr 1fr;
-  grid-rows: 4 4 4 4;
-  height: 66;
+  grid-rows: 5 5 5 5 3 5 5 5 3 5 5 5 3;
+  height: 76;
   margin: 0 4;
   background: $panel;
 }
 
 AccountUpdate2 .label {
-  padding: 1 2;
+  padding: 2 2;
   text-align: right;
 }
 
 AccountUpdate2 Input{
     width: 120;
+    margin: 1 0;
 }
