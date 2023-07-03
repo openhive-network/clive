@@ -13,8 +13,6 @@ from schemas.operations import CustomOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -39,7 +37,7 @@ class Custom(OperationBase):
                 yield Static("data", classes="label")
                 yield self.__data_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> CustomOperation:
         required_auths_in_list = self.__required_auths_input.value.split(",")
         required_auths_in_list = [x.strip(" ") for x in required_auths_in_list]
 

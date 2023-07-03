@@ -13,8 +13,6 @@ from schemas.operations import CommentOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -51,7 +49,7 @@ class Comment(OperationBase):
                 yield Static("json metadata", classes="label")
                 yield self.__json_metadata_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> CommentOperation:
         return CommentOperation(
             author=self.__author_input.value,
             permlink=self.__permlink_input.value,

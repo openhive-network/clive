@@ -9,11 +9,13 @@ from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import TransferToVestingOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHiveHF26
 
 
 class Body(Grid):
@@ -43,7 +45,7 @@ class TransferToVesting(OperationBase):
                 yield Static("amount", classes="label")
                 yield self.__amount_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> TransferToVestingOperation[AssetHiveHF26]:
         return TransferToVestingOperation(
             from_=str(self.app.world.profile_data.working_account.name),
             to=self.__to_input.value,

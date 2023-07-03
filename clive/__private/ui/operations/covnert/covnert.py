@@ -9,12 +9,14 @@ from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.__private.hive_fields_basic_schemas import Uint32t
 from schemas.operations import ConvertOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26
 
 
 class Body(Grid):
@@ -44,7 +46,7 @@ class Convert(OperationBase):
                 yield Static("amount", classes="label")
                 yield self.__amount_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> ConvertOperation[AssetHbdHF26]:
         return ConvertOperation(
             from_=str(self.app.world.profile_data.working_account.name),
             request_id=Uint32t(self.__request_id_input.value),

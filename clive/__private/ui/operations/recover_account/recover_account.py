@@ -13,8 +13,6 @@ from schemas.operations import RecoverAccountOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -71,7 +69,7 @@ class RecoverAccount(OperationBase):
                 yield Static("key auths", classes="label")
                 yield self.__key_auths_recent_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> RecoverAccountOperation:
         valid_new_account_auths = OperationBase._split_auths_fields(self.__account_auths_new_input.value)
         valid_new_key_auths = OperationBase._split_auths_fields(self.__key_auths_new_input.value)
 

@@ -9,11 +9,13 @@ from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import ClaimRewardBalanceOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
 
 class Body(Grid):
@@ -46,7 +48,7 @@ class ClaimRewardBalance(OperationBase):
                 yield Static("reward vests", classes="label")
                 yield self.__reward_vests_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> ClaimRewardBalanceOperation[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]:
         return ClaimRewardBalanceOperation(
             account=str(self.app.world.profile_data.name),
             reward_hive=Asset.hive(float(self.__reward_hive_input.value)),

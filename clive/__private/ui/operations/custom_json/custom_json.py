@@ -13,8 +13,6 @@ from schemas.operations import CustomJsonOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -42,7 +40,7 @@ class CustomJson(OperationBase):
                 yield Static("json", classes="label")
                 yield self.__json_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> CustomJsonOperation:
         required_auths_in_list = self.__required_auths_input.value.split(",")
         required_auths_in_list = [x.strip(" ") for x in required_auths_in_list]
 

@@ -8,7 +8,7 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import WitnessSetPropertiesOperation
 
 if TYPE_CHECKING:
@@ -47,7 +47,7 @@ class WitnessSetProperties(OperationBase):
                 yield Static("hbd interest rate", classes="label")
                 yield self.__hbd_interest_rate_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> WitnessSetPropertiesOperation:
         props_field = {
             "account_creation_fee": Asset.hive(float(self.__account_creation_fee_input.value)),
             "maximum_block_size": int(self.__maximum_block_size_input.value),

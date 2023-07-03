@@ -15,7 +15,7 @@ from schemas.operations import LimitOrderCreateOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26
 
 
 class Body(Grid):
@@ -58,7 +58,7 @@ class LimitOrderCreate(OperationBase):
                 yield self.__min_to_receive_input
                 yield self.__currency_selector_to_receive
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> LimitOrderCreateOperation[AssetHiveHF26, AssetHbdHF26]:
         return LimitOrderCreateOperation(
             owner=str(self.app.world.profile_data.name),
             order_id=int(self.__request_id_input.value),

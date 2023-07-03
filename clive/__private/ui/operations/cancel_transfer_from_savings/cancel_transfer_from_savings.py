@@ -14,8 +14,6 @@ from schemas.operations import CancelTransferFromSavingsOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -41,7 +39,7 @@ class CancelTransferFromSavings(OperationBase):
                 yield Static("request_id", classes="label")
                 yield self.__request_id_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> CancelTransferFromSavingsOperation:
         return CancelTransferFromSavingsOperation(
             From=str(self.app.world.profile_data.working_account.name),
             request_id=int(self.__request_id_input.value),

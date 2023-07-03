@@ -14,8 +14,6 @@ from schemas.operations import AccountWitnessProxyOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -41,7 +39,7 @@ class AccountWitnessProxy(OperationBase):
                 yield Static("proxy", classes="label")
                 yield self.__proxy_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> AccountWitnessProxyOperation:
         return AccountWitnessProxyOperation(
             account=str(self.app.world.profile_data.name),
             proxy=self.__proxy_input.value,

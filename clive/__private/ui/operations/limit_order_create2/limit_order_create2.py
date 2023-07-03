@@ -10,11 +10,13 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import LimitOrderCreate2Operation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26
 
 
 class Body(Grid):
@@ -76,7 +78,7 @@ class LimitOrderCreate2(OperationBase):
                 yield Static("quote", classes="label")
                 yield self.__quote_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> LimitOrderCreate2Operation[AssetHbdHF26, AssetHiveHF26]:
         exchange_rate = {
             "base": self.__currency_selector_base.selected.value(float(self.__base_input.value)),
             "quote": Asset.hive(float(self.__quote_input.value)),

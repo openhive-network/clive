@@ -9,11 +9,13 @@ from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import CreateProposalOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26
 
 
 class Body(Grid):
@@ -50,7 +52,7 @@ class CreateProposal(OperationBase):
                 yield Static("permlink", classes="label")
                 yield self.__permlink_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> CreateProposalOperation[AssetHbdHF26]:
         return CreateProposalOperation(
             creator=str(self.app.world.profile_data.name),
             receiver=self.__receiver_input.value,

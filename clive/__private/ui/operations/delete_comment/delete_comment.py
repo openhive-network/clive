@@ -14,8 +14,6 @@ from schemas.operations import DeleteCommentOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -41,7 +39,7 @@ class DeleteComment(OperationBase):
                 yield Static("permlink", classes="label")
                 yield self.__permlink_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> DeleteCommentOperation:
         return DeleteCommentOperation(
             author=str(self.app.world.profile_data.name),
             permlink=self.__permlink_input.value,

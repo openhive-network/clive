@@ -14,8 +14,6 @@ from schemas.operations import EscrowApproveOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -52,7 +50,7 @@ class EscrowApprove(OperationBase):
                 yield Static("approve", classes="label")
                 yield self.__approve_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> EscrowApproveOperation:
         return EscrowApproveOperation(
             from_=str(self.app.world.profile_data.name),
             to=self.__to_input.value,

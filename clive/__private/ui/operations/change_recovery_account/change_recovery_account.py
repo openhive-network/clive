@@ -13,8 +13,6 @@ from schemas.operations import ChangeRecoveryAccountOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -36,7 +34,7 @@ class ChangeRecoveryAccount(OperationBase):
                 yield Static("new recovery account", classes="label")
                 yield self.__new_recovery_account_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> ChangeRecoveryAccountOperation:
         return ChangeRecoveryAccountOperation(
             account_to_recover=self.__account_to_recover_input.value,
             new_recovery_account=self.__new_recovery_account_input.value,

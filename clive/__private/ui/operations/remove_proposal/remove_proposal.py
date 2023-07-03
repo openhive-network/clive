@@ -14,8 +14,6 @@ from schemas.operations import RemoveProposalOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -41,7 +39,7 @@ class RemoveProposal(OperationBase):
                 yield Static("proposal ids", classes="label")
                 yield self.__proposal_ids_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> RemoveProposalOperation:
         split_ids: list[str] = self.__proposal_ids_input.value.split(",")
         split_ids = [x.strip(" ") for x in split_ids]
         proposal_ids_list: list[int] = [int(v) for v in split_ids]

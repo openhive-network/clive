@@ -15,8 +15,6 @@ from schemas.operations import VoteOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -48,7 +46,7 @@ class Vote(OperationBase):
                 yield Static("weight", classes="label")
                 yield self.__weight_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> VoteOperation:
         return VoteOperation(
             voter=str(self.app.world.profile_data.working_account.name),
             author=self.__author_input.value,

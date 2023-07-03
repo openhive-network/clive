@@ -13,8 +13,6 @@ from schemas.operations import ResetAccountOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -54,7 +52,7 @@ class ResetAccount(OperationBase):
                 yield Static("key auths", classes="label")
                 yield self.__key_auths_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> ResetAccountOperation:
         valid_account_auths = OperationBase._split_auths_fields(self.__account_auths_input.value)
         split_key_auths = OperationBase._split_auths_fields(self.__key_auths_input.value)
 

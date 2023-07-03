@@ -14,8 +14,6 @@ from schemas.operations import UpdateProposalVotesOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -44,7 +42,7 @@ class UpdateProposalVotes(OperationBase):
                 yield Static("approve", classes="label")
                 yield self.__approve_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> UpdateProposalVotesOperation:
         split_ids: list[str] = self.__proposal_ids.value.split(",")
         split_ids = [x.strip(" ") for x in split_ids]
         proposal_ids_list: list[int] = [int(v) for v in split_ids]

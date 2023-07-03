@@ -13,8 +13,6 @@ from schemas.operations import DeclineVotingRightsOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -40,7 +38,7 @@ class DeclineVotingRights(OperationBase):
                 yield Static("decline", classes="label")
                 yield self.__decline_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> DeclineVotingRightsOperation:
         return DeclineVotingRightsOperation(
             account=self.__account_input.value, decline=bool(self.__decline_input.value)
         )

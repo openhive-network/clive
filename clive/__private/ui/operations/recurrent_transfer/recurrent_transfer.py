@@ -15,7 +15,7 @@ from schemas.operations import RecurrentTransferOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26
 
 
 class Body(Grid):
@@ -61,7 +61,7 @@ class RecurrentTransfer(OperationBase):
                 yield Static("executions", classes="label")
                 yield self.__executions_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> RecurrentTransferOperation[AssetHiveHF26, AssetHbdHF26]:
         return RecurrentTransferOperation(
             from_=str(self.app.world.profile_data.name),
             to=self.__to_input.value,

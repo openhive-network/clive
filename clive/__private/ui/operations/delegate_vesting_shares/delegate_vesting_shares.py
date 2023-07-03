@@ -9,11 +9,13 @@ from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import DelegateVestingSharesOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetVestsHF26
 
 
 class Body(Grid):
@@ -43,7 +45,7 @@ class DelegateVestingShares(OperationBase):
                 yield Static("vesting shares", classes="label")
                 yield self.__vesting_shares_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> DelegateVestingSharesOperation[AssetVestsHF26]:
         return DelegateVestingSharesOperation(
             delegator=str(self.app.world.profile_data.name),
             delegatee=self.__delegatee_input.value,

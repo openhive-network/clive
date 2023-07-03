@@ -14,8 +14,6 @@ from schemas.operations import SetResetAccountOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -44,7 +42,7 @@ class SetResetAccount(OperationBase):
                 yield Static("reset account", classes="label")
                 yield self.__reset_account_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> SetResetAccountOperation:
         return SetResetAccountOperation(
             account=str(self.app.world.profile_data.name),
             current_reset_account=self.__current_reset_account_input.value,

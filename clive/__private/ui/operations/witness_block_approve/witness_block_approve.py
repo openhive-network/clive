@@ -13,8 +13,6 @@ from schemas.operations import WitnessBlockApproveOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -36,5 +34,5 @@ class WitnessBlockApprove(OperationBase):
                 yield Static("block_id", classes="label")
                 yield self.__block_id_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> WitnessBlockApproveOperation:
         return WitnessBlockApproveOperation(witness=self.__witness_input.value, block_id=self.__block_id_input.value)

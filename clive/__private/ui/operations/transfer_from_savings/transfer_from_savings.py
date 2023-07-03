@@ -15,7 +15,7 @@ from schemas.operations import TransferFromSavingsOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26
 
 
 class Body(Grid):
@@ -50,7 +50,7 @@ class TransferFromSavings(OperationBase):
                 yield Static("memo", classes="label")
                 yield self.__memo_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> TransferFromSavingsOperation[AssetHiveHF26, AssetHbdHF26]:
         return TransferFromSavingsOperation(
             from_=str(self.app.world.profile_data.working_account.name),
             request_id=int(self.__request_id_input.value),

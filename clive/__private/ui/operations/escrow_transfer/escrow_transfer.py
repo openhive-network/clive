@@ -10,11 +10,13 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import EscrowTransferOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26
 
 
 class Body(Grid):
@@ -71,7 +73,7 @@ class EscrowTransfer(OperationBase):
                 yield self.__fee_input
                 yield self.__currency_selector
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> EscrowTransferOperation[AssetHiveHF26, AssetHbdHF26]:
         return EscrowTransferOperation(
             from_=str(self.app.world.profile_data.name),
             to=self.__to_input.value,

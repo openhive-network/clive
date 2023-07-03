@@ -9,11 +9,13 @@ from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import WitnessUpdateOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetHiveHF26
 
 
 class Body(Grid):
@@ -56,7 +58,7 @@ class WitnessUpdate(OperationBase):
                 yield Static("hbd interest rate", classes="label")
                 yield self.__hbd_interest_rate_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> WitnessUpdateOperation[AssetHiveHF26]:
         props_field = {
             "account_creation_fee": Asset.hive(float(self.__account_creation_fee_input.value)),
             "maximum_block_size": int(self.__maximum_block_size_input.value),

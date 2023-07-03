@@ -14,8 +14,6 @@ from schemas.operations import LimitOrderCancelOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -36,7 +34,7 @@ class LimitOrderCancel(OperationBase):
                 yield Static("order_id", classes="label")
                 yield self.__order_id_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> LimitOrderCancelOperation:
         return LimitOrderCancelOperation(
             owner=str(self.app.world.profile_data.working_account.name),
             order_id=int(self.__order_id_input.value),

@@ -8,11 +8,13 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from schemas.__private.hive_fields_basic_schemas import AssetVestsHF26
 
 
 class Body(Grid):
@@ -35,7 +37,7 @@ class WithdrawVesting(OperationBase):
                 yield Static("vesting shares", classes="label")
                 yield self.__vesting_shares_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> WithdrawVestingOperation[AssetVestsHF26]:
         return WithdrawVestingOperation(
             account=self.__account_input.value,
             vesting_shares=Asset.vests(float(self.__vesting_shares_input.value)),

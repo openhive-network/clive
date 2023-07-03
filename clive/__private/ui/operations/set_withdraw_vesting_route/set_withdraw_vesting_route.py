@@ -14,8 +14,6 @@ from schemas.operations import SetWithdrawVestingRouteOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Operation
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title"""
@@ -47,7 +45,7 @@ class SetWithdrawVestingRoute(OperationBase):
                 yield Static("auto vest", classes="label")
                 yield self.__auto_vest_input
 
-    def _create_operation(self) -> Operation | None:
+    def _create_operation(self) -> SetWithdrawVestingRouteOperation:
         return SetWithdrawVestingRouteOperation(
             from_account=str(self.app.world.profile_data.name),
             to_account=self.__to_account_input.value,
