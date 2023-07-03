@@ -70,7 +70,7 @@ class AccountUpdate2(OperationBase):
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("Account update2")
+            yield BigTitle("Account update two")
             with Body():
                 yield Static("account", classes="label")
                 yield self.__account_input

@@ -58,7 +58,7 @@ class LimitOrderCreate2(OperationBase):
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("Limit order create2")
+            yield BigTitle("Limit order create two")
             with Body():
                 yield Static("owner", classes="label")
                 yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="owner-label")
