@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -26,11 +27,15 @@ class PlaceTaker(Static):
 class EscrowApprove(OperationBase):
     def __init__(self) -> None:
         super().__init__()
+
+        default_escrow_id = str(get_default_from_model(EscrowApproveOperation, "escrow_id"))
+        default_approve = str(get_default_from_model(EscrowApproveOperation, "approve"))
+
         self.__to_input = Input(placeholder="e.g: bob")
         self.__agent_input = Input(placeholder="e.g: charlie")
         self.__who_input = Input(placeholder="e.g: charlie")
-        self.__escrow_id_input = Input(placeholder="e.g.: 23456789. Notice - default is 30")
-        self.__approve_input = Input(value="True")
+        self.__escrow_id_input = Input(default_escrow_id, placeholder="e.g.: 23456789")
+        self.__approve_input = Input(default_approve, placeholder="e.g: False")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

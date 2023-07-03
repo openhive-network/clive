@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -27,9 +28,12 @@ class SetWithdrawVestingRoute(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
+        default_percent = str(get_default_from_model(SetWithdrawVestingRouteOperation, "percent"))
+        default_auto_vest = str(get_default_from_model(SetWithdrawVestingRouteOperation, "auto_vest"))
+
         self.__to_account_input = Input(placeholder="e.g.: alice")
-        self.__percent_input = Input(placeholder="e.g.: 10. Notice: default value is 0")
-        self.__auto_vest_input = Input(placeholder="e.g. True. Notice: default is False")
+        self.__percent_input = Input(default_percent, placeholder="e.g.: 10")
+        self.__auto_vest_input = Input(default_auto_vest, placeholder="e.g. True")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

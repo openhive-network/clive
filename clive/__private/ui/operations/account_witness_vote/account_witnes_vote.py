@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -27,8 +28,10 @@ class AccountWitnessVote(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
+        default_approve = str(get_default_from_model(AccountWitnessVoteOperation, "approve"))
+
         self.__witness_input = Input(placeholder="e.g.: hiveio")
-        self.__approve_input = Input(placeholder="e.g.: True. Notice - default value is True")
+        self.__approve_input = Input(default_approve, placeholder="e.g.: False.")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

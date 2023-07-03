@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
@@ -43,8 +44,11 @@ class LimitOrderCreate2(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__order_id_input = Input(placeholder="e.g.: 1000.", value="0")
-        self.__fill_or_kill_input = Input(placeholder="e.g.: True.", value="False")
+        default_fill_or_kill = str(get_default_from_model(LimitOrderCreate2Operation, "fill_or_kill"))
+        default_order_id = str(0)
+
+        self.__order_id_input = Input(default_order_id, placeholder="e.g.: 1000")
+        self.__fill_or_kill_input = Input(default_fill_or_kill, placeholder="e.g.: True")
         self.__expiration_input = Input(placeholder="e.g.: 2023-01-01T00:00:00")
         self.__amount_to_sell_input = Input(placeholder="e.g.: 1.000")
         self.__base_input = Input(placeholder="e.g: 1")

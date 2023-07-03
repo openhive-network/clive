@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -26,8 +27,10 @@ class DeclineVotingRights(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
+        default_decline = str(get_default_from_model(DeclineVotingRightsOperation, "decline"))
+
         self.__account_input = Input(placeholder="e.g.: alice")
-        self.__decline_input = Input(value="True-")
+        self.__decline_input = Input(default_decline, placeholder="e.g: False")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

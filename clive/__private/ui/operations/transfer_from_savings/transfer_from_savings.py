@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
@@ -30,7 +31,9 @@ class TransferFromSavings(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__request_id_input = Input(placeholder="e.g.: 1000, notice: default value is 0")
+        default_request_id = str(get_default_from_model(TransferFromSavingsOperation, "request_id"))
+
+        self.__request_id_input = Input(default_request_id, placeholder="e.g.: 1000")
         self.__amount_input = Input(placeholder="e.g.: 5.000")
         self.__memo_input = Input(placeholder="e.g.: For the coffee!")
         self.__currency_selector = CurrencySelectorLiquid()

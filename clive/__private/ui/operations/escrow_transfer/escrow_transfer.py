@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
@@ -34,9 +35,12 @@ class AdditionalPlaceTaker(Static):
 class EscrowTransfer(OperationBase):
     def __init__(self) -> None:
         super().__init__()
+
+        default_escrow_id = str(get_default_from_model(EscrowTransferOperation, "escrow_id"))
+
         self.__to_input = Input(placeholder="e.g: alice")
         self.__agent_input = Input(placeholder="e.g: bob")
-        self.__escrow_id_input = Input(placeholder="e.g.: 23456789. Notice - default is 30")
+        self.__escrow_id_input = Input(default_escrow_id, placeholder="e.g.: 23456789")
         self.__hbd_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
         self.__hive_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
         self.__fee_input = Input(placeholder="e.g: 3.000")
