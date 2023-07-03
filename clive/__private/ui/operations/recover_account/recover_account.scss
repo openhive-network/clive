@@ -1,8 +1,8 @@
 RecoverAccount Body {
   grid-size: 2;
   grid-columns: 22 2fr 1fr;
-  grid-rows: 4 2 4 4 4 2 4 4 4;
-  height: 33;
+  grid-rows: 4 4 4 4 4 4 4 4 4;
+  height: 37;
   margin: 0 4;
   background: $panel;
 }
@@ -14,8 +14,4 @@ RecoverAccount .label {
 
 RecoverAccount Input{
     width: 120;
-}
-
-RecoverAccount PlaceTaker{
-    row-span: 1;
 }

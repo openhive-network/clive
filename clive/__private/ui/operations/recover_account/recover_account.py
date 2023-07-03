@@ -19,11 +19,11 @@ class Body(Grid):
 
 
 class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
+    """Container used for making correct layout of new owner authority"""
 
 
 class AdditionalPlaceTaker(Static):
-    """Container used for making correct layout after BigTitle Recent owner authority"""
+    """Container used for making correct layout of new recent authority"""
 
 
 class RecoverAccount(OperationBase):
@@ -52,16 +52,16 @@ class RecoverAccount(OperationBase):
             with Body():
                 yield Static("account to recover", classes="label")
                 yield self.__account_to_recover_input
-                yield BigTitle("New owner authority", classes="authority-label")
                 yield PlaceTaker()
+                yield BigTitle("New owner authority")
                 yield Static("weight threshold", classes="label")
                 yield self.__weight_threshold_new_input
                 yield Static("account auths", classes="label")
                 yield self.__account_auths_new_input
                 yield Static("key auths", classes="label")
                 yield self.__key_auths_new_input
-                yield BigTitle("Recent owner authority", classes="authority-label")
                 yield AdditionalPlaceTaker()
+                yield BigTitle("Recent owner authority")
                 yield Static("weight threshold", classes="label")
                 yield self.__weight_threshold_recent_input
                 yield Static("account auths", classes="label")

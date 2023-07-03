@@ -43,8 +43,8 @@ class ResetAccount(OperationBase):
                 yield self.__reset_account_input
                 yield Static("account to reset", classes="label")
                 yield self.__account_to_reset_input
-                yield BigTitle("New owner authority", classes="authority-label")
                 yield PlaceTaker()
+                yield BigTitle("New owner authority")
                 yield Static("weight threshold", classes="label")
                 yield self.__weight_threshold_input
                 yield Static("account auths", classes="label")

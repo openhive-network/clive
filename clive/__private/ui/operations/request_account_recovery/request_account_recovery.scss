@@ -1,8 +1,8 @@
 RequestAccountRecovery Body {
   grid-size: 2;
   grid-columns: 22 2fr 1fr;
-  grid-rows: 4 4 2 4 4 4;
-  height: 23;
+  grid-rows: 4 4 4 4 4 4;
+  height: 25;
   margin: 0 4;
   background: $panel;
 }
@@ -14,8 +14,4 @@ RequestAccountRecovery .label {
 
 RequestAccountRecovery Input{
     width: 120;
-}
-
-RequestAccountRecovery PlaceTaker{
-    row-span: 1;
 }

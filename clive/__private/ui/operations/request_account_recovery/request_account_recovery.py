@@ -43,8 +43,8 @@ class RequestAccountRecovery(OperationBase):
                 yield self.__recovery_account_input
                 yield Static("account to recover", classes="label")
                 yield self.__account_to_recover_input
-                yield BigTitle("New owner authority", classes="authority-label")
                 yield PlaceTaker()
+                yield BigTitle("New owner authority")
                 yield Static("weight threshold", classes="label")
                 yield self.__weight_threshold_input
                 yield Static("account auths", classes="label")
