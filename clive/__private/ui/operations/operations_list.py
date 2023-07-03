@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.ui.operations import (
+    AccountCreate,
     AccountWitnessProxy,
     AccountWitnessVote,
     CancelTransferFromSavings,
@@ -13,6 +14,7 @@ from clive.__private.ui.operations import (
     Comment,
     CommentOptions,
     Convert,
+    CreateClaimedAccount,
     CreateProposal,
     Custom,
     CustomJson,
@@ -92,4 +94,6 @@ OPERATIONS: Final[list[type[OperationBase]]] = [
     RecoverAccount,
     LimitOrderCreate2,
     FeedPublish,
+    CreateClaimedAccount,
+    AccountCreate,
 ]
