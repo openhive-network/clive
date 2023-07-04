@@ -1,25 +1,24 @@
-from typing import Optional
-
 import typer
 
-from clive import World
-from clive.__private.cli import common
-from clive.__private.util import ExitCallHandler
+from clive.__private.cli.common import WithWorld
 
 list_ = typer.Typer(help="List various things.")
 
 
 @list_.command()
+@WithWorld.decorator
 def keys(
-    profile: Optional[str] = common.profile_option,
+    ctx: typer.Context,
 ) -> None:
     """
     List all Public keys stored in the wallet.
     """
+    common = WithWorld(**ctx.params)
 
-    with ExitCallHandler(World(profile_name=profile), finally_callback=lambda w: w.close()) as world:
-        assert world.profile_data.name == profile, "Wrong profile loaded."
+    assert (
+        common.world.profile_data.name == common.profile
+    ), f"Wrong profile loaded. {common.world.profile_data.name} != {common.profile}"
 
-        public_keys = world.profile_data.working_account.keys
+    public_keys = common.world.profile_data.working_account.keys
 
-        typer.echo(f"{profile}, your keys are:\n{public_keys}")
+    typer.echo(f"{common.profile}, your keys are:\n{public_keys}")
