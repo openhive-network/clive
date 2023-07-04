@@ -10,7 +10,7 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 from clive.__private.config import settings
 from clive.__private.core import iwax
 from clive.__private.core.world import World
-from clive.__private.util import prepare_before_launch, spawn_thread_pool
+from clive.__private.util import prepare_before_launch, thread_pool
 from clive.core.url import Url
 from tests import WalletInfo
 
@@ -21,8 +21,14 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import PrivateKey, PublicKey
 
 
+@pytest.fixture(autouse=True, scope="session")
+def manage_thread_pool() -> Iterator[None]:
+    with thread_pool:
+        yield
+
+
 @pytest.fixture(autouse=True, scope="function")
-def run_prepare_before_launch() -> Iterator[None]:
+def run_prepare_before_launch() -> None:
     working_directory = tt.context.get_current_directory()
 
     beekeeper_directory = working_directory / "beekeeper"
@@ -31,9 +37,7 @@ def run_prepare_before_launch() -> Iterator[None]:
 
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
-    with spawn_thread_pool() as executor:
-        prepare_before_launch(executor=executor)
-        yield
+    prepare_before_launch()
 
 
 @pytest.fixture

@@ -4,11 +4,10 @@ from textual.cli.cli import run_app
 
 
 def main() -> None:
-    from clive.__private.util import prepare_before_launch, spawn_thread_pool
+    from clive.__private.util import prepare_before_launch
 
-    with spawn_thread_pool() as executor:
-        prepare_before_launch(executor=executor)
-        run_app(["--dev", "clive.dev_import:clive_app"])
+    prepare_before_launch()
+    run_app(["--dev", "clive.dev_import:clive_app"])
 
 
 if __name__ == "__main__":

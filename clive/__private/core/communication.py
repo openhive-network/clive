@@ -4,7 +4,6 @@ import asyncio
 import json
 import time
 import typing
-from collections.abc import Callable
 from datetime import datetime, timedelta
 from functools import partial
 from typing import Any, ClassVar, Final
@@ -17,9 +16,7 @@ from clive.__private.logger import logger
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
 
 if typing.TYPE_CHECKING:
-    from concurrent.futures import ThreadPoolExecutor
-
-CommunicationClosedCallbackT = Callable[[], bool]
+    from collections.abc import Callable
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -35,20 +32,9 @@ class Communication:
     DEFAULT_ATTEMPTS: Final[int] = 3
 
     __async_client: ClassVar[httpx.AsyncClient | None] = None
-    __thread_pool: ClassVar[ThreadPoolExecutor | None] = None
 
     @classmethod
-    def submit(cls, fn: Callable[[CommunicationClosedCallbackT], None]) -> None:
-        cls.__get_thread_pool().submit(fn, lambda: cls.__get_thread_pool()._shutdown)
-
-    @classmethod
-    def __get_thread_pool(cls) -> ThreadPoolExecutor:
-        assert cls.__thread_pool is not None, "Thread pool was not set, please call start()"
-        return cls.__thread_pool
-
-    @classmethod
-    def start(cls, thread_pool: ThreadPoolExecutor) -> None:
-        cls.__thread_pool = thread_pool
+    def start(cls) -> None:
         if cls.__async_client is None:
             cls.__async_client = httpx.AsyncClient(timeout=2, http2=True)
 
@@ -59,7 +45,7 @@ class Communication:
                 await cls.__async_client.aclose()
                 cls.__async_client = None
 
-        asyncio_run(__close(), cls.__get_thread_pool())
+        asyncio_run(__close())
 
     @classmethod
     def get_async_client(cls) -> httpx.AsyncClient:
@@ -79,7 +65,6 @@ class Communication:
             httpx.Response,
             asyncio_run(
                 cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time),
-                cls.__get_thread_pool(),
             ),
         )
 

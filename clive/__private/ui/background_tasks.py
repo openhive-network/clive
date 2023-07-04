@@ -2,19 +2,22 @@ from __future__ import annotations
 
 import asyncio
 from asyncio import Task
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Any
 
 from textual.message import Message
 
 from clive.__private.core.callback import invoke
 from clive.__private.logger import logger
+from clive.__private.util import thread_pool
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from datetime import timedelta
 
 
 TasksDict = dict[str, Task[Any]]
+ErrorCallbackT = Callable[[Exception], None]
+ThreadPoolClosedCallbackT = Callable[[], bool]
 
 
 class BackgroundErrorOccurred(Message):
@@ -24,9 +27,9 @@ class BackgroundErrorOccurred(Message):
 
 
 class BackgroundTasks:
-    def __init__(self, *, exception_handler: Callable[[Exception], None] | None = None) -> None:
+    def __init__(self, *, exception_handler: ErrorCallbackT | None = None) -> None:
         self.__exception_handler = exception_handler
-
+        self.__thread_pool = thread_pool
         self.__tasks: TasksDict = {}
 
     @property
@@ -52,6 +55,9 @@ class BackgroundTasks:
 
         name = name or f"continuous-{function.__name__}"
         self.__tasks[name] = asyncio.create_task(__loop())
+
+    def run_in_thread(self, function: Callable[[ThreadPoolClosedCallbackT], None]) -> None:
+        self.__thread_pool.submit(function, lambda: self.__thread_pool._shutdown)
 
     def cancel(self, name: str, *, remove: bool = True) -> None:
         """Cancel a background task."""

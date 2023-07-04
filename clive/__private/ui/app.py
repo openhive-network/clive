@@ -10,11 +10,11 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.communication import Communication, CommunicationClosedCallbackT
+from clive.__private.core.communication import Communication
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
-from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
+from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks, ThreadPoolClosedCallbackT
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -87,6 +87,7 @@ class Clive(App[int], ManualReactive):
     ) -> int | None:
         try:
             self.__class__.is_launched = True
+            Communication.start()
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
         finally:
             self.__class__.is_launched = False
@@ -97,7 +98,7 @@ class Clive(App[int], ManualReactive):
         refresh_interval: Final[int] = 3
         self.console.set_window_title("Clive")
 
-        def update_data_worker(closed: CommunicationClosedCallbackT) -> None:
+        def update_data_worker(closed: ThreadPoolClosedCallbackT) -> None:
             while not closed():
                 self.__update_data_from_node()
                 self.world.update_reactive("profile_data")
@@ -106,8 +107,8 @@ class Clive(App[int], ManualReactive):
         def __should_enter_onboarding() -> bool:
             return not (self.world.profile_data.name and self.world.profile_data.node_address)
 
-        Communication.submit(update_data_worker)
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
+        self.background_tasks.run_in_thread(update_data_worker)
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 

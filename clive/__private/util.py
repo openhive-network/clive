@@ -6,19 +6,16 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Generic, TypeVar
 
 from clive.__private.config import ROOT_DIRECTORY, settings
-from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-
-def spawn_thread_pool(*, workers: int = 4) -> ThreadPoolExecutor:
-    return ThreadPoolExecutor(max_workers=workers)
+thread_pool = ThreadPoolExecutor(max_workers=4)
 
 
-def prepare_before_launch(*, executor: ThreadPoolExecutor, enable_textual_logger: bool = True) -> None:
+def prepare_before_launch(*, enable_textual_logger: bool = True) -> None:
     def _create_clive_data_directory() -> None:
         Path(settings.DATA_PATH).mkdir(parents=True, exist_ok=True)
 
@@ -31,7 +28,6 @@ def prepare_before_launch(*, executor: ThreadPoolExecutor, enable_textual_logger
 
     _create_clive_data_directory()
     _copy_settings()
-    Communication.start(executor)
 
     logger.debug(f"settings:\n{settings.as_dict()}")
 
