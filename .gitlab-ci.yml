@@ -144,7 +144,7 @@ build_hived:
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true
-    - job: build_hived
+    - job: prepare_testnet_hived_image
       artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
@@ -209,7 +209,7 @@ build_and_push_docker_testnet_image:
     - job: testing_clive
     - job: prepare_mainnet_hived_image
       artifacts: true
-    - job: build_hived
+    - job: prepare_testnet_hived_image
       artifacts: true
   rules:
     - if: '$CI_COMMIT_REF_NAME != "master" && $CI_COMMIT_REF_NAME != "develop"'
