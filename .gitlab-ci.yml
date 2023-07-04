@@ -168,7 +168,7 @@ build_and_push_docker_image:
     - develop
     - master
   script:
-    - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile ..
+    - docker build --build-arg BEEKEEPER_LOCATION="${BEEKEEPER_BINARY}" -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile ..
 
 build_and_push_docker_testnet_image:
   extends: .build_and_push_base
@@ -187,6 +187,6 @@ build_and_push_docker_testnet_image:
   variables:
     BUILD_SUFFIX: "-testnet"
   script:
-    - docker build -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET ..
+    - docker build --build-arg BEEKEEPER_LOCATION="${BEEKEEPER_BINARY}" -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET ..
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
