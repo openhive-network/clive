@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import signal
 import subprocess
 import warnings
@@ -67,6 +68,7 @@ class BeekeeperExecutable:
                 [self.__executable.absolute(), "--data-dir", config.wallet_dir.as_posix()],
                 stdout=self.__files["stdout"],
                 stderr=self.__files["stderr"],
+                preexec_fn=os.setpgrp,  # create new process group, so signals won't be passed to child process
             )
         except Exception as e:
             logger.debug(f"Caught exception during start, closing: {e}")
