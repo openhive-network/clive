@@ -116,6 +116,7 @@ prepare_testnet_hived_image:
       artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
+    HIVED_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/hived"
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   artifacts:
     reports:
