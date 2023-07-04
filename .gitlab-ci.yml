@@ -32,7 +32,7 @@ include:
 image: "registry.gitlab.syncad.com/hive/hive/ci-base-image${TEST_IMAGE_TAG}"
 
 .shared_tags: &shared_tags
-  - hived-for-tests
+  - public-runner-docker
 
 .configuration:
   before_script: &configuration_before_script # configure python
