@@ -67,20 +67,19 @@ class Beekeeper:
             ).token
         return self.__token
 
-    def __get_request_url(self) -> Url:
+    @property
+    def http_endpoint(self) -> Url:
         if not self.config.webserver_http_endpoint and (remote := self.get_remote_address_from_settings()):
             self.config.webserver_http_endpoint = remote
-        assert self.config.webserver_http_endpoint is not None, "http webserver not set"
+
+        if not self.config.webserver_http_endpoint:
+            raise UrlNotSetError()
+
         return self.config.webserver_http_endpoint
 
     def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
-        url = self.__get_request_url()
-
-        if url is None:
-            raise UrlNotSetError()
-
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        result = Communication.request(url.as_string(), data=request.json(by_alias=True))
+        result = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))
 
         if result.status_code != codes.OK:
             raise Non200StatusCodeError()
