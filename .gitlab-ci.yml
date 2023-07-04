@@ -102,38 +102,6 @@ prepare_testnet_hived_image:
   variables:
     HIVE_NETWORK_TYPE: testnet
 
-.hive_based_build:
-  stage: build
-  needs: []
-  variables:
-    TARGET: ""
-    SOURCE: ""
-    DESTINATION: ""
-  script:
-    - cd hive
-    - mkdir build && cd build
-    - cmake -DCMAKE_BUILD_TYPE=Release -DBUILD_HIVE_TESTNET=ON -GNinja ..
-    - ninja $TARGET
-    - cp -r $SOURCE $DESTINATION
-  artifacts:
-    paths:
-      - $DESTINATION
-  tags: *shared_tags
-
-build_beekeeper:
-  extends: .hive_based_build
-  variables:
-    TARGET: "beekeeper"
-    SOURCE: "programs/beekeeper/beekeeper"
-    DESTINATION: "$BEEKEEPER_BINARY"
-
-build_hived:
-  extends: .hive_based_build
-  variables:
-    TARGET: "hived"
-    SOURCE: "."
-    DESTINATION: "$HIVE_BUILD_ROOT_PATH"
-
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
