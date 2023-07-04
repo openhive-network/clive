@@ -142,7 +142,7 @@ build_hived:
   stage: tests
   extends: .configuration
   needs:
-    - job: build_beekeeper
+    - job: prepare_mainnet_hived_image
       artifacts: true
     - job: build_hived
       artifacts: true
@@ -174,7 +174,7 @@ testing_clive:
   stage: build_docker
   needs:
     - job: pre_commit_checks
-    - job: build_beekeeper
+    - job: prepare_mainnet_hived_image
       artifacts: true
     - job: testing_clive
   variables:
@@ -207,7 +207,7 @@ build_and_push_docker_testnet_image:
   needs:
     - job: pre_commit_checks
     - job: testing_clive
-    - job: build_beekeeper
+    - job: prepare_mainnet_hived_image
       artifacts: true
     - job: build_hived
       artifacts: true
