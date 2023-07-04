@@ -50,6 +50,11 @@ class ProfileData(Context):
             db[self._LAST_USED_IDENTIFIER] = self.name
 
     @classmethod
+    def get_lastly_used_profile_name(cls) -> str | None:
+        with shelve.open(str(cls._get_file_storage_path())) as db:
+            return db.get(cls._LAST_USED_IDENTIFIER, None)
+
+    @classmethod
     def load(cls, name: str | None = None) -> ProfileData:
         """
         Load profile data with the given name from the database. If no name is given, the last used profile is loaded.
