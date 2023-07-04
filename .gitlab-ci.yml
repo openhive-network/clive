@@ -1,5 +1,3 @@
-image: "registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3"
-
 stages:
   - static_code_analysis
   - build
@@ -21,6 +19,16 @@ variables:
   TXT_CLEAR: "\e[0m"
   BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
   HIVE_BUILD_ROOT_PATH: "$CI_PROJECT_DIR/hived"
+
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-5
+  TEST_IMAGE_TAG: "@sha256:eaa6f32730f0f4c45a95a65b6d790bea2b71a59276eb28795c04be7703f003e6"
+
+include:
+  - project: 'hive/hive'
+    ref: fc899116bf691309cc618e51a9c2d8c6d5edb8cd #develop
+    file: '/scripts/ci-helpers/prepare_data_image_job.yml'
+
+image: "registry.gitlab.syncad.com/hive/hive/ci-base-image${TEST_IMAGE_TAG}"
 
 .shared_tags: &shared_tags
   - hived-for-tests
