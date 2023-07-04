@@ -19,6 +19,7 @@ from clive.__private.ui.operations import (
     CreateClaimedAccount,
     CreateProposal,
     Custom,
+    CustomBinary,
     CustomJson,
     DeclineVotingRights,
     DelegateVestingShares,
@@ -100,4 +101,5 @@ OPERATIONS: Final[list[type[OperationBase]]] = [
     AccountCreate,
     AccountUpdate,
     AccountUpdate2,
+    CustomBinary,
 ]

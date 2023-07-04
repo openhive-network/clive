@@ -17,6 +17,7 @@ from clive.__private.ui.operations.covnert.covnert import Convert
 from clive.__private.ui.operations.create_claimed_account.create_claimed_account import CreateClaimedAccount
 from clive.__private.ui.operations.create_proposal.create_proposal import CreateProposal
 from clive.__private.ui.operations.custom.custom import Custom
+from clive.__private.ui.operations.custom_binary.custom_binary import CustomBinary
 from clive.__private.ui.operations.custom_json.custom_json import CustomJson
 from clive.__private.ui.operations.decline_voting_rights.decline_voting_rights import DeclineVotingRights
 from clive.__private.ui.operations.delegate_vesting_shares.delegate_vesting_shares import DelegateVestingShares
@@ -94,4 +95,5 @@ __all__ = [
     "AccountCreate",
     "AccountUpdate",
     "AccountUpdate2",
+    "CustomBinary",
 ]
