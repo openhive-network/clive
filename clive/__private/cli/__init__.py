@@ -4,6 +4,7 @@ from typing import Final, Optional
 
 import typer
 
+from clive.__private.cli.spawn import spawn
 from clive.__private.cli.transfer import transfer
 from clive.__private.run_tui import run_tui
 from clive.version import VERSION_INFO
@@ -16,6 +17,7 @@ Type "clive <command> --help" to read more about a specific subcommand.
 cli = typer.Typer(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
 
 cli.add_typer(transfer, name="transfer")
+cli.add_typer(spawn, name="spawn")
 
 
 @cli.callback(invoke_without_command=True)
