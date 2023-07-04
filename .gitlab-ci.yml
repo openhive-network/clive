@@ -17,8 +17,9 @@ variables:
   # colors:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
-  BEEKEEPER_BINARY: "$CI_PROJECT_DIR/beekeeper"
-  HIVE_BUILD_ROOT_PATH: "$CI_PROJECT_DIR/hived"
+
+  HIVE_BUILD_ROOT_PATH: "hived-binaries"
+  BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
 
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-5
   TEST_IMAGE_TAG: "@sha256:eaa6f32730f0f4c45a95a65b6d790bea2b71a59276eb28795c04be7703f003e6"
@@ -78,6 +79,28 @@ type_check_with_mypy:
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+.common_prepare_hived_image:
+  extends: .prepare_hived_image
+  stage: build
+  variables:
+    REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
+    REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
+    SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
+    BINARY_CACHE_PATH: "${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
+  tags:
+    - public-runner-docker
+    - hived-for-tests
+
+prepare_mainnet_hived_image:
+  extends: .common_prepare_hived_image
+  variables:
+    HIVE_NETWORK_TYPE: mainnet
+
+prepare_testnet_hived_image:
+  extends: .common_prepare_hived_image
+  variables:
+    HIVE_NETWORK_TYPE: testnet
 
 .hive_based_build:
   stage: build
