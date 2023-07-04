@@ -4,7 +4,7 @@ from typing import Final
 import typer
 from click import ClickException
 
-from clive.__private.cli.common import Common, common_options
+from clive.__private.cli.common import OperationCommon
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Asset
@@ -21,7 +21,7 @@ transfer = typer.Typer(
 
 
 @transfer.callback(invoke_without_command=True)
-@common_options
+@OperationCommon.decorator
 def _main(
     ctx: typer.Context,
     from_: str = typer.Option(..., "--from", help="The account to transfer from.", show_default=False),
@@ -29,7 +29,7 @@ def _main(
     amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
     memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
-    common = Common(**ctx.params)
+    common = OperationCommon(**ctx.params)
     if common.world is None:
         raise ClickException("World is not set.")
     typer.echo(f"{locals()=}")

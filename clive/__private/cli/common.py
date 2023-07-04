@@ -1,3 +1,4 @@
+from abc import ABC
 from collections.abc import Callable
 from functools import wraps
 from typing import Any, Optional
@@ -26,12 +27,16 @@ profile_option = typer.Option(
 )
 
 
-class PreconfiguredBaseModel(BaseModel):
+class PreconfiguredBaseModel(BaseModel, ABC):
     class Config:
         arbitrary_types_allowed: bool = True
 
+    @staticmethod
+    def decorator(func: Callable[..., None]) -> Any:
+        """Should be overridden in subclasses."""
 
-class Common(PreconfiguredBaseModel):
+
+class OperationCommon(PreconfiguredBaseModel):
     """
     Common options for some commands.
     Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597
@@ -43,25 +48,25 @@ class Common(PreconfiguredBaseModel):
     save_file: Optional[str] = typer.Option(None, help="The file to save the transaction to.", show_default=False)
     world: World | None = None
 
+    @staticmethod
+    def decorator(func: Callable[..., None]) -> Any:
+        common = OperationCommon()
 
-def common_options(func: Callable[..., None]) -> Any:
-    common = Common()
+        @merge_args(func)
+        @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
+        def wrapper(
+            ctx: typer.Context,
+            broadcast: bool = common.broadcast,  # noqa: ARG001
+            sign: Optional[str] = common.sign,  # noqa: ARG001
+            profile: Optional[str] = common.profile,
+            save_file: Optional[str] = common.save_file,  # noqa: ARG001
+            **kwargs: Any,
+        ) -> None:
+            with ExitCallHandler(World(profile_name=profile), finally_callback=lambda w: w.close()) as world:
+                ctx.params.update(world=world)
+                return func(ctx=ctx, **kwargs)
 
-    @merge_args(func)
-    @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
-    def wrapper(
-        ctx: typer.Context,
-        broadcast: bool = common.broadcast,  # noqa: ARG001
-        sign: Optional[str] = common.sign,  # noqa: ARG001
-        profile: Optional[str] = common.profile,
-        save_file: Optional[str] = common.save_file,  # noqa: ARG001
-        **kwargs: Any,
-    ) -> None:
-        with ExitCallHandler(World(profile_name=profile), finally_callback=lambda w: w.close()) as world:
-            ctx.params.update(world=world)
-            return func(ctx=ctx, **kwargs)
-
-    return wrapper
+        return wrapper
 
 
 class WithWorld(PreconfiguredBaseModel):
