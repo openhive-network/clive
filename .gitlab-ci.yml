@@ -35,6 +35,7 @@ image: "registry.gitlab.syncad.com/hive/hive/ci-base-image${TEST_IMAGE_TAG}"
   - public-runner-docker
 
 .configuration:
+  interruptible: true
   before_script: &configuration_before_script # configure python
     - python3 -V
     - poetry self update
