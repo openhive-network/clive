@@ -32,15 +32,7 @@ class SuppressNotExistingApi:
         return None
 
     def __exit__(self, _: type[Exception] | None, ex: Exception | None, __: TracebackType | None) -> bool:
-        return ex is None or (  # if false, rethrows
-            ex is not None
-            and isinstance(ex, CommunicationError)
-            and (
-                isinstance(error_dict := ex.args[-1], dict)
-                and (error := error_dict.get("error", {}))
-                and self.__get_formatted_error_message() == error.get("message", "")
-            )
-        )
+        return ex is None or (isinstance(ex, CommunicationError) and self.__get_formatted_error_message() in str(ex))
 
     def __get_formatted_error_message(self) -> str:
         return f"Assert Exception:api_itr != data._registered_apis.end(): Could not find API {self.__api_name}"
