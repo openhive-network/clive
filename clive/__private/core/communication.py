@@ -101,7 +101,11 @@ class Communication:
         if not isinstance(data, str):
             data = json.dumps(data, cls=CustomJSONEncoder)
         for attempts_left in reversed(range(max_attempts)):
-            response: httpx.Response = await invoke(callback=partial(post_method, url, content=data))
+            try:
+                response: httpx.Response = await invoke(callback=partial(post_method, url, content=data))
+            except httpx.ConnectError as error:
+                raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}") from error
+
             result = response.json()
 
             if response.is_success:
