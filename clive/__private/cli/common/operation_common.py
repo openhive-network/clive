@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, Optional
+from typing import Any, Concatenate, Optional, ParamSpec
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
@@ -9,6 +9,11 @@ from clive import World
 from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import profile_option
 from clive.__private.util import ExitCallHandler
+
+P = ParamSpec("P")
+
+PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
+PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class OperationCommon(PreconfiguredBaseModel):
@@ -21,11 +26,11 @@ class OperationCommon(PreconfiguredBaseModel):
     profile: Optional[str] = profile_option
     sign: Optional[str] = typer.Option(None, help="Key alias to sign the transaction with.", show_default=False)
     save_file: Optional[str] = typer.Option(None, help="The file to save the transaction to.", show_default=False)
-    world: World | None = None
+    world: World
 
     @staticmethod
-    def decorator(func: Callable[..., None]) -> Any:
-        common = OperationCommon()
+    def decorator(func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
+        common = OperationCommon.construct(world=None)  # type: ignore[arg-type]
 
         @merge_args(func)
         @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
@@ -35,10 +40,11 @@ class OperationCommon(PreconfiguredBaseModel):
             sign: Optional[str] = common.sign,  # noqa: ARG001
             profile: Optional[str] = common.profile,
             save_file: Optional[str] = common.save_file,  # noqa: ARG001
+            *args: P.args,
             **kwargs: Any,
         ) -> None:
             with ExitCallHandler(World(profile_name=profile), finally_callback=lambda w: w.close()) as world:
                 ctx.params.update(world=world)
-                return func(ctx=ctx, **kwargs)
+                return func(ctx, *args, **kwargs)
 
-        return wrapper
+        return wrapper  # type: ignore[no-any-return]
