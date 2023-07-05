@@ -53,10 +53,14 @@ class OperationCommon(PreconfiguredBaseModel):
             if not broadcast:
                 typer.echo("[Performing dry run, because --no-broadcast was specified.]\n")
 
+            beekeeper_remote_endpoint = Url.parse(beekeeper_remote) if beekeeper_remote else None
+
+            cls._print_launching_beekeeper(beekeeper_remote_endpoint)
+
             with ExitCallHandler(
                 World(
                     profile_name=profile,
-                    beekeeper_remote_endpoint=Url.parse(beekeeper_remote) if beekeeper_remote else None,
+                    beekeeper_remote_endpoint=beekeeper_remote_endpoint,
                 ),
                 finally_callback=lambda w: w.close(),
             ) as world:
