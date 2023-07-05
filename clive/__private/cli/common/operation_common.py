@@ -43,11 +43,14 @@ class OperationCommon(PreconfiguredBaseModel):
             password: str = common.password,
             sign: str = common.sign,  # noqa: ARG001
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
-            broadcast: bool = common.broadcast,  # noqa: ARG001
+            broadcast: bool = common.broadcast,
             save_file: Optional[str] = common.save_file,  # noqa: ARG001
             *args: P.args,
             **kwargs: Any,
         ) -> None:
+            if not broadcast:
+                typer.echo("[Performing dry run, because --no-broadcast was specified.]\n")
+
             with ExitCallHandler(
                 World(
                     profile_name=profile,
