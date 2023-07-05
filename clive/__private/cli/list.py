@@ -21,4 +21,4 @@ def keys(
 
     public_keys = common.world.profile_data.working_account.keys
 
-    typer.echo(f"{common.profile}, your keys are:\n{public_keys}")
+    typer.echo(f"{common.profile}, your keys are:\n{list(public_keys)}")
