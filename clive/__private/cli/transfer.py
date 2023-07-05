@@ -4,7 +4,7 @@ from typing import Final
 import typer
 from click import ClickException
 
-from clive.__private.cli.common import OperationCommon
+from clive.__private.cli.common.operation_common import OperationCommon
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Asset

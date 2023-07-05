@@ -1,6 +1,6 @@
 import typer
 
-from clive.__private.cli.common import WithWorld
+from clive.__private.cli.common.with_world import WithWorld
 
 list_ = typer.Typer(help="List various things.")
 
