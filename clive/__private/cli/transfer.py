@@ -4,7 +4,6 @@ from typing import Final
 import typer
 
 from clive.__private.cli.common.operation_common import OperationCommon
-from clive.__private.core.keys import PublicKey
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Asset
 from schemas.operations import TransferOperation
@@ -30,12 +29,13 @@ def _main(
     common = OperationCommon(**ctx.params)
 
     from_me = common.world.profile_data.working_account.name
+    key_to_sign = common.world.profile_data.working_account.keys.get(common.sign)
 
     perform_actions_on_transaction(
         TransferOperation(from_=from_me, to=to, amount=Asset.from_legacy(amount.upper()), memo=memo),
         beekeeper=common.world.beekeeper,
         node=common.world.node,
-        sign_key=PublicKey(value=common.sign) if common.sign else None,
+        sign_key=key_to_sign,
         save_file_path=Path(common.save_file) if common.save_file else None,
         broadcast=common.broadcast,
         chain_id=common.world.node.chain_id,

@@ -58,6 +58,12 @@ class KeyManager:
     def is_key_to_import_alias_available(self, alias: str) -> bool:
         return self.__is_alias_available(alias, self.__keys_to_import)
 
+    def get(self, alias: str) -> PublicKeyAliased:
+        for key in self.__keys:
+            if key.alias == alias:
+                return key
+        raise KeyNotFoundError(f"Key with alias `{alias}` not found.")
+
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
             self.__assert_no_alias_conflict(key.alias, "public")
