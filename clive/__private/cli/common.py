@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.util import ExitCallHandler
+from clive.core.url import Url
 
 
 def _get_default_profile_name() -> str | None:
@@ -25,6 +26,8 @@ profile_option = typer.Option(
     help="The profile to use.",
     show_default=bool(_get_default_profile_name()),
 )
+
+beekeeper_remote_option = typer.Option(None, help="Beekeeper remote endpoint.", show_default=False)
 
 
 class PreconfiguredBaseModel(BaseModel, ABC):
@@ -74,18 +77,49 @@ class WithWorld(PreconfiguredBaseModel):
     world: World
 
     @staticmethod
-    def decorator(func: Callable[..., None]) -> Any:
-        common = WithWorld.construct(world=None)  # type: ignore[arg-type]
+    def decorator(*, use_beekeeper: bool = True) -> Any:  # type: ignore[override]
+        """
+        Decorator to be used on commands that need a world. The world could be created with a beekeeper or without.
+        Beekeeper is launched locally by default, but it is possible to use a remote beekeeper by specifying the
+        `beekeeper_remote` argument in the decorated function.
 
-        @merge_args(func)
-        @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
-        def wrapper(
-            ctx: typer.Context,
-            profile: Optional[str] = common.profile,
-            **kwargs: Any,
-        ) -> None:
-            with ExitCallHandler(World(profile_name=profile), finally_callback=lambda w: w.close()) as world:
-                ctx.params.update(world=world)
-                return func(ctx=ctx, **kwargs)
+        Params:
+            use_beekeeper: Set this to False when there is no need to use a beekeeper.
+        """
 
-        return wrapper
+        def outer(func: Callable[..., None]) -> Any:
+            common = WithWorld.construct(world=None)  # type: ignore[arg-type]
+
+            @merge_args(func)
+            @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
+            def inner(
+                ctx: typer.Context,
+                profile: Optional[str] = common.profile,
+                **kwargs: Any,
+            ) -> None:
+                def _get_beekeeper_remote() -> Url | None:
+                    beekeeper_remote = kwargs.get("beekeeper_remote", None)
+                    return Url.parse(beekeeper_remote) if beekeeper_remote else None
+
+                beekeeper_remote_endpoint = _get_beekeeper_remote()
+
+                typer.echo(
+                    "Launching beekeeper..."
+                    if not beekeeper_remote_endpoint
+                    else f"Using beekeeper at {beekeeper_remote_endpoint}"
+                )
+
+                with ExitCallHandler(
+                    World(
+                        profile_name=profile,
+                        use_beekeeper=use_beekeeper,
+                        beekeeper_remote_endpoint=beekeeper_remote_endpoint,
+                    ),
+                    finally_callback=lambda w: w.close(),
+                ) as world:
+                    ctx.params.update(world=world)
+                    return func(ctx=ctx, **kwargs)
+
+            return inner
+
+        return outer

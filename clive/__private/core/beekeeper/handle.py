@@ -48,7 +48,10 @@ class NotMatchingIdJsonRPCError(CommunicationError):
 
 
 class Beekeeper:
-    def __init__(self) -> None:
+    def __init__(self, *, remote_endpoint: Url | None = None) -> None:
+        if remote_endpoint:
+            settings.set("beekeeper.remote_address", str(remote_endpoint))
+
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError()
 

@@ -6,7 +6,7 @@ list_ = typer.Typer(help="List various things.")
 
 
 @list_.command()
-@WithWorld.decorator
+@WithWorld.decorator(use_beekeeper=False)
 def keys(
     ctx: typer.Context,
 ) -> None:
