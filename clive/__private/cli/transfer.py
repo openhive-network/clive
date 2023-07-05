@@ -23,15 +23,16 @@ transfer = typer.Typer(
 @OperationCommon.decorator
 def _main(
     ctx: typer.Context,
-    from_: str = typer.Option(..., "--from", help="The account to transfer from.", show_default=False),
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
     amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
     memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
     common = OperationCommon(**ctx.params)
 
+    from_me = common.world.profile_data.working_account.name
+
     perform_actions_on_transaction(
-        TransferOperation(from_=from_, to=to, amount=Asset.from_legacy(amount.upper()), memo=memo),
+        TransferOperation(from_=from_me, to=to, amount=Asset.from_legacy(amount.upper()), memo=memo),
         beekeeper=common.world.beekeeper,
         node=common.world.node,
         sign_key=PublicKey(value=common.sign) if common.sign else None,
