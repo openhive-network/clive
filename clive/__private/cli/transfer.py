@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Final
 
 import typer
-from click import ClickException
 
 from clive.__private.cli.common.operation_common import OperationCommon
 from clive.__private.core.keys import PublicKey
@@ -30,9 +29,6 @@ def _main(
     memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
     common = OperationCommon(**ctx.params)
-    if common.world is None:
-        raise ClickException("World is not set.")
-    typer.echo(f"{locals()=}")
 
     perform_actions_on_transaction(
         TransferOperation(from_=from_, to=to, amount=Asset.from_legacy(amount.upper()), memo=memo),
