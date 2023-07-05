@@ -1,7 +1,7 @@
 from abc import ABC
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, Optional
+from typing import Any, Concatenate, Optional, ParamSpec
 
 import typer
 from merge_args import merge_args  # type: ignore
@@ -11,6 +11,8 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.util import ExitCallHandler
 from clive.core.url import Url
+
+P = ParamSpec("P")
 
 
 def _get_default_profile_name() -> str | None:
@@ -72,12 +74,16 @@ class OperationCommon(PreconfiguredBaseModel):
         return wrapper
 
 
+PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
+PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
+
+
 class WithWorld(PreconfiguredBaseModel):
     profile: Optional[str] = profile_option
     world: World
 
     @staticmethod
-    def decorator(*, use_beekeeper: bool = True) -> Any:  # type: ignore[override]
+    def decorator(*, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
         """
         Decorator to be used on commands that need a world. The world could be created with a beekeeper or without.
         Beekeeper is launched locally by default, but it is possible to use a remote beekeeper by specifying the
@@ -87,7 +93,7 @@ class WithWorld(PreconfiguredBaseModel):
             use_beekeeper: Set this to False when there is no need to use a beekeeper.
         """
 
-        def outer(func: Callable[..., None]) -> Any:
+        def outer(func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
             common = WithWorld.construct(world=None)  # type: ignore[arg-type]
 
             @merge_args(func)
@@ -95,10 +101,11 @@ class WithWorld(PreconfiguredBaseModel):
             def inner(
                 ctx: typer.Context,
                 profile: Optional[str] = common.profile,
-                **kwargs: Any,
+                *args: P.args,
+                **kwargs: P.kwargs,
             ) -> None:
                 def _get_beekeeper_remote() -> Url | None:
-                    beekeeper_remote = kwargs.get("beekeeper_remote", None)
+                    beekeeper_remote: str | None = kwargs.get("beekeeper_remote", None)  # type: ignore[assignment]
                     return Url.parse(beekeeper_remote) if beekeeper_remote else None
 
                 beekeeper_remote_endpoint = _get_beekeeper_remote()
@@ -118,8 +125,8 @@ class WithWorld(PreconfiguredBaseModel):
                     finally_callback=lambda w: w.close(),
                 ) as world:
                     ctx.params.update(world=world)
-                    return func(ctx=ctx, **kwargs)
+                    return func(ctx, *args, **kwargs)
 
-            return inner
+            return inner  # type: ignore[no-any-return]
 
         return outer
