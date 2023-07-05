@@ -31,7 +31,7 @@ class EditAuthority(AuthorityForm):
         self._save()
 
     def on_authority_form_saved(self, event: AuthorityForm.Saved) -> None:
-        self.app.world.profile_data.working_account.keys_to_import[event.key_alias] = event.private_key
+        # TODO: We should allow for alias editing
         self.app.world.update_reactive("profile_data")
 
         self.app.pop_screen()

@@ -103,7 +103,7 @@ class TransferToAccount(CartBasedScreen):
     def __fast_broadcast(self) -> None:
         if operation := self.__create_operation():
             self.app.world.commands.fast_broadcast(
-                operation=operation, sign_with=self.app.world.profile_data.working_account.keys[0]
+                operation=operation, sign_with=self.app.world.profile_data.working_account.keys.first
             )
             self.app.pop_screen()
             Notification(

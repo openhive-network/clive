@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.keys.keys import PublicKeyAliased
+from clive.__private.core.keys.keys import PrivateKey, PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper
@@ -23,16 +23,16 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
         self.__sync_missing_keys()
 
     def __import_pending_keys(self) -> None:
-        for alias, key in self.profile_data.working_account.keys_to_import.items():
-            imported = ImportKey(
+        def import_key(alias: str, key: PrivateKey) -> PublicKeyAliased:
+            return ImportKey(
                 app_state=self.app_state,
                 wallet=self.profile_data.name,
                 alias=alias,
                 key_to_import=key,
                 beekeeper=self.beekeeper,
             ).execute_with_result()
-            self.profile_data.working_account.keys.append(imported)
-        self.profile_data.working_account.keys_to_import.clear()
+
+        self.profile_data.working_account.keys.import_pending_to_beekeeper(import_key)
 
     def __sync_missing_keys(self) -> None:
         keys_in_clive = self.profile_data.working_account.keys
@@ -40,6 +40,6 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
 
         keys_missing_in_clive = [key for key in keys_in_beekeeper if key not in keys_in_clive]
 
-        self.profile_data.working_account.keys.extend(
-            PublicKeyAliased(value=key, alias=key) for key in keys_missing_in_clive
+        self.profile_data.working_account.keys.add(
+            *[PublicKeyAliased(value=key, alias=key) for key in keys_missing_in_clive]
         )

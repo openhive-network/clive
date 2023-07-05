@@ -44,9 +44,9 @@ class Authority(ColumnLayout, CliveWidget):
     class AuthoritiesChanged(Message):
         """Emitted when authorities have been changed"""
 
-    def __init__(self, authority: PublicKeyAliased) -> None:
+    def __init__(self, index: int, authority: PublicKeyAliased) -> None:
+        self.__index = index
         self.__authority = authority
-        self.__index = self.app.world.profile_data.working_account.keys.index(self.__authority)
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -70,8 +70,8 @@ class Authority(ColumnLayout, CliveWidget):
                 return
 
             self.app.world.commands.remove_key(password=result, key_to_remove=self.__authority)
-
             self.app.world.profile_data.working_account.keys.remove(self.__authority)
+
             Notification(f"Authority `{self.__authority.alias}` was removed.", category="success").show()
             self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
 
@@ -105,8 +105,8 @@ class ManageAuthorities(BaseScreen):
         with self.__mount_point:
             yield BigTitle("authorities")
             yield AuthorityHeader()
-            for key in self.app.world.profile_data.working_account.keys:
-                yield Authority(key)
+            for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
+                self.__mount_point.mount(Authority(idx, key))
 
     def action_new_authority(self) -> None:
         self.app.push_screen(NewAuthority())
@@ -120,5 +120,5 @@ class ManageAuthorities(BaseScreen):
     def __rebuild_authorities(self) -> None:
         self.query(Authority).remove()
 
-        for key in self.app.world.profile_data.working_account.keys:
-            self.__mount_point.mount(Authority(key))
+        for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
+            self.__mount_point.mount(Authority(idx, key))

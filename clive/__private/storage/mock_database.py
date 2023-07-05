@@ -3,12 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from enum import Enum
-from typing import TYPE_CHECKING
 
+from clive.__private.core.keys.key_manager import KeyManager
 from clive.models import Asset
-
-if TYPE_CHECKING:
-    from clive.__private.core.keys.keys import PrivateKey, PublicKeyAliased
 
 
 class AccountType(str, Enum):
@@ -73,8 +70,7 @@ class Account:
 
 @dataclass
 class WorkingAccount(Account):
-    keys: list[PublicKeyAliased] = field(default_factory=list)
-    keys_to_import: dict[str, PrivateKey] = field(default_factory=dict)
+    keys: KeyManager = field(default_factory=KeyManager)
 
     def __hash__(self) -> int:
         return super().__hash__()
