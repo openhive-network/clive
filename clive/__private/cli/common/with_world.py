@@ -21,8 +21,8 @@ class WithWorld(PreconfiguredBaseModel):
     profile: Optional[str] = profile_option
     world: World
 
-    @staticmethod
-    def decorator(*, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
+    @classmethod
+    def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
         """
         Decorator to be used on commands that need a world. The world could be created with a beekeeper or without.
         Beekeeper is launched locally by default, but it is possible to use a remote beekeeper by specifying the
@@ -33,7 +33,7 @@ class WithWorld(PreconfiguredBaseModel):
         """
 
         def outer(func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
-            common = WithWorld.construct(world=None)  # type: ignore[arg-type]
+            common = cls.construct(world=None)  # type: ignore[arg-type]
 
             @merge_args(func)
             @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])

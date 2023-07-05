@@ -9,6 +9,6 @@ class PreconfiguredBaseModel(BaseModel, ABC):
     class Config:
         arbitrary_types_allowed: bool = True
 
-    @staticmethod
-    def decorator(func: Callable[..., Any]) -> Any:
+    @classmethod
+    def decorator(cls, func: Callable[..., Any]) -> Any:
         """Should be overridden in subclasses."""

@@ -33,9 +33,9 @@ class OperationCommon(PreconfiguredBaseModel):
     save_file: Optional[str] = typer.Option(None, help="The file to save the transaction to.", show_default=False)
     world: World
 
-    @staticmethod
-    def decorator(func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
-        common = OperationCommon.construct(world=None)  # type: ignore[arg-type]
+    @classmethod
+    def decorator(cls, func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
+        common = cls.construct(world=None)  # type: ignore[arg-type]
 
         @merge_args(func)
         @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
@@ -65,7 +65,7 @@ class OperationCommon(PreconfiguredBaseModel):
                 world.beekeeper.api.unlock(wallet_name=world.profile_data.name, password=password)
 
                 result = func(ctx, *args, **kwargs)
-                OperationCommon.__print_transaction(result)
+                cls.__print_transaction(result)
                 return result
 
         return wrapper  # type: ignore[no-any-return]
