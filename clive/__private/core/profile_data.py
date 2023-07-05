@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import shelve
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Final
+from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private import config
 from clive.__private.storage.contextual import Context
 from clive.__private.storage.mock_database import Account, WorkingAccount
 from clive.core.url import Url
 from clive.models import Operation
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 
 class Cart(list[Operation]):
@@ -45,14 +49,25 @@ class ProfileData(Context):
         if Clive.is_app_exist():
             Clive.app_instance().world.update_reactive("profile_data")
 
-        with shelve.open(str(self._get_file_storage_path())) as db:
+        with self.__open_database() as db:
             db[self.name] = self
             db[self._LAST_USED_IDENTIFIER] = self.name
 
     @classmethod
     def get_lastly_used_profile_name(cls) -> str | None:
-        with shelve.open(str(cls._get_file_storage_path())) as db:
+        with cls.__open_database() as db:
             return db.get(cls._LAST_USED_IDENTIFIER, None)
+
+    @classmethod
+    @contextmanager
+    def __open_database(cls) -> Iterator[shelve.Shelf[Any]]:
+        path = cls._get_file_storage_path()
+
+        # create data directory if it doesn't exist
+        path.parent.mkdir(parents=True, exist_ok=True)
+
+        with shelve.open(str(path)) as db:
+            yield db
 
     @classmethod
     def load(cls, name: str | None = None) -> ProfileData:
@@ -62,17 +77,14 @@ class ProfileData(Context):
         :param name: Name of the profile to load.
         :return: Profile data.
         """
-        # create data directory if it doesn't exist
-        cls._get_file_storage_path().parent.mkdir(parents=True, exist_ok=True)
-
-        with shelve.open(str(cls._get_file_storage_path())) as db:
+        with cls.__open_database() as db:
             if name is None:
                 name = db.get(cls._LAST_USED_IDENTIFIER, "")
             return db.get(name, cls(name))
 
     @classmethod
     def list_profiles(cls) -> list[str]:
-        with shelve.open(str(cls._get_file_storage_path())) as db:
+        with cls.__open_database() as db:
             return list(db.keys() - {cls._LAST_USED_IDENTIFIER})
 
     @staticmethod
