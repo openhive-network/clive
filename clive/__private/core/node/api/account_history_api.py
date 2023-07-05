@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.core.node.api.api import Api
+from clive.models import ApiOperationObject, ApiVirtualOperationObject  # noqa: TCH001
 from schemas.account_history_api import response_schemas  # noqa: TCH001
 
 
@@ -14,11 +15,13 @@ class AccountHistoryApi(Api):
         include_reversible: bool = True,
         operation_filter_low: int | None = None,
         operation_filter_high: int | None = None,
-    ) -> response_schemas.GetAccountHistory:
+    ) -> response_schemas.GetAccountHistory[ApiOperationObject, ApiVirtualOperationObject]:
         raise NotImplementedError()
 
     @Api.method
-    def get_transaction(self, id_: str, include_reversible: bool = True) -> response_schemas.GetTransaction:
+    def get_transaction(
+        self, id_: str, include_reversible: bool = True
+    ) -> response_schemas.GetTransaction[ApiOperationObject]:
         raise NotImplementedError()
 
     @Api.method
@@ -31,10 +34,10 @@ class AccountHistoryApi(Api):
         limit: int | None = None,
         include_reversible: bool = True,
         group_by_block: bool = False,
-    ) -> response_schemas.EnumVirtualOps:
+    ) -> response_schemas.EnumVirtualOps[ApiVirtualOperationObject]:
         raise NotImplementedError()
 
     def get_ops_in_block(
         self, block_num: int, only_virtual: bool = False, include_reversible: bool = True
-    ) -> response_schemas.GetOpsInBlock:
+    ) -> response_schemas.GetOpsInBlock[ApiOperationObject, ApiVirtualOperationObject]:
         raise NotImplementedError()
