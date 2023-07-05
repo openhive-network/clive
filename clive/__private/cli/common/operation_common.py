@@ -24,6 +24,7 @@ class OperationCommon(PreconfiguredBaseModel):
     """
 
     profile: Optional[str] = profile_option
+    password: str = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
     sign: str = typer.Option(..., help="Key alias to sign the transaction with.", show_default=False)
     beekeeper_remote: Optional[str] = beekeeper_remote_option
     broadcast: bool = typer.Option(..., help="Broadcast the transaction.", show_default=False)
@@ -39,6 +40,7 @@ class OperationCommon(PreconfiguredBaseModel):
         def wrapper(
             ctx: typer.Context,
             profile: Optional[str] = common.profile,
+            password: str = common.password,
             sign: str = common.sign,  # noqa: ARG001
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
             broadcast: bool = common.broadcast,  # noqa: ARG001
@@ -54,6 +56,9 @@ class OperationCommon(PreconfiguredBaseModel):
                 finally_callback=lambda w: w.close(),
             ) as world:
                 ctx.params.update(world=world)
+
+                world.beekeeper.api.unlock(wallet_name=world.profile_data.name, password=password)
+
                 return func(ctx, *args, **kwargs)
 
         return wrapper  # type: ignore[no-any-return]
