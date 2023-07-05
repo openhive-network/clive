@@ -70,6 +70,7 @@ class OperationCommon(PreconfiguredBaseModel):
 
                 result = func(ctx, *args, **kwargs)
                 cls.__print_transaction(result)
+                typer.echo(f"Transaction was successfully {'broadcasted' if broadcast else 'created'}.")
                 return result
 
         return wrapper  # type: ignore[no-any-return]
