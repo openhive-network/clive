@@ -8,6 +8,9 @@ from clive.__private.core.commands.sign import Sign
 from clive.__private.core.ensure_transaction import ensure_transaction
 
 if TYPE_CHECKING:
+    from clive.models import Transaction
+
+if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.beekeeper import Beekeeper
@@ -25,7 +28,7 @@ def perform_actions_on_transaction(
     sign_key: PublicKey | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
-) -> None:
+) -> Transaction:
     """This function performs commands on a transaction object.
 
     Args:
@@ -36,6 +39,9 @@ def perform_actions_on_transaction(
         sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
         save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         broadcast: Whether to broadcast the transaction.
+
+    Returns:
+        The transaction object.
     """
     transaction = ensure_transaction(content, node=node)
 
@@ -49,3 +55,5 @@ def perform_actions_on_transaction(
 
     if transaction.is_signed() and broadcast:
         Broadcast(node=node, transaction=transaction).execute()
+
+    return transaction

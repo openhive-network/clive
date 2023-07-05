@@ -2,6 +2,7 @@ from collections.abc import Callable
 from functools import wraps
 from typing import Any, Concatenate, Optional, ParamSpec
 
+import rich
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
@@ -10,11 +11,12 @@ from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import beekeeper_remote_option, profile_option
 from clive.__private.util import ExitCallHandler
 from clive.core.url import Url
+from clive.models import Transaction
 
 P = ParamSpec("P")
 
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
-PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
+PreWrapFuncT = Callable[Concatenate[typer.Context, P], Transaction]
+PostWrapFuncT = Callable[Concatenate[typer.Context, P], Transaction]
 
 
 class OperationCommon(PreconfiguredBaseModel):
@@ -47,7 +49,7 @@ class OperationCommon(PreconfiguredBaseModel):
             save_file: Optional[str] = common.save_file,  # noqa: ARG001
             *args: P.args,
             **kwargs: Any,
-        ) -> None:
+        ) -> Transaction:
             if not broadcast:
                 typer.echo("[Performing dry run, because --no-broadcast was specified.]\n")
 
@@ -62,6 +64,14 @@ class OperationCommon(PreconfiguredBaseModel):
 
                 world.beekeeper.api.unlock(wallet_name=world.profile_data.name, password=password)
 
-                return func(ctx, *args, **kwargs)
+                result = func(ctx, *args, **kwargs)
+                OperationCommon.__print_transaction(result)
+                return result
 
         return wrapper  # type: ignore[no-any-return]
+
+    @staticmethod
+    def __print_transaction(transaction: Transaction) -> None:
+        transaction_json = transaction.json(by_alias=True)
+        typer.echo("Created transaction:")
+        rich.print_json(transaction_json)
