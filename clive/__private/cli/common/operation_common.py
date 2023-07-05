@@ -29,7 +29,7 @@ class OperationCommon(PreconfiguredBaseModel):
     password: str = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
     sign: str = typer.Option(..., help="Key alias to sign the transaction with.", show_default=False)
     beekeeper_remote: Optional[str] = beekeeper_remote_option
-    broadcast: bool = typer.Option(..., help="Broadcast the transaction.", show_default=False)
+    broadcast: bool = typer.Option(..., help="Whether broadcast the transaction. (i.e. dry-run)", show_default=False)
     save_file: Optional[str] = typer.Option(None, help="The file to save the transaction to.", show_default=False)
     world: World
 
