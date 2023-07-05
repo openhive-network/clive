@@ -68,6 +68,9 @@ class Account:
     name: str
     data: NodeData = field(default_factory=NodeData)
 
+    def __hash__(self) -> int:
+        return hash(self.name)
+
 
 @dataclass
 class PublicKey:
@@ -155,3 +158,6 @@ class PrivateKey:
 class WorkingAccount(Account):
     keys: list[PublicKeyAliased] = field(default_factory=list)
     keys_to_import: dict[str, PrivateKey] = field(default_factory=dict)
+
+    def __hash__(self) -> int:
+        return super().__hash__()
