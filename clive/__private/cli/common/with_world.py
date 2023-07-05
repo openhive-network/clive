@@ -45,7 +45,7 @@ class WithWorld(PreconfiguredBaseModel):
             ) -> None:
                 beekeeper_remote_endpoint = cls.__get_beekeeper_remote(kwargs)
 
-                cls.__print_launching_beekeeper(beekeeper_remote_endpoint)
+                cls.__print_launching_beekeeper(use_beekeeper, beekeeper_remote_endpoint)
 
                 with ExitCallHandler(
                     World(
@@ -68,9 +68,10 @@ class WithWorld(PreconfiguredBaseModel):
         return Url.parse(beekeeper_remote) if beekeeper_remote else None
 
     @staticmethod
-    def __print_launching_beekeeper(beekeeper_remote_endpoint: Url | None) -> None:
-        typer.echo(
-            "Launching beekeeper..."
-            if not beekeeper_remote_endpoint
-            else f"Using beekeeper at {beekeeper_remote_endpoint}"
-        )
+    def __print_launching_beekeeper(use_beekeeper: bool, beekeeper_remote_endpoint: Url | None) -> None:
+        if use_beekeeper:
+            typer.echo(
+                "Launching beekeeper..."
+                if not beekeeper_remote_endpoint
+                else f"Using beekeeper at {beekeeper_remote_endpoint}"
+            )
