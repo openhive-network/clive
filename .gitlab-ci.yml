@@ -25,8 +25,11 @@ variables:
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
   # binaries:
-  HIVE_BUILD_ROOT_PATH: "hived-binaries"
-  BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
+  HIVED_BINARIES_DIR_NAME: "hived-binaries"
+  HIVED_MAINNET_BINARIES_DIR: "${CI_PROJECT_DIR}/${HIVED_BINARIES_DIR_NAME}/mainnet"
+  HIVED_TESTNET_BINARIES_DIR: "${CI_PROJECT_DIR}/${HIVED_BINARIES_DIR_NAME}/testnet"
+  BEEKEEPER_BINARY: "${HIVED_MAINNET_BINARIES_DIR}/beekeeper"
+  HIVED_TESTNET_BINARY: "${HIVED_TESTNET_BINARIES_DIR}/hived"
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-5
   TEST_IMAGE_TAG: "@sha256:eaa6f32730f0f4c45a95a65b6d790bea2b71a59276eb28795c04be7703f003e6"
 
@@ -87,7 +90,7 @@ type_check_with_mypy:
     REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
     REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
     SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
-    BINARY_CACHE_PATH: "${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
+    BINARY_CACHE_PATH: "${HIVED_BINARIES_DIR_NAME}/${HIVE_NETWORK_TYPE}"
   tags:
     - public-runner-docker
     - hived-for-tests
@@ -116,7 +119,7 @@ prepare_testnet_hived_image:
       artifacts: true
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
-    HIVED_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/hived"
+    HIVED_PATH: $HIVED_TESTNET_BINARY
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   artifacts:
     reports:
