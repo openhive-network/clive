@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
+
 import clive
+from clive.__private.core.profile_data import ProfileCouldNotBeLoadedError
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -43,8 +46,7 @@ def test_if_correct_profile_is_loaded_when_something_is_stored() -> None:
 
 
 def test_loading_profile_without_given_name_when_no_lastly_used() -> None:
-    # ACT
-    world = clive.World()
-
-    # ASSERT
-    assert world.profile_data.name == ""  # noqa PLC1901 TODO: Should we allow for empty profile name? Probably not
+    # ACT & ASSERT
+    with pytest.raises(ProfileCouldNotBeLoadedError) as error:
+        clive.World()
+    assert "No lastly used profile to load." in str(error.value)

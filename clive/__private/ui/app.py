@@ -11,6 +11,7 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core.communication import Communication
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
@@ -105,7 +106,7 @@ class Clive(App[int], ManualReactive):
                 sleep(refresh_interval)
 
         def __should_enter_onboarding() -> bool:
-            return not (self.world.profile_data.name and self.world.profile_data.node_address)
+            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
         self.background_tasks.run_in_thread(update_data_worker)

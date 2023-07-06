@@ -10,10 +10,15 @@ from clive.__private import config
 from clive.__private.storage.contextual import Context
 from clive.__private.storage.mock_database import Account, WorkingAccount
 from clive.core.url import Url
+from clive.exceptions import CliveError
 from clive.models import Operation
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+
+class ProfileCouldNotBeLoadedError(CliveError):
+    """Raised when a profile could not be loaded."""
 
 
 class Cart(list[Operation]):
@@ -23,6 +28,7 @@ class Cart(list[Operation]):
 
 @dataclass
 class ProfileData(Context):
+    ONBOARDING_PROFILE_NAME: Final[str] = field(init=False, default="onboarding")
     _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
 
     name: str = ""
@@ -55,8 +61,14 @@ class ProfileData(Context):
 
     @classmethod
     def get_lastly_used_profile_name(cls) -> str | None:
+        """
+        Get the name of the lastly used profile. If no profile was used yet, None is returned.
+        """
         with cls.__open_database() as db:
-            return db.get(cls._LAST_USED_IDENTIFIER, None)
+            profile_name: str | None = db.get(cls._LAST_USED_IDENTIFIER, None)
+            if profile_name != cls.ONBOARDING_PROFILE_NAME:
+                return profile_name
+            return None
 
     @classmethod
     @contextmanager
@@ -70,16 +82,33 @@ class ProfileData(Context):
             yield db
 
     @classmethod
-    def load(cls, name: str | None = None) -> ProfileData:
+    def load(cls, name: str = "") -> ProfileData:
         """
-        Load profile data with the given name from the database. If no name is given, the last used profile is loaded.
+        Load profile data with the given name from the database.
 
-        :param name: Name of the profile to load.
-        :return: Profile data.
+        Params:
+            name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
         """
+
+        def assert_profile_could_be_loaded() -> None:
+            """
+            Cases:
+            1. name="" and lastly_used_exists=True -> load lastly_used
+            2. name="" and lastly_used_exists=False -> raise error
+            3. name="some_name" and lastly_used_exists=True -> load "some_name"
+            4. name="some_name" and lastly_used_exists=False -> load "some_name"
+            """
+
+            lastly_used_exists = cls.get_lastly_used_profile_name()
+            if not lastly_used_exists and not name:
+                raise ProfileCouldNotBeLoadedError("No lastly used profile to load.")
+
+        assert_profile_could_be_loaded()
+
         with cls.__open_database() as db:
-            if name is None:
-                name = db.get(cls._LAST_USED_IDENTIFIER, "")
+            if not name:
+                name = cls.get_lastly_used_profile_name()  # type: ignore[assignment]
+                assert name is not None, "We already checked that lastly used profile exists."
             return db.get(name, cls(name))
 
     @classmethod

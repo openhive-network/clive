@@ -17,9 +17,19 @@ if TYPE_CHECKING:
 
 
 class World:
+    """
+    World is a top-level container for all application objects. It is a single source of truth for interacting with
+    the Clive application.
+
+    Params:
+        profile_name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
+        use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
+        beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
+    """
+
     def __init__(
         self,
-        profile_name: str | None = None,
+        profile_name: str = "",
         use_beekeeper: bool = True,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
@@ -79,7 +89,7 @@ class TextualWorld(World, ManualReactive):
     profile_data: ProfileData = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
 
-    def __init__(self, profile_name: str | None = None) -> None:
-        super().__init__(profile_name)
+    def __init__(self) -> None:
+        super().__init__(ProfileData.get_lastly_used_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
         self.profile_data = self._profile_data
         self.app_state = self._app_state

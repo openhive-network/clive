@@ -7,6 +7,7 @@ from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
@@ -18,7 +19,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.app_state import AppState
-    from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.mock_database import Account
 
 
@@ -125,4 +125,4 @@ class Header(TextualHeader, CliveWidget):
         return profile_data.name
 
     def __is_in_onboarding_mode(self) -> bool:
-        return not self.app.world.profile_data.name
+        return self.app.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
