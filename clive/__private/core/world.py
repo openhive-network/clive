@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+import typer
 from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands
 from clive.__private.core.node.node import Node
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile_data import ProfileCouldNotBeLoadedError, ProfileData
 from clive.__private.ui.background_tasks import BackgroundTasks
 from clive.__private.ui.manual_reactive import ManualReactive
 
@@ -100,4 +101,7 @@ class TextualWorld(World, ManualReactive):
 
 class TyperWorld(World):
     def _load_profile(self, profile_name: str) -> ProfileData:
-        return ProfileData.load(profile_name, auto_create=False)
+        try:
+            return ProfileData.load(profile_name, auto_create=False)
+        except ProfileCouldNotBeLoadedError:
+            raise typer.BadParameter("Profile does not exist.") from None
