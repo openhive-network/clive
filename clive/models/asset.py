@@ -3,7 +3,18 @@ from __future__ import annotations
 import re
 from typing import TypeAlias
 
+from clive.__private.core.decimal_conventer import DecimalConverter
+from clive.exceptions import CliveError
 from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+
+
+class AssetError(CliveError):
+    """Base class for all asset related errors."""
+
+
+class AssetLegacyInvalidFormatError(CliveError):
+    def __init__(self, value: str) -> None:
+        super().__init__(f"Invalid asset format: {value}")
 
 
 class Asset:
@@ -43,13 +54,16 @@ class Asset:
                 raise ValueError(f"Unknown asset type: '{symbol}'")
 
     @classmethod
-    def from_legacy(cls, legacy: str) -> Asset.ANY:
-        legacy_parsing_regex = re.compile(r"(\d+\.\d+) ([A-Z]+)")
-        parsed = legacy_parsing_regex.match(legacy)
-        assert parsed is not None
-        amount = int(parsed.group(1).replace(".", ""))
-        symbol = parsed.group(2)
-        return cls.resolve_symbol(symbol)(amount=amount)
+    def from_legacy(cls, value: str) -> Asset.ANY:
+        match = re.match(r"(\d+(?:\.\d+)?)\s*(\w+)", value)
+        if not match:
+            raise AssetLegacyInvalidFormatError(value)
+
+        amount, symbol = match.groups()
+
+        asset_cls = cls.resolve_symbol(symbol)
+        asset_precision = asset_cls.get_asset_information().precision
+        return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_precision))
 
     @classmethod
     def to_legacy(cls, asset: Asset.ANY) -> str:
@@ -58,3 +72,8 @@ class Asset:
     @classmethod
     def pretty_amount(cls, asset: Asset.ANY) -> str:
         return f"{int(asset.amount) / 10**asset.precision :.{asset.precision}f}"
+
+    @staticmethod
+    def __convert_amount_to_internal_representation(amount: str, precision: int) -> int:
+        amount_decimal = DecimalConverter.convert(amount, precision=precision)
+        return int(amount_decimal * 10**precision)
