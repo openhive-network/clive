@@ -82,12 +82,13 @@ class ProfileData(Context):
             yield db
 
     @classmethod
-    def load(cls, name: str = "") -> ProfileData:
+    def load(cls, name: str = "", *, auto_create: bool = True) -> ProfileData:
         """
         Load profile data with the given name from the database.
 
         Params:
             name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
+            auto_create: If True, a new profile is created if the profile with the given name does not exist.
         """
 
         def assert_profile_could_be_loaded() -> None:
@@ -103,13 +104,20 @@ class ProfileData(Context):
             if not lastly_used_exists and not name:
                 raise ProfileCouldNotBeLoadedError("No lastly used profile to load.")
 
+        def create_new_profile(new_profile_name: str) -> ProfileData:
+            if not auto_create:
+                raise ProfileCouldNotBeLoadedError(f"Profile `{new_profile_name}` does not exist.")
+            return cls(new_profile_name)
+
         assert_profile_could_be_loaded()
 
         with cls.__open_database() as db:
             if not name:
                 name = cls.get_lastly_used_profile_name()  # type: ignore[assignment]
                 assert name is not None, "We already checked that lastly used profile exists."
-            return db.get(name, cls(name))
+
+            stored_profile: ProfileData | None = db.get(name, None)
+            return stored_profile if stored_profile else create_new_profile(name)
 
     @classmethod
     def list_profiles(cls) -> list[str]:

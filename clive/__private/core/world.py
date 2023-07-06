@@ -38,7 +38,7 @@ class World:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self._profile_data = ProfileData.load(profile_name)
+        self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = Commands(self)
         self._background_tasks = BackgroundTasks()
@@ -71,6 +71,9 @@ class World:
         if self._beekeeper is not None:
             self._beekeeper.close()
 
+    def _load_profile(self, profile_name: str) -> ProfileData:
+        return ProfileData.load(profile_name)
+
     def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         keeper = Beekeeper(remote_endpoint=remote_endpoint)
         keeper.start()
@@ -93,3 +96,8 @@ class TextualWorld(World, ManualReactive):
         super().__init__(ProfileData.get_lastly_used_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
         self.profile_data = self._profile_data
         self.app_state = self._app_state
+
+
+class TyperWorld(World):
+    def _load_profile(self, profile_name: str) -> ProfileData:
+        return ProfileData.load(profile_name, auto_create=False)

@@ -9,6 +9,7 @@ from merge_args import merge_args  # type: ignore[import]
 from clive import World
 from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import beekeeper_remote_option, profile_option
+from clive.__private.core.world import TyperWorld
 from clive.__private.util import ExitCallHandler
 from clive.core.url import Url
 from clive.models import Transaction
@@ -58,7 +59,7 @@ class OperationCommon(PreconfiguredBaseModel):
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)
 
             with ExitCallHandler(
-                World(
+                TyperWorld(
                     profile_name=profile,
                     beekeeper_remote_endpoint=beekeeper_remote_endpoint,
                 ),
