@@ -186,6 +186,6 @@ build_and_push_docker_testnet_image:
   variables:
     BUILD_SUFFIX: "-testnet"
   script:
-    - docker build --build-arg BEEKEEPER_LOCATION="${BEEKEEPER_BINARY}" -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET ..
+    - docker build --build-arg BEEKEEPER_LOCATION="${BEEKEEPER_BINARY}" --build-arg HIVED_LOCATION="${HIVED_TESTNET_BINARY}" -t $TAG_COMMIT -t $TAG_LATEST -f Dockerfile.TESTNET ..
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -3,9 +3,9 @@ FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-3
 ADD --chown=hived_admin:users . /clive
 WORKDIR /clive
 
-ARG HIVE_BUILD_ROOT_LOCATION="./hived/"
-ENV HIVE_BUILD_ROOT_PATH="/clive/hived/"
-ADD --chown=hived_admin:users "${HIVE_BUILD_ROOT_LOCATION}" "${HIVE_BUILD_ROOT_PATH}"
+ARG HIVED_LOCATION="./hived"
+ENV HIVED_PATH="/clive/hived"
+ADD --chown=hived_admin:users "${HIVED_LOCATION}" "${HIVED_PATH}"
 
 ARG BEEKEEPER_LOCATION="./beekeeper"
 ENV BEEKEEPER_PATH="/clive/beekeeper"
