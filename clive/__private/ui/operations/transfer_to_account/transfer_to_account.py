@@ -33,9 +33,9 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select[Callable[[float], Asset.ANY]]):
+class CurrencySelector(Select[Callable[[float], Asset.AnyT]]):
     def __init__(self) -> None:
-        def _asset_factory(symbol: str) -> Callable[[float], Asset.ANY]:
+        def _asset_factory(symbol: str) -> Callable[[float], Asset.AnyT]:
             asset = Asset.resolve_symbol(symbol)
             return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
 

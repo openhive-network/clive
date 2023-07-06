@@ -15,15 +15,15 @@ class AccountType(str, Enum):
     WATCHED = "watched"
 
 
-def default_hive() -> Asset.HIVE:
+def default_hive() -> Asset.Hive:
     return Asset.hive(0)
 
 
-def default_hbd() -> Asset.HBD:
+def default_hbd() -> Asset.Hbd:
     return Asset.hbd(0)
 
 
-def default_vests() -> Asset.VESTS:
+def default_vests() -> Asset.Vests:
     return Asset.vests(0)
 
 
@@ -41,14 +41,14 @@ class Manabar:
 
 @dataclass
 class NodeData:
-    hbd_savings: Asset.HBD = field(default_factory=default_hbd)
-    hbd_unclaimed: Asset.HBD = field(default_factory=default_hbd)
-    hive_balance: Asset.HIVE = field(default_factory=default_hive)
-    hive_dollars: Asset.HBD = field(default_factory=default_hbd)
+    hbd_savings: Asset.Hbd = field(default_factory=default_hbd)
+    hbd_unclaimed: Asset.Hbd = field(default_factory=default_hbd)
+    hive_balance: Asset.Hive = field(default_factory=default_hive)
+    hive_dollars: Asset.Hbd = field(default_factory=default_hbd)
     hive_power_balance: int = 0
-    hive_savings: Asset.HIVE = field(default_factory=default_hive)
-    hive_unclaimed: Asset.HIVE = field(default_factory=default_hive)
-    hp_unclaimed: Asset.VESTS = field(default_factory=default_vests)
+    hive_savings: Asset.Hive = field(default_factory=default_hive)
+    hive_unclaimed: Asset.Hive = field(default_factory=default_hive)
+    hp_unclaimed: Asset.Vests = field(default_factory=default_vests)
     last_refresh: datetime = field(default_factory=lambda: datetime.now())
     last_transaction: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
     recovery_account: str = ""

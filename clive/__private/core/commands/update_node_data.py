@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from schemas.database_api.response_schemas import GetDynamicGlobalProperties
     from schemas.rc_api.fundaments_of_responses import RcAccount
 
-    GDPOT = GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS]
+    GDPOT = GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]
 
 
 class SuppressNotExistingApi:
@@ -45,9 +45,9 @@ class UpdateNodeData(Command):
 
     @dataclass
     class AccountApiInfo:
-        core: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS]
+        core: AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests]
         latest_interaction: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
-        rc: RcAccount[Asset.VESTS] | None = None
+        rc: RcAccount[Asset.Vests] | None = None
         warnings: int = 0
         reputation: int = 0
 
@@ -91,12 +91,12 @@ class UpdateNodeData(Command):
 
     def __harvest_data_from_api(self) -> dict[Account, AccountApiInfo]:
         account_names = [acc.name for acc in self.accounts]
-        core_accounts_info: dict[str, AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS]] = {
+        core_accounts_info: dict[str, AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests]] = {
             str(acc.name): acc for acc in self.node.api.database_api.find_accounts(accounts=account_names).accounts
         }
         assert len(core_accounts_info) == len(self.accounts), "invalid amount of accounts after rc api call"
 
-        rc_accounts_info: dict[str, RcAccount[Asset.VESTS]] = {}
+        rc_accounts_info: dict[str, RcAccount[Asset.Vests]] = {}
         with SuppressNotExistingApi("rc_api"):
             rc_accounts_info = {
                 acc.account: acc for acc in self.node.api.rc_api.find_rc_accounts(accounts=account_names).rc_accounts
@@ -188,7 +188,7 @@ class UpdateNodeData(Command):
     def __calculate_hive_power(
         self,
         gdpo: GDPOT,
-        account: AccountItemFundament[Asset.HIVE, Asset.HBD, Asset.VESTS],
+        account: AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests],
     ) -> int:
         account_vesting_shares = (
             int(account.vesting_shares.amount)
@@ -229,10 +229,10 @@ class UpdateNodeData(Command):
             - gdpo.time
         )
 
-    def __vests_to_hive(self, amount: int | Asset.VESTS, gdpo: GDPOT) -> Asset.HIVE:
-        if isinstance(amount, Asset.VESTS):
+    def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: GDPOT) -> Asset.Hive:
+        if isinstance(amount, Asset.Vests):
             amount = int(amount.amount)
-        return Asset.HIVE(
+        return Asset.Hive(
             amount=int(amount * int(gdpo.total_vesting_fund_hive.amount) / int(gdpo.total_vesting_shares.amount))
         )
 

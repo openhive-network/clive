@@ -136,7 +136,7 @@ class DatabaseApi(Api):
         raise NotImplementedError()
 
     @Api.method
-    def get_config(self) -> database_api.GetConfig[Asset.HIVE, Asset.HBD]:
+    def get_config(self) -> database_api.GetConfig[Asset.Hive, Asset.Hbd]:
         raise NotImplementedError()
 
     @Api.method
@@ -146,11 +146,11 @@ class DatabaseApi(Api):
     @Api.method
     def get_dynamic_global_properties(
         self,
-    ) -> database_api.GetDynamicGlobalProperties[Asset.HIVE, Asset.HBD, Asset.VESTS]:
+    ) -> database_api.GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]:
         raise NotImplementedError()
 
     @Api.method
-    def get_feed_history(self) -> database_api.GetFeedHistory[Asset.HIVE, Asset.HBD]:
+    def get_feed_history(self) -> database_api.GetFeedHistory[Asset.Hive, Asset.Hbd]:
         raise NotImplementedError()
 
     @Api.method
@@ -158,7 +158,7 @@ class DatabaseApi(Api):
         raise NotImplementedError()
 
     @Api.method
-    def get_order_book(self, limit: int, base: Asset.HIVE, quote: Asset.HBD) -> database_api.GetOrderBook:
+    def get_order_book(self, limit: int, base: Asset.Hive, quote: Asset.Hbd) -> database_api.GetOrderBook:
         raise NotImplementedError()
 
     @Api.method
@@ -182,7 +182,7 @@ class DatabaseApi(Api):
         raise NotImplementedError()
 
     @Api.method
-    def get_witness_schedule(self) -> database_api.GetWitnessSchedule[Asset.HIVE]:
+    def get_witness_schedule(self) -> database_api.GetWitnessSchedule[Asset.Hive]:
         raise NotImplementedError()
 
     @Api.method
@@ -237,7 +237,7 @@ class DatabaseApi(Api):
 
     @Api.method
     def list_limit_orders(
-        self, start: tuple[str, int] | tuple[dict[Literal["base", "quote"], Asset.HIVE | Asset.HBD], int]
+        self, start: tuple[str, int] | tuple[dict[Literal["base", "quote"], Asset.Hive | Asset.Hbd], int]
     ) -> database_api.ListLimitOrders:
         raise NotImplementedError()
 

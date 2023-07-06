@@ -18,43 +18,43 @@ class AssetLegacyInvalidFormatError(CliveError):
 
 
 class Asset:
-    HIVE: TypeAlias = AssetHiveHF26
-    HBD: TypeAlias = AssetHbdHF26
-    VESTS: TypeAlias = AssetVestsHF26
-    ANY: TypeAlias = HIVE | HBD | VESTS
+    Hive: TypeAlias = AssetHiveHF26
+    Hbd: TypeAlias = AssetHbdHF26
+    Vests: TypeAlias = AssetVestsHF26
+    AnyT: TypeAlias = Hive | Hbd | Vests
 
     @classmethod
-    def hive(cls, amount: float) -> Asset.HIVE:
-        return Asset.HIVE(amount=cls.float_to_nai_int(amount, Asset.HIVE))
+    def hive(cls, amount: float) -> Asset.Hive:
+        return Asset.Hive(amount=cls.float_to_nai_int(amount, Asset.Hive))
 
     @classmethod
-    def hbd(cls, amount: float) -> Asset.HBD:
-        return Asset.HBD(amount=cls.float_to_nai_int(amount, Asset.HBD))
+    def hbd(cls, amount: float) -> Asset.Hbd:
+        return Asset.Hbd(amount=cls.float_to_nai_int(amount, Asset.Hbd))
 
     @classmethod
-    def vests(cls, amount: float) -> Asset.VESTS:
-        return Asset.VESTS(amount=cls.float_to_nai_int(amount, Asset.VESTS))
+    def vests(cls, amount: float) -> Asset.Vests:
+        return Asset.Vests(amount=cls.float_to_nai_int(amount, Asset.Vests))
 
     @classmethod
-    def float_to_nai_int(cls, number: float, asset_type: type[Asset.ANY]) -> int:
+    def float_to_nai_int(cls, number: float, asset_type: type[Asset.AnyT]) -> int:
         result = number * (10 ** asset_type.get_asset_information().precision)
         assert result == int(result), "invalid precision"
         return int(result)
 
     @classmethod
-    def resolve_symbol(cls, symbol: str) -> type[Asset.ANY]:
+    def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
         match symbol:
             case "HIVE" | "TESTS":
-                return Asset.HIVE
+                return Asset.Hive
             case "HBD" | "TBD":
-                return Asset.HBD
+                return Asset.Hbd
             case "VESTS":
-                return Asset.VESTS
+                return Asset.Vests
             case _:
                 raise ValueError(f"Unknown asset type: '{symbol}'")
 
     @classmethod
-    def from_legacy(cls, value: str) -> Asset.ANY:
+    def from_legacy(cls, value: str) -> Asset.AnyT:
         match = re.match(r"(\d+(?:\.\d+)?)\s*(\w+)", value)
         if not match:
             raise AssetLegacyInvalidFormatError(value)
@@ -66,11 +66,11 @@ class Asset:
         return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_precision))
 
     @classmethod
-    def to_legacy(cls, asset: Asset.ANY) -> str:
+    def to_legacy(cls, asset: Asset.AnyT) -> str:
         return f"{cls.pretty_amount(asset)} {asset.get_asset_information().symbol[0]}"
 
     @classmethod
-    def pretty_amount(cls, asset: Asset.ANY) -> str:
+    def pretty_amount(cls, asset: Asset.AnyT) -> str:
         return f"{int(asset.amount) / 10**asset.precision :.{asset.precision}f}"
 
     @staticmethod
