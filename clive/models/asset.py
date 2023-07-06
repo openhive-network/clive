@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 import re
-from typing import ClassVar, Literal, TypeAlias
+from typing import TypeAlias
 
 from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
 
 class Asset:
-    HIVE: ClassVar[TypeAlias] = AssetHiveHF26
-    HBD: ClassVar[TypeAlias] = AssetHbdHF26
-    VESTS: ClassVar[TypeAlias] = AssetVestsHF26
-    ANY: ClassVar[TypeAlias] = HIVE | HBD | VESTS
-    ALLOWED_SYMBOLS: ClassVar[TypeAlias] = Literal["HIVE", "TESTS", "HBD", "TBD", "VESTS"]
+    HIVE: TypeAlias = AssetHiveHF26
+    HBD: TypeAlias = AssetHbdHF26
+    VESTS: TypeAlias = AssetVestsHF26
+    ANY: TypeAlias = HIVE | HBD | VESTS
 
     @classmethod
     def hive(cls, amount: float) -> Asset.HIVE:
@@ -32,7 +31,7 @@ class Asset:
         return int(result)
 
     @classmethod
-    def resolve_symbol(cls, symbol: ALLOWED_SYMBOLS) -> Asset.ANY:
+    def resolve_symbol(cls, symbol: str) -> type[Asset.ANY]:
         match symbol:
             case "HIVE" | "TESTS":
                 return Asset.HIVE
@@ -49,7 +48,7 @@ class Asset:
         parsed = legacy_parsing_regex.match(legacy)
         assert parsed is not None
         amount = int(parsed.group(1).replace(".", ""))
-        symbol: Asset.ALLOWED_SYMBOLS = parsed.group(2)
+        symbol = parsed.group(2)
         return cls.resolve_symbol(symbol)(amount=amount)
 
     @classmethod

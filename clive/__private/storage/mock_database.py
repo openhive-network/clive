@@ -23,7 +23,7 @@ def default_hbd() -> Asset.HBD:
     return Asset.hbd(0)
 
 
-def default_vests() -> Asset.HIVE:
+def default_vests() -> Asset.VESTS:
     return Asset.vests(0)
 
 
