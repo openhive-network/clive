@@ -21,6 +21,11 @@ class ProfileCouldNotBeLoadedError(CliveError):
     """Raised when a profile could not be loaded."""
 
 
+class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError):
+    def __init__(self, profile_name: str) -> None:
+        super().__init__(f"Profile `{profile_name}` does not exist.")
+
+
 class Cart(list[Operation]):
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
@@ -106,7 +111,7 @@ class ProfileData(Context):
 
         def create_new_profile(new_profile_name: str) -> ProfileData:
             if not auto_create:
-                raise ProfileCouldNotBeLoadedError(f"Profile `{new_profile_name}` does not exist.")
+                raise ProfileDoesNotExistsError(new_profile_name)
             return cls(new_profile_name)
 
         assert_profile_could_be_loaded()
