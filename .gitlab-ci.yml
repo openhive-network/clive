@@ -19,6 +19,8 @@ workflow:
     - if: $CI_COMMIT_BRANCH
 
 variables:
+  FF_ENABLE_JOB_CLEANUP: 1
+  GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
   PACKAGES_TO_CHECK: "clive/ tests/"
   # colors:
