@@ -25,7 +25,7 @@ class OperationCommon(PreconfiguredBaseModel):
     Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597
     """
 
-    profile: Optional[str] = profile_option
+    profile: str = profile_option
     password: str = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
     sign: str = typer.Option(..., help="Key alias to sign the transaction with.", show_default=False)
     beekeeper_remote: Optional[str] = beekeeper_remote_option
@@ -41,7 +41,7 @@ class OperationCommon(PreconfiguredBaseModel):
         @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
         def wrapper(
             ctx: typer.Context,
-            profile: Optional[str] = common.profile,
+            profile: str = common.profile,
             password: str = common.password,
             sign: str = common.sign,  # noqa: ARG001
             beekeeper_remote: Optional[str] = common.beekeeper_remote,

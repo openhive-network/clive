@@ -1,6 +1,6 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Concatenate, Optional, ParamSpec
+from typing import Concatenate, ParamSpec
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
@@ -18,7 +18,7 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithWorld(PreconfiguredBaseModel):
-    profile: Optional[str] = profile_option
+    profile: str = profile_option
     world: World
 
     @classmethod
@@ -39,7 +39,7 @@ class WithWorld(PreconfiguredBaseModel):
             @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
             def inner(
                 ctx: typer.Context,
-                profile: Optional[str] = common.profile,
+                profile: str = common.profile,
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> None:
