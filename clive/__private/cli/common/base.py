@@ -5,6 +5,7 @@ from typing import Any
 import typer
 from pydantic import BaseModel
 
+from clive.__private.core.profile_data import ProfileData
 from clive.core.url import Url
 
 
@@ -27,3 +28,7 @@ class PreconfiguredBaseModel(BaseModel, ABC):
                 if not beekeeper_remote_endpoint
                 else f"Using beekeeper at {beekeeper_remote_endpoint}"
             )
+
+    @staticmethod
+    def _assert_correct_profile_is_loaded(loaded: ProfileData, expected_name: str) -> None:
+        assert loaded.name == expected_name, f"Wrong profile loaded. Got `{loaded.name}` but expected `{expected_name}`"

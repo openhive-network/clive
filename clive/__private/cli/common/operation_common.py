@@ -64,6 +64,8 @@ class OperationCommon(PreconfiguredBaseModel):
                 ),
                 finally_callback=lambda w: w.close(),
             ) as world:
+                cls._assert_correct_profile_is_loaded(world.profile_data, profile)
+
                 ctx.params.update(world=world)
 
                 world.beekeeper.api.unlock(wallet_name=world.profile_data.name, password=password)

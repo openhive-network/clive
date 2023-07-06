@@ -55,6 +55,8 @@ class WithWorld(PreconfiguredBaseModel):
                     ),
                     finally_callback=lambda w: w.close(),
                 ) as world:
+                    cls._assert_correct_profile_is_loaded(world.profile_data, profile)
+
                     ctx.params.update(world=world)
                     return func(ctx, *args, **kwargs)
 
