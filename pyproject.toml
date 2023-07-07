@@ -94,6 +94,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "INP",
     "PIE",
     "T20",
+    "PYI",
     "RET",
     "SIM",
     "TCH",
