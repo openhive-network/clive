@@ -86,6 +86,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "D",
     "UP",
     "YTT",
+    "ASYNC",
     "BLE",
     "B",
     "A",
