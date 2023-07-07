@@ -99,6 +99,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "RSE",
     "RET",
     "SIM",
+    "TID",
     "TCH",
     "ARG",
     "PTH",
