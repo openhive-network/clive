@@ -58,7 +58,7 @@ class _SelectList(Widget):
     ) -> None:
         if select.search:
             # when a search is there, add a class for pad-top the list
-            classes = f"{str(classes)} --search"
+            classes = f"{classes!s} --search"
 
         super().__init__(classes=classes)
 

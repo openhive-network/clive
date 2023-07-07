@@ -321,5 +321,5 @@ class Clive(App[int], ManualReactive):
         except Exception as error:
             # We already had a situation where Textual swallowed an exception without logging it.
             # This is a safeguard to prevent that from happening again.
-            logger.error(error)  # noqa: TRY400
+            logger.error(error)
             raise error from None

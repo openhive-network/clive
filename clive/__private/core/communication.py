@@ -80,7 +80,7 @@ class Communication:
         return await cls.__request(url, sync=False, data=data, max_attempts=max_attempts, pool_time=pool_time)
 
     @classmethod
-    async def __request(
+    async def __request(  # noqa: PLR0913
         cls,
         url: str,
         *,

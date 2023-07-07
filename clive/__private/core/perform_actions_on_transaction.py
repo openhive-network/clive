@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
 
 
-def perform_actions_on_transaction(
+def perform_actions_on_transaction(  # noqa: PLR0913
     content: TransactionConvertibleType,
     *,
     node: Node,

@@ -78,4 +78,4 @@ class BackgroundTasks:
             if self.__exception_handler:
                 self.__exception_handler(error)
             else:
-                logger.error(f"Unhandled exception in background tasks: {error}")  # noqa: TRY400
+                logger.error(f"Unhandled exception in background tasks: {error}")
