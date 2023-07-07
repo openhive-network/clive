@@ -96,6 +96,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "T20",
     "PYI",
     "PT",
+    "RSE",
     "RET",
     "SIM",
     "TCH",
