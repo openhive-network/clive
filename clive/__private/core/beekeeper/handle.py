@@ -31,13 +31,11 @@ class Non200StatusCodeError(CommunicationError):
 
 class ErrorResponseError(CommunicationError):
     def __init__(self, request: JSONRPCRequest, response: JsonT) -> None:
-        logger.error(
-            f"""
+        logger.error(f"""
 For request: {request}
 
 Got error response: {response}
-        """
-        )
+""")
         super().__init__(request, response)
 
 

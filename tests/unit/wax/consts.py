@@ -13,19 +13,28 @@ VALID_TRXS: Final[dict[str, str]] = {
 
 VALID_OPERATIONS: Final[dict[str, str]] = {
     "vote_operation": '{"type":"vote_operation","value":{"voter":"steemit78","author":"steemit","permlink":"firstpost","weight":10000}}',
-    "comment_operation": '{"type":"comment_operation","value":{"parent_author":"","parent_permlink":"meta","author":"steemit","permlink":"firstpost","title":"Welcome to Steem!","body":"Steemit is a social media platform where anyone can earn STEEM points by posting. The more people who like a post, the more STEEM the poster earns. Anyone can sell their STEEM for cash or vest it to boost their voting power.","json_metadata":""}}',
+    "comment_operation": (
+        '{"type":"comment_operation","value":{"parent_author":"","parent_permlink":"meta","author":"steemit","permlink":"firstpost","title":"Welcome'
+        ' to Steem!","body":"Steemit is a social media platform where anyone can earn STEEM points by posting. The more'
+        " people who like a post, the more STEEM the poster earns. Anyone can sell their STEEM for cash or vest it to"
+        ' boost their voting power.","json_metadata":""}}'
+    ),
     "transfer_operation": '{"type":"transfer_operation","value":{"from":"admin","to":"steemit","amount":{"amount":"833000","precision":3,"nai":"@@000000021"},"memo":""}}',
     "transfer_to_vesting_operation": '{"type":"transfer_to_vesting_operation","value":{"from":"faddy","to":"","amount":{"amount":"357000","precision":3,"nai":"@@000000021"}}}',
     "withdraw_vesting_operation": '{"type":"withdraw_vesting_operation","value":{"account":"steemit","vesting_shares":{"amount":"200000000000","precision":6,"nai":"@@000000037"}}}',
     "limit_order_create_operation": '{"type":"limit_order_create_operation","value":{"owner":"linouxis9","orderid":10,"amount_to_sell":{"amount":"9950","precision":3,"nai":"@@000000021"},"min_to_receive":{"amount":"3500","precision":3,"nai":"@@000000013"},"fill_or_kill":false,"expiration":"2035-10-29T06:32:22"}}',
-    "limit_order_cancel_operation": '{"type":"limit_order_cancel_operation","value":{"owner":"linouxis9","orderid":10}}',
+    "limit_order_cancel_operation": (
+        '{"type":"limit_order_cancel_operation","value":{"owner":"linouxis9","orderid":10}}'
+    ),
     "feed_publish_operation": '{"type":"feed_publish_operation","value":{"publisher":"abit","exchange_rate":{"base":{"amount":"1000","precision":3,"nai":"@@000000013"},"quote":{"amount":"1000000","precision":3,"nai":"@@000000021"}}}}',
     "convert_operation": '{"type":"convert_operation","value":{"owner":"summon","requestid":1467592156,"amount":{"amount":"5000","precision":3,"nai":"@@000000013"}}}',
     "account_create_operation": '{"type":"account_create_operation","value":{"fee":{"amount":"0","precision":3,"nai":"@@000000021"},"creator":"hello","new_account_name":"fabian","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM8MN3FNBa8WbEpxz3wGL3L1mkt6sGnncH8iuto7r8Wa3T9NSSGT",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM8HCf7QLUexogEviN8x1SpKRhFwg2sc8LrWuJqv7QsmWrua6ZyR",1]]},"posting":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM8EhGWcEuQ2pqCKkGHnbmcTNpWYZDjGTT7ketVBp4gUStDr2brz",1]]},"memo_key":"STM6Gkj27XMkoGsr4zwEvkjNhh4dykbXmPFzHhT8g86jWsqu3U38X","json_metadata":"{}"}}',
     "account_update_operation": '{"type":"account_update_operation","value":{"account":"theoretical","posting":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo",1],["STM76EQNV2RTA6yF9TnBvGSV71mW7eW36MM7XQp24JxdoArTfKA76",1]]},"memo_key":"STM6FATHLohxTN8RWWkU9ZZwVywXo6MEDjHHui1jEBYkG2tTdvMYo","json_metadata":""}}',
     "witness_update_operation": '{"type":"witness_update_operation","value":{"owner":"steempty","url":"fmooo/steemd-docker","block_signing_key":"STM8LoQjQqJHvotqBo7HjnqmUbFW9oJ2theyqonzUd9DdJ7YYHsvD","props":{"account_creation_fee":{"amount":"100000","precision":3,"nai":"@@000000021"},"maximum_block_size":131072,"hbd_interest_rate":1000},"fee":{"amount":"0","precision":3,"nai":"@@000000021"}}}',
     "account_witness_vote_operation": '{"type":"account_witness_vote_operation","value":{"account":"donalddrumpf","witness":"berniesanders","approve":true}}',
-    "account_witness_proxy_operation": '{"type":"account_witness_proxy_operation","value":{"account":"bunkermining","proxy":"datasecuritynode"}}',
+    "account_witness_proxy_operation": (
+        '{"type":"account_witness_proxy_operation","value":{"account":"bunkermining","proxy":"datasecuritynode"}}'
+    ),
     "pow_operation": '{"type":"pow_operation","value":{"worker_account":"admin","block_id":"000004433bd4602cf5f74dbb564183837df9cef8","nonce":82,"work":{"worker":"STM65wH1LZ7BfSHcK69SShnqCAH5xdoSZpGkUjmzHJ5GCuxEK9V5G","input":"59b009f89477919f95914151cef06f28bf344dd6fb7670aca1c1f4323c80446b","signature":"1f3f83209097efcd01b7d6f27ce726164323d503d6fcf4d55bfb7cb3032796f6766738b36062b5850d69447fdf9c091cbc70825df5eeacc4710a0b11ffdbf0912a","work":"0b62f4837801cd857f01d6a541faeb13d6bb95f1c36c6b4b14a47df632aa6c92"},"props":{"account_creation_fee":{"amount":"100000","precision":3,"nai":"@@000000021"},"maximum_block_size":131072,"hbd_interest_rate":1000}}}',
     "custom_operation": '{"type":"custom_operation","value":{"required_auths":["bytemaster"],"id":777,"data":"0a627974656d617374657207737465656d697402a3d13897d82114466ad87a74b73a53292d8331d1bd1d3082da6bfbcff19ed097029db013797711c88cccca3692407f9ff9b9ce7221aaa2d797f1692be2215d0a5f6d2a8cab6832050078bc5729201e3ea24ea9f7873e6dbdc65a6bd9899053b9acda876dc69f11a13df9ca8b26b6"}}',
     "delete_comment_operation": '{"type":"delete_comment_operation","value":{"author":"jsc","permlink":"test-delete"}}',
@@ -44,18 +53,37 @@ VALID_OPERATIONS: Final[dict[str, str]] = {
     "pow2_operation": '{"type":"pow2_operation","value":{"work":{"type":"pow2","value":{"input":{"worker_account":"aizen06","prev_block":"003ea604345523c344fbadab605073ea712dd76f","nonce":"1052853013628665497"},"pow_summary":3817904373}},"props":{"account_creation_fee":{"amount":"1","precision":3,"nai":"@@000000021"},"maximum_block_size":131072,"hbd_interest_rate":1000}}}',
     "escrow_approve_operation": '{"type":"escrow_approve_operation","value":{"from":"disregardfiat","to":"inconceivable","agent":"dlux-io","who":"dlux-io","escrow_id":199891652,"approve":false}}',
     "transfer_to_savings_operation": '{"type":"transfer_to_savings_operation","value":{"from":"hiveauth","to":"hiveauth","amount":{"amount":"13541","precision":3,"nai":"@@000000013"},"memo":""}}',
-    "transfer_from_savings_operation": '{"type":"transfer_from_savings_operation","value":{"from":"portalmine","request_id":378116,"to":"portalmine","amount":{"amount":"1","precision":3,"nai":"@@000000013"},"memo":"Claim HBD interest"}}',
-    "cancel_transfer_from_savings_operation": '{"type":"cancel_transfer_from_savings_operation","value":{"from":"portalmine","request_id":378116}}',
-    "decline_voting_rights_operation": '{"type":"decline_voting_rights_operation","value":{"account":"bilalhaider","decline":true}}',
+    "transfer_from_savings_operation": (
+        '{"type":"transfer_from_savings_operation","value":{"from":"portalmine","request_id":378116,"to":"portalmine","amount":{"amount":"1","precision":3,"nai":"@@000000013"},"memo":"Claim'
+        ' HBD interest"}}'
+    ),
+    "cancel_transfer_from_savings_operation": (
+        '{"type":"cancel_transfer_from_savings_operation","value":{"from":"portalmine","request_id":378116}}'
+    ),
+    "decline_voting_rights_operation": (
+        '{"type":"decline_voting_rights_operation","value":{"account":"bilalhaider","decline":true}}'
+    ),
     "claim_reward_balance_operation": '{"type":"claim_reward_balance_operation","value":{"account":"bradleyarrow","reward_hive":{"amount":"0","precision":3,"nai":"@@000000021"},"reward_hbd":{"amount":"104","precision":3,"nai":"@@000000013"},"reward_vests":{"amount":"531747227","precision":6,"nai":"@@000000037"}}}',
     "delegate_vesting_shares_operation": '{"type":"delegate_vesting_shares_operation","value":{"delegator":"elamaria","delegatee":"music1sound","vesting_shares":{"amount":"90111193694","precision":6,"nai":"@@000000037"}}}',
     "account_create_with_delegation_operation": '{"type":"account_create_with_delegation_operation","value":{"fee":{"amount":"35000","precision":3,"nai":"@@000000021"},"delegation":{"amount":"0","precision":6,"nai":"@@000000037"},"creator":"steem","new_account_name":"hendratayogas","owner":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM51YSoy7MdrAWgeTsQo4xYVR7L4BKucjqDPefsB7ZojBZgU7CCN",1]]},"active":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM5jgwX1VPT4oZpescjwTmf6k8T8oYmg3RrhjaDnSapis9sFojAL",1]]},"posting":{"weight_threshold":1,"account_auths":[],"key_auths":[["STM5BcLMqLSBXa3DX7ThbbDYFEwcHbvUYWoF8PgTaSVAdNUikBQK1",1]]},"memo_key":"STM5Fj3bNfLCvhFC6U67kfNCg6d8CfpxW2AJRJ9KhELEaoBMK9Ltf","json_metadata":"","extensions":[]}}',
     "witness_set_properties_operation": '{"type":"witness_set_properties_operation","value":{"owner":"alloyxuast","props":[["hbd_exchange_rate","67010000000000000353424400000000e80300000000000003535445454d0000"],["key","03d8cb826edbc3222ac59f30ce5d419d95903b94d0adfb197e25c60bca3b1ab5ae"]],"extensions":[]}}',
-    "account_update2_operation": '{"type":"account_update2_operation","value":{"account":"rosylisboa","json_metadata":"","posting_json_metadata":"{\\"profile\\":{\\"name\\":\\"Rosy Lisboa\\",\\"about\\":\\"\\",\\"website\\":\\"https://www.instagram.com/rosylisboa_/\\",\\"profile_image\\":\\"https://i.postimg.cc/5NhHzzBJ/yoxi.jpg\\",\\"cover_image\\":\\"https://i.postimg.cc/rmWwns1W/portada4.png\\",\\"version\\":2,\\"location\\":\\"Venezuela, Maturín\\"}}","extensions":[]}}',
-    "create_proposal_operation": '{"type":"create_proposal_operation","value":{"creator":"ecency","receiver":"ecency","start_date":"2022-11-30T00:00:00","end_date":"2023-11-30T00:00:00","daily_pay":{"amount":"600000","precision":3,"nai":"@@000000013"},"subject":"Ecency development and maintenance #3","permlink":"ecency-development-and-maintenance-3","extensions":[]}}',
+    "account_update2_operation": (
+        '{"type":"account_update2_operation","value":{"account":"rosylisboa","json_metadata":"","posting_json_metadata":"{\\"profile\\":{\\"name\\":\\"Rosy'
+        ' Lisboa\\",\\"about\\":\\"\\",\\"website\\":\\"https://www.instagram.com/rosylisboa_/\\",\\"profile_image\\":\\"https://i.postimg.cc/5NhHzzBJ/yoxi.jpg\\",\\"cover_image\\":\\"https://i.postimg.cc/rmWwns1W/portada4.png\\",\\"version\\":2,\\"location\\":\\"Venezuela,'
+        ' Maturín\\"}}","extensions":[]}}'
+    ),
+    "create_proposal_operation": (
+        '{"type":"create_proposal_operation","value":{"creator":"ecency","receiver":"ecency","start_date":"2022-11-30T00:00:00","end_date":"2023-11-30T00:00:00","daily_pay":{"amount":"600000","precision":3,"nai":"@@000000013"},"subject":"Ecency'
+        ' development and maintenance #3","permlink":"ecency-development-and-maintenance-3","extensions":[]}}'
+    ),
     "update_proposal_votes_operation": '{"type":"update_proposal_votes_operation","value":{"voter":"ballenaprepago","proposal_ids":[0],"approve":true,"extensions":[]}}',
-    "remove_proposal_operation": '{"type":"remove_proposal_operation","value":{"proposal_owner":"doze","proposal_ids":[225],"extensions":[]}}',
-    "update_proposal_operation": '{"type":"update_proposal_operation","value":{"proposal_id":247,"creator":"arcange","daily_pay":{"amount":"135000","precision":3,"nai":"@@000000013"},"subject":"HiveSQL Services Proposal - Let\'s Keep It Free To Use","permlink":"hivesql-proposal-2023-2024","extensions":[]}}',
+    "remove_proposal_operation": (
+        '{"type":"remove_proposal_operation","value":{"proposal_owner":"doze","proposal_ids":[225],"extensions":[]}}'
+    ),
+    "update_proposal_operation": (
+        '{"type":"update_proposal_operation","value":{"proposal_id":247,"creator":"arcange","daily_pay":{"amount":"135000","precision":3,"nai":"@@000000013"},"subject":"HiveSQL'
+        ' Services Proposal - Let\'s Keep It Free To Use","permlink":"hivesql-proposal-2023-2024","extensions":[]}}'
+    ),
     "collateralized_convert_operation": '{"type":"collateralized_convert_operation","value":{"owner":"karbea","requestid":2,"amount":{"amount":"102","precision":3,"nai":"@@000000021"}}}',
     "recurrent_transfer_operation": '{"type":"recurrent_transfer_operation","value":{"from":"adamada","to":"jonalyn2020","amount":{"amount":"230","precision":3,"nai":"@@000000021"},"memo":"","recurrence":168,"executions":8,"extensions":[]}}',
 }

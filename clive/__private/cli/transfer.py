@@ -6,7 +6,7 @@ from clive.__private.cli.common.operation_common import OperationCommon
 
 HELP: Final[str] = """
 Transfer some funds to another account.
-"""  # fmt: skip
+"""
 
 transfer = typer.Typer(
     help=HELP,

@@ -37,9 +37,11 @@ class DecimalConverter:
         rounded_amount = cls.__round_to_precision(amount, precision)
         if rounded_amount != amount:
             warnings.warn(
-                f"Precision lost during value creation.\n"
-                f"\n"
-                f"Value of {amount} was requested, but it was rounded to {rounded_amount},\n"
-                f"because precision of this value is {precision} ({pow(0.1, precision):.{precision}f}).",
+                (
+                    "Precision lost during value creation.\n"
+                    "\n"
+                    f"Value of {amount} was requested, but it was rounded to {rounded_amount},\n"
+                    f"because precision of this value is {precision} ({pow(0.1, precision):.{precision}f})."
+                ),
                 stacklevel=1,
             )
