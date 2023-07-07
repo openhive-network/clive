@@ -79,9 +79,9 @@ class Logger:
 
         def __hooked(*args: Any, **kwargs: Any) -> None:
             if self.__enabled_loguru:
-                loguru_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
+                loguru_attr(*args, **kwargs)
             if self.__enabled_textual:
-                textual_log_attr(*args, **kwargs)  # type: ignore[misc] # We know it's not None
+                textual_log_attr(*args, **kwargs)
 
         return __hooked
 
