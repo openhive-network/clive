@@ -91,7 +91,7 @@ class Communication:
     ) -> httpx.Response:
         async def __sleep() -> None:
             seconds_to_sleep = pool_time.total_seconds()
-            time.sleep(seconds_to_sleep) if sync else await asyncio.sleep(seconds_to_sleep)
+            time.sleep(seconds_to_sleep) if sync else await asyncio.sleep(seconds_to_sleep)  # noqa: ASYNC101
 
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
