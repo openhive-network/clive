@@ -23,13 +23,13 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(autouse=True, scope="session")
-def manage_thread_pool() -> Iterator[None]:
+def _manage_thread_pool() -> Iterator[None]:
     with thread_pool:
         yield
 
 
-@pytest.fixture(autouse=True, scope="function")
-def run_prepare_before_launch() -> None:
+@pytest.fixture(autouse=True)
+def _run_prepare_before_launch() -> None:
     working_directory = tt.context.get_current_directory()
 
     beekeeper_directory = working_directory / "beekeeper"
@@ -41,31 +41,31 @@ def run_prepare_before_launch() -> None:
     prepare_before_launch()
 
 
-@pytest.fixture
+@pytest.fixture()
 def wallet_name() -> str:
     return "wallet"
 
 
-@pytest.fixture
+@pytest.fixture()
 def wallet_password() -> str:
     return "password"
 
 
-@pytest.fixture
+@pytest.fixture()
 def key_pair() -> tuple[PublicKey, PrivateKey]:
     private_key = iwax.generate_private_key()
     public_key = private_key.calculate_public_key()
     return public_key, private_key
 
 
-@pytest.fixture
+@pytest.fixture()
 def world(wallet_name: str) -> Iterator[World]:
     world = World(profile_name=wallet_name)
     yield world
     world.close()
 
 
-@pytest.fixture
+@pytest.fixture()
 def init_node(world: World) -> Iterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
@@ -74,7 +74,7 @@ def init_node(world: World) -> Iterator[tt.InitNode]:
     init_node.close()
 
 
-@pytest.fixture
+@pytest.fixture()
 def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
     world.beekeeper.api.create(wallet_name=wallet_name, password=wallet_password)
 
@@ -84,6 +84,6 @@ def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
     )
 
 
-@pytest.fixture
+@pytest.fixture()
 def beekeeper(world: World) -> Beekeeper:
     return world.beekeeper

@@ -21,7 +21,7 @@ def check_wallets(given: ListWallets, valid: list[str], *, unlocked: bool = True
         assert given_wallet.unlocked == unlocked
 
 
-@pytest.mark.parametrize("wallet_name", ("test", "123"))
+@pytest.mark.parametrize("wallet_name", ["test", "123"])
 def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
     # ARRANGE & ACT
     beekeeper.api.create(wallet_name=wallet_name)
@@ -30,7 +30,7 @@ def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
     check_wallets(beekeeper.api.list_wallets(), [wallet_name])
 
 
-@pytest.mark.parametrize("invalid_wallet_name", (",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37})))
+@pytest.mark.parametrize("invalid_wallet_name", [(",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37}))])
 def test_invalid_wallet_names(beekeeper: Beekeeper, invalid_wallet_name: str) -> None:
     # ARRANGE, ACT & ASSERT
     with pytest.raises(CommunicationError):

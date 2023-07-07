@@ -7,7 +7,7 @@ import pytest
 from clive.__private.logger import logger
 
 
-@pytest.mark.sequential
+@pytest.mark.sequential()
 def test_autocompletion_time() -> None:
     # ARRANGE
     seconds_threshold = 0.4

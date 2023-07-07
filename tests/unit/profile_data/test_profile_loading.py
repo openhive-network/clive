@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
 
 
-@pytest.fixture
+@pytest.fixture()
 def world_cleanup() -> Iterator[list[World]]:
     worlds_to_close: list[World] = []
     yield worlds_to_close

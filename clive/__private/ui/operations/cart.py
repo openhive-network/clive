@@ -235,7 +235,8 @@ class Cart(BaseScreen):
         self.app.world.update_reactive("profile_data")
 
     def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
-        assert event.to_idx >= 0 and event.to_idx < len(self.app.world.profile_data.cart)
+        assert event.to_idx >= 0
+        assert event.to_idx < len(self.app.world.profile_data.cart)
 
         self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
         self.app.world.update_reactive("profile_data")

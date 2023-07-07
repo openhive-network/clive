@@ -6,8 +6,8 @@ import wax
 
 
 @pytest.mark.parametrize(
-    "pv, pub",
-    (
+    ("pv", "pub"),
+    [
         (b"5HrsWGvAPXxSt8UbAoosaaNXqwZqSbPcu51AZts5sbWP4FRK75h", b"5G7HFCyKq3onQZn2nVGphKfzYpRyLR8bBP1jQewtaNDA76n1RE"),
         (b"5JN1fKJ8Zdrn6NmwCtBx1ktALaUCTxdmVgtE8ZwVyxMiRjwE1Dh", b"8hCsdMnyrffbo1UPBn2XLQC5TPbZ8PnBNzRgUVwp3e19JHrWTA"),
         (b"5KPSLEcntyCQ3GL85tq22e4aYPQQAeofGBUMzBwRa338GGPkoaE", b"6w5YXbTT2dXNjbfUw6AuFnmtHjoHKVuH6Se21nsjiQDxsAafFt"),
@@ -18,7 +18,7 @@ import wax
         (b"5KA8z1BDz4Tx1Rv3dkyUE8ySPg5q9iZ47JQtZV9LCkU9WpkT5jx", b"8ijGkwArT88m6u93iBrb8HPtBdkfLT2ZqyHa3nGzPKiwyrMGkQ"),
         (b"5KULwD6ifh2kDVfoJzMDiab7dWt1Xm5B3tyacXS2AtAdTTtw8ZR", b"4zkfhmsWY1LkUQTRqqMcCkcTYGmwWa66iu9DxpdGf2Fide1MfV"),
         (b"5K9NbgGuV1ptFNXFdD6qtXnZ9cXmnJx9MstkJefK3uVGm92QRMM", b"6Ti6u3nyvd1mcRQtXbKCxXXuWVNRpzxudtioTtCtGstfkuDxve"),
-    ),
+    ],
 )
 def test_proper_calculations(pv: bytes, pub: bytes) -> None:
     assert wax.calculate_public_key(pv).result == pub

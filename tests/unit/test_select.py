@@ -16,10 +16,10 @@ def test_minimum_length() -> None:
     assert required == Select.MIN_AMOUNT_OF_ITEMS
 
 
-@pytest.mark.parametrize("amount", (0, 1))
+@pytest.mark.parametrize("amount", [0, 1])
 def test_minimum_assert(amount: int) -> None:
     # ARRANGE, ACT & ASSERT
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match="At least 2 items are required to use Select."):
         Select([SelectItem(None, f"{i}") for i in range(amount)], list_mount="")
 
 

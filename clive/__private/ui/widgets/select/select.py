@@ -165,7 +165,9 @@ class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
 
     def __assert_min_amount_of_items(self) -> None:
         if len(self.__items) < self.MIN_AMOUNT_OF_ITEMS:
-            raise ValueError(f"At least {self.MIN_AMOUNT_OF_ITEMS} items are required to use {self}.")
+            raise ValueError(
+                f"At least {self.MIN_AMOUNT_OF_ITEMS} items are required to use {self.__class__.__name__}."
+            )
 
     def __retrieve_selected(self, selected: Any) -> None:
         if isinstance(selected, int):

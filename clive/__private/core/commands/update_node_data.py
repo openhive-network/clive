@@ -181,7 +181,8 @@ class UpdateNodeData(Command):
             reputation = self.node.api.reputation_api.get_account_reputations(
                 account_lower_bound=account_name, limit=1
             ).reputations
-            assert len(reputation) == 1 and reputation[0].account == account_name, "reputation data malformed"
+            assert len(reputation) == 1
+            assert reputation[0].account == account_name, "reputation data malformed"
             return int(reputation[0].reputation)
         return 0
 
