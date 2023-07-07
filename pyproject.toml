@@ -32,7 +32,7 @@ dynaconf = "3.1.11"
 loguru = "0.6.0"
 textual = "0.17.3"
 httpx = { extras = ["http2"], version = "0.23.3" }
-pydantic = "1.10.7"
+pydantic = "1.10.11"
 merge-args = "0.1.5"
 typer = { extras = ["all"], version = "0.8.0" }
 inflection = "0.5.1"
