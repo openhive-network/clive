@@ -19,10 +19,13 @@ from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
+from clive.models.asset import AssetAmountT
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
 
 
 class Body(Grid):
@@ -33,17 +36,17 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select[Callable[[float], Asset.AnyT]]):
+class CurrencySelector(Select[LiquidAssetCallableT]):
     def __init__(self) -> None:
-        def _asset_factory(symbol: str) -> Callable[[float], Asset.AnyT]:
-            asset = Asset.resolve_symbol(symbol)
-            return lambda value: asset(amount=Asset.float_to_nai_int(value, asset))
-
+        selectable: dict[str, LiquidAssetCallableT] = {
+            "HBD": Asset.hbd,
+            "HIVE": Asset.hive,
+        }
         super().__init__(
-            items=[SelectItem(_asset_factory(symbol), symbol) for symbol in ["HIVE", "HBD"]],
+            items=[SelectItem(function, text) for text, function in selectable.items()],
             list_mount="ViewBag",
             placeholder="Select currency",
-            selected=1,
+            selected=0,
         )
 
 
@@ -116,11 +119,13 @@ class TransferToAccount(CartBasedScreen):
         :return: Operation if the operation is valid, None otherwise.
         """
 
+        asset = self.__currency_selector.selected.value
+
         try:
             return TransferOperation(
                 from_=str(self.app.world.profile_data.working_account.name),
                 to=self.__to_input.value,
-                amount=self.__currency_selector.selected.value(float(self.__amount_input.value)),
+                amount=asset(self.__amount_input.value),
                 memo=self.__memo_input.value,
             )
         except ValidationError as error:
