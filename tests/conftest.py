@@ -23,13 +23,13 @@ if TYPE_CHECKING:
 
 
 @pytest.fixture(autouse=True, scope="session")
-def _manage_thread_pool() -> Iterator[None]:
+def manage_thread_pool() -> Iterator[None]:
     with thread_pool:
         yield
 
 
 @pytest.fixture(autouse=True)
-def _run_prepare_before_launch() -> None:
+def run_prepare_before_launch() -> None:
     working_directory = tt.context.get_current_directory()
 
     beekeeper_directory = working_directory / "beekeeper"
