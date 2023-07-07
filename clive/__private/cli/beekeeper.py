@@ -2,6 +2,7 @@ from typing import Optional
 
 import typer
 
+from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 from clive.__private.cli.common.options import beekeeper_remote_option
 from clive.__private.cli.common.with_beekeeper import WithBeekeeper
 
@@ -16,4 +17,4 @@ def info(
 ) -> None:
     """Show the beekeeper info."""
     common = WithBeekeeper(**ctx.params)
-    typer.echo(common.beekeeper.api.get_info().json(by_alias=True))
+    BeekeeperInfo(beekeeper=common.beekeeper).run()

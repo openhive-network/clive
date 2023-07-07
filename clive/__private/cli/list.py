@@ -1,5 +1,6 @@
 import typer
 
+from clive.__private.cli.commands.list import ListKeys, ListNode
 from clive.__private.cli.common.with_world import WithWorld
 
 list_ = typer.Typer(help="List various things.")
@@ -14,8 +15,7 @@ def keys(
     List all Public keys stored in the wallet.
     """
     common = WithWorld(**ctx.params)
-    public_keys = common.world.profile_data.working_account.keys
-    typer.echo(f"{common.profile}, your keys are:\n{list(public_keys)}")
+    ListKeys(world=common.world).run()
 
 
 @list_.command()
@@ -25,4 +25,4 @@ def node(
 ) -> None:
     """List address of the currently selected node."""
     common = WithWorld(**ctx.params)
-    typer.echo(common.world.node.address)
+    ListNode(world=common.world).run()
