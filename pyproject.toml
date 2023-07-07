@@ -106,6 +106,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "ERA",
     "PL",
     "TRY",
+    "FLY",
     "RUF",
 ]
 ignore = [
