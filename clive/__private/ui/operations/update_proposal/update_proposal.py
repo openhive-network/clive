@@ -28,7 +28,7 @@ class UpdateProposal(OperationBase):
         self.__proposal_id_input = Input(placeholder="e.g.: 1000")
         self.__creator_input = Input(placeholder="e.g.: alice")
         self.__daily_pay_input = Input(placeholder="e.g.: 2.000")
-        self.__subject_input = Input(placeholder="e.g.: pizza day")
+        self.__subject_input = Input(placeholder="e.g.: New subject")
         self.__permlink_input = Input(placeholder="e.g.: a-post-by-alice")
         self.__extensions_input = Input(placeholder="e.g.: []")
 

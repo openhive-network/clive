@@ -1,7 +1,8 @@
 RecurrentTransfer Body {
   grid-size: 3;
   grid-columns: 14 2fr 1fr;
-  height: 29;
+  grid-rows: 3 4 4 4 4;
+  height: 25;
   margin: 0 4;
   background: $panel;
 }

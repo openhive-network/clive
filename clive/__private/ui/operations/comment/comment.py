@@ -24,7 +24,7 @@ class Comment(OperationBase):
 
         self.__parent_author_input = Input(placeholder="e.g: alice. Notice: this field can be empty")
         self.__parent_permlink_input = Input(placeholder="e.g: a-post-by-alice")
-        self.__author_input = Input(placeholder="e.g: Joe")
+        self.__author_input = Input(placeholder="e.g: joe")
         self.__permlink_input = Input(placeholder="e.g: a-post-by-alice")
         self.__title_input = Input(placeholder="e.g: A post by Joe")
         self.__body_input = Input(placeholder="e.g: Look at my awesome post")
