@@ -129,8 +129,10 @@ build_hived:
 testing_clive:
   extends: .testing
   script:
-    - echo -e "${TXT_BLUE}Launching clive tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/
+    - echo -e "${TXT_BLUE}Launching clive sequential tests...${TXT_CLEAR}"
+    - python3 -m pytest -m sequential --durations 0 --junitxml=report.xml tests/
+    - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
+    - python3 -m pytest -m "not sequential" -n auto --durations 0 --junitxml=report.xml tests/
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

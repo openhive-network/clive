@@ -117,3 +117,9 @@ required-imports = ["from __future__ import annotations"]
     "UP007", # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
     "PLR0913", # too restrictive
 ]
+
+
+[tool.pytest.ini_options]
+markers = [
+    "sequential: mark test to run sequentially, skipping pytest-xdist",
+]
