@@ -40,7 +40,7 @@ class Asset:
 
     @classmethod
     def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
-        match symbol:
+        match symbol.upper():
             case "HIVE" | "TESTS":
                 return Asset.Hive
             case "HBD" | "TBD":
