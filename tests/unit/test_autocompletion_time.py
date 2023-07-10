@@ -8,7 +8,7 @@ from clive.__private.logger import logger
 def test_autocompletion_time() -> None:
     # ARRANGE
     seconds_threshold = 0.5
-    command = "export _CLIVE_COMPLETE=1 && time python3 -X importtime clive/main.py --help"
+    command = "_CLIVE_COMPLETE=1 TIMEFORMAT='%U' /bin/bash -c 'time python3 -X importtime clive/main.py --help'"
 
     # ACT
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
@@ -16,7 +16,7 @@ def test_autocompletion_time() -> None:
     # ASSERT
     output = result.stderr.strip()
 
-    import_time = float(output.split("\n")[-2].split("user")[0])
+    import_time = float(output.splitlines()[-1])
 
     logger.info(f"Cumulative import time: {import_time:.2f}s")
     logger.info(output)
