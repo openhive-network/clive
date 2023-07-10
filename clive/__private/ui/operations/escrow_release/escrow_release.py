@@ -31,13 +31,13 @@ class EscrowRelease(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
-        str(get_default_from_model(EscrowReleaseOperation, "escrow_id"))
+        default_escrow_id = str(get_default_from_model(EscrowReleaseOperation, "escrow_id"))
 
         self.__to_input = Input(placeholder="e.g: bob")
         self.__agent_input = Input(placeholder="e.g: charlie")
         self.__who_input = Input(placeholder="e.g: charlie")
         self.__receiver_input = Input(placeholder="e.g: bob")
-        self.__escrow_id_input = Input(placeholder="e.g.: 23456789. Notice - default is 30")
+        self.__escrow_id_input = Input(value=default_escrow_id, placeholder="e.g.: 23456789.")
         self.__hbd_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
         self.__hive_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
 
