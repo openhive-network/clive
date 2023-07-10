@@ -1,21 +1,18 @@
 FeedPublish Body {
   grid-size: 3;
-  grid-columns: 20 2fr 1fr;
-  grid-rows: 3 1 4 4 4 4;
-  height: 13;
+  grid-columns: 16 2fr 1fr;
+  grid-rows: 4 4;
+  height: 20;
   margin: 0 4;
   background: $panel;
 }
 
-FeedPublish ExchangeRateTaker{
-    row-span: 2;
-}
-
 FeedPublish .label {
-  padding: 1 4;
+  padding: 1 2;
   text-align: right;
 }
 
 FeedPublish #publisher-label {
-  padding: 1 1;
+  padding: 1 0;
+  margin: 0 -108;
 }

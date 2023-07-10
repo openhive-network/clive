@@ -29,6 +29,10 @@ class ExchangeRateTaker(Static):
     """Container used for making correct layout of exchange rate"""
 
 
+class TestTaker(Static):
+    """Just testing"""
+
+
 class FeedPublish(OperationBase):
     def __init__(self) -> None:
         super().__init__()
@@ -42,6 +46,7 @@ class FeedPublish(OperationBase):
             yield BigTitle("Feed publish")
             with Body():
                 yield Static("publisher", classes="label")
+                yield TestTaker()
                 yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="publisher-label")
                 yield ExchangeRateTaker()
                 yield BigTitle("Exchange rate")
