@@ -131,3 +131,8 @@ DashboardBase ActivityStats .amount {
 DashboardBase ActivityStats .amount-variant {
   background: $panel-lighten-2;
 }
+
+DashboardBase #account-info-button{
+      background: $panel-lighten-2;
+      height: 3;
+}

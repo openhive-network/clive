@@ -5,16 +5,19 @@ from typing import TYPE_CHECKING, Final
 import humanize
 from textual.binding import Binding
 from textual.containers import Container, Horizontal
-from textual.widgets import Label, Static
+from textual.widgets import Button, Label, Static
 
 from clive.__private.storage.mock_database import Account, AccountType, Manabar, WorkingAccount
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
+from clive.__private.ui.user_info.user__info import UserInfo
+from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
+from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 
@@ -158,7 +161,14 @@ class DashboardBase(BaseScreen):
                 yield WorkingAccountContainer()
                 yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
                 yield WatchedAccountContainer()
+                yield CliveButton("account info", id_="account-info-button")
             yield CommandLine(focus_on_cancel=body)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "account-info-button":
+            self.app.push_screen(UserInfo())
+        else:
+            Notification("Not implemented yet!", category="error").show()
 
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
