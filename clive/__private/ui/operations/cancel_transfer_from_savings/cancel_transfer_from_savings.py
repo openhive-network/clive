@@ -44,6 +44,6 @@ class CancelTransferFromSavings(OperationBase):
 
     def _create_operation(self) -> CancelTransferFromSavingsOperation:
         return CancelTransferFromSavingsOperation(
-            from_=str(self.app.world.profile_data.working_account.name),
+            From=str(self.app.world.profile_data.working_account.name),
             request_id=int(self.__request_id_input.value),
         )
