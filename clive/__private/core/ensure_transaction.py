@@ -10,7 +10,7 @@ from clive.models import Operation, OperationBaseClass, Transaction
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
 
-    TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
+TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
 
 
 def ensure_transaction(
