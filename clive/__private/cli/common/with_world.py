@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Concatenate, ParamSpec
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
+from clive.__private.cli.common import options
 from clive.__private.cli.common.base import PreconfiguredBaseModel
-from clive.__private.cli.common.options import profile_option
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -20,7 +20,7 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithWorld(PreconfiguredBaseModel):
-    profile: str = profile_option
+    profile: str = options.profile_option
     world: "World"
 
     @classmethod

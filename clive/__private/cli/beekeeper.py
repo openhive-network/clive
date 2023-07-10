@@ -2,7 +2,7 @@ from typing import Optional
 
 import typer
 
-from clive.__private.cli.common.options import beekeeper_remote_option
+from clive.__private.cli.common import options
 from clive.__private.cli.common.with_beekeeper import WithBeekeeper
 
 beekeeper = typer.Typer(help="Beekeeper-related commands.")
@@ -12,7 +12,7 @@ beekeeper = typer.Typer(help="Beekeeper-related commands.")
 @WithBeekeeper.decorator
 def info(
     ctx: typer.Context,
-    beekeeper_remote: Optional[str] = beekeeper_remote_option,  # noqa: ARG001
+    beekeeper_remote: Optional[str] = options.beekeeper_remote_option,  # noqa: ARG001
 ) -> None:
     """Show the beekeeper info."""
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo

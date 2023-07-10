@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
+from clive.__private.cli.common import options
 from clive.__private.cli.common.base import PreconfiguredBaseModel
-from clive.__private.cli.common.options import beekeeper_remote_option
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -19,7 +19,7 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithBeekeeper(PreconfiguredBaseModel):
-    beekeeper_remote: Optional[str] = beekeeper_remote_option
+    beekeeper_remote: Optional[str] = options.beekeeper_remote_option
     beekeeper: "Beekeeper"
 
     @classmethod
