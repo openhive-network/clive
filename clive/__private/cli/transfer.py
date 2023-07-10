@@ -24,12 +24,4 @@ def _main(
     memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
     common = OperationCommon(**ctx.params)
-    Transfer(
-        world=common.world,
-        sign=common.sign,
-        save_file=common.save_file,
-        broadcast=common.broadcast,
-        to=to,
-        amount=amount,
-        memo=memo,
-    ).run()
+    Transfer.from_(to=to, amount=amount, memo=memo, **common.dict()).run()
