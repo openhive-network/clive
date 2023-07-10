@@ -1,12 +1,17 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, Concatenate, ParamSpec
+from typing import TYPE_CHECKING, Concatenate, ParamSpec
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import profile_option
+
+if TYPE_CHECKING:
+    from clive.__private.core.world import World
+    from clive.core.url import Url
+
 
 P = ParamSpec("P")
 
@@ -15,11 +20,8 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithWorld(PreconfiguredBaseModel):
-    # from clive.core.url import Url  # noqa: ERA001 pydantic executes this on import
-    # from clive.__private.core.world import World  # noqa: ERA001 pydantic executes this on import
-
     profile: str = profile_option
-    world: Any
+    world: "World"
 
     @classmethod
     def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
@@ -68,8 +70,15 @@ class WithWorld(PreconfiguredBaseModel):
         return outer
 
     @staticmethod
-    def __get_beekeeper_remote(kwargs: P.kwargs) -> Any | None:
+    def __get_beekeeper_remote(kwargs: P.kwargs) -> "Url | None":
         from clive.core.url import Url
 
         beekeeper_remote: str | None = kwargs.get("beekeeper_remote", None)
         return Url.parse(beekeeper_remote) if beekeeper_remote else None
+
+    @staticmethod
+    def update_forwards() -> None:
+        from clive.__private.core.world import World  # noqa: F401
+        from clive.core.url import Url  # noqa: F401
+
+        WithWorld.update_forward_refs(**locals())

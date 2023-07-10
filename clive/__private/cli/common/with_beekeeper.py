@@ -1,12 +1,16 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Any, Concatenate, Optional, ParamSpec
+from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import beekeeper_remote_option
+
+if TYPE_CHECKING:
+    from clive.__private.core.beekeeper import Beekeeper
+
 
 P = ParamSpec("P")
 
@@ -15,10 +19,8 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithBeekeeper(PreconfiguredBaseModel):
-    # from clive.__private.core.beekeeper import Beekeeper  # noqa: ERA001 pydantic executes this on import
-
     beekeeper_remote: Optional[str] = beekeeper_remote_option
-    beekeeper: Any
+    beekeeper: "Beekeeper"
 
     @classmethod
     def decorator(cls, func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
@@ -49,3 +51,9 @@ class WithBeekeeper(PreconfiguredBaseModel):
                 func(ctx, *args, **kwargs)
 
         return wrapper  # type: ignore[no-any-return]
+
+    @staticmethod
+    def update_forwards() -> None:
+        from clive.__private.core.beekeeper import Beekeeper  # noqa: F401
+
+        WithBeekeeper.update_forward_refs(**locals())
