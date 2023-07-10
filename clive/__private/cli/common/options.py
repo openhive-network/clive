@@ -2,9 +2,15 @@ from typing import Any
 
 import typer
 
+from clive.__private.util import is_tab_completion_active
+
 
 def _get_default_profile_name() -> str | None:
-    raise NotImplementedError
+    if not is_tab_completion_active():
+        from clive.__private.core.profile_data import ProfileData
+
+        return ProfileData.get_lastly_used_profile_name()
+    return None
 
 
 def get_default_or_make_required(value: Any) -> Any:
