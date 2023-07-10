@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import shutil
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -56,3 +57,7 @@ class ExitCallHandler(Generic[T]):
                 self.__exception_callback(self.__obj, ex)
         finally:
             self.__finally_callback(self.__obj)
+
+
+def is_tab_completion_active() -> bool:
+    return "_CLIVE_COMPLETE" in os.environ

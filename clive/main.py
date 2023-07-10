@@ -1,16 +1,11 @@
 from __future__ import annotations
 
 import sys
-from os import environ
 
 from clive.__private.cli import cli
 from clive.__private.run_cli import run_cli
 from clive.__private.run_tui import run_tui
-from clive.__private.util import thread_pool
-
-
-def __is_tab_completion_active() -> bool:
-    return "_CLIVE_COMPLETE" in environ
+from clive.__private.util import is_tab_completion_active, thread_pool
 
 
 def __any_arguments_given() -> bool:
@@ -18,7 +13,7 @@ def __any_arguments_given() -> bool:
 
 
 def main() -> None:
-    if __is_tab_completion_active():
+    if is_tab_completion_active():
         cli()
         return
 
