@@ -4,10 +4,10 @@ import datetime
 from typing import TYPE_CHECKING
 
 import wax
-from clive.__private.core.keys import PrivateKey, PublicKey
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
+    from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.models import Operation, Transaction
 
 
@@ -46,12 +46,16 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 
 
 def calculate_public_key(wif: str) -> PublicKey:
+    from clive.__private.core.keys import PublicKey
+
     result = wax.calculate_public_key(wif.encode())
     __validate_wax_response(result)
     return PublicKey(value=result.result.decode())
 
 
 def generate_private_key() -> PrivateKey:
+    from clive.__private.core.keys import PrivateKey
+
     result = wax.generate_private_key()
     __validate_wax_response(result)
     return PrivateKey(value=result.result.decode())
