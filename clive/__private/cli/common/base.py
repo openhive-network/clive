@@ -5,7 +5,6 @@ from typing import Any
 import typer
 from pydantic import BaseModel
 
-from clive.__private.core.profile_data import ProfileData
 from clive.core.url import Url
 
 
@@ -30,5 +29,5 @@ class PreconfiguredBaseModel(BaseModel, ABC):
             )
 
     @staticmethod
-    def _assert_correct_profile_is_loaded(loaded: ProfileData, expected_name: str) -> None:
-        assert loaded.name == expected_name, f"Wrong profile loaded. Got `{loaded.name}` but expected `{expected_name}`"
+    def _assert_correct_profile_is_loaded(loaded_name: str, expected_name: str) -> None:
+        assert loaded_name == expected_name, f"Wrong profile loaded. Got `{loaded_name}` but expected `{expected_name}`"

@@ -2,7 +2,6 @@ from typing import Final
 
 import typer
 
-from clive.__private.cli.commands.transfer import Transfer
 from clive.__private.cli.common.operation_common import OperationCommon
 
 HELP: Final[str] = """
@@ -23,5 +22,7 @@ def _main(
     amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
     memo: str = typer.Option("", help="The memo to attach to the transfer."),
 ) -> None:
+    from clive.__private.cli.commands.transfer import Transfer
+
     common = OperationCommon(**ctx.params)
     Transfer.from_(to=to, amount=amount, memo=memo, **common.dict()).run()

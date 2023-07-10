@@ -7,9 +7,6 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import beekeeper_remote_option
-from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.util import ExitCallHandler
-from clive.core.url import Url
 
 P = ParamSpec("P")
 
@@ -18,8 +15,10 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithBeekeeper(PreconfiguredBaseModel):
+    # from clive.__private.core.beekeeper import Beekeeper  # noqa: ERA001 pydantic executes this on import
+
     beekeeper_remote: Optional[str] = beekeeper_remote_option
-    beekeeper: Beekeeper
+    beekeeper: Any
 
     @classmethod
     def decorator(cls, func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
@@ -33,6 +32,10 @@ class WithBeekeeper(PreconfiguredBaseModel):
             *args: Any,
             **kwargs: Any,
         ) -> None:
+            from clive.__private.core.beekeeper import Beekeeper
+            from clive.__private.util import ExitCallHandler
+            from clive.core.url import Url
+
             beekeeper_remote_endpoint = Url.parse(beekeeper_remote) if beekeeper_remote else None
 
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)

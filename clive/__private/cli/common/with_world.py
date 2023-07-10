@@ -1,16 +1,12 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import Concatenate, ParamSpec
+from typing import Any, Concatenate, ParamSpec
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
-from clive import World
 from clive.__private.cli.common.base import PreconfiguredBaseModel
 from clive.__private.cli.common.options import profile_option
-from clive.__private.core.world import TyperWorld
-from clive.__private.util import ExitCallHandler
-from clive.core.url import Url
 
 P = ParamSpec("P")
 
@@ -19,8 +15,11 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithWorld(PreconfiguredBaseModel):
+    # from clive.core.url import Url  # noqa: ERA001 pydantic executes this on import
+    # from clive.__private.core.world import World  # noqa: ERA001 pydantic executes this on import
+
     profile: str = profile_option
-    world: World
+    world: Any
 
     @classmethod
     def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
@@ -44,6 +43,9 @@ class WithWorld(PreconfiguredBaseModel):
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> None:
+                from clive.__private.core.world import TyperWorld
+                from clive.__private.util import ExitCallHandler
+
                 beekeeper_remote_endpoint = cls.__get_beekeeper_remote(kwargs)
 
                 cls._print_launching_beekeeper(beekeeper_remote_endpoint, use_beekeeper)
@@ -56,7 +58,7 @@ class WithWorld(PreconfiguredBaseModel):
                     ),
                     finally_callback=lambda w: w.close(),
                 ) as world:
-                    cls._assert_correct_profile_is_loaded(world.profile_data, profile)
+                    cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
 
                     ctx.params.update(world=world)
                     return func(ctx, *args, **kwargs)
@@ -66,6 +68,8 @@ class WithWorld(PreconfiguredBaseModel):
         return outer
 
     @staticmethod
-    def __get_beekeeper_remote(kwargs: P.kwargs) -> Url | None:
+    def __get_beekeeper_remote(kwargs: P.kwargs) -> Any | None:
+        from clive.core.url import Url
+
         beekeeper_remote: str | None = kwargs.get("beekeeper_remote", None)
         return Url.parse(beekeeper_remote) if beekeeper_remote else None

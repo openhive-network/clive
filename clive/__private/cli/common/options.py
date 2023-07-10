@@ -2,11 +2,9 @@ from typing import Any
 
 import typer
 
-from clive.__private.core.profile_data import ProfileData
-
 
 def _get_default_profile_name() -> str | None:
-    return ProfileData.get_lastly_used_profile_name()
+    raise NotImplementedError
 
 
 def get_default_or_make_required(value: Any) -> Any:
