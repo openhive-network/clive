@@ -28,7 +28,7 @@ class UpdateProposalVotes(OperationBase):
     def __init__(self) -> None:
         super().__init__()
 
-        default_approve = get_default_from_model(UpdateProposalVotesOperation, "approve")
+        default_approve = str(get_default_from_model(UpdateProposalVotesOperation, "approve"))
 
         self.__proposal_ids = Input(placeholder="e.g.: 10,11,12")
         self.__approve_input = Input(default_approve, placeholder="e.g.: True")
