@@ -30,3 +30,16 @@ UserInfo GeneralInfo .recovery-value{
 UserInfo GeneralInfo .date-value {
     margin-left: 12;
 }
+
+/* MoneyInfo */
+UserInfo MoneyInfo {
+  layout: grid;
+  grid-size: 6;
+  height: 3;
+}
+
+MoneyInfo .money-info-label{
+    background: $primary-lighten-1;
+    width: 50;
+    text-align: center;
+}

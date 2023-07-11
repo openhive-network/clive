@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Vertical
 from textual.widgets import Static
 
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -61,14 +61,28 @@ class GeneralInfo(AccountReferencingWidget):
         yield self.create_dynamic_label(lambda: self._account.data.recovery_account, classes="general-value")
 
 
+class MoneyInfo(AccountReferencingWidget):
+    """Contains all information about money which user has"""
+
+    def compose(self) -> ComposeResult:
+        yield EllipsedStatic("HIVE BALANCE", classes="money-info-label")
+        yield EllipsedStatic("HP BALANCE", classes="money-info-label")
+        yield EllipsedStatic("HIVE DOLLARS", classes="money-info-label")
+        yield EllipsedStatic("SAVINGS HIVE", classes="money-info-label")
+        yield EllipsedStatic("SAVINGS HBD", classes="money-info-label")
+        yield EllipsedStatic("UNCLAIMED REWARDS", classes="money-info-label")
+
+
 class AccountRow(AccountReferencingWidget):
     def compose(self) -> ComposeResult:
-        with Horizontal(), Container(id="tables"):
+        with Vertical(), Container(id="tables"):
+            yield ContainerTitle("GENERAL INFO")
             yield GeneralInfo(self._account)
+            yield ContainerTitle("MONEY INFO")
+            yield MoneyInfo(self._account)
 
 
 class UserInfo(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle("User info")
-        yield ContainerTitle("GENERAL INFO")
         yield AccountRow(self.app.world.profile_data.working_account)
