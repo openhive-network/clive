@@ -35,7 +35,7 @@ class WithBeekeeper(PreconfiguredBaseModel):
             **kwargs: Any,
         ) -> None:
             from clive.__private.core.beekeeper import Beekeeper
-            from clive.__private.util import ExitCallHandler
+            from clive.__private.core.exit_call_handler import ExitCallHandler
             from clive.core.url import Url
 
             beekeeper_remote_endpoint = Url.parse(beekeeper_remote) if beekeeper_remote else None

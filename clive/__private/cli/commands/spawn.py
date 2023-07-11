@@ -5,7 +5,7 @@ import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.util import ExitCallHandler
+from clive.__private.core.exit_call_handler import ExitCallHandler
 
 
 @dataclass

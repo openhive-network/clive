@@ -49,8 +49,8 @@ class OperationCommon(PreconfiguredBaseModel):
             *args: P.args,
             **kwargs: Any,
         ) -> None:
+            from clive.__private.core.exit_call_handler import ExitCallHandler
             from clive.__private.core.world import TyperWorld
-            from clive.__private.util import ExitCallHandler
             from clive.core.url import Url
 
             if not broadcast:

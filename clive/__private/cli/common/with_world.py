@@ -45,8 +45,8 @@ class WithWorld(PreconfiguredBaseModel):
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> None:
+                from clive.__private.core.exit_call_handler import ExitCallHandler
                 from clive.__private.core.world import TyperWorld
-                from clive.__private.util import ExitCallHandler
 
                 beekeeper_remote_endpoint = cls.__get_beekeeper_remote(kwargs)
 
