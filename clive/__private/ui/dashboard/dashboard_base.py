@@ -11,7 +11,7 @@ from clive.__private.storage.mock_database import Account, AccountType, Manabar,
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
-from clive.__private.ui.user_info.user__info import UserInfo
+from clive.__private.ui.user_info.user_info import UserInfo
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel

@@ -1,0 +1,28 @@
+$general-color: $secondary-darken-2;
+$watched-color: $primary-darken-1;
+
+UserInfo ContainerTitle{
+    background: $general-color;
+    text-align: center;
+}
+
+/* GeneralInfo */
+UserInfo GeneralInfo {
+  layout: grid;
+  grid-size: 5;
+  height: 3;
+}
+
+UserInfo .general-info-label{
+    background: $watched-color;
+    width: 50;
+    text-align: center;
+}
+
+UserInfo GeneralInfo .general-value{
+  text-align: center;
+}
+
+UserInfo GeneralInfo .recovery-value{
+    margin-left: 19;
+ }
