@@ -7,11 +7,11 @@ import pytest
 import test_tools as tt
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
+from clive.__private.before_launch import prepare_before_launch
 from clive.__private.config import settings
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.world import World
-from clive.__private.util import prepare_before_launch
 from clive.core.url import Url
 from tests import WalletInfo
 

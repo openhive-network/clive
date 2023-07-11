@@ -4,7 +4,7 @@ from textual.cli.cli import run_app
 
 
 def main() -> None:
-    from clive.__private.util import prepare_before_launch
+    from clive.__private.before_launch import prepare_before_launch
 
     prepare_before_launch()
     run_app(["--dev", "clive.dev_import:clive_app"])
