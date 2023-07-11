@@ -68,6 +68,8 @@ class UpdateNodeData(Command):
             account.data.hbd_savings = info.core.savings_hbd_balance
             account.data.hive_unclaimed = info.core.reward_hive_balance
             account.data.hbd_unclaimed = info.core.reward_hbd_balance
+            account.data.last_account_update = info.core.last_account_update
+            account.data.last_owner_update = info.core.last_owner_update
             account.data.hp_unclaimed = info.core.reward_vesting_balance
             account.data.recovery_account = info.core.recovery_account
 

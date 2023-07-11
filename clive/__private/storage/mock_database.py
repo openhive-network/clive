@@ -55,6 +55,8 @@ class NodeData:
     hp_unclaimed: Asset.VESTS = field(default_factory=default_vests)
     last_refresh: datetime = field(default_factory=lambda: datetime.now())
     last_transaction: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
+    last_account_update: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
+    last_owner_update: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
     recovery_account: str = ""
     reputation: int = 0
     warnings: int = 0

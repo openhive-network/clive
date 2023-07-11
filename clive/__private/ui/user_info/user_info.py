@@ -23,10 +23,6 @@ class ContainerTitle(Static):
     """A title for all containers which this screen contains"""
 
 
-class Body(Static, can_focus=True):
-    """A body for working/watched accounts container"""
-
-
 class AccountReferencingWidget(CliveWidget):
     """Base class for all classes that must get some information about account"""
 
@@ -60,8 +56,8 @@ class GeneralInfo(AccountReferencingWidget):
 
         yield EllipsedStatic(f"@{self._account.name}", classes="general-value")
         yield self.create_dynamic_label(lambda: str(self._account.data.reputation), classes="recovery-value")
-        yield EllipsedStatic("01.06.2022 19:48", classes="general-value")
-        yield EllipsedStatic("01.06.2022 19:48", classes="general-value")
+        yield self.create_dynamic_label(lambda: str(self._account.data.last_owner_update), classes="date-value")
+        yield self.create_dynamic_label(lambda: str(self._account.data.last_account_update), classes="date-value")
         yield self.create_dynamic_label(lambda: self._account.data.recovery_account, classes="general-value")
 
 
