@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import os
 import shutil
-from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import TYPE_CHECKING, Generic, TypeVar
 
@@ -12,8 +10,6 @@ from clive.__private.logger import logger
 if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
-
-thread_pool = ThreadPoolExecutor(max_workers=4)
 
 
 def prepare_before_launch(*, enable_textual_logger: bool = True) -> None:
@@ -57,7 +53,3 @@ class ExitCallHandler(Generic[T]):
                 self.__exception_callback(self.__obj, ex)
         finally:
             self.__finally_callback(self.__obj)
-
-
-def is_tab_completion_active() -> bool:
-    return "_CLIVE_COMPLETE" in os.environ

@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING, Any
 
 from textual.message import Message
 
+from clive.__private.core._thread import thread_pool
 from clive.__private.core.callback import invoke
 from clive.__private.logger import logger
-from clive.__private.util import thread_pool
 
 if TYPE_CHECKING:
     from datetime import timedelta

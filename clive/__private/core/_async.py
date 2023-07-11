@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any
 
-from clive.__private.util import thread_pool
+from clive.__private.core._thread import thread_pool
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine

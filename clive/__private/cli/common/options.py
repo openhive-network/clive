@@ -2,7 +2,7 @@ from typing import Any
 
 import typer
 
-from clive.__private.util import is_tab_completion_active
+from clive.__private.cli.completion import is_tab_completion_active
 
 
 def _get_default_profile_name() -> str | None:
