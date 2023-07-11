@@ -40,7 +40,7 @@ class BeekeeperExecutable:
     def __init__(self) -> None:
         self.__executable: Path = self.get_path_from_settings()  # type: ignore
         if self.__executable is None:
-            raise BeekeeperNotConfiguredError()
+            raise BeekeeperNotConfiguredError
 
         self.__process: Popen[bytes] | None = None
         self.__files: dict[str, TextIO | None] = {
@@ -50,10 +50,10 @@ class BeekeeperExecutable:
 
     def run(self, config: BeekeeperConfig) -> None:
         if self.__process is not None:
-            raise BeekeeperAlreadyRunningError()
+            raise BeekeeperAlreadyRunningError
 
         if config.notifications_endpoint is None:
-            raise BeekeeperNotificationServerNotConfiguredError()
+            raise BeekeeperNotificationServerNotConfiguredError
 
         # prepare config
         if not config.wallet_dir.exists():

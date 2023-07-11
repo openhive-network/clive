@@ -61,7 +61,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
             raise InputTooShortError(expected_length=minimum_input_length, given_value=profile_name)
 
         if password != repeated_password:
-            raise RepeatedPasswordIsDifferentError()
+            raise RepeatedPasswordIsDifferentError
 
         return profile_name, password
 

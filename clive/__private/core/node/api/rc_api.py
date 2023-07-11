@@ -8,20 +8,20 @@ from schemas import rc_api  # noqa: TCH001
 class RcApi(Api):
     @Api.method
     def find_rc_accounts(self, accounts: list[str], refresh_mana: bool = False) -> rc_api.FindRcAccounts[Asset.Vests]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @Api.method
     def get_resource_params(self) -> rc_api.GetResourceParams:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @Api.method
     def get_resource_pool(self) -> rc_api.GetResourcePool:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @Api.method
     def list_rc_accounts(self, accounts: list[str], refresh_mana: bool = False) -> rc_api.ListRcAccounts[Asset.Vests]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @Api.method
     def list_rc_direct_delegations(self, start: tuple[str, str], limit: int) -> rc_api.ListRcDirectDelegations:
-        raise NotImplementedError()
+        raise NotImplementedError

@@ -53,7 +53,7 @@ class Beekeeper:
             settings.set("beekeeper.remote_address", str(remote_endpoint))
 
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
-            raise BeekeeperNotConfiguredError()
+            raise BeekeeperNotConfiguredError
 
         self.config = BeekeeperConfig()
         self.__notification_server = BeekeeperNotificationsServer()
@@ -76,7 +76,7 @@ class Beekeeper:
             self.config.webserver_http_endpoint = remote
 
         if not self.config.webserver_http_endpoint:
-            raise UrlNotSetError()
+            raise UrlNotSetError
 
         return self.config.webserver_http_endpoint
 
@@ -85,7 +85,7 @@ class Beekeeper:
         result = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))
 
         if result.status_code != codes.OK:
-            raise Non200StatusCodeError()
+            raise Non200StatusCodeError
 
         json = result.json()
         if "error" in json:

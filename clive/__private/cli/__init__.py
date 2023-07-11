@@ -32,7 +32,7 @@ def _main(
 ) -> None:
     if version:
         typer.echo(f"CLIVE Version: {VERSION_INFO}")
-        raise typer.Exit()
+        raise typer.Exit
 
 
 @cli.command()

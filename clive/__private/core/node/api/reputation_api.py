@@ -9,4 +9,4 @@ class ReputationApi(Api):
     def get_account_reputations(
         self, *, account_lower_bound: str, limit: int = 1_000
     ) -> response_schemas.GetAccountReputations:
-        raise NotImplementedError()
+        raise NotImplementedError

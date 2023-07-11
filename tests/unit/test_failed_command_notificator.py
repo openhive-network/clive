@@ -36,7 +36,7 @@ def test_catching_correct_exception(exception: type[CommandError]) -> None:
 @pytest.mark.parametrize("exception", [Exception, AssertionError, ValueError, TypeError])
 def test_catching_incorrect_exception(exception: type[Exception]) -> None:
     with pytest.raises(exception), FailedCommandNotificator():
-        raise exception()
+        raise exception
 
 
 def test_catch_only() -> None:

@@ -16,13 +16,13 @@ class AccountHistoryApi(Api):
         operation_filter_low: int | None = None,
         operation_filter_high: int | None = None,
     ) -> response_schemas.GetAccountHistory[models.ApiOperationObject, models.ApiVirtualOperationObject]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @Api.method
     def get_transaction(
         self, id_: str, include_reversible: bool = True
     ) -> response_schemas.GetTransaction[models.ApiOperationObject]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     @Api.method
     def enum_virtual_ops(  # noqa: PLR0913
@@ -35,9 +35,9 @@ class AccountHistoryApi(Api):
         include_reversible: bool = True,
         group_by_block: bool = False,
     ) -> response_schemas.EnumVirtualOps[models.ApiVirtualOperationObject]:
-        raise NotImplementedError()
+        raise NotImplementedError
 
     def get_ops_in_block(
         self, block_num: int, only_virtual: bool = False, include_reversible: bool = True
     ) -> response_schemas.GetOpsInBlock[models.ApiOperationObject, models.ApiVirtualOperationObject]:
-        raise NotImplementedError()
+        raise NotImplementedError

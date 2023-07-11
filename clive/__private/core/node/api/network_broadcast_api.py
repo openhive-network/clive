@@ -8,4 +8,4 @@ from clive.models import Transaction  # noqa: TCH001
 class NetworkBroadcastApi(Api):
     @Api.method
     def broadcast_transaction(self, *, trx: Transaction) -> EmptyResponse:
-        raise NotImplementedError()
+        raise NotImplementedError

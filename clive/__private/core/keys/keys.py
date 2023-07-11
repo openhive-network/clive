@@ -145,7 +145,7 @@ class PrivateKey(Key):
         try:
             iwax.calculate_public_key(key)
         except iwax.WaxOperationFailedError:
-            raise PrivateKeyInvalidFormatError() from None
+            raise PrivateKeyInvalidFormatError from None
 
     @overload
     def calculate_public_key(self) -> PublicKey:

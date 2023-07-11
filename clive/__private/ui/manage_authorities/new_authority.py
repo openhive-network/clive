@@ -127,7 +127,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
             raise AliasAlreadyInUseFormError(private_key.alias)
 
         if __private_key_already_exists():
-            raise PrivateKeyAlreadyInUseError()
+            raise PrivateKeyAlreadyInUseError
 
     def _content_after_big_title(self) -> ComposeResult:
         if self._subtitle():

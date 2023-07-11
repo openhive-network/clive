@@ -20,6 +20,6 @@ class Broadcast(Command):
 
     def _execute(self) -> None:
         if not self.transaction.is_signed():
-            raise TransactionNotSignedError()
+            raise TransactionNotSignedError
 
         self.node.api.network_broadcast.broadcast_transaction(trx=self.transaction)
