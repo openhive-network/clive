@@ -29,19 +29,23 @@ def perform_actions_on_transaction(  # noqa: PLR0913
     save_file_path: Path | None = None,
     broadcast: bool = False,
 ) -> Transaction:
-    """This function performs commands on a transaction object.
+    """
+    Performs commands on a transaction object.
 
     Args:
-        content: The content to be converted to a transaction.
-            (This can be a transaction object, a list of operations, or a single operation.)
-        node: The node which will be used for transaction broadcasting.
-        beekeeper: The beekeeper to use to sign the transaction.
-        sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
-        save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
-        broadcast: Whether to broadcast the transaction.
+    ----
+    content: The content to be converted to a transaction.
+        (This can be a transaction object, a list of operations, or a single operation.)
+    node: The node which will be used for transaction broadcasting.
+    beekeeper: The beekeeper to use to sign the transaction.
+    chain_id: The chain id to use for signing the transaction.
+    sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+    save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
+    broadcast: Whether to broadcast the transaction.
 
     Returns:
-        The transaction object.
+    -------
+    The transaction object.
     """
     transaction = ensure_transaction(content, node=node)
 

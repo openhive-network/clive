@@ -10,9 +10,7 @@ list_ = typer.Typer(help="List various things.")
 def keys(
     ctx: typer.Context,
 ) -> None:
-    """
-    List all Public keys stored in the wallet.
-    """
+    """List all Public keys stored in the wallet."""
     from clive.__private.cli.commands.list import ListKeys
 
     common = WithWorld(**ctx.params)

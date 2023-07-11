@@ -29,7 +29,7 @@ LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
@@ -116,9 +116,11 @@ class TransferToAccount(CartBasedScreen):
     def __create_operation(self) -> Operation | None:
         """
         Collects data from the screen and creates a new operation based on it.
-        :return: Operation if the operation is valid, None otherwise.
-        """
 
+        Returns
+        -------
+        Operation if the operation is valid, None otherwise.
+        """
         asset = self.__currency_selector.selected.value
 
         try:
@@ -134,8 +136,11 @@ class TransferToAccount(CartBasedScreen):
 
     def __add_to_cart(self) -> bool:
         """
-        Creates a new operation and adds it to the cart.
-        :return: True if the operation was added to the cart successfully, False otherwise.
+        Create a new operation and adds it to the cart.
+
+        Returns
+        -------
+        True if the operation was added to the cart successfully, False otherwise.
         """
         operation = self.__create_operation()
         if not operation:

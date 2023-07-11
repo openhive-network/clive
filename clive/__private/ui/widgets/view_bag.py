@@ -4,4 +4,4 @@ from textual.containers import Container
 
 
 class ViewBag(Container):
-    """Handy class for wrapping"""
+    """Handy class for wrapping."""

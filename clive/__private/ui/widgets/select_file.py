@@ -17,15 +17,15 @@ if TYPE_CHECKING:
 
 
 class FilePathLabel(Static):
-    """Label for file path input"""
+    """Label for file path input."""
 
 
 class DirectoryTreeHint(Static):
-    """Hint for DirectoryTree widget"""
+    """Hint for DirectoryTree widget."""
 
 
 class Body(Grid):
-    """Container for widgets"""
+    """Container for widgets."""
 
 
 class SelectFile(BaseScreen):
@@ -35,7 +35,7 @@ class SelectFile(BaseScreen):
     ]
 
     class Saved(Message):
-        """Emitted when user saves the form"""
+        """Emitted when user saves the form."""
 
         def __init__(self, file_path: Path) -> None:
             self.file_path = file_path

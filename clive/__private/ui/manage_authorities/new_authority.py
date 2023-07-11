@@ -38,7 +38,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
     ]
 
     class Saved(Message, bubble=True):
-        """Emitted when user Saves the form"""
+        """Emitted when user Saves the form."""
 
         def __init__(self, private_key: PrivateKeyAliased) -> None:
             self.private_key = private_key
@@ -62,7 +62,11 @@ class NewAuthorityBase(AuthorityForm, ABC):
     @property
     def _private_key(self) -> PrivateKeyAliased:
         """
-        :raises PrivateKeyInvalidFormatError: if private key is not in valid format
+        Get private key from input.
+
+        Raises
+        ------
+        PrivateKeyInvalidFormatError: if private key is not in valid format
         """
         return PrivateKeyAliased(value=self._private_key_raw, file_path=self.__key_file_path, alias=self._key_alias_raw)
 
@@ -93,10 +97,13 @@ class NewAuthorityBase(AuthorityForm, ABC):
 
     def _validate(self) -> None:
         """
-        Raises:
-            PrivateKeyInvalidFormatFormError: if key is invalid
-            AliasAlreadyInUseError: if alias is already in use
-            PrivateKeyAlreadyInUseError: if private key is already in use
+        Validate form data.
+
+        Raises
+        ------
+        PrivateKeyInvalidFormatFormError: if key is invalid
+        AliasAlreadyInUseError: if alias is already in use
+        PrivateKeyAlreadyInUseError: if private key is already in use.
         """
         try:
             self.__check_if_authority_already_exists(self._private_key)
@@ -105,9 +112,12 @@ class NewAuthorityBase(AuthorityForm, ABC):
 
     def __check_if_authority_already_exists(self, private_key: PrivateKeyAliased) -> None:
         """
-        Raises:
-            AliasAlreadyInUseFormError: if alias is already in use
-            PrivateKeyAlreadyInUseError: if private key is already in use
+        Check if authority is already stored.
+
+        Raises
+        ------
+        AliasAlreadyInUseFormError: if alias is already in use
+        PrivateKeyAlreadyInUseError: if private key is already in use.
         """
 
         def __private_key_already_exists() -> bool:

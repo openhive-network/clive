@@ -66,9 +66,7 @@ class ProfileData(Context):
 
     @classmethod
     def get_lastly_used_profile_name(cls) -> str | None:
-        """
-        Get the name of the lastly used profile. If no profile was used yet, None is returned.
-        """
+        """Get the name of the lastly used profile. If no profile was used yet, None is returned."""
         with cls.__open_database() as db:
             profile_name: str | None = db.get(cls._LAST_USED_IDENTIFIER, None)
             if profile_name != cls.ONBOARDING_PROFILE_NAME:
@@ -91,20 +89,26 @@ class ProfileData(Context):
         """
         Load profile data with the given name from the database.
 
-        Params:
-            name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
-            auto_create: If True, a new profile is created if the profile with the given name does not exist.
+        Args:
+        ----
+        name: Name of the profile to load.
+        auto_create: If True, a new profile is created if the profile with the given name does not exist.
+
+        Returns:
+        -------
+        Profile data.
         """
 
         def assert_profile_could_be_loaded() -> None:
             """
+            Assert that the profile with the given name could be loaded.
+
             Cases:
             1. name="" and lastly_used_exists=True -> load lastly_used
             2. name="" and lastly_used_exists=False -> raise error
             3. name="some_name" and lastly_used_exists=True -> load "some_name"
-            4. name="some_name" and lastly_used_exists=False -> load "some_name"
+            4. name="some_name" and lastly_used_exists=False -> load "some_name".
             """
-
             lastly_used_exists = cls.get_lastly_used_profile_name()
             if not lastly_used_exists and not name:
                 raise ProfileCouldNotBeLoadedError("No lastly used profile to load.")

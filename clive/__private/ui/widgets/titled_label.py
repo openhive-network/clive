@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 class TitledLabel(CliveWidget):
     """
     A label with a title and a value.
+
     The value can be updated dynamically if :obj_to_watch: and :attribute_name: is given.
     When :value: is provided with both of the mentioned parameters, it will be used as a prefix for the dynamic value.
     """

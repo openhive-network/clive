@@ -19,9 +19,7 @@ class CommandRequiresActiveModeError(CommandExecutionNotPossibleError):
 
 @dataclass(kw_only=True)
 class CommandInActive(CommandRestricted, ABC):
-    """
-    A command that require the application to be in active mode.
-    """
+    """A command that require the application to be in active mode."""
 
     app_state: AppStateProtocol
 

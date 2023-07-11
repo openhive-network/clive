@@ -20,7 +20,8 @@ if TYPE_CHECKING:
 class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
     """
     A select widget with a drop-down.
-    Modified version of: https://github.com/mitosch/textual-select
+
+    Modified version of: https://github.com/mitosch/textual-select.
     """
 
     # TODO: validate given items (list of dicts not like value, text)

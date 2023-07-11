@@ -19,9 +19,7 @@ class KeyNotFoundError(CliveError):
 
 
 class KeyManager:
-    """
-    An object that manages a number of keys. A container-like object which you iterate over to see all the public keys.
-    """
+    """An object that manages a number of keys. A container-like object which you iterate over to see all the public keys."""
 
     def __init__(self) -> None:
         self.__keys: list[PublicKeyAliased] = []

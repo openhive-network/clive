@@ -20,7 +20,7 @@ class ExternalCLICommand(ABC):
         Unused kwargs are ignored.
 
         Args:
-        ---
+        ----
         **kwargs: The kwargs to create the instance from.
         """
         sanitized = {k: v for k, v in kwargs.items() if k in inspect.signature(cls).parameters}

@@ -12,11 +12,11 @@ if TYPE_CHECKING:
 
 
 class PrivateKeyError(CliveError):
-    """A PrivateKey related error"""
+    """A PrivateKey related error."""
 
 
 class PrivateKeyInvalidFormatError(PrivateKeyError):
-    """A PrivateKey has an invalid format"""
+    """A PrivateKey has an invalid format."""
 
 
 @dataclass(kw_only=True)
@@ -37,9 +37,7 @@ class Key(ABC):
         """
         Determines the type of the key from the given key raw string.
 
-        Info:
-            This method requires the key to be in the correct format - because key in the wrong format will be
-            determined as a public key also.
+        This method requires the key to be in the correct format - because key in the wrong format will be determined as a public key also.
         """
         try:
             iwax.calculate_public_key(key)
@@ -94,8 +92,9 @@ class PrivateKey(Key):
     """
     A container for a private key.
 
-    Raises:
-         PrivateKeyInvalidFormatError: if private key is not in valid format
+    Raises
+    ------
+     PrivateKeyInvalidFormatError: if private key is not in valid format
     """
 
     file_path: Path | None = None
@@ -137,8 +136,11 @@ class PrivateKey(Key):
     @staticmethod
     def validate(key: str) -> None:
         """
-        Raises:
-            PrivateKeyInvalidFormatError: if private key is not in valid format
+        Validates the given key.
+
+        Raises
+        ------
+        PrivateKeyInvalidFormatError: if private key is not in valid format.
         """
         try:
             iwax.calculate_public_key(key)

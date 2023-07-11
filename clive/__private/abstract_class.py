@@ -9,7 +9,8 @@ from textual.message_pump import MessagePumpMeta
 class AbstractClass(ABC):  # noqa: B024
     """
     Abstract class that marks if some class cannot be instantiated.
-    Even when no abstract methods were defined, this class cannot be instantiated. (default ABC allows for that)
+
+    Even when no abstract methods were defined, this class cannot be instantiated. (default ABC allows for that).
     """
 
     def __new__(cls, abstract_type: type[AbstractClass] | None = None, *args, **kwargs) -> Any:  # type: ignore
@@ -25,9 +26,10 @@ class AbstractClass(ABC):  # noqa: B024
 class MessagePumpABCMeta(MessagePumpMeta, ABCMeta):
     """
     Combine MessagePumpMeta and ABCMeta into a single metaclass.
+
     Resolves the issue with:
         TypeError: metaclass conflict: the metaclass of a derived class must be a (non-strict) subclass of the
-        metaclasses of all its bases
+        metaclasses of all its bases.
     """
 
 

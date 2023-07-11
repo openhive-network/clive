@@ -27,11 +27,11 @@ class InvalidAccountNameError(FormValidationError):
 
 
 class Body(Static):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class AccountNameInputContainer(Horizontal):
-    """Container for account name input and label"""
+    """Container for account name input and label."""
 
 
 class AccountNameHighlighter(Highlighter):

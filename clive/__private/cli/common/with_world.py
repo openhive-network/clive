@@ -26,12 +26,15 @@ class WithWorld(PreconfiguredBaseModel):
     @classmethod
     def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
         """
-        Decorator to be used on commands that need a world. The world could be created with a beekeeper or without.
+        Decorator to be used on commands that need a world.
+
+        The world could be created with a beekeeper or without.
         Beekeeper is launched locally by default, but it is possible to use a remote beekeeper by specifying the
         `beekeeper_remote` argument in the decorated function.
 
-        Params:
-            use_beekeeper: Set this to False when there is no need to use a beekeeper.
+        Args:
+        ----
+        use_beekeeper: Set this to False when there is no need to use a beekeeper.
         """
 
         def outer(func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:

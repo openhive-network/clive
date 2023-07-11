@@ -4,7 +4,7 @@ from textual.message import Message
 
 
 class NodeDataUpdated(Message):
-    """Emitted when app.node_data has been updated"""
+    """Emitted when app.node_data has been updated."""
 
 
 class ProfileDataUpdated(Message):
@@ -15,4 +15,4 @@ class ProfileDataUpdated(Message):
 
 
 class AppStateUpdated(Message):
-    """Emitted when app.app_state has been updated"""
+    """Emitted when app.app_state has been updated."""

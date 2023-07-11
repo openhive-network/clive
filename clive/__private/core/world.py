@@ -19,13 +19,15 @@ if TYPE_CHECKING:
 
 class World:
     """
-    World is a top-level container for all application objects. It is a single source of truth for interacting with
-    the Clive application.
+    World is a top-level container for all application objects.
 
-    Params:
-        profile_name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
-        use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
-        beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
+    It is a single source of truth for interacting with the Clive application.
+
+    Args:
+    ----
+    profile_name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
+    use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
+    beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
     """
 
     def __init__(

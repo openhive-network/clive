@@ -82,7 +82,7 @@ class HttpServer:
         self.__thread = None
 
     def notify(self, message: JsonT) -> None:
-        """Should be called only by request handler when request is received"""
+        """Should be called only by request handler when request is received."""
         self.__observer.notify(message)
 
 

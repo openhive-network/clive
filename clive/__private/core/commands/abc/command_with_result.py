@@ -13,7 +13,9 @@ CommandResultT = TypeVar("CommandResultT")
 @dataclass(kw_only=True)
 class CommandWithResult(Command, Generic[CommandResultT], ABC):
     """
-    A command that returns a result. The result property can be used to set and access the result of the command,
+    A command that returns a result.
+
+    The result property can be used to set and access the result of the command,
     which is initially set to None. Subclasses should set the result property with the output, if any.
     """
 
@@ -21,11 +23,15 @@ class CommandWithResult(Command, Generic[CommandResultT], ABC):
 
     @property
     def result(self) -> CommandResultT:
-        """Get the result of the command.
-        Returns:
+        """
+        Get the result of the command.
+
+        Returns
+        -------
             The result of the command.
 
-        Raises:
+        Raises
+        ------
             ValueError: If the result has not been set before.
         """
         if self._result is None:

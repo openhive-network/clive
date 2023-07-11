@@ -76,7 +76,7 @@ class Clive(App[int], ManualReactive):
 
     @property
     def namespace_bindings(self) -> NamespaceBindingsMapType:
-        """Provides the ability to control the binding order in the footer"""
+        """Provides the ability to control the binding order in the footer."""
         return self.__sort_bindings(super().namespace_bindings)
 
     def run(
@@ -152,7 +152,10 @@ class Clive(App[int], ManualReactive):
     def pop_screen_until(self, *screens: str | type[Screen]) -> None:
         """
         Pop all screens until one of the given screen is on top of the stack.
-        ScreenNotFoundError is raised if no screen was found.
+
+        Raises
+        ------
+        ScreenNotFoundError:  if no screen was found.
         """
         for screen in screens:
             if not self.__is_screen_in_stack(screen):
@@ -182,7 +185,9 @@ class Clive(App[int], ManualReactive):
         self, method_name: Literal["push_screen", "switch_screen", "pop_screen"], screen: str | Screen | None = None
     ) -> AwaitMount | Screen:
         """
-        Because of textual's event ScreenResume not being bubbled up, we can't easily hook on it via
+        Auxiliary function to override the default push_screen, switch_screen and pop_screen methods.
+
+        Because of Textual's event ScreenResume not being bubbled up, we can't easily hook on it via
         `def on_screen_resume` so we have to override the push_screen, switch_screen and pop_screen methods.
         """
         method = getattr(super(), method_name)
@@ -233,9 +238,7 @@ class Clive(App[int], ManualReactive):
             screen.post_message(message)
 
     def post_message_to_screen(self, screen: str | type[Screen], message: Message) -> None:
-        """
-        Post a message to a specific screen in the stack.
-        """
+        """Post a message to a specific screen in the stack."""
         self.__assert_screen_in_stack(screen)
         for screen_ in reversed(self.screen_stack):
             if self.__screen_eq(screen_, screen):
@@ -263,13 +266,18 @@ class Clive(App[int], ManualReactive):
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
-        """Sorts bindings by placing the ESC key at first place and fn keys at the end of the dictionary.
+        """
+        Sorts bindings by placing the ESC key at first place and fn keys at the end of the dictionary.
+
         This is done so that the bindings in the footer are displayed in a correct, uniform way.
 
         Args:
-            data: The bindings to sort.
+        ----
+        data: The bindings to sort.
+
         Returns:
-            New dictionary holding sorted bindings.
+        -------
+        New dictionary holding sorted bindings.
         """
         fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
         non_fn_keys = [key for key in data if key not in fn_keys]

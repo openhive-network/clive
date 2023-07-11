@@ -29,8 +29,10 @@ class CliveWidget(Widget):
         """
         Bind a key to an action.
 
-        :param binding: The binding to add.
-        :param before: The key of the binding to add this one before e.g.: "f2".
+        Args:
+        ----
+        binding: The binding to add.
+        before: The key of the binding to add this one before e.g.: "f2".
         """
 
         def add_before() -> None:

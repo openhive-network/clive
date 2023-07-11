@@ -25,11 +25,11 @@ if TYPE_CHECKING:
 
 
 class ContainerTitle(Static):
-    """A title for working/watched accounts container"""
+    """A title for working/watched accounts container."""
 
 
 class Body(Static, can_focus=True):
-    """A body for working/watched accounts container"""
+    """A body for working/watched accounts container."""
 
 
 class AccountReferencingWidget(CliveWidget):

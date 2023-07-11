@@ -64,4 +64,4 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
 
     @abstractmethod
     def apply_and_validate(self) -> None:
-        """This method should perform its actions and raise FormValidationError if some input is invalid"""
+        """Should perform its actions and raise FormValidationError if some input is invalid."""

@@ -12,6 +12,8 @@ if TYPE_CHECKING:
 class ManualReactive(DOMNode):
     def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
         """
+        Updates the given reactive attribute with the given update function.
+
         Reactive attributes of Textual are unable to detect changes to their own attributes
         (if we are dealing with a non-primitive type like a custom class).
         In order to notify watchers of a reactive attribute, it would have to be re-instantiated with the modified

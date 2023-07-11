@@ -16,16 +16,21 @@ TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transa
 def ensure_transaction(
     content: TransactionConvertibleType, node: Node, expiration: timedelta = timedelta(minutes=30)
 ) -> Transaction:
-    """Ensures that the given content is a transaction.
+    """
+    Ensures that the given content is a transaction.
 
     If the content is a transaction, it is returned as-is.
     If the content is a list of operations, they are gathered into a transaction and returned.
 
     Args:
-        content: The content to ensure is a transaction.
+    ----
+    content: The content to ensure is a transaction.
+    node: The node to use for building the transaction.
+    expiration: The expiration of the transaction.
 
     Returns:
-        The transaction.
+    -------
+    The transaction.
     """
 
     def __ensure_operation(item: Any) -> Operation:

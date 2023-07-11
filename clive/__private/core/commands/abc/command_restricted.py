@@ -14,9 +14,7 @@ class CommandExecutionNotPossibleError(CommandError):
 
 
 class CommandRestricted(Command, ABC):
-    """
-    A command that is conditioned before it can be executed.
-    """
+    """A command that is conditioned before it can be executed."""
 
     _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandExecutionNotPossibleError
 
@@ -24,7 +22,8 @@ class CommandRestricted(Command, ABC):
         """
         Execute the command if the conditions are met.
 
-        Raises:
+        Raises
+        ------
             CommandExecutionNotPossibleError: If the command cannot be executed.
         """
         if not self._is_execution_possible():
@@ -33,6 +32,4 @@ class CommandRestricted(Command, ABC):
 
     @abstractmethod
     def _is_execution_possible(self) -> bool:
-        """
-        The condition that must be met for the command to be executed. When execution is not possible, error is raised.
-        """
+        """The condition that must be met for the command to be executed. When execution is not possible, error is raised."""

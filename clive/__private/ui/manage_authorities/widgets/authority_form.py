@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """Container for body"""
+    """Container for body."""
 
 
 class SubTitle(Static):
@@ -29,7 +29,7 @@ class SubTitle(Static):
 
 class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     class AuthoritiesChanged(Message):
-        """Emitted when authorities have been changed"""
+        """Emitted when authorities have been changed."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -84,7 +84,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
 
     @abstractmethod
     def _validate(self) -> None:
-        """Should raise FormValidationError if validation fails"""
+        """Should raise FormValidationError if validation fails."""
 
     def _title(self) -> str:
         return ""

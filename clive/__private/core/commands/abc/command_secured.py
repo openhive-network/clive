@@ -14,9 +14,7 @@ class InvalidPasswordError(CliveError):
 
 @dataclass(kw_only=True)
 class CommandPasswordSecured(Command, ABC):
-    """
-    A command that requires a password to proceed.
-    """
+    """A command that requires a password to proceed."""
 
     password: str
 

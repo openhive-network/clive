@@ -31,35 +31,35 @@ class TransactionCouldNotBeSignedError(CliveError):
 
 
 class StaticPart(Static):
-    """Static part of the screen"""
+    """Static part of the screen."""
 
 
 class ScrollablePart(Container, can_focus=True):
-    """Scrollable part of the screen"""
+    """Scrollable part of the screen."""
 
 
 class ActionsContainer(Horizontal):
-    """Container for the all the actions - combobox"""
+    """Container for the all the actions - combobox."""
 
 
 class ActionsSpacer(Static):
-    """Spacer for the actions container"""
+    """Spacer for the actions container."""
 
 
 class KeyHint(Label):
-    """Hint for the authority"""
+    """Hint for the authority."""
 
 
 class TransactionHint(Label):
-    """Hint about the transaction"""
+    """Hint about the transaction."""
 
 
 class OperationItem(Static):
-    """Item in the operations list"""
+    """Item in the operations list."""
 
 
 class SelectKey(SafeSelect[PublicKey], CliveWidget):
-    """Combobox for selecting the authority key"""
+    """Combobox for selecting the authority key."""
 
     def __init__(self) -> None:
         super().__init__(

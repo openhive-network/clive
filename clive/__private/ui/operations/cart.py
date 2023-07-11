@@ -25,44 +25,44 @@ if TYPE_CHECKING:
 
 
 class DynamicColumn(DynamicLabel):
-    """Column with dynamic content"""
+    """Column with dynamic content."""
 
 
 class StaticColumn(Static):
-    """Column with static content"""
+    """Column with static content."""
 
 
 class ColumnLayout(Static):
-    """This class holds column order"""
+    """Holds column order."""
 
 
 class ButtonMoveUp(Button):
-    """Button used for moving the operation up in the cart"""
+    """Button used for moving the operation up in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
         super().__init__("🔼", id="move-up-button", disabled=disabled)
 
 
 class ButtonMoveDown(Button):
-    """Button used for moving the operation down in the cart"""
+    """Button used for moving the operation down in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
         super().__init__("🔽", id="move-down-button", disabled=disabled)
 
 
 class ButtonDelete(Button):
-    """Button used for removing the operation from cart"""
+    """Button used for removing the operation from cart."""
 
     def __init__(self) -> None:
         super().__init__("🗑️", id="delete-button")
 
 
 class StaticPart(Static):
-    """Container for the static part of the screen - title, global buttons and table header"""
+    """Container for the static part of the screen - title, global buttons and table header."""
 
 
 class ScrollablePart(Container):
-    """Container used for holding operation items"""
+    """Container used for holding operation items."""
 
 
 class DetailedCartOperation(ColumnLayout, CliveWidget):
@@ -83,7 +83,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
             super().__init__()
 
     class Focus(Message):
-        """Message sent when other DetailedCartOperation should be focused"""
+        """Message sent when other DetailedCartOperation should be focused."""
 
         def __init__(self, target_idx: int) -> None:
             self.target_idx = target_idx

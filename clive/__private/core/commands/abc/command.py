@@ -16,16 +16,14 @@ class CommandError(CliveError):
 
 @dataclass(kw_only=True)
 class Command(ABC):
-    """
-    Command is an abstract class that defines a common interface for executing commands. The execute() method should
-    be overridden by subclasses to implement the specific functionality of the command.
-    """
+    """An abstract class that defines a common interface for executing commands."""
 
     @abstractmethod
     def _execute(self) -> None:
         """
-        Proxy method for the execute() method. This method should be overridden by subclasses to implement the specific
-        functionality of the command. The result could be set via the `result` property.
+        Proxy method for the execute() method.
+
+        The result could be set via the `result` property.
         """
 
     def execute(self) -> None:

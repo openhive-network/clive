@@ -21,7 +21,8 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 class OperationCommon(PreconfiguredBaseModel):
     """
     Common options for some commands.
-    Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597
+
+    Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597.
     """
 
     profile: str = options.profile_option

@@ -4,7 +4,7 @@ from enum import Enum
 
 
 class AppMode(str, Enum):
-    """Application mode"""
+    """Application mode."""
 
     value: str
 

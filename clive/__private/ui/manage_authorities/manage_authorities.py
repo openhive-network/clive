@@ -25,15 +25,15 @@ if TYPE_CHECKING:
 
 
 class DynamicColumn(DynamicLabel):
-    """Column with dynamic content"""
+    """Column with dynamic content."""
 
 
 class StaticColumn(Static):
-    """Column with static content"""
+    """Column with static content."""
 
 
 class ColumnLayout(Static):
-    """This class holds column order"""
+    """Holds column order."""
 
 
 odd = "OddColumn"
@@ -42,7 +42,7 @@ even = "EvenColumn"
 
 class Authority(ColumnLayout, CliveWidget):
     class AuthoritiesChanged(Message):
-        """Emitted when authorities have been changed"""
+        """Emitted when authorities have been changed."""
 
     def __init__(self, index: int, authority: PublicKeyAliased) -> None:
         self.__index = index

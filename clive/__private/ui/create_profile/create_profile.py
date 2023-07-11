@@ -47,7 +47,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         return []
 
     def _get_valid_args(self) -> tuple[str, str]:
-        """Selects all input fields and validates them, if something is invalid throws an exception"""
+        """Selects all input fields and validates them, if something is invalid throws an exception."""
         minimum_input_length: Final[int] = 3
 
         profile_name = self.get_widget_by_id("profile_name_input", expect_type=Input).value
@@ -68,9 +68,11 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     def _create_profile(self) -> tuple[CreateWallet, SyncDataWithBeekeeper]:
         """
         Collects the data from the form and creates a profile.
-        :return: True if the profile was created successfully, False otherwise.
-        """
 
+        Returns
+        -------
+        True if the profile was created successfully, False otherwise.
+        """
         profile_name, password = self._get_valid_args()
         self.context.name = profile_name
 

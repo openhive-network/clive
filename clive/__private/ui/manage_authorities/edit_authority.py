@@ -51,8 +51,11 @@ class EditAuthority(AuthorityForm):
 
     def _validate(self) -> None:
         """
-        Raises:
-            AliasAlreadyInUseFormError: if alias is already in use
+        Validate the form data.
+
+        Raises
+        ------
+        AliasAlreadyInUseFormError: if alias is already in use.
         """
         if not self.context.working_account.keys.is_public_alias_available(self._key_alias_raw):
             raise AliasAlreadyInUseFormError(self._key_alias_raw)

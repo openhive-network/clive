@@ -32,7 +32,8 @@ ADDITIONAL_CHARACTER_BINDINGS: dict[str, str] = {
 
 def dicts_equal_with_order(dict_a: dict[Any, Any], dict_b: dict[Any, Any]) -> bool:
     """
-    Python dictionaries are insertion ordered as of Python 3.6
+    Python dictionaries are insertion ordered as of Python 3.6.
+
     While comparing with simple ==, it won't check the order, just their contents.
     """
     return list(dict_a.keys()) == list(dict_b.keys()) and dict_a == dict_b

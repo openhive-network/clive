@@ -20,11 +20,11 @@ if TYPE_CHECKING:
 
 
 class Description(Static):
-    """Some description text"""
+    """Some description text."""
 
 
 class ButtonsContainer(Horizontal):
-    """Container holding buttons"""
+    """Container holding buttons."""
 
 
 class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
