@@ -20,9 +20,11 @@ if typing.TYPE_CHECKING:
 
 
 class CustomJSONEncoder(json.JSONEncoder):
+    TIME_FORMAT_WITH_MILLIS: Final[str] = "%Y-%m-%dT%H:%M:%S.%f"
+
     def default(self, obj: Any) -> Any:
         if isinstance(obj, datetime):
-            return obj.isoformat()
+            return obj.strftime(self.TIME_FORMAT_WITH_MILLIS)
 
         return super().default(obj)
 
