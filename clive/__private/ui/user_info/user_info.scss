@@ -50,8 +50,10 @@ UserInfo MoneyInfo DynamicLabel {
 /* WarningsInfo */
 UserInfo WarningsInfo .no-warning{
     text-align: center;
+    background: green;
 }
 
 UserInfo WarningsInfo .warning{
     text-align: center;
+    background: red;
 }

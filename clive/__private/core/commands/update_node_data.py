@@ -17,6 +17,7 @@ if TYPE_CHECKING:
     from clive.__private.storage import mock_database
     from clive.__private.storage.mock_database import Account
     from schemas.__private.hive_fields_custom_schemas import Manabar
+    from schemas.__private.operations import Hf26OperationRepresentationType
     from schemas.database_api.fundaments_of_reponses import AccountItemFundament
     from schemas.database_api.response_schemas import GetDynamicGlobalProperties
     from schemas.rc_api.fundaments_of_responses import RcAccount
@@ -51,6 +52,7 @@ class UpdateNodeData(Command):
         warnings: int = 0
         reputation: int = 0
         warnings_list: list[str] = field(default_factory=lambda: [""])
+        newest_operations: list[Hf26OperationRepresentationType] = field(default_factory=lambda: [""])
 
     def _execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
@@ -61,6 +63,7 @@ class UpdateNodeData(Command):
         for account, info in api_accounts.items():
             account.data.reputation = info.reputation
             account.data.last_transaction = info.latest_interaction
+            account.data.newest_operations = info.newest_operations
             account.data.warnings = info.warnings
             account.data.warnings_list = info.warnings_list
 
@@ -121,6 +124,7 @@ class UpdateNodeData(Command):
                 info.latest_interaction = self.__normalize_datetime(
                     self.__get_newest_account_interactions(account.name)
                 )
+                info.newest_operations = self.__get_newest_account_operations(account.name)
             result[account] = info
         return result
 
@@ -198,6 +202,18 @@ class UpdateNodeData(Command):
             .history[0][1]
             .timestamp
         )
+
+    def __get_newest_account_operations(self, account_name: str) -> list[Hf26OperationRepresentationType]:
+        operations = []
+
+        non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
+        value = self.node.api.account_history_api.get_account_history(
+            account=account_name, limit=1, operation_filter_low=non_virtual_operations_filter, include_reversible=True
+        ).history
+
+        for operation in value:
+            operations.append(operation[1].op)
+        return operations
 
     def __get_account_reputation(self, account_name: str) -> int:
         with SuppressNotExistingApi("reputation_api"):

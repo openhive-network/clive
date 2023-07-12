@@ -99,9 +99,8 @@ class WarningsInfo(AccountReferencingWidget):
 
     def compose(self) -> ComposeResult:
         list_of_warnings = self._account.data.warnings_list
-        if list_of_warnings[0]:
-            for warning in list_of_warnings:
-                yield EllipsedStatic(warning, classes="warning")
+        if list_of_warnings:
+            yield self.create_dynamic_label(lambda: list_of_warnings[0], classes="warning")  # TODO
         else:
             yield EllipsedStatic("No warnings to show", classes="no-warning")
 
@@ -115,6 +114,7 @@ class AccountRow(AccountReferencingWidget):
             yield MoneyInfo(self._account)
             yield ContainerTitle("WARNINGS")
             yield WarningsInfo(self._account)
+            yield ContainerTitle("LAST OPERATIONS")
 
 
 class UserInfo(BaseScreen):

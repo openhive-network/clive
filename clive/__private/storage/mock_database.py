@@ -11,6 +11,8 @@ from clive.models import Asset
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from schemas.__private.operations import Hf26OperationRepresentationType
+
 
 class AccountType(str, Enum):
     value: str
@@ -64,6 +66,7 @@ class NodeData:
     vote_manabar: Manabar = field(default_factory=Manabar)
     downvote_manabar: Manabar = field(default_factory=Manabar)
     warnings_list: list[str] = field(default_factory=lambda: [""])
+    newest_operations: list[Hf26OperationRepresentationType] = field(default_factory=lambda: [""])
 
 
 @dataclass
