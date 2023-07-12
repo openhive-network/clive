@@ -36,7 +36,7 @@ class Node:
         ...
 
     def send(self, request: JSONRPCRequest, *, expect_type: type[T] | None = None) -> T | JSONRPCResponse[Any]:
-        response = Communication.request(str(self.address), data=request.dict(by_alias=True))
+        response = Communication.request(str(self.address), data=request.json(by_alias=True))
         data = response.json()
 
         if not expect_type:
