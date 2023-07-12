@@ -13,6 +13,15 @@ def _get_default_profile_name() -> str | None:
     return None
 
 
+def _get_default_beekeeper_remote() -> str | None:
+    if not is_tab_completion_active():
+        from clive.__private.core.beekeeper import Beekeeper
+
+        address = Beekeeper.get_remote_address_from_settings()
+        return str(address) if address else None
+    return None
+
+
 def get_default_or_make_required(value: Any) -> Any:
     return ... if value is None else value
 
@@ -23,5 +32,7 @@ profile_option = typer.Option(
     show_default=bool(_get_default_profile_name()),
 )
 beekeeper_remote_option = typer.Option(
-    None, help="Beekeeper remote endpoint. (starts locally if not provided)", show_default=False
+    _get_default_beekeeper_remote(),
+    help="Beekeeper remote endpoint. (starts locally if not provided)",
+    show_default=bool(_get_default_beekeeper_remote()),
 )
