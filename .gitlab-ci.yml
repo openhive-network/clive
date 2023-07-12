@@ -23,13 +23,14 @@ variables:
 
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-5
   TEST_IMAGE_TAG: "@sha256:eaa6f32730f0f4c45a95a65b6d790bea2b71a59276eb28795c04be7703f003e6"
+  CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${TEST_IMAGE_TAG}"
 
 include:
   - project: 'hive/hive'
     ref: fc899116bf691309cc618e51a9c2d8c6d5edb8cd #develop
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
 
-image: "registry.gitlab.syncad.com/hive/hive/ci-base-image${TEST_IMAGE_TAG}"
+image: ${CI_BASE_IMAGE}
 
 .shared_tags: &shared_tags
   - public-runner-docker
@@ -138,6 +139,41 @@ testing_clive:
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+.prepare_clive_image:
+  extends: .docker_image_builder_job
+  stage: build_docker
+  needs:
+    - job: pre_commit_checks
+    - job: prepare_mainnet_hived_image
+      artifacts: true
+
+  variables:
+    BASE_IMAGE: ""
+    BUILD_SUFFIX: ""
+
+    TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
+    SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
+
+  script:
+    - $SCRIPTS_PATH/ci-helpers/build_instance.sh "${TAG_COMMIT}" "${CI_PROJECT_DIR}" $CI_REGISTRY_IMAGE --beekeeper-source-image=${HIVED_IMAGE_NAME} --base-image=${BASE_IMAGE}
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - source docker_image_name.env
+    - docker push ${CLIVE_IMAGE_NAME}
+  artifacts:
+    reports:
+      dotenv: docker_image_name.env
+    paths:
+      - ./docker_image_name.env
+    expire_in: 6 hours
+
+  tags: *shared_tags
+
+build_and_push_clive_image:
+  extends: .prepare_clive_image
+  variables:
+    BASE_IMAGE: ${CI_BASE_IMAGE}
+
 
 .build_and_push_base:
   image: docker:20.10.13
