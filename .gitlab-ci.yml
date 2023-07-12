@@ -175,6 +175,23 @@ build_and_push_clive_image:
   variables:
     BASE_IMAGE: ${CI_BASE_IMAGE}
 
+build_and_push_clive_stable_image:
+  stage: build_docker
+  needs:
+    - job: build_and_push_clive_image
+      artifacts: true
+
+  only:
+    - develop
+    - master
+
+  variables:
+    BUILD_SUFFIX: ""
+    ADDITIONAL_IMAGE_NAME: ${CI_REGISTRY_IMAGE}instance:instance-${BUILD_SUFFIX}${CI_COMMIT_REF_NAME}
+  script:
+    - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker push ${ADDITIONAL_IMAGE_NAME}
 
 .build_and_push_base:
   image: docker:20.10.13
