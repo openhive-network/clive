@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
 from textual.containers import Container, Vertical
 from textual.widgets import Static
 
@@ -72,6 +73,26 @@ class MoneyInfo(AccountReferencingWidget):
         yield EllipsedStatic("SAVINGS HBD", classes="money-info-label")
         yield EllipsedStatic("UNCLAIMED REWARDS", classes="money-info-label")
 
+        yield self.create_dynamic_label(
+            lambda: f"{str(self._account.data.hive_balance.amount)} HIVE", classes="money-value"
+        )
+        yield self.create_dynamic_label(
+            lambda: f"{str(self._account.data.hive_power_balance)} HP", classes="money-value"
+        )
+        yield self.create_dynamic_label(
+            lambda: f"$ {str(self._account.data.hive_dollars.amount)}", classes="money-value"
+        )
+        yield self.create_dynamic_label(
+            lambda: f"{str(self._account.data.hive_savings.amount)} HIVE", classes="money-value"
+        )
+        yield self.create_dynamic_label(
+            lambda: f"{str(self._account.data.hbd_savings.amount)} HBD", classes="money-value"
+        )
+        yield self.create_dynamic_label(
+            lambda: f"{self._account.data.hbd_unclaimed.amount} HBD {self._account.data.hp_unclaimed.amount} HP {self._account.data.hive_unclaimed.amount} HIVE",
+            classes="unclaimed-value",
+        )
+
 
 class AccountRow(AccountReferencingWidget):
     def compose(self) -> ComposeResult:
@@ -83,6 +104,10 @@ class AccountRow(AccountReferencingWidget):
 
 
 class UserInfo(BaseScreen):
+    BINDINGS = [
+        Binding("escape", "pop_screen", "Cancel"),
+    ]
+
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle("User info")
         yield AccountRow(self.app.world.profile_data.working_account)

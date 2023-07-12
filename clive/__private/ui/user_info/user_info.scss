@@ -43,3 +43,11 @@ MoneyInfo .money-info-label{
     width: 50;
     text-align: center;
 }
+
+MoneyInfo .money-value{
+    margin-left: 15;
+}
+
+MoneyInfo .unclaimed-value{
+    margin-left: 9;
+}
