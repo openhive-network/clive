@@ -55,10 +55,10 @@ class GeneralInfo(AccountReferencingWidget):
         yield EllipsedStatic("LAST ACCOUNT UPDATE", classes="general-info-label")
         yield EllipsedStatic("RECOVERY ACCOUNT", classes="general-info-label")
 
-        yield EllipsedStatic(f"@{self._account.name}", classes="general-value")
-        yield self.create_dynamic_label(lambda: str(self._account.data.reputation), classes="recovery-value")
-        yield self.create_dynamic_label(lambda: str(self._account.data.last_owner_update), classes="date-value")
-        yield self.create_dynamic_label(lambda: str(self._account.data.last_account_update), classes="date-value")
+        yield EllipsedStatic(f"@{self._account.name}", classes="general-name-value")
+        yield self.create_dynamic_label(lambda: str(self._account.data.reputation), classes="general-value")
+        yield self.create_dynamic_label(lambda: str(self._account.data.last_owner_update), classes="general-value")
+        yield self.create_dynamic_label(lambda: str(self._account.data.last_account_update), classes="general-value")
         yield self.create_dynamic_label(lambda: self._account.data.recovery_account, classes="general-value")
 
 
@@ -90,7 +90,7 @@ class MoneyInfo(AccountReferencingWidget):
         )
         yield self.create_dynamic_label(
             lambda: f"{self._account.data.hbd_unclaimed.amount} HBD {self._account.data.hp_unclaimed.amount} HP {self._account.data.hive_unclaimed.amount} HIVE",
-            classes="unclaimed-value",
+            classes="money-value",
         )
 
 

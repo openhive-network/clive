@@ -19,16 +19,14 @@ UserInfo .general-info-label{
     text-align: center;
 }
 
-UserInfo GeneralInfo .general-value{
-  text-align: center;
+UserInfo GeneralInfo DynamicLabel {
+    text-align: center;
+    width: 50;
 }
 
-UserInfo GeneralInfo .recovery-value{
-    margin-left: 19;
- }
-
-UserInfo GeneralInfo .date-value {
-    margin-left: 12;
+UserInfo GeneralInfo .general-name-value{
+    text-align: center;
+    width: 50;
 }
 
 /* MoneyInfo */
@@ -44,10 +42,7 @@ MoneyInfo .money-info-label{
     text-align: center;
 }
 
-MoneyInfo .money-value{
-    margin-left: 15;
-}
-
-MoneyInfo .unclaimed-value{
-    margin-left: 9;
+UserInfo MoneyInfo DynamicLabel {
+    text-align: center;
+    width: 50;
 }
