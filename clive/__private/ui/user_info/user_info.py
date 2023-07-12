@@ -101,6 +101,7 @@ class AccountRow(AccountReferencingWidget):
             yield GeneralInfo(self._account)
             yield ContainerTitle("MONEY INFO")
             yield MoneyInfo(self._account)
+            yield ContainerTitle("WARNINGS")
 
 
 class UserInfo(BaseScreen):

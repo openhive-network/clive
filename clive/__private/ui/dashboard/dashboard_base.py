@@ -168,10 +168,10 @@ class DashboardBase(BaseScreen):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account-info-button":
             self.app.push_screen(UserInfo())
-        elif event.button.id == "watched-account-info-button":
+        elif event.button.id == "watched-account-info-button" and self.app.world.profile_data.watched_accounts:
             self.app.push_screen(WatchedAccountInfo())
         else:
-            Notification("Not implemented yet!", category="error").show()
+            Notification("You don't have any watched accounts to watch", category="error").show()
 
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
