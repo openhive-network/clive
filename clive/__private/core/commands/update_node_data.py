@@ -50,6 +50,7 @@ class UpdateNodeData(Command):
         rc: RcAccount[Asset.VESTS] | None = None
         warnings: int = 0
         reputation: int = 0
+        warnings_list: list[str] = field(default_factory=lambda: [""])
 
     def _execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
@@ -61,6 +62,7 @@ class UpdateNodeData(Command):
             account.data.reputation = info.reputation
             account.data.last_transaction = info.latest_interaction
             account.data.warnings = info.warnings
+            account.data.warnings_list = info.warnings_list
 
             account.data.hive_balance = info.core.balance
             account.data.hive_dollars = info.core.hbd_balance
@@ -113,6 +115,8 @@ class UpdateNodeData(Command):
                 reputation=self.__get_account_reputation(account.name),
             )
             info.warnings = self.__count_warning(account, info)
+            info.warnings_list = self.__get_list_of_warnings_to_display(account, info)
+
             with SuppressNotExistingApi("account_history_api"):
                 info.latest_interaction = self.__normalize_datetime(
                     self.__get_newest_account_interactions(account.name)
@@ -164,6 +168,23 @@ class UpdateNodeData(Command):
         return int(
             account_info.core.governance_vote_expiration_ts - timedelta(days=warning_period_in_days) > datetime.utcnow()
         )
+
+    def __get_list_of_warnings_to_display(self, account: Account, account_info: AccountApiInfo) -> list[str]:
+        warnings_list = []
+        if bool(self.__check_is_governance_is_expiring(account_info)):
+            message = f"Your governance is expiring in {account_info.core.governance_vote_expiration_ts}!"
+            warnings_list.append(message)
+        elif bool(self.__check_is_changing_recovery_account_is_in_progress(account)):
+            message = "Change recovery account is in progress"
+            warnings_list.append(message)
+        elif bool(self.__check_is_declining_voting_rights_in_progress(account)):
+            message = "Declining voting rights for your account is in progress"
+            warnings_list.append(message)
+        elif bool(self.__check_for_recurrent_transfers(account_info)):
+            message = f"{account_info.core.open_recurrent_transfers} recurrent transfers in progress"
+            warnings_list.append(message)
+
+        return warnings_list
 
     def __get_newest_account_interactions(self, account_name: str) -> datetime:
         non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF

@@ -94,6 +94,18 @@ class MoneyInfo(AccountReferencingWidget):
         )
 
 
+class WarningsInfo(AccountReferencingWidget):
+    """Contains warnings information"""
+
+    def compose(self) -> ComposeResult:
+        list_of_warnings = self._account.data.warnings_list
+        if list_of_warnings[0]:
+            for warning in list_of_warnings:
+                yield EllipsedStatic(warning, classes="warning")
+        else:
+            yield EllipsedStatic("No warnings to show", classes="no-warning")
+
+
 class AccountRow(AccountReferencingWidget):
     def compose(self) -> ComposeResult:
         with Vertical(), Container(id="tables"):
@@ -102,6 +114,7 @@ class AccountRow(AccountReferencingWidget):
             yield ContainerTitle("MONEY INFO")
             yield MoneyInfo(self._account)
             yield ContainerTitle("WARNINGS")
+            yield WarningsInfo(self._account)
 
 
 class UserInfo(BaseScreen):

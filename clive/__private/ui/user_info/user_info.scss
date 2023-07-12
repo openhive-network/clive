@@ -46,3 +46,12 @@ UserInfo MoneyInfo DynamicLabel {
     text-align: center;
     width: 50;
 }
+
+/* WarningsInfo */
+UserInfo WarningsInfo .no-warning{
+    text-align: center;
+}
+
+UserInfo WarningsInfo .warning{
+    text-align: center;
+}

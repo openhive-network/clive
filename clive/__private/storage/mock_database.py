@@ -63,6 +63,7 @@ class NodeData:
     rc_manabar: Manabar = field(default_factory=Manabar)
     vote_manabar: Manabar = field(default_factory=Manabar)
     downvote_manabar: Manabar = field(default_factory=Manabar)
+    warnings_list: list[str] = field(default_factory=lambda: [""])
 
 
 @dataclass
