@@ -11,7 +11,7 @@ from clive.__private.storage.mock_database import Account, AccountType, Manabar,
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
-from clive.__private.ui.user_info.user_info import UserInfo
+from clive.__private.ui.user_info.user_info import UserInfo, WatchedAccountInfo
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
@@ -161,12 +161,15 @@ class DashboardBase(BaseScreen):
                 yield WorkingAccountContainer()
                 yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
                 yield WatchedAccountContainer()
-                yield CliveButton("account info", id_="account-info-button")
+                yield CliveButton("ACCOUNT INFO", id_="account-info-button")
+                yield CliveButton("WATCHED ACCOUNTS INFO", id_="watched-account-info-button")
             yield CommandLine(focus_on_cancel=body)
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "account-info-button":
             self.app.push_screen(UserInfo())
+        elif event.button.id == "watched-account-info-button":
+            self.app.push_screen(WatchedAccountInfo())
         else:
             Notification("Not implemented yet!", category="error").show()
 

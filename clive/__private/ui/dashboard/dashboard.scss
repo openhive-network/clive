@@ -132,7 +132,9 @@ DashboardBase ActivityStats .amount-variant {
   background: $panel-lighten-2;
 }
 
-DashboardBase #account-info-button{
-      background: $panel-lighten-2;
+DashboardBase CliveButton {
+      background: $panel-lighten-1;
       height: 3;
+      text-align: center;
+      width: 220;
 }

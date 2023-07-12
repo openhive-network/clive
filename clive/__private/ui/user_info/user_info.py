@@ -111,3 +111,14 @@ class UserInfo(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle("User info")
         yield AccountRow(self.app.world.profile_data.working_account)
+
+
+class WatchedAccountInfo(BaseScreen):
+    BINDINGS = [
+        Binding("escape", "pop_screen", "Cancel"),
+    ]
+
+    def create_main_panel(self) -> ComposeResult:
+        yield BigTitle("Watched account info")
+        for acc in self.app.world.profile_data.watched_accounts:
+            yield AccountRow(acc)
