@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import sys
 import time
 from random import randint
 from typing import TYPE_CHECKING
 
 import test_tools as tt
+
+from clive.main import main as clive_main
+
+ARGS_COUNT = 2
 
 if TYPE_CHECKING:
     from typing import Any
@@ -53,7 +58,12 @@ tt.logger.info(f"{alice.name} public key: {alice.public_key}")
 tt.logger.info(f"{alice.name} private key: {alice.private_key}")
 tt.logger.info("done!")
 
-tt.logger.info("serving forever... press Ctrl+C to exit")
+# passing any argument to the script will skip clive autolaunch i.e. for debugging purposes.
+if len(sys.argv) < ARGS_COUNT:
+    tt.logger.info("Attempting to start a clive interactive mode - exit to finish")
+    clive_main()
+else:
+    tt.logger.info("serving forever... press Ctrl+C to exit")
 
-while True:
-    time.sleep(1)
+    while True:
+        time.sleep(1)
