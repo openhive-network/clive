@@ -46,7 +46,7 @@ class NotMatchingIdJsonRPCError(CommunicationError):
 
 
 class Beekeeper:
-    def __init__(self, *, remote_endpoint: Url | None = None) -> None:
+    def __init__(self, *, remote_endpoint: Url | None = None, run_in_background: bool = False) -> None:
         if remote_endpoint:
             settings.set("beekeeper.remote_address", str(remote_endpoint))
 
@@ -57,7 +57,7 @@ class Beekeeper:
         self.__notification_server = BeekeeperNotificationsServer()
         self.__notification_server_port: int | None = None
         self.api = BeekeeperApi(self)
-        self.__executable = BeekeeperExecutable()
+        self.__executable = BeekeeperExecutable(run_in_background=run_in_background)
         self.__token: str | None = None
 
     @property

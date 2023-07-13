@@ -37,11 +37,12 @@ class BeekeeperNotConfiguredError(CliveError):
 
 
 class BeekeeperExecutable:
-    def __init__(self) -> None:
+    def __init__(self, *, run_in_background: bool = False) -> None:
         self.__executable: Path = self.get_path_from_settings()  # type: ignore
         if self.__executable is None:
             raise BeekeeperNotConfiguredError
 
+        self.__run_in_background = run_in_background
         self.__process: Popen[bytes] | None = None
         self.__files: dict[str, TextIO | None] = {
             "stdout": None,
@@ -63,9 +64,12 @@ class BeekeeperExecutable:
 
         self.__prepare_files_for_streams(config.wallet_dir)
 
+        command = ["nohup"] if self.__run_in_background else []
+        command += [str(self.__executable.absolute()), "--data-dir", config.wallet_dir.as_posix()]
+
         try:
             self.__process = Popen(
-                [self.__executable.absolute(), "--data-dir", config.wallet_dir.as_posix()],
+                command,
                 stdout=self.__files["stdout"],
                 stderr=self.__files["stderr"],
                 preexec_fn=os.setpgrp,  # create new process group, so signals won't be passed to child process

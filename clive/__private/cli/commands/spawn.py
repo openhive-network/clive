@@ -8,15 +8,27 @@ from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.exit_call_handler import ExitCallHandler
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SpawnBeekeeper(ExternalCLICommand):
+    background: bool
+
     def run(self) -> None:
         typer.echo("Launching beekeeper...")
 
-        with ExitCallHandler(Beekeeper(), finally_callback=lambda bk: bk.close()) as beekeeper:
+        with ExitCallHandler(
+            Beekeeper(run_in_background=self.background),
+            finally_callback=lambda bk: bk.close() if not self.background else None,
+        ) as beekeeper:
             beekeeper.start()
 
-            typer.echo(f"Beekeeper started on {beekeeper.http_endpoint}. Press Ctrl+C to exit.")
+            typer.echo(f"Beekeeper started on {beekeeper.http_endpoint}.")
 
-            while True:
-                time.sleep(1)
+            if not self.background:
+                self.__serve_forever()
+
+    @staticmethod
+    def __serve_forever() -> None:
+        typer.echo("Press Ctrl+C to exit.")
+
+        while True:
+            time.sleep(1)
