@@ -3,10 +3,12 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Any, Generic, TypeVar
 
-from pydantic import BaseModel, Field, validator
+from pydantic import Field, validator
+
+from clive.models.base import CliveBaseModel
 
 
-class BeekeeperResponse(BaseModel):
+class BeekeeperResponse(CliveBaseModel):
     pass
 
 
@@ -35,7 +37,7 @@ class ListKeys(BeekeeperResponse):
 
 
 class ListWallets(BeekeeperResponse):
-    class WalletDetails(BaseModel):
+    class WalletDetails(CliveBaseModel):
         name: str
         unlocked: bool
 
@@ -80,7 +82,7 @@ T = TypeVar(
 )
 
 
-class JSONRPCProtocol(BaseModel):
+class JSONRPCProtocol(CliveBaseModel):
     id_: int = Field(alias="id", default=0)
     jsonrpc: str = "2.0"
 

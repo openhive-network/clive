@@ -4,11 +4,12 @@ from pathlib import Path
 from types import UnionType
 from typing import get_args
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from clive.__private.config import settings
 from clive.core.url import Url
 from clive.exceptions import CliveError
+from clive.models.base import CliveBaseModel
 
 AllowedTypesT = str | list[str] | bool | int | Url | Path
 
@@ -25,7 +26,7 @@ def _wallet_dir_default() -> Path:
     return Path(settings.data_path / "beekeeper")
 
 
-class BeekeeperConfig(BaseModel):
+class BeekeeperConfig(CliveBaseModel):
     wallet_dir: Path = Field(default_factory=_wallet_dir_default)
     unlock_timeout: int = 900
     log_json_rpc: Path | None = None

@@ -3,12 +3,12 @@ from collections.abc import Callable
 from typing import Any
 
 import typer
-from pydantic import BaseModel
 
 from clive.core.url import Url
+from clive.models.base import CliveBaseModel
 
 
-class CommonBaseModel(BaseModel, ABC):
+class CommonBaseModel(CliveBaseModel, ABC):
     class Config:
         arbitrary_types_allowed: bool = True
 
