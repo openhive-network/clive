@@ -6,7 +6,6 @@ import typer
 
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.list import list_
-from clive.__private.cli.spawn import spawn
 from clive.__private.cli.transfer import transfer
 from clive.__private.run_tui import run_tui
 from clive.version import VERSION_INFO
@@ -20,7 +19,6 @@ cli = typer.Typer(help=HELP, rich_markup_mode="rich", context_settings={"help_op
 
 cli.add_typer(transfer, name="transfer")
 cli.add_typer(list_, name="list")
-cli.add_typer(spawn, name="spawn")
 cli.add_typer(beekeeper, name="beekeeper")
 
 

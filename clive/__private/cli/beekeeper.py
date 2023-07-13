@@ -19,3 +19,13 @@ def info(
 
     common = WithBeekeeper(**ctx.params)
     BeekeeperInfo(beekeeper=common.beekeeper).run()
+
+
+@beekeeper.command()
+def spawn(
+    background: bool = typer.Option(True, help="Run in background."),
+) -> None:
+    """Spawn beekeeper process."""
+    from clive.__private.cli.commands.beekeeper import BeekeeperSpawn
+
+    BeekeeperSpawn(background=background).run()
