@@ -21,7 +21,7 @@ class SpawnBeekeeper(ExternalCLICommand):
         ) as beekeeper:
             beekeeper.start()
 
-            typer.echo(f"Beekeeper started on {beekeeper.http_endpoint}.")
+            typer.echo(f"Beekeeper started on {beekeeper.http_endpoint} with pid {beekeeper.pid}.")
 
             if not self.background:
                 self.__serve_forever()

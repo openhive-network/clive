@@ -24,6 +24,10 @@ class BeekeeperAlreadyRunningError(BeekeeperError):
     pass
 
 
+class BeekeeperNotRunningError(BeekeeperError):
+    pass
+
+
 class BeekeeperNotificationServerNotConfiguredError(BeekeeperError):
     pass
 
@@ -52,6 +56,12 @@ class BeekeeperExecutable:
             "stdout": None,
             "stderr": None,
         }
+
+    @property
+    def pid(self) -> int:
+        if self.__process is None:
+            raise BeekeeperNotRunningError("Cannot get PID, Beekeeper is not running.")
+        return self.__process.pid
 
     def run(self, config: BeekeeperConfig) -> None:
         if self.__process is not None:
