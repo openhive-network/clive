@@ -16,6 +16,7 @@ IMAGE_TAG_PREFIX=""
 BEEKEEPER_IMAGE=""
 BASE_IMAGE=""
 
+DOCKER_TARGET="instance"
 
 print_help () {
     echo "Usage: $0 <image_tag> <src_dir> <registry_url> [OPTION[=VALUE]]..."
@@ -24,6 +25,7 @@ print_help () {
     echo "OPTIONS:"
     echo "  --beekeeper-source-image=image_name Allows to specify image name containing a prebuilt beekeper tool"
     echo "  --base-image=image_name             Allows to specify an image name being use as a base of the one to be built"
+    echo "  --embedded-testnet                  Allows to build a clive image having embedded a hived testnet inside (ready for immediate sanboxing run)"
     echo "  --help                              Display this help screen and exit"
     echo
 }
@@ -37,6 +39,10 @@ while [ $# -gt 0 ]; do
       ;;
     --base-image=*)
       BASE_IMAGE="${1#*=}"
+      ;;
+    --embedded-testnet)
+      DOCKER_TARGET="embedded_testnet_instance"
+      IMAGE_TAG_PREFIX="testnet-"
       ;;
     --help)
         print_help
@@ -76,11 +82,10 @@ TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"
 echo "Moving into source root directory: ${SRCROOTDIR}"
 
 pushd "$SRCROOTDIR"
-#pwd
 
 export DOCKER_BUILDKIT=1
 
-docker build --target=instance \
+docker build --target=${DOCKER_TARGET} \
   --build-arg CI_REGISTRY_IMAGE=$REGISTRY \
   --build-arg BASE_IMAGE=${BASE_IMAGE} \
   --build-arg BEEKEEPER_IMAGE=${BEEKEEPER_IMAGE} \
@@ -90,3 +95,5 @@ docker build --target=instance \
 popd
 
 echo "CLIVE_IMAGE_NAME=${REGISTRY}${IMAGE_TAG_PREFIX}instance:${IMAGE_TAG_PREFIX}instance-${BUILD_IMAGE_TAG}" > docker_image_name.env
+echo "CLIVE_IMAGE_PATH=${REGISTRY}${IMAGE_TAG_PREFIX}instance" >> docker_image_name.env
+echo "CLIVE_IMAGE_TAG_PREFIX=:${IMAGE_TAG_PREFIX}instance-" >>  docker_image_name.env
