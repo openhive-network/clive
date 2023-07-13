@@ -45,7 +45,8 @@ class BeekeeperNotConfiguredError(BeekeeperError):
 
 
 class BeekeeperExecutable:
-    def __init__(self, *, run_in_background: bool = False) -> None:
+    def __init__(self, config: BeekeeperConfig, *, run_in_background: bool = False) -> None:
+        self.__config = config
         self.__executable: Path = self.get_path_from_settings()  # type: ignore
         if self.__executable is None:
             raise BeekeeperNotConfiguredError
@@ -63,23 +64,23 @@ class BeekeeperExecutable:
             raise BeekeeperNotRunningError("Cannot get PID, Beekeeper is not running.")
         return self.__process.pid
 
-    def run(self, config: BeekeeperConfig) -> None:
+    def run(self) -> None:
         if self.__process is not None:
             raise BeekeeperAlreadyRunningError
 
-        if config.notifications_endpoint is None:
+        if self.__config.notifications_endpoint is None:
             raise BeekeeperNotificationServerNotConfiguredError
 
         # prepare config
-        if not config.wallet_dir.exists():
-            config.wallet_dir.mkdir()
-        config_filename = config.wallet_dir / "config.ini"
-        config.save(config_filename)
+        if not self.__config.wallet_dir.exists():
+            self.__config.wallet_dir.mkdir()
+        config_filename = self.__config.wallet_dir / "config.ini"
+        self.__config.save(config_filename)
 
-        self.__prepare_files_for_streams(config.wallet_dir)
+        self.__prepare_files_for_streams(self.__config.wallet_dir)
 
         command = ["nohup"] if self.__run_in_background else []
-        command += [str(self.__executable.absolute()), "--data-dir", config.wallet_dir.as_posix()]
+        command += [str(self.__executable.absolute()), "--data-dir", self.__config.wallet_dir.as_posix()]
 
         try:
             self.__process = Popen(

@@ -57,7 +57,7 @@ class Beekeeper:
         self.__notification_server = BeekeeperNotificationsServer()
         self.__notification_server_port: int | None = None
         self.api = BeekeeperApi(self)
-        self.__executable = BeekeeperExecutable(run_in_background=run_in_background)
+        self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)
         self.__token: str | None = None
 
     @property
@@ -122,7 +122,7 @@ class Beekeeper:
 
     def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
-        self.__executable.run(self.config)
+        self.__executable.run()
 
         if self.__notification_server.opening_beekeeper_failed.wait(timeout):
             self.__close_beekeeper()
