@@ -7,6 +7,8 @@ FROM $BEEKEEPER_IMAGE as beekeper_source
 
 FROM $BASE_IMAGE AS instance
 
+SHELL ["/bin/bash", "-c"]
+
 ADD --chown=hived_admin:users . /clive
 
 WORKDIR /clive
@@ -21,3 +23,21 @@ RUN poetry self update && \
 ENV COLORTERM=truecolor
 
 ENTRYPOINT ["poetry", "run", "clive"]
+
+# this target should be built using a testnet hived image as a base (to have embedded testnet)
+FROM instance as embedded_testnet_instance
+
+ARG CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
+ENV CLIVE_SECRETS__DEFAULT_KEY=${CLIVE_SECRETS__DEFAULT_KEY}
+
+ENV HIVED_PATH="/home/hived/bin/hived"
+ENV CLI_WALLET_PATH="/home/hived/bin/cli_wallet"
+ENV GET_DEV_KEY_PATH="/home/hived/bin/get_dev_key"
+ENV COMPRESS_BLOCK_LOG_PATH="/home/hived/bin/compress_block_log"
+
+WORKDIR /clive
+
+# Run installation once again to supplement extras and development dependencies
+RUN poetry install
+
+ENTRYPOINT ["poetry", "run", "python", "testnet_node.py"]
