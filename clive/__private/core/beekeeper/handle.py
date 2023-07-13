@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from httpx import codes
+from pydantic import Field
 
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.api import BeekeeperApi
@@ -14,6 +15,7 @@ from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
 from clive.exceptions import CommunicationError
+from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -158,3 +160,18 @@ class Beekeeper:
     def get_remote_address_from_settings(cls) -> Url | None:
         raw_address = settings.get("beekeeper.remote_address")
         return Url.parse(raw_address) if raw_address else None
+
+    @staticmethod
+    def get_remote_address_from_connection_file() -> Url | None:
+        class ConnectionFileData(CliveBaseModel):
+            type_: str = Field(alias="type")
+            address: str
+            port: int
+
+        connection_file = BeekeeperConfig.get_wallet_dir() / "beekeeper.connection"
+        if not connection_file.is_file():
+            return None
+
+        connection = ConnectionFileData.parse_file(connection_file)
+
+        return Url(connection.type_, connection.address, connection.port)
