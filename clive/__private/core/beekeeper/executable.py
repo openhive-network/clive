@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import signal
 import subprocess
@@ -60,9 +61,14 @@ class BeekeeperExecutable:
 
     @property
     def pid(self) -> int:
-        if self.__process is None:
+        pid_file = self.__config.wallet_dir / "beekeeper.pid"
+        if not pid_file.is_file():
             raise BeekeeperNotRunningError("Cannot get PID, Beekeeper is not running.")
-        return self.__process.pid
+
+        with pid_file.open("r") as file:
+            data = json.load(file)
+
+        return int(data["pid"])
 
     def run(self) -> None:
         if self.__process is not None:
