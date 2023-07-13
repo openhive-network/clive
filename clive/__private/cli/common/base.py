@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from clive.core.url import Url
 
 
-class PreconfiguredBaseModel(BaseModel, ABC):
+class CommonBaseModel(BaseModel, ABC):
     class Config:
         arbitrary_types_allowed: bool = True
 

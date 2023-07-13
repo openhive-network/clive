@@ -6,7 +6,7 @@ import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import PreconfiguredBaseModel
+from clive.__private.cli.common.base import CommonBaseModel
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -19,7 +19,7 @@ PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
-class WithWorld(PreconfiguredBaseModel):
+class WithWorld(CommonBaseModel):
     profile: str = options.profile_option
     world: "World"
 

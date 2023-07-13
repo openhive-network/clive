@@ -6,7 +6,7 @@ import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import PreconfiguredBaseModel
+from clive.__private.cli.common.base import CommonBaseModel
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -18,7 +18,7 @@ PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
-class WithBeekeeper(PreconfiguredBaseModel):
+class WithBeekeeper(CommonBaseModel):
     beekeeper_remote: Optional[str] = options.beekeeper_remote_option
     beekeeper: "Beekeeper"
 
