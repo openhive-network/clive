@@ -7,14 +7,12 @@ import subprocess
 import warnings
 from pathlib import Path
 from subprocess import Popen
-from typing import TYPE_CHECKING, TextIO
+from typing import TextIO
 
 from clive.__private.config import settings
+from clive.__private.core.beekeeper.config import BeekeeperConfig
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
-
-if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.config import BeekeeperConfig
 
 
 class BeekeeperError(CliveError):
@@ -61,7 +59,13 @@ class BeekeeperExecutable:
 
     @property
     def pid(self) -> int:
-        pid_file = self.__config.wallet_dir / "beekeeper.pid"
+        if self.__process is None:
+            return self.get_pid_from_file()
+        return self.__process.pid
+
+    @staticmethod
+    def get_pid_from_file() -> int:
+        pid_file = BeekeeperConfig.get_wallet_dir() / "beekeeper.pid"
         if not pid_file.is_file():
             raise BeekeeperNotRunningError("Cannot get PID, Beekeeper is not running.")
 

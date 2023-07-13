@@ -21,8 +21,12 @@ def webserver_default() -> Url:
     return Url("", "0.0.0.0", 0)
 
 
+def _wallet_dir_default() -> Path:
+    return Path(settings.data_path / "beekeeper")
+
+
 class BeekeeperConfig(BaseModel):
-    wallet_dir: Path = Field(default_factory=lambda: Path(settings.data_path) / "beekeeper")
+    wallet_dir: Path = Field(default_factory=_wallet_dir_default)
     unlock_timeout: int = 900
     log_json_rpc: Path | None = None
     webserver_http_endpoint: Url | None = Field(default_factory=webserver_default)
@@ -36,6 +40,10 @@ class BeekeeperConfig(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+    @staticmethod
+    def get_wallet_dir() -> Path:
+        return _wallet_dir_default()
 
     def save(self, destination: Path) -> None:
         with destination.open("wt", encoding="utf-8") as out_file:

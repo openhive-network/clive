@@ -82,6 +82,10 @@ class Beekeeper:
     def pid(self) -> int:
         return self.__executable.pid
 
+    @staticmethod
+    def get_pid_from_file() -> int:
+        return BeekeeperExecutable.get_pid_from_file()
+
     def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
         request = JSONRPCRequest(method=endpoint, params=kwargs)
         result = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))

@@ -29,3 +29,11 @@ def spawn(
     from clive.__private.cli.commands.beekeeper import BeekeeperSpawn
 
     BeekeeperSpawn(background=background).run()
+
+
+@beekeeper.command()
+def close() -> None:
+    """Close beekeeper process."""
+    from clive.__private.cli.commands.beekeeper import BeekeeperClose
+
+    BeekeeperClose().run()
