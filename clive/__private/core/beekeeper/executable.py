@@ -16,23 +16,27 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.config import BeekeeperConfig
 
 
-class BeekeeperAlreadyRunningError(Exception):
+class BeekeeperError(CliveError):
+    """Base class for Beekeeper errors."""
+
+
+class BeekeeperAlreadyRunningError(BeekeeperError):
     pass
 
 
-class BeekeeperNotificationServerNotConfiguredError(CliveError):
+class BeekeeperNotificationServerNotConfiguredError(BeekeeperError):
     pass
 
 
-class BeekeeperNonZeroExitCodeError(CliveError):
+class BeekeeperNonZeroExitCodeError(BeekeeperError):
     pass
 
 
-class BeekeeperDidNotClosedError(CliveError):
+class BeekeeperDidNotClosedError(BeekeeperError):
     pass
 
 
-class BeekeeperNotConfiguredError(CliveError):
+class BeekeeperNotConfiguredError(BeekeeperError):
     pass
 
 
