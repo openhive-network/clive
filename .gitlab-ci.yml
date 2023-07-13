@@ -151,13 +151,13 @@ testing_clive:
 
   variables:
     BASE_IMAGE: ""
-    BUILD_SUFFIX: ""
+    BUILD_INSTANCE_ARGS: ""
 
     TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
 
   script:
-    - $SCRIPTS_PATH/ci-helpers/build_instance.sh "${TAG_COMMIT}" "${CI_PROJECT_DIR}" $CI_REGISTRY_IMAGE --beekeeper-source-image=${HIVED_IMAGE_NAME} --base-image=${BASE_IMAGE}
+    - $SCRIPTS_PATH/ci-helpers/build_instance.sh "${TAG_COMMIT}" "${CI_PROJECT_DIR}" $CI_REGISTRY_IMAGE --beekeeper-source-image=${HIVED_IMAGE_NAME} --base-image=${BASE_IMAGE} ${BUILD_INSTANCE_ARGS}
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
@@ -175,6 +175,16 @@ build_and_push_clive_image:
   variables:
     BASE_IMAGE: ${CI_BASE_IMAGE}
 
+build_and_push_clive_testnet_image:
+  extends: .prepare_clive_image
+  needs:
+    - job: prepare_testnet_hived_image
+      artifacts: true
+
+  variables:
+    BASE_IMAGE: ${HIVED_IMAGE_NAME}
+    BUILD_INSTANCE_ARGS: "--embedded-testnet"
+
 build_and_push_clive_stable_image:
   stage: build_docker
   needs:
@@ -186,8 +196,24 @@ build_and_push_clive_stable_image:
     - master
 
   variables:
-    BUILD_SUFFIX: ""
-    ADDITIONAL_IMAGE_NAME: ${CI_REGISTRY_IMAGE}instance:instance-${BUILD_SUFFIX}${CI_COMMIT_REF_NAME}
+    ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
+  script:
+    - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker push ${ADDITIONAL_IMAGE_NAME}
+
+build_and_push_clive_stable_testnet_image:
+  stage: build_docker
+  needs:
+    - job: build_and_push_clive_testnet_image
+      artifacts: true
+
+  only:
+    - develop
+    - master
+
+  variables:
+    ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
   script:
     - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
