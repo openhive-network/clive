@@ -24,7 +24,6 @@ from clive.__private.ui.operations.delete_comment.delete_comment import DeleteCo
 from clive.__private.ui.operations.escrow_dispute.escrow_dispute import EscrowDispute
 from clive.__private.ui.operations.escrow_release.escrow_release import EscrowRelease
 from clive.__private.ui.operations.escrow_transfer.escrow_transfer import EscrowTransfer
-from clive.__private.ui.operations.feed_publish.feed_publish import FeedPublish
 from clive.__private.ui.operations.limit_order_cancel.limit_order_cancel import LimitOrderCancel
 from clive.__private.ui.operations.limit_order_create.limit_order_create import LimitOrderCreate
 from clive.__private.ui.operations.limit_order_create2.limit_order_create2 import LimitOrderCreate2
@@ -80,7 +79,6 @@ __all__ = [
     "RequestAccountRecovery",
     "RecoverAccount",
     "LimitOrderCreate2",
-    "FeedPublish",
     "CreateClaimedAccount",
     "AccountCreate",
     "AccountUpdate",
