@@ -13,6 +13,7 @@ from clive.__private.ui.operations import (
     ChangeRecoveryAccount,
     ClaimAccount,
     ClaimRewardBalance,
+    CollateralizedConvert,
     Comment,
     CommentOptions,
     Convert,
@@ -88,4 +89,5 @@ OPERATIONS: Final[list[type[OperationBase]]] = [
     AccountCreate,
     AccountUpdate,
     AccountUpdate2,
+    CollateralizedConvert,
 ]
