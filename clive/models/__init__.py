@@ -1,30 +1,33 @@
 from __future__ import annotations
 
-from .aliased import (
-    ApiOperationObject,
-    ApiVirtualOperationObject,
-    Operation,
-    OperationBaseClass,
-    OperationRepresentationType,
-    Signature,
-    VirtualOperation,
-    VirtualOperationBaseClass,
-    VirtualOperationRepresentationType,
-)
-from .asset import Asset
-from .transaction import Transaction
+from clive.__private.cli.completion import is_tab_completion_active
 
-__all__ = [
-    "ApiOperationObject",
-    "ApiVirtualOperationObject",
-    "Operation",
-    "OperationBaseClass",
-    "OperationRepresentationType",
-    "Signature",
-    "VirtualOperation",
-    "VirtualOperationBaseClass",
-    "VirtualOperationRepresentationType",
-    "VirtualOperationRepresentationType",
-    "Asset",
-    "Transaction",
-]
+if not is_tab_completion_active():
+    from .aliased import (
+        ApiOperationObject,
+        ApiVirtualOperationObject,
+        Operation,
+        OperationBaseClass,
+        OperationRepresentationType,
+        Signature,
+        VirtualOperation,
+        VirtualOperationBaseClass,
+        VirtualOperationRepresentationType,
+    )
+    from .asset import Asset
+    from .transaction import Transaction
+
+    __all__ = [
+        "ApiOperationObject",
+        "ApiVirtualOperationObject",
+        "Operation",
+        "OperationBaseClass",
+        "OperationRepresentationType",
+        "Signature",
+        "VirtualOperation",
+        "VirtualOperationBaseClass",
+        "VirtualOperationRepresentationType",
+        "VirtualOperationRepresentationType",
+        "Asset",
+        "Transaction",
+    ]
