@@ -1,19 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command import CommandError
+from clive.__private.core.error_handlers.error_handler_context_manager import (
+    ErrorHandlerContextManager,
+    ResultNotAvailable,
+)
 from clive.__private.logger import logger
 from clive.__private.ui.widgets.notification import Notification
 
-if TYPE_CHECKING:
-    from types import TracebackType
 
-    from typing_extensions import Self
-
-
-class FailedCommandNotificator:
+class FailedCommandNotificator(ErrorHandlerContextManager):
     """
     A context manager that notifies about failed commands (by default resulted with `CommandError` or its subclasses).
 
@@ -27,19 +24,15 @@ class FailedCommandNotificator:
     """
 
     def __init__(self, message: str | None = None, *, catch_only: type[CommandError] | None = None) -> None:
+        super().__init__()
         self.__message = message
         self.__catch_only = catch_only
 
-    def __enter__(self) -> Self:
-        return self
-
-    def __exit__(
-        self, exc_type: type[BaseException] | None, exc_val: BaseException | None, exc_tb: TracebackType | None
-    ) -> bool:
-        if exc_val and self.__is_exception_to_catch(exc_val):
-            self.__notify(exc_val)
-            return True
-        return False
+    def _handle_error(self, error: BaseException) -> ResultNotAvailable:
+        if self.__is_exception_to_catch(error):
+            self.__notify(error)
+            return ResultNotAvailable(error)
+        raise error
 
     def __is_exception_to_catch(self, exception: BaseException) -> bool:
         if self.__catch_only:
