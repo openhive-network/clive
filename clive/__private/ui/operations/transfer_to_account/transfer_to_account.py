@@ -20,7 +20,7 @@ from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset, Operation
-from clive.models.asset import AssetAmountT
+from clive.models.asset import AssetAmountInvalidFormatError, AssetAmountT
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
@@ -51,6 +51,14 @@ class CurrencySelector(Select[LiquidAssetCallableT]):
             placeholder="Select currency",
             selected=0,
         )
+
+    def create_asset(self, amount: AssetAmountT) -> Asset.AnyT | None:
+        asset = self.selected.value
+        try:
+            return asset(amount)
+        except AssetAmountInvalidFormatError as error:
+            Notification(error.message, category="error").show()
+            return None
 
 
 class TransferToAccount(CartBasedScreen):
@@ -132,13 +140,15 @@ class TransferToAccount(CartBasedScreen):
         -------
         Operation if the operation is valid, None otherwise.
         """
-        asset = self.__currency_selector.selected.value
+        asset = self.__currency_selector.create_asset(self.__amount_input.value)
+        if not asset:
+            return None
 
         try:
             return TransferOperation(
                 from_=str(self.app.world.profile_data.working_account.name),
                 to=self.__to_input.value,
-                amount=asset(self.__amount_input.value),
+                amount=asset,
                 memo=self.__memo_input.value,
             )
         except ValidationError as error:
