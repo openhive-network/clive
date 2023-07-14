@@ -95,4 +95,6 @@ class Commands:
         ).execute()
 
     def update_node_data(self, *, accounts: list[Account]) -> None:
-        UpdateNodeData(accounts=accounts, node=self.__world.node).execute()
+        self.__world.app_state._dynamic_global_properties = UpdateNodeData(
+            accounts=accounts, node=self.__world.node
+        ).execute_with_result()
