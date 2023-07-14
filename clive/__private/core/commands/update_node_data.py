@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from math import ceil
 from typing import TYPE_CHECKING, Final, cast
 
@@ -112,9 +112,7 @@ class UpdateNodeData(Command):
             )
             info.warnings = self.__count_warning(account, info)
             with SuppressNotExistingApi("account_history_api"):
-                info.latest_interaction = self.__normalize_datetime(
-                    self.__get_newest_account_interactions(account.name)
-                )
+                info.latest_interaction = self.__get_newest_account_interactions(account.name)
             result[account] = info
         return result
 
@@ -160,12 +158,13 @@ class UpdateNodeData(Command):
         assert account_info.core is not None, "account_info.core cannot be None"
         warning_period_in_days: Final[int] = 31
         return int(
-            account_info.core.governance_vote_expiration_ts - timedelta(days=warning_period_in_days) > datetime.utcnow()
+            account_info.core.governance_vote_expiration_ts - timedelta(days=warning_period_in_days)
+            > self.__normalize_datetime(datetime.utcnow())
         )
 
     def __get_newest_account_interactions(self, account_name: str) -> datetime:
         non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
-        return (
+        return self.__normalize_datetime(
             self.node.api.account_history_api.get_account_history(
                 account=account_name,
                 limit=1,
@@ -238,4 +237,4 @@ class UpdateNodeData(Command):
         )
 
     def __normalize_datetime(self, date: datetime) -> datetime:
-        return date.replace(microsecond=0)
+        return date.replace(microsecond=0, tzinfo=timezone.utc)
