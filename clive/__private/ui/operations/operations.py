@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
+from textual.containers import Container
 from textual.widgets import Button, Tab, Tabs
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.notification import Notification
 
@@ -23,6 +25,18 @@ class OperationButton(CliveButton):
         self.operation_screen = operation_screen
 
 
+class OperationTab(Tab):
+    """A tab that knows which container of operations is assigned to"""
+
+    def __init__(self, label: str, *, container: str, id_: str | None = None):
+        super().__init__(label, id=id_)
+        self.container = container
+
+
+class FinancialOperations(Container):
+    """Container used to store all financial operations"""
+
+
 class Operations(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -31,11 +45,21 @@ class Operations(CartBasedScreen):
 
     def create_left_panel(self) -> ComposeResult:
         yield Tabs(
-            Tab("Financial", id="financial-tab"),
-            Tab("Social", id="social-tav"),
+            OperationTab("Financial", container="FinancialOperations", id_="financial-tab"),
+            Tab("Social", id="social-tab"),
             Tab("Governance", id="governance-tab"),
             Tab("Account management", id="account-management-tab"),
         )
+        with FinancialOperations(id="financial-operations"):
+            yield OperationButton("TRANSFER", FINANCIAL_OPERATIONS[0])
+
+    def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
+        container: FinancialOperations = self.query_one(FinancialOperations)
+
+        if event.tab.id == "financial-tab":
+            container.visible = True
+        else:
+            container.visible = False
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
