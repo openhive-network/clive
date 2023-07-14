@@ -8,6 +8,7 @@ from textual.reactive import var
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands
+from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
 from clive.__private.ui.background_tasks import BackgroundTasks
@@ -43,7 +44,7 @@ class World:
 
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
-        self._commands = Commands(self)
+        self._commands = self._setup_commands()
         self._background_tasks = BackgroundTasks()
 
         if use_beekeeper:
@@ -77,6 +78,9 @@ class World:
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)
 
+    def _setup_commands(self) -> Commands:
+        return Commands(self)
+
     def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         keeper = Beekeeper(remote_endpoint=remote_endpoint)
         keeper.start()
@@ -99,6 +103,9 @@ class TextualWorld(World, ManualReactive):
         super().__init__(ProfileData.get_lastly_used_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
         self.profile_data = self._profile_data
         self.app_state = self._app_state
+
+    def _setup_commands(self) -> Commands:
+        return Commands(self, exception_handler_cls=CommunicationFailureNotificator)
 
 
 class TyperWorld(World):

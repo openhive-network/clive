@@ -17,7 +17,7 @@ def test_fast_broadcast_smoke_test(world: World, init_node: tt.InitNode, wallet:
     # ARRANGE
     pubkey = world.commands.import_key(
         key_to_import=PrivateKeyAliased(value=str(init_node.config.private_key[0]), alias="some-alias")
-    )
+    ).result_or_raise
 
     # ACT & ASSERT
     world.commands.fast_broadcast(

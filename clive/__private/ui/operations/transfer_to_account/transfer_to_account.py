@@ -19,7 +19,7 @@ from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select.select import Select
 from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset, Operation
+from clive.models import Asset
 from clive.models.asset import AssetAmountInvalidFormatError, AssetAmountT
 from schemas.operations import TransferOperation
 
@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.keys import PublicKeyAliased
+
 
 LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
 
@@ -128,11 +129,13 @@ class TransferToAccount(CartBasedScreen):
         if not key or not operation:
             return
 
-        self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)
+        if not self.app.world.commands.fast_broadcast(operation=operation, sign_with=key).success:
+            return
+
         self.app.pop_screen()
         Notification(f"Operation `{operation.__class__.__name__}` broadcast successfully.", category="success").show()
 
-    def __create_operation(self) -> Operation | None:
+    def __create_operation(self) -> TransferOperation[Asset.Hive, Asset.Hbd] | None:
         """
         Collects data from the screen and creates a new operation based on it.
 

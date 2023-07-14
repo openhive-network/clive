@@ -131,7 +131,9 @@ class TransactionSummary(BaseScreen):
 
     def __broadcast(self) -> None:
         signed = self.__sign_transaction()
-        self.app.world.commands.broadcast(transaction=signed)
+
+        if not self.app.world.commands.broadcast(transaction=signed).success:
+            return
 
         self.__clear_all()
         self.action_dashboard()
@@ -152,7 +154,7 @@ class TransactionSummary(BaseScreen):
         except NoItemSelectedError as error:
             raise TransactionCouldNotBeSignedError(transaction, "No key was selected!") from error
         else:
-            return self.app.world.commands.sign(transaction=transaction, sign_with=selected.value)
+            return self.app.world.commands.sign(transaction=transaction, sign_with=selected.value).result_or_raise
 
     def __build_transaction(self) -> Transaction:
-        return self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)
+        return self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart).result_or_raise
