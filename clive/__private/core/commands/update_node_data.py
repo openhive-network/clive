@@ -90,7 +90,9 @@ class UpdateNodeData(Command):
             account.data.last_refresh = self.__normalize_datetime(datetime.utcnow())
 
     def __harvest_data_from_api(self) -> dict[Account, AccountApiInfo]:
-        account_names = [acc.name for acc in self.accounts]
+        account_names = [acc.name for acc in self.accounts if acc.name]
+        if not account_names:
+            return {}
         core_accounts_info: dict[str, AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests]] = {
             str(acc.name): acc for acc in self.node.api.database_api.find_accounts(accounts=account_names).accounts
         }
