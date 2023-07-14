@@ -7,7 +7,7 @@ import pytest
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_in_active import CommandInActive, CommandRequiresActiveModeError
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError
-from clive.__private.core.failed_command_notificator import FailedCommandNotificator
+from clive.__private.core.error_handlers.failed_command_notificator import FailedCommandNotificator
 
 
 @dataclass(kw_only=True)
