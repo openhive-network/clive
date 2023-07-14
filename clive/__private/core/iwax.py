@@ -33,8 +33,14 @@ def validate_operation(operation: Operation) -> bool:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
 
 
-def calculate_digest(transaction: Transaction, chain_id: str) -> str:
-    result = wax.calculate_digest(__as_binary_json(transaction), chain_id.encode())
+def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
+    result = wax.calculate_sig_digest(__as_binary_json(transaction), chain_id.encode())
+    __validate_wax_response(result)
+    return result.result.decode()
+
+
+def calculate_transaction_id(transaction: Transaction) -> str:
+    result = wax.calculate_transaction_id(__as_binary_json(transaction))
     __validate_wax_response(result)
     return result.result.decode()
 

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.iwax import calculate_digest
+from clive.__private.core.iwax import calculate_sig_digest
 from clive.models import Signature, Transaction
 
 if TYPE_CHECKING:
@@ -20,7 +20,7 @@ class Sign(CommandWithResult[Transaction]):
     chain_id: str
 
     def _execute(self) -> None:
-        sig_digest = calculate_digest(self.transaction, self.chain_id)
+        sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
         result = self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.value)
         self.transaction.signatures = [Signature(result.signature)]
         self._result = self.transaction
