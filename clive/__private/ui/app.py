@@ -5,6 +5,7 @@ from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Final, overload
 
+from test_tools.__private.raise_exception_helper import RaiseExceptionHelper
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.reactive import reactive, var
@@ -98,6 +99,7 @@ class Clive(App[int], ManualReactive):
     def on_mount(self) -> None:
         refresh_interval: Final[int] = 3
         self.console.set_window_title("Clive")
+        RaiseExceptionHelper.initialize()
 
         def update_data_worker(closed: ThreadPoolClosedCallbackT) -> None:
             while not closed():
@@ -294,9 +296,12 @@ class Clive(App[int], ManualReactive):
         self.post_message(BackgroundErrorOccurred(error))
 
     def __update_data_from_node(self) -> None:
-        self.world.commands.update_node_data(
-            accounts=[self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
-        )
+        try:
+            self.world.commands.update_node_data(
+                accounts=[self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+            )
+        except Exception as e:  # noqa: BLE001
+            RaiseExceptionHelper.raise_exception_in_main_thread(e)
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
