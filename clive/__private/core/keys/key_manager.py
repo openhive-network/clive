@@ -48,7 +48,10 @@ class KeyManager:
 
     @property
     def first(self) -> PublicKeyAliased:
-        return self.__keys[0]
+        try:
+            return self.__keys[0]
+        except IndexError:
+            raise KeyNotFoundError("No keys found.") from None
 
     def is_public_alias_available(self, alias: str) -> bool:
         return self.__is_alias_available(alias, self.__keys)
