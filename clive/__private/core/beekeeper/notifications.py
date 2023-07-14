@@ -23,7 +23,7 @@ class BeekeeperNotificationsServer:
 
     def notify(self, message: JsonT) -> None:
         logger.info(f"Got notification: {message}")
-        details: dict[str, str] = message["value"]
+        details = message["value"]
         if message["name"] == "webserver listening":
             if details["type"] == "HTTP":
                 self.http_endpoint = self.__parse_endpoint_notification(details)
@@ -33,6 +33,7 @@ class BeekeeperNotificationsServer:
             logger.debug("Beekeeper reports to be ready")
             self.ready.set()
         elif message["name"] == "opening_beekeeper_failed":
+            details = details["connection"]
             assert details["type"] == "HTTP"
             self.http_endpoint = self.__parse_endpoint_notification(details)
             logger.debug(f"Got notification with http address, but beekeeper failed when opening: {self.http_endpoint}")

@@ -122,6 +122,8 @@ class Beekeeper:
 
         if self.__notification_server.opening_beekeeper_failed.wait(timeout):
             self.__close_beekeeper()
+            self.__notification_server_port = self.__notification_server.listen()
+            self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         elif not (
             self.__notification_server.http_listening_event.wait(timeout)
             and self.__notification_server.ready.wait(timeout)
