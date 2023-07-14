@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
 from textual.containers import Container
-from textual.widgets import Button, Tab, Tabs
+from textual.widgets import Button, TabbedContent, TabPane
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
@@ -25,14 +25,6 @@ class OperationButton(CliveButton):
         self.operation_screen = operation_screen
 
 
-class OperationTab(Tab):
-    """A tab that knows which container of operations is assigned to"""
-
-    def __init__(self, label: str, *, container: str, id_: str | None = None):
-        super().__init__(label, id=id_)
-        self.container = container
-
-
 class FinancialOperations(Container):
     """Container used to store all financial operations"""
 
@@ -44,25 +36,28 @@ class Operations(CartBasedScreen):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        yield Tabs(
-            OperationTab("Financial", container="FinancialOperations", id_="financial-tab"),
-            Tab("Social", id="social-tab"),
-            Tab("Governance", id="governance-tab"),
-            Tab("Account management", id="account-management-tab"),
-        )
-        with FinancialOperations(id="financial-operations"):
-            yield OperationButton("TRANSFER", FINANCIAL_OPERATIONS[0])
+        with TabbedContent(initial="financial"):
+            with TabPane("Financial", id="financial"):
+                yield OperationButton("TRANSFER", FINANCIAL_OPERATIONS[0])
+                yield OperationButton("HIVE POWER MANAGEMENT", FINANCIAL_OPERATIONS[1])
+                yield OperationButton("CONVERT", FINANCIAL_OPERATIONS[1])
+                yield OperationButton("SAVING", FINANCIAL_OPERATIONS[1])
+            with TabPane("Social", id="social"):
+                yield OperationButton("SOCIAL OPERATIONS", FINANCIAL_OPERATIONS[1])
+            with TabPane("Governance", id="governance"):
+                yield OperationButton("GOVERNANCE OPERATIONS", FINANCIAL_OPERATIONS[1])
+            with TabPane("Account management", id="account-management"):
+                yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", FINANCIAL_OPERATIONS[1])
 
-    def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
-        container: FinancialOperations = self.query_one(FinancialOperations)
-
-        if event.tab.id == "financial-tab":
-            container.visible = True
-        else:
-            container.visible = False
+    def action_show_tab(self, tab: str) -> None:
+        """Switch to a new tab."""
+        self.get_child_by_type(TabbedContent).active = tab
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
+        if not isinstance(button.operation_screen(), FINANCIAL_OPERATIONS[0]):
+            Notification("Not implemented yet", category="warning").show()
+            return
         self.app.push_screen(button.operation_screen())
 
     def action_cart(self) -> None:
