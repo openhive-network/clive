@@ -18,8 +18,6 @@ from clive.__private.ui.operations import (
     CommentOptions,
     Convert,
     CreateClaimedAccount,
-    CreateProposal,
-    Custom,
     CustomJson,
     DelegateVestingShares,
     DeleteComment,
@@ -31,14 +29,12 @@ from clive.__private.ui.operations import (
     LimitOrderCreate2,
     RecoverAccount,
     RecurrentTransfer,
-    RemoveProposal,
     RequestAccountRecovery,
     SetWithdrawVestingRoute,
     TransferFromSavings,
     TransferToAccount,
     TransferToSavings,
     TransferToVesting,
-    UpdateProposal,
     UpdateProposalVotes,
     Vote,
     WithdrawVesting,
@@ -69,31 +65,30 @@ FINANCIAL_OPERATIONS: Final[list[type[OperationBase]]] = [
     CollateralizedConvert,
     DelegateVestingShares,
     RecurrentTransfer,
-    EscrowTransfer,
-    EscrowDispute,
-    EscrowRelease,
-    LimitOrderCancel,
-    LimitOrderCreate,
-    LimitOrderCreate2,
 ]
 GOVERNANCE_OPERATIONS: Final[list[type[OperationBase]]] = [
     AccountWitnessVote,
     AccountWitnessProxy,
-    WitnessSetProperties,
-    WitnessUpdate,
     UpdateProposalVotes,
-    CreateProposal,
-    RemoveProposal,
-    UpdateProposal,
 ]
-ACCOUNT_MANAGEMENT: Final[list[type[OperationBase]]] = [
+ADVANCED_OPERATIONS: Final[list[type[OperationBase]]] = [
     AccountCreate,
-    AccountUpdate,
-    AccountUpdate2,
-    ChangeRecoveryAccount,
+    CustomJson,
     ClaimAccount,
     CreateClaimedAccount,
-    RecoverAccount,
     RequestAccountRecovery,
+    RecoverAccount,
+    ChangeRecoveryAccount,
+    EscrowTransfer,
+    EscrowDispute,
+    EscrowRelease,
 ]
-CUSTOM_OPERATIONS: Final[list[type[OperationBase]]] = [CustomJson, Custom]
+MARKET_OPERATIONS: Final[list[type[OperationBase]]] = [LimitOrderCreate, LimitOrderCreate2, LimitOrderCancel]
+WITNESS_OPERATIONS: Final[list[type[OperationBase]]] = [
+    WitnessUpdate,
+    WitnessSetProperties,
+]
+ACCOUNT_MANAGEMENT: Final[list[type[OperationBase]]] = [
+    AccountUpdate,
+    AccountUpdate2,
+]
