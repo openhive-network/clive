@@ -5,10 +5,11 @@ from datetime import datetime, timedelta, timezone
 from math import ceil
 from typing import TYPE_CHECKING, Final, cast
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import calculate_current_manabar_value, calculate_manabar_full_regeneration_time
 from clive.exceptions import CommunicationError
 from clive.models import Asset
+from schemas.database_api.response_schemas import GetDynamicGlobalProperties
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -18,10 +19,9 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import Account
     from schemas.__private.hive_fields_custom_schemas import Manabar
     from schemas.database_api.fundaments_of_reponses import AccountItemFundament
-    from schemas.database_api.response_schemas import GetDynamicGlobalProperties
     from schemas.rc_api.fundaments_of_responses import RcAccount
 
-    GDPOT = GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]
+DynamicGlobalPropertiesT = GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]
 
 
 class SuppressNotExistingApi:
@@ -39,7 +39,7 @@ class SuppressNotExistingApi:
 
 
 @dataclass
-class UpdateNodeData(Command):
+class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
     accounts: list[Account]
     node: Node
 
@@ -56,6 +56,7 @@ class UpdateNodeData(Command):
 
         api_accounts = self.__harvest_data_from_api()
         gdpo = self.node.api.database_api.get_dynamic_global_properties()
+        self._result = gdpo
 
         for account, info in api_accounts.items():
             account.data.reputation = info.reputation
@@ -189,7 +190,7 @@ class UpdateNodeData(Command):
 
     def __calculate_hive_power(
         self,
-        gdpo: GDPOT,
+        gdpo: DynamicGlobalPropertiesT,
         account: AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests],
     ) -> int:
         account_vesting_shares = (
@@ -205,7 +206,9 @@ class UpdateNodeData(Command):
             ),
         )
 
-    def __update_manabar(self, gdpo: GDPOT, max_mana: int, manabar: Manabar, dest: mock_database.Manabar) -> None:
+    def __update_manabar(
+        self, gdpo: DynamicGlobalPropertiesT, max_mana: int, manabar: Manabar, dest: mock_database.Manabar
+    ) -> None:
         power_from_api = int(manabar.current_mana)
         last_update = int(manabar.last_update_time)
         dest.max_value = int(self.__vests_to_hive(max_mana, gdpo).amount)
@@ -231,7 +234,7 @@ class UpdateNodeData(Command):
             - gdpo.time
         )
 
-    def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: GDPOT) -> Asset.Hive:
+    def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: DynamicGlobalPropertiesT) -> Asset.Hive:
         if isinstance(amount, Asset.Vests):
             amount = int(amount.amount)
         return Asset.Hive(
