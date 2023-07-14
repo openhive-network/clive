@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Final
 
 import humanize
@@ -20,6 +21,7 @@ from clive.models import Asset
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from datetime import datetime
 
     from textual.app import ComposeResult
 
@@ -73,8 +75,10 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         )
 
     def __pretty_hivepower(self) -> str:
-        formated_size = humanize.naturalsize(self.__manabar.value, binary=False)
-        return formated_size.replace(" Bytes", "").upper().replace(" ", "") + " HP"
+        format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
+        matched = format_fix_regex.match(humanize.naturalsize(self.__manabar.value, binary=False))
+        assert matched is not None
+        return f"{matched[1]}{matched[2]} HP".upper()
 
 
 class BalanceStats(AccountReferencingWidget):
@@ -117,9 +121,19 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield Static()
         yield Label("LAST:")
         yield DynamicLabel(
-            self.app.world, "profile_data", lambda _: f"Transaction: {self._account.data.last_transaction}"
+            self.app.world,
+            "profile_data",
+            lambda _: f"Transaction: {self.__humanize_datetime(self._account.data.last_transaction)}",
         )
-        yield DynamicLabel(self.app.world, "profile_data", lambda _: f"Update: {self._account.data.last_refresh}")
+        yield DynamicLabel(
+            self.app.world,
+            "profile_data",
+            lambda _: f"Update: {self.__humanize_datetime(self._account.data.last_refresh)}",
+        )
+
+    @classmethod
+    def __humanize_datetime(cls, dt: datetime) -> str:
+        return dt.replace(tzinfo=None).isoformat()
 
 
 class AccountRow(AccountReferencingWidget):
