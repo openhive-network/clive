@@ -122,7 +122,7 @@ class TransferToAccount(CartBasedScreen):
 
         self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)
         self.app.pop_screen()
-        Notification(f"Operation `{operation.__class__.__name__}` broadcast succesfully.", category="success").show()
+        Notification(f"Operation `{operation.__class__.__name__}` broadcast successfully.", category="success").show()
 
     def __create_operation(self) -> Operation | None:
         """
