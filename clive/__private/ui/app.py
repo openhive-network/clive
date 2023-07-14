@@ -105,6 +105,7 @@ class Clive(App[int], ManualReactive):
             while not closed():
                 self.__update_data_from_node()
                 self.world.update_reactive("profile_data")
+                self.world.update_reactive("app_state")
                 sleep(refresh_interval)
 
         def __should_enter_onboarding() -> bool:

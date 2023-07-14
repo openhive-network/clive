@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import datetime
 from typing import TYPE_CHECKING
 
+import humanize
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Header as TextualHeader
-from textual.widgets._header import HeaderClock, HeaderTitle
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
+from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -63,6 +65,24 @@ class AlarmsSummary(Container, CliveWidget):
         yield self.__label
 
 
+class DynamicPropertiesClock(Horizontal, CliveWidget):
+    def compose(self) -> ComposeResult:
+        yield DynamicLabel(self.app.world, "app_state", self.__update_block_num, id_="block_num")
+        yield DynamicLabel(self.app.world, "app_state", self.__update_chain_time, id_="chain_time")
+        yield DynamicLabel(self.app.world, "app_state", self.__update_last_update, id_="last_update")
+
+    def __update_block_num(self, app_state: AppState) -> str:
+        return f"block: {app_state.get_dynamic_global_properties().head_block_number}"
+
+    def __update_chain_time(self, app_state: AppState) -> str:
+        return f"{app_state.get_dynamic_global_properties().time.time()} UTC"
+
+    def __update_last_update(self, app_state: AppState) -> str:
+        gdpo = app_state.get_dynamic_global_properties()
+        last_update = humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
+        return f"last update: {last_update}"
+
+
 class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
@@ -92,6 +112,8 @@ class Header(TextualHeader, CliveWidget):
                     callback=lambda app_state: "active" if app_state.is_active() else "inactive",
                     id_="mode-label",
                 )
+            yield DynamicPropertiesClock()
+
         with Vertical(id="expandable"):
             yield HeaderTitle()
             yield TitledLabel(
@@ -101,7 +123,7 @@ class Header(TextualHeader, CliveWidget):
                 callback=self.__get_node_address,
                 id_="node-address-label",
             )
-        yield HeaderClock()
+            yield DynamicPropertiesClock()
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()

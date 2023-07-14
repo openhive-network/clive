@@ -19,6 +19,29 @@ Header HeaderTitle {
   width: 1fr;
 }
 
+Header DynamicPropertiesClock {
+  height: 1;
+  width: auto;
+  background: $foreground-darken-1 5%;
+  color: $text;
+}
+
+Header DynamicPropertiesClock DynamicLabel {
+  background: $foreground -5%;
+  content-align: center middle;
+  margin-left: 1;
+  padding: 0 1;
+}
+
+Header DynamicPropertiesClock #last_update {
+  background: $foreground -5%;
+  width: 30;
+}
+
+Header TitledLabel {
+  padding: 0 1;
+}
+
 Header #profile-label #value {
   color: $accent;
 }
