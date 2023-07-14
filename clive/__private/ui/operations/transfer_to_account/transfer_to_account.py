@@ -8,6 +8,7 @@ from textual.binding import Binding
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
+from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
@@ -24,6 +25,8 @@ from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from clive.__private.core.keys import PublicKeyAliased
 
 LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
 
@@ -104,14 +107,22 @@ class TransferToAccount(CartBasedScreen):
         self.__fast_broadcast()
 
     def __fast_broadcast(self) -> None:
-        if operation := self.__create_operation():
-            self.app.world.commands.fast_broadcast(
-                operation=operation, sign_with=self.app.world.profile_data.working_account.keys.first
-            )
-            self.app.pop_screen()
-            Notification(
-                f"Operation `{operation.__class__.__name__}` broadcast succesfully.", category="success"
-            ).show()
+        def get_key() -> PublicKeyAliased | None:
+            try:
+                return self.app.world.profile_data.working_account.keys.first
+            except KeyNotFoundError:
+                Notification("No keys found for the working account.", category="error").show()
+                return None
+
+        key = get_key()
+        operation = self.__create_operation()
+
+        if not key or not operation:
+            return
+
+        self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)
+        self.app.pop_screen()
+        Notification(f"Operation `{operation.__class__.__name__}` broadcast succesfully.", category="success").show()
 
     def __create_operation(self) -> Operation | None:
         """
