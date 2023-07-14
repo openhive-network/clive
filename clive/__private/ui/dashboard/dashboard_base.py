@@ -156,9 +156,13 @@ class DashboardBase(BaseScreen):
             with Body() as body:
                 yield ContainerTitle("WORKING ACCOUNT", classes="working")
                 yield WorkingAccountContainer()
-                yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
-                yield WatchedAccountContainer()
+                if self.__has_watched_accounts():
+                    yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
+                    yield WatchedAccountContainer()
             yield CommandLine(focus_on_cancel=body)
 
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
+
+    def __has_watched_accounts(self) -> bool:
+        return bool(self.app.world.profile_data.watched_accounts)
