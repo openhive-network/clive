@@ -106,18 +106,18 @@ class Beekeeper:
     def is_already_running_locally() -> bool:
         return BeekeeperExecutable.is_already_running()
 
-    def _send(self, response: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
+    def _send(self, result_model: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        result = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))
+        response = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))
 
-        if result.status_code != codes.OK:
+        if response.status_code != codes.OK:
             raise BeekeeperNon200StatusCodeError
 
-        json = result.json()
-        if "error" in json:
-            raise BeekeeperResponseError(request, json)
+        result = response.json()
+        if "error" in result:
+            raise BeekeeperResponseError(request, result)
 
-        return_value = JSONRPCResponse[T](**json)
+        return_value = JSONRPCResponse[T](**result)
 
         if return_value.id_ != request.id_:
             raise BeekeeperNotMatchingIdJsonRPCError(request.id_, return_value.id_)
