@@ -74,6 +74,15 @@ class BeekeeperExecutable:
 
         return int(data["pid"])
 
+    @classmethod
+    def is_already_running(cls) -> bool:
+        try:
+            cls.get_pid_from_file()
+        except BeekeeperNotRunningError:
+            return False
+        else:
+            return True
+
     def run(self) -> None:
         if self.__process is not None:
             raise BeekeeperAlreadyRunningError

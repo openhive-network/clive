@@ -25,6 +25,13 @@ class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
     def run(self) -> None:
+        if Beekeeper.is_already_running_locally():
+            typer.echo(
+                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
+                f" {Beekeeper.get_pid_from_file()}"
+            )
+            raise typer.Exit(errno.EEXIST)
+
         typer.echo("Launching beekeeper...")
 
         with ExitCallHandler(
