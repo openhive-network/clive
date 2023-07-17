@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from httpx import codes
-from pydantic import Field
+from pydantic import Field, validator
 
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.api import BeekeeperApi
@@ -48,6 +48,16 @@ class NotMatchingIdJsonRPCError(CommunicationError):
 
 
 class Beekeeper:
+    class ConnectionFileData(CliveBaseModel):
+        type_: str = Field(alias="type")
+        address: str
+        port: int
+
+        @validator("type_")
+        @classmethod
+        def convert_type(cls, value: str) -> str:
+            return value.lower()
+
     def __init__(self, *, remote_endpoint: Url | None = None, run_in_background: bool = False) -> None:
         if remote_endpoint:
             settings.set("beekeeper.remote_address", str(remote_endpoint))
@@ -161,17 +171,12 @@ class Beekeeper:
         raw_address = settings.get("beekeeper.remote_address")
         return Url.parse(raw_address) if raw_address else None
 
-    @staticmethod
-    def get_remote_address_from_connection_file() -> Url | None:
-        class ConnectionFileData(CliveBaseModel):
-            type_: str = Field(alias="type")
-            address: str
-            port: int
-
+    @classmethod
+    def get_remote_address_from_connection_file(cls) -> Url | None:
         connection_file = BeekeeperConfig.get_wallet_dir() / "beekeeper.connection"
         if not connection_file.is_file():
             return None
 
-        connection = ConnectionFileData.parse_file(connection_file)
+        connection = cls.ConnectionFileData.parse_file(connection_file)
 
         return Url(connection.type_, connection.address, connection.port)
