@@ -33,7 +33,7 @@ class OperationCommand(WorldBasedCommand, ABC):
             chain_id=self.world.node.chain_id,
         )
 
-        self.__print_transaction(transaction)
+        self.__print_transaction(transaction.with_hash())
         typer.echo(f"Transaction was successfully {'broadcasted' if self.broadcast else 'created'}.")
 
     @staticmethod

@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 from pydantic import Field, validator
 
+from clive.__private.core import iwax
 from clive.models import Operation, Signature  # noqa: TCH001
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
+from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
 from schemas.__private.operations import HF26OperationTypes
 from schemas.transaction_model.transaction import Hf26Transaction
-
-if TYPE_CHECKING:
-    from schemas.__private.hive_fields_custom_schemas import TransactionId
 
 
 class Transaction(Hf26Transaction):
@@ -36,6 +35,9 @@ class Transaction(Hf26Transaction):
 
     def is_signed(self) -> bool:
         return bool(self.signatures)
+
+    def with_hash(self) -> TransactionWithHash:
+        return TransactionWithHash(**self.dict(by_alias=True), transaction_id=iwax.calculate_transaction_id(self))
 
 
 class TransactionWithHash(Transaction):
