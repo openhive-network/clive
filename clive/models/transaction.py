@@ -22,7 +22,8 @@ class Transaction(Hf26Transaction):
     signatures: list[Signature] = Field(default_factory=list)
 
     @validator("operations", pre=True)
-    def convert_operations(cls, value: Any) -> list[Hf26OperationRepresentation]:  # noqa: N805
+    @classmethod
+    def convert_operations(cls, value: Any) -> list[Hf26OperationRepresentation]:
         assert isinstance(value, list)
         return [cls.__convert_to_h26(op) for op in value]
 
