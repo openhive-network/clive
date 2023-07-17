@@ -14,7 +14,7 @@ from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsS
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
-from clive.exceptions import CommunicationError
+from clive.exceptions import CliveError, CommunicationError
 from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
@@ -23,15 +23,19 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
 
 
-class UrlNotSetError(CommunicationError):
+class BeekeeperError(CliveError):
+    """Base class for all Beekeeper errors."""
+
+
+class BeekeeperUrlNotSetError(BeekeeperError):
     pass
 
 
-class Non200StatusCodeError(CommunicationError):
+class BeekeeperNon200StatusCodeError(BeekeeperError):
     pass
 
 
-class ErrorResponseError(CommunicationError):
+class BeekeeperResponseError(BeekeeperError, CommunicationError):
     def __init__(self, request: JSONRPCRequest, response: JsonT) -> None:
         logger.error(f"""
 For request: {request}
@@ -41,10 +45,10 @@ Got error response: {response}
         super().__init__(request, response)
 
 
-class NotMatchingIdJsonRPCError(CommunicationError):
+class BeekeeperNotMatchingIdJsonRPCError(BeekeeperError):
     def __init__(self, given: Any, got: Any) -> None:
-        logger.error(f"Id sent: `{given}`, got: `{got}`")
-        super().__init__(given, got)
+        self.message = f"Given id `{given}` does not match the id of the response `{got}`"
+        super().__init__(self.message)
 
 
 class Beekeeper:
@@ -86,7 +90,7 @@ class Beekeeper:
             self.config.webserver_http_endpoint = remote
 
         if not self.config.webserver_http_endpoint:
-            raise UrlNotSetError
+            raise BeekeeperUrlNotSetError
 
         return self.config.webserver_http_endpoint
 
@@ -107,16 +111,16 @@ class Beekeeper:
         result = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))
 
         if result.status_code != codes.OK:
-            raise Non200StatusCodeError
+            raise BeekeeperNon200StatusCodeError
 
         json = result.json()
         if "error" in json:
-            raise ErrorResponseError(request, json)
+            raise BeekeeperResponseError(request, json)
 
         return_value = JSONRPCResponse[T](**json)
 
         if return_value.id_ != request.id_:
-            raise NotMatchingIdJsonRPCError(request.id_, return_value.id_)
+            raise BeekeeperNotMatchingIdJsonRPCError(request.id_, return_value.id_)
 
         logger.info(f"Returning model: {return_value}")
         return return_value
