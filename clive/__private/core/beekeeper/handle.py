@@ -36,13 +36,8 @@ class BeekeeperNon200StatusCodeError(BeekeeperError):
 
 
 class BeekeeperResponseError(BeekeeperError, CommunicationError):
-    def __init__(self, request: JSONRPCRequest, response: JsonT) -> None:
-        logger.error(f"""
-For request: {request}
-
-Got error response: {response}
-""")
-        super().__init__(request, response)
+    def __init__(self, url: str, request: JSONRPCRequest, response: JsonT) -> None:
+        super().__init__(url, request.json(by_alias=True), response)
 
 
 class BeekeeperNotMatchingIdJsonRPCError(BeekeeperError):
@@ -107,15 +102,16 @@ class Beekeeper:
         return BeekeeperExecutable.is_already_running()
 
     def _send(self, result_model: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
+        url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        response = Communication.request(self.http_endpoint.as_string(), data=request.json(by_alias=True))
+        response = Communication.request(url, data=request.json(by_alias=True))
 
         if response.status_code != codes.OK:
             raise BeekeeperNon200StatusCodeError
 
         result = response.json()
         if "error" in result:
-            raise BeekeeperResponseError(request, result)
+            raise BeekeeperResponseError(url, request, result)
 
         return_value = JSONRPCResponse[T](**result)
 

@@ -36,12 +36,16 @@ class CommunicationFailureNotificator(ErrorHandlerContextManager):
 
     @classmethod
     def __determine_message(cls, exception: CommunicationError) -> str:
-        exception_raw = str(exception)
+        error_message = exception.get_response_error_message()
+
+        if not error_message:
+            return str(exception)
 
         for searched, printed in cls.SEARCHED_AND_PRINTED_MESSAGES.items():
-            if searched in exception_raw:
+            if searched in error_message:
                 return printed
-        return exception_raw
+
+        return error_message
 
     @staticmethod
     def __notify_tui(message: str) -> None:

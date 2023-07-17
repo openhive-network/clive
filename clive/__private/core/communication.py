@@ -100,13 +100,13 @@ class Communication:
         result: dict[str, Any] = {}
         post_method: Callable[..., httpx.Response] = httpx.post if sync else cls.get_async_client().post  # type: ignore
 
-        if not isinstance(data, str):
-            data = json.dumps(data, cls=CustomJSONEncoder)
+        data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
+
         for attempts_left in reversed(range(max_attempts)):
             try:
-                response: httpx.Response = await invoke(callback=partial(post_method, url, content=data))
+                response: httpx.Response = await invoke(callback=partial(post_method, url, content=data_serialized))
             except httpx.ConnectError as error:
-                raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}") from error
+                raise CommunicationError(url, data_serialized) from error
 
             result = response.json()
 
@@ -115,14 +115,16 @@ class Communication:
                     return response
 
                 if "error" in result:
-                    logger.debug(f"Error in response from {url=}, {data=}, {result=}")
+                    logger.debug(f"Error in response from {url=}, request={data_serialized}, response={result}")
                 else:
-                    raise UnknownResponseFormatError(response)
+                    raise UnknownResponseFormatError(url, data_serialized, result)
             else:
-                message = f"Received bad status code: {response.status_code} from {url=}, {data=}, {result=}"
-                logger.error(message)
+                logger.error(
+                    f"Received bad status code: {response.status_code} from {url=}, request={data_serialized},"
+                    f" response={result}"
+                )
 
             if attempts_left > 0:
                 await __sleep()
 
-        raise CommunicationError(f"Problem occurred during communication with {url=}, {data=}, {result=}")
+        raise CommunicationError(url, data_serialized, result)

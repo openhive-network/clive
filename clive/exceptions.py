@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Any
 
-if TYPE_CHECKING:
-    from httpx import Response
+from clive.__private.logger import logger
 
 
 class CliveError(Exception):
@@ -13,17 +12,35 @@ class CliveError(Exception):
 class CommunicationError(CliveError):
     """Base class for all communication exceptions."""
 
+    def __init__(self, url: str, request: str, response: dict[str, Any] | None = None, *, message: str = "") -> None:
+        self.url = url
+        self.request = request
+        self.response = response
+        message = message or self.__create_message()
+        logger.error(message)
+        super().__init__(message)
+
+    def get_response_error_message(self) -> str | None:
+        if self.response is None:
+            return None
+
+        message = self.response.get("error", {}).get("message", None)
+        return str(message) if message is not None else message
+
+    def __create_message(self) -> str:
+        message = f"Problem occurred during communication with: url={self.url}, request={self.request}"
+        if self.response is not None:
+            message += f", response={self.response}"
+
+        return message
+
 
 class UnknownResponseFormatError(CommunicationError):
     """Raised when the response format is unknown."""
 
-    def __init__(self, response: Response) -> None:
-        self.response = response
-        message = (
-            f"Unknown response format from url={response.url}\n"
-            f"data={response.request.content!r}, result={response.json()}"
-        )
-        super().__init__(message)
+    def __init__(self, url: str, request: str, response: dict[str, Any]) -> None:
+        message = f"Unknown response format from: {url=}, {request=}, {response=}"
+        super().__init__(url, request, response, message=message)
 
 
 class NoItemSelectedError(CliveError):
