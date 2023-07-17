@@ -9,11 +9,12 @@ from clive.__private.core import iwax
 from clive.models import Operation, Signature  # noqa: TCH001
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
 from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
-from schemas.__private.operations import HF26OperationTypes
+from schemas.__private.operations import Hf26OperationRepresentation, HF26OperationTypes
 from schemas.transaction_model.transaction import Hf26Transaction
 
 
 class Transaction(Hf26Transaction):
+    operations: list[Hf26OperationRepresentation] = Field(default_factory=list)
     ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(0))
     ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(0))
     expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
@@ -21,7 +22,7 @@ class Transaction(Hf26Transaction):
     signatures: list[Signature] = Field(default_factory=list)
 
     @validator("operations", pre=True)
-    def convert_operations(cls, value: Any) -> list[Operation]:  # noqa: N805
+    def convert_operations(cls, value: Any) -> list[Hf26OperationRepresentation]:  # noqa: N805
         assert isinstance(value, list)
         return [cls.__convert_to_h26(op) for op in value]
 
@@ -29,15 +30,26 @@ class Transaction(Hf26Transaction):
         self.operations.append(self.__convert_to_h26(operation))
 
     @classmethod
-    def __convert_to_h26(cls, operation: Operation) -> Operation:
+    def __convert_to_h26(cls, operation: Any) -> Hf26OperationRepresentation:
+        if isinstance(operation, Hf26OperationRepresentation):
+            return operation
         op_name = operation.get_name()
-        return HF26OperationTypes[op_name](type=op_name, value=operation)  # type: ignore[call-arg]
+
+        # Why is there `Hf26OperationType` type hint in the `HF26OperationTypes` structure when they re no longer of Operation type?
+        return HF26OperationTypes[op_name](type=op_name, value=operation)  # type: ignore[call-arg, return-value]
 
     def is_signed(self) -> bool:
         return bool(self.signatures)
 
     def with_hash(self) -> TransactionWithHash:
-        return TransactionWithHash(**self.dict(by_alias=True), transaction_id=iwax.calculate_transaction_id(self))
+        # TODO: There is an issue with __convert_to_h26(), the type of `operation` is not Operation but could be Any.
+        #  After resolving and making it to work with dict, it should be possible to **self.dict(by_alias=True)
+        #  like: return TransactionWithHash(**self.dict(by_alias=True) , transaction_id=iwax.calculate_transaction_id(self))
+
+        data = self.dict(by_alias=True)
+        data["operations"] = self.operations.copy()
+
+        return TransactionWithHash(**data, transaction_id=iwax.calculate_transaction_id(self))
 
 
 class TransactionWithHash(Transaction):
