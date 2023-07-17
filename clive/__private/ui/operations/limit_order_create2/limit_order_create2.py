@@ -8,7 +8,7 @@ from textual.widgets import Input, Static
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.operation_base import OperationBase
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.currency_selector_liquid import CurrencySelectorLiquid
+from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
