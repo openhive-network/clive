@@ -15,7 +15,7 @@ if not is_tab_completion_active():
         VirtualOperationRepresentationType,
     )
     from .asset import Asset
-    from .transaction import Transaction
+    from .transaction import Transaction, TransactionWithHash
 
     __all__ = [
         "ApiOperationObject",
@@ -30,4 +30,5 @@ if not is_tab_completion_active():
         "VirtualOperationRepresentationType",
         "Asset",
         "Transaction",
+        "TransactionWithHash",
     ]
