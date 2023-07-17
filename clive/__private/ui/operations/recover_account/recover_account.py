@@ -15,15 +15,15 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
-    """Container used for making correct layout of new owner authority"""
+    """Container used for making correct layout of new owner authority."""
 
 
 class AdditionalPlaceTaker(Static):
-    """Container used for making correct layout of new recent authority"""
+    """Container used for making correct layout of new recent authority."""
 
 
 class RecoverAccount(OperationBase):
@@ -34,16 +34,18 @@ class RecoverAccount(OperationBase):
         self.__weight_threshold_new_input = Input(placeholder="e.g: 1")
         self.__account_auths_new_input = Input(placeholder="e.g: alice, 1; bob, 1. Notice: split pair of values by ;")
         self.__key_auths_new_input = Input(
-            placeholder="e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. "
-            "Notice: split pair of values by ;"
+            placeholder=(
+                "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
+            )
         )
         self.__weight_threshold_recent_input = Input(placeholder="e.g: 1")
         self.__account_auths_recent_input = Input(
             placeholder="e.g: alice, 1; bob, 1. Notice: split pair of values by ;"
         )
         self.__key_auths_recent_input = Input(
-            placeholder="e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. "
-            "Notice: split pair of values by ;"
+            placeholder=(
+                "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
+            )
         )
 
     def create_left_panel(self) -> ComposeResult:

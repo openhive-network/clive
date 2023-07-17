@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
@@ -29,15 +29,15 @@ class PlaceTaker(Static):
 
 
 class ExchangeRatePlaceTaker(Static):
-    """Container used for making correct layout of Exchange rate big title"""
+    """Container used for making correct layout of Exchange rate big title."""
 
 
 class BaseQuotePlaceTaker(Static):
-    """Container used for making correct layout of base and quote fields"""
+    """Container used for making correct layout of base and quote fields."""
 
 
 class AmountToSellPlaceTaker(Static):
-    """Container used for making correct layout of amount to sell field"""
+    """Container used for making correct layout of amount to sell field."""
 
 
 class LimitOrderCreate2(OperationBase):

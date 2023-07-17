@@ -26,7 +26,7 @@ class OperationButton(CliveButton):
 
 
 class FinancialOperations(Container):
-    """Container used to store all financial operations"""
+    """Container used to store all financial operations."""
 
 
 class Operations(CartBasedScreen):

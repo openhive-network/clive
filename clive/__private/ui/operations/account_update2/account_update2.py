@@ -15,19 +15,19 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
-    """Container used for making correct layout of owner authority part"""
+    """Container used for making correct layout of owner authority part."""
 
 
 class AdditionalPlaceTaker(Static):
-    """Container used for making correct layout of active authority part"""
+    """Container used for making correct layout of active authority part."""
 
 
 class AdditionalPlaceTaker2(Static):
-    """Container used for making correct layout of posting authority part"""
+    """Container used for making correct layout of posting authority part."""
 
 
 class AccountUpdate2(OperationBase):
@@ -45,7 +45,9 @@ class AccountUpdate2(OperationBase):
         )
         self.__key_auths_owner_input = Input(
             "None",
-            placeholder="e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;",
+            placeholder=(
+                "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
+            ),
         )
 
         self.__weight_threshold_active_input = Input("None", placeholder="e.g: 1")
@@ -54,8 +56,9 @@ class AccountUpdate2(OperationBase):
         )
         self.__key_auths_active_input = Input(
             "None",
-            placeholder="e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. "
-            "Notice: split pair of values by ;",
+            placeholder=(
+                "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
+            ),
         )
 
         self.__weight_threshold_posting_input = Input("None", placeholder="e.g: 1")
@@ -64,8 +67,9 @@ class AccountUpdate2(OperationBase):
         )
         self.__key_auths_posting_input = Input(
             "None",
-            placeholder="e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. "
-            "Notice: split pair of values by ;",
+            placeholder=(
+                "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
+            ),
         )
 
     def create_left_panel(self) -> ComposeResult:

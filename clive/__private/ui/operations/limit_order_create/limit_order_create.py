@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
@@ -38,7 +38,7 @@ class LimitOrderCreate(OperationBase):
         self.__amount_to_sell_input = Input(placeholder="e.g.: 1.000")
         self.__min_to_receive_input = Input(placeholder="e.g.: 1.000")
         self.__fill_or_kill_input = Input(default_fill_or_kill, placeholder="e.g.: True")
-        self.__time_point_sec_input = Input(placeholder="e.g.: 1970-01-01T00:00:00")
+        self.__expiration_input = Input(placeholder="e.g.: 1970-01-01T00:00:00")
         self.__currency_selector_to_sell = CurrencySelectorLiquid()
         self.__currency_selector_to_receive = CurrencySelectorLiquid()
 
@@ -53,8 +53,8 @@ class LimitOrderCreate(OperationBase):
                 yield self.__order_id_input
                 yield Static("fill or kill", classes="label")
                 yield self.__fill_or_kill_input
-                yield Static("time point sec", classes="label")
-                yield self.__time_point_sec_input
+                yield Static("expiration", classes="label")
+                yield self.__expiration_input
                 yield Static("amount to sell", classes="label")
                 yield self.__amount_to_sell_input
                 yield self.__currency_selector_to_sell
@@ -65,9 +65,9 @@ class LimitOrderCreate(OperationBase):
     def _create_operation(self) -> LimitOrderCreateOperation[AssetHiveHF26, AssetHbdHF26]:
         return LimitOrderCreateOperation(
             owner=str(self.app.world.profile_data.name),
-            order_id=int(self.__order_id_input.value),
+            orderid=int(self.__order_id_input.value),
             amount_to_sell=self.__currency_selector_to_sell.selected.value(float(self.__amount_to_sell_input.value)),
             min_to_receive=self.__currency_selector_to_receive.selected.value(float(self.__min_to_receive_input.value)),
             fill_or_kill=bool(self.__fill_or_kill_input.value),
-            time_point_sec=self.__time_point_sec_input.value,
+            expiration=self.__expiration_input.value,
         )

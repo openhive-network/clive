@@ -28,15 +28,15 @@ class Asset:
 
     @classmethod
     def hive(cls, amount: AssetAmountT) -> Asset.Hive:
-        return Asset.Hive(amount=cls.__convert_amount_to_internal_representation(amount, Asset.Hive))
+        return Asset.Hive(amount=cls.convert_amount_to_internal_representation(amount, Asset.Hive))
 
     @classmethod
     def hbd(cls, amount: AssetAmountT) -> Asset.Hbd:
-        return Asset.Hbd(amount=cls.__convert_amount_to_internal_representation(amount, Asset.Hbd))
+        return Asset.Hbd(amount=cls.convert_amount_to_internal_representation(amount, Asset.Hbd))
 
     @classmethod
     def vests(cls, amount: AssetAmountT) -> Asset.Vests:
-        return Asset.Vests(amount=cls.__convert_amount_to_internal_representation(amount, Asset.Vests))
+        return Asset.Vests(amount=cls.convert_amount_to_internal_representation(amount, Asset.Vests))
 
     @classmethod
     def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
@@ -59,7 +59,7 @@ class Asset:
         amount, symbol = match.groups()
 
         asset_cls = cls.resolve_symbol(symbol)
-        return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
+        return asset_cls(amount=cls.convert_amount_to_internal_representation(amount, asset_cls))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:
@@ -70,7 +70,7 @@ class Asset:
         return f"{int(asset.amount) / 10**asset.precision :.{asset.precision}f}"
 
     @staticmethod
-    def __convert_amount_to_internal_representation(amount: AssetAmountT, precision: int | type[Asset.AnyT]) -> int:
+    def convert_amount_to_internal_representation(amount: AssetAmountT, precision: int | type[Asset.AnyT]) -> int:
         precision = precision if isinstance(precision, int) else precision.get_asset_information().precision
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
         return int(amount_decimal * 10**precision)

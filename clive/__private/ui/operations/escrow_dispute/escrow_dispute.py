@@ -17,11 +17,11 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
-    """Container used for making correct layout of a grid"""
+    """Container used for making correct layout of a grid."""
 
 
 class EscrowDispute(OperationBase):

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title"""
+    """All the content of the screen, excluding the title."""
 
 
 class PlaceTaker(Static):
@@ -31,8 +31,9 @@ class RequestAccountRecovery(OperationBase):
         self.__weight_threshold_input = Input(placeholder="e.g: 1")
         self.__account_auths_input = Input(placeholder="e.g: alice, 1; bob, 1. Notice: split pair of values by ;")
         self.__key_auths_input = Input(
-            placeholder="e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. "
-            "Notice: split pair of values by ;"
+            placeholder=(
+                "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
+            )
         )
 
     def create_left_panel(self) -> ComposeResult:

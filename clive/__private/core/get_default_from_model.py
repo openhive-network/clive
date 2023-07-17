@@ -11,7 +11,7 @@ ExpectT = TypeVar("ExpectT")
 
 
 class WrongTypeError(CliveError):
-    """Raised when the type of the value is not the expected one"""
+    """Raised when the type of the value is not the expected one."""
 
 
 class NoMatchesError(CliveError):

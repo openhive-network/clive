@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 
 class OperationBase(CartBasedScreen, AbstractClassMessagePump):
-    """Base class for all screens that represent operations"""
+    """Base class for all screens that represent operations."""
 
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -29,13 +29,14 @@ class OperationBase(CartBasedScreen, AbstractClassMessagePump):
 
     @abstractmethod
     def _create_operation(self) -> Operation | None:
-        """Should return a new operation based on the data from screen"""
+        """Should return a new operation based on the data from screen."""
 
     def create_operation(self) -> Operation | None:
         """
-        Tries to create a new operation
+        Tries to create a new operation.
 
-        Returns:
+        Returns
+        -------
             Operation if the operation is valid, None otherwise.
         """
         try:
@@ -69,7 +70,7 @@ class OperationBase(CartBasedScreen, AbstractClassMessagePump):
     def __fast_broadcast(self) -> None:
         if operation := self.create_operation():
             self.app.world.commands.fast_broadcast(
-                operation=operation, sign_with=self.app.world.profile_data.working_account.keys[0]
+                operation=operation, sign_with=self.app.world.profile_data.working_account.keys.first
             )
             self.app.pop_screen()
             Notification(
@@ -79,6 +80,7 @@ class OperationBase(CartBasedScreen, AbstractClassMessagePump):
     def __add_to_cart(self) -> bool:
         """
         Creates a new operation and adds it to the cart.
+
         :return: True if the operation was added to the cart successfully, False otherwise.
         """
         operation = self.create_operation()
@@ -91,7 +93,7 @@ class OperationBase(CartBasedScreen, AbstractClassMessagePump):
 
     @staticmethod
     def _split_auths_fields(auths: str) -> list[tuple[str, int]]:
-        """To create valid format of auths like key_auths, to create pydantic operation model"""
+        """To create valid format of auths like key_auths, to create pydantic operation model."""
         if not auths or auths == "None":
             return []
 
