@@ -5,12 +5,12 @@ from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Final, overload
 
-from test_tools.__private.raise_exception_helper import RaiseExceptionHelper
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core.beekeeper.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.communication import Communication
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
