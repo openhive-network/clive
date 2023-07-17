@@ -6,7 +6,7 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
-from clive.__private.core.beekeeper.raise_exception_helper import RaiseExceptionHelper
+from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 
 if TYPE_CHECKING:
     from collections.abc import Callable

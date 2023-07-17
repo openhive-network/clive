@@ -10,9 +10,9 @@ from textual.binding import Binding
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core.beekeeper.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.communication import Communication
 from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.activate.activate import Activate as ActivateScreen
