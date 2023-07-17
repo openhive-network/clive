@@ -105,6 +105,11 @@ class CreateProfile(CreateProfileCommon):
         self.app.pop_screen()
 
     def action_create_profile(self) -> None:
+        # Disabling this feature for now, because for this to make sense, there is a need for the profile change feature
+        # and according to the initial assumptions, we are currently focusing on a single-profile clive instance.
+        Notification("This feature is not available yet.", category="info").show()
+        return
+
         try:
             Command.execute_multiple(*self._create_profile())
         except FormValidationError as error:
