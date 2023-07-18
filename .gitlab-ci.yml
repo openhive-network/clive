@@ -187,6 +187,7 @@ build_and_push_clive_testnet_image:
 
 .prepare_clive_stable_image:
   stage: build_docker
+  extends: .docker_image_builder_job
   only:
     - develop
     - master
@@ -196,6 +197,7 @@ build_and_push_clive_testnet_image:
     - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
     - docker push ${ADDITIONAL_IMAGE_NAME}
+  tags: *shared_tags
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
