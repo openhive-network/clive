@@ -73,20 +73,29 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     def compose(self) -> ComposeResult:
         self.set_interval(0.5, self.__trigger_last_update)
 
-        yield DynamicLabel(self.app.world, "app_state", self.__get_block_num, id_="block_num")
-        yield DynamicLabel(self.app.world, "app_state", self.__get_chain_time, id_="chain_time")
-        yield DynamicLabel(self, "last_update_trigger", self.__get_last_update, id_="last_update")
+        yield TitledLabel(
+            "Block",
+            obj_to_watch=self.app.world,
+            attribute_name="app_state",
+            callback=self.__get_last_block,
+            id_="block_num",
+        )
+        yield TitledLabel(
+            "Last update",
+            obj_to_watch=self,
+            attribute_name="last_update_trigger",
+            callback=self.__get_last_update,
+            id_="last_update",
+        )
 
-    def __get_block_num(self, app_state: AppState) -> str:
-        return f"block: {app_state.get_dynamic_global_properties().head_block_number}"
-
-    def __get_chain_time(self, app_state: AppState) -> str:
-        return f"{app_state.get_dynamic_global_properties().time.time()} UTC"
+    def __get_last_block(self, app_state: AppState) -> str:
+        block_num = app_state.get_dynamic_global_properties().head_block_number
+        block_time = app_state.get_dynamic_global_properties().time.time()
+        return f"{block_num} ({block_time} UTC)"
 
     def __get_last_update(self, _: bool) -> str:
         gdpo = self.app.world.app_state.get_dynamic_global_properties()
-        last_update = humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
-        return f"last update: {last_update}"
+        return humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
 
     def __trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
