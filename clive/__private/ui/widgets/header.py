@@ -123,7 +123,6 @@ class Header(TextualHeader, CliveWidget):
                 callback=self.__get_node_address,
                 id_="node-address-label",
             )
-            yield DynamicPropertiesClock()
 
     def on_click(self, event: events.Click) -> None:  # type: ignore
         event.prevent_default()
