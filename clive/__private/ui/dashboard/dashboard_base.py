@@ -75,9 +75,12 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         )
 
     def __pretty_hivepower(self) -> str:
+        formatted_string = humanize.naturalsize(self.__manabar.value, binary=False)
+        if "Bytes" in formatted_string:
+            return f"{self.__manabar.value} HP"
         format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
-        matched = format_fix_regex.match(humanize.naturalsize(self.__manabar.value, binary=False))
-        assert matched is not None
+        matched = format_fix_regex.match(formatted_string)
+        assert matched is not None, "Given string does not match regex"
         return f"{matched[1]}{matched[2]} HP".upper()
 
 
