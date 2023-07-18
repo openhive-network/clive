@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import humanize
 from textual.containers import Container, Horizontal, Vertical
+from textual.reactive import var
 from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
@@ -66,10 +67,15 @@ class AlarmsSummary(Container, CliveWidget):
 
 
 class DynamicPropertiesClock(Horizontal, CliveWidget):
+    last_update_trigger = var(False)
+    """A value that is used to trigger a re-rendering of the last update time."""
+
     def compose(self) -> ComposeResult:
+        self.set_interval(0.5, self.__trigger_last_update)
+
         yield DynamicLabel(self.app.world, "app_state", self.__get_block_num, id_="block_num")
         yield DynamicLabel(self.app.world, "app_state", self.__get_chain_time, id_="chain_time")
-        yield DynamicLabel(self.app.world, "app_state", self.__get_last_update, id_="last_update")
+        yield DynamicLabel(self, "last_update_trigger", self.__get_last_update, id_="last_update")
 
     def __get_block_num(self, app_state: AppState) -> str:
         return f"block: {app_state.get_dynamic_global_properties().head_block_number}"
@@ -77,10 +83,13 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     def __get_chain_time(self, app_state: AppState) -> str:
         return f"{app_state.get_dynamic_global_properties().time.time()} UTC"
 
-    def __get_last_update(self, app_state: AppState) -> str:
-        gdpo = app_state.get_dynamic_global_properties()
+    def __get_last_update(self, _: bool) -> str:
+        gdpo = self.app.world.app_state.get_dynamic_global_properties()
         last_update = humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
         return f"last update: {last_update}"
+
+    def __trigger_last_update(self) -> None:
+        self.last_update_trigger = not self.last_update_trigger
 
 
 class Header(TextualHeader, CliveWidget):
