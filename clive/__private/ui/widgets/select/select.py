@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Final, Generic
 
-from textual.binding import Bindings
+from textual.binding import _Bindings
 from textual.message import Message
 from textual.reactive import reactive
 
@@ -63,8 +63,8 @@ class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
     ) -> None:
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
-        self.__bindings_before: Bindings | None = None
-        self.__global_bindings_before: Bindings | None = None
+        self.__bindings_before: _Bindings | None = None
+        self.__global_bindings_before: _Bindings | None = None
 
         self.__items = items
         self.__assert_min_amount_of_items()
@@ -217,8 +217,8 @@ class Select(CliveWidget, Generic[SelectItemValueType], can_focus=True):
     def __override_bindings(self) -> None:
         self.__bindings_before = self.screen._bindings
         self.__global_bindings_before = self.app._bindings
-        self.screen._bindings = Bindings()
-        self.app._bindings = Bindings()
+        self.screen._bindings = _Bindings()
+        self.app._bindings = _Bindings()
         self._refresh_footer_bindings()
 
     def __restore_bindings(self) -> None:
