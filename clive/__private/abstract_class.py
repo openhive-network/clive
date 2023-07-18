@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, ABCMeta
 from typing import Any
 
-from textual.message_pump import MessagePumpMeta
+from textual.message_pump import _MessagePumpMeta
 
 
 class AbstractClass(ABC):  # noqa: B024
@@ -23,7 +23,7 @@ class AbstractClass(ABC):  # noqa: B024
         return super().__new__(cls, *args, **kwargs)
 
 
-class MessagePumpABCMeta(MessagePumpMeta, ABCMeta):
+class MessagePumpABCMeta(_MessagePumpMeta, ABCMeta):
     """
     Combine MessagePumpMeta and ABCMeta into a single metaclass.
 
