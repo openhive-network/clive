@@ -67,17 +67,17 @@ class AlarmsSummary(Container, CliveWidget):
 
 class DynamicPropertiesClock(Horizontal, CliveWidget):
     def compose(self) -> ComposeResult:
-        yield DynamicLabel(self.app.world, "app_state", self.__update_block_num, id_="block_num")
-        yield DynamicLabel(self.app.world, "app_state", self.__update_chain_time, id_="chain_time")
-        yield DynamicLabel(self.app.world, "app_state", self.__update_last_update, id_="last_update")
+        yield DynamicLabel(self.app.world, "app_state", self.__get_block_num, id_="block_num")
+        yield DynamicLabel(self.app.world, "app_state", self.__get_chain_time, id_="chain_time")
+        yield DynamicLabel(self.app.world, "app_state", self.__get_last_update, id_="last_update")
 
-    def __update_block_num(self, app_state: AppState) -> str:
+    def __get_block_num(self, app_state: AppState) -> str:
         return f"block: {app_state.get_dynamic_global_properties().head_block_number}"
 
-    def __update_chain_time(self, app_state: AppState) -> str:
+    def __get_chain_time(self, app_state: AppState) -> str:
         return f"{app_state.get_dynamic_global_properties().time.time()} UTC"
 
-    def __update_last_update(self, app_state: AppState) -> str:
+    def __get_last_update(self, app_state: AppState) -> str:
         gdpo = app_state.get_dynamic_global_properties()
         last_update = humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
         return f"last update: {last_update}"
