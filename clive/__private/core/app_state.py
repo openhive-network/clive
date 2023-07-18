@@ -3,9 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT  # noqa: TCH001
-
 if TYPE_CHECKING:
+    from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT
     from clive.__private.core.world import World
 
 
