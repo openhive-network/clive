@@ -185,38 +185,28 @@ build_and_push_clive_testnet_image:
     BASE_IMAGE: ${HIVED_IMAGE_NAME}
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
-build_and_push_clive_stable_image:
+.prepare_clive_stable_image:
   stage: build_docker
+  only:
+    - develop
+    - master
+  variables:
+    ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
+  script:
+    - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
+    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker push ${ADDITIONAL_IMAGE_NAME}
+
+build_and_push_clive_stable_image:
+  extends: .prepare_clive_stable_image
   needs:
     - job: build_and_push_clive_image
       artifacts: true
 
-  only:
-    - develop
-    - master
-
-  variables:
-    ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
-  script:
-    - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
-    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker push ${ADDITIONAL_IMAGE_NAME}
-
 build_and_push_clive_stable_testnet_image:
-  stage: build_docker
+  extends: .prepare_clive_stable_image
   needs:
     - job: build_and_push_clive_testnet_image
       artifacts: true
-
-  only:
-    - develop
-    - master
-
-  variables:
-    ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
-  script:
-    - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
-    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker push ${ADDITIONAL_IMAGE_NAME}
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
