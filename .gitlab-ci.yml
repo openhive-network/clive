@@ -194,9 +194,9 @@ build_and_push_clive_testnet_image:
   variables:
     ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
   script:
-    - docker image tag ${CLIVE_IMAGE_NAME} ${ADDITIONAL_IMAGE_NAME}
+    - docker manifest create ${ADDITIONAL_IMAGE_NAME} ${CLIVE_IMAGE_NAME}
     - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker push ${ADDITIONAL_IMAGE_NAME}
+    - docker manifest push ${ADDITIONAL_IMAGE_NAME}
   tags: *shared_tags
 
 build_and_push_clive_stable_image:
