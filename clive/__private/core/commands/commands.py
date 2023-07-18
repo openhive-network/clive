@@ -94,7 +94,7 @@ class Commands:
             beekeeper=self.__world.beekeeper,
         ).execute()
 
-    def update_node_data(self, *, accounts: list[Account]) -> None:
+    def update_node_data(self, *, accounts: list[Account] | None = None) -> None:
         self.__world.app_state._dynamic_global_properties = UpdateNodeData(
-            accounts=accounts, node=self.__world.node
+            accounts=accounts or [], node=self.__world.node
         ).execute_with_result()

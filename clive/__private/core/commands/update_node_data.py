@@ -40,8 +40,8 @@ class SuppressNotExistingApi:
 
 @dataclass
 class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
-    accounts: list[Account]
     node: Node
+    accounts: list[Account] = field(default_factory=list)
 
     @dataclass
     class AccountApiInfo:

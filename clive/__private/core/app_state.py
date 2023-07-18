@@ -17,7 +17,7 @@ class AppState:
 
     def get_dynamic_global_properties(self) -> DynamicGlobalPropertiesT:
         if self._dynamic_global_properties is None:
-            self.world.commands.update_node_data(accounts=[])
+            self.world.commands.update_node_data()
         assert self._dynamic_global_properties is not None
         return self._dynamic_global_properties
 
