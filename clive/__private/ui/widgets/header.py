@@ -71,7 +71,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     """A value that is used to trigger a re-rendering of the last update time."""
 
     def compose(self) -> ComposeResult:
-        self.set_interval(0.5, self.__trigger_last_update)
+        self.set_interval(0.25, self.__trigger_last_update)
 
         yield TitledLabel(
             "Block",
