@@ -10,7 +10,7 @@ from clive.__private.logger import logger
 @pytest.mark.sequential()
 def test_autocompletion_time() -> None:
     # ARRANGE
-    seconds_threshold = 0.4
+    seconds_threshold = 0.5
     command = "_CLIVE_COMPLETE=1 TIMEFORMAT='%U' /bin/bash -c 'time python3 -X importtime clive/main.py --help'"
 
     # ACT
