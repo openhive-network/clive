@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class FormScreenBase(CliveScreen, Contextual[ContextT]):
+class FormScreenBase(CliveScreen[None], Contextual[ContextT]):
     def __init__(self, owner: Form[ContextT]) -> None:
         self._owner = owner
         super().__init__()

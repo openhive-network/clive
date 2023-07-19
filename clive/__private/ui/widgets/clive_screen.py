@@ -4,7 +4,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec
 
 from textual.dom import DOMNode
-from textual.screen import Screen
+from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 P = ParamSpec("P")
 
 
-class CliveScreen(Screen, CliveWidget):
+class CliveScreen(Screen[ScreenResultType], CliveWidget):
     """
     An ordinary textual screen that also knows what type of application it belongs to.
 

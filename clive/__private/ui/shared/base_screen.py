@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class BaseScreen(CliveScreen, AbstractClassMessagePump):
+class BaseScreen(CliveScreen[None], AbstractClassMessagePump):
     def compose(self) -> ComposeResult:
         yield Header()
         yield from self.create_main_panel()

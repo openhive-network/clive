@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 
     from rich.console import RenderableType
     from textual.message import Message
-    from textual.screen import Screen
+    from textual.screen import Screen, ScreenResultType
     from textual.widget import AwaitMount
 
     from clive.__private.core.commands.command_wrappers import CommandWrapper
@@ -110,7 +110,7 @@ class Clive(App[int], ManualReactive):
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
 
-    def replace_screen(self, old: str | type[Screen], new: str | Screen) -> None:
+    def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
         new_, _ = self._get_screen(new)
 
         if self.is_screen_on_top(old):
@@ -121,28 +121,28 @@ class Clive(App[int], ManualReactive):
         self.app._screen_stack.pop(old_screen_index)
         self.push_screen_at(old_screen_index, new_)
 
-    def __get_screen_index(self, screen: str | type[Screen]) -> int:
+    def __get_screen_index(self, screen: str | type[Screen[ScreenResultType]]) -> int:
         for index, screen_on_stack in enumerate(self.app._screen_stack):
             if self.__screen_eq(screen_on_stack, screen):
                 return index
 
         raise ScreenNotFoundError(f"Screen {screen} is not in the screen stack.\nScreen stack: {self.screen_stack}")
 
-    def is_screen_on_top(self, screen: str | type[Screen]) -> bool:
+    def is_screen_on_top(self, screen: str | type[Screen[ScreenResultType]]) -> bool:
         return self.__screen_eq(self.screen, screen)
 
-    def push_screen(self, screen: Screen | str) -> AwaitMount:
+    def push_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
         return self.__update_screen("push_screen", screen)
 
-    def push_screen_at(self, index: int, screen: Screen | str) -> None:
+    def push_screen_at(self, index: int, screen: Screen[ScreenResultType] | str) -> None:
         """Push a screen at the given index in the stack."""
         screen_, _ = self.app._get_screen(screen)
         self.app._screen_stack.insert(index, screen_)
 
-    def pop_screen(self) -> Screen:
+    def pop_screen(self) -> Screen[ScreenResultType]:
         return self.__update_screen("pop_screen")
 
-    def pop_screen_until(self, *screens: str | type[Screen]) -> None:
+    def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> None:
         """
         Pop all screens until one of the given screen is on top of the stack.
 
@@ -163,20 +163,24 @@ class Clive(App[int], ManualReactive):
                 f"None of the {screens} screens was found in stack.\nScreen stack: {self.screen_stack}"
             )
 
-    def switch_screen(self, screen: Screen | str) -> AwaitMount:
+    def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
         return self.__update_screen("switch_screen", screen)
 
     @overload
-    def __update_screen(self, method_name: Literal["push_screen", "switch_screen"], screen: Screen | str) -> AwaitMount:
+    def __update_screen(
+        self, method_name: Literal["push_screen", "switch_screen"], screen: Screen[ScreenResultType] | str
+    ) -> AwaitMount:
         ...
 
     @overload
-    def __update_screen(self, method_name: Literal["pop_screen"]) -> Screen:
+    def __update_screen(self, method_name: Literal["pop_screen"]) -> Screen[ScreenResultType]:
         ...
 
     def __update_screen(
-        self, method_name: Literal["push_screen", "switch_screen", "pop_screen"], screen: str | Screen | None = None
-    ) -> AwaitMount | Screen:
+        self,
+        method_name: Literal["push_screen", "switch_screen", "pop_screen"],
+        screen: str | Screen[ScreenResultType] | None = None,
+    ) -> AwaitMount | Screen[ScreenResultType]:
         """
         Auxiliary function to override the default push_screen, switch_screen and pop_screen methods.
 
@@ -184,7 +188,7 @@ class Clive(App[int], ManualReactive):
         `def on_screen_resume` so we have to override the push_screen, switch_screen and pop_screen methods.
         """
         method = getattr(super(), method_name)
-        reply: AwaitMount | Screen = method(screen) if screen else method()
+        reply: AwaitMount | Screen[ScreenResultType] = method(screen) if screen else method()
 
         self.title = f"{self.__class__.__name__} ({self.screen.__class__.__name__})"
         return reply
@@ -230,23 +234,23 @@ class Clive(App[int], ManualReactive):
         for screen in reversed(self.screen_stack):
             screen.post_message(message)
 
-    def post_message_to_screen(self, screen: str | type[Screen], message: Message) -> None:
+    def post_message_to_screen(self, screen: str | type[Screen[ScreenResultType]], message: Message) -> None:
         """Post a message to a specific screen in the stack."""
         self.__assert_screen_in_stack(screen)
         for screen_ in reversed(self.screen_stack):
             if self.__screen_eq(screen_, screen):
                 screen_.post_message(message)
 
-    def __assert_screen_in_stack(self, screen_to_check: str | type[Screen]) -> None:
+    def __assert_screen_in_stack(self, screen_to_check: str | type[Screen[ScreenResultType]]) -> None:
         if not self.__is_screen_in_stack(screen_to_check):
             raise ScreenNotFoundError(
                 f"Screen {screen_to_check} is not in the screen stack.\nScreen stack: {self.screen_stack}"
             )
 
-    def __is_screen_in_stack(self, screen_to_check: str | type[Screen]) -> bool:
+    def __is_screen_in_stack(self, screen_to_check: str | type[Screen[ScreenResultType]]) -> bool:
         return any(self.__screen_eq(screen, screen_to_check) for screen in self.screen_stack)
 
-    def __screen_eq(self, screen: Screen, other: str | type[Screen]) -> bool:
+    def __screen_eq(self, screen: Screen[ScreenResultType], other: str | type[Screen[ScreenResultType]]) -> bool:
         if isinstance(other, str):
             return screen.__class__.__name__ == other
         return isinstance(screen, other)

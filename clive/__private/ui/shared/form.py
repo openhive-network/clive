@@ -15,7 +15,7 @@ from clive.__private.ui.widgets.clive_screen import CliveScreen
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
 
 
-class Form(Contextual[ContextT], CliveScreen):
+class Form(Contextual[ContextT], CliveScreen[None]):
     AMOUNT_OF_DEFAULT_SCREENS: Final[int] = 2
 
     def __init__(self) -> None:

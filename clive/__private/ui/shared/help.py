@@ -13,7 +13,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from textual.screen import Screen
+    from textual.screen import Screen, ScreenResultType
 
 
 class Help(BaseScreen):
@@ -25,7 +25,7 @@ class Help(BaseScreen):
 
     GLOBAL_HELP_FILE_PATH: Final[Path] = ROOT_DIRECTORY / "__private/ui/global_help.md"
 
-    def __init__(self, screen: Screen) -> None:
+    def __init__(self, screen: Screen[ScreenResultType]) -> None:
         super().__init__()
 
         self.__screen = screen
