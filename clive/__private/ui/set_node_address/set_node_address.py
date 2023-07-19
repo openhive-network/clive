@@ -135,7 +135,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
             with ScrollablePart():
                 yield self.__selected_node
                 yield Static()
-                yield ModeSwitchContainer()
+                yield ModeSwitchContainer(disabled=True)
                 yield Static()
                 yield self.__nodes_list
                 yield self.__manual_node
