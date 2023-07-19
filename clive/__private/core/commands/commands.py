@@ -116,7 +116,15 @@ class Commands:
         )
 
     def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
-        return self.__surround_with_exception_handler(UpdateNodeData(accounts=accounts or [], node=self.__world.node))
+        wrapper = self.__surround_with_exception_handler(
+            UpdateNodeData(accounts=accounts or [], node=self.__world.node)
+        )
+
+        if wrapper.error_occurred:
+            return CommandWrapper(command=wrapper.command, error=wrapper.error)
+
+        self.__world.app_state._dynamic_global_properties = wrapper.result_or_raise
+        return CommandWrapper(command=wrapper.command)
 
     @overload
     def __surround_with_exception_handler(
