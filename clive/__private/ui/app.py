@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Final, overload
+from typing import TYPE_CHECKING, Final, TypeVar
 
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
@@ -29,16 +29,19 @@ from clive.exceptions import ScreenNotFoundError
 from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from typing import ClassVar, Literal
 
     from rich.console import RenderableType
     from textual.message import Message
-    from textual.screen import Screen, ScreenResultType
+    from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
     from clive.__private.core.commands.command_wrappers import CommandWrapper
     from clive.__private.ui.app_messages import NodeDataUpdated, ProfileDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
+
+UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
 
 class Clive(App[int], ManualReactive):
@@ -131,8 +134,13 @@ class Clive(App[int], ManualReactive):
     def is_screen_on_top(self, screen: str | type[Screen[ScreenResultType]]) -> bool:
         return self.__screen_eq(self.screen, screen)
 
-    def push_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
-        return self.__update_screen("push_screen", screen)
+    def push_screen(
+        self,
+        screen: Screen[ScreenResultType] | str,
+        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
+    ) -> AwaitMount:
+        fun = super().push_screen
+        return self.__update_screen(lambda: fun(screen, callback))
 
     def push_screen_at(self, index: int, screen: Screen[ScreenResultType] | str) -> None:
         """Push a screen at the given index in the stack."""
@@ -140,7 +148,8 @@ class Clive(App[int], ManualReactive):
         self.app._screen_stack.insert(index, screen_)
 
     def pop_screen(self) -> Screen[ScreenResultType]:
-        return self.__update_screen("pop_screen")
+        fun = super().pop_screen
+        return self.__update_screen(lambda: fun())
 
     def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> None:
         """
@@ -164,32 +173,17 @@ class Clive(App[int], ManualReactive):
             )
 
     def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
-        return self.__update_screen("switch_screen", screen)
+        fun = super().switch_screen
+        return self.__update_screen(lambda: fun(screen))
 
-    @overload
-    def __update_screen(
-        self, method_name: Literal["push_screen", "switch_screen"], screen: Screen[ScreenResultType] | str
-    ) -> AwaitMount:
-        ...
-
-    @overload
-    def __update_screen(self, method_name: Literal["pop_screen"]) -> Screen[ScreenResultType]:
-        ...
-
-    def __update_screen(
-        self,
-        method_name: Literal["push_screen", "switch_screen", "pop_screen"],
-        screen: str | Screen[ScreenResultType] | None = None,
-    ) -> AwaitMount | Screen[ScreenResultType]:
+    def __update_screen(self, callback: Callable[[], UpdateScreenResultT]) -> UpdateScreenResultT:
         """
         Auxiliary function to override the default push_screen, switch_screen and pop_screen methods.
 
         Because of Textual's event ScreenResume not being bubbled up, we can't easily hook on it via
         `def on_screen_resume` so we have to override the push_screen, switch_screen and pop_screen methods.
         """
-        method = getattr(super(), method_name)
-        reply: AwaitMount | Screen[ScreenResultType] = method(screen) if screen else method()
-
+        reply = callback()
         self.title = f"{self.__class__.__name__} ({self.screen.__class__.__name__})"
         return reply
 
