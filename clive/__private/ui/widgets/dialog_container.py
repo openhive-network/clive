@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-from textual.containers import Container
+from textual.containers import ScrollableContainer
 
 from clive.__private.ui.widgets.big_title import BigTitle
 
 
-class DialogContainer(Container):
+class DialogContainer(ScrollableContainer):
     """A container for dialog-like looking widgets. Content stored inside this container will be centered."""
 
     def __init__(self, title: str = "", *, id_: str | None = None, classes: str | None = None) -> None:

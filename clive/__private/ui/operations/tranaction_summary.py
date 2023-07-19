@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
 from clive.__private.core.keys import PublicKey
@@ -34,7 +34,7 @@ class StaticPart(Static):
     """Static part of the screen."""
 
 
-class ScrollablePart(Container, can_focus=True):
+class ScrollablePart(ScrollableContainer, can_focus=True):
     """Scrollable part of the screen."""
 
 

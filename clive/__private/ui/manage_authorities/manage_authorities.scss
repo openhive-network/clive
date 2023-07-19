@@ -25,6 +25,10 @@ ManageAuthorities AuthorityHeader {
   margin: 0 1;
 }
 
+ManageAuthorities ScrollablePart {
+  height: 1fr;
+}
+
 ManageAuthorities Authority {
   margin: 1;
 }

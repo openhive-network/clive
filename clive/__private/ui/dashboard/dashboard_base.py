@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 import humanize
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
 from clive.__private.storage.mock_database import Account, AccountType, Manabar, WorkingAccount
@@ -30,7 +30,7 @@ class ContainerTitle(Static):
     """A title for working/watched accounts container."""
 
 
-class Body(Static, can_focus=True):
+class Body(ScrollableContainer, can_focus=True):
     """A body for working/watched accounts container."""
 
 

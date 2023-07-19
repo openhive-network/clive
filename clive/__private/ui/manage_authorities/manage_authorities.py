@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
+from textual.containers import ScrollableContainer
 from textual.message import Message
 from textual.widgets import Button, Static
 
@@ -34,6 +35,10 @@ class StaticColumn(Static):
 
 class ColumnLayout(Static):
     """Holds column order."""
+
+
+class ScrollablePart(ScrollableContainer):
+    pass
 
 
 odd = "OddColumn"
@@ -99,14 +104,15 @@ class ManageAuthorities(BaseScreen):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__mount_point = ViewBag()
+        self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
-        with self.__mount_point:
+        with ViewBag():
             yield BigTitle("authorities")
             yield AuthorityHeader()
-            for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-                self.__mount_point.mount(Authority(idx, key))
+            with self.__scrollable_part:
+                for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
+                    yield Authority(idx, key)
 
     def action_new_authority(self) -> None:
         self.app.push_screen(NewAuthority())
@@ -121,4 +127,4 @@ class ManageAuthorities(BaseScreen):
         self.query(Authority).remove()
 
         for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-            self.__mount_point.mount(Authority(idx, key))
+            self.__scrollable_part.mount(Authority(idx, key))

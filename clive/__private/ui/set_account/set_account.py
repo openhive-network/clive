@@ -4,7 +4,7 @@ from re import Pattern, compile
 from typing import TYPE_CHECKING, Final
 
 from rich.highlighter import Highlighter
-from textual.containers import Horizontal
+from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Checkbox, Input, Static
 
 from clive.__private.core.profile_data import ProfileData
@@ -26,7 +26,7 @@ class InvalidAccountNameError(FormValidationError):
         super().__init__(f"Given account name is invalid: `{given_account_name}`", given_value=given_account_name)
 
 
-class Body(Static):
+class ScrollablePart(ScrollableContainer):
     """All the content of the screen, excluding the title."""
 
 
@@ -65,7 +65,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("set account name")
-            with Body():
+            with ScrollablePart():
                 with AccountNameInputContainer():
                     yield Static("Account name:", id="account-name-label")
                     yield Static("@", id="account-name-at")

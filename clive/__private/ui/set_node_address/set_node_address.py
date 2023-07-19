@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, Final
 import httpx
 from rich.highlighter import Highlighter
 from textual.binding import Binding
-from textual.containers import Container, Horizontal
+from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Button, Input, Static, Switch
 
 from clive.__private.core.beekeeper.model import JSONRPCRequest
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class Body(Static):
+class ScrollablePart(ScrollableContainer):
     """All the content of the screen, excluding the title."""
 
 
@@ -129,7 +129,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("set node address")
-            with Body():
+            with ScrollablePart():
                 yield self.__selected_node
                 yield Static()
                 yield ModeSwitchContainer()

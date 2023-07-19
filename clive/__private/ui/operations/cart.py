@@ -4,7 +4,7 @@ import contextlib
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container
+from textual.containers import ScrollableContainer
 from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static
@@ -62,7 +62,7 @@ class StaticPart(Static):
     """Container for the static part of the screen - title, global buttons and table header."""
 
 
-class ScrollablePart(Container):
+class ScrollablePart(ScrollableContainer):
     """Container used for holding operation items."""
 
 

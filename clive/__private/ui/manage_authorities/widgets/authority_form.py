@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 from textual.message import Message
 from textual.widgets import Input, Static
 
@@ -21,6 +21,10 @@ if TYPE_CHECKING:
 
 class Body(Grid):
     """Container for body."""
+
+
+class ScrollablePart(ScrollableContainer):
+    pass
 
 
 class SubTitle(Static):
@@ -48,7 +52,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         with ViewBag():
             yield BigTitle(self._title())
             yield from self._content_after_big_title()
-            with Body():
+            with ScrollablePart(), Body():
                 yield Static("Key alias:", classes="label")
                 yield self._key_alias_input
                 yield from self._content_after_alias_input()

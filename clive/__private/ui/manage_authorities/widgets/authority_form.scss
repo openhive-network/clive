@@ -8,7 +8,11 @@ AuthorityForm Body {
   grid-rows: 4;
   grid-size: 2;
   height: auto;
+}
+
+AuthorityForm ScrollablePart {
   padding: 2 4;
+  height: 1fr;
 }
 
 AuthorityForm .label {

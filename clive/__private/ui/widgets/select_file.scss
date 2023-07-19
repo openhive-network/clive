@@ -1,3 +1,7 @@
+SelectFile DialogContainer {
+  overflow: hidden;
+}
+
 SelectFile Body {
   layout: grid;
   grid-size: 2;
