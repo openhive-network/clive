@@ -51,7 +51,7 @@ pytest-asyncio = "0.21.0"
 pytest-xdist = "3.1.0"
 ruff = "0.0.277"
 types-pyyaml = "6.0.12.4"
-textual = { extras = ["dev"], version = "0.29.0" }
+textual_dev = "1.0.1"
 
 test-tools = { path = "hive/tests/hive-local-tools/test-tools", develop = true }
 
