@@ -54,7 +54,7 @@ class SelectFile(BaseScreen):
             yield DirectoryTree(str(Path.home()))
 
     def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
-        self.__file_path_input.value = event.path
+        self.__file_path_input.value = str(event.path)
 
     def action_save(self) -> None:
         if not self.__is_valid():
