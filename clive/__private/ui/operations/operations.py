@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
-from textual.containers import Container
 from textual.widgets import Button, TabbedContent, TabPane
 
 from clive.__private.ui.operations.cart import Cart
@@ -23,10 +22,6 @@ class OperationButton(CliveButton):
     def __init__(self, label: TextType, operation_screen: type[OperationBase]) -> None:
         super().__init__(label)
         self.operation_screen = operation_screen
-
-
-class FinancialOperations(Container):
-    """Container used to store all financial operations."""
 
 
 class Operations(CartBasedScreen):
