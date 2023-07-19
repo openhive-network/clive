@@ -150,7 +150,7 @@ class Header(TextualHeader, CliveWidget):
                 id_="node-address-label",
             )
 
-    def on_click(self, event: events.Click) -> None:  # type: ignore
+    def on_click(self, event: events.Click) -> None:
         event.prevent_default()
         self.app.header_expanded = not self.app.header_expanded
 
