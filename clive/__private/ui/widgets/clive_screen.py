@@ -48,7 +48,3 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
             return wrapper
 
         return decorator
-
-    def on_mount(self) -> None:
-        if self.app.focused is None:
-            self.focus_next()
