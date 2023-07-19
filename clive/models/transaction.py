@@ -9,7 +9,7 @@ from clive.__private.core import iwax
 from clive.models import Operation, Signature  # noqa: TCH001
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
 from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
-from schemas.__private.operations import Hf26OperationRepresentation, HF26OperationTypes
+from schemas.__private.operations import Hf26OperationRepresentation, get_hf26_representation
 from schemas.transaction_model.transaction import Hf26Transaction
 
 
@@ -36,8 +36,7 @@ class Transaction(Hf26Transaction):
             return operation
         op_name = operation.get_name()
 
-        # Why is there `Hf26OperationType` type hint in the `HF26OperationTypes` structure when they re no longer of Operation type?
-        return HF26OperationTypes[op_name](type=op_name, value=operation)  # type: ignore[call-arg, return-value]
+        return get_hf26_representation(op_name)(type=op_name, value=operation)
 
     def is_signed(self) -> bool:
         return bool(self.signatures)
