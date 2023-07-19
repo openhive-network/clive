@@ -25,7 +25,7 @@ def test_autocompletion_time() -> None:
     logger.info(output)
 
     message = (
-        f"Autocompletion time `{import_time:.2f}s` exceeds `{seconds_threshold}s`\n"
+        f"Autocompletion time `{import_time}s` exceeds `{seconds_threshold}s`\n"
         "Please check for any unnecessary imports in autocompletion mode."
     )
     assert import_time < seconds_threshold, message
