@@ -19,7 +19,7 @@ def test_autocompletion_time() -> None:
     # ASSERT
     output = result.stderr.strip()
 
-    import_time = float(output.splitlines()[-1])
+    import_time = float(output.splitlines()[-1].replace(",", "."))
 
     logger.info(f"Cumulative import time: {import_time:.2f}s")
     logger.info(output)
