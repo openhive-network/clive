@@ -30,7 +30,7 @@ python = "^3.10"
 dunamai = "1.15.0"
 dynaconf = "3.1.11"
 loguru = "0.6.0"
-textual = "0.29.0"
+textual = "0.30.0"
 httpx = { extras = ["http2"], version = "0.23.3" }
 pydantic = "1.10.11"
 merge-args = "0.1.5"
