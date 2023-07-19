@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import timedelta
 from pathlib import Path
 from time import sleep
-from typing import TYPE_CHECKING, Final, TypeVar
+from typing import TYPE_CHECKING, Any, Final, TypeVar
 
 from textual import on
 from textual.app import App, AutopilotCallbackType
@@ -149,7 +149,7 @@ class Clive(App[int], ManualReactive):
         screen_, _ = self.app._get_screen(screen)
         self.app._screen_stack.insert(index, screen_)
 
-    def pop_screen(self) -> Screen[ScreenResultType]:
+    def pop_screen(self) -> Screen[Any]:
         fun = super().pop_screen
         return self.__update_screen(lambda: fun())
 
