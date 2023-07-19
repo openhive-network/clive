@@ -20,7 +20,7 @@ class CliveWidget(Widget):
     """
 
     @property
-    def app(self) -> Clive:
+    def app(self) -> Clive:  # type: ignore[override]
         from clive.__private.ui.app import Clive  # To avoid circular imports
 
         return typing.cast(Clive, super().app)
