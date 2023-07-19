@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import os
 
-from textual.cli._run import run_app
 from textual.features import parse_features
+from textual_dev.tools.run import run_app
 
 
 def main() -> None:
