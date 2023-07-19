@@ -102,7 +102,7 @@ class Clive(App[int], ManualReactive):
         RaiseExceptionHelper.initialize()
 
         def __should_enter_onboarding() -> bool:
-            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
+            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
         self.background_tasks.run_in_thread(self.__update_data_from_node)
