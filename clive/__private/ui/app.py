@@ -133,7 +133,7 @@ class Clive(App[int], ManualReactive):
 
         raise ScreenNotFoundError(f"Screen {screen} is not in the screen stack.\nScreen stack: {self.screen_stack}")
 
-    def is_screen_on_top(self, screen: str | type[Screen[ScreenResultType]]) -> bool:
+    def is_screen_on_top(self, screen: str | type[Screen[Any]]) -> bool:
         return self.__screen_eq(self.screen, screen)
 
     def push_screen(
