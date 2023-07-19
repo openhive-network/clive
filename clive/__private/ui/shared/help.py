@@ -31,7 +31,7 @@ class Help(BaseScreen):
         self.__screen = screen
 
         if isinstance(screen, DashboardBase):
-            self.__help_file_path = self.GLOBAL_HELP_FILE_PATH
+            self.__help_file_path: Path = self.GLOBAL_HELP_FILE_PATH
         else:
             class_path = Path(inspect.getfile(screen.__class__))
             self.__help_file_path = class_path.parent / "help.md"
