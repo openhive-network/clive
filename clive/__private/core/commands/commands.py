@@ -127,7 +127,7 @@ class Commands:
         return CommandWrapper(command=wrapper.command)
 
     @overload
-    def __surround_with_exception_handler(
+    def __surround_with_exception_handler(  # type: ignore[misc]
         self, command: CommandWithResult[CommandResultT]
     ) -> CommandWithResultWrapper[CommandResultT]:
         ...

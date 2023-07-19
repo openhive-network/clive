@@ -12,8 +12,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class CommandWrapper:
-    command: Command
+class ErrorHolder:
     error: BaseException | None = None
 
     @property
@@ -25,12 +24,17 @@ class CommandWrapper:
         return not self.error_occurred
 
 
+@dataclass(kw_only=True)
+class CommandWrapper(ErrorHolder):
+    command: Command
+
+
 class ResultNotAvailableError(CliveError):
     """Raised when a command's result is not available."""
 
 
 @dataclass(kw_only=True)
-class CommandWithResultWrapper(Generic[CommandResultT], CommandWrapper):
+class CommandWithResultWrapper(Generic[CommandResultT], ErrorHolder):
     command: CommandWithResult[CommandResultT]
     result: CommandResultT | ResultNotAvailable
 
