@@ -30,7 +30,7 @@ python = "^3.10"
 dunamai = "1.15.0"
 dynaconf = "3.1.11"
 loguru = "0.6.0"
-textual = "0.21.0"
+textual = "0.22.0"
 httpx = { extras = ["http2"], version = "0.23.3" }
 pydantic = "1.10.11"
 merge-args = "0.1.5"
@@ -51,7 +51,7 @@ pytest-asyncio = "0.21.0"
 pytest-xdist = "3.1.0"
 ruff = "0.0.277"
 types-pyyaml = "6.0.12.4"
-textual = { extras = ["dev"], version = "0.21.0" }
+textual = { extras = ["dev"], version = "0.22.0" }
 
 test-tools = { path = "hive/tests/hive-local-tools/test-tools", develop = true }
 
