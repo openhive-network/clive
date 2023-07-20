@@ -1,12 +1,9 @@
-Operations DialogContainer #hint {
-  text-align: center;
+Operations OperationButton{
+    width: 1fr;
+    background: $primary;
+    margin: 1 2 0 2;
 }
 
-Operations DialogContainer > Button {
-  width: 1fr;
-  background: $primary;
-}
-
-Operations DialogContainer > Button:focus {
-  background: $primary-darken-1;
+Operations Tab{
+    width: 1fr;
 }
