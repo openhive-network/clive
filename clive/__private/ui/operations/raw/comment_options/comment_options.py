@@ -1,0 +1,70 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from textual.containers import Grid
+from textual.widgets import Checkbox, Input, Static
+
+from clive.__private.core.get_default_from_model import get_default_from_model
+from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
+from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.placeholders_constants import (
+    ASSET_AMOUNT_PLACEHOLDER,
+    PERCENT_PLACEHOLDER,
+    PERMLINK_PLACEHOLDER,
+)
+from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.models import Asset
+from schemas.operations import CommentOptionsOperation
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+
+class Body(Grid):
+    """All the content of the screen, excluding the title."""
+
+
+class CommentOptions(RawOperationBaseScreen):
+    def __init__(self) -> None:
+        super().__init__()
+
+        default_percent_hbd = str(get_default_from_model(CommentOptionsOperation, "percent_hbd", int))
+        default_allow_votes = get_default_from_model(CommentOptionsOperation, "allow_votes", bool)
+        default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
+
+        self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
+        self.__max_accepted_payout_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__percent_hbd_input = Input(default_percent_hbd, placeholder=PERCENT_PLACEHOLDER)
+        self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
+        self.__allow_curation_rewards_input = Checkbox("allow curation reward", value=default_allow_curation_rewards)
+        self.__extensions_input = Input(placeholder="e.g: []")
+
+    def create_left_panel(self) -> ComposeResult:
+        with ViewBag():
+            yield BigTitle("Comment options")
+            with Body():
+                yield Static("author", classes="label")
+                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
+                yield Static("permlink", classes="label")
+                yield self.__permlink_input
+                yield Static("max accepted payout", classes="label")
+                yield self.__max_accepted_payout_input
+                yield Static("percent hbd", classes="label")
+                yield self.__percent_hbd_input
+                yield Static("extensions", classes="label")
+                yield self.__extensions_input
+                yield self.__allow_votes_input
+                yield self.__allow_curation_rewards_input
+
+    def _create_operation(self) -> CommentOptionsOperation[Asset.Hbd]:
+        return CommentOptionsOperation(
+            author=self.app.world.profile_data.name,
+            permlink=self.__permlink_input.value,
+            max_accepted_payout=Asset.hbd(self.__max_accepted_payout_input.value),
+            percent_hbd=int(self.__percent_hbd_input.value),
+            allow_votes=self.__allow_votes_input.value,
+            allow_curation_rewards=self.__allow_curation_rewards_input.value,
+            extensions=self.__extensions_input.value,
+        )
