@@ -1,0 +1,21 @@
+CreateClaimedAccount Body {
+  grid-size: 2;
+  grid-columns: 22 2fr 1fr;
+  grid-rows: 4 4 4 4;
+  height: 65;
+  margin: 0 4;
+  background: $panel;
+}
+
+CreateClaimedAccount .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+CreateClaimedAccount Input{
+    width: 120;
+}
+
+CreateClaimedAccount #creator-label {
+  padding: 1 2;
+}

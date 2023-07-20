@@ -1,0 +1,21 @@
+AccountCreate Body {
+  grid-size: 2;
+  grid-columns: 22 2fr 1fr;
+  grid-rows: 4 4 4 4;
+  height: 70;
+  margin: 0 4;
+  background: $panel;
+}
+
+AccountCreate .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+AccountCreate Input{
+    width: 120;
+}
+
+AccountCreate #creator-label {
+  padding: 1 2;
+}

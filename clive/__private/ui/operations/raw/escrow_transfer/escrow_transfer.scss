@@ -1,0 +1,25 @@
+EscrowTransfer Body {
+  grid-size: 3;
+  grid-columns: 26 3fr 1fr;
+  grid-rows: 3 4 4 4 4 4 4 4 4;
+  height: 40;
+  margin: 2 4;
+  background: $panel;
+}
+
+EscrowTransfer PlaceTaker {
+  row-span: 1;
+}
+
+EscrowTransfer AdditionalPlaceTaker{
+      row-span: 8;
+}
+
+EscrowTransfer .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+EscrowTransfer #from-label {
+  padding: 1 2;
+}
