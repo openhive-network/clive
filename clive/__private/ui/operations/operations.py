@@ -12,7 +12,6 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -68,13 +67,13 @@ class Operations(CartBasedScreen):
     def push_operation_screen(self, event: OperationButton.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
         if not button.operation_screen:
-            Notification("Not implemented yet", category="warning").show()
+            self.notify("Not implemented yet!", severity="error")
             return
         self.app.push_screen(button.operation_screen())
 
     def action_cart(self) -> None:
         if not self.app.world.profile_data.cart:
-            Notification("There are no operations in the cart! Cannot continue.", category="warning").show()
+            self.notify("There are no operations in the cart! Cannot continue.", severity="warning")
             return
 
         self.app.push_screen(Cart())

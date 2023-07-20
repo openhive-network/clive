@@ -9,7 +9,6 @@ from textual.widgets import Input, Static
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -53,7 +52,7 @@ class ConfirmWithPassword(BaseScreen):
                 self.__result_callback(self.__get_password_input())
             except InvalidPasswordError:
                 self.app.push_screen(ConfirmWithPassword(self.__result_callback, self.__action_name))
-                Notification("Invalid password", category="error").show()
+                self.notify("Invalid password", severity="error")
 
     def __get_password_input(self) -> str:
         return self.__password_input.value

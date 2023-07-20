@@ -7,7 +7,6 @@ from typing import TypeVar
 from textual.widgets import Select
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.notification import Notification
 from clive.models.aliased import AssetBase
 from clive.models.asset import AssetAmountInvalidFormatError, AssetAmountT
 
@@ -40,5 +39,5 @@ class CurrencySelectorBase(Select[CurrencySelectorCallableT[CurrencySelectorValu
         try:
             return asset(amount)
         except AssetAmountInvalidFormatError as error:
-            Notification(error.message, category="error").show()
+            self.notify(error.message, severity="error")
             return None

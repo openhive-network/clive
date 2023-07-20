@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
@@ -77,7 +76,7 @@ class Authority(ColumnLayout, CliveWidget):
             self.app.world.commands.remove_key(password=result, key_to_remove=self.__authority)
             self.app.world.profile_data.working_account.keys.remove(self.__authority)
 
-            Notification(f"Authority `{self.__authority.alias}` was removed.", category="success").show()
+            self.notify(f"Authority `{self.__authority.alias}` was removed.")
             self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
 
         self.app.push_screen(

@@ -11,7 +11,6 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import FormValidationError
 
@@ -77,9 +76,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
         try:
             self._validate()
         except FormValidationError as error:
-            Notification(
-                f"Failed the validation process! Could not continue. Reason: {error.reason}", category="error"
-            ).show()
+            self.notify(f"Failed the validation process! Could not continue. Reason: {error.reason}", severity="error")
             if reraise_exception:
                 raise
             return False

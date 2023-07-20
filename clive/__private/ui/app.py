@@ -26,7 +26,6 @@ from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.shared.help import Help
 from clive.__private.ui.terminal.command_line import CommandLinePrompt
 from clive.__private.ui.terminal.terminal_screen import TerminalScreen
-from clive.__private.ui.widgets.notification import Notification
 from clive.exceptions import ScreenNotFoundError
 from clive.version import VERSION_INFO
 
@@ -202,7 +201,7 @@ class Clive(App[int], ManualReactive):
         self.bell()
         path = self.save_screenshot(filename, path)
         message = f"Screenshot saved to [bold green]'{path}'[/]"
-        Notification(message).show()
+        self.notify(message)
 
     def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
         if message_type == "info":

@@ -13,7 +13,6 @@ from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -119,10 +118,7 @@ class TransactionSummary(BaseScreen):
         else:
             self.app.world.commands.save_to_file(transaction=signed, path=file_path)
 
-        Notification(
-            f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}",
-            category="success",
-        ).show()
+        self.notify(f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}")
 
     def action_dashboard(self) -> None:
         from clive.__private.ui.dashboard.dashboard_base import DashboardBase
@@ -140,7 +136,7 @@ class TransactionSummary(BaseScreen):
         try:
             signed = self.__sign_transaction()
         except TransactionCouldNotBeSignedError as error:
-            Notification(str(error), category="error").show()
+            self.notify(str(error), severity="error")
             return
 
         if not self.app.world.commands.broadcast(transaction=signed).success:
@@ -148,7 +144,7 @@ class TransactionSummary(BaseScreen):
 
         self.__clear_all()
         self.action_dashboard()
-        Notification("Transaction broadcast successfully!", category="success").show()
+        self.notify("Transaction broadcast successfully!")
 
     def action_save(self) -> None:
         self.app.push_screen(SelectFile(file_must_exist=False))

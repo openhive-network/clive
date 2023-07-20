@@ -14,7 +14,6 @@ from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.tranaction_summary import TransactionSummary
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
@@ -51,7 +50,7 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
 
             return operation  # noqa: TRY300
         except (ValidationError, iwax.WaxOperationFailedError) as error:
-            Notification(f"Operation failed the validation process.\n{error}", category="error").show()
+            self.notify(f"Operation failed the validation process.\n{error}", severity="error")
             return None
 
     @on(Activate.Succeeded)
@@ -82,7 +81,7 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
             try:
                 return self.app.world.profile_data.working_account.keys.first
             except KeyNotFoundError:
-                Notification("No keys found for the working account.", category="error").show()
+                self.notify("No keys found for the working account.", severity="error")
                 return None
 
         key = get_key()
@@ -95,7 +94,7 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
             return
 
         self.app.pop_screen()
-        Notification(f"Operation `{operation.__class__.__name__}` broadcast successfully.", category="success").show()
+        self.notify(f"Operation `{operation.__class__.__name__}` broadcast successfully.")
 
     def __add_to_cart(self) -> bool:
         """

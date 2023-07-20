@@ -13,7 +13,6 @@ from textual.widgets import Checkbox, Input, Static
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -78,7 +77,7 @@ class Activate(BaseScreen):
         if not permanent_active:
             raw_active_mode_time = self.__get_active_mode_time()
             if raw_active_mode_time is None:
-                Notification("The active mode time must be a number and >= 1", category="error").show()
+                self.notify("The active mode time must be a number and >= 1", severity="error")
                 return
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)

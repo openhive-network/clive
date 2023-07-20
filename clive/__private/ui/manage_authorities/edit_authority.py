@@ -6,7 +6,6 @@ from textual.binding import Binding
 
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
-from clive.__private.ui.widgets.notification import Notification
 from clive.exceptions import AliasAlreadyInUseFormError
 
 if TYPE_CHECKING:
@@ -36,7 +35,7 @@ class EditAuthority(AuthorityForm):
         new_alias = self._key_alias_raw
 
         if old_alias == new_alias:
-            Notification("No changes to save", category="warning").show()
+            self.notify("No changes to save", severity="warning")
             return
 
         if not self._validate_with_notification():
@@ -47,7 +46,7 @@ class EditAuthority(AuthorityForm):
         self.app.post_message_to_everyone(ProfileDataUpdated())
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
-        Notification(f"Authority `{self.authority.alias}` was edited.", category="success").show()
+        self.notify(f"Authority `{self.authority.alias}` was edited.")
 
     def _validate(self) -> None:
         """

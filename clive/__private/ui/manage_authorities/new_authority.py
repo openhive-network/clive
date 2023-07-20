@@ -17,7 +17,6 @@ from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm, SubTitle
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.exceptions import (
     AliasAlreadyInUseFormError,
@@ -78,7 +77,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
     def load_authority_from_file(self, event: SelectFile.Saved) -> None:
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
-        Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
+        self.notify(f"Authority loaded from `{event.file_path}`")
 
     @on(Input.Changed, "#key_input")
     def recalculate_public_key(self) -> None:
@@ -89,7 +88,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
 
     def _save(self, *, reraise_exception: bool = False) -> None:
         if not self._is_key_provided:
-            Notification("Not saving any private key, because none has been provided", category="warning").show()
+            self.notify("Not saving any private key, because none has been provided", severity="warning")
             return
 
         if not self._validate_with_notification(reraise_exception=reraise_exception):
@@ -171,7 +170,7 @@ class NewAuthority(NewAuthorityBase):
         self.app.post_message_to_everyone(ProfileDataUpdated())
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
-        Notification("New authority was created.", category="success").show()
+        self.notify("New authority was created.")
 
     def action_save(self) -> None:
         self._save()

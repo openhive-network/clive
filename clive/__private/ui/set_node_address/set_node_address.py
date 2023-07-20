@@ -19,7 +19,6 @@ from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.core.url import Url
 from clive.exceptions import NodeAddressError
@@ -156,14 +155,12 @@ class SetNodeAddressBase(BaseScreen, ABC):
         try:
             self._valid_and_save_address()
         except NodeAddressError:
-            Notification(
+            self.notify(
                 "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
-                category="error",
-            ).show()
+                severity="error",
+            )
         else:
-            Notification(
-                f"Node address set to `{self.app.world.profile_data.node_address}`.", category="success"
-            ).show()
+            self.notify(f"Node address set to `{self.app.world.profile_data.node_address}`.")
 
     @on(Switch.Changed)
     def change_mode(self) -> None:

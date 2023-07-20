@@ -11,7 +11,6 @@ from textual.widgets import DirectoryTree, Input, Static
 
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -60,7 +59,7 @@ class SelectFile(BaseScreen):
 
     def action_save(self) -> None:
         if not self.__is_valid():
-            Notification("Failed the validation process! Could not continue.", category="error").show()
+            self.notify("Failed the validation process! Could not continue.", severity="error")
             return
         self.app.post_message_to_everyone(self.Saved(self.__get_file_path()))
         self.app.pop_screen()

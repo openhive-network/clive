@@ -8,7 +8,6 @@ from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.notification import Notification
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -38,7 +37,7 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
                     def _on_activation_result(value: bool) -> None:
                         if not value:
-                            Notification("Aborted. Active mode is required for this action.", category="warning").show()
+                            self.notify("Aborted. Active mode is required for this action.", severity="warning")
                             return
 
                         func(*args, **kwargs)

@@ -18,7 +18,6 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.notification import Notification
 from clive.exceptions import FormValidationError, InputTooShortError, RepeatedPasswordIsDifferentError
 
 if TYPE_CHECKING:
@@ -104,17 +103,17 @@ class CreateProfile(CreateProfileCommon):
     def action_create_profile(self) -> None:
         # Disabling this feature for now, because for this to make sense, there is a need for the profile change feature
         # and according to the initial assumptions, we are currently focusing on a single-profile clive instance.
-        Notification("This feature is not available yet.", category="info").show()
+        self.notify("This feature is not available yet.", severity="warning")
         return
 
         try:
             Command.execute_multiple(*self._create_profile())
         except FormValidationError as error:
-            Notification(f"Failed the validation process! Reason: {error.reason}", category="error").show()
+            self.notify(f"Failed the validation process! Reason: {error.reason}", severity="error")
         else:
             self.app.post_message_to_everyone(ProfileDataUpdated())
             self.app.pop_screen()
-            Notification("Profile created successfully!", category="success").show()
+            self.notify("Profile created successfully!")
 
     def _additional_content(self) -> ComposeResult:
         yield Static()

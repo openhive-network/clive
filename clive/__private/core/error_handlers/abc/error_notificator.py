@@ -8,7 +8,6 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
     ResultNotAvailable,
 )
 from clive.__private.logger import logger
-from clive.__private.ui.widgets.notification import Notification
 
 
 class ErrorNotificator(ErrorHandlerContextManager, ABC):
@@ -39,4 +38,4 @@ class ErrorNotificator(ErrorHandlerContextManager, ABC):
 
     @staticmethod
     def __notify_tui(message: str) -> None:
-        Notification(message, category="error").show()
+        get_clive().app_instance().notify(message, severity="error")
