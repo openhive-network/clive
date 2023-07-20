@@ -3,11 +3,18 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
-from textual.widgets import Button, TabbedContent, TabPane
+from textual.widgets import Button, Static, TabbedContent, TabPane
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS
+from clive.__private.ui.operations.operations_list import (
+    ADVANCED_OPERATIONS,
+    FINANCIAL_OPERATIONS,
+    GOVERNANCE_OPERATIONS,
+    MARKET_OPERATIONS,
+    SOCIAL_OPERATIONS,
+    WITNESS_OPERATIONS,
+)
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.notification import Notification
 
@@ -25,6 +32,10 @@ class OperationButton(CliveButton):
 
 
 class Operations(CartBasedScreen):
+    def __init__(self) -> None:
+        self.__tab_id = 0
+        super().__init__()
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
         Binding("f2", "cart", "Cart"),
@@ -37,12 +48,29 @@ class Operations(CartBasedScreen):
                 yield OperationButton("HIVE POWER MANAGEMENT", FINANCIAL_OPERATIONS[1])
                 yield OperationButton("CONVERT", FINANCIAL_OPERATIONS[1])
                 yield OperationButton("SAVING", FINANCIAL_OPERATIONS[1])
+                self.__tab_id = 0
             with TabPane("Social", id="social"):
                 yield OperationButton("SOCIAL OPERATIONS", FINANCIAL_OPERATIONS[1])
+                self.__tab_id = 0
             with TabPane("Governance", id="governance"):
                 yield OperationButton("GOVERNANCE OPERATIONS", FINANCIAL_OPERATIONS[1])
+                self.__tab_id = 0
             with TabPane("Account management", id="account-management"):
                 yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", FINANCIAL_OPERATIONS[1])
+                self.__tab_id = 0
+            with TabPane("Raw"):
+                self.__tab_id = 1
+                yield Static("Select one of the following operations:", id="hint")
+                for operation in (
+                    FINANCIAL_OPERATIONS
+                    + SOCIAL_OPERATIONS
+                    + MARKET_OPERATIONS
+                    + ADVANCED_OPERATIONS
+                    + MARKET_OPERATIONS
+                    + GOVERNANCE_OPERATIONS
+                    + WITNESS_OPERATIONS
+                ):
+                    yield OperationButton(self.__humanize_class_name(operation), operation)
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
@@ -50,9 +78,13 @@ class Operations(CartBasedScreen):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
-        if not isinstance(button.operation_screen(), FINANCIAL_OPERATIONS[0]):
+        if bool(self.__tab_id):
+            self.app.push_screen(button.operation_screen())
+
+        elif not isinstance(button.operation_screen(), FINANCIAL_OPERATIONS[0]):
             Notification("Not implemented yet", category="warning").show()
             return
+
         self.app.push_screen(button.operation_screen())
 
     def action_cart(self) -> None:
