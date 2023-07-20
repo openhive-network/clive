@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from textual.binding import Binding
-from textual.widgets import Button, TabbedContent, TabPane
+from textual.widgets import Button, Static, TabbedContent, TabPane
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS
+from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.notification import Notification
 
@@ -40,12 +40,16 @@ class Operations(CartBasedScreen):
                 yield OperationButton("HIVE POWER MANAGEMENT", None)
                 yield OperationButton("CONVERT", None)
                 yield OperationButton("SAVING", None)
-            with TabPane("Social", id="social"):
+            with TabPane("Social"):
                 yield OperationButton("SOCIAL OPERATIONS", None)
-            with TabPane("Governance", id="governance"):
+            with TabPane("Governance"):
                 yield OperationButton("GOVERNANCE OPERATIONS", None)
-            with TabPane("Account management", id="account-management"):
+            with TabPane("Account management"):
                 yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", None)
+            with TabPane("Raw"):
+                yield Static("select one of the following operation:", id="hint")
+                for operation in RAW_OPERATIONS:
+                    yield OperationButton(self.__humanize_class_name(operation), operation)
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
@@ -64,3 +68,14 @@ class Operations(CartBasedScreen):
             return
 
         self.app.push_screen(Cart())
+
+    @staticmethod
+    def __humanize_class_name(type_: type[Any]) -> str:
+        result = ""
+
+        class_name = type_.__name__.replace("_", "")
+        for char in class_name:
+            if char.isupper():
+                result += " "
+            result += char.lower()
+        return result.strip().title()

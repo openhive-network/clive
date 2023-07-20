@@ -22,7 +22,7 @@ class RightContainer(Container):
 
 
 class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
-    """Base class for all screens with operations."""
+    """Base class for all screens that should show a brief cart summary."""
 
     def create_main_panel(self) -> ComposeResult:
         with Horizontal():
