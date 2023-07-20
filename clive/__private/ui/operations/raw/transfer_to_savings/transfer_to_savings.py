@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
 from textual.widgets import Input, Static
 
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -16,15 +15,12 @@ from clive.__private.ui.widgets.placeholders_constants import (
     MEMO_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset
-from clive.models.asset import AssetAmountT
-from schemas.operations import TransferOperation
+from schemas.operations import TransferToSavingsOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-
-LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
+    from clive.models import Asset
 
 
 class Body(Grid):
@@ -35,7 +31,7 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class TransferToAccount(OperationBaseScreen):
+class TransferToSavings(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
@@ -46,7 +42,7 @@ class TransferToAccount(OperationBaseScreen):
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("Transfer to account")
+            yield BigTitle("Transfer to savings")
             with Body():
                 yield Static("from", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
@@ -59,14 +55,10 @@ class TransferToAccount(OperationBaseScreen):
                 yield Static("memo", classes="label")
                 yield self.__memo_input
 
-    def _create_operation(self) -> TransferOperation[Asset.Hive, Asset.Hbd] | None:
-        asset = self.__currency_selector.create_asset(self.__amount_input.value)
-        if not asset:
-            return None
-
-        return TransferOperation(
+    def _create_operation(self) -> TransferToSavingsOperation[Asset.Hive, Asset.Hbd]:
+        return TransferToSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
-            amount=asset,
+            amount=self.__currency_selector.selected.value(self.__amount_input.value),
             memo=self.__memo_input.value,
         )

@@ -1,0 +1,26 @@
+SetWithdrawVestingRoute Body {
+  grid-size: 3;
+  grid-columns: 13 2fr 1fr;
+  grid-rows: 3 4 4 4;
+  height: 16;
+  margin: 0 4;
+  background: $panel;
+}
+
+SetWithdrawVestingRoute PlaceTaker {
+  row-span: 3;
+}
+
+SetWithdrawVestingRoute .label {
+  padding: 1 1;
+  text-align: right;
+}
+
+SetWithdrawVestingRoute #from-label {
+  padding: 1 2;
+}
+
+SetWithdrawVestingRoute Checkbox {
+    margin-left: 2;
+    width: auto;
+}

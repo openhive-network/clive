@@ -1,0 +1,21 @@
+ClaimRewardBalance Body {
+  grid-size: 3;
+  grid-columns: 17 2fr 1fr;
+  grid-rows: 3 4 4 4;
+  height: 16;
+  margin: 0 4;
+  background: $panel;
+}
+
+ClaimRewardBalance PlaceTaker {
+  row-span: 3;
+}
+
+ClaimRewardBalance .label {
+  padding: 1 1;
+  text-align: right;
+}
+
+ClaimRewardBalance #account-label {
+  padding: 1 1;
+}

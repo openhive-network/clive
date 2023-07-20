@@ -1,0 +1,21 @@
+TransferToSavings Body {
+  grid-size: 3;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 3 4 4 4;
+  height: 16;
+  margin: 0 4;
+  background: $panel;
+}
+
+TransferToSavings PlaceTaker {
+  row-span: 2;
+}
+
+TransferToSavings .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+TransferToSavings #from-label {
+  padding: 1 2;
+}

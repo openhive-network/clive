@@ -1,0 +1,21 @@
+RecurrentTransfer Body {
+  grid-size: 3;
+  grid-columns: 14 2fr 1fr;
+  grid-rows: 3 4 4 4 4;
+  height: 25;
+  margin: 0 4;
+  background: $panel;
+}
+
+RecurrentTransfer PlaceTaker {
+  row-span: 2;
+}
+
+RecurrentTransfer .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+RecurrentTransfer #from-label {
+  padding: 1 1;
+}
