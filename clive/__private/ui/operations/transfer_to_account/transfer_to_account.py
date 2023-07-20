@@ -14,13 +14,12 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.tranaction_summary import TransactionSummary
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.notification import Notification
-from clive.__private.ui.widgets.select.select import Select
-from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
-from clive.models.asset import AssetAmountInvalidFormatError, AssetAmountT
+from clive.models.asset import AssetAmountT
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
@@ -40,28 +39,6 @@ class PlaceTaker(Static):
     """Container used for making correct layout of a grid."""
 
 
-class CurrencySelector(Select[LiquidAssetCallableT]):
-    def __init__(self) -> None:
-        selectable: dict[str, LiquidAssetCallableT] = {
-            "HBD": Asset.hbd,
-            "HIVE": Asset.hive,
-        }
-        super().__init__(
-            items=[SelectItem(function, text) for text, function in selectable.items()],
-            list_mount="ViewBag",
-            placeholder="Select currency",
-            selected=0,
-        )
-
-    def create_asset(self, amount: AssetAmountT) -> Asset.AnyT | None:
-        asset = self.selected.value
-        try:
-            return asset(amount)
-        except AssetAmountInvalidFormatError as error:
-            Notification(error.message, category="error").show()
-            return None
-
-
 class TransferToAccount(CartBasedScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Cancel"),
@@ -76,7 +53,7 @@ class TransferToAccount(CartBasedScreen):
         self.__to_input = Input(placeholder="e.g.: some-account")
         self.__amount_input = Input(placeholder="e.g.: 5.000")
         self.__memo_input = Input(placeholder="e.g.: For the coffee!")
-        self.__currency_selector = CurrencySelector()
+        self.__currency_selector = CurrencySelectorLiquid()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
