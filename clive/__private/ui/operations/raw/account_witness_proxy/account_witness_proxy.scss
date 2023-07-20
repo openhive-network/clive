@@ -1,0 +1,21 @@
+AccountWitnessProxy Body {
+  grid-size: 3;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 4;
+  height: 9;
+  margin: 0 4;
+  background: $panel;
+}
+
+AccountWitnessProxy PlaceTaker {
+  row-span: 2;
+}
+
+AccountWitnessProxy .label {
+  padding: 1 2;
+  text-align: right;
+}
+
+AccountWitnessProxy #account-label {
+  padding: 1 1;
+}
