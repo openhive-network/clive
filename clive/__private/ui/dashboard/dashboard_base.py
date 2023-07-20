@@ -15,6 +15,7 @@ from clive.__private.storage.accounts import Account, AccountType, WorkingAccoun
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
+from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -23,8 +24,6 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from textual.app import ComposeResult
 
     from clive.__private.storage.mock_database import Manabar
@@ -36,25 +35,6 @@ class ContainerTitle(Static):
 
 class Body(ScrollableContainer, can_focus=True):
     """A body for working/watched accounts container."""
-
-
-class AccountReferencingWidget(CliveWidget):
-    def __init__(
-        self,
-        account: Account,
-        name: str | None = None,
-        classes: str | None = None,
-    ) -> None:
-        self._account = account
-        super().__init__(name=name, classes=classes)
-
-    def create_dynamic_label(self, foo: Callable[[], str], classes: str | None = None) -> DynamicLabel:
-        return DynamicLabel(
-            self.app.world,
-            "profile_data",
-            lambda _: foo() if self._account.name else "NULL",
-            classes=classes,
-        )
 
 
 class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
