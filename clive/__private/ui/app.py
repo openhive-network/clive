@@ -92,9 +92,7 @@ class Clive(App[int], ManualReactive):
             Communication.start()
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
         finally:
-            self.__class__.is_launched = False
-            self.world.close()
-            Communication.close()
+            self.__cleanup()
 
     def on_mount(self) -> None:
         refresh_interval: Final[int] = 3
@@ -333,4 +331,10 @@ class Clive(App[int], ManualReactive):
         # We already had a situation where Textual swallowed an exception without logging it.
         # This is a safeguard to prevent that from happening again.
         logger.error(str(error))
+        self.__cleanup()
         super()._handle_exception(error)
+
+    def __cleanup(self) -> None:
+        self.__class__.is_launched = False
+        self.world.close()
+        Communication.close()
