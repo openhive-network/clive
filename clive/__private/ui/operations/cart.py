@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import ScrollableContainer
 from textual.css.query import NoMatches
@@ -180,14 +181,17 @@ class CartItem(ColumnLayout, CliveWidget):
     def __is_last(self) -> bool:
         return self.__idx == self.__operations_count - 1
 
-    def on_button_pressed(self, event: CliveButton.Pressed) -> None:
-        """Event handler called when a button is pressed."""
-        if event.button.id == "delete-button":
-            self.post_message(self.Delete(self))
-        elif event.button.id == "move-up-button":
-            self.post_message(self.Move(self.__idx, self.__idx - 1))
-        elif event.button.id == "move-down-button":
-            self.post_message(self.Move(self.__idx, self.__idx + 1))
+    @on(CliveButton.Pressed, "#move-up-button")
+    def move_up(self) -> None:
+        self.post_message(self.Move(from_idx=self.__idx, to_idx=self.__idx - 1))
+
+    @on(CliveButton.Pressed, "#move-down-button")
+    def move_down(self) -> None:
+        self.post_message(self.Move(from_idx=self.__idx, to_idx=self.__idx + 1))
+
+    @on(CliveButton.Pressed, "#delete-button")
+    def delete(self) -> None:
+        self.post_message(self.Delete(self))
 
     def on_cart_item_move(self, event: CartItem.Move) -> None:
         if event.to_idx == self.__idx:

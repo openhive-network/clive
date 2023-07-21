@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import ScrollableContainer
 from textual.message import Message
-from textual.widgets import Button, Static
+from textual.widgets import Static
 
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.manage_authorities.edit_authority import EditAuthority
@@ -61,14 +62,12 @@ class Authority(ColumnLayout, CliveWidget):
         yield CliveButton("✏️", id_="edit_authority_button", classes=odd)
         yield CliveButton("🗑️", id_="remove_authority_button", classes=even)
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Event handler called when a button is pressed."""
-        if event.button.id == "remove_authority_button":
-            self.__remove_authority()
-        if event.button.id == "edit_authority_button":
-            self.app.push_screen(EditAuthority(self.__authority))
+    @on(CliveButton.Pressed, "#edit_authority_button")
+    def push_edit_authority_screen(self) -> None:
+        self.app.push_screen(EditAuthority(self.__authority))
 
-    def __remove_authority(self) -> None:
+    @on(CliveButton.Pressed, "#remove_authority_button")
+    def remove_authority(self) -> None:
         @CliveScreen.try_again_after_activation(app=self.app)
         def __on_confirmation_result(result: str) -> None:
             if not result:

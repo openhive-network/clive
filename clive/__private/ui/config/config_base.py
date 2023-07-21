@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
-from textual.widgets import Button, Static
+from textual.widgets import Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
@@ -30,6 +31,6 @@ class ConfigBase(BaseScreen, AbstractClassMessagePump):
             yield CliveButton("Select node", id_="select-node")
             yield from self.additional_buttons()
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "select-node":
-            self.app.push_screen(SetNodeAddress())
+    @on(CliveButton.Pressed, "#select-node")
+    def push_set_node_address_screen(self) -> None:
+        self.app.push_screen(SetNodeAddress())

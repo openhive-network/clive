@@ -3,9 +3,10 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING, Final
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.widgets import Button, Input, Static
+from textual.widgets import Input, Static
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
@@ -95,15 +96,11 @@ class CreateProfile(CreateProfileCommon):
     def context(self) -> ProfileData:
         return self.app.world.profile_data
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "create-button":
-            self.action_create_profile()
-        elif event.button.id == "cancel-button":
-            self.action_dashboard()
-
+    @on(CliveButton.Pressed, "#cancel-button")
     def action_dashboard(self) -> None:
         self.app.pop_screen()
 
+    @on(CliveButton.Pressed, "#create-button")
     def action_create_profile(self) -> None:
         # Disabling this feature for now, because for this to make sense, there is a need for the profile change feature
         # and according to the initial assumptions, we are currently focusing on a single-profile clive instance.

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.widgets import Button, Static
+from textual.widgets import Static
 
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -17,7 +18,7 @@ if TYPE_CHECKING:
 class Quit(BaseScreen):
     BINDINGS = [
         Binding("ctrl+x", "exit_cleanly", "Quit"),
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "cancel", "Cancel"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
@@ -28,12 +29,11 @@ class Quit(BaseScreen):
                 yield CliveButton("Quit", variant="error", id_="quit")
                 yield CliveButton("Cancel", variant="primary", id_="cancel")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "quit":
-            self.action_exit_cleanly()
-        else:
-            self.app.pop_screen()
+    @on(CliveButton.Pressed, "#cancel")
+    def action_cancel(self) -> None:
+        self.app.pop_screen()
 
+    @on(CliveButton.Pressed, "#quit")
     def action_exit_cleanly(self) -> None:
         self.log("Exiting cleanly")
         self.app.world.profile_data.save()

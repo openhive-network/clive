@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.widgets import Button, Static
+from textual.widgets import Static
 
 from clive.__private.storage.contextual import ContextT
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -38,14 +39,16 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
         with DialogContainer("done!"):
             yield Description(self.__end_note)
             with ButtonsContainer():
-                yield CliveButton("Finish 🎉", id_="finish_return_form_screen")
-                yield CliveButton("Forgot something? 🤔", id_="return_finish_form_screen")
+                yield CliveButton("Finish 🎉", id_="finish-button")
+                yield CliveButton("Forgot something? 🤔", id_="forgot-button")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "return_finish_form_screen":
-            self.action_previous_screen()
-        elif event.button.id == "finish_return_form_screen":
-            self.action_finish()
+    @on(CliveButton.Pressed, "#forgot-button")
+    def previous_screen(self) -> None:
+        self.action_previous_screen()
+
+    @on(CliveButton.Pressed, "#finish-button")
+    def finish(self) -> None:
+        self.action_finish()
 
     def action_finish(self) -> None:
         self._owner.execute_post_actions()

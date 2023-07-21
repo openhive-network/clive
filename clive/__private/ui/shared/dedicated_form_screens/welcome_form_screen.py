@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
-from textual.widgets import Button, Static
+from textual.widgets import Static
 
 from clive.__private.storage.contextual import ContextT
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -29,9 +30,9 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
             yield Static(self.__title)
             yield CliveButton("Start! 🐝", id_="welcome_button_start")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "welcome_button_start":
-            self.action_next_screen()
+    @on(CliveButton.Pressed, "#welcome_button_start")
+    def begin(self) -> None:
+        self.action_next_screen()
 
     def action_cancel(self) -> None:
         self._cancel()

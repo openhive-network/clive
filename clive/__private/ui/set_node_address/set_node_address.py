@@ -7,9 +7,10 @@ from typing import TYPE_CHECKING, Any, Final
 
 import httpx
 from rich.highlighter import Highlighter
+from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
-from textual.widgets import Button, Input, Static, Switch
+from textual.widgets import Input, Static, Switch
 
 from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.ui.app_messages import NodeDataUpdated
@@ -147,14 +148,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
         self.app.post_message_to_everyone(NodeDataUpdated())
         self.__selected_node.refresh()
 
-    def on_select_changed(self, event: Select.Changed) -> None:
-        if event.selected:
-            self.save_node_address_with_gui_support()
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "save-node-address-button":
-            self.save_node_address_with_gui_support()
-
+    @on(Select.Changed)
+    @on(CliveButton.Pressed, "#save-node-address-button")
     def save_node_address_with_gui_support(self) -> None:
         try:
             self._valid_and_save_address()

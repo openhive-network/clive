@@ -3,9 +3,10 @@ from __future__ import annotations
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import ScrollableContainer
-from textual.widgets import Button, Static, TabbedContent, TabPane
+from textual.widgets import Static, TabbedContent, TabPane
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
@@ -63,7 +64,8 @@ class Operations(CartBasedScreen):
         """Switch to a new tab."""
         self.get_child_by_type(TabbedContent).active = tab
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    @on(OperationButton.Pressed)
+    def push_operation_screen(self, event: OperationButton.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
         if not button.operation_screen:
             Notification("Not implemented yet", category="warning").show()

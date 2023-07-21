@@ -4,10 +4,11 @@ from collections.abc import Callable
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.message import Message
-from textual.widgets import Button, Checkbox, Input, Static
+from textual.widgets import Checkbox, Input, Static
 
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -60,19 +61,16 @@ class Activate(BaseScreen):
                 yield CliveButton("Ok", variant="primary", id_="activate-button")
                 yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "activate-button":
-            self.action_activate()
-        elif event.button.id == "cancel-button":
-            self.action_cancel()
-
-    def on_checkbox_changed(self) -> None:
+    @on(Checkbox.Changed)
+    def toggle_active_mode_temporary_time(self) -> None:
         self.__temporary_active_mode_label.toggle_class("-hidden")
         self.__temporary_active_mode_input.toggle_class("-hidden")
 
+    @on(CliveButton.Pressed, "#cancel-button")
     def action_cancel(self) -> None:
         self.__exit_cancel()
 
+    @on(CliveButton.Pressed, "#activate-button")
     def action_activate(self) -> None:
         permanent_active = self.__permanent_active_mode_switch.value
         active_mode_time: timedelta | None = None
