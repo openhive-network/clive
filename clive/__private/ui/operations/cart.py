@@ -73,8 +73,8 @@ class CartItem(ColumnLayout, CliveWidget):
     ]
 
     class Delete(Message):
-        def __init__(self, deleted: Operation) -> None:
-            self.deleted = deleted
+        def __init__(self, widget: CartItem) -> None:
+            self.widget = widget
             super().__init__()
 
     class Move(Message):
@@ -115,12 +115,12 @@ class CartItem(ColumnLayout, CliveWidget):
 
         def operation_name(_: ProfileData) -> str:
             if self.is_valid():
-                return self.__operation.__class__.__name__
+                return self.operation.__class__.__name__
             return ""
 
         def operation_details(_: ProfileData) -> str:
             if self.is_valid():
-                return str(self.__operation)
+                return str(self.operation)
             return ""
 
         yield DynamicColumn(
@@ -164,13 +164,13 @@ class CartItem(ColumnLayout, CliveWidget):
         return self.__idx
 
     @property
-    def __operations_count(self) -> int:
-        return len(self.app.world.profile_data.cart)
-
-    @property
-    def __operation(self) -> Operation:
+    def operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
         return self.app.world.profile_data.cart[self.__idx]
+
+    @property
+    def __operations_count(self) -> int:
+        return len(self.app.world.profile_data.cart)
 
     @property
     def __is_first(self) -> bool:
@@ -183,7 +183,7 @@ class CartItem(ColumnLayout, CliveWidget):
     def on_button_pressed(self, event: CliveButton.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
-            self.post_message(self.Delete(self.__operation))
+            self.post_message(self.Delete(self))
         elif event.button.id == "move-up-button":
             self.post_message(self.Move(self.__idx, self.__idx - 1))
         elif event.button.id == "move-down-button":
@@ -223,16 +223,19 @@ class Cart(BaseScreen):
                 yield CartHeader()
 
             with self.__scrollable_part:
-                for idx in range(len(self.app.world.profile_data.cart)):
-                    yield CartItem(idx)
+                yield from self.__rebuild_items()
 
             yield Static()
 
+    def __rebuild_items(self) -> ComposeResult:
+        for idx in range(len(self.app.world.profile_data.cart)):
+            yield CartItem(idx)
+
     def on_cart_item_delete(self, event: CartItem.Delete) -> None:
-        widget = self.query(CartItem).last()
-        self.app.world.profile_data.cart.remove(event.deleted)
-        widget.remove()
+        self.app.world.profile_data.cart.remove(event.widget.operation)
         self.app.world.update_reactive("profile_data")
+        self.__scrollable_part.query(CartItem).remove()
+        self.__scrollable_part.mount(*self.__rebuild_items())
 
     def on_cart_item_move(self, event: CartItem.Move) -> None:
         assert event.to_idx >= 0
