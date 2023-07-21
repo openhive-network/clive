@@ -24,9 +24,9 @@ class CommandLinePrompt(Static, CliveWidget):
         super().__init__(self.INACTIVE_PROMPT)
 
     def on_mount(self) -> None:
-        self.watch(self.app.world, "app_state", self.on_app_state, init=False)
+        self.watch(self.app.world, "app_state", self.app_state_changed, init=False)
 
-    def on_app_state(self, _: AppState) -> None:
+    def app_state_changed(self, _: AppState) -> None:
         self.update(self.get_current_prompt())
 
     def get_current_prompt(self) -> str:

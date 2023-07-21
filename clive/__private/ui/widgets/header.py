@@ -31,9 +31,9 @@ class HeaderIcon(TextualHeaderIcon):
         super().__init__(id="icon")
 
     def on_mount(self) -> None:
-        self.watch(self.app, "header_expanded", self.on_header_expanded)
+        self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
-    def on_header_expanded(self, expanded: bool) -> None:
+    def header_expanded_changed(self, expanded: bool) -> None:
         self.icon = "-" if expanded else "+"
 
 
@@ -105,7 +105,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
 class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
-        self.on_app_state(self.app.world.app_state)
+        self.app_state_changed(self.app.world.app_state)
         self.__node_version_label = DynamicLabel(
             obj_to_watch=self.app.world,
             attribute_name="node",
@@ -114,8 +114,8 @@ class Header(TextualHeader, CliveWidget):
         )
 
     def on_mount(self) -> None:
-        self.watch(self.app, "header_expanded", self.on_header_expanded)
-        self.watch(self.app.world, "app_state", self.on_app_state, init=False)
+        self.watch(self.app, "header_expanded", self.header_expanded_changed)
+        self.watch(self.app.world, "app_state", self.app_state_changed, init=False)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
@@ -154,10 +154,10 @@ class Header(TextualHeader, CliveWidget):
         event.prevent_default()
         self.app.header_expanded = not self.app.header_expanded
 
-    def on_header_expanded(self, expanded: bool) -> None:
+    def header_expanded_changed(self, expanded: bool) -> None:
         self.add_class("-tall") if expanded else self.remove_class("-tall")
 
-    def on_app_state(self, app_state: AppState) -> None:
+    def app_state_changed(self, app_state: AppState) -> None:
         if app_state.is_active():
             self.add_class("-active")
         else:

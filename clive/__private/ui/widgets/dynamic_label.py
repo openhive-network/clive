@@ -34,7 +34,7 @@ class DynamicLabel(Label, CliveWidget):
         self.__init = init
 
     def on_mount(self) -> None:
-        self.watch(self.__obj_to_watch, self.__attribute_name, self.on_attribute_changed, init=not bool(self.__init))
+        self.watch(self.__obj_to_watch, self.__attribute_name, self.attribute_changed, init=not bool(self.__init))
 
-    def on_attribute_changed(self, attribute: Any) -> None:
+    def attribute_changed(self, attribute: Any) -> None:
         self.update(f"{self.__prefix}{self.__callback(attribute)}")

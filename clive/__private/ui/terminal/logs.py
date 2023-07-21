@@ -13,9 +13,9 @@ class Logs(TextLog):
         super().__init__(wrap=True, highlight=True, markup=True)
 
     def on_mount(self) -> None:
-        self.watch(self.app, "logs", self.on_logs)
+        self.watch(self.app, "logs", self.logs_changed)
 
-    def on_logs(self, logs: list[RenderableType | object]) -> None:
+    def logs_changed(self, logs: list[RenderableType | object]) -> None:
         last_line_index = len(self.lines)
         for log in logs[last_line_index:]:
             self.write(log)
