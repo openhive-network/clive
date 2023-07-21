@@ -330,10 +330,7 @@ class Clive(App[int], ManualReactive):
         return cls.__app_instance
 
     def _handle_exception(self, error: Exception) -> None:
-        try:
-            super()._handle_exception(error)
-        except Exception as error:
-            # We already had a situation where Textual swallowed an exception without logging it.
-            # This is a safeguard to prevent that from happening again.
-            logger.error(error)
-            raise error from None
+        # We already had a situation where Textual swallowed an exception without logging it.
+        # This is a safeguard to prevent that from happening again.
+        logger.error(str(error))
+        super()._handle_exception(error)
