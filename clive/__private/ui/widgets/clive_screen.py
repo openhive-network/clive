@@ -3,7 +3,6 @@ from __future__ import annotations
 from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec
 
-from textual.dom import DOMNode
 from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
@@ -11,6 +10,9 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from clive.__private.ui.app import Clive
+
 
 P = ParamSpec("P")
 
@@ -23,12 +25,16 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
     """
 
     @staticmethod
-    def try_again_after_activation(*, app: DOMNode | None = None) -> Callable[[Callable[P, None]], Callable[P, None]]:
+    def try_again_after_activation(*, app: Clive | None = None) -> Callable[[Callable[P, None]], Callable[P, None]]:
         def decorator(func: Callable[P, None]) -> Callable[P, None]:
             @wraps(func)
             def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-                self = app or args[0]
-                assert isinstance(self, DOMNode), f"`{type(self)}` is not a DOMNode instance."
+                if not app:
+                    self = args[0]
+                    assert isinstance(self, CliveWidget), f"{type(self)} is not a CliveWidget"
+                    app_ = self.app
+                else:
+                    app_ = app
 
                 try:
                     func(*args, **kwargs)
@@ -37,12 +43,12 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
                     def _on_activation_result(value: bool) -> None:
                         if not value:
-                            self.notify("Aborted. Active mode is required for this action.", severity="warning")
+                            app_.notify("Aborted. Active mode is required for this action.", severity="warning")
                             return
 
                         func(*args, **kwargs)
 
-                    self.app.push_screen(Activate(activation_result_callback=_on_activation_result))
+                    app_.push_screen(Activate(activation_result_callback=_on_activation_result))
 
             return wrapper
 
