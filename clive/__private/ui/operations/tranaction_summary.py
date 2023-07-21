@@ -130,7 +130,11 @@ class TransactionSummary(BaseScreen):
         self.__broadcast()
 
     def __broadcast(self) -> None:
-        signed = self.__sign_transaction()
+        try:
+            signed = self.__sign_transaction()
+        except TransactionCouldNotBeSignedError as error:
+            Notification(str(error), category="error").show()
+            return
 
         if not self.app.world.commands.broadcast(transaction=signed).success:
             return
