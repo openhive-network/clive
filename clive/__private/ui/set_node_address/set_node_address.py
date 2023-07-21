@@ -163,7 +163,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 f"Node address set to `{self.app.world.profile_data.node_address}`.", category="success"
             ).show()
 
-    def on_switch_changed(self) -> None:
+    @on(Switch.Changed)
+    def change_mode(self) -> None:
         self.__nodes_list.toggle_class("-hidden")
         self.__manual_node.toggle_class("-hidden")
 

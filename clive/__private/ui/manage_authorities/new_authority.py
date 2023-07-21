@@ -4,6 +4,7 @@ import typing
 from abc import ABC
 from typing import TYPE_CHECKING, Any
 
+from textual import on
 from textual.binding import Binding
 from textual.message import Message
 from textual.widgets import Input, Static
@@ -48,7 +49,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self.__key_input = Input(self._default_key(), placeholder="You can paste your key here")
+        self.__key_input = Input(self._default_key(), placeholder="You can paste your key here", id="key_input")
         self.__key_file_path: Path | None = None
 
     @property
@@ -73,17 +74,18 @@ class NewAuthorityBase(AuthorityForm, ABC):
     def action_load_from_file(self) -> None:
         self.app.push_screen(SelectFile())
 
-    def on_select_file_saved(self, event: SelectFile.Saved) -> None:
+    @on(SelectFile.Saved)
+    def load_authority_from_file(self, event: SelectFile.Saved) -> None:
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
         Notification(f"Authority loaded from `{event.file_path}`", category="success").show()
 
-    def on_input_changed(self, event: Input.Changed) -> None:
-        if event.input == self.__key_input:
-            try:
-                self._public_key_input.value = self._private_key.calculate_public_key().value
-            except PrivateKeyInvalidFormatError:
-                self._public_key_input.value = "Invalid form of private key"
+    @on(Input.Changed, "#key_input")
+    def recalculate_public_key(self) -> None:
+        try:
+            self._public_key_input.value = self._private_key.calculate_public_key().value
+        except PrivateKeyInvalidFormatError:
+            self._public_key_input.value = "Invalid form of private key"
 
     def _save(self, *, reraise_exception: bool = False) -> None:
         if not self._is_key_provided:
@@ -161,7 +163,8 @@ class NewAuthority(NewAuthorityBase):
         return self.app.world.profile_data
 
     @CliveScreen.try_again_after_activation()
-    def on_new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
+    @on(NewAuthorityBase.Saved)
+    def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])
 
         self.app.world.commands.sync_data_with_beekeeper()
@@ -178,7 +181,8 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
-    def on_new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
+    @on(NewAuthorityBase.Saved)
+    def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])
         logger.debug("New authority is waiting to be imported...")
 

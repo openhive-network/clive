@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
+from textual import on
 from textual.binding import Binding
 
 from clive.__private.abstract_class import AbstractClassMessagePump
@@ -53,7 +54,8 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
             return None
 
-    def on_activate_succeeded(self) -> None:
+    @on(Activate.Succeeded)
+    def activate_succeeded(self) -> None:
         self.__fast_broadcast()
 
     def action_finalize(self) -> None:

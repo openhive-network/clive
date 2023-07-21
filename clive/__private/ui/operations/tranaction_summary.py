@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
@@ -98,10 +99,12 @@ class TransactionSummary(BaseScreen):
                     yield OperationItem(operation.json(by_alias=True), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
-    def on_activate_succeeded(self) -> None:
+    @on(Activate.Succeeded)
+    def activate_succeeded(self) -> None:
         self.__broadcast()
 
-    def on_select_file_saved(self, event: SelectFile.Saved) -> None:
+    @on(SelectFile.Saved)
+    def save_to_file(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
 
         signed = None

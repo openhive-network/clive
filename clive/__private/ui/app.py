@@ -5,6 +5,7 @@ from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Final, TypeVar
 
+from textual import on
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.reactive import reactive, var
@@ -15,6 +16,7 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
+from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks, ThreadPoolClosedCallbackT
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -38,7 +40,7 @@ if TYPE_CHECKING:
     from textual.widget import AwaitMount
 
     from clive.__private.core.commands.command_wrappers import CommandWrapper
-    from clive.__private.ui.app_messages import NodeDataUpdated, ProfileDataUpdated
+    from clive.__private.ui.app_messages import NodeDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -249,10 +251,12 @@ class Clive(App[int], ManualReactive):
             return screen.__class__.__name__ == other
         return isinstance(screen, other)
 
-    def on_background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
+    @on(BackgroundErrorOccurred)
+    def background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
         raise event.exception
 
-    def on_profile_data_updated(self, _: ProfileDataUpdated) -> None:
+    @on(ProfileDataUpdated)
+    def profile_data_updated(self) -> None:
         self.world.update_reactive("profile_data")
 
     def on_node_data_updated(self, _: NodeDataUpdated) -> None:

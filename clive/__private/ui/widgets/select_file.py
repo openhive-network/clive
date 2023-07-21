@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Grid
 from textual.message import Message
@@ -53,7 +54,8 @@ class SelectFile(BaseScreen):
             yield DirectoryTreeHint("Or select from the directory tree:")
             yield DirectoryTree(str(Path.home()))
 
-    def on_directory_tree_file_selected(self, event: DirectoryTree.FileSelected) -> None:
+    @on(DirectoryTree.FileSelected)
+    def update_input_path(self, event: DirectoryTree.FileSelected) -> None:
         self.__file_path_input.value = str(event.path)
 
     def action_save(self) -> None:

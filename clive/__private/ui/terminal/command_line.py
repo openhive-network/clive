@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from textual import on
 from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import Input, Static
@@ -36,7 +37,8 @@ class CommandLineInput(Input, CliveWidget):
     def __init__(self) -> None:
         super().__init__(placeholder="Enter command...", id="command-line-input")
 
-    def on_input_submitted(self, event: Input.Submitted) -> None:
+    @on(Input.Submitted)
+    def handle_command(self, event: Input.Submitted) -> None:
         raw_input = event.value
 
         if raw_input:

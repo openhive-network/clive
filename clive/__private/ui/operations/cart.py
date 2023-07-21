@@ -193,7 +193,8 @@ class CartItem(ColumnLayout, CliveWidget):
     def delete(self) -> None:
         self.post_message(self.Delete(self))
 
-    def on_cart_item_move(self, event: CartItem.Move) -> None:
+    @on(Move)
+    def move_item(self, event: CartItem.Move) -> None:
         if event.to_idx == self.__idx:
             self.__idx = event.from_idx
         self.app.world.update_reactive("profile_data")
@@ -235,20 +236,23 @@ class Cart(BaseScreen):
         for idx in range(len(self.app.world.profile_data.cart)):
             yield CartItem(idx)
 
-    def on_cart_item_delete(self, event: CartItem.Delete) -> None:
+    @on(CartItem.Delete)
+    def remove_item(self, event: CartItem.Delete) -> None:
         self.app.world.profile_data.cart.remove(event.widget.operation)
         self.app.world.update_reactive("profile_data")
         self.__scrollable_part.query(CartItem).remove()
         self.__scrollable_part.mount(*self.__rebuild_items())
 
-    def on_cart_item_move(self, event: CartItem.Move) -> None:
+    @on(CartItem.Move)
+    def move_item(self, event: CartItem.Move) -> None:
         assert event.to_idx >= 0
         assert event.to_idx < len(self.app.world.profile_data.cart)
 
         self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
         self.app.world.update_reactive("profile_data")
 
-    def on_cart_item_focus(self, event: CartItem.Focus) -> None:
+    @on(CartItem.Focus)
+    def focus_item(self, event: CartItem.Focus) -> None:
         for cart_item in self.query(CartItem):
             if event.target_idx == cart_item.idx:
                 cart_item.focus()

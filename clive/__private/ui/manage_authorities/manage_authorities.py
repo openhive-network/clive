@@ -11,6 +11,7 @@ from textual.widgets import Static
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.manage_authorities.edit_authority import EditAuthority
 from clive.__private.ui.manage_authorities.new_authority import NewAuthority
+from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -116,13 +117,9 @@ class ManageAuthorities(BaseScreen):
     def action_new_authority(self) -> None:
         self.app.push_screen(NewAuthority())
 
-    def on_authority_form_authorities_changed(self) -> None:
-        self.__rebuild_authorities()
-
-    def on_authority_authorities_changed(self) -> None:
-        self.__rebuild_authorities()
-
-    def __rebuild_authorities(self) -> None:
+    @on(Authority.AuthoritiesChanged)
+    @on(AuthorityForm.AuthoritiesChanged)
+    def rebuild_authorities(self) -> None:
         self.query(Authority).remove()
 
         for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
