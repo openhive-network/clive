@@ -8,13 +8,13 @@ from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
 from clive.__private.core.keys import PublicKey
+from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.notification import Notification
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import CliveError, NoItemSelectedError
@@ -63,10 +63,14 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
     """Combobox for selecting the authority key."""
 
     def __init__(self) -> None:
+        try:
+            first_value = self.app.world.profile_data.working_account.keys.first
+        except KeyNotFoundError:
+            first_value = None
+
         super().__init__(
-            [SelectItem(x, x.alias) for x in self.app.world.profile_data.working_account.keys],
-            list_mount="ViewBag",
-            selected=0,
+            [(key.alias, key) for key in self.app.world.profile_data.working_account.keys],
+            value=first_value,
             empty_string="no private key found",
         )
 
@@ -157,11 +161,11 @@ class TransactionSummary(BaseScreen):
         transaction = self.__build_transaction()
 
         try:
-            selected = self.__select_key.selected
+            value = self.__select_key.value
         except NoItemSelectedError as error:
             raise TransactionCouldNotBeSignedError(transaction, "No key was selected!") from error
         else:
-            return self.app.world.commands.sign(transaction=transaction, sign_with=selected.value).result_or_raise
+            return self.app.world.commands.sign(transaction=transaction, sign_with=value).result_or_raise
 
     def __build_transaction(self) -> Transaction:
         return self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart).result_or_raise

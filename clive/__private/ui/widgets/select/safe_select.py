@@ -1,63 +1,82 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic
+from typing import TYPE_CHECKING, Final, Generic
 
-from textual.widget import Widget
-from textual.widgets import Static
+from textual.widgets import Select, Static
+from textual.widgets._select import SelectOption, SelectType
 
-from clive.__private.ui.widgets.select.select import Select
-from clive.__private.ui.widgets.select.select_item import SelectItem, SelectItemValueType
+from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from textual.app import ComposeResult
 
 
-class SafeSelect(Widget, Generic[SelectItemValueType]):
+class EmptySelect(Static):
+    DEFAULT_MESSAGE: Final[str] = "Nothing to choose from."
+
+    DEFAULT_CSS = """
+    EmptySelect {
+        color: $error-lighten-1;
+    }
+    """
+
+    def __init__(self, empty_message: str = DEFAULT_MESSAGE) -> None:
+        super().__init__(empty_message)
+        self.value = None
+
+
+class SingleSelect(Static, Generic[SelectType]):
+    """Dummy select widget."""
+
+    def __init__(self, option: SelectOption[SelectType]) -> None:
+        super().__init__(option[0])
+        self.value = option[1]
+
+
+class SafeSelect(CliveWidget, Generic[SelectType]):
+    MIN_AMOUNT_OF_ITEMS: Final[int] = 2
+
     DEFAULT_CSS = """
     SafeSelect {
         min-height: 3;
         align: center middle;
     }
-
-    SafeSelect .-empty-list {
-        color: $error-lighten-1;
-    }
     """
 
     def __init__(
         self,
-        items: list[SelectItem[SelectItemValueType]],
-        list_mount: str | Widget,
+        options: Iterable[SelectOption[SelectType]],
         *,
-        search: bool = False,
-        selected: int | SelectItemValueType | SelectItem[SelectItemValueType] | None = None,
-        placeholder: str = "",
-        empty_string: str = "nothing to choose",
+        prompt: str = "Select",
+        value: SelectType | None = None,
+        empty_string: str = EmptySelect.DEFAULT_MESSAGE,
         id_: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
-        self.__items = items
-        self.__selected: SelectItem[SelectItemValueType] | None = None
-        self.__content: Select[SelectItemValueType] | Static = Static(empty_string, classes="-empty-list")
+        self._options = list(options)
+        self._content: Select[SelectType] | SingleSelect[SelectType] | EmptySelect = EmptySelect(empty_string)
+        self.__value: SelectType | None = value
 
-        if len(items) >= Select.MIN_AMOUNT_OF_ITEMS:
-            self.__content = Select(items, list_mount, search=search, selected=selected, placeholder=placeholder)
-        elif items:
-            self.__selected = items[0]
-            self.__content = Static(self.__selected.text)
+        if len(self._options) >= self.MIN_AMOUNT_OF_ITEMS:
+            self._content = Select(options, prompt=prompt, allow_blank=False, value=self.__value)
+        elif options:
+            self._content = SingleSelect(option=self._options[0])
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(selected={self.__selected}, items={self.__items})"
+        return f"{self.__class__.__name__}(value={self.__value}, options={self._options}, content={self._content})"
 
     @property
-    def selected(self) -> SelectItem[SelectItemValueType]:
-        if self.__selected is None:
+    def value(self) -> SelectType:
+        value = self._content.value
+        if value is None:
             raise NoItemSelectedError(f"No item is selected yet from {self}.")
-        return self.__selected
+        return value
 
     def compose(self) -> ComposeResult:
-        yield self.__content
+        yield self._content
