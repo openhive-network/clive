@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Final, TypeVar
 from textual import on
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
+from textual.notifications import Notification, SeverityLevel
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
@@ -83,6 +84,17 @@ class Clive(App[int], ManualReactive):
     def namespace_bindings(self) -> NamespaceBindingsMapType:
         """Provides the ability to control the binding order in the footer."""
         return self.__sort_bindings(super().namespace_bindings)
+
+    def notify(
+        self,
+        message: str,
+        *,
+        title: str | None = None,
+        severity: SeverityLevel = "information",
+        timeout: float = Notification.timeout,
+    ) -> Notification:
+        title = title if title is not None else severity.capitalize()
+        return super().notify(message, title=title, severity=severity, timeout=timeout)
 
     def run(
         self,
