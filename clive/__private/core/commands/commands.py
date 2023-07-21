@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.error_handlers.error_handler_context_manager import (
         ErrorHandlerContextManager,
+        ResultNotAvailable,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import World
@@ -148,7 +149,7 @@ class Commands:
         exception_handler = self.__exception_handler_cls()
         with exception_handler:
             if isinstance(command, CommandWithResult):
-                result = command.execute_with_result()
+                result: ResultNotAvailable | CommandResultT = exception_handler.execute(command.execute_with_result)
             else:
                 command.execute()
 
