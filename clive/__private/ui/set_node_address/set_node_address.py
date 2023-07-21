@@ -10,7 +10,7 @@ from rich.highlighter import Highlighter
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
-from textual.widgets import Input, Static, Switch
+from textual.widgets import Input, Select, Static, Switch
 
 from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.ui.app_messages import NodeDataUpdated
@@ -20,8 +20,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.notification import Notification
-from clive.__private.ui.widgets.select.select import Select
-from clive.__private.ui.widgets.select.select_item import SelectItem
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.core.url import Url
 from clive.exceptions import NodeAddressError
@@ -44,6 +42,17 @@ class ModeSwitch(Switch):
     """A switch that changes the way the node address is selected."""
 
 
+class NodeSelector(Select[Url], CliveWidget):
+    """Select for the node address."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            [(str(url), url) for url in self.app.world.profile_data.backup_node_addresses],
+            allow_blank=False,
+            value=self.app.world.profile_data.node_address,
+        )
+
+
 class SelectedNodeAddress(Static, CliveWidget):
     """The currently selected node address."""
 
@@ -54,14 +63,7 @@ class SelectedNodeAddress(Static, CliveWidget):
 class NodesList(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
-        yield Select[Url](
-            items=[
-                SelectItem(node, str(node))
-                for idx, node in enumerate(self.app.world.profile_data.backup_node_addresses)
-            ],
-            selected=self.app.world.profile_data.node_address,
-            list_mount="ViewBag",
-        )
+        yield NodeSelector()
 
 
 class NodeUrlHighlighter(Highlighter):
@@ -140,8 +142,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
     def _valid_and_save_address(self) -> None:
         if self._in_nodes_list_mode():
-            selected: SelectItem[Url] = self.query_one(Select).selected
-            address = selected.value
+            address = self.query_one(Select).value
+            assert address is not None
         else:
             address = Url.parse(self.app.query_one("#node-address-input", Input).value)
         self.app.world.node.address = address
