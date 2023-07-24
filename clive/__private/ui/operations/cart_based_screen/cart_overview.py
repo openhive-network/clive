@@ -24,24 +24,12 @@ class CartInfoContainer(Container):
     """A container that holds the label with amount of items and items itself."""
 
 
-class CartItem(DynamicLabel):
+class CartItem(Static):
     """Holds the cart item info."""
 
-    def __init__(
-        self, operation: Operation, *, prefix: str = "", id_: str | None = None, classes: str | None = None
-    ) -> None:
+    def __init__(self, index: int, operation: Operation) -> None:
         self._operation = operation
-        super().__init__(
-            self.app.world, "profile_data", self.__fetch_operation_info, prefix=prefix, id_=id_, classes=classes
-        )
-
-    def __fetch_operation_info(self, profile_data: ProfileData) -> str:
-        if self._operation in profile_data.cart:
-            idx = profile_data.cart.index(self._operation)
-            return f"{idx + 1}. {self._operation.__class__.__name__} operation"
-        self.add_class("deleted")
-        self.remove()
-        return ""
+        super().__init__(f"{index}. {operation.get_name()}")
 
 
 class CartItemsAmount(DynamicLabel):
@@ -66,7 +54,6 @@ class CartOverview(CliveWidget):
         super().__init__()
 
         self.__cart_items_container = CartItemsContainer()
-        self.__current_cart_operations = self.__get_operations_from_cart()
 
     def compose(self) -> ComposeResult:
         with Resources():
@@ -81,37 +68,16 @@ class CartOverview(CliveWidget):
         with CartInfoContainer():
             yield CartItemsAmount()
             with self.__cart_items_container:
-                yield from self.__current_cart_operations
+                yield from self.__create_cart_items()
         yield Static()
 
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", callback=self.__sync_cart_items)
 
     def __sync_cart_items(self, _: ProfileData) -> None:
-        current_ops = self.__get_operations_from_cart()
-
-        def find_in_current_ops(op: CartItem) -> CartItem | None:
-            for x in current_ops:
-                # this custom comparator is because every time new objects are created
-                # and shallow comparison returns false positive, that none of these
-                # CartItem exists. Overriding __eq__ is invalid, because it breaks
-                # textual internally. Comparison in this case has to be done on
-                # Operation object, not CartItem
-                if x._operation == op._operation:
-                    return x
-            return None
-
-        for op in self.__current_cart_operations:
-            nop = find_in_current_ops(op)
-            if nop is not None:
-                current_ops.remove(nop)
-            else:
-                op.add_class("deleted")
-                op.remove()
-
-        if len(current_ops) > 0:
-            self.__cart_items_container.mount(*current_ops)
-        self.__current_cart_operations = self.__get_operations_from_cart()
+        self.__cart_items_container.query(CartItem).remove()
+        new_cart_items = self.__create_cart_items()
+        self.__cart_items_container.mount(*new_cart_items)
 
     @staticmethod
     def __get_rc(profile_data: ProfileData) -> str:
@@ -125,5 +91,5 @@ class CartOverview(CliveWidget):
     def __get_hbd_balance(profile_data: ProfileData) -> str:
         return Asset.to_legacy(profile_data.working_account.data.hive_dollars)
 
-    def __get_operations_from_cart(self) -> list[CartItem]:
-        return [CartItem(op) for op in self.app.world.profile_data.cart]
+    def __create_cart_items(self) -> list[CartItem]:
+        return [CartItem(index + 1, operation) for index, operation in enumerate(self.app.world.profile_data.cart)]
