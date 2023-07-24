@@ -41,9 +41,6 @@ Cart DetailedCartOperation .cell #operation_details {
   align: left middle;
 }
 
-Cart .deleted {
-  display: none;
-}
 
 Cart ButtonMoveUp, Cart ButtonMoveDown {
   background: $primary;

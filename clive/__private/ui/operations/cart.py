@@ -230,7 +230,6 @@ class Cart(BaseScreen):
     def on_detailed_cart_operation_deleted(self, event: DetailedCartOperation.Deleted) -> None:
         widget = self.query(DetailedCartOperation).last()
         self.app.world.profile_data.cart.remove(event.deleted)
-        widget.add_class("deleted")
         widget.remove()
         self.app.world.update_reactive("profile_data")
 
