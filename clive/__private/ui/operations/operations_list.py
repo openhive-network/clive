@@ -30,6 +30,7 @@ from clive.__private.ui.operations import (
     RecoverAccount,
     RecurrentTransfer,
     RequestAccountRecovery,
+    Savings,
     SetWithdrawVestingRoute,
     TransferFromSavings,
     TransferToAccount,
@@ -45,10 +46,11 @@ from clive.__private.ui.operations import (
 if TYPE_CHECKING:
     from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
     from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
+    from clive.__private.ui.operations.savings_operation_base_screen import SavingOperationBaseScreen
 
-
-FINANCIAL_OPERATIONS: Final[list[type[OperationBaseScreen]]] = [
+FINANCIAL_OPERATIONS: Final[list[type[OperationBaseScreen | SavingOperationBaseScreen]]] = [
     TransferToAccount,
+    Savings,
 ]
 RAW_OPERATIONS: Final[list[type[RawOperationBaseScreen]]] = [
     TransferToVesting,

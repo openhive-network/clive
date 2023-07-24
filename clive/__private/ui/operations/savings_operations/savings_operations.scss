@@ -1,0 +1,138 @@
+Savings Tab{
+    width: 1fr;
+}
+
+Savings TabPane {
+   height: 35;
+}
+
+Savings SavingsInterestInfo {
+    height: 5;
+    border: $secondary-darken-2;
+}
+
+/* savings-balances */
+Savings SavingsBalances {
+  layout: grid;
+  grid-size: 10 3;
+  width: 50%;
+}
+
+Savings SavingsBalances DynamicLabel {
+    text-align: center;
+    width: 100%;
+    column-span: 5;
+    text-style: bold;
+}
+
+Savings SavingsBalances Static {
+    column-span: 5;
+    text-align: center;
+    text-style: bold;
+}
+
+Savings SavingsBalances #savings-title {
+    column-span: 10;
+    text-align: center;
+    background: $accent-lighten-1;
+    text-style: bold;
+}
+
+Savings SavingsBalances #savings-token-hbd{
+    background: $primary-darken-1;
+}
+
+Savings SavingsBalances #savings-token-hive{
+    background: $primary-darken-2;
+}
+
+
+Savings SavingsBalances .savings-value-hive {
+    background: $accent-lighten-1;
+}
+
+Savings SavingsBalances .savings-value-hbd {
+    background: $accent-lighten-3;
+}
+
+/* interest-rate */
+
+SavingsInterestInfo #interest-rate {
+    width: 50%;
+}
+
+SavingsInterestInfo #interest-rate Static {
+    content-align: center middle;
+    text-style:bold;
+    width: 100%;
+}
+
+SavingsInterestInfo .interest-rate-date {
+    background: $primary-lighten-2;
+}
+
+SavingsInterestInfo .interest-rate-value {
+    background: $primary-lighten-1;
+    content-align: center middle;
+
+}
+
+SavingsInterestInfo .interest-rate-value-percent {
+    background: $primary-lighten-2;
+}
+
+/* pending-transfers */
+Savings #without-pending-label {
+    background: $accent-lighten-1;
+    text-style: bold;
+    text-align: center;
+}
+
+
+Savings PendingHeader {
+    width: 1fr;
+    height: 3;
+}
+
+Savings PendingHeader Static {
+    text-align: center;
+    height: 1;
+    width: 1fr;
+    text-style: bold;
+}
+
+Savings PendingHeader #pending-title {
+    height: 1;
+    margin-bottom: 1;
+}
+
+Savings PendingHeader #header-pending {
+    width: 1fr;
+    height: 2;
+}
+
+Savings  .EvenColumn {
+    background: $primary-background-darken-2;
+    width: 1fr;
+}
+
+Savings .OddColumn {
+    background: $primary-background-darken-1;
+    width: 1fr;
+}
+
+Savings  #pending-transfers {
+    height: 25;
+}
+
+Savings #pending-transfers Static{
+    width: 1fr;
+    content-align: center middle;
+    height: 3;
+    text-style: bold;
+}
+
+Savings PendingTransfer {
+    height: 3;
+    margin-bottom: 1;
+}
