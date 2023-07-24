@@ -1,10 +1,22 @@
+Operations TabbedContent {
+    height: 1fr;
+}
+
+Operations ScrollablePart {
+    height: 1fr;
+}
+
 Operations OperationButton{
     width: 1fr;
     background: $primary;
     margin: 1 2 0 2;
 }
 
-Operations Tab{
+Operations TabPane{
+    height: 1fr;
+}
+
+Operations Tab {
     width: 1fr;
 }
 
