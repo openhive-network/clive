@@ -7,11 +7,12 @@ from textual.binding import Binding
 from textual.containers import Container
 from textual.css.query import NoMatches
 from textual.message import Message
-from textual.widgets import Button, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.tranaction_summary import TransactionSummary
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -36,25 +37,25 @@ class ColumnLayout(Static):
     """Holds column order."""
 
 
-class ButtonMoveUp(Button):
+class ButtonMoveUp(CliveButton):
     """Button used for moving the operation up in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
-        super().__init__("🔼", id="move-up-button", disabled=disabled)
+        super().__init__("🔼", id_="move-up-button", disabled=disabled)
 
 
-class ButtonMoveDown(Button):
+class ButtonMoveDown(CliveButton):
     """Button used for moving the operation down in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
-        super().__init__("🔽", id="move-down-button", disabled=disabled)
+        super().__init__("🔽", id_="move-down-button", disabled=disabled)
 
 
-class ButtonDelete(Button):
+class ButtonDelete(CliveButton):
     """Button used for removing the operation from cart."""
 
     def __init__(self) -> None:
-        super().__init__("🗑️", id="delete-button")
+        super().__init__("🗑️", id_="delete-button")
 
 
 class StaticPart(Static):
@@ -179,7 +180,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def __is_last(self) -> bool:
         return self.__idx == self.__operations_count - 1
 
-    def on_button_pressed(self, event: Button.Pressed) -> None:
+    def on_button_pressed(self, event: CliveButton.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
             self.post_message(self.Deleted(self.__operation))
