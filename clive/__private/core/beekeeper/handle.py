@@ -117,12 +117,15 @@ class Beekeeper:
             raise BeekeeperNotRunningError
 
     def close(self) -> None:
+        logger.info("Closing Beekeeper...")
         self.api.close_session()
         self.__token = None
         self.__close_beekeeper()
         self.is_running = False
+        logger.info("Beekeeper closed.")
 
     def start(self, *, timeout: float = 5.0) -> None:
+        logger.info("Starting Beekeeper...")
         self.is_starting = True
         self.__notification_server_port = self.__notification_server.listen()
         if not (remote := self.get_remote_address_from_settings()):
@@ -134,6 +137,7 @@ class Beekeeper:
         assert self.token is not None
         self.is_running = True
         self.is_starting = False
+        logger.info(f"Beekeeper started on {self.config.webserver_http_endpoint}.")
 
     def restart(self) -> None:
         self.close()
