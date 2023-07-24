@@ -148,9 +148,12 @@ testing_clive:
     - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
-
+  when: manual
+  except:
+    - develop
+    - master
   variables:
-    BASE_IMAGE: ""
+    BASE_IMAGE: ${CI_BASE_IMAGE}
     BUILD_INSTANCE_ARGS: ""
 
     TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
@@ -170,45 +173,35 @@ testing_clive:
 
   tags: *shared_tags
 
-build_and_push_clive_image:
-  extends: .prepare_clive_image
-  variables:
-    BASE_IMAGE: ${CI_BASE_IMAGE}
-
-build_and_push_clive_testnet_image:
-  extends: .prepare_clive_image
+.clive_testnet: &clive_testnet
   needs:
     - job: prepare_testnet_hived_image
       artifacts: true
-
   variables:
     BASE_IMAGE: ${HIVED_IMAGE_NAME}
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
+build_and_push_clive_image:
+  extends: .prepare_clive_image
+
+build_and_push_clive_testnet_image:
+  extends: .prepare_clive_image
+  <<: *clive_testnet
+
 .prepare_clive_stable_image:
-  stage: build_docker
-  extends: .docker_image_builder_job
+  extends: .prepare_clive_image
+  when: on_success
+  except: [ ]
   only:
     - develop
     - master
-  variables:
-    ADDITIONAL_IMAGE_NAME: ${CLIVE_IMAGE_PATH}${CLIVE_IMAGE_TAG_PREFIX}${CI_COMMIT_REF_NAME}
-  script:
-    - docker manifest create ${ADDITIONAL_IMAGE_NAME} ${CLIVE_IMAGE_NAME}
-    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
-    - docker manifest push ${ADDITIONAL_IMAGE_NAME}
-  tags: *shared_tags
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
-  needs:
-    - job: build_and_push_clive_image
-      artifacts: true
 
 build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
-  needs:
-    - job: build_and_push_clive_testnet_image
-      artifacts: true
+  <<: *clive_testnet
+
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
