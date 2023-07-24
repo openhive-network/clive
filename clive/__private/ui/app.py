@@ -95,22 +95,14 @@ class Clive(App[int], ManualReactive):
             self.__cleanup()
 
     def on_mount(self) -> None:
-        refresh_interval: Final[int] = 3
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
-
-        def update_data_worker(closed: ThreadPoolClosedCallbackT) -> None:
-            while not closed():
-                self.__update_data_from_node()
-                self.world.update_reactive("profile_data")
-                self.world.update_reactive("app_state")
-                sleep(refresh_interval)
 
         def __should_enter_onboarding() -> bool:
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
-        self.background_tasks.run_in_thread(update_data_worker)
+        self.background_tasks.run_in_thread(self.__update_data_from_node)
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
@@ -294,13 +286,19 @@ class Clive(App[int], ManualReactive):
     def __handle_background_error(self, error: Exception) -> None:
         self.post_message(BackgroundErrorOccurred(error))
 
-    def __update_data_from_node(self) -> None:
-        try:
-            self.world.commands.update_node_data(
-                accounts=[self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
-            )
-        except Exception as e:  # noqa: BLE001
-            RaiseExceptionHelper.raise_exception_in_main_thread(e)
+    def __update_data_from_node(self, closed: ThreadPoolClosedCallbackT) -> None:
+        refresh_interval: Final[int] = 3
+        while not closed():
+            accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+
+            try:
+                self.world.commands.update_node_data(accounts=accounts)
+            except Exception as error:  # noqa: BLE001
+                RaiseExceptionHelper.raise_exception_in_main_thread(error)
+            else:
+                self.world.update_reactive("profile_data")
+                self.world.update_reactive("app_state")
+                sleep(refresh_interval)
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
