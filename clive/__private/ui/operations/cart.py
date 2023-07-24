@@ -66,13 +66,13 @@ class ScrollablePart(Container):
     """Container used for holding operation items."""
 
 
-class DetailedCartOperation(ColumnLayout, CliveWidget):
+class CartItem(ColumnLayout, CliveWidget):
     BINDINGS = [
         Binding("ctrl+up", "select_previous", "Prev"),
         Binding("ctrl+down", "select_next", "Next"),
     ]
 
-    class Deleted(Message):
+    class Delete(Message):
         def __init__(self, deleted: Operation) -> None:
             self.deleted = deleted
             super().__init__()
@@ -84,7 +84,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
             super().__init__()
 
     class Focus(Message):
-        """Message sent when other DetailedCartOperation should be focused."""
+        """Message sent when other CartItem should be focused."""
 
         def __init__(self, target_idx: int) -> None:
             self.target_idx = target_idx
@@ -96,7 +96,7 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
         super().__init__()
 
     def __repr__(self) -> str:
-        return f"DetailedCartOperation({self.__idx=})"
+        return f"{self.__class__.__name__}(idx={self.__idx})"
 
     def on_mount(self) -> None:
         if self.__is_first:
@@ -183,19 +183,19 @@ class DetailedCartOperation(ColumnLayout, CliveWidget):
     def on_button_pressed(self, event: CliveButton.Pressed) -> None:
         """Event handler called when a button is pressed."""
         if event.button.id == "delete-button":
-            self.post_message(self.Deleted(self.__operation))
+            self.post_message(self.Delete(self.__operation))
         elif event.button.id == "move-up-button":
             self.post_message(self.Move(self.__idx, self.__idx - 1))
         elif event.button.id == "move-down-button":
             self.post_message(self.Move(self.__idx, self.__idx + 1))
 
-    def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
+    def on_cart_item_move(self, event: CartItem.Move) -> None:
         if event.to_idx == self.__idx:
             self.__idx = event.from_idx
         self.app.world.update_reactive("profile_data")
 
 
-class CartOperationsHeader(ColumnLayout):
+class CartHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
         yield StaticColumn("No.", id="operation_position_in_trx", classes="cell cell-middle")
         yield StaticColumn("Operation Type", id="operation_type", classes="cell cell-variant cell-middle")
@@ -220,31 +220,31 @@ class Cart(BaseScreen):
         with ViewBag():
             with StaticPart():
                 yield BigTitle("operations cart")
-                yield CartOperationsHeader()
+                yield CartHeader()
 
             with self.__scrollable_part:
                 for idx in range(len(self.app.world.profile_data.cart)):
-                    yield DetailedCartOperation(idx)
+                    yield CartItem(idx)
 
             yield Static()
 
-    def on_detailed_cart_operation_deleted(self, event: DetailedCartOperation.Deleted) -> None:
-        widget = self.query(DetailedCartOperation).last()
+    def on_cart_item_delete(self, event: CartItem.Delete) -> None:
+        widget = self.query(CartItem).last()
         self.app.world.profile_data.cart.remove(event.deleted)
         widget.remove()
         self.app.world.update_reactive("profile_data")
 
-    def on_detailed_cart_operation_move(self, event: DetailedCartOperation.Move) -> None:
+    def on_cart_item_move(self, event: CartItem.Move) -> None:
         assert event.to_idx >= 0
         assert event.to_idx < len(self.app.world.profile_data.cart)
 
         self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
         self.app.world.update_reactive("profile_data")
 
-    def on_detailed_cart_operation_focus(self, event: DetailedCartOperation.Focus) -> None:
-        for detailed in self.query(DetailedCartOperation):
-            if event.target_idx == detailed.idx:
-                detailed.focus()
+    def on_cart_item_focus(self, event: CartItem.Focus) -> None:
+        for cart_item in self.query(CartItem):
+            if event.target_idx == cart_item.idx:
+                cart_item.focus()
 
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummary())

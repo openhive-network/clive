@@ -29,15 +29,15 @@ Cart .cell-variant {
   background: $primary-background-darken-1;
 }
 
-Cart CartOperationsHeader {
+Cart CartHeader {
   margin: 0 1;
 }
 
-Cart DetailedCartOperation {
+Cart CartItem {
   margin: 1;
 }
 
-Cart DetailedCartOperation .cell #operation_details {
+Cart CartItem .cell #operation_details {
   align: left middle;
 }
 
@@ -63,6 +63,6 @@ Cart Scrollable {
   height: 1fr;
 }
 
-Cart DetailedCartOperation:focus-within {
+Cart CartItem:focus-within {
   background: $primary-background;
 }
