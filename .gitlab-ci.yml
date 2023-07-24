@@ -173,20 +173,20 @@ testing_clive:
 
   tags: *shared_tags
 
-.clive_testnet: &clive_testnet
+.clive_testnet_needs: &clive_testnet_needs
   needs:
     - job: prepare_testnet_hived_image
       artifacts: true
-  variables:
-    BASE_IMAGE: ${HIVED_IMAGE_NAME}
-    BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
 build_and_push_clive_image:
   extends: .prepare_clive_image
 
 build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
-  <<: *clive_testnet
+  <<: *clive_testnet_needs
+  variables:
+    BASE_IMAGE: ${HIVED_IMAGE_NAME}
+    BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
@@ -195,13 +195,17 @@ build_and_push_clive_testnet_image:
   only:
     - develop
     - master
+  variables:
+    BUILD_INSTANCE_ARGS: "--image-path-suffix=-${CI_COMMIT_REF_NAME}"
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
 
 build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
-  <<: *clive_testnet
-
+  <<: *clive_testnet_needs
+  variables:
+    BASE_IMAGE: ${HIVED_IMAGE_NAME}
+    BUILD_INSTANCE_ARGS: "--embedded-testnet --image-path-suffix=-${CI_COMMIT_REF_NAME}"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
