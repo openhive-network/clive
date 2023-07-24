@@ -11,36 +11,13 @@ from typing import TextIO
 
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.config import BeekeeperConfig
+from clive.__private.core.beekeeper.exceptions import (
+    BeekeeperAlreadyRunningError,
+    BeekeeperNotConfiguredError,
+    BeekeeperNotificationServerNotConfiguredError,
+    BeekeeperNotRunningError,
+)
 from clive.__private.logger import logger
-from clive.exceptions import CliveError
-
-
-class BeekeeperError(CliveError):
-    """Base class for Beekeeper errors."""
-
-
-class BeekeeperAlreadyRunningError(BeekeeperError):
-    pass
-
-
-class BeekeeperNotRunningError(BeekeeperError):
-    pass
-
-
-class BeekeeperNotificationServerNotConfiguredError(BeekeeperError):
-    pass
-
-
-class BeekeeperNonZeroExitCodeError(BeekeeperError):
-    pass
-
-
-class BeekeeperDidNotClosedError(BeekeeperError):
-    pass
-
-
-class BeekeeperNotConfiguredError(BeekeeperError):
-    pass
 
 
 class BeekeeperExecutable:

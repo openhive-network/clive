@@ -8,42 +8,23 @@ from pydantic import Field, validator
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.api import BeekeeperApi
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
-from clive.__private.core.beekeeper.executable import BeekeeperExecutable, BeekeeperNotConfiguredError
+from clive.__private.core.beekeeper.exceptions import (
+    BeekeeperNon200StatusCodeError,
+    BeekeeperNotConfiguredError,
+    BeekeeperNotMatchingIdJsonRPCError,
+    BeekeeperResponseError,
+    BeekeeperUrlNotSetError,
+)
+from clive.__private.core.beekeeper.executable import BeekeeperExecutable
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
-from clive.exceptions import CliveError, CommunicationError
 from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
     from pathlib import Path
-
-    from clive.__private.core.beekeeper.notification_http_server import JsonT
-
-
-class BeekeeperError(CliveError):
-    """Base class for all Beekeeper errors."""
-
-
-class BeekeeperUrlNotSetError(BeekeeperError):
-    pass
-
-
-class BeekeeperNon200StatusCodeError(BeekeeperError):
-    pass
-
-
-class BeekeeperResponseError(BeekeeperError, CommunicationError):
-    def __init__(self, url: str, request: JSONRPCRequest, response: JsonT) -> None:
-        super().__init__(url, request.json(by_alias=True), response)
-
-
-class BeekeeperNotMatchingIdJsonRPCError(BeekeeperError):
-    def __init__(self, given: Any, got: Any) -> None:
-        self.message = f"Given id `{given}` does not match the id of the response `{got}`"
-        super().__init__(self.message)
 
 
 class Beekeeper:
