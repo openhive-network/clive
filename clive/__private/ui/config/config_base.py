@@ -12,8 +12,6 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
-
     from textual.app import ComposeResult
 
 
@@ -22,7 +20,7 @@ class ConfigBase(BaseScreen, AbstractClassMessagePump):
         Binding("escape", "pop_screen", "Cancel"),
     ]
 
-    def additional_buttons(self) -> Iterable[Button]:
+    def additional_buttons(self) -> ComposeResult:
         """Returns the additional buttons to be displayed on the configuration screen."""
         return []
 
