@@ -12,6 +12,7 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperNon200StatusCodeError,
     BeekeeperNotConfiguredError,
     BeekeeperNotMatchingIdJsonRPCError,
+    BeekeeperNotRunningError,
     BeekeeperResponseError,
     BeekeeperUrlNotSetError,
 )
@@ -45,6 +46,8 @@ class Beekeeper:
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError
 
+        self.is_running = False
+        self.is_starting = False
         self.config = BeekeeperConfig()
         self.__notification_server = BeekeeperNotificationsServer()
         self.__notification_server_port: int | None = None
@@ -83,6 +86,8 @@ class Beekeeper:
         return BeekeeperExecutable.is_already_running()
 
     def _send(self, result_model: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
+        self.__assert_is_running()
+
         url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
         response = Communication.request(url, data=request.json(by_alias=True))
@@ -102,12 +107,23 @@ class Beekeeper:
         logger.info(f"Returning model: {return_value}")
         return return_value
 
+    def __assert_is_running(self) -> None:
+        if self.is_starting:
+            return
+
+        if not self.is_running:
+            if self.__token is not None:
+                self.close()
+            raise BeekeeperNotRunningError
+
     def close(self) -> None:
         self.api.close_session()
         self.__token = None
         self.__close_beekeeper()
+        self.is_running = False
 
     def start(self, *, timeout: float = 5.0) -> None:
+        self.is_starting = True
         self.__notification_server_port = self.__notification_server.listen()
         if not (remote := self.get_remote_address_from_settings()):
             self.__run_beekeeper(timeout=timeout)
@@ -116,6 +132,8 @@ class Beekeeper:
 
         assert self.config.webserver_http_endpoint is not None
         assert self.token is not None
+        self.is_running = True
+        self.is_starting = False
 
     def restart(self) -> None:
         self.close()
