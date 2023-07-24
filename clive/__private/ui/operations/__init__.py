@@ -43,6 +43,7 @@ from clive.__private.ui.operations.raw.vote.vote import Vote
 from clive.__private.ui.operations.raw.withdraw_vesting.withdraw_vesting import WithdrawVesting
 from clive.__private.ui.operations.raw.witness_set_properties.witness_set_properties import WitnessSetProperties
 from clive.__private.ui.operations.raw.witness_update.witness_update import WitnessUpdate
+from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 
 __all__ = [
@@ -86,4 +87,5 @@ __all__ = [
     "AccountUpdate",
     "AccountUpdate2",
     "CollateralizedConvert",
+    "Savings",
 ]
