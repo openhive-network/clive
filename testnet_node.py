@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import argparse
+import shutil
 import sys
 import time
 from random import randint
@@ -7,6 +9,13 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
+from clive.__private.config import settings
+from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.keys.keys import PrivateKeyAliased
+from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.world import World
+from clive.__private.storage.mock_database import Account as WatchedAccount
+from clive.__private.storage.mock_database import WorkingAccount
 from clive.main import main as clive_main
 
 ARGS_COUNT = 2
@@ -15,6 +24,22 @@ if TYPE_CHECKING:
     from typing import Any
 
     from test_tools.__private.asset import AssetBase
+
+engine = argparse.ArgumentParser("testnet configurator")
+engine.add_argument(
+    "-p",
+    "--perform-onboarding",
+    dest="onboarding",
+    nargs="?",
+    type=bool,
+    const=True,
+    default=False,
+    help="if not set, pregenerated profile will be used, otherwise onboarding will be launched",
+)
+
+args = engine.parse_args()
+enable_onboarding: bool = args.onboarding
+
 
 node = tt.InitNode()
 node.config.webserver_http_endpoint = "0.0.0.0:8090"
@@ -35,7 +60,28 @@ wallet.create_account(
 )
 
 # setup watching accounts
-watched_accounts = [tt.Account(name) for name in ("gtg", "god")]
+watched_accounts = [tt.Account(name) for name in ("bob", "timmy", "john")]
+
+
+shutil.rmtree(settings.data_path, ignore_errors=True)
+if not enable_onboarding:
+    tt.logger.info("Configuring ProfileData for clive")
+
+    ProfileData(
+        alice.name,
+        working_account=WorkingAccount(name=alice.name),
+        watched_accounts=[WatchedAccount(acc.name) for acc in watched_accounts],
+    ).save()
+
+    world = World(alice.name)
+    password = CreateWallet(beekeeper=world.beekeeper, wallet=alice.name, password=alice.name).execute_with_result()
+    tt.logger.info(f"password for {alice.name} is: `{password}`")
+    world.profile_data.working_account.keys.add_to_import(
+        PrivateKeyAliased(value=alice.private_key._value, alias=f"default {alice.name} key")
+    )
+    world.commands.sync_data_with_beekeeper()
+    world.profile_data.save()
+    world.close()
 
 
 def random_assets(asset: type[AssetBase]) -> dict[str, Any]:
