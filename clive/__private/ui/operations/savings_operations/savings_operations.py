@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Container, Horizontal
-from textual.widgets import Button, Static, TabbedContent, TabPane
+from textual.containers import Container, Grid, Horizontal
+from textual.widgets import Button, Checkbox, Input, Static, TabbedContent, TabPane
 
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -13,17 +13,21 @@ from clive.__private.ui.operations.savings_operation_base_screen import SavingOp
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
     from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 
 odd = "OddColumn"
 even = "EvenColumn"
+
+
+class Body(Grid):
+    """Holds all places using to create transfers from/to savings."""
 
 
 class SavingsBalances(AccountReferencingWidget):
@@ -109,6 +113,18 @@ class PendingHeader(CliveWidget):
 
 
 class Savings(SavingOperationBaseScreen):
+    def __init__(self) -> None:
+        super().__init__()
+        self.__amount_input = Input(placeholder="put amount to transfer here", id="amount-input")
+        self.__memo_input = Input(placeholder="put memo here")
+        self.__to_account_input = Input(placeholder="put to-account here")
+        self.__currency_selector = CurrencySelectorLiquid()
+
+        self.__to_checkbox = Checkbox("transfer to savings", id="to-savings-choose")
+        self.__from_checkbox = Checkbox("transfer from savings", id="from-savings-choose")
+
+        self.__to_account = Horizontal(id="to-parameter")
+
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent():
             with TabPane("savings info"), Container():
@@ -125,7 +141,28 @@ class Savings(SavingOperationBaseScreen):
                 else:
                     yield Static("No pending transfers from savings now !", id="without-pending-label")
             with TabPane("transfer"):
-                yield Static("NOT IMPLEMENTED YET")
+                yield Static("Choose type of operation", id="savings-transfer-header")
+                with Horizontal(id="operation-type-choose"):
+                    yield self.__from_checkbox
+                    yield self.__to_checkbox
 
-    def summary_of_operation(self) -> RawOperationBaseScreen | None:
-        return None
+                yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
+                with self.__to_account:
+                    yield Static("to", classes="label")
+                    yield self.__to_account_input
+                with Body():
+                    yield Static("amount", classes="label")
+                    yield self.__amount_input
+                    yield self.__currency_selector
+                    yield Static("memo", classes="label")
+                    yield self.__memo_input
+                yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
+
+    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+        if event.checkbox.value:
+            _check_boxes = self.query(Checkbox)
+
+            for check_box in _check_boxes.filter(".-on"):
+                if check_box != event.checkbox:
+                    check_box.value = False
+                    break
