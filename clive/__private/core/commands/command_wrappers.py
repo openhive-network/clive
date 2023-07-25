@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Generic
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
-from clive.__private.core.error_handlers.error_handler_context_manager import ResultNotAvailable
+from clive.__private.core.error_handlers.abc.error_handler_context_manager import ResultNotAvailable
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

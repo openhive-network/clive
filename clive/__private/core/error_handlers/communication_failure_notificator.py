@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Final
 
 from clive.__private.core.clive_import import get_clive
-from clive.__private.core.error_handlers.error_handler_context_manager import (
+from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ErrorHandlerContextManager,
     ResultNotAvailable,
 )

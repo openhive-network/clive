@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.commands.abc.command import Command
-    from clive.__private.core.error_handlers.error_handler_context_manager import (
+    from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
         ErrorHandlerContextManager,
         ResultNotAvailable,
     )
