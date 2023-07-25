@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import argparse
 import shutil
-import sys
 import time
 from random import randint
 from typing import TYPE_CHECKING
@@ -36,9 +35,20 @@ engine.add_argument(
     default=False,
     help="if not set, pregenerated profile will be used, otherwise onboarding will be launched",
 )
+engine.add_argument(
+    "-n",
+    "--no-tui",
+    dest="no_tui",
+    nargs="?",
+    type=bool,
+    const=True,
+    default=False,
+    help="if not set, TUI will will be launched, otherwise only testnet will be configured",
+)
 
 args = engine.parse_args()
 enable_onboarding: bool = args.onboarding
+disable_tui: bool = args.no_tui
 
 
 node = tt.InitNode()
@@ -104,8 +114,8 @@ tt.logger.info(f"{alice.name} public key: {alice.public_key}")
 tt.logger.info(f"{alice.name} private key: {alice.private_key}")
 tt.logger.info("done!")
 
-# passing any argument to the script will skip clive autolaunch i.e. for debugging purposes.
-if len(sys.argv) < ARGS_COUNT:
+# not passing `--no-tui` to the script will skip clive autolaunch i.e. for debugging purposes.
+if not disable_tui:
     tt.logger.info("Attempting to start a clive interactive mode - exit to finish")
     clive_main()
 else:
