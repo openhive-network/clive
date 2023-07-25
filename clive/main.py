@@ -27,11 +27,11 @@ def main() -> None:
             cli()
             return
 
-    if not __any_arguments_given():
-        run_tui()
-        return
+        if not __any_arguments_given():
+            run_tui()
+            return
 
-    run_cli()
+        run_cli()
 
 
 if __name__ == "__main__":
