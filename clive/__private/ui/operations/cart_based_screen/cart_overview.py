@@ -74,10 +74,10 @@ class CartOverview(CliveWidget):
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", callback=self.__sync_cart_items)
 
-    def __sync_cart_items(self, _: ProfileData) -> None:
-        self.__cart_items_container.query(CartItem).remove()
+    async def __sync_cart_items(self, _: ProfileData) -> None:
+        await self.__cart_items_container.query(CartItem).remove()
         new_cart_items = self.__create_cart_items()
-        self.__cart_items_container.mount(*new_cart_items)
+        await self.__cart_items_container.mount(*new_cart_items)
 
     @staticmethod
     def __get_rc(profile_data: ProfileData) -> str:
