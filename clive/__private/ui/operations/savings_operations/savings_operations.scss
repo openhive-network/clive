@@ -136,3 +136,68 @@ Savings PendingTransfer {
     height: 3;
     margin-bottom: 1;
 }
+
+/* transfer from and to savings*/
+Savings  .transfer-savings-balances {
+    width: 100%;
+    grid-size: 10 3;
+    height: 4;
+}
+
+Savings #savings-transfer-header {
+    margin-bottom: 1;
+    text-align: center;
+    text-style: bold;
+}
+
+Savings Body {
+  grid-size: 3;
+  grid-columns: 12 2fr 1fr;
+  grid-rows: 4 4 4 4 4;
+  height: auto;
+}
+
+
+Savings .label {
+  padding: 1 1;
+}
+
+Savings .to-label {
+  padding: 1 1;
+}
+
+Savings #to-parameter {
+    height: 3;
+    margin-bottom: 1;
+}
+
+Savings #to-parameter Input {
+    width: 55%;
+}
+
+Savings #to-parameter Static {
+    width: 11%;
+}
+
+Savings Checkbox {
+    width: 50%;
+    content-align: center middle;
+}
+
+Savings #operation-type-choose {
+    height: 2;
+    align: center middle;
+}
+
+Savings #transfer-time-reminder {
+    width: 1fr;
+    height: 1;
+    content-align: center top;
+    background: $accent-lighten-1;
+    text-style: bold;
+    margin-top: 1;
+}
+
+Savings ViewBag {
+    height: auto;
+}
