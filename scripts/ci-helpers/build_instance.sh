@@ -90,7 +90,8 @@ pushd "$SRCROOTDIR"
 
 export DOCKER_BUILDKIT=1
 
-CLIVE_IMAGE_NAME="${REGISTRY}${IMAGE_TAG_PREFIX}instance${IMAGE_PATH_SUFFIX}:${IMAGE_TAG_PREFIX}instance-${BUILD_IMAGE_TAG}"
+CLIVE_IMAGE_PATH="${REGISTRY}${IMAGE_TAG_PREFIX}instance${IMAGE_PATH_SUFFIX}"
+CLIVE_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${IMAGE_TAG_PREFIX}instance-${BUILD_IMAGE_TAG}"
 
 docker build --target=${DOCKER_TARGET} \
   --build-arg CI_REGISTRY_IMAGE=$REGISTRY \
@@ -101,4 +102,5 @@ docker build --target=${DOCKER_TARGET} \
 
 popd
 
-echo "CLIVE_IMAGE_NAME=${CLIVE_IMAGE_NAME}" > docker_image_name.env
+echo "CLIVE_IMAGE_PATH=${CLIVE_IMAGE_PATH}" > docker_image_name.env
+echo "CLIVE_IMAGE_NAME=${CLIVE_IMAGE_NAME}" >> docker_image_name.env
