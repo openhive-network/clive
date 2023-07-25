@@ -1,16 +1,10 @@
 from __future__ import annotations
 
-from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command import CommandError
-from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
-    ErrorHandlerContextManager,
-    ResultNotAvailable,
-)
-from clive.__private.logger import logger
-from clive.__private.ui.widgets.notification import Notification
+from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 
 
-class FailedCommandNotificator(ErrorHandlerContextManager):
+class FailedCommandNotificator(ErrorNotificator):
     """
     A context manager that notifies about failed commands (by default resulted with `CommandError` or its subclasses).
 
@@ -28,31 +22,14 @@ class FailedCommandNotificator(ErrorHandlerContextManager):
         self.__message = message
         self.__catch_only = catch_only
 
-    def _handle_error(self, error: BaseException) -> ResultNotAvailable:
-        if self.__is_exception_to_catch(error):
-            self.__notify(error)
-            return ResultNotAvailable(error)
-        raise error
-
-    def __is_exception_to_catch(self, exception: BaseException) -> bool:
+    def _is_exception_to_catch(self, exception: BaseException) -> bool:
         if self.__catch_only:
             return type(exception) is self.__catch_only
         return isinstance(exception, CommandError)
 
-    def __notify(self, exception: BaseException) -> None:
-        message = self.__determine_message(exception)
+    def _determine_message(self, exception: BaseException) -> str:
+        assert isinstance(exception, CommandError)
 
-        if get_clive().is_launched:
-            self.__notify_tui(message)
-            return
-
-        logger.warning(f"Command failed and no one was notified. {message=}")
-
-    def __determine_message(self, exception: BaseException) -> str:
         if self.__message:
             return self.__message
         return str(exception)
-
-    @staticmethod
-    def __notify_tui(message: str) -> None:
-        Notification(message, category="error").show()
