@@ -15,7 +15,6 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
-from clive.__private.ui.activate.activate import Activate as ActivateScreen
 from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks, ThreadPoolClosedCallbackT
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
@@ -219,7 +218,6 @@ class Clive(App[int], ManualReactive):
             self.world.commands.set_timeout(seconds=int(active_mode_time.total_seconds()))
         wrapper = self.world.commands.activate(password=password, time=active_mode_time)
         self.world.update_reactive("app_state")
-        self.post_message_to_everyone(ActivateScreen.Succeeded())
         return wrapper
 
     def deactivate(self) -> None:

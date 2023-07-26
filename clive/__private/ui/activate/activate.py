@@ -91,6 +91,7 @@ class Activate(BaseScreen):
         self.__exit_success()
 
     def __exit_success(self) -> None:
+        self.app.post_message_to_everyone(self.Succeeded())
         self.app.pop_screen()
         self.__set_activation_result(True)
 
