@@ -10,7 +10,7 @@ from clive.__private import config
 from clive.__private.storage.contextual import Context
 from clive.__private.storage.mock_database import Account, WorkingAccount
 from clive.core.url import Url
-from clive.exceptions import CliveError
+from clive.exceptions import CliveError, CommunicationError
 from clive.models import Operation
 
 if TYPE_CHECKING:
@@ -45,6 +45,7 @@ class ProfileData(Context):
 
     backup_node_addresses: list[Url] = field(init=False)
     _node_address: Url = field(init=False)
+    network_type: str = ""
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:
@@ -62,6 +63,16 @@ class ProfileData(Context):
     def node_address(self, v: Url) -> None:
         assert isinstance(v, Url)
         self._node_address = v
+        self.__sync_node_version()
+
+    def __sync_node_version(self) -> None:
+        if self.node_address:
+            from clive.__private.core.node.node import Node  # to avoid cyclic references
+
+            try:
+                self.network_type = Node(self).api.database_api.get_version().node_type
+            except CommunicationError:
+                self.network_type = "no connection"
 
     def save(self) -> None:
         from clive.__private.ui.app import Clive
