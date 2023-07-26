@@ -64,14 +64,14 @@ In order to run clive via Docker, you need to have Docker installed on your mach
 instructions [here](https://docs.docker.com/get-docker/).
 
 Then you can run a docker container always with the latest master/develop version of clive by running the following
-command (depending on the branch you want to use, e.g. develop):
+command (depending on the branch and chain version you want to use, e.g. develop on testnet):
 
  ```bash
-docker pull registry.gitlab.syncad.com/hive/clive/develop:latest   && docker run -ti  registry.gitlab.syncad.com/hive/clive/develop:latest
+docker pull registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest   && docker run -ti  registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest
  ```
 
 If you want to run clive via CLI, you can pass any argument to the `docker run` command:
 
  ```bash
-docker run -ti  registry.gitlab.syncad.com/hive/clive/develop:latest --help
+docker run -ti  registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest --help
  ```
