@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
-from time import sleep
-from typing import TYPE_CHECKING, Final, overload
+from typing import TYPE_CHECKING, overload
 
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
@@ -290,7 +289,6 @@ class Clive(App[int], ManualReactive):
         self.post_message(BackgroundErrorOccurred(error))
 
     def __update_data_from_node(self, closed: ThreadPoolClosedCallbackT) -> None:
-        refresh_interval: Final[int] = 3
         while not closed():
             accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
 
@@ -301,7 +299,6 @@ class Clive(App[int], ManualReactive):
             else:
                 self.world.update_reactive("profile_data")
                 self.world.update_reactive("app_state")
-                sleep(refresh_interval)
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
