@@ -26,7 +26,7 @@ class Api(AbstractClass):
     @staticmethod
     def method(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
-        def wrapper(this: Self, /, **kwargs: P.kwargs) -> R:
+        async def wrapper(this: Self, /, **kwargs: P.kwargs) -> R:
             return_type: type[R] = get_type_hints(func)["return"]
             endpoint = this.__get_endpoint(func)
             for key in list(kwargs.keys()):
@@ -38,7 +38,7 @@ class Api(AbstractClass):
                 result: return_type  # type: ignore[valid-type]
 
             Response.update_forward_refs(**locals())
-            return this._node.send(request, expect_type=Response).result
+            return (await this._node.send(request, expect_type=Response)).result
 
         return wrapper  # type: ignore
 

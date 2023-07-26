@@ -140,16 +140,10 @@ class Commands(Generic[WorldT]):
             )
         )
 
-    def update_node_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWrapper:
-        wrapper = self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=list(accounts or []), node=self._world.node)
-        )
-
-        if wrapper.error_occurred:
-            return CommandWrapper(command=wrapper.command, error=wrapper.error)
-
-        self._world.app_state._dynamic_global_properties = wrapper.result_or_raise
-        return CommandWrapper(command=wrapper.command)
+    async def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
+        command = UpdateNodeData(accounts=accounts or [], node=self._world.node)
+        self._world.app_state._dynamic_global_properties = await command.async_execute_with_result()
+        return CommandWrapper(command=command)
 
     @overload
     def __surround_with_exception_handlers(  # type: ignore[misc]

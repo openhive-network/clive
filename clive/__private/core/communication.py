@@ -63,11 +63,8 @@ class Communication:
         max_attempts: int = DEFAULT_ATTEMPTS,
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> httpx.Response:
-        return typing.cast(
-            httpx.Response,
-            asyncio_run(
-                cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time),
-            ),
+        return asyncio_run(
+            cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time),
         )
 
     @classmethod

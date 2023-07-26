@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from dataclasses import dataclass
 
 from clive.__private.logger import logger
@@ -14,22 +14,43 @@ class CommandError(CliveError):
         super().__init__(self.message)
 
 
+class SynchronousOnlyCommandError(CommandError):
+    """Raised by commands, that are dedicated to be executed only via execute."""
+
+
+class AsynchronousOnlyCommandError(CommandError):
+    """Raised by commands, that are dedicated to be executed only via async_execute."""
+
+
 @dataclass(kw_only=True)
-class Command(ABC):
+class Command(ABC):  # noqa: B024
     """An abstract class that defines a common interface for executing commands."""
 
-    @abstractmethod
     def _execute(self) -> None:
         """
         Proxy method for the execute() method.
 
         The result could be set via the `result` property.
         """
+        raise AsynchronousOnlyCommandError(self)
 
     def execute(self) -> None:
         """Executes the command. The result could be accessed via the `result` property."""
         self._log_execution_info()
         self._execute()
+
+    async def _async_execute(self) -> None:
+        """
+        Proxy method for the execute() method.
+
+        The result could be set via the `result` property.
+        """
+        raise SynchronousOnlyCommandError(self)
+
+    async def async_execute(self) -> None:
+        """Executes the command. The result could be accessed via the `result` property."""
+        self._log_execution_info()
+        await self._async_execute()
 
     @staticmethod
     def execute_multiple(*commands: Command) -> None:

@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.models import Transaction
 
@@ -22,7 +23,7 @@ class BuildTransaction(CommandWithResult[Transaction]):
         self._result = Transaction(operations=self.operations)
 
         # get dynamic global properties
-        gdpo = self.node.api.database_api.get_dynamic_global_properties()
+        gdpo = asyncio_run(self.node.api.database_api.get_dynamic_global_properties())
 
         # set header
         block_id = gdpo.head_block_id

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.beekeeper.model import JSONRPCResponse
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
@@ -36,15 +37,15 @@ class Node:
         self.__sync_node_version()
 
     @overload
-    def send(self, request: JSONRPCRequest, *, expect_type: None = None) -> JSONRPCResponse[Any]:
+    async def send(self, request: JSONRPCRequest, *, expect_type: None = None) -> JSONRPCResponse[Any]:
         ...
 
     @overload
-    def send(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
+    async def send(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
         ...
 
-    def send(self, request: JSONRPCRequest, *, expect_type: type[T] | None = None) -> T | JSONRPCResponse[Any]:
-        response = Communication.request(str(self.address), data=request.json(by_alias=True))
+    async def send(self, request: JSONRPCRequest, *, expect_type: type[T] | None = None) -> T | JSONRPCResponse[Any]:
+        response = await Communication.arequest(str(self.address), data=request.json(by_alias=True))
         data = response.json()
 
         if not expect_type:
@@ -54,11 +55,11 @@ class Node:
 
     @property
     def chain_id(self) -> str:
-        return self.api.database_api.get_config().HIVE_CHAIN_ID
+        return asyncio_run(self.api.database_api.get_config()).HIVE_CHAIN_ID
 
     def __sync_node_version(self) -> None:
         if self.address:
             try:
-                self.__network_type = self.api.database_api.get_version().node_type
+                self.__network_type = asyncio_run(self.api.database_api.get_version()).node_type
             except CommunicationError:
                 self.__network_type = "no connection"
