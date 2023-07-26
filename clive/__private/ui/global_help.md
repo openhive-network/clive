@@ -9,5 +9,4 @@ the [Hive](https://gitlab.syncad.com/hive/hive) blockchain. Inspired by midnight
 |:--------:|-----------------|
 |   `F1`   | Show help       |
 | `Ctrl+X` | Quit            |
-| `Ctrl+O` | Toggle terminal |
 | `Ctrl+S` | Screenshot      |
