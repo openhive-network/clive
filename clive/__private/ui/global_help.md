@@ -8,6 +8,6 @@ the [Hive](https://gitlab.syncad.com/hive/hive) blockchain. Inspired by midnight
 | Binding  | Action          |
 |:--------:|-----------------|
 |   `F1`   | Show help       |
-| `Ctrl+C` | Quit            |
+| `Ctrl+X` | Quit            |
 | `Ctrl+O` | Toggle terminal |
 | `Ctrl+S` | Screenshot      |

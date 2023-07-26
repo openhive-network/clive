@@ -16,14 +16,14 @@ if TYPE_CHECKING:
 
 class Quit(BaseScreen):
     BINDINGS = [
-        Binding("ctrl+c", "exit_cleanly", "Quit"),
+        Binding("ctrl+x", "exit_cleanly", "Quit"),
         Binding("escape", "pop_screen", "Cancel"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Are you sure you want to quit?", id="question")
-            yield Static("(You can also confirm by pressing Ctrl+C again)", id="hint")
+            yield Static("(You can also confirm by pressing Ctrl+X again)", id="hint")
             with Horizontal(id="buttons"):
                 yield CliveButton("Quit", variant="error", id_="quit")
                 yield CliveButton("Cancel", variant="primary", id_="cancel")
