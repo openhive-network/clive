@@ -31,6 +31,16 @@ Header TitledLabel {
   margin-right: 1;
 }
 
+Header #node-type-label {
+  margin-left: 1;
+  margin-right: 1;
+  color: green;
+}
+
+Header #node-type-label.-not-mainnet {
+  color: red;
+}
+
 Header #profile-label #value {
   color: $accent;
 }

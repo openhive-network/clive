@@ -105,6 +105,12 @@ class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
         self.on_app_state(self.app.world.app_state)
+        self.__node_version_label = DynamicLabel(
+            obj_to_watch=self.app.world,
+            attribute_name="profile_data",
+            callback=self.__get_node_version,
+            id_="node-type-label",
+        )
 
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.on_header_expanded)
@@ -114,6 +120,7 @@ class Header(TextualHeader, CliveWidget):
         yield HeaderIcon()
         with Horizontal(id="bar"):
             if not self.__is_in_onboarding_mode():
+                yield self.__node_version_label
                 yield TitledLabel(
                     "Profile",
                     obj_to_watch=self.app.world,
@@ -162,6 +169,14 @@ class Header(TextualHeader, CliveWidget):
     @staticmethod
     def __get_profile_name(profile_data: ProfileData) -> str:
         return profile_data.name
+
+    def __get_node_version(self, profile_data: ProfileData) -> str:
+        class_to_switch = "-not-mainnet"
+        if profile_data.network_type == "mainnet":
+            self.__node_version_label.remove_class(class_to_switch)
+        else:
+            self.__node_version_label.add_class(class_to_switch)
+        return profile_data.network_type
 
     def __is_in_onboarding_mode(self) -> bool:
         return self.app.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
