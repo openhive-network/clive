@@ -22,12 +22,12 @@ class FailedCommandNotificator(ErrorNotificator):
         self.__message = message
         self.__catch_only = catch_only
 
-    def _is_exception_to_catch(self, exception: BaseException) -> bool:
+    def _is_exception_to_catch(self, exception: Exception) -> bool:
         if self.__catch_only:
             return type(exception) is self.__catch_only
         return isinstance(exception, CommandError)
 
-    def _determine_message(self, exception: BaseException) -> str:
+    def _determine_message(self, exception: Exception) -> str:
         assert isinstance(exception, CommandError)
 
         if self.__message:

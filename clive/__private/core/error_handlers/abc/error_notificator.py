@@ -15,20 +15,20 @@ class ErrorNotificator(ErrorHandlerContextManager, ABC):
     """A context manager that notifies about errors."""
 
     @abstractmethod
-    def _determine_message(self, exception: BaseException) -> str:
+    def _determine_message(self, exception: Exception) -> str:
         """Return message to be displayed in notification."""
 
-    def _handle_error(self, error: BaseException) -> ResultNotAvailable:
+    def _handle_error(self, error: Exception) -> ResultNotAvailable:
         if self._is_exception_to_catch(error):
             self.__notify(error)
             return ResultNotAvailable(error)
         raise error
 
     @abstractmethod
-    def _is_exception_to_catch(self, error: BaseException) -> bool:
+    def _is_exception_to_catch(self, error: Exception) -> bool:
         """Return `True` if the exception should be caught and notified about."""
 
-    def __notify(self, exception: BaseException) -> None:
+    def __notify(self, exception: Exception) -> None:
         message = self._determine_message(exception)
 
         if get_clive().is_launched:

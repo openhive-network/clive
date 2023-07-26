@@ -13,11 +13,11 @@ class CommunicationFailureNotificator(ErrorNotificator):
         "does not have sufficient funds": "You don't have enough funds to perform this operation.",
     }
 
-    def _is_exception_to_catch(self, error: BaseException) -> bool:
+    def _is_exception_to_catch(self, error: Exception) -> bool:
         return isinstance(error, CommunicationError)
 
     @classmethod
-    def _determine_message(cls, exception: BaseException) -> str:
+    def _determine_message(cls, exception: Exception) -> str:
         assert isinstance(exception, CommunicationError)
 
         error_message = exception.get_response_error_message()

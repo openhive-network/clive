@@ -15,12 +15,12 @@ ExecuteResultT = TypeVar("ExecuteResultT")
 
 @dataclass
 class ResultNotAvailable:
-    exception: BaseException
+    exception: Exception
 
 
 class ErrorHandlerContextManager(ABC):
     def __init__(self) -> None:
-        self._error: BaseException | None = None
+        self._error: Exception | None = None
 
     def __enter__(self) -> Self:
         return self
@@ -32,22 +32,22 @@ class ErrorHandlerContextManager(ABC):
         exc_tb: TracebackType | None,
     ) -> bool:
         """Return false if exception should be re-raised."""
-        if exc_val is not None:
+        if exc_val is not None and isinstance(exc_val, Exception):
             self._error = exc_val
             try:
                 self._handle_error(exc_val)
-            except BaseException:  # noqa: BLE001
+            except Exception:  # noqa: BLE001
                 return False
             else:
                 return True
         return False
 
     @abstractmethod
-    def _handle_error(self, error: BaseException) -> ResultNotAvailable:
+    def _handle_error(self, error: Exception) -> ResultNotAvailable:
         """Handle all the errors. Reraise if error should not be handled."""
 
     @property
-    def error(self) -> BaseException | None:
+    def error(self) -> Exception | None:
         return self._error
 
     @property
