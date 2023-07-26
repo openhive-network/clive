@@ -7,6 +7,7 @@ from pydantic import ValidationError
 from textual.binding import Binding
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.cart import Cart
@@ -42,8 +43,13 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
             Operation if the operation is valid, None otherwise.
         """
         try:
-            return self._create_operation()
-        except ValidationError as error:
+            operation = self._create_operation()
+            if operation is None:
+                return None
+            iwax.validate_operation(operation)
+
+            return operation  # noqa: TRY300
+        except (ValidationError, iwax.WaxOperationFailedError) as error:
             Notification(f"Operation failed the validation process.\n{error}", category="error").show()
             return None
 
