@@ -49,9 +49,9 @@ class Clive(App[int], ManualReactive):
     CSS_PATH = list(Path(__file__).parent.glob("**/*.scss"))
 
     BINDINGS = [
-        Binding("ctrl+x", "push_screen('quit')", "Quit", show=False),
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("l", "mock_log", "Mock log", show=False),
+        Binding("ctrl+x", "push_screen('quit')", "Quit"),
         Binding("f1", "help", "Help"),
     ]
 
