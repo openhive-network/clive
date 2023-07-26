@@ -17,6 +17,9 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.update_node_data import UpdateNodeData
+from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
+    ResultNotAvailable,
+)
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -24,7 +27,6 @@ if TYPE_CHECKING:
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
         ErrorHandlerContextManager,
-        ResultNotAvailable,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import World
@@ -33,34 +35,36 @@ if TYPE_CHECKING:
 
 
 class Commands:
-    def __init__(self, world: World, *, exception_handler_cls: type[ErrorHandlerContextManager] | None = None) -> None:
+    def __init__(
+        self, world: World, *, exception_handlers: list[type[ErrorHandlerContextManager]] | None = None
+    ) -> None:
         self.__world = world
-        self.__exception_handler_cls = exception_handler_cls
+        self.__exception_handlers = exception_handlers
 
     def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             Activate(
                 beekeeper=self.__world.beekeeper, wallet=self.__world.profile_data.name, password=password, time=time
             )
         )
 
     def deactivate(self) -> CommandWrapper:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             Deactivate(beekeeper=self.__world.beekeeper, wallet=self.__world.profile_data.name)
         )
 
     def set_timeout(self, *, seconds: int) -> CommandWrapper:
-        return self.__surround_with_exception_handler(SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds))
+        return self.__surround_with_exception_handlers(SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds))
 
     def build_transaction(
         self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
     ) -> CommandWithResultWrapper[Transaction]:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             BuildTransaction(operations=operations, node=self.__world.node, expiration=expiration)
         )
 
     def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             Sign(
                 beekeeper=self.__world.beekeeper,
                 transaction=transaction,
@@ -70,13 +74,13 @@ class Commands:
         )
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> CommandWrapper:
-        return self.__surround_with_exception_handler(SaveToFileAsBinary(transaction=transaction, file_path=path))
+        return self.__surround_with_exception_handlers(SaveToFileAsBinary(transaction=transaction, file_path=path))
 
     def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
-        return self.__surround_with_exception_handler(Broadcast(node=self.__world.node, transaction=transaction))
+        return self.__surround_with_exception_handlers(Broadcast(node=self.__world.node, transaction=transaction))
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             FastBroadcast(
                 node=self.__world.node,
                 operation=operation,
@@ -87,7 +91,7 @@ class Commands:
         )
 
     def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             ImportKey(
                 app_state=self.__world.app_state,
                 wallet=self.__world.profile_data.name,
@@ -97,7 +101,7 @@ class Commands:
         )
 
     def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             RemoveKey(
                 app_state=self.__world.app_state,
                 wallet=self.__world.profile_data.name,
@@ -108,7 +112,7 @@ class Commands:
         )
 
     def sync_data_with_beekeeper(self) -> CommandWrapper:
-        return self.__surround_with_exception_handler(
+        return self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
                 app_state=self.__world.app_state,
                 profile_data=self.__world.profile_data,
@@ -117,7 +121,7 @@ class Commands:
         )
 
     def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
-        wrapper = self.__surround_with_exception_handler(
+        wrapper = self.__surround_with_exception_handlers(
             UpdateNodeData(accounts=accounts or [], node=self.__world.node)
         )
 
@@ -128,32 +132,89 @@ class Commands:
         return CommandWrapper(command=wrapper.command)
 
     @overload
-    def __surround_with_exception_handler(  # type: ignore[misc]
+    def __surround_with_exception_handlers(  # type: ignore[misc]
         self, command: CommandWithResult[CommandResultT]
     ) -> CommandWithResultWrapper[CommandResultT]:
         ...
 
     @overload
-    def __surround_with_exception_handler(self, command: Command) -> CommandWrapper:
+    def __surround_with_exception_handlers(self, command: Command) -> CommandWrapper:
+        ...
+
+    def __surround_with_exception_handlers(
+        self, command: CommandWithResult[CommandResultT] | Command
+    ) -> CommandWithResultWrapper[CommandResultT] | CommandWrapper:
+        if not self.__exception_handlers:
+            if isinstance(command, CommandWithResult):
+                command.execute_with_result()
+            else:
+                command.execute()
+            return self.__create_command_wrapper(command)
+
+        return self.__surround_with_exception_handler(command, self.__exception_handlers)
+
+    @overload
+    def __surround_with_exception_handler(  # type: ignore[misc]
+        self,
+        command: CommandWithResult[CommandResultT],
+        exception_handlers: list[type[ErrorHandlerContextManager]],
+        error: Exception | None = None,
+    ) -> CommandWithResultWrapper[CommandResultT]:
+        ...
+
+    @overload
+    def __surround_with_exception_handler(
+        self,
+        command: Command,
+        exception_handlers: list[type[ErrorHandlerContextManager]],
+        error: Exception | None = None,
+    ) -> CommandWrapper:
         ...
 
     def __surround_with_exception_handler(
-        self, command: CommandWithResult[CommandResultT] | Command
-    ) -> CommandWithResultWrapper[CommandResultT] | CommandWrapper:
-        if self.__exception_handler_cls is None:
-            if isinstance(command, CommandWithResult):
-                return CommandWithResultWrapper(command=command, result=command.execute_with_result())
-            command.execute()
-            return CommandWrapper(command=command)
+        self,
+        command: Command | CommandWithResult[CommandResultT],
+        exception_handlers: list[type[ErrorHandlerContextManager]],
+        error: Exception | None = None,
+    ) -> CommandWrapper | CommandWithResultWrapper[CommandResultT]:
+        try:
+            next_exception_handler = exception_handlers[0]
+        except IndexError:
+            # No more exception handlers
+            assert error is not None
+            raise error
 
-        exception_handler = self.__exception_handler_cls()
-        with exception_handler:
-            if isinstance(command, CommandWithResult):
-                result: ResultNotAvailable | CommandResultT = exception_handler.execute(command.execute_with_result)
+        handler = next_exception_handler()
+
+        try:
+            if error:
+                handler.try_to_handle_error(error)
             else:
-                command.execute()
+                # exectue the command only once
+                handler.execute(
+                    command.execute_with_result if isinstance(command, CommandWithResult) else command.execute
+                )
+        except Exception as error:  # noqa: BLE001
+            # Try to handle the error with the next exception handler
+            assert self.__exception_handlers
+            self.__surround_with_exception_handler(command, self.__exception_handlers[1:], error)
 
-        error = exception_handler.error
+        return self.__create_command_wrapper(command, handler.error)
+
+    @overload
+    def __create_command_wrapper(  # type: ignore[misc]
+        self, command: CommandWithResult[CommandResultT], error: Exception | None = None
+    ) -> CommandWithResultWrapper[CommandResultT]:
+        ...
+
+    @overload
+    def __create_command_wrapper(self, command: Command, error: Exception | None = None) -> CommandWrapper:
+        ...
+
+    def __create_command_wrapper(
+        self, command: Command | CommandWithResult[CommandResultT], error: Exception | None = None
+    ) -> CommandWrapper | CommandWithResultWrapper[CommandResultT]:
         if isinstance(command, CommandWithResult):
+            result = command.result if error is None else ResultNotAvailable(exception=error)
             return CommandWithResultWrapper(command=command, result=result, error=error)
         return CommandWrapper(command=command, error=error)
