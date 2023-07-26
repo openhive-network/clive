@@ -33,7 +33,6 @@ class ErrorHandlerContextManager(ABC):
     ) -> bool:
         """Return false if exception should be re-raised."""
         if exc_val is not None and isinstance(exc_val, Exception):
-            self._error = exc_val
             try:
                 self.try_to_handle_error(exc_val)
             except Exception:  # noqa: BLE001
@@ -43,8 +42,12 @@ class ErrorHandlerContextManager(ABC):
         return False
 
     @abstractmethod
+    def _try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
+        """Handle all the errors. Reraise if error should not be handled. Return `ResultNotAvailable` otherwise."""
+
     def try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
-        """Handle all the errors. Reraise if error should not be handled."""
+        self._error = error
+        return self._try_to_handle_error(error)
 
     @property
     def error(self) -> Exception | None:
@@ -58,5 +61,4 @@ class ErrorHandlerContextManager(ABC):
         try:
             return func()
         except Exception as error:  # noqa: BLE001
-            self._error = error
             return self.try_to_handle_error(error)
