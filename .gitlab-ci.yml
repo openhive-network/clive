@@ -199,7 +199,7 @@ build_and_push_clive_testnet_image:
     BUILD_INSTANCE_ARGS: "--image-path-suffix=-${CI_COMMIT_REF_NAME}"
   after_script:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
-    - export LATEST_IMAGE_TAG="${CLIVE_IMAGE_PATH}:latest"
+    - export LATEST_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-latest"
     - echo Tagging ${CLIVE_IMAGE_NAME} with additional ${LATEST_IMAGE_TAG}
     - docker tag ${CLIVE_IMAGE_NAME} ${LATEST_IMAGE_TAG}
     - docker push ${LATEST_IMAGE_TAG}
