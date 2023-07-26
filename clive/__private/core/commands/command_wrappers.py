@@ -23,6 +23,11 @@ class ErrorHolder:
     def success(self) -> bool:
         return not self.error_occurred
 
+    def raise_if_error_occurred(self) -> None:
+        if self.error_occurred:
+            assert self.error is not None
+            raise self.error
+
 
 @dataclass(kw_only=True)
 class CommandWrapper(ErrorHolder):
