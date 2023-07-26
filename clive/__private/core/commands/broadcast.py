@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.commands.abc.command import Command
 from clive.exceptions import TransactionNotSignedError
 
@@ -19,7 +20,9 @@ class Broadcast(Command):
     transaction: Transaction
 
     def _execute(self) -> None:
+        asyncio_run(self._async_execute())
+
+    async def _async_execute(self) -> None:
         if not self.transaction.is_signed():
             raise TransactionNotSignedError
-
-        self.node.api.network_broadcast.broadcast_transaction(trx=self.transaction)
+        await self.node.api.network_broadcast.broadcast_transaction(trx=self.transaction)

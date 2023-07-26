@@ -120,16 +120,12 @@ class Commands:
             )
         )
 
-    def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
-        wrapper = self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=accounts or [], node=self.__world.node)
-        )
+    async def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
+        command = UpdateNodeData(accounts=accounts or [], node=self.__world.node)
+        self.__world.app_state._dynamic_global_properties = await command.async_execute_with_result()
+        return CommandWrapper(command=command)
 
-        if wrapper.error_occurred:
-            return CommandWrapper(command=wrapper.command, error=wrapper.error)
-
-        self.__world.app_state._dynamic_global_properties = wrapper.result_or_raise
-        return CommandWrapper(command=wrapper.command)
+        # if wrapper.error_occurred:
 
     @overload
     def __surround_with_exception_handlers(  # type: ignore[misc]

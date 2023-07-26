@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.core._async import asyncio_run
+
 if TYPE_CHECKING:
     from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT
     from clive.__private.core.world import World
@@ -17,7 +19,7 @@ class AppState:
 
     def get_dynamic_global_properties(self) -> DynamicGlobalPropertiesT:
         if self._dynamic_global_properties is None:
-            self.world.commands.update_node_data().raise_if_error_occurred()
+            asyncio_run(self.world.commands.update_node_data()).raise_if_error_occurred()
         assert self._dynamic_global_properties is not None
         return self._dynamic_global_properties
 

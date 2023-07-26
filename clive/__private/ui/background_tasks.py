@@ -3,17 +3,14 @@ from __future__ import annotations
 import asyncio
 from asyncio import Task
 from collections.abc import Callable
-from typing import TYPE_CHECKING, Any
+from datetime import datetime, timedelta
+from typing import Any
 
 from textual.message import Message
 
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.callback import invoke
 from clive.__private.logger import logger
-
-if TYPE_CHECKING:
-    from datetime import timedelta
-
 
 TasksDict = dict[str, Task[Any]]
 ErrorCallbackT = Callable[[Exception], None]
@@ -50,8 +47,12 @@ class BackgroundTasks:
         """Run a function every given time."""
 
         async def __loop() -> None:
+            next_time = timedelta(seconds=0)
             while True:
-                await self.__wait_before_call(time, function)
+                start = datetime.now()
+                await self.__wait_before_call(next_time, function)
+                stop = datetime.now()
+                next_time = timedelta(seconds=max(0, (time - (stop - start)).total_seconds()))
 
         name = name or f"continuous-{function.__name__}"
         self.__tasks[name] = asyncio.create_task(__loop())

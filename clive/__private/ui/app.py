@@ -14,7 +14,7 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
-from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks, ThreadPoolClosedCallbackT
+from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -101,7 +101,7 @@ class Clive(App[int], ManualReactive):
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
-        self.background_tasks.run_in_thread(self.__update_data_from_node)
+        self.background_tasks.run_every(timedelta(seconds=1.5), self.__update_data_from_node)
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
@@ -288,17 +288,16 @@ class Clive(App[int], ManualReactive):
     def __handle_background_error(self, error: Exception) -> None:
         self.post_message(BackgroundErrorOccurred(error))
 
-    def __update_data_from_node(self, closed: ThreadPoolClosedCallbackT) -> None:
-        while not closed():
-            accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+    async def __update_data_from_node(self) -> None:
+        accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
 
-            try:
-                self.world.commands.update_node_data(accounts=accounts)
-            except Exception as error:  # noqa: BLE001
-                RaiseExceptionHelper.raise_exception_in_main_thread(error)
-            else:
-                self.world.update_reactive("profile_data")
-                self.world.update_reactive("app_state")
+        try:
+            await self.world.commands.update_node_data(accounts=accounts)
+        except Exception as error:  # noqa: BLE001
+            RaiseExceptionHelper.raise_exception_in_main_thread(error)
+        else:
+            self.world.update_reactive("profile_data")
+            self.world.update_reactive("app_state")
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")

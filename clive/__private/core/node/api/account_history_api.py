@@ -6,7 +6,7 @@ from schemas.account_history_api import response_schemas  # noqa: TCH001
 
 class AccountHistoryApi(Api):
     @Api.method
-    def get_account_history(  # noqa: PLR0913
+    async def get_account_history(  # noqa: PLR0913
         self,
         account: str,
         start: int = -1,
@@ -18,11 +18,11 @@ class AccountHistoryApi(Api):
         raise NotImplementedError
 
     @Api.method
-    def get_transaction(self, id_: str, include_reversible: bool = True) -> response_schemas.GetTransaction:
+    async def get_transaction(self, id_: str, include_reversible: bool = True) -> response_schemas.GetTransaction:
         raise NotImplementedError
 
     @Api.method
-    def enum_virtual_ops(  # noqa: PLR0913
+    async def enum_virtual_ops(  # noqa: PLR0913
         self,
         block_range_begin: int,
         block_range_end: int,
@@ -34,7 +34,7 @@ class AccountHistoryApi(Api):
     ) -> response_schemas.EnumVirtualOps:
         raise NotImplementedError
 
-    def get_ops_in_block(
+    async def get_ops_in_block(
         self, block_num: int, only_virtual: bool = False, include_reversible: bool = True
     ) -> response_schemas.GetOpsInBlock:
         raise NotImplementedError

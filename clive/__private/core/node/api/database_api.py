@@ -54,149 +54,155 @@ class DatabaseApi(Api):
     ]
 
     @Api.method
-    def find_account_recovery_requests(self, accounts: list[str]) -> database_api.FindAccountRecoveryRequests:
+    async def find_account_recovery_requests(self, accounts: list[str]) -> database_api.FindAccountRecoveryRequests:
         raise NotImplementedError
 
     @Api.method
-    def find_accounts(self, accounts: list[str], delayed_votes_active: bool | None = None) -> database_api.FindAccounts:
+    async def find_accounts(
+        self, accounts: list[str], delayed_votes_active: bool | None = None
+    ) -> database_api.FindAccounts:
         raise NotImplementedError
 
     @Api.method
-    def find_change_recovery_account_requests(
+    async def find_change_recovery_account_requests(
         self, accounts: list[str]
     ) -> database_api.FindChangeRecoveryAccountRequests:
         raise NotImplementedError
 
     @Api.method
-    def find_collateralized_conversion_requests(
+    async def find_collateralized_conversion_requests(
         self, account: str
     ) -> database_api.FindCollateralizedConversionRequests:
         raise NotImplementedError
 
     @Api.method
-    def find_comments(self, comments: list[tuple[str, str]]) -> database_api.FindComments:
+    async def find_comments(self, comments: list[tuple[str, str]]) -> database_api.FindComments:
         raise NotImplementedError
 
     @Api.method
-    def find_decline_voting_rights_requests(self, accounts: list[str]) -> database_api.FindDeclineVotingRightsRequests:
+    async def find_decline_voting_rights_requests(
+        self, accounts: list[str]
+    ) -> database_api.FindDeclineVotingRightsRequests:
         raise NotImplementedError
 
     @Api.method
-    def find_escrows(self, from_: str = "") -> database_api.FindEscrows:
+    async def find_escrows(self, from_: str = "") -> database_api.FindEscrows:
         raise NotImplementedError
 
     @Api.method
-    def find_hbd_conversion_requests(self, account: str) -> database_api.FindHbdConversionRequests:
+    async def find_hbd_conversion_requests(self, account: str) -> database_api.FindHbdConversionRequests:
         raise NotImplementedError
 
     @Api.method
-    def find_limit_orders(self, account: str) -> database_api.FindLimitOrders:
+    async def find_limit_orders(self, account: str) -> database_api.FindLimitOrders:
         raise NotImplementedError
 
     @Api.method
-    def find_owner_histories(self, owner: str = "") -> database_api.FindOwnerHistories:
+    async def find_owner_histories(self, owner: str = "") -> database_api.FindOwnerHistories:
         raise NotImplementedError
 
     @Api.method
-    def find_proposals(self, proposal_ids: list[int]) -> database_api.FindProposals:
+    async def find_proposals(self, proposal_ids: list[int]) -> database_api.FindProposals:
         raise NotImplementedError
 
     @Api.method
-    def find_recurrent_transfers(self, from_: str = "") -> database_api.FindRecurrentTransfers:
+    async def find_recurrent_transfers(self, from_: str = "") -> database_api.FindRecurrentTransfers:
         raise NotImplementedError
 
     @Api.method
-    def find_savings_withdrawals(self, account: str) -> database_api.FindSavingsWithdrawals:
+    async def find_savings_withdrawals(self, account: str) -> database_api.FindSavingsWithdrawals:
         raise NotImplementedError
 
     @Api.method
-    def find_vesting_delegation_expirations(self, account: str) -> database_api.FindVestingDelegationExpirations:
+    async def find_vesting_delegation_expirations(self, account: str) -> database_api.FindVestingDelegationExpirations:
         raise NotImplementedError
 
     @Api.method
-    def find_vesting_delegations(self, account: str) -> database_api.FindVestingDelegations:
+    async def find_vesting_delegations(self, account: str) -> database_api.FindVestingDelegations:
         raise NotImplementedError
 
     @Api.method
-    def find_withdraw_vesting_routes(
+    async def find_withdraw_vesting_routes(
         self, account: str, order: DatabaseApi.SORT_TYPES
     ) -> database_api.FindWithdrawVestingRoutes:
         raise NotImplementedError
 
     @Api.method
-    def find_witnesses(self, owners: list[str]) -> database_api.FindWitnesses:
+    async def find_witnesses(self, owners: list[str]) -> database_api.FindWitnesses:
         raise NotImplementedError
 
     @Api.method
-    def get_active_witnesses(self) -> database_api.GetActiveWitnesses:
+    async def get_active_witnesses(self) -> database_api.GetActiveWitnesses:
         raise NotImplementedError
 
     @Api.method
-    def get_comment_pending_payouts(self, comments: list[tuple[str, str]]) -> database_api.GetCommentPendingPayouts:
+    async def get_comment_pending_payouts(
+        self, comments: list[tuple[str, str]]
+    ) -> database_api.GetCommentPendingPayouts:
         raise NotImplementedError
 
     @Api.method
-    def get_config(self) -> database_api.GetConfig[Asset.Hive, Asset.Hbd]:
+    async def get_config(self) -> database_api.GetConfig[Asset.Hive, Asset.Hbd]:
         raise NotImplementedError
 
     @Api.method
-    def get_current_price_feed(self) -> database_api.GetCurrentPriceFeed:
+    async def get_current_price_feed(self) -> database_api.GetCurrentPriceFeed:
         raise NotImplementedError
 
     @Api.method
-    def get_dynamic_global_properties(
+    async def get_dynamic_global_properties(
         self,
     ) -> database_api.GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]:
         raise NotImplementedError
 
     @Api.method
-    def get_feed_history(self) -> database_api.GetFeedHistory[Asset.Hive, Asset.Hbd]:
+    async def get_feed_history(self) -> database_api.GetFeedHistory[Asset.Hive, Asset.Hbd]:
         raise NotImplementedError
 
     @Api.method
-    def get_hardfork_properties(self) -> database_api.GetHardforkProperties:
+    async def get_hardfork_properties(self) -> database_api.GetHardforkProperties:
         raise NotImplementedError
 
     @Api.method
-    def get_order_book(self, limit: int, base: Asset.Hive, quote: Asset.Hbd) -> database_api.GetOrderBook:
+    async def get_order_book(self, limit: int, base: Asset.Hive, quote: Asset.Hbd) -> database_api.GetOrderBook:
         raise NotImplementedError
 
     @Api.method
-    def get_potential_signatures(self, trx: Transaction) -> database_api.GetPotentialSignatures:
+    async def get_potential_signatures(self, trx: Transaction) -> database_api.GetPotentialSignatures:
         raise NotImplementedError
 
     @Api.method
-    def get_required_signatures(self, trx: Transaction) -> database_api.GetRequiredSignatures:
+    async def get_required_signatures(self, trx: Transaction) -> database_api.GetRequiredSignatures:
         raise NotImplementedError
 
     @Api.method
-    def get_reward_funds(self) -> database_api.GetRewardFunds:
+    async def get_reward_funds(self) -> database_api.GetRewardFunds:
         raise NotImplementedError
 
     @Api.method
-    def get_transaction_hex(self, trx: Transaction) -> database_api.GetTransactionHex:
+    async def get_transaction_hex(self, trx: Transaction) -> database_api.GetTransactionHex:
         raise NotImplementedError
 
     @Api.method
-    def get_version(self) -> database_api.GetVersion:
+    async def get_version(self) -> database_api.GetVersion:
         raise NotImplementedError
 
     @Api.method
-    def get_witness_schedule(self) -> database_api.GetWitnessSchedule[Asset.Hive]:
+    async def get_witness_schedule(self) -> database_api.GetWitnessSchedule[Asset.Hive]:
         raise NotImplementedError
 
     @Api.method
-    def is_known_transaction(self, id_: str) -> database_api.IsKnownTransaction:
+    async def is_known_transaction(self, id_: str) -> database_api.IsKnownTransaction:
         raise NotImplementedError
 
     @Api.method
-    def list_account_recovery_requests(
+    async def list_account_recovery_requests(
         self, account: str, limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListAccountRecoveryRequests:
         raise NotImplementedError
 
     @Api.method
-    def list_accounts(
+    async def list_accounts(
         self,
         start: str | tuple[str, str] | tuple[datetime, str],
         limit: int,
@@ -206,47 +212,47 @@ class DatabaseApi(Api):
         raise NotImplementedError
 
     @Api.method
-    def list_change_recovery_account_requests(
+    async def list_change_recovery_account_requests(
         self, start: str | tuple[datetime, str], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListChangeRecoveryAccountRequests:
         raise NotImplementedError
 
     @Api.method
-    def list_collateralized_conversion_requests(
+    async def list_collateralized_conversion_requests(
         self, start: str | None, limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListCollateralizedConversionRequests:
         raise NotImplementedError
 
     @Api.method
-    def list_decline_voting_rights_requests(
+    async def list_decline_voting_rights_requests(
         self, start: str | tuple[datetime, str], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListDeclineVotingRightsRequests:
         raise NotImplementedError
 
     @Api.method
-    def list_escrows(
+    async def list_escrows(
         self, start: tuple[str, int] | tuple[bool, datetime, int], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListEscrows:
         raise NotImplementedError
 
     @Api.method
-    def list_hbd_conversion_requests(
+    async def list_hbd_conversion_requests(
         self, limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListHbdConversionRequests:
         raise NotImplementedError
 
     @Api.method
-    def list_limit_orders(
+    async def list_limit_orders(
         self, start: tuple[str, int] | tuple[dict[Literal["base", "quote"], Asset.Hive | Asset.Hbd], int]
     ) -> database_api.ListLimitOrders:
         raise NotImplementedError
 
     @Api.method
-    def list_owner_histories(self, start: tuple[str, datetime], limit: int) -> database_api.ListOwnerHistories:
+    async def list_owner_histories(self, start: tuple[str, datetime], limit: int) -> database_api.ListOwnerHistories:
         raise NotImplementedError
 
     @Api.method
-    def list_proposal_votes(  # noqa: PLR0913
+    async def list_proposal_votes(  # noqa: PLR0913
         self,
         start: list[str],
         limit: int,
@@ -257,7 +263,7 @@ class DatabaseApi(Api):
         raise NotImplementedError
 
     @Api.method
-    def list_proposals(  # noqa: PLR0913
+    async def list_proposals(  # noqa: PLR0913
         self,
         start: list[str] | list[int] | list[datetime],
         limit: int,
@@ -268,7 +274,7 @@ class DatabaseApi(Api):
         raise NotImplementedError
 
     @Api.method
-    def list_savings_withdrawals(
+    async def list_savings_withdrawals(
         self,
         start: tuple[int] | tuple[datetime, str, int] | tuple[str, datetime, int],
         limit: int,
@@ -277,45 +283,47 @@ class DatabaseApi(Api):
         raise NotImplementedError
 
     @Api.method
-    def list_vesting_delegation_expirations(
+    async def list_vesting_delegation_expirations(
         self, start: tuple[str, datetime, int] | tuple[datetime, int], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListVestingDelegationExpirations:
         raise NotImplementedError
 
     @Api.method
-    def list_vesting_delegations(
+    async def list_vesting_delegations(
         self, start: tuple[str, str], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListVestingDelegations:
         raise NotImplementedError
 
     @Api.method
-    def list_withdraw_vesting_routes(
+    async def list_withdraw_vesting_routes(
         self, start: tuple[str, str] | tuple[str, int], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListWithdrawVestingRoutes:
         raise NotImplementedError
 
     @Api.method
-    def list_witness_votes(
+    async def list_witness_votes(
         self, start: tuple[str, str], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListWitnessVotes:
         raise NotImplementedError
 
     @Api.method
-    def list_witnesses(
+    async def list_witnesses(
         self, start: str | tuple[int, str] | tuple[str | int, str], limit: int, order: DatabaseApi.SORT_TYPES
     ) -> database_api.ListWitnesses:
         raise NotImplementedError
 
     @Api.method
-    def verify_account_authority(self, account: str, signers: list[str]) -> database_api.VerifyAccountAuthority:
+    async def verify_account_authority(self, account: str, signers: list[str]) -> database_api.VerifyAccountAuthority:
         raise NotImplementedError
 
     @Api.method
-    def verify_authority(self, trx: Transaction, pack: DatabaseApi.PACK_TYPES = "hf26") -> database_api.VerifyAuthority:
+    async def verify_authority(
+        self, trx: Transaction, pack: DatabaseApi.PACK_TYPES = "hf26"
+    ) -> database_api.VerifyAuthority:
         raise NotImplementedError
 
     @Api.method
-    def verify_signatures(  # noqa: PLR0913
+    async def verify_signatures(  # noqa: PLR0913
         self,
         hash_: str,
         signatures: list[str],
