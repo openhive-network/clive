@@ -32,7 +32,7 @@ class Node:
 
     @address.setter
     def address(self, address: Url) -> None:
-        self.__profile_data.node_address = address
+        self.__profile_data._node_address = address
         self.__sync_node_version()
 
     @overload

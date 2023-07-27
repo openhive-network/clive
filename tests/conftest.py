@@ -69,7 +69,7 @@ def world(wallet_name: str) -> Iterator[World]:
 def init_node(world: World) -> Iterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
-    world.profile_data.node_address = Url.parse(init_node.http_endpoint, protocol="http")
+    world.profile_data._node_address = Url.parse(init_node.http_endpoint, protocol="http")
     yield init_node
     init_node.close()
 

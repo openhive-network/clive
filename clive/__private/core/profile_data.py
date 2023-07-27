@@ -44,7 +44,11 @@ class ProfileData(Context):
     cart = Cart()
 
     backup_node_addresses: list[Url] = field(init=False)
-    node_address: Url = field(init=False)
+    _node_address: Url = field(init=False)
+
+    @property
+    def node_address(self) -> Url:
+        return self._node_address
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:
@@ -52,7 +56,7 @@ class ProfileData(Context):
 
     def __post_init__(self) -> None:
         self.backup_node_addresses = self.__default_node_address()
-        self.node_address = self.backup_node_addresses[0]
+        self._node_address = self.backup_node_addresses[0]
 
     def save(self) -> None:
         from clive.__private.ui.app import Clive
