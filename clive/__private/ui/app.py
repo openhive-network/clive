@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from textual.widget import AwaitMount
 
     from clive.__private.core.commands.command_wrappers import CommandWrapper
-    from clive.__private.ui.app_messages import ProfileDataUpdated
+    from clive.__private.ui.app_messages import NodeDataUpdated, ProfileDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
 
@@ -256,6 +256,9 @@ class Clive(App[int], ManualReactive):
 
     def on_profile_data_updated(self, _: ProfileDataUpdated) -> None:
         self.world.update_reactive("profile_data")
+
+    def on_node_data_updated(self, _: NodeDataUpdated) -> None:
+        self.world.update_reactive("node")
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:

@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.app_state import AppState
+    from clive.__private.core.node.node import Node
     from clive.__private.storage.mock_database import Account
 
 
@@ -107,7 +108,7 @@ class Header(TextualHeader, CliveWidget):
         self.on_app_state(self.app.world.app_state)
         self.__node_version_label = DynamicLabel(
             obj_to_watch=self.app.world,
-            attribute_name="profile_data",
+            attribute_name="node",
             callback=self.__get_node_version,
             id_="node-type-label",
         )
@@ -144,7 +145,7 @@ class Header(TextualHeader, CliveWidget):
             yield TitledLabel(
                 "node address",
                 obj_to_watch=self.app.world,
-                attribute_name="profile_data",
+                attribute_name="node",
                 callback=self.__get_node_address,
                 id_="node-address-label",
             )
@@ -163,20 +164,20 @@ class Header(TextualHeader, CliveWidget):
             self.remove_class("-active")
 
     @staticmethod
-    def __get_node_address(profile_data: ProfileData) -> str:
-        return str(profile_data.node_address)
+    def __get_node_address(node: Node) -> str:
+        return str(node.address)
 
     @staticmethod
     def __get_profile_name(profile_data: ProfileData) -> str:
         return profile_data.name
 
-    def __get_node_version(self, profile_data: ProfileData) -> str:
+    def __get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"
-        if profile_data.network_type == "mainnet":
+        if node.network_type == "mainnet":
             self.__node_version_label.remove_class(class_to_switch)
         else:
             self.__node_version_label.add_class(class_to_switch)
-        return profile_data.network_type
+        return node.network_type
 
     def __is_in_onboarding_mode(self) -> bool:
         return self.app.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME

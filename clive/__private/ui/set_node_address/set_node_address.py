@@ -12,7 +12,7 @@ from textual.containers import Container, Horizontal
 from textual.widgets import Button, Input, Static, Switch
 
 from clive.__private.core.beekeeper.model import JSONRPCRequest
-from clive.__private.ui.app_messages import ProfileDataUpdated
+from clive.__private.ui.app_messages import NodeDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -143,8 +143,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
             address = selected.value
         else:
             address = Url.parse(self.app.query_one("#node-address-input", Input).value)
-        self.app.world.profile_data.node_address = address
-        self.app.post_message_to_everyone(ProfileDataUpdated())
+        self.app.world.node.address = address
+        self.app.post_message_to_everyone(NodeDataUpdated())
         self.__selected_node.refresh()
 
     def on_select_changed(self, event: Select.Changed) -> None:

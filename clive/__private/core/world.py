@@ -99,11 +99,13 @@ class World:
 class TextualWorld(World, ManualReactive):
     profile_data: ProfileData = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
+    node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
         super().__init__(ProfileData.get_lastly_used_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
         self.profile_data = self._profile_data
         self.app_state = self._app_state
+        self.node = self._node
 
     def _setup_commands(self) -> Commands:
         return Commands(self, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
