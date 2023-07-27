@@ -196,8 +196,7 @@ class Commands:
                 )
         except Exception as error:  # noqa: BLE001
             # Try to handle the error with the next exception handler
-            assert self.__exception_handlers
-            self.__surround_with_exception_handler(command, self.__exception_handlers[1:], error)
+            self.__surround_with_exception_handler(command, exception_handlers[1:], error)
 
         return self.__create_command_wrapper(command, handler.error)
 
