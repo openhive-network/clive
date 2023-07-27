@@ -15,21 +15,20 @@ class WaxOperationFailedError(CliveError):
     pass
 
 
-def __validate_wax_response(response: wax.python_result) -> bool:
+def __validate_wax_response(response: wax.python_result) -> None:
     if response.status == wax.python_error_code.fail:
         raise WaxOperationFailedError(response.exception_message.decode())
-    return True
 
 
 def __as_binary_json(item: Operation | Transaction) -> bytes:
     return item.json(by_alias=True).encode()
 
 
-def validate_transaction(transaction: Transaction) -> bool:
+def validate_transaction(transaction: Transaction) -> None:
     return __validate_wax_response(wax.validate_transaction(__as_binary_json(transaction)))
 
 
-def validate_operation(operation: Operation) -> bool:
+def validate_operation(operation: Operation) -> None:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
 
 
