@@ -120,8 +120,8 @@ class Header(TextualHeader, CliveWidget):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
+            yield self.__node_version_label
             if not self.__is_in_onboarding_mode():
-                yield self.__node_version_label
                 yield TitledLabel(
                     "Profile",
                     obj_to_watch=self.app.world,
