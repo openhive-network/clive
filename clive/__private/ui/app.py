@@ -88,13 +88,13 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
-            self.__class__.is_launched = True
             Communication.start()
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
         finally:
             self.__cleanup()
 
     def on_mount(self) -> None:
+        self.__class__.is_launched = True
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
 
