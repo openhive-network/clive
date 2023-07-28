@@ -45,7 +45,7 @@ class NodeData:
     hbd_unclaimed: Asset.Hbd = field(default_factory=default_hbd)
     hive_balance: Asset.Hive = field(default_factory=default_hive)
     hbd_balance: Asset.Hbd = field(default_factory=default_hbd)
-    hive_power_balance: int = 0
+    hp_balance: int = 0
     hive_savings: Asset.Hive = field(default_factory=default_hive)
     hive_unclaimed: Asset.Hive = field(default_factory=default_hive)
     hp_unclaimed: Asset.Vests = field(default_factory=default_vests)

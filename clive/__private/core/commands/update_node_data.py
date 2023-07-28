@@ -72,7 +72,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             account.data.hp_unclaimed = info.core.reward_vesting_balance
             account.data.recovery_account = info.core.recovery_account
 
-            account.data.hive_power_balance = self.__calculate_hive_power(gdpo, info.core)
+            account.data.hp_balance = self.__calculate_hive_power(gdpo, info.core)
 
             self.__update_manabar(
                 gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
