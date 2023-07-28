@@ -9,10 +9,10 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
-    ACCOUNT_NAME_PLACEHOLDER,
     DATE_PLACEHOLDER,
     ID_PLACEHOLDER,
     JSON_DATA_PLACEHOLDER,
@@ -35,8 +35,8 @@ class EscrowTransfer(RawOperationBaseScreen):
 
         default_escrow_id = str(get_default_from_model(EscrowTransferOperation, "escrow_id", int))
 
-        self.__to_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
-        self.__agent_input = Input(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__to_input = AccountNameInput(label="to")
+        self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__escrow_id_input = Input(default_escrow_id, placeholder=ID_PLACEHOLDER)
         self.__hbd_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
         self.__hive_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
@@ -51,10 +51,8 @@ class EscrowTransfer(RawOperationBaseScreen):
             with Body():
                 yield Static("from", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield Static("to", classes="label")
-                yield self.__to_input
-                yield Static("agent", classes="label")
-                yield self.__agent_input
+                yield from self.__to_input.compose()
+                yield from self.__agent_input.compose()
                 yield Static("escrow id", classes="label")
                 yield self.__escrow_id_input
                 yield Static("hbd amount", classes="label")

@@ -9,8 +9,9 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER, MEMO_PLACEHOLDER
+from clive.__private.ui.widgets.placeholders_constants import MEMO_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecurrentTransferOperation
 
@@ -31,7 +32,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
         default_recurrence = str(get_default_from_model(RecurrentTransferOperation, "recurrence", int))
         default_executions = str(get_default_from_model(RecurrentTransferOperation, "executions", int))
 
-        self.__to_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
+        self.__to_input = AccountNameInput(label="to")
         self.__amount_input = AmountInput()
         self.__memo_input = Input(placeholder=MEMO_PLACEHOLDER)
         self.__recurrence_input = Input(default_recurrence, placeholder="e.g.: 26")
@@ -43,8 +44,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
             with Body():
                 yield Static("from", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield Static("to", classes="label")
-                yield self.__to_input
+                yield from self.__to_input.compose()
                 yield Static("amount", classes="label")
                 yield self.__amount_input
                 yield Static("memo", classes="label")

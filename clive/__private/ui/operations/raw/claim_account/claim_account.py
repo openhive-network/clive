@@ -7,7 +7,8 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER, ASSET_AMOUNT_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import ClaimAccountOperation
@@ -24,15 +25,14 @@ class ClaimAccount(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__creator_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
+        self.__creator_input = AccountNameInput(label="creator")
         self.__fee_input = Input(placeholder=f"{ASSET_AMOUNT_PLACEHOLDER} Notice: if you want to pay in RC type 0")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Claim account")
             with Body():
-                yield Static("creator", classes="label")
-                yield self.__creator_input
+                yield from self.__creator_input.compose()
                 yield Static("fee", classes="label")
                 yield self.__fee_input
 

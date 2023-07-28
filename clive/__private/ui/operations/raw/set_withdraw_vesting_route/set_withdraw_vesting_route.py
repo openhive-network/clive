@@ -9,10 +9,8 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.placeholders_constants import (
-    ACCOUNT_NAME_PLACEHOLDER,
-    PERCENT_PLACEHOLDER,
-)
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.placeholders_constants import PERCENT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import SetWithdrawVestingRouteOperation
 
@@ -35,7 +33,7 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
         default_percent = str(get_default_from_model(SetWithdrawVestingRouteOperation, "percent", int))
         default_auto_vest = get_default_from_model(SetWithdrawVestingRouteOperation, "auto_vest", bool)
 
-        self.__to_account_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
+        self.__to_account_input = AccountNameInput(label="to account")
         self.__percent_input = Input(default_percent, placeholder=PERCENT_PLACEHOLDER)
         self.__auto_vest_input = Checkbox("auto vest", value=default_auto_vest)
 
@@ -46,8 +44,7 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
                 yield Static("from", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield PlaceTaker()
-                yield Static("to account", classes="label")
-                yield self.__to_account_input
+                yield from self.__to_account_input.compose()
                 yield Static("percent", classes="label")
                 yield self.__percent_input
                 yield self.__auto_vest_input

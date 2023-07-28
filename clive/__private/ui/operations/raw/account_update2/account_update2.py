@@ -7,6 +7,7 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_AUTHS_PLACEHOLDER,
     JSON_DATA_PLACEHOLDER,
@@ -33,7 +34,7 @@ class AccountUpdate2(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__account_input = Input(placeholder=ACCOUNT_AUTHS_PLACEHOLDER)
+        self.__account_input = AccountNameInput(label="account")
         self.__memo_key_input = Input(placeholder=KEY_PLACEHOLDER)
         self.__json_metadata_input = Input(placeholder=JSON_DATA_PLACEHOLDER)
         self.__posting_json_metadata = Input(placeholder=JSON_DATA_PLACEHOLDER)
@@ -60,8 +61,7 @@ class AccountUpdate2(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Account update two")
             with Body():
-                yield Static("account", classes="label")
-                yield self.__account_input
+                yield from self.__account_input.compose()
                 yield Static("memo key", classes="label")
                 yield self.__memo_key_input
                 yield Static("json metadata", classes="label")

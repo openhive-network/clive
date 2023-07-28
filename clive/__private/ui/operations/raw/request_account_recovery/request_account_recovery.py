@@ -7,10 +7,10 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_AUTHS_PLACEHOLDER,
     ACCOUNT_NAME2_PLACEHOLDER,
-    ACCOUNT_NAME_PLACEHOLDER,
     KEY_AUTHS_PLACEHOLDER,
     WEIGHT_THRESHOLD_PLACEHOLDER,
 )
@@ -33,8 +33,10 @@ class RequestAccountRecovery(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__recovery_account_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
-        self.__account_to_recover_input = Input(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__recovery_account_input = AccountNameInput(label="recovery account")
+        self.__account_to_recover_input = AccountNameInput(
+            label="account to recover", placeholder=ACCOUNT_NAME2_PLACEHOLDER
+        )
         self.__weight_threshold_input = Input(placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
         self.__account_auths_input = Input(placeholder=ACCOUNT_AUTHS_PLACEHOLDER)
         self.__key_auths_input = Input(placeholder=KEY_AUTHS_PLACEHOLDER)
@@ -43,10 +45,8 @@ class RequestAccountRecovery(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Request account recovery")
             with Body():
-                yield Static("recovery account", classes="label")
-                yield self.__recovery_account_input
-                yield Static("account to recover", classes="label")
-                yield self.__account_to_recover_input
+                yield from self.__recovery_account_input.compose()
+                yield from self.__account_to_recover_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("New owner authority")
                 yield Static("weight threshold", classes="label")
