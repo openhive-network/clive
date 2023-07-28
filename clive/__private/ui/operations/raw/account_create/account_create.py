@@ -8,9 +8,9 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_AUTHS_PLACEHOLDER,
-    ACCOUNT_NAME_PLACEHOLDER,
     ASSET_AMOUNT_PLACEHOLDER,
     JSON_DATA_PLACEHOLDER,
     KEY_AUTHS_PLACEHOLDER,
@@ -37,7 +37,7 @@ class AccountCreate(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__new_account_name_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
+        self.__new_account_name_input = AccountNameInput(label="new account name")
         self.__fee_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
 
         self.__weight_threshold_owner_input = Input(placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
@@ -61,8 +61,7 @@ class AccountCreate(RawOperationBaseScreen):
             with Body():
                 yield Static("creator", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
-                yield Static("new account name", classes="label")
-                yield self.__new_account_name_input
+                yield from self.__new_account_name_input.compose()
                 yield Static("fee", classes="label")
                 yield self.__fee_input
                 yield Static("memo key", classes="label")

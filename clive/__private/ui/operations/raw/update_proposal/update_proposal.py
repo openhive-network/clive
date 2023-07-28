@@ -7,8 +7,8 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.placeholders_constants import (
-    ACCOUNT_NAME_PLACEHOLDER,
     ASSET_AMOUNT_PLACEHOLDER,
     ID_PLACEHOLDER,
     PERMLINK_PLACEHOLDER,
@@ -30,7 +30,7 @@ class UpdateProposal(RawOperationBaseScreen):
         super().__init__()
 
         self.__proposal_id_input = Input(placeholder=ID_PLACEHOLDER)
-        self.__creator_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
+        self.__creator_input = AccountNameInput(label="creator")
         self.__daily_pay_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__subject_input = Input(placeholder="e.g.: New subject")
         self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
@@ -42,8 +42,7 @@ class UpdateProposal(RawOperationBaseScreen):
             with Body():
                 yield Static("proposal id", classes="label")
                 yield self.__proposal_id_input
-                yield Static("creator", classes="label")
-                yield self.__creator_input
+                yield from self.__creator_input.compose()
                 yield Static("daily pay", classes="label")
                 yield self.__daily_pay_input
                 yield Static("subject", classes="label")
@@ -60,5 +59,5 @@ class UpdateProposal(RawOperationBaseScreen):
             daily_pay=Asset.hbd(self.__daily_pay_input.value),
             subject=self.__subject_input.value,
             permlink=self.__permlink_input.value,
-            extensions=self.__extensions_input.value,  # Notice: this operation is not working, cause it was mistake in schemas, need to update schemas
+            extensions=self.__extensions_input.value,
         )

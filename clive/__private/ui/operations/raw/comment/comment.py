@@ -7,9 +7,9 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
-    ACCOUNT_NAME_PLACEHOLDER,
     JSON_DATA_PLACEHOLDER,
     PERMLINK_PLACEHOLDER,
 )
@@ -28,9 +28,9 @@ class Comment(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__parent_author_input = Input(placeholder=f"{ACCOUNT_NAME_PLACEHOLDER} Notice: this field can be empty")
+        self.__parent_author_input = AccountNameInput(label="parent  author")
         self.__parent_permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
-        self.__author_input = Input(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__author_input = AccountNameInput(label="author", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
         self.__title_input = Input(placeholder="e.g: A post by bob")
         self.__body_input = Input(placeholder="e.g: Look at my awesome post")
@@ -40,16 +40,14 @@ class Comment(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Comment")
             with Body():
-                yield Static("author", classes="label")
-                yield self.__author_input
+                yield from self.__author_input.compose()
                 yield Static("permlink", classes="label")
                 yield self.__permlink_input
                 yield Static("title", classes="label")
                 yield self.__title_input
                 yield Static("body", classes="label")
                 yield self.__body_input
-                yield Static("parent author", classes="label")
-                yield self.__parent_author_input
+                yield from self.__parent_author_input.compose()
                 yield Static("parent permlink", classes="label")
                 yield self.__parent_permlink_input
                 yield Static("json metadata", classes="label")
