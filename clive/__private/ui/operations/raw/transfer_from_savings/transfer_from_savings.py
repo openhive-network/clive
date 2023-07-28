@@ -57,6 +57,7 @@ class TransferFromSavings(RawOperationBaseScreen):
     def _create_operation(self) -> TransferFromSavingsOperation[Asset.Hive, Asset.Hbd]:
         return TransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
+            to=self.app.world.profile_data.working_account.name,
             request_id=int(self.__request_id_input.value),
             amount=self.__currency_selector.selected.value(self.__amount_input.value),
             memo=self.__memo_input.value,
