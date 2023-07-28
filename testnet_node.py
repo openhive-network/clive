@@ -70,7 +70,7 @@ wallet.create_account(
 )
 
 # setup watching accounts
-watched_accounts = [tt.Account(name) for name in ("bob", "timmy", "john")]
+watched_accounts = [tt.Account(name) for name in ("bob", "ocdb", "blocktrades")]
 
 
 shutil.rmtree(settings.data_path, ignore_errors=True)
