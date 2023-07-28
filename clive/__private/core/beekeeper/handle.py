@@ -118,8 +118,9 @@ class Beekeeper:
 
     def close(self) -> None:
         logger.info("Closing Beekeeper...")
-        self.api.close_session()
-        self.__token = None
+        if self.__token:
+            self.api.close_session()
+            self.__token = None
         self.__close_beekeeper()
         self.is_running = False
         logger.info("Beekeeper closed.")

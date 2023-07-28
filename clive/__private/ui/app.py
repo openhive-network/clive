@@ -123,12 +123,12 @@ class Clive(App[int], ManualReactive):
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
+        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
 
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
         else:
             self.push_screen(DashboardInactive())
-
 
     def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
         new_, _ = self._get_screen(new)
@@ -324,12 +324,18 @@ class Clive(App[int], ManualReactive):
 
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
+        allowed_fails_of_update_node_data = 5
         accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+        self.__amount_of_fails_during_update_node_data = 0
 
         try:
             await self.world.commands.update_node_data(accounts=accounts)
+            self.__amount_of_fails_during_update_node_data = 0
         except Exception as error:  # noqa: BLE001
-            RaiseExceptionHelper.raise_exception_in_main_thread(error)
+            self.__amount_of_fails_during_update_node_data += 1
+            logger.warning(f"Update node data failed {self.__amount_of_fails_during_update_node_data} times: {error}")
+            if self.__amount_of_fails_during_update_node_data >= allowed_fails_of_update_node_data:
+                RaiseExceptionHelper.raise_exception_in_main_thread(error)
         else:
             self.world.update_reactive("profile_data")
             self.world.update_reactive("app_state")

@@ -16,7 +16,7 @@ from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.commands.update_node_data import UpdateNodeData
+from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT, UpdateNodeData
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
@@ -140,10 +140,15 @@ class Commands(Generic[WorldT]):
             )
         )
 
-    async def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
-        command = UpdateNodeData(accounts=accounts or [], node=self._world.node)
-        self._world.app_state._dynamic_global_properties = await command.async_execute_with_result()
-        return CommandWrapper(command=command)
+    async def update_node_data(
+        self, *, accounts: list[Account] | None = None
+    ) -> CommandWithResultWrapper[DynamicGlobalPropertiesT]:
+        result = self.__surround_with_exception_handlers(
+            UpdateNodeData(accounts=accounts or [], node=self._world.node)
+        )
+        if result.success:
+            self._world.app_state._dynamic_global_properties = result.result_or_raise
+        return result
 
     @overload
     def __surround_with_exception_handlers(  # type: ignore[misc]

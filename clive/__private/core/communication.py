@@ -101,7 +101,11 @@ class Communication:
 
         for attempts_left in reversed(range(max_attempts)):
             try:
-                response: httpx.Response = await invoke(callback=partial(post_method, url, content=data_serialized))
+                response: httpx.Response = await invoke(
+                    callback=partial(
+                        post_method, url, content=data_serialized, headers={"Content-Type": "application/json"}
+                    )
+                )
             except httpx.ConnectError as error:
                 raise CommunicationError(url, data_serialized) from error
 
