@@ -91,10 +91,6 @@ class ProfileData(Context):
             accounts.add(self.working_account)
         return accounts
 
-    @property
-    def node_address(self) -> Url:
-        return self._node_address
-
     @classmethod
     def _get_file_storage_path(cls) -> Path:
         return Path(config.settings.data_path) / "data/profile"

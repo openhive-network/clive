@@ -346,7 +346,7 @@ class Clive(App[int], ManualReactive):
         logger.debug(f"Screen stack: {self.screen_stack}")
 
         query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
-        response = await Communication.arequest(str(self.world.profile_data.node_address), data=query)
+        response = await Communication.arequest(str(self.world.node.address), data=query)
         result = response.json()
         logger.debug(f'Current block: {result["result"]["head_block_number"]}')
 

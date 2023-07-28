@@ -48,7 +48,7 @@ class NodeSelector(Select[Url], CliveWidget):
         super().__init__(
             [(str(url), url) for url in self.app.world.profile_data.backup_node_addresses],
             allow_blank=False,
-            value=self.app.world.profile_data.node_address,
+            value=self.app.world.node.address,
         )
 
 
@@ -56,7 +56,7 @@ class SelectedNodeAddress(Static, CliveWidget):
     """The currently selected node address."""
 
     def render(self) -> RenderableType:
-        return f"Selected node address: {self.app.world.profile_data.node_address}"
+        return f"Selected node address: {self.app.world.node.address}"
 
 
 class NodesList(Container, CliveWidget):
@@ -107,7 +107,7 @@ class ManualNode(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please manually enter the node address you want to connect to.")
         yield Input(
-            placeholder=f"e.g.: {self.app.world.profile_data.node_address}",
+            placeholder=f"e.g.: {self.app.world.node.address}",
             id="node-address-input",
             highlighter=NodeUrlHighlighter(self.log),
         )
@@ -160,7 +160,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 severity="error",
             )
         else:
-            self.notify(f"Node address set to `{self.app.world.profile_data.node_address}`.")
+            self.notify(f"Node address set to `{self.app.world.node.address}`.")
 
     @on(Switch.Changed)
     def change_mode(self) -> None:
