@@ -8,8 +8,8 @@ from textual.widgets import Checkbox, Input, Static
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
     DATE_PLACEHOLDER,
@@ -27,10 +27,6 @@ class Body(Grid):
     """All the content of the screen, excluding the title."""
 
 
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
-
-
 class LimitOrderCreate2(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
@@ -41,11 +37,9 @@ class LimitOrderCreate2(RawOperationBaseScreen):
         self.__order_id_input = Input(default_order_id, placeholder=ID_PLACEHOLDER)
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)
         self.__expiration_input = Input(placeholder=DATE_PLACEHOLDER)
-        self.__amount_to_sell_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__base_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__amount_to_sell_input = AmountInput()
+        self.__base_input = AmountInput()
         self.__quote_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__currency_selector_amount_to_sell = CurrencySelectorLiquid()
-        self.__currency_selector_base = CurrencySelectorLiquid()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -53,37 +47,39 @@ class LimitOrderCreate2(RawOperationBaseScreen):
             with Body():
                 yield Static("owner", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield PlaceTaker(id="first-taker")
                 yield Static("order id", classes="label")
                 yield self.__order_id_input
                 yield Static("", classes="label")
                 yield self.__fill_or_kill_input
                 yield Static("expiration", classes="label")
                 yield self.__expiration_input
-                yield PlaceTaker()
                 yield Static("amount to sell", classes="label")
                 yield self.__amount_to_sell_input
-                yield self.__currency_selector_amount_to_sell
-                yield PlaceTaker()
+                yield Static("")
                 yield BigTitle("Exchange rate")
-                yield PlaceTaker()
                 yield Static("base", classes="label")
                 yield self.__base_input
-                yield self.__currency_selector_base
                 yield Static("quote", classes="label")
                 yield self.__quote_input
 
-    def _create_operation(self) -> LimitOrderCreate2Operation[Asset.Hbd, Asset.Hive]:
+    def _create_operation(self) -> LimitOrderCreate2Operation[Asset.Hbd, Asset.Hive] | None:
+        base = self.__base_input.amount
+
         exchange_rate = {
-            "base": self.__currency_selector_base.create_asset(self.__base_input.value),
+            "base": base,
             "quote": Asset.hive(self.__quote_input.value),
         }
+
+        amount_to_sell = self.__amount_to_sell_input.amount
+
+        if not amount_to_sell or not base:
+            return None
 
         return LimitOrderCreate2Operation(
             owner=self.app.world.profile_data.name,
             order_id=int(self.__order_id_input.value),
             fill_or_kill=self.__fill_or_kill_input.value,
             expiration=self.__expiration_input.value,
-            amount_to_sell=self.__currency_selector_amount_to_sell.create_asset(self.__amount_to_sell_input.value),
+            amount_to_sell=amount_to_sell,
             exchange_rate=exchange_rate,
         )

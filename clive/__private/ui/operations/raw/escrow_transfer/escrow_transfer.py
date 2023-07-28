@@ -8,12 +8,11 @@ from textual.widgets import Input, Static
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
     ACCOUNT_NAME_PLACEHOLDER,
-    ASSET_AMOUNT_PLACEHOLDER,
     DATE_PLACEHOLDER,
     ID_PLACEHOLDER,
     JSON_DATA_PLACEHOLDER,
@@ -30,14 +29,6 @@ class Body(Grid):
     """All the content of the screen, excluding the title."""
 
 
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
-
-
-class AdditionalPlaceTaker(Static):
-    """Additional container for making correct layout for Inputs, except fee."""
-
-
 class EscrowTransfer(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
@@ -49,11 +40,10 @@ class EscrowTransfer(RawOperationBaseScreen):
         self.__escrow_id_input = Input(default_escrow_id, placeholder=ID_PLACEHOLDER)
         self.__hbd_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
         self.__hive_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
-        self.__fee_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__fee_input = AmountInput()
         self.__ratification_deadline_input = Input(placeholder=DATE_PLACEHOLDER)
         self.__escrow_expiration_input = Input(placeholder=DATE_PLACEHOLDER)
         self.__json_meta_input = Input(placeholder=JSON_DATA_PLACEHOLDER)
-        self.__currency_selector = CurrencySelectorLiquid()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -61,7 +51,6 @@ class EscrowTransfer(RawOperationBaseScreen):
             with Body():
                 yield Static("from", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield AdditionalPlaceTaker()
                 yield Static("to", classes="label")
                 yield self.__to_input
                 yield Static("agent", classes="label")
@@ -78,12 +67,14 @@ class EscrowTransfer(RawOperationBaseScreen):
                 yield self.__escrow_expiration_input
                 yield Static("json meta", classes="label")
                 yield self.__json_meta_input
-                yield PlaceTaker()
                 yield Static("fee", classes="label")
                 yield self.__fee_input
-                yield self.__currency_selector
 
-    def _create_operation(self) -> EscrowTransferOperation[Asset.Hive, Asset.Hbd]:
+    def _create_operation(self) -> EscrowTransferOperation[Asset.Hive, Asset.Hbd] | None:
+        fee = self.__fee_input.amount
+        if not fee:
+            return None
+
         return EscrowTransferOperation(
             from_=self.app.world.profile_data.name,
             to=self.__to_input.value,
@@ -94,5 +85,5 @@ class EscrowTransfer(RawOperationBaseScreen):
             ratification_deadline=self.__ratification_deadline_input.value,
             escrow_expiration=self.__ratification_deadline_input.value,
             json_meta=self.__json_meta_input.value,
-            fee=self.__currency_selector.create_asset(self.__fee_input.value),
+            fee=fee,
         )
