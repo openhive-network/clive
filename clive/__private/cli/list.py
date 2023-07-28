@@ -1,5 +1,6 @@
 import typer
 
+from clive.__private.cli.common import options
 from clive.__private.cli.common.with_world import WithWorld
 
 list_ = typer.Typer(help="List various things.")
@@ -27,3 +28,13 @@ def node(
 
     common = WithWorld(**ctx.params)
     ListNode(world=common.world).run()
+
+
+@list_.command()
+@WithWorld.decorator(use_beekeeper=False)
+def balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:
+    """List balances of the currently selected account."""
+    from clive.__private.cli.commands.list import ListBalances
+
+    common = WithWorld(**ctx.params)
+    ListBalances(world=common.world, account_name=account_name).run()
