@@ -29,7 +29,7 @@ class Node:
 
     @property
     def address(self) -> Url:
-        return self.__profile_data.node_address
+        return self.__profile_data._node_address
 
     @address.setter
     def address(self, address: Url) -> None:

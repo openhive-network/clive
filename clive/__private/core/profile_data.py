@@ -46,10 +46,6 @@ class ProfileData(Context):
     backup_node_addresses: list[Url] = field(init=False)
     _node_address: Url = field(init=False)
 
-    @property
-    def node_address(self) -> Url:
-        return self._node_address
-
     @classmethod
     def _get_file_storage_path(cls) -> Path:
         return Path(config.settings.data_path) / "data/profile"
