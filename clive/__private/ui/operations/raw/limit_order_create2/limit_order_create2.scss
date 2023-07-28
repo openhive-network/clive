@@ -1,14 +1,10 @@
 LimitOrderCreate2 Body {
-  grid-size: 3;
-  grid-columns: 19 2fr 2fr;
-  grid-rows: 3 4 2 4 4 2 4;
+  grid-size: 2;
+  grid-columns: 19 3fr;
+  grid-rows: 3 4 2 4 4 3 4;
   height: 33;
   margin: 0 4;
   background: $panel;
-}
-
-LimitOrderCreate2 #first-taker {
-  row-span: 3;
 }
 
 LimitOrderCreate2 .label {
