@@ -107,7 +107,6 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
-            Communication.start()
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
         finally:
             self.__cleanup()
@@ -377,4 +376,3 @@ class Clive(App[int], ManualReactive):
     def __cleanup(self) -> None:
         self.__class__.is_launched = False
         self.world.close()
-        Communication.close()
