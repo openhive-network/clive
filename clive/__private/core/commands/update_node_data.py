@@ -64,7 +64,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             account.data.warnings = info.warnings
 
             account.data.hive_balance = info.core.balance
-            account.data.hive_dollars = info.core.hbd_balance
+            account.data.hbd_balance = info.core.hbd_balance
             account.data.hive_savings = info.core.savings_balance
             account.data.hbd_savings = info.core.savings_hbd_balance
             account.data.hive_unclaimed = info.core.reward_hive_balance

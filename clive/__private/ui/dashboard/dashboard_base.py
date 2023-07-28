@@ -108,7 +108,7 @@ class ActivityStats(AccountReferencingWidget):
         )
         yield Static("HBD", classes="token token-variant")
         yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hive_dollars),
+            lambda: Asset.pretty_amount(self._account.data.hbd_balance),
             "amount amount-variant",
         )
         yield self.create_dynamic_label(

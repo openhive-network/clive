@@ -39,7 +39,7 @@ class ListBalances(WorldBasedCommand):
         table.add_column("Type", justify="left", style="cyan", no_wrap=True)
         table.add_column("Amount", justify="right", style="green", no_wrap=True)
 
-        table.add_row("HBD Liquid", f"{Asset.pretty_amount(data.hive_dollars)}")
+        table.add_row("HBD Liquid", f"{Asset.pretty_amount(data.hbd_balance)}")
         table.add_row("HBD Savings", f"{Asset.pretty_amount(data.hbd_savings)}")
         table.add_row("HBD Unclaimed", f"{Asset.pretty_amount(data.hbd_unclaimed)}")
         table.add_row("HIVE Liquid", f"{Asset.pretty_amount(data.hive_balance)}")
