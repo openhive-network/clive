@@ -10,7 +10,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.placeholders_constants import ID_PLACEHOLDER, MEMO_PLACEHOLDER, ACCOUNT_NAME_PLACEHOLDER
+from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER, ID_PLACEHOLDER, MEMO_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import TransferFromSavingsOperation
 
