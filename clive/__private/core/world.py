@@ -75,6 +75,7 @@ class World:
         return self._node
 
     def close(self) -> None:
+        self.profile_data.save()
         if self._beekeeper is not None:
             self._beekeeper.close()
         Communication.close()

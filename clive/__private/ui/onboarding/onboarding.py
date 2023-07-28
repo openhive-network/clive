@@ -25,6 +25,7 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     def action_finish(self) -> None:
         self.app.world.profile_data = self.context
         super().action_finish()
+        self.app.world.profile_data.save()
 
 
 class Onboarding(Form[ProfileData]):
