@@ -5,10 +5,12 @@ from typing import TYPE_CHECKING
 
 import wax
 from clive.exceptions import CliveError
+from clive.models import Transaction
+from clive.models.aliased import convert_to_representation
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKey, PublicKey
-    from clive.models import Operation, Transaction
+    from clive.models import Operation
 
 
 class WaxOperationFailedError(CliveError):
@@ -21,6 +23,9 @@ def __validate_wax_response(response: wax.python_result) -> None:
 
 
 def __as_binary_json(item: Operation | Transaction) -> bytes:
+    if not isinstance(item, Transaction):
+        item = convert_to_representation(item)
+
     return item.json(by_alias=True).encode()
 
 
