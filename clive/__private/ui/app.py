@@ -101,6 +101,7 @@ class Clive(App[int], ManualReactive):
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
+        self.__amount_of_fails_during_update_node_data = 0
         self.background_tasks.run_every(timedelta(seconds=1.5), self.__update_data_from_node)
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
@@ -289,12 +290,17 @@ class Clive(App[int], ManualReactive):
         self.post_message(BackgroundErrorOccurred(error))
 
     async def __update_data_from_node(self) -> None:
+        allowed_fails_of_update_node_data = 5
         accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
 
         try:
             await self.world.commands.update_node_data(accounts=accounts)
+            self.__amount_of_fails_during_update_node_data = 0
         except Exception as error:  # noqa: BLE001
-            RaiseExceptionHelper.raise_exception_in_main_thread(error)
+            self.__amount_of_fails_during_update_node_data += 1
+            logger.warning(f"Update node data failed {self.__amount_of_fails_during_update_node_data} times: {error}")
+            if self.__amount_of_fails_during_update_node_data >= allowed_fails_of_update_node_data:
+                RaiseExceptionHelper.raise_exception_in_main_thread(error)
         else:
             self.world.update_reactive("profile_data")
             self.world.update_reactive("app_state")
