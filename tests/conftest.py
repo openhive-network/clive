@@ -11,7 +11,6 @@ from clive.__private.before_launch import prepare_before_launch
 from clive.__private.config import settings
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
-from clive.__private.core.communication import Communication
 from clive.__private.core.world import World
 from clive.core.url import Url
 from tests import WalletInfo
@@ -26,9 +25,7 @@ if TYPE_CHECKING:
 @pytest.fixture(autouse=True, scope="session")
 def manage_thread_pool() -> Iterator[None]:
     with thread_pool:
-        Communication.start()
         yield
-        Communication.close()
 
 
 @pytest.fixture(autouse=True)

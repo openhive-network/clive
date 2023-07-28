@@ -8,6 +8,7 @@ from textual.reactive import var
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands
+from clive.__private.core.communication import Communication
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
 from clive.__private.core.node.node import Node
@@ -46,6 +47,7 @@ class World:
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
+        Communication.start()
         self._background_tasks = BackgroundTasks()
 
         if use_beekeeper:
@@ -75,6 +77,7 @@ class World:
     def close(self) -> None:
         if self._beekeeper is not None:
             self._beekeeper.close()
+        Communication.close()
 
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)

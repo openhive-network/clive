@@ -88,7 +88,6 @@ class Clive(App[int], ManualReactive):
     ) -> int | None:
         try:
             self.__class__.is_launched = True
-            Communication.start()
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
         finally:
             self.__cleanup()
@@ -340,4 +339,3 @@ class Clive(App[int], ManualReactive):
     def __cleanup(self) -> None:
         self.__class__.is_launched = False
         self.world.close()
-        Communication.close()
