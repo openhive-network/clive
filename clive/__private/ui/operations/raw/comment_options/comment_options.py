@@ -9,10 +9,10 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
     PERCENT_PLACEHOLDER,
-    PERMLINK_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -34,7 +34,7 @@ class CommentOptions(RawOperationBaseScreen):
         default_allow_votes = get_default_from_model(CommentOptionsOperation, "allow_votes", bool)
         default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
 
-        self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
+        self.__permlink_input = PermlinkInput(label="permlink")
         self.__max_accepted_payout_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__percent_hbd_input = Input(default_percent_hbd, placeholder=PERCENT_PLACEHOLDER)
         self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
@@ -47,8 +47,7 @@ class CommentOptions(RawOperationBaseScreen):
             with Body():
                 yield Static("author", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
-                yield Static("permlink", classes="label")
-                yield self.__permlink_input
+                yield from self.__permlink_input.compose()
                 yield Static("max accepted payout", classes="label")
                 yield self.__max_accepted_payout_input
                 yield Static("percent hbd", classes="label")

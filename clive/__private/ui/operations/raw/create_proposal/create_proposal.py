@@ -9,10 +9,10 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
     DATE_PLACEHOLDER,
-    PERMLINK_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -35,7 +35,7 @@ class CreateProposal(RawOperationBaseScreen):
         self.__end_date_input = Input(placeholder=DATE_PLACEHOLDER)
         self.__daily_pay_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__subject_input = Input(placeholder="e.g: example subject")
-        self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
+        self.__permlink_input = PermlinkInput(label="permlink")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -52,8 +52,7 @@ class CreateProposal(RawOperationBaseScreen):
                 yield self.__daily_pay_input
                 yield Static("subject", classes="label")
                 yield self.__subject_input
-                yield Static("permlink", classes="label")
-                yield self.__permlink_input
+                yield from self.__permlink_input.compose()
 
     def _create_operation(self) -> CreateProposalOperation[Asset.Hbd]:
         return CreateProposalOperation(
