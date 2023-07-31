@@ -3,16 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.placeholders_constants import (
-    MEMO_PLACEHOLDER,
-)
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import TransferToSavingsOperation
 
@@ -32,7 +30,7 @@ class TransferToSavings(RawOperationBaseScreen):
 
         self.__to_input = AccountNameInput(label="to")
         self.__amount_input = AmountInput()
-        self.__memo_input = Input(placeholder=MEMO_PLACEHOLDER)
+        self.__memo_input = MemoInput(label="memo")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -43,8 +41,7 @@ class TransferToSavings(RawOperationBaseScreen):
                 yield from self.__to_input.compose()
                 yield Static("amount", classes="label")
                 yield self.__amount_input
-                yield Static("memo", classes="label")
-                yield self.__memo_input
+                yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferToSavingsOperation[Asset.Hive, Asset.Hbd] | None:
         amount = self.__amount_input.amount
