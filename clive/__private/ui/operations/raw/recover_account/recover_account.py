@@ -9,8 +9,8 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.placeholders_constants import (
-    KEY_AUTHS_PLACEHOLDER,
     WEIGHT_THRESHOLD_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -35,10 +35,10 @@ class RecoverAccount(RawOperationBaseScreen):
         self.__account_to_recover_input = AccountNameInput(label="account to recover")
         self.__weight_threshold_new_input = Input(placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
         self.__account_auths_new_input = AccountAuthsInput(label="account auths")
-        self.__key_auths_new_input = Input(placeholder=KEY_AUTHS_PLACEHOLDER)
+        self.__key_auths_new_input = KeyAuthsInput(label="key auths")
         self.__weight_threshold_recent_input = Input(placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
         self.__account_auths_recent_input = AccountAuthsInput(label="account auths")
-        self.__key_auths_recent_input = Input(placeholder=KEY_AUTHS_PLACEHOLDER)
+        self.__key_auths_recent_input = KeyAuthsInput(label="key auths")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -50,15 +50,13 @@ class RecoverAccount(RawOperationBaseScreen):
                 yield Static("weight threshold", classes="label")
                 yield self.__weight_threshold_new_input
                 yield from self.__account_auths_new_input.compose()
-                yield Static("key auths", classes="label")
-                yield self.__key_auths_new_input
+                yield from self.__key_auths_new_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("Recent owner authority")
                 yield Static("weight threshold", classes="label")
                 yield self.__weight_threshold_recent_input
                 yield from self.__account_auths_recent_input.compose()
-                yield Static("key auths", classes="label")
-                yield self.__key_auths_recent_input
+                yield from self.__key_auths_recent_input.compose()
 
     def _create_operation(self) -> RecoverAccountOperation:
         new_owner_authority = self._create_authority_field(
