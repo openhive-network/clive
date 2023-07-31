@@ -94,5 +94,5 @@ class EscrowTransfer(RawOperationBaseScreen):
             ratification_deadline=self.__ratification_deadline_input.value,
             escrow_expiration=self.__ratification_deadline_input.value,
             json_meta=self.__json_meta_input.value,
-            fee=self.__currency_selector.selected.value(self.__fee_input.value),
+            fee=self.__currency_selector.create_asset(self.__fee_input.value),
         )

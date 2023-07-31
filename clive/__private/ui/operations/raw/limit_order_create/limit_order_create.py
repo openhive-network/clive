@@ -70,8 +70,8 @@ class LimitOrderCreate(RawOperationBaseScreen):
         return LimitOrderCreateOperation(
             owner=self.app.world.profile_data.name,
             orderid=int(self.__order_id_input.value),
-            amount_to_sell=self.__currency_selector_to_sell.selected.value(self.__amount_to_sell_input.value),
-            min_to_receive=self.__currency_selector_to_receive.selected.value(self.__min_to_receive_input.value),
+            amount_to_sell=self.__currency_selector_to_sell.create_asset(self.__amount_to_sell_input.value),
+            min_to_receive=self.__currency_selector_to_receive.create_asset(self.__min_to_receive_input.value),
             fill_or_kill=bool(self.__fill_or_kill_input.value),
             expiration=self.__expiration_input.value,
         )

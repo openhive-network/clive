@@ -59,6 +59,6 @@ class TransferToSavings(RawOperationBaseScreen):
         return TransferToSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
-            amount=self.__currency_selector.selected.value(self.__amount_input.value),
+            amount=self.__currency_selector.create_asset(self.__amount_input.value),
             memo=self.__memo_input.value,
         )

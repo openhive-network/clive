@@ -70,7 +70,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
         return RecurrentTransferOperation(
             from_=self.app.world.profile_data.name,
             to=self.__to_input.value,
-            amount=self.__currency_selector.selected.value(self.__amount_input.value),
+            amount=self.__currency_selector.create_asset(self.__amount_input.value),
             memo=self.__memo_input.value,
             recurrence=int(self.__recurrence_input.value),
             executions=int(self.__executions_input.value),

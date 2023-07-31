@@ -75,7 +75,7 @@ class LimitOrderCreate2(RawOperationBaseScreen):
 
     def _create_operation(self) -> LimitOrderCreate2Operation[Asset.Hbd, Asset.Hive]:
         exchange_rate = {
-            "base": self.__currency_selector_base.selected.value(self.__base_input.value),
+            "base": self.__currency_selector_base.create_asset(self.__base_input.value),
             "quote": Asset.hive(self.__quote_input.value),
         }
 
@@ -84,6 +84,6 @@ class LimitOrderCreate2(RawOperationBaseScreen):
             order_id=int(self.__order_id_input.value),
             fill_or_kill=self.__fill_or_kill_input.value,
             expiration=self.__expiration_input.value,
-            amount_to_sell=self.__currency_selector_amount_to_sell.selected.value(self.__amount_to_sell_input.value),
+            amount_to_sell=self.__currency_selector_amount_to_sell.create_asset(self.__amount_to_sell_input.value),
             exchange_rate=exchange_rate,
         )
