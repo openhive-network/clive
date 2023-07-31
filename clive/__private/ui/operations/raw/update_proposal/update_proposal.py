@@ -8,10 +8,10 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
     ID_PLACEHOLDER,
-    PERMLINK_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -33,7 +33,7 @@ class UpdateProposal(RawOperationBaseScreen):
         self.__creator_input = AccountNameInput(label="creator")
         self.__daily_pay_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__subject_input = Input(placeholder="e.g.: New subject")
-        self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
+        self.__permlink_input = PermlinkInput(label="permlink")
         self.__extensions_input = Input(placeholder="e.g.: []")
 
     def create_left_panel(self) -> ComposeResult:
@@ -47,8 +47,7 @@ class UpdateProposal(RawOperationBaseScreen):
                 yield self.__daily_pay_input
                 yield Static("subject", classes="label")
                 yield self.__subject_input
-                yield Static("permlink", classes="label")
-                yield self.__permlink_input
+                yield from self.__permlink_input.compose()
                 yield Static("extensions", classes="label")
                 yield self.__extensions_input
 

@@ -10,9 +10,9 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ID_PLACEHOLDER,
-    PERMLINK_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import VoteOperation
@@ -36,7 +36,7 @@ class Vote(RawOperationBaseScreen):
         default_weight = str(get_default_from_model(VoteOperation, "weight", int))
 
         self.__author_input = AccountNameInput(label="author")
-        self.__permlink_input = Input(placeholder=PERMLINK_PLACEHOLDER)
+        self.__permlink_input = PermlinkInput(label="permlink")
         self.__weight_input = Input(default_weight, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
@@ -47,8 +47,7 @@ class Vote(RawOperationBaseScreen):
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="voter-label")
                 yield PlaceTaker()
                 yield from self.__author_input.compose()
-                yield Static("permlink", classes="label")
-                yield self.__permlink_input
+                yield from self.__permlink_input.compose()
                 yield Static("weight", classes="label")
                 yield self.__weight_input
 
