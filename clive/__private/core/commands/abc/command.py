@@ -41,7 +41,7 @@ class Command(ABC):  # noqa: B024
 
     async def _async_execute(self) -> None:
         """
-        Proxy method for the execute() method.
+        Proxy method for the async_execute() method.
 
         The result could be set via the `result` property.
         """
