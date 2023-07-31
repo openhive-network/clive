@@ -4,7 +4,7 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -12,9 +12,7 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.placeholders_constants import (
-    MEMO_PLACEHOLDER,
-)
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from clive.models.asset import AssetAmountT
@@ -36,7 +34,7 @@ class TransferToAccount(OperationBaseScreen):
         super().__init__()
 
         self.__to_input = AccountNameInput(label="to")
-        self.__memo_input = Input(placeholder=MEMO_PLACEHOLDER)
+        self.__memo_input = MemoInput(label="memo")
 
         self.__amount_input = AmountInput()
 
@@ -53,8 +51,7 @@ class TransferToAccount(OperationBaseScreen):
                 yield KnownAccount(to_input)
                 yield Static("amount", classes="label")
                 yield self.__amount_input
-                yield Static("memo", classes="label")
-                yield self.__memo_input
+                yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferOperation[Asset.Hive, Asset.Hbd] | None:
         amount = self.__amount_input.amount
