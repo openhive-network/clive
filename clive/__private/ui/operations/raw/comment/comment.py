@@ -8,11 +8,9 @@ from textual.widgets import Input, Static
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
-from clive.__private.ui.widgets.placeholders_constants import (
-    ACCOUNT_NAME2_PLACEHOLDER,
-    JSON_DATA_PLACEHOLDER,
-)
+from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CommentOperation
 
@@ -34,7 +32,7 @@ class Comment(RawOperationBaseScreen):
         self.__permlink_input = PermlinkInput(label="permlink")
         self.__title_input = Input(placeholder="e.g: A post by bob")
         self.__body_input = Input(placeholder="e.g: Look at my awesome post")
-        self.__json_metadata_input = Input(placeholder=JSON_DATA_PLACEHOLDER)
+        self.__json_metadata_input = JsonDataInput(label="json metadata")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -48,8 +46,7 @@ class Comment(RawOperationBaseScreen):
                 yield self.__body_input
                 yield from self.__parent_author_input.compose()
                 yield from self.__parent_permlink_input.compose()
-                yield Static("json metadata", classes="label")
-                yield self.__json_metadata_input
+                yield from self.__json_metadata_input.compose()
 
     def _create_operation(self) -> CommentOperation:
         return CommentOperation(
