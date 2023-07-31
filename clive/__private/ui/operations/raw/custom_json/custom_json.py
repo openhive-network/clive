@@ -7,7 +7,7 @@ from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.placeholders_constants import JSON_DATA_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomJsonOperation
 
@@ -26,7 +26,7 @@ class CustomJson(RawOperationBaseScreen):
         self.__required_auths_input = Input(placeholder="e.g.: alice,bob,charlie")
         self.__required_posting_auths_input = Input(placeholder="e.g: alice,bob,charlie")
         self.__id_input = Input(value="0")
-        self.__json_input = Input(placeholder=f"Custom json data {JSON_DATA_PLACEHOLDER}")
+        self.__json_input = JsonDataInput(label="json")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -38,8 +38,7 @@ class CustomJson(RawOperationBaseScreen):
                 yield self.__required_posting_auths_input
                 yield Static("id", classes="label")
                 yield self.__id_input
-                yield Static("json", classes="label")
-                yield self.__json_input
+                yield from self.__json_input.compose()
 
     def _create_operation(self) -> CustomJsonOperation:
         required_auths_in_list = self.__required_auths_input.value.split(",")

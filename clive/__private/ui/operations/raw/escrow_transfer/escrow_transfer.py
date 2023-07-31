@@ -11,11 +11,11 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
     DATE_PLACEHOLDER,
     ID_PLACEHOLDER,
-    JSON_DATA_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -43,7 +43,7 @@ class EscrowTransfer(RawOperationBaseScreen):
         self.__fee_input = AmountInput()
         self.__ratification_deadline_input = Input(placeholder=DATE_PLACEHOLDER)
         self.__escrow_expiration_input = Input(placeholder=DATE_PLACEHOLDER)
-        self.__json_meta_input = Input(placeholder=JSON_DATA_PLACEHOLDER)
+        self.__json_meta_input = JsonDataInput(label="json meta")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -63,8 +63,7 @@ class EscrowTransfer(RawOperationBaseScreen):
                 yield self.__ratification_deadline_input
                 yield Static("escrow expiration", classes="label")
                 yield self.__escrow_expiration_input
-                yield Static("json meta", classes="label")
-                yield self.__json_meta_input
+                yield from self.__json_meta_input.compose()
                 yield Static("fee", classes="label")
                 yield self.__fee_input
 

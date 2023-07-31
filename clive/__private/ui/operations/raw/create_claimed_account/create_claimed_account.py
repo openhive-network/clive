@@ -10,9 +10,9 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.placeholders_constants import (
-    JSON_DATA_PLACEHOLDER,
     KEY_PLACEHOLDER,
     WEIGHT_THRESHOLD_PLACEHOLDER,
 )
@@ -50,7 +50,7 @@ class CreateClaimedAccount(RawOperationBaseScreen):
         self.__key_auths_posting_input = KeyAuthsInput(label="key auths")
 
         self.__memo_key_input = Input(placeholder=KEY_PLACEHOLDER)
-        self.__json_metadata_input = Input(placeholder=JSON_DATA_PLACEHOLDER)
+        self.__json_metadata_input = JsonDataInput(label="json metadata")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -61,8 +61,7 @@ class CreateClaimedAccount(RawOperationBaseScreen):
                 yield from self.__new_account_name_input.compose()
                 yield Static("memo key", classes="label")
                 yield self.__memo_key_input
-                yield Static("json metadata", classes="label")
-                yield self.__json_metadata_input
+                yield from self.__json_metadata_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("owner authority")
                 yield Static("weight threshold", classes="label")
