@@ -22,8 +22,18 @@ class Body(Grid):
 
 
 class CancelTransferFromSavings(RawOperationBaseScreen):
-    def __init__(self, request_id: str | None = None) -> None:
+    def __init__(
+        self,
+        request_id: str | None = None,
+        to: str | None = None,
+        amount: str | None = None,
+        memo: str | None = None,
+    ) -> None:
         self.__request_id = request_id
+
+        self.__to_account = to
+        self.__amount = amount
+        self.__memo = memo
         super().__init__()
 
         if self.__request_id is None:
@@ -37,8 +47,18 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
             yield BigTitle("Cancel transfer from savings")
             with ScrollableContainer(), Body():
                 yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield from self.__request_id_input.compose()
+                yield EllipsedStatic(self.app.world.profile_data.working_account.name, classes="parameters-label")
+                if self.__request_id is None:
+                    yield from self.__request_id_input.compose()
+                else:
+                    yield InputLabel("request id")
+                    yield EllipsedStatic(self.__request_id, classes="parameters-label")
+                    yield InputLabel("to")
+                    yield EllipsedStatic(self.__to_account, classes="parameters-label")  # type: ignore
+                    yield InputLabel("amount", classes="label")
+                    yield EllipsedStatic(self.__amount, classes="parameters-label")  # type: ignore
+                    yield InputLabel("memo", classes="label")
+                    yield EllipsedStatic(self.__memo, classes="parameters-label")  # type: ignore
 
     def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
         request_id = self.__request_id_input.value
