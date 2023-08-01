@@ -44,13 +44,13 @@ class KeyManager:
     @property
     def every(self) -> list[PublicKeyAliased]:
         """A *copy* of the keys."""
-        return self.__keys.copy()
+        return list(iter(self))
 
     @property
     def first(self) -> PublicKeyAliased:
         try:
-            return self.__keys[0]
-        except IndexError:
+            return next(iter(self))
+        except StopIteration:
             raise KeyNotFoundError("No keys found.") from None
 
     def is_public_alias_available(self, alias: str) -> bool:
