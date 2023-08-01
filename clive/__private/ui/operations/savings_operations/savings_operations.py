@@ -102,7 +102,7 @@ class PendingTransfer(CliveWidget):
 
     @on(Button.Pressed, "#delete-transfer-button")
     def move_to_cancel_transfer(self) -> None:
-        self.app.push_screen(CancelTransferFromSavings())
+        self.app.push_screen(CancelTransferFromSavings(request_id=self.__transfer.request_id))
 
 
 class PendingHeader(CliveWidget):
