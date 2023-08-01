@@ -89,7 +89,7 @@ class PendingTransfer(CliveWidget):
         self.__amount = Asset.to_legacy(pending_transfer.amount)
         self.__realized_in = pending_transfer.complete.replace(tzinfo=None).isoformat()
         self.__memo = pending_transfer.memo
-        self.__request_id = pending_transfer.request_id
+        self.__request_id = str(pending_transfer.request_id)
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -102,7 +102,7 @@ class PendingTransfer(CliveWidget):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "delete-transfer-button":
-            self.app.push_screen(CancelTransferFromSavings())
+            self.app.push_screen(CancelTransferFromSavings(request_id=self.__request_id))
 
 
 class PendingHeader(CliveWidget):

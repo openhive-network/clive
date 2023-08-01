@@ -22,12 +22,15 @@ class Body(Grid):
 
 
 class CancelTransferFromSavings(RawOperationBaseScreen):
-    def __init__(self) -> None:
+    def __init__(self, request_id: str | None = None) -> None:
+        self.__request_id = request_id
         super().__init__()
 
-        default_request_id = get_default_from_model(CancelTransferFromSavingsOperation, "request_id", int)
-
-        self.__request_id_input = IdInput(label="request id", value=default_request_id)
+        if self.__request_id is None:
+            default_request_id = str(get_default_from_model(CancelTransferFromSavingsOperation, "request_id", int))
+            self.__request_id_input = IdInput(label="request id", value=default_request_id)
+        else:
+            self.__request_id_input = IdInput(label="request id", value=self.__request_id)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
