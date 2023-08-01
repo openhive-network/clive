@@ -146,6 +146,9 @@ required-imports = ["from __future__ import annotations"]
 
 
 [tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "--strict-markers"
 markers = [
     "sequential: mark test to run sequentially, skipping pytest-xdist",
 ]
