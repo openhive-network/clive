@@ -13,21 +13,15 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.clive_screen import CliveScreen
+from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
     from clive.models import Operation
 
 
-class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
-    """Base class for all screens that represent operations."""
-
-    BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
-        Binding("f2", "add_to_cart", "Add to cart"),
-        Binding("f5", "fast_broadcast", "Fast broadcast"),
-        Binding("f10", "finalize", "Finalize transaction"),
-    ]
+class OperationMethods(CliveWidget, AbstractClassMessagePump):
+    """Class to provide access to methods related with operations to not just screens."""
 
     @abstractmethod
     def _create_operation(self) -> Operation | None:
@@ -103,3 +97,14 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
         self.app.world.profile_data.cart.append(operation)
         self.app.world.update_reactive("profile_data")
         return True
+
+
+class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
+    """Base class for all screens that represent operations."""
+
+    BINDINGS = [
+        Binding("escape", "pop_screen", "Cancel"),
+        Binding("f2", "add_to_cart", "Add to cart"),
+        Binding("f5", "fast_broadcast", "Fast broadcast"),
+        Binding("f10", "finalize", "Finalize transaction"),
+    ]
