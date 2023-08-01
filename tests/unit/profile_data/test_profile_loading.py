@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 import typer
 
-from clive.__private.core.profile_data import ProfileCouldNotBeLoadedError
+from clive.__private.core.profile_data import NoLastlyUsedProfileError
 from clive.__private.core.world import TyperWorld, World
 
 if TYPE_CHECKING:
@@ -59,9 +59,8 @@ def test_if_correct_profile_is_loaded_when_something_is_stored(world_cleanup: li
 @pytest.mark.parametrize("world_cls", [World, TyperWorld])
 def test_loading_profile_without_given_name_when_no_lastly_used(world_cls: type[World]) -> None:
     # ACT & ASSERT
-    with pytest.raises(ProfileCouldNotBeLoadedError) as error:
+    with pytest.raises(NoLastlyUsedProfileError):
         world_cls()
-    assert "No lastly used profile to load." in str(error.value)
 
 
 def test_loading_non_existing_profile_with_auto_create_disabled() -> None:

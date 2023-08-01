@@ -26,6 +26,10 @@ class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError):
         super().__init__(f"Profile `{profile_name}` does not exist.")
 
 
+class NoLastlyUsedProfileError(ProfileCouldNotBeLoadedError):
+    """Raised when no lastly used profile exists."""
+
+
 class Cart(list[Operation]):
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
@@ -95,12 +99,17 @@ class ProfileData(Context):
 
         Args:
         ----
-        name: Name of the profile to load.
+        name: Name of the profile to load. If empty, the lastly used profile is loaded.
         auto_create: If True, a new profile is created if the profile with the given name does not exist.
 
         Returns:
         -------
         Profile data.
+
+        Raises:
+        ------
+        ProfileCouldNotBeLoadedError: If the profile could not be loaded.
+        ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
         def assert_profile_could_be_loaded() -> None:
@@ -115,7 +124,7 @@ class ProfileData(Context):
             """
             lastly_used_exists = cls.get_lastly_used_profile_name()
             if not lastly_used_exists and not name:
-                raise ProfileCouldNotBeLoadedError("No lastly used profile to load.")
+                raise NoLastlyUsedProfileError
 
         def create_new_profile(new_profile_name: str) -> ProfileData:
             if not auto_create:
