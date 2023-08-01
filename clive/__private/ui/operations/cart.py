@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
+import inflection
 from textual import on
 from textual.binding import Binding
 from textual.containers import ScrollableContainer
@@ -116,7 +117,7 @@ class CartItem(ColumnLayout, CliveWidget):
 
         def operation_name(_: ProfileData) -> str:
             if self.is_valid():
-                return self.operation.__class__.__name__
+                return inflection.humanize(self.operation.get_name())
             return ""
 
         def operation_details(_: ProfileData) -> str:

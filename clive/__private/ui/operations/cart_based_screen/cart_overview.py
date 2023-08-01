@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import inflection
 from textual.containers import Container, Grid
 from textual.widgets import Static
 
@@ -29,7 +30,7 @@ class CartItem(Static):
 
     def __init__(self, index: int, operation: Operation) -> None:
         self._operation = operation
-        super().__init__(f"{index}. {operation.get_name()}")
+        super().__init__(f"{index}. {inflection.humanize(operation.get_name())}")
 
 
 class CartItemsAmount(DynamicLabel):
