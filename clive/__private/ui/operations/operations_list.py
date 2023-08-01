@@ -46,9 +46,8 @@ from clive.__private.ui.operations import (
 if TYPE_CHECKING:
     from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
     from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
-    from clive.__private.ui.operations.savings_operation_base_screen import SavingOperationBaseScreen
 
-FINANCIAL_OPERATIONS: Final[list[type[OperationBaseScreen | SavingOperationBaseScreen]]] = [
+FINANCIAL_OPERATIONS: Final[list[type[OperationBaseScreen]]] = [
     TransferToAccount,
     Savings,
 ]

@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING
 from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Button, Checkbox, Input, Static, TabbedContent, TabPane
 
+from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
-from clive.__private.ui.operations.savings_operation_base_screen import SavingOperationBaseScreen
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -171,7 +171,7 @@ class SavingsTransfers(TabPane):
         yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
 
 
-class Savings(SavingOperationBaseScreen):
+class Savings(OperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent():
             yield SavingsInfo(
