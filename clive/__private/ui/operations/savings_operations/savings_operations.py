@@ -4,9 +4,10 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Container, Grid, Horizontal
+from textual.notifications import Notification
 from textual.widgets import Button, Checkbox, Input, Static, TabbedContent, TabPane
 
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
@@ -15,6 +16,8 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.models import Asset
+from schemas.__private.operations.transfer_from_savings_operation import TransferFromSavingsOperation
+from schemas.__private.operations.transfer_to_savings_operation import TransferToSavingsOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -137,7 +140,7 @@ class SavingsInfo(TabPane):
                 yield Static("No pending transfers from savings now !", id="without-pending-label")
 
 
-class SavingsTransfers(TabPane):
+class SavingsTransfers(TabPane, OperationMethods):
     def __init__(self, working_account: WorkingAccount, title: str = "") -> None:
         self.__title = title
         self.__working_account = working_account
@@ -170,6 +173,30 @@ class SavingsTransfers(TabPane):
             yield Static("memo", classes="label")
             yield self.__memo_input
         yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
+
+    def _create_operation(
+        self,
+    ) -> TransferToSavingsOperation[Asset.Hive, Asset.Hbd] | TransferFromSavingsOperation[Asset.Hive, Asset.Hbd] | None:
+        asset = self.__currency_selector.create_asset(self.__amount_input.value)
+
+        if not asset:
+            return None
+        if self.__to_checkbox.value:
+            return TransferToSavingsOperation(
+                from_=self.app.world.profile_data.working_account.name,
+                to=self.__to_account_input.value,
+                amount=asset,
+                memo=self.__memo_input.value,
+            )
+        elif self.__from_checkbox.value:  # noqa: RET505
+            return TransferFromSavingsOperation(
+                from_=self.app.world.profile_data.working_account.name,
+                amount=asset,
+                memo=self.__memo_input.value,
+            )
+        else:
+            Notification("Please select type of operation", category="warning").show()
+            return None
 
 
 class Savings(OperationBaseScreen):
