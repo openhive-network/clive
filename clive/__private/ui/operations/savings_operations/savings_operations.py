@@ -19,6 +19,7 @@ from clive.models import Asset
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.storage.accounts import WorkingAccount
     from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 
@@ -112,9 +113,35 @@ class PendingHeader(CliveWidget):
             yield Static()
 
 
-class Savings(SavingOperationBaseScreen):
-    def __init__(self) -> None:
-        super().__init__()
+class SavingsInfo(TabPane):
+    def __init__(
+        self,
+        working_account: WorkingAccount,
+        pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]],
+        title: str = "",
+    ):
+        self.__working_account = working_account
+        self.__pending_transfers = pending_transfers
+        super().__init__(title=title)
+
+    def compose(self) -> ComposeResult:
+        with Container():
+            yield SavingsInterestInfo(self.__working_account)
+            if self.__pending_transfers:
+                yield PendingHeader()
+                with Container(id="pending-transfers"):
+                    for transfer in self.__pending_transfers:
+                        yield PendingTransfer(transfer)
+            else:
+                yield Static("No pending transfers from savings now !", id="without-pending-label")
+
+
+class SavingsTransfers(TabPane):
+    def __init__(self, working_account: WorkingAccount, title: str = "") -> None:
+        self.__title = title
+        self.__working_account = working_account
+        super().__init__(title=self.__title)
+
         self.__amount_input = Input(placeholder="put amount to transfer here", id="amount-input")
         self.__memo_input = Input(placeholder="put memo here")
         self.__to_account_input = Input(placeholder="put to-account here")
@@ -125,38 +152,36 @@ class Savings(SavingOperationBaseScreen):
 
         self.__to_account = Horizontal(id="to-parameter")
 
+    def compose(self) -> ComposeResult:
+        yield Static("Choose type of operation", id="savings-transfer-header")
+        with Horizontal(id="operation-type-choose"):
+            yield self.__from_checkbox
+            yield self.__to_checkbox
+
+        yield SavingsBalances(self.__working_account, classes="transfer-savings-balances")
+        with self.__to_account:
+            yield Static("to", classes="label")
+            yield self.__to_account_input
+        with Body():
+            yield Static("amount", classes="label")
+            yield self.__amount_input
+            yield self.__currency_selector
+            yield Static("memo", classes="label")
+            yield self.__memo_input
+        yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
+
+
+class Savings(SavingOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent():
-            with TabPane("savings info"), Container():
-                yield SavingsInterestInfo(self.app.world.profile_data.working_account)
-                pending_transfers = self.app.world.node.api.database_api.find_savings_withdrawals(
+            yield SavingsInfo(
+                self.app.world.profile_data.working_account,
+                self.app.world.node.api.database_api.find_savings_withdrawals(
                     account=self.app.world.profile_data.working_account.name
-                ).withdrawals
-                if pending_transfers:
-                    yield PendingHeader()
-                    with Container(id="pending-transfers"):
-                        for transfer in pending_transfers:
-                            yield PendingTransfer(transfer)
-
-                else:
-                    yield Static("No pending transfers from savings now !", id="without-pending-label")
-            with TabPane("transfer"):
-                yield Static("Choose type of operation", id="savings-transfer-header")
-                with Horizontal(id="operation-type-choose"):
-                    yield self.__from_checkbox
-                    yield self.__to_checkbox
-
-                yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
-                with self.__to_account:
-                    yield Static("to", classes="label")
-                    yield self.__to_account_input
-                with Body():
-                    yield Static("amount", classes="label")
-                    yield self.__amount_input
-                    yield self.__currency_selector
-                    yield Static("memo", classes="label")
-                    yield self.__memo_input
-                yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
+                ).withdrawals,
+                title="savings info",
+            )
+            yield SavingsTransfers(self.app.world.profile_data.working_account, title="transfer")
 
     def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
         if event.checkbox.value:
