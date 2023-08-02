@@ -23,7 +23,7 @@ def webserver_default() -> Url:
 
 
 def _wallet_dir_default() -> Path:
-    return Path(settings.data_path / "beekeeper")
+    return Path(settings.data_path) / "beekeeper"
 
 
 class BeekeeperConfig(CliveBaseModel):
