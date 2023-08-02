@@ -10,7 +10,12 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER, ID_PLACEHOLDER, MEMO_PLACEHOLDER
+from clive.__private.ui.widgets.placeholders_constants import (
+    ACCOUNT_NAME_PLACEHOLDER,
+    ASSET_AMOUNT_PLACEHOLDER,
+    ID_PLACEHOLDER,
+    MEMO_PLACEHOLDER,
+)
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import TransferFromSavingsOperation
 
@@ -34,6 +39,7 @@ class TransferFromSavings(RawOperationBaseScreen):
 
         default_request_id = str(get_default_from_model(TransferFromSavingsOperation, "request_id", int))
 
+        self.__to_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
         self.__request_id_input = Input(default_request_id, placeholder=ID_PLACEHOLDER)
         self.__amount_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__memo_input = Input(placeholder=MEMO_PLACEHOLDER)
@@ -46,8 +52,12 @@ class TransferFromSavings(RawOperationBaseScreen):
                 yield Static("from", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield PlaceTaker()
+                yield Static("to", classes="label")
+                yield self.__to_input
+                yield PlaceTaker()
                 yield Static("request id", classes="label")
                 yield self.__request_id_input
+                yield PlaceTaker()
                 yield Static("amount", classes="label")
                 yield self.__amount_input
                 yield self.__currency_selector
@@ -57,7 +67,7 @@ class TransferFromSavings(RawOperationBaseScreen):
     def _create_operation(self) -> TransferFromSavingsOperation[Asset.Hive, Asset.Hbd]:
         return TransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
-            to=self.app.world.profile_data.working_account.name,
+            to=self.__to_input.value,
             request_id=int(self.__request_id_input.value),
             amount=self.__currency_selector.selected.value(self.__amount_input.value),
             memo=self.__memo_input.value,

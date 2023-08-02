@@ -2,13 +2,10 @@ TransferFromSavings Body {
   grid-size: 3;
   grid-columns: 12 2fr 1fr;
   grid-rows: 3 4 4 4;
-  height: 16;
+  height: auto;
   margin: 0 4;
+  padding-bottom: 2;
   background: $panel;
-}
-
-TransferFromSavings PlaceTaker {
-  row-span: 2;
 }
 
 TransferFromSavings .label {
