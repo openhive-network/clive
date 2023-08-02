@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Container, Grid, Horizontal
@@ -32,6 +32,10 @@ even = "EvenColumn"
 
 class Body(Grid):
     """Holds all places using to create transfers from/to savings."""
+
+
+class RequestIdError(Exception):
+    """Raise when quantity of request_ids is greater than 100."""
 
 
 class SavingsBalances(AccountReferencingWidget):
@@ -103,13 +107,13 @@ class PendingTransfer(CliveWidget):
     @on(Button.Pressed, "#delete-transfer-button")
     def move_to_cancel_transfer(self) -> None:
         self.app.push_screen(
-                CancelTransferFromSavings(
-                    request_id=self.__transfer.request_id,
-                    to=self.__transfer.to,
-                    amount=Asset.to_legacy(self.__transfer.amount),
-                    memo=self.__transfer.memo,
-                )
+            CancelTransferFromSavings(
+                request_id=self.__transfer.request_id,
+                to=self.__transfer.to,
+                amount=Asset.to_legacy(self.__transfer.amount),
+                memo=self.__transfer.memo,
             )
+        )
 
 
 class PendingHeader(CliveWidget):
@@ -195,14 +199,40 @@ class SavingsTransfers(TabPane, OperationMethods):
                 memo=self.__memo_input.value,
             )
         elif self.__from_checkbox.value:  # noqa: RET505
+            try:
+                self.__create_request_id()
+            except RequestIdError:
+                self.notify("Maximum quantity of request ids is 100!", severity="error")
+                return None
+
             return TransferFromSavingsOperation(
                 from_=self.app.world.profile_data.working_account.name,
                 amount=asset,
                 memo=self.__memo_input.value,
+                request_id=self.__create_request_id(),
             )
         else:
             Notification("Please select type of operation", category="warning").show()
             return None
+
+    def __create_request_id(self) -> int:
+        pending_transfers = (
+            self.app.world.node.api.database_api.find_savings_withdrawals(
+                account=self.app.world.profile_data.working_account.name
+            ).withdrawals,
+        )
+        max_number_of_request_ids: Final[int] = 100
+
+        if not pending_transfers[0]:
+            return 0
+
+        if len(pending_transfers) >= max_number_of_request_ids:
+            raise RequestIdError("Maximum quantity of request ids is 100")
+
+        sorted_transfers = sorted(pending_transfers[0], key=lambda x: x.request_id)
+        last_occupied_id = sorted_transfers[-1].request_id
+
+        return last_occupied_id + 1
 
 
 class Savings(OperationBaseScreen):
