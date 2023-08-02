@@ -13,7 +13,7 @@ from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.tranaction_summary import TransactionSummary
+from clive.__private.ui.operations.transaction_summary import TransactionSummary
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
