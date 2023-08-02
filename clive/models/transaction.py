@@ -7,14 +7,14 @@ from pydantic import Field, validator
 
 from clive.__private.core import iwax
 from clive.models import Operation, Signature  # noqa: TCH001
+from clive.models.aliased import OperationRepresentationType, convert_to_representation
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
 from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
-from schemas.__private.operations import Hf26OperationRepresentation, get_hf26_representation
 from schemas.transaction_model.transaction import Hf26Transaction
 
 
 class Transaction(Hf26Transaction):
-    operations: list[Hf26OperationRepresentation] = Field(default_factory=list)
+    operations: list[OperationRepresentationType] = Field(default_factory=list)
     ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(0))
     ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(0))
     expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
@@ -23,20 +23,12 @@ class Transaction(Hf26Transaction):
 
     @validator("operations", pre=True)
     @classmethod
-    def convert_operations(cls, value: Any) -> list[Hf26OperationRepresentation]:
+    def convert_operations(cls, value: Any) -> list[OperationRepresentationType]:
         assert isinstance(value, list)
-        return [cls.__convert_to_h26(op) for op in value]
+        return [convert_to_representation(op) for op in value]
 
     def add_operation(self, operation: Operation) -> None:
-        self.operations.append(self.__convert_to_h26(operation))
-
-    @classmethod
-    def __convert_to_h26(cls, operation: Any) -> Hf26OperationRepresentation:
-        if isinstance(operation, Hf26OperationRepresentation):
-            return operation
-        op_name = operation.get_name()
-
-        return get_hf26_representation(op_name)(type=op_name, value=operation)
+        self.operations.append(convert_to_representation(operation))
 
     def is_signed(self) -> bool:
         return bool(self.signatures)
