@@ -4,8 +4,11 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
+from clive.__private.core._async import asyncio_run
+from clive.__private.core.commands.abc.command import SynchronousOnlyCommandError
+
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Awaitable, Callable
     from types import TracebackType
 
     from typing_extensions import Self
@@ -34,7 +37,7 @@ class ErrorHandlerContextManager(ABC):
         """Return false if exception should be re-raised."""
         if exc_val is not None and isinstance(exc_val, Exception):
             try:
-                self.try_to_handle_error(exc_val)
+                asyncio_run(self.try_to_handle_error(exc_val))
             except Exception:  # noqa: BLE001
                 return False
             else:
@@ -45,7 +48,7 @@ class ErrorHandlerContextManager(ABC):
     def _try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
         """Handle all the errors. Reraise if error should not be handled. Return `ResultNotAvailable` otherwise."""
 
-    def try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
+    async def try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
         self._error = error
         return self._try_to_handle_error(error)
 
@@ -57,8 +60,13 @@ class ErrorHandlerContextManager(ABC):
     def error_occurred(self) -> bool:
         return self.error is not None
 
-    def execute(self, func: Callable[[], ExecuteResultT]) -> ExecuteResultT | ResultNotAvailable:
+    async def execute(
+        self, async_func: Awaitable[ExecuteResultT], func: Callable[[], ExecuteResultT]
+    ) -> ExecuteResultT | ResultNotAvailable:
         try:
-            return func()
+            try:
+                return await async_func
+            except SynchronousOnlyCommandError:
+                return func()
         except Exception as error:  # noqa: BLE001
-            return self.try_to_handle_error(error)
+            return await self.try_to_handle_error(error)

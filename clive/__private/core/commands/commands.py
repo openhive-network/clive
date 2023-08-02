@@ -3,6 +3,8 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
+from clive.__private.core._async import asyncio_run
+from clive.__private.core.commands.abc.command import SynchronousOnlyCommandError
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
@@ -25,7 +27,6 @@ from clive.__private.core.error_handlers.general_error_notificator import Genera
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
     from pathlib import Path
 
     from clive.__private.core.commands.abc.command import Command
@@ -49,131 +50,155 @@ class Commands(Generic[WorldT]):
         self.__exception_handlers = exception_handlers
 
     def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(
-            Activate(
-                app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
-                wallet=self._world.profile_data.name,
-                password=password,
-                time=time,
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                Activate(
+                    app_state=self._world.app_state,
+                    beekeeper=self._world.beekeeper,
+                    wallet=self._world.profile_data.name,
+                    password=password,
+                    time=time,
+                )
             )
         )
 
     def deactivate(self) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(
-            Deactivate(
-                app_state=self._world.app_state, beekeeper=self._world.beekeeper, wallet=self._world.profile_data.name
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                Deactivate(
+                    app_state=self._world.app_state,
+                    beekeeper=self._world.beekeeper,
+                    wallet=self._world.profile_data.name,
+                )
             )
         )
 
     def set_timeout(self, *, seconds: int) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds))
+        return asyncio_run(
+            self.__surround_with_exception_handlers(SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds))
+        )
 
     def build_transaction(
         self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
     ) -> CommandWithResultWrapper[Transaction]:
-        return self.__surround_with_exception_handlers(
-            BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
+            )
         )
 
     def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
-        return self.__surround_with_exception_handlers(
-            Sign(
-                app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
-                transaction=transaction,
-                key=sign_with,
-                chain_id=self._world.node.chain_id,
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                Sign(
+                    app_state=self._world.app_state,
+                    beekeeper=self._world.beekeeper,
+                    transaction=transaction,
+                    key=sign_with,
+                    chain_id=self._world.node.chain_id,
+                )
             )
         )
 
     def save_to_file(self, *, transaction: Transaction, path: Path) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(SaveToFileAsBinary(transaction=transaction, file_path=path))
+        return asyncio_run(
+            self.__surround_with_exception_handlers(SaveToFileAsBinary(transaction=transaction, file_path=path))
+        )
 
     def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(
-            Broadcast(
-                node=self._world.node,
-                transaction=transaction,
-            )
+        return asyncio_run(
+            self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
         )
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(
-            FastBroadcast(
-                app_state=self._world.app_state,
-                node=self._world.node,
-                operation=operation,
-                beekeeper=self._world.beekeeper,
-                sign_with=sign_with,
-                chain_id=self._world.node.chain_id,
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                FastBroadcast(
+                    app_state=self._world.app_state,
+                    node=self._world.node,
+                    operation=operation,
+                    beekeeper=self._world.beekeeper,
+                    sign_with=sign_with,
+                    chain_id=self._world.node.chain_id,
+                )
             )
         )
 
     def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
-        return self.__surround_with_exception_handlers(
-            ImportKey(
-                app_state=self._world.app_state,
-                wallet=self._world.profile_data.name,
-                key_to_import=key_to_import,
-                beekeeper=self._world.beekeeper,
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                ImportKey(
+                    app_state=self._world.app_state,
+                    wallet=self._world.profile_data.name,
+                    key_to_import=key_to_import,
+                    beekeeper=self._world.beekeeper,
+                )
             )
         )
 
     def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(
-            RemoveKey(
-                app_state=self._world.app_state,
-                wallet=self._world.profile_data.name,
-                beekeeper=self._world.beekeeper,
-                key_to_remove=key_to_remove,
-                password=password,
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                RemoveKey(
+                    app_state=self._world.app_state,
+                    wallet=self._world.profile_data.name,
+                    beekeeper=self._world.beekeeper,
+                    key_to_remove=key_to_remove,
+                    password=password,
+                )
             )
         )
 
     def sync_data_with_beekeeper(self) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(
-            SyncDataWithBeekeeper(
-                app_state=self._world.app_state,
-                profile_data=self._world.profile_data,
-                beekeeper=self._world.beekeeper,
+        return asyncio_run(
+            self.__surround_with_exception_handlers(
+                SyncDataWithBeekeeper(
+                    app_state=self._world.app_state,
+                    profile_data=self._world.profile_data,
+                    beekeeper=self._world.beekeeper,
+                )
             )
         )
 
     async def update_node_data(
         self, *, accounts: list[Account] | None = None
     ) -> CommandWithResultWrapper[DynamicGlobalPropertiesT]:
-        result = self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=accounts or [], node=self._world.node)
-        )
+        result = self.__surround_with_exception_handlers(UpdateNodeData(accounts=accounts or [], node=self._world.node))
         if result.success:
             self._world.app_state._dynamic_global_properties = result.result_or_raise
         return result
 
     @overload
-    def __surround_with_exception_handlers(  # type: ignore[misc]
+    async def __surround_with_exception_handlers(  # type: ignore[misc]
         self, command: CommandWithResult[CommandResultT]
     ) -> CommandWithResultWrapper[CommandResultT]:
         ...
 
     @overload
-    def __surround_with_exception_handlers(self, command: Command) -> CommandWrapper:
+    async def __surround_with_exception_handlers(self, command: Command) -> CommandWrapper:
         ...
 
-    def __surround_with_exception_handlers(
+    async def __surround_with_exception_handlers(
         self, command: CommandWithResult[CommandResultT] | Command
     ) -> CommandWithResultWrapper[CommandResultT] | CommandWrapper:
         if not self.__exception_handlers:
-            if isinstance(command, CommandWithResult):
-                command.execute_with_result()
-            else:
-                command.execute()
+            try:
+                if isinstance(command, CommandWithResult):
+                    await command.async_execute_with_result()
+                else:
+                    await command.async_execute()
+            except SynchronousOnlyCommandError:
+                if isinstance(command, CommandWithResult):
+                    command.execute_with_result()
+                else:
+                    command.execute()
+
             return self.__create_command_wrapper(command)
 
-        return self.__surround_with_exception_handler(command, self.__exception_handlers)
+        return await self.__surround_with_exception_handler(command, self.__exception_handlers)
 
     @overload
-    def __surround_with_exception_handler(  # type: ignore[misc]
+    async def __surround_with_exception_handler(  # type: ignore[misc]
         self,
         command: CommandWithResult[CommandResultT],
         exception_handlers: list[type[ErrorHandlerContextManager]],
@@ -182,7 +207,7 @@ class Commands(Generic[WorldT]):
         ...
 
     @overload
-    def __surround_with_exception_handler(
+    async def __surround_with_exception_handler(
         self,
         command: Command,
         exception_handlers: list[type[ErrorHandlerContextManager]],
@@ -190,7 +215,7 @@ class Commands(Generic[WorldT]):
     ) -> CommandWrapper:
         ...
 
-    def __surround_with_exception_handler(
+    async def __surround_with_exception_handler(
         self,
         command: Command | CommandWithResult[CommandResultT],
         exception_handlers: list[type[ErrorHandlerContextManager]],
@@ -207,15 +232,20 @@ class Commands(Generic[WorldT]):
 
         try:
             if error:
-                handler.try_to_handle_error(error)
+                await handler.try_to_handle_error(error)
             else:
                 # exectue the command only once
-                handler.execute(
-                    command.execute_with_result if isinstance(command, CommandWithResult) else command.execute
+                await handler.execute(
+                    (
+                        command.async_execute_with_result()
+                        if isinstance(command, CommandWithResult)
+                        else command.async_execute()
+                    ),
+                    command.execute_with_result if isinstance(command, CommandWithResult) else command.execute,
                 )
         except Exception as error:  # noqa: BLE001
             # Try to handle the error with the next exception handler
-            return self.__surround_with_exception_handler(command, exception_handlers[1:], error)
+            return await self.__surround_with_exception_handler(command, exception_handlers[1:], error)
         return self.__create_command_wrapper(command, handler.error)
 
     @overload
