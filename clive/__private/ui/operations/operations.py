@@ -1,30 +1,23 @@
 from __future__ import annotations
 
-from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import ScrollableContainer
-from textual.widgets import Static, TabbedContent, TabPane
+from textual.widgets import Static, TabbedContent
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
-
     from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
     from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
-
-
-class ScrollablePart(ScrollableContainer):
-    pass
 
 
 class OperationButton(CliveButton):
@@ -43,18 +36,18 @@ class Operations(CartBasedScreen):
 
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent(initial="financial"):
-            with self.__create_tab("Financial", id_="financial"):
+            with ScrollableTabPane("Financial", id="financial"):
                 yield OperationButton("TRANSFER", FINANCIAL_OPERATIONS[0])
                 yield OperationButton("HIVE POWER MANAGEMENT", None)
                 yield OperationButton("CONVERT", None)
                 yield OperationButton("SAVING", None)
-            with self.__create_tab("Social"):
+            with ScrollableTabPane("Social"):
                 yield OperationButton("SOCIAL OPERATIONS", None)
-            with self.__create_tab("Governance"):
+            with ScrollableTabPane("Governance"):
                 yield OperationButton("GOVERNANCE OPERATIONS", None)
-            with self.__create_tab("Account management"):
+            with ScrollableTabPane("Account management"):
                 yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", None)
-            with TabPane("Raw"):
+            with ScrollableTabPane("Raw"):
                 yield Static("select one of the following operation:", id="hint")
                 for operation in RAW_OPERATIONS:
                     yield OperationButton(self.__humanize_class_name(operation), operation)
@@ -88,8 +81,3 @@ class Operations(CartBasedScreen):
                 result += " "
             result += char.lower()
         return result.strip().title()
-
-    @contextmanager
-    def __create_tab(self, name: str, *, id_: str | None = None) -> Iterator[None]:
-        with TabPane(name, id=id_), ScrollablePart():
-            yield
