@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import wax
 from clive.exceptions import CliveError
 from clive.models import Transaction
-from clive.models.aliased import convert_to_representation
+from clive.models.convert_to_representation import convert_to_representation
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKey, PublicKey

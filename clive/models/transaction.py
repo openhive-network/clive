@@ -7,7 +7,8 @@ from pydantic import Field, validator
 
 from clive.__private.core import iwax
 from clive.models import Operation, Signature  # noqa: TCH001
-from clive.models.aliased import OperationRepresentationType, convert_to_representation
+from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
+from clive.models.convert_to_representation import convert_to_representation
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
 from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
 from schemas.transaction_model.transaction import Hf26Transaction
