@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING, Final
 
 import humanize
@@ -8,7 +7,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
-from clive.__private.core.formatters.humanize import humanize_hive_power
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hive_power
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -119,20 +118,13 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: f"History entry: {self.__humanize_datetime(self._account.data.last_history_entry)}",
+            lambda _: f"History entry: {humanize_datetime(self._account.data.last_history_entry)}",
         )
         yield DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: f"Account update: {self.__humanize_datetime(self._account.data.last_account_update)}",
+            lambda _: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
         )
-
-    @classmethod
-    def __humanize_datetime(cls, value: datetime) -> str:
-        value = value.replace(tzinfo=None)
-        if value == datetime(1970, 1, 1):
-            return "never"
-        return value.isoformat()
 
 
 class AccountRow(AccountReferencingWidget):

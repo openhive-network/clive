@@ -1,13 +1,27 @@
 from __future__ import annotations
 
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import humanize
 import inflection
 
 from clive.__private.core.formatters.case import underscore
 from clive.models import Asset, Operation
+
+if TYPE_CHECKING:
+    from datetime import datetime
+
+
+def humanize_datetime(value: datetime) -> str:
+    """
+    Return pretty formatted datetime.
+
+    Examples
+    --------
+    datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
+    """
+    return value.replace(tzinfo=None).isoformat()
 
 
 def humanize_class_name(cls: str | type[Any]) -> str:
