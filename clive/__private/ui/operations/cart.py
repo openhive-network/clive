@@ -11,6 +11,7 @@ from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static
 
+from clive.__private.core.humanize import humanize_operation_details
 from clive.__private.ui.operations.transaction_summary import TransactionSummary
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -117,7 +118,7 @@ class CartItem(ColumnLayout, CliveWidget):
             return inflection.humanize(self.operation.get_name())
 
         def get_operation_details(_: ProfileData) -> str:
-            return str(self.operation)
+            return humanize_operation_details(self.operation)
 
         yield DynamicColumn(
             self.app.world,

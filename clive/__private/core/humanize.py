@@ -1,0 +1,26 @@
+from __future__ import annotations
+
+from clive.models import Asset, Operation
+
+
+def humanize_operation_details(operation: Operation) -> str:
+    """
+    Return pretty formatted operation details (properties).
+
+    Examples
+    --------
+    TransferToVestingOperation -> "from='alice', to='bob', amount='1.000 HIVE'"
+    """
+    out = ""
+
+    operation_dict = dict(operation._iter(by_alias=True))
+    for key, value in operation_dict.items():
+        value_ = value
+
+        # Display assets in legacy format.
+        if isinstance(value, Asset.AnyT):  # type: ignore[arg-type]
+            value_ = Asset.to_legacy(value)
+
+        out += f"{key}='{value_}', "
+
+    return out[:-2]
