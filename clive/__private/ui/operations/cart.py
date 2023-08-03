@@ -205,9 +205,7 @@ class CartHeader(ColumnLayout):
         yield StaticColumn("No.", id="operation_position_in_trx", classes="cell cell-middle")
         yield StaticColumn("Operation Type", id="operation_type", classes="cell cell-variant cell-middle")
         yield StaticColumn("Operation Details", id="operation_details", classes="cell cell-middle")
-        yield StaticColumn("Move Up", classes="cell cell-variant cell-middle")
-        yield StaticColumn("Move Down", classes="cell cell-middle")
-        yield StaticColumn("Delete", classes="cell cell-variant cell-middle")
+        yield StaticColumn("Actions", id="actions", classes="cell cell-variant cell-middle")
 
 
 class Cart(BaseScreen):

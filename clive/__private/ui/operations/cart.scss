@@ -41,6 +41,9 @@ Cart CartItem .cell #operation_details {
   align: left middle;
 }
 
+Cart #actions {
+  column-span: 3;
+}
 
 Cart ButtonMoveUp, Cart ButtonMoveDown {
   background: $primary;
