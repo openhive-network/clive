@@ -57,6 +57,10 @@ ManageAuthorities #authority_type {
   column-span: 3;
 }
 
+ManageAuthorities #actions {
+  column-span: 2;
+}
+
 AuthorityTitle #authorities_title_label {
   content-align: center middle;
   column-span: 8;

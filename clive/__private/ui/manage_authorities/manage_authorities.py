@@ -91,8 +91,7 @@ class AuthorityHeader(ColumnLayout):
         yield StaticColumn("No.", id="authority_row_number", classes=even)
         yield StaticColumn("Authority Name", id="authority_name", classes=odd)
         yield StaticColumn("Authority Type", id="authority_type", classes=even)
-        yield StaticColumn("Edit", classes=odd)
-        yield StaticColumn("Delete", classes=even)
+        yield StaticColumn("Actions", id="actions", classes=odd)
 
 
 class ManageAuthorities(BaseScreen):
