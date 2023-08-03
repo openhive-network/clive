@@ -110,32 +110,38 @@ class CartItem(ColumnLayout, CliveWidget):
         return self.__idx < self.__operations_count
 
     def compose(self) -> ComposeResult:
-        def operation_index(_: ProfileData) -> str:
+        def get_operation_index(_: ProfileData) -> str:
             if self.is_valid():
                 return f"{self.__idx + 1}."
             return ""
 
-        def operation_name(_: ProfileData) -> str:
+        def get_operation_name(_: ProfileData) -> str:
             if self.is_valid():
                 return inflection.humanize(self.operation.get_name())
             return ""
 
-        def operation_details(_: ProfileData) -> str:
+        def get_operation_details(_: ProfileData) -> str:
             if self.is_valid():
                 return str(self.operation)
             return ""
 
         yield DynamicColumn(
-            self.app.world, "profile_data", operation_index, id_="operation_position_in_trx", classes="cell cell-middle"
+            self.app.world,
+            "profile_data",
+            get_operation_index,
+            id_="operation_position_in_trx",
+            classes="cell cell-middle",
         )
         yield DynamicColumn(
             self.app.world,
             "profile_data",
-            operation_name,
+            get_operation_name,
             id_="operation_type",
             classes="cell cell-variant cell-middle",
         )
-        yield DynamicColumn(self.app.world, "profile_data", operation_details, id_="operation_details", classes="cell")
+        yield DynamicColumn(
+            self.app.world, "profile_data", get_operation_details, id_="operation_details", classes="cell"
+        )
         yield ButtonMoveUp(disabled=self.__is_first)
         yield ButtonMoveDown(disabled=self.__is_last)
         yield ButtonDelete()
