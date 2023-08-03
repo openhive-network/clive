@@ -10,7 +10,21 @@ from clive.__private.core.formatters.case import underscore
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
-    from datetime import datetime
+    from datetime import datetime, timedelta
+
+
+def humanize_natural_time(value: datetime | timedelta) -> str:
+    """
+    Return pretty formatted relative time from now.
+
+    Examples
+    --------
+    now=datetime(1971, 1, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "29 years ago"
+    now=datetime(1999, 2, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "10 months ago"
+    now=datetime(1999, 12, 31, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "a day ago"
+    now=datetime(2000, 1, 1, 1, 30), value=datetime(2000, 1, 1, 0, 0) -> "an hour from now"
+    """
+    return humanize.naturaltime(value)
 
 
 def humanize_datetime(value: datetime) -> str:

@@ -3,13 +3,13 @@ from __future__ import annotations
 import datetime
 from typing import TYPE_CHECKING
 
-import humanize
 from textual.containers import Container, Horizontal, Vertical
 from textual.reactive import var
 from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
+from clive.__private.core.formatters.humanize import humanize_natural_time
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
@@ -97,7 +97,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
 
     async def __get_last_update(self, _: bool) -> str:
         gdpo = await self.app.world.app_state.get_dynamic_global_properties()
-        return humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
+        return humanize_natural_time(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
 
     def __trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
