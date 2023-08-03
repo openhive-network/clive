@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import inflection
 from textual import on
 from textual.binding import Binding
 from textual.widgets import Static, TabbedContent
 
-from clive.__private.core.formatters.humanize import humanize_class_name
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
@@ -23,10 +23,24 @@ if TYPE_CHECKING:
 
 class OperationButton(CliveButton):
     def __init__(
-        self, label: TextType, operation_screen: type[OperationBaseScreen | RawOperationBaseScreen] | None
+        self,
+        operation_screen: type[OperationBaseScreen | RawOperationBaseScreen] | None,
+        *,
+        label: TextType | None = None,
     ) -> None:
+        if operation_screen is None and label is None:
+            raise ValueError("Either `operation_screen` or `label` must be provided!")
+
+        if label is None:
+            assert operation_screen is not None
+            label = self.__humanize_class_name(operation_screen.__name__)
+
         super().__init__(label)
         self.operation_screen = operation_screen
+
+    @staticmethod
+    def __humanize_class_name(class_name: str) -> str:
+        return inflection.humanize(inflection.underscore(class_name))
 
 
 class Operations(CartBasedScreen):
@@ -38,17 +52,17 @@ class Operations(CartBasedScreen):
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent(initial="financial"):
             with ScrollableTabPane("Financial", id="financial"):
-                yield OperationButton("TRANSFER", FINANCIAL_OPERATIONS[0])
-                yield OperationButton("HIVE POWER MANAGEMENT", None)
-                yield OperationButton("CONVERT", None)
-                yield OperationButton("SAVING", None)
+                yield OperationButton(FINANCIAL_OPERATIONS[0], label="Transfer")
+                yield OperationButton(None, label="Hive power management")
+                yield OperationButton(None, label="Convert")
+                yield OperationButton(None, label="Saving")
             with ScrollableTabPane("Social"):
-                yield OperationButton("SOCIAL OPERATIONS", None)
+                yield OperationButton(None, label="Social operations")
             with ScrollableTabPane("Governance"):
-                yield OperationButton("GOVERNANCE OPERATIONS", None)
+                yield OperationButton(None, label="Governance operations")
             with ScrollableTabPane("Account management"):
-                yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", None)
-            yield from self.__create_raw_operations_tab(hide=True)
+                yield OperationButton(None, label="Account management operations")
+            yield from self.__create_raw_operations_tab(hide=False)
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
@@ -76,4 +90,4 @@ class Operations(CartBasedScreen):
         with ScrollableTabPane("Raw"):
             yield Static("select one of the following operation:", id="hint")
             for operation in RAW_OPERATIONS:
-                yield OperationButton(humanize_class_name(operation), operation)
+                yield OperationButton(operation)
