@@ -89,11 +89,11 @@ class Clive(App[int], ManualReactive):
         self,
         message: str,
         *,
-        title: str | None = None,
+        title: str = "",
         severity: SeverityLevel = "information",
         timeout: float = Notification.timeout,
     ) -> Notification:
-        title = title if title is not None else severity.capitalize()
+        title = title if title else severity.capitalize()
         return super().notify(message, title=title, severity=severity, timeout=timeout)
 
     def run(
