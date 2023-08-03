@@ -10,7 +10,7 @@ from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static
 
-from clive.__private.core.humanize import humanize_operation_details, humanize_operation_name
+from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.operations.transaction_summary import TransactionSummary
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle

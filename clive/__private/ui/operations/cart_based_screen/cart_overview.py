@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Container, Grid
 from textual.widgets import Static
 
-from clive.__private.core.humanize import humanize_operation_name
+from clive.__private.core.formatters.humanize import humanize_operation_name
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.models import Asset
