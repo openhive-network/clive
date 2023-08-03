@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from datetime import timedelta
 from pathlib import Path
 from time import sleep
@@ -94,6 +95,7 @@ class Clive(App[int], ManualReactive):
         timeout: float = Notification.timeout,
     ) -> Notification:
         title = title if title else severity.capitalize()
+        timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
 
     def run(
