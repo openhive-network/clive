@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 from asyncio import gather
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -14,7 +13,7 @@ from clive.models import Asset
 from schemas.database_api.response_schemas import GetDynamicGlobalProperties
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Coroutine
+    from collections.abc import Awaitable
     from types import TracebackType
 
     from clive.__private.core.node.node import Node
@@ -105,37 +104,39 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         if not account_names:
             return {}
 
-        self.__core_accounts_info: CoreAccountsInfoT | None = None
+        self.__core_accounts_info: CoreAccountsInfoT = None  # type: ignore
 
         core_accounts_info_future = self.__submit_gathering_base_information(account_names)
         rc_accounts_info_future = self.__submit_gathering_rc_information(account_names)
 
-        harvested_data: dict[str, tuple[Awaitable[int], Awaitable[int], Awaitable[datetime]]] = {}
+        harvested_data: dict[str, Awaitable[tuple[int, datetime]]] = {}
         for account in self.accounts:
-            harvested_data[account.name] = (
-                self.__submit_gathering_account_warnings(account, core_accounts_info_future),
+            harvested_data[account.name] = gather(
                 self.__get_account_reputation(account.name),
                 self.__get_account_last_history_entry(account.name),
             )
 
-        await self.__try_await_core_accounts(core_accounts_info_future)
-        rc_accounts_info = await rc_accounts_info_future
-
+        self.__core_accounts_info = await core_accounts_info_future
         assert self.__core_accounts_info is not None
         assert len(self.__core_accounts_info) == len(self.accounts), "invalid amount of accounts after rc api call"
+
+        warnings = {account.name: self.__submit_gathering_account_warnings(account) for account in self.accounts}
+
+        rc_accounts_info = await rc_accounts_info_future
         assert rc_accounts_info == {} or len(rc_accounts_info) == len(
             self.accounts
         ), "invalid amount of accounts after database api call"
 
         result: dict[Account, UpdateNodeData.AccountApiInfo] = {}
         for account in self.accounts:
-            warnings, reputation, last_history_entry = harvested_data[account.name]
+            reputation, last_history_entry = await harvested_data[account.name]
+            account_warning_count = await warnings[account.name]
             result[account] = self.AccountApiInfo(
                 core=self.__core_accounts_info[account.name],
                 rc=rc_accounts_info.get(account.name),
-                last_history_entry=await last_history_entry,
-                warnings=await warnings,
-                reputation=await reputation,
+                last_history_entry=last_history_entry,
+                warnings=account_warning_count,
+                reputation=reputation,
             )
         return result
 
@@ -151,12 +152,8 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             }
         return {}
 
-    async def __submit_gathering_account_warnings(
-        self, account: Account, core_future: Coroutine[None, None, CoreAccountsInfoT]
-    ) -> int:
+    async def __submit_gathering_account_warnings(self, account: Account) -> int:
         async def __wait_for_core_info_and_evaluate_warnings() -> int:
-            await self.__try_await_core_accounts(core_future)
-            assert self.__core_accounts_info is not None
             return sum(
                 [
                     await self.__check_for_recurrent_transfers(self.__core_accounts_info[account.name]),
@@ -177,11 +174,6 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             ]
         )
         return (await part_1_of_sum) + part_2_of_sum
-
-    async def __try_await_core_accounts(self, awaitable: Awaitable[CoreAccountsInfoT]) -> None:
-        if self.__core_accounts_info is None:
-            with contextlib.suppress(RuntimeError):  # already awaited
-                self.__core_accounts_info = await awaitable
 
     async def __check_is_recovery_account_not_warning_listed(self, account: Account) -> int:
         warning_recovery_accounts: Final[set[str]] = {"steem"}
