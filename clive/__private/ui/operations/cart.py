@@ -3,7 +3,6 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING
 
-import inflection
 from textual import on
 from textual.binding import Binding
 from textual.containers import ScrollableContainer
@@ -11,7 +10,7 @@ from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static
 
-from clive.__private.core.humanize import humanize_operation_details
+from clive.__private.core.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.operations.transaction_summary import TransactionSummary
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -115,7 +114,7 @@ class CartItem(ColumnLayout, CliveWidget):
             return f"{self.__idx + 1}."
 
         def get_operation_name(_: ProfileData) -> str:
-            return inflection.humanize(self.operation.get_name())
+            return humanize_operation_name(self.operation)
 
         def get_operation_details(_: ProfileData) -> str:
             return humanize_operation_details(self.operation)

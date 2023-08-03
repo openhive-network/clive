@@ -1,6 +1,19 @@
 from __future__ import annotations
 
+import inflection
+
 from clive.models import Asset, Operation
+
+
+def humanize_operation_name(operation: Operation) -> str:
+    """
+    Return pretty formatted operation name.
+
+    Examples
+    --------
+    TransferToVestingOperation -> Transfer to vesting
+    """
+    return inflection.humanize(operation.get_name())
 
 
 def humanize_operation_details(operation: Operation) -> str:

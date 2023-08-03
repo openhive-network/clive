@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import inflection
 from textual.containers import Container, Grid
 from textual.widgets import Static
 
+from clive.__private.core.humanize import humanize_operation_name
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.models import Asset
@@ -30,7 +30,7 @@ class CartItem(Static):
 
     def __init__(self, index: int, operation: Operation) -> None:
         self._operation = operation
-        super().__init__(f"{index}. {inflection.humanize(operation.get_name())}")
+        super().__init__(f"{index}. {humanize_operation_name(operation)}")
 
 
 class CartItemsAmount(DynamicLabel):
