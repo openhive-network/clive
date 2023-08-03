@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-import humanize
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
-from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hive_power
+from clive.__private.core.formatters.humanize import (
+    humanize_datetime,
+    humanize_hive_power,
+    humanize_natural_time,
+)
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -61,7 +64,6 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         super().__init__(account=account, classes=classes)
 
     def compose(self) -> ComposeResult:
-        suppressed_units: Final[list[str]] = ["minutes", "seconds", "microseconds"]
         yield self.create_dynamic_label(
             lambda: f"{self.__manabar.percentage :.2f}% {self.__name}",
             classes="percentage",
@@ -71,9 +73,13 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
             classes="hivepower-value",
         )
         yield self.create_dynamic_label(
-            lambda: humanize.precisedelta(self.__manabar.full_regeneration, suppress=suppressed_units),
+            self.__get_regeneration_time,
             classes="time",
         )
+
+    def __get_regeneration_time(self) -> str:
+        natural_time = humanize_natural_time(self.__manabar.full_regeneration)
+        return natural_time if natural_time != "now" else "Full!"
 
 
 class BalanceStats(AccountReferencingWidget):
