@@ -161,7 +161,7 @@ testing_clive:
 
   script:
     - $SCRIPTS_PATH/ci-helpers/build_instance.sh "${TAG_COMMIT}" "${CI_PROJECT_DIR}" $CI_REGISTRY_IMAGE --beekeeper-source-image=${HIVED_IMAGE_NAME} --base-image=${BASE_IMAGE} ${BUILD_INSTANCE_ARGS}
-    - echo $CI_BUILD_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
   artifacts:
