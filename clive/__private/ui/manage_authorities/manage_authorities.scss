@@ -37,12 +37,21 @@ Authority #remove_authority_button {
   content-align: center middle;
   column-span: 1;
   width: 100%;
+  background: $error;
+}
+Authority #remove_authority_button:focus {
+  background: $error-darken-1;
 }
 
 Authority #edit_authority_button {
   content-align: center middle;
   column-span: 1;
   width: 100%;
+  background: $primary;
+}
+
+Authority #edit_authority_button:focus {
+  background: $primary-darken-1;
 }
 
 ManageAuthorities #authority_row_number {
