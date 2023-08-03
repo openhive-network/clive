@@ -1,8 +1,27 @@
 from __future__ import annotations
 
+from typing import Any
+
 import inflection
 
+from clive.__private.core.formatters.case import underscore
 from clive.models import Asset, Operation
+
+
+def humanize_class_name(cls: str | type[Any]) -> str:
+    """
+    Return pretty formatted class name.
+
+    Args:
+    ----
+    cls: Class name or class itself.
+
+    Examples:
+    --------
+    TransferToVestingOperation -> "Transfer to vesting operation"
+    """
+    class_name = cls if isinstance(cls, str) else cls.__name__
+    return inflection.humanize(underscore(class_name))
 
 
 def humanize_operation_name(operation: Operation) -> str:

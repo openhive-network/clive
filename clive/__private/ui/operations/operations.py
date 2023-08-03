@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
 from textual.widgets import Static, TabbedContent
 
+from clive.__private.core.formatters.humanize import humanize_class_name
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
@@ -68,17 +69,6 @@ class Operations(CartBasedScreen):
 
         self.app.push_screen(Cart())
 
-    @staticmethod
-    def __humanize_class_name(type_: type[Any]) -> str:
-        result = ""
-
-        class_name = type_.__name__.replace("_", "")
-        for char in class_name:
-            if char.isupper():
-                result += " "
-            result += char.lower()
-        return result.strip().title()
-
     def __create_raw_operations_tab(self, *, hide: bool = False) -> ComposeResult:
         if hide:
             return []
@@ -86,4 +76,4 @@ class Operations(CartBasedScreen):
         with ScrollableTabPane("Raw"):
             yield Static("select one of the following operation:", id="hint")
             for operation in RAW_OPERATIONS:
-                yield OperationButton(self.__humanize_class_name(operation), operation)
+                yield OperationButton(humanize_class_name(operation), operation)
