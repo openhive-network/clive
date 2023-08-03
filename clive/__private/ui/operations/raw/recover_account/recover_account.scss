@@ -1,8 +1,8 @@
 RecoverAccount Body {
   grid-size: 2;
-  grid-columns: 22 2fr 1fr;
-  grid-rows: 5 3 5 5;
-  height: 42;
+  grid-columns: 22 1fr;
+  grid-rows: 5 1 5 5 5 1 5 5;
+  height: auto;
   margin: 0 4;
   background: $panel;
 }
