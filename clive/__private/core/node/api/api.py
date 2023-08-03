@@ -3,10 +3,9 @@ from __future__ import annotations
 from functools import wraps
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
 
-import inflection
-
 from clive.__private.abstract_class import AbstractClass
 from clive.__private.core.beekeeper.model import JSONRPCProtocol, JSONRPCRequest
+from clive.__private.core.formatters.case import underscore
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -43,4 +42,4 @@ class Api(AbstractClass):
         return wrapper  # type: ignore
 
     def __get_endpoint(self, func: Callable[..., Any]) -> str:
-        return f"{inflection.underscore(self.__class__.__name__)}.{func.__name__}"
+        return f"{underscore(self.__class__.__name__)}.{func.__name__}"
