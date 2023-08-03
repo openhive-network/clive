@@ -104,7 +104,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         if not account_names:
             return {}
 
-        self.__core_accounts_info: CoreAccountsInfoT = None  # type: ignore
+        self.__core_accounts_info: CoreAccountsInfoT = {}
 
         core_accounts_info_future = self.__submit_gathering_base_information(account_names)
         rc_accounts_info_future = self.__submit_gathering_rc_information(account_names)
@@ -117,7 +117,6 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             )
 
         self.__core_accounts_info = await core_accounts_info_future
-        assert self.__core_accounts_info is not None
         assert len(self.__core_accounts_info) == len(self.accounts), "invalid amount of accounts after rc api call"
 
         warnings = {account.name: self.__submit_gathering_account_warnings(account) for account in self.accounts}
