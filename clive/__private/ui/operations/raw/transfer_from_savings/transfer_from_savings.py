@@ -10,7 +10,8 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER, ID_PLACEHOLDER, MEMO_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER, ID_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import TransferFromSavingsOperation
 
@@ -33,7 +34,7 @@ class TransferFromSavings(RawOperationBaseScreen):
         self.__to_input = Input(placeholder=ACCOUNT_NAME_PLACEHOLDER)
         self.__request_id_input = Input(default_request_id, placeholder=ID_PLACEHOLDER)
         self.__amount_input = AmountInput()
-        self.__memo_input = Input(placeholder=MEMO_PLACEHOLDER)
+        self.__memo_input = MemoInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
