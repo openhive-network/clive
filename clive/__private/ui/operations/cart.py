@@ -42,21 +42,21 @@ class ButtonMoveUp(CliveButton):
     """Button used for moving the operation up in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
-        super().__init__("🔼", id_="move-up-button", disabled=disabled)
+        super().__init__("↑", id_="move-up-button", disabled=disabled)
 
 
 class ButtonMoveDown(CliveButton):
     """Button used for moving the operation down in the cart."""
 
     def __init__(self, *, disabled: bool = False) -> None:
-        super().__init__("🔽", id_="move-down-button", disabled=disabled)
+        super().__init__("↓", id_="move-down-button", disabled=disabled)
 
 
 class ButtonDelete(CliveButton):
     """Button used for removing the operation from cart."""
 
     def __init__(self) -> None:
-        super().__init__("🗑️", id_="delete-button")
+        super().__init__("Remove", id_="delete-button")
 
 
 class StaticPart(Static):

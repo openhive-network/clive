@@ -58,9 +58,9 @@ class Authority(ColumnLayout, CliveWidget):
     def compose(self) -> ComposeResult:
         yield StaticColumn(str(self.__index + 1), id="authority_row_number", classes=even)
         yield StaticColumn(self.__authority.alias, id="authority_name", classes=odd)
-        yield StaticColumn("🔐 " + self.__authority.__class__.__name__, id="authority_type", classes=even)
-        yield CliveButton("✏️", id_="edit_authority_button", classes=odd)
-        yield CliveButton("🗑️", id_="remove_authority_button", classes=even)
+        yield StaticColumn(self.__authority.__class__.__name__, id="authority_type", classes=even)
+        yield CliveButton("Edit", id_="edit_authority_button", classes=odd)
+        yield CliveButton("Remove", id_="remove_authority_button", classes=even)
 
     @on(CliveButton.Pressed, "#edit_authority_button")
     def push_edit_authority_screen(self) -> None:

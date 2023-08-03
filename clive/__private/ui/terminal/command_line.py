@@ -17,8 +17,8 @@ if TYPE_CHECKING:
 
 
 class CommandLinePrompt(Static, CliveWidget):
-    INACTIVE_PROMPT: Final[str] = " 🔒 ❯❯❯:"  # noqa: RUF001
-    ACTIVE_PROMPT: Final[str] = " 🔑 ###:"
+    INACTIVE_PROMPT: Final[str] = ">>>:"
+    ACTIVE_PROMPT: Final[str] = "###:"
 
     def __init__(self) -> None:
         super().__init__(self.INACTIVE_PROMPT)

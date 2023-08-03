@@ -41,11 +41,11 @@ class Onboarding(Form[ProfileData]):
     def create_welcome_screen(self) -> ScreenBuilder[ProfileData]:
         return lambda owner: OnboardingWelcomeScreen(
             owner,
-            "Let's start onboarding! 🚢\nIn any moment you can press the `[blue]?[/]` button to see the help page.",
+            "Let's start onboarding!\nIn any moment you can press the `[blue]?[/]` button to see the help page.",
         )
 
     def create_finish_screen(self) -> ScreenBuilder[ProfileData]:
-        return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive 🚀")
+        return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
         self.__context = ProfileData()
