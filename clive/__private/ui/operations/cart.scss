@@ -1,11 +1,3 @@
-Cart ViewBag {
-  overflow-y: hidden;
-}
-
-Cart StaticPart {
-  height: auto;
-}
-
 Cart ColumnLayout {
   layout: grid;
   grid-size: 6 1;
@@ -37,10 +29,6 @@ Cart CartItem {
   margin: 1;
 }
 
-Cart CartItem .cell #operation_details {
-  align: left middle;
-}
-
 Cart #actions {
   column-span: 3;
 }
@@ -59,11 +47,6 @@ Cart ButtonDelete {
 
 Cart ButtonDelete:focus {
   background: $error-darken-1;
-}
-
-Cart Scrollable {
-  overflow-y: scroll;
-  height: 1fr;
 }
 
 Cart CartItem:focus-within {
