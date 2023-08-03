@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 from datetime import datetime
 from typing import TYPE_CHECKING, Final
 
@@ -9,6 +8,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
+from clive.__private.core.formatters.humanize import humanize_hive_power
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -68,22 +68,13 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
             classes="percentage",
         )
         yield self.create_dynamic_label(
-            self.__pretty_hivepower,
+            lambda: humanize_hive_power(self.__manabar.value),
             classes="hivepower-value",
         )
         yield self.create_dynamic_label(
             lambda: humanize.precisedelta(self.__manabar.full_regeneration, suppress=suppressed_units),
             classes="time",
         )
-
-    def __pretty_hivepower(self) -> str:
-        formatted_string = humanize.naturalsize(self.__manabar.value, binary=False)
-        if "Bytes" in formatted_string:
-            return f"{self.__manabar.value} HP"
-        format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
-        matched = format_fix_regex.match(formatted_string)
-        assert matched is not None, "Given string does not match regex"
-        return f"{matched[1]}{matched[2]} HP".upper()
 
 
 class BalanceStats(AccountReferencingWidget):

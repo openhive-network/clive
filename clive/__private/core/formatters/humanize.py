@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import re
 from typing import Any
 
+import humanize
 import inflection
 
 from clive.__private.core.formatters.case import underscore
@@ -56,3 +58,15 @@ def humanize_operation_details(operation: Operation) -> str:
         out += f"{key}='{value_}', "
 
     return out[:-2]
+
+
+def humanize_hive_power(value: int) -> str:
+    """Return pretty formatted hive power."""
+    formatted_string = humanize.naturalsize(value, binary=False)
+    if "Bytes" in formatted_string:
+        return f"{value} HP"
+
+    format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
+    matched = format_fix_regex.match(formatted_string)
+    assert matched is not None, "Given string does not match regex"
+    return f"{matched[1]}{matched[2]} HP".upper()
