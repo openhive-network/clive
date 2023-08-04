@@ -80,7 +80,7 @@ if not enable_onboarding:
     ProfileData(
         alice.name,
         working_account=WorkingAccount(name=alice.name),
-        watched_accounts=[WatchedAccount(acc.name) for acc in watched_accounts],
+        watched_accounts={WatchedAccount(acc.name) for acc in watched_accounts},
     ).save()
 
     world = World(alice.name)
