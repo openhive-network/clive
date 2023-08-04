@@ -15,6 +15,11 @@ from clive.models.aliased import AccountName
 class InvalidAccountNameError(CliveError):
     """An account name is invalid."""
 
+    def __init__(self, value: str) -> None:
+        self.value = value
+        self.message = f"Given account name is invalid: `{value}`"
+        super().__init__(self.message)
+
 
 class AccountType(str, Enum):
     value: str
@@ -45,8 +50,8 @@ class Account:
         """
         try:
             validate_schema_field(AccountName, name)
-        except ValidationError:
-            raise InvalidAccountNameError from None
+        except ValidationError as error:
+            raise InvalidAccountNameError(name) from error
 
     @classmethod
     def is_valid(cls, name: str) -> bool:

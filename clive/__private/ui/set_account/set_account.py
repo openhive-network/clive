@@ -21,11 +21,6 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class InvalidAccountNameFormError(FormValidationError):
-    def __init__(self, given_account_name: str) -> None:
-        super().__init__(f"Given account name is invalid: `{given_account_name}`", given_value=given_account_name)
-
-
 class ScrollablePart(ScrollableContainer):
     """All the content of the screen, excluding the title."""
 
@@ -64,7 +59,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         account_name = self.__account_name_input.value
         try:
             Account.validate(account_name)
-        except InvalidAccountNameError:
-            raise InvalidAccountNameFormError(account_name) from None
+        except InvalidAccountNameError as error:
+            raise FormValidationError(str(error), given_value=account_name) from error
 
         self.context.working_account.name = account_name
