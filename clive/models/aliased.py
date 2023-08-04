@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from schemas.__private.hive_fields_basic_schemas import AccountName as SchemasAccountName
 from schemas.__private.hive_fields_basic_schemas import AssetBase as SchemasAssetBase
 from schemas.__private.hive_fields_custom_schemas import Signature as SchemasSignature
 from schemas.__private.operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
@@ -22,3 +23,4 @@ VirtualOperationRepresentationType = Hf26VirtualOperationRepresentationType
 ApiOperationObject = Hf26ApiOperationObject
 ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 Signature = SchemasSignature
+AccountName = SchemasAccountName

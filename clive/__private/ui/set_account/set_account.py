@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from re import Pattern, compile
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from rich.highlighter import Highlighter
 from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Checkbox, Input, Static
 
 from clive.__private.core.profile_data import ProfileData
+from clive.__private.storage.accounts import Account, InvalidAccountNameError
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -35,17 +35,10 @@ class AccountNameInputContainer(Horizontal):
 
 
 class AccountNameHighlighter(Highlighter):
-    MAX_ACCOUNT_NAME_LENGTH: Final[int] = 14
-    HIVE_ACCOUNT_NAME_REGEX: Final[Pattern[str]] = compile(
-        r"^((([a-z0-9])[a-z0-9\-]{1,14}([a-z0-9]))(\.([a-z0-9])[a-z0-9\-]{1,14}([a-z0-9]))*)$"
-    )
-
-    @classmethod
-    def is_valid_account_name(cls, name: str) -> bool:
-        return len(name) <= cls.MAX_ACCOUNT_NAME_LENGTH and (cls.HIVE_ACCOUNT_NAME_REGEX.match(name) is not None)
-
     def highlight(self, text: Text) -> None:
-        if self.is_valid_account_name(str(text)):
+        try:
+            Account.validate(str(text))
+        except InvalidAccountNameError:
             text.stylize("green")
         else:
             text.stylize("red")
@@ -73,7 +66,10 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
                 yield Checkbox("Working account?", value=True)
 
     def apply_and_validate(self) -> None:
-        if not AccountNameHighlighter.is_valid_account_name(account_name := self.__account_name_input.value):
-            raise InvalidAccountNameFormError(account_name)
+        account_name = self.__account_name_input.value
+        try:
+            Account.validate(account_name)
+        except InvalidAccountNameError:
+            raise InvalidAccountNameFormError(account_name) from None
 
         self.context.working_account.name = account_name
