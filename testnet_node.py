@@ -101,6 +101,22 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
         )
 
 
+def modify_vests_price(node: tt.InitNode, wallet: tt.Wallet) -> None:
+    def report_vests_price(detail: str) -> None:
+        dgpo = node.api.database.get_dynamic_global_properties()
+        tt.logger.info(
+            f"Vests price {detail} (vests/hive): {dgpo['total_vesting_shares']}/{dgpo['total_vesting_fund_hive']}."
+        )
+
+    report_vests_price("before")
+    node.api.debug_node.debug_set_vest_price(
+        vest_price={"quote": tt.Asset.Vest(1800).as_nai(), "base": tt.Asset.Test(1).as_nai()}
+    )
+    report_vests_price("after")
+
+    wallet.api.transfer_to_vesting(CREATOR_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(10_000_000).as_nai())
+
+
 async def prepare_profile() -> None:
     tt.logger.info("Configuring ProfileData for clive")
 
@@ -152,9 +168,10 @@ async def main() -> None:
     enable_clive_onboarding = args.perform_onboarding
     disable_tui = args.no_tui
 
-    _, wallet = prepare_node()
+    node, wallet = prepare_node()
     create_working_account(wallet)
     create_watched_accounts(wallet)
+    modify_vests_price(node, wallet)
     send_test_transfer_from_working_account(wallet)
     print_working_account_keys()
 
