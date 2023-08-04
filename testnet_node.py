@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 def init_argparse(args: Sequence[str]) -> argparse.Namespace:
-    parser = argparse.ArgumentParser("Testnet configurator")
+    parser = argparse.ArgumentParser(description="Clive testnet configurator")
 
     add = parser.add_argument
 
