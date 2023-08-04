@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
@@ -29,27 +29,23 @@ class UpdateProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proposal_id_input = Input(placeholder=ID_PLACEHOLDER)
+        self.__proposal_id_input = CustomInput(label="proposal id", placeholder=ID_PLACEHOLDER)
         self.__creator_input = AccountNameInput(label="creator")
-        self.__daily_pay_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__subject_input = Input(placeholder="e.g.: New subject")
+        self.__daily_pay_input = CustomInput(label="daily pay", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__subject_input = CustomInput(label="subject", placeholder="e.g.: New subject")
         self.__permlink_input = PermlinkInput(label="permlink")
-        self.__extensions_input = Input(placeholder="e.g.: []")
+        self.__extensions_input = CustomInput(label="extensions", placeholder="e.g.: []")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Update proposal")
             with Body():
-                yield Static("proposal id", classes="label")
-                yield self.__proposal_id_input
+                yield from self.__proposal_id_input.compose()
                 yield from self.__creator_input.compose()
-                yield Static("daily pay", classes="label")
-                yield self.__daily_pay_input
-                yield Static("subject", classes="label")
-                yield self.__subject_input
+                yield from self.__daily_pay_input.compose()
+                yield from self.__subject_input.compose()
                 yield from self.__permlink_input.compose()
-                yield Static("extensions", classes="label")
-                yield self.__extensions_input
+                yield from self.__extensions_input.compose()
 
     def _create_operation(self) -> UpdateProposalOperation[Asset.Hbd]:
         return UpdateProposalOperation(

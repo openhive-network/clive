@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Checkbox, Input, Static
+from textual.widgets import Checkbox, Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
@@ -35,11 +36,15 @@ class CommentOptions(RawOperationBaseScreen):
         default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
 
         self.__permlink_input = PermlinkInput(label="permlink")
-        self.__max_accepted_payout_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__percent_hbd_input = Input(default_percent_hbd, placeholder=PERCENT_PLACEHOLDER)
+        self.__max_accepted_payout_input = CustomInput(
+            label="max accepted payout", placeholder=ASSET_AMOUNT_PLACEHOLDER
+        )
+        self.__percent_hbd_input = CustomInput(
+            label="percent hbd", default_value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
+        )
         self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
         self.__allow_curation_rewards_input = Checkbox("allow curation reward", value=default_allow_curation_rewards)
-        self.__extensions_input = Input(placeholder="e.g: []")
+        self.__extensions_input = CustomInput(label="extensions", placeholder="e.g: []")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -48,12 +53,9 @@ class CommentOptions(RawOperationBaseScreen):
                 yield Static("author", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
                 yield from self.__permlink_input.compose()
-                yield Static("max accepted payout", classes="label")
-                yield self.__max_accepted_payout_input
-                yield Static("percent hbd", classes="label")
-                yield self.__percent_hbd_input
-                yield Static("extensions", classes="label")
-                yield self.__extensions_input
+                yield from self.__max_accepted_payout_input.compose()
+                yield from self.__percent_hbd_input.compose()
+                yield from self.__extensions_input.compose()
                 yield self.__allow_votes_input
                 yield self.__allow_curation_rewards_input
 

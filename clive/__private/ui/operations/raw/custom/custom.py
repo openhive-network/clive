@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomOperation
 
@@ -22,20 +22,17 @@ class Custom(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__required_auths_input = Input(placeholder="e.g.: alice,bob,charlie")
-        self.__id_input = Input(value="0")
-        self.__data_input = Input(placeholder="Custom data input")
+        self.__required_auths_input = CustomInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
+        self.__id_input = CustomInput(label="id", default_value="0")
+        self.__data_input = CustomInput(label="data", placeholder="Custom data input")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Custom")
             with Body():
-                yield Static("required auths", classes="label")
-                yield self.__required_auths_input
-                yield Static("id", classes="label")
-                yield self.__id_input
-                yield Static("data", classes="label")
-                yield self.__data_input
+                yield from self.__required_auths_input.compose()
+                yield from self.__id_input.compose()
+                yield from self.__data_input.compose()
 
     def _create_operation(self) -> CustomOperation:
         required_auths_in_list = self.__required_auths_input.value.split(",")

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
@@ -37,12 +38,18 @@ class EscrowTransfer(RawOperationBaseScreen):
 
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__escrow_id_input = Input(default_escrow_id, placeholder=ID_PLACEHOLDER)
-        self.__hbd_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
-        self.__hive_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
+        self.__escrow_id_input = CustomInput(
+            label="escrow id", default_value=default_escrow_id, placeholder=ID_PLACEHOLDER
+        )
+        self.__hbd_amount_input = CustomInput(
+            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", default_value="0.000"
+        )
+        self.__hive_amount_input = CustomInput(
+            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", default_value="0.000"
+        )
         self.__fee_input = AmountInput()
-        self.__ratification_deadline_input = Input(placeholder=DATE_PLACEHOLDER)
-        self.__escrow_expiration_input = Input(placeholder=DATE_PLACEHOLDER)
+        self.__ratification_deadline_input = CustomInput(label="ratification deadline", placeholder=DATE_PLACEHOLDER)
+        self.__escrow_expiration_input = CustomInput(label="escrow expiration", placeholder=DATE_PLACEHOLDER)
         self.__json_meta_input = JsonDataInput(label="json meta")
 
     def create_left_panel(self) -> ComposeResult:
@@ -53,18 +60,12 @@ class EscrowTransfer(RawOperationBaseScreen):
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield from self.__to_input.compose()
                 yield from self.__agent_input.compose()
-                yield Static("escrow id", classes="label")
-                yield self.__escrow_id_input
-                yield Static("hbd amount", classes="label")
-                yield self.__hbd_amount_input
-                yield Static("hive amount", classes="label")
-                yield self.__hive_amount_input
-                yield Static("ratification deadline", classes="label")
-                yield self.__ratification_deadline_input
-                yield Static("escrow expiration", classes="label")
-                yield self.__escrow_expiration_input
+                yield from self.__escrow_id_input.compose()
+                yield from self.__hbd_amount_input.compose()
+                yield from self.__hive_amount_input.compose()
+                yield from self.__ratification_deadline_input.compose()
+                yield from self.__escrow_expiration_input.compose()
                 yield from self.__json_meta_input.compose()
-                yield Static("fee", classes="label")
                 yield self.__fee_input
 
     def _create_operation(self) -> EscrowTransferOperation[Asset.Hive, Asset.Hbd] | None:

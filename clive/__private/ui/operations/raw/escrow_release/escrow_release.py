@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
     ID_PLACEHOLDER,
@@ -40,9 +41,15 @@ class EscrowRelease(RawOperationBaseScreen):
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__who_input = AccountNameInput(label="who", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__receiver_input = AccountNameInput(label="receiver")
-        self.__escrow_id_input = Input(value=default_escrow_id, placeholder=ID_PLACEHOLDER)
-        self.__hbd_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
-        self.__hive_amount_input = Input(placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000")
+        self.__escrow_id_input = CustomInput(
+            label="escrow id", default_value=default_escrow_id, placeholder=ID_PLACEHOLDER
+        )
+        self.__hbd_amount_input = CustomInput(
+            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", default_value="0.000"
+        )
+        self.__hive_amount_input = CustomInput(
+            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", default_value="0.000"
+        )
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -55,12 +62,9 @@ class EscrowRelease(RawOperationBaseScreen):
                 yield from self.__agent_input.compose()
                 yield from self.__who_input.compose()
                 yield from self.__receiver_input.compose()
-                yield Static("escrow id", classes="label")
-                yield self.__escrow_id_input
-                yield Static("hbd amount", classes="label")
-                yield self.__hbd_amount_input
-                yield Static("hive amount", classes="label")
-                yield self.__hive_amount_input
+                yield from self.__escrow_id_input.compose()
+                yield from self.__hbd_amount_input.compose()
+                yield from self.__hive_amount_input.compose()
 
     def _create_operation(self) -> EscrowReleaseOperation[Asset.Hive, Asset.Hbd]:
         return EscrowReleaseOperation(

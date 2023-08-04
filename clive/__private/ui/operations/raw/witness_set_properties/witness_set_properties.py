@@ -3,11 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -30,9 +31,15 @@ class WitnessSetProperties(RawOperationBaseScreen):
         super().__init__()
 
         self.__witness_input = AccountNameInput(label="witness")
-        self.__account_creation_fee_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__maximum_block_size_input = Input(value="131072", placeholder="maximum block size")
-        self.__hbd_interest_rate_input = Input(value="1000", placeholder="hbd interest rate")
+        self.__account_creation_fee_input = CustomInput(
+            label="account creation fee", placeholder=ASSET_AMOUNT_PLACEHOLDER
+        )
+        self.__maximum_block_size_input = CustomInput(
+            label="maximum block size", default_value="131072", placeholder="maximum block size"
+        )
+        self.__hbd_interest_rate_input = CustomInput(
+            label="hbd interest rate", default_value="1000", placeholder="hbd interest rate"
+        )
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -41,12 +48,9 @@ class WitnessSetProperties(RawOperationBaseScreen):
                 yield from self.__witness_input.compose()
                 yield BigTitle("Props")
                 yield PlaceTaker()
-                yield Static("account creation fee", classes="label")
-                yield self.__account_creation_fee_input
-                yield Static("maximum block size", classes="label")
-                yield self.__maximum_block_size_input
-                yield Static("hbd interest rate", classes="label")
-                yield self.__hbd_interest_rate_input
+                yield from self.__account_creation_fee_input.compose()
+                yield from self.__maximum_block_size_input.compose()
+                yield from self.__hbd_interest_rate_input.compose()
 
     def _create_operation(self) -> WitnessSetPropertiesOperation:
         props_field = {

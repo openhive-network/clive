@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
@@ -30,8 +30,8 @@ class Comment(RawOperationBaseScreen):
         self.__parent_permlink_input = PermlinkInput(label="parent permlink")
         self.__author_input = AccountNameInput(label="author", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__permlink_input = PermlinkInput(label="permlink")
-        self.__title_input = Input(placeholder="e.g: A post by bob")
-        self.__body_input = Input(placeholder="e.g: Look at my awesome post")
+        self.__title_input = CustomInput(label="title", placeholder="e.g: A post by bob")
+        self.__body_input = CustomInput(label="title", placeholder="e.g: Look at my awesome post")
         self.__json_metadata_input = JsonDataInput(label="json metadata")
 
     def create_left_panel(self) -> ComposeResult:
@@ -40,10 +40,8 @@ class Comment(RawOperationBaseScreen):
             with Body():
                 yield from self.__author_input.compose()
                 yield from self.__permlink_input.compose()
-                yield Static("title", classes="label")
-                yield self.__title_input
-                yield Static("body", classes="label")
-                yield self.__body_input
+                yield from self.__title_input.compose()
+                yield from self.__body_input.compose()
                 yield from self.__parent_author_input.compose()
                 yield from self.__parent_permlink_input.compose()
                 yield from self.__json_metadata_input.compose()

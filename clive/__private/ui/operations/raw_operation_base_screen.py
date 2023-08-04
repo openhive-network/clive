@@ -7,7 +7,9 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from schemas.__private.hive_fields_basic_schemas import Authority
 
 if TYPE_CHECKING:
-    from textual.widgets import Input
+    from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
+    from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
+    from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
 
 
 class RawOperationBaseScreen(OperationBaseScreen, AbstractClassMessagePump):
@@ -31,7 +33,10 @@ class RawOperationBaseScreen(OperationBaseScreen, AbstractClassMessagePump):
         return valid_auths_format
 
     def _create_authority_field(
-        self, weight_threshold_input: Input, account_auths_input: Input, key_auths_input: Input
+        self,
+        weight_threshold_input: WeightThresholdInput,
+        account_auths_input: AccountAuthsInput,
+        key_auths_input: KeyAuthsInput,
     ) -> Authority | None:
         if not weight_threshold_input.value:
             return Authority(

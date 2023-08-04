@@ -3,11 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -29,9 +30,9 @@ class ClaimRewardBalance(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__reward_hive_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__reward_hbd_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__reward_vests_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__reward_hive_input = CustomInput(label="reward hive", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__reward_hbd_input = CustomInput(label="reward hbd", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__reward_vests_input = CustomInput(label="reward vests", placeholder=ASSET_AMOUNT_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -40,12 +41,9 @@ class ClaimRewardBalance(RawOperationBaseScreen):
                 yield Static("account", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
                 yield PlaceTaker()
-                yield Static("reward hive", classes="label")
-                yield self.__reward_hive_input
-                yield Static("reward hbd", classes="label")
-                yield self.__reward_hbd_input
-                yield Static("reward vests", classes="label")
-                yield self.__reward_vests_input
+                yield from self.__reward_hive_input.compose()
+                yield from self.__reward_hbd_input.compose()
+                yield from self.__reward_vests_input.compose()
 
     def _create_operation(self) -> ClaimRewardBalanceOperation[Asset.Hive, Asset.Hbd, Asset.Vests]:
         return ClaimRewardBalanceOperation(

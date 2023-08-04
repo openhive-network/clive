@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -31,7 +32,7 @@ class DelegateVestingShares(RawOperationBaseScreen):
         super().__init__()
 
         self.__delegatee_input = AccountNameInput(label="delegatee")
-        self.__vesting_shares_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__vesting_shares_input = CustomInput(label="vesting shares", placeholder=ASSET_AMOUNT_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -41,8 +42,7 @@ class DelegateVestingShares(RawOperationBaseScreen):
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="delegator-label")
                 yield PlaceTaker()
                 yield from self.__delegatee_input.compose()
-                yield Static("vesting shares", classes="label")
-                yield self.__vesting_shares_input
+                yield from self.__vesting_shares_input.compose()
 
     def _create_operation(self) -> DelegateVestingSharesOperation[Asset.Vests]:
         return DelegateVestingSharesOperation(

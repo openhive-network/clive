@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomJsonOperation
@@ -23,21 +23,20 @@ class CustomJson(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__required_auths_input = Input(placeholder="e.g.: alice,bob,charlie")
-        self.__required_posting_auths_input = Input(placeholder="e.g: alice,bob,charlie")
-        self.__id_input = Input(value="0")
+        self.__required_auths_input = CustomInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
+        self.__required_posting_auths_input = CustomInput(
+            label="required posting auths", placeholder="e.g: alice,bob,charlie"
+        )
+        self.__id_input = CustomInput(label="id", default_value="0")
         self.__json_input = JsonDataInput(label="json")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Custom json")
             with Body():
-                yield Static("required auths", classes="label")
-                yield self.__required_auths_input
-                yield Static("required posting auths", classes="label")
-                yield self.__required_posting_auths_input
-                yield Static("id", classes="label")
-                yield self.__id_input
+                yield from self.__required_auths_input.compose()
+                yield from self.__required_posting_auths_input.compose()
+                yield from self.__id_input.compose()
                 yield from self.__json_input.compose()
 
     def _create_operation(self) -> CustomJsonOperation:
