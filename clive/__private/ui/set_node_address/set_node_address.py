@@ -139,21 +139,21 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 yield self.__nodes_list
                 yield self.__manual_node
 
-    def _valid_and_save_address(self) -> None:
+    async def _valid_and_save_address(self) -> None:
         if self._in_nodes_list_mode():
             address = self.query_one(Select).value
             assert address is not None
         else:
             address = Url.parse(self.app.query_one("#node-address-input", Input).value)
-        self.app.world.node.address = address
+        await self.app.world.node.set_address(address)
         self.app.post_message_to_everyone(NodeDataUpdated())
         self.__selected_node.refresh()
 
     @on(Select.Changed)
     @on(CliveButton.Pressed, "#save-node-address-button")
-    def save_node_address_with_gui_support(self) -> None:
+    async def save_node_address_with_gui_support(self) -> None:
         try:
-            self._valid_and_save_address()
+            await self._valid_and_save_address()
         except NodeAddressError:
             self.notify(
                 "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
@@ -177,7 +177,7 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
         super().__init__(owner=owner)
 
     async def apply_and_validate(self) -> None:
-        self._valid_and_save_address()
+        await self._valid_and_save_address()
 
 
 class SetNodeAddress(SetNodeAddressBase):
