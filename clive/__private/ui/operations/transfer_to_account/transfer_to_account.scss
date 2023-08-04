@@ -7,10 +7,6 @@ TransferToAccount Body {
   background: $panel;
 }
 
-TransferToAccount PlaceTaker {
-  row-span: 2;
-}
-
 TransferToAccount .label {
   padding: 1 2;
   text-align: right;
@@ -18,4 +14,8 @@ TransferToAccount .label {
 
 TransferToAccount #from-label {
   padding: 1 2;
+}
+
+TransferToAccount KnownAccount {
+  column-span: 1;
 }

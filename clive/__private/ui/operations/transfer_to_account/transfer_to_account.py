@@ -10,6 +10,7 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME_PLACEHOLDER,
     ASSET_AMOUNT_PLACEHOLDER,
@@ -53,6 +54,7 @@ class TransferToAccount(OperationBaseScreen):
                 yield PlaceTaker()
                 yield Static("to", classes="label")
                 yield self.__to_input
+                yield KnownAccount(self.__to_input)
                 yield Static("amount", classes="label")
                 yield self.__amount_input
                 yield self.__currency_selector
