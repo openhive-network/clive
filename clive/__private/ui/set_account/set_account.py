@@ -36,12 +36,7 @@ class AccountNameInputContainer(Horizontal):
 
 class AccountNameHighlighter(Highlighter):
     def highlight(self, text: Text) -> None:
-        try:
-            Account.validate(str(text))
-        except InvalidAccountNameError:
-            text.stylize("green")
-        else:
-            text.stylize("red")
+        text.stylize("green" if Account.is_valid(str(text)) else "red")
 
 
 class SetAccount(BaseScreen, FormScreen[ProfileData]):

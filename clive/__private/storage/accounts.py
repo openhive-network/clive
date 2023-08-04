@@ -48,6 +48,14 @@ class Account:
         except ValidationError:
             raise InvalidAccountNameError from None
 
+    @classmethod
+    def is_valid(cls, name: str) -> bool:
+        try:
+            cls.validate(name)
+        except InvalidAccountNameError:
+            return False
+        return True
+
 
 @dataclass
 class WorkingAccount(Account):
