@@ -3,16 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
-from clive.__private.ui.widgets.placeholders_constants import (
-    WEIGHT_THRESHOLD_PLACEHOLDER,
-)
+from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecoverAccountOperation
 
@@ -33,10 +31,10 @@ class RecoverAccount(RawOperationBaseScreen):
         super().__init__()
 
         self.__account_to_recover_input = AccountNameInput(label="account to recover")
-        self.__weight_threshold_new_input = Input(placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
+        self.__weight_threshold_new_input = WeightThresholdInput(label="weight threshold")
         self.__account_auths_new_input = AccountAuthsInput(label="account auths")
         self.__key_auths_new_input = KeyAuthsInput(label="key auths")
-        self.__weight_threshold_recent_input = Input(placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
+        self.__weight_threshold_recent_input = WeightThresholdInput(label="weight threshold")
         self.__account_auths_recent_input = AccountAuthsInput(label="account auths")
         self.__key_auths_recent_input = KeyAuthsInput(label="key auths")
 
@@ -47,14 +45,12 @@ class RecoverAccount(RawOperationBaseScreen):
                 yield from self.__account_to_recover_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("New owner authority")
-                yield Static("weight threshold", classes="label")
-                yield self.__weight_threshold_new_input
+                yield from self.__weight_threshold_new_input.compose()
                 yield from self.__account_auths_new_input.compose()
                 yield from self.__key_auths_new_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("Recent owner authority")
-                yield Static("weight threshold", classes="label")
-                yield self.__weight_threshold_recent_input
+                yield from self.__weight_threshold_recent_input.compose()
                 yield from self.__account_auths_recent_input.compose()
                 yield from self.__key_auths_recent_input.compose()
 
