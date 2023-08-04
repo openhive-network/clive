@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
@@ -33,7 +34,7 @@ class AccountUpdate(RawOperationBaseScreen):
         super().__init__()
 
         self.__account_input = AccountNameInput(label="account")
-        self.__memo_key_input = Input(placeholder=KEY_PLACEHOLDER)
+        self.__memo_key_input = CustomInput(label="memo key", placeholder=KEY_PLACEHOLDER)
         self.__json_metadata_input = JsonDataInput(label="json metadata")
 
         self.__weight_threshold_owner_input = WeightThresholdInput(label="weight threshold")
@@ -53,8 +54,7 @@ class AccountUpdate(RawOperationBaseScreen):
             yield BigTitle("Account update")
             with Body():
                 yield from self.__account_input.compose()
-                yield Static("memo key", classes="label")
-                yield self.__memo_key_input
+                yield from self.__memo_key_input.compose()
                 yield from self.__json_metadata_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("owner authority")

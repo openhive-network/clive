@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
@@ -31,10 +32,10 @@ class CreateProposal(RawOperationBaseScreen):
         super().__init__()
 
         self.__receiver_input = AccountNameInput(label="receiver")
-        self.__start_date_input = Input(placeholder=DATE_PLACEHOLDER)
-        self.__end_date_input = Input(placeholder=DATE_PLACEHOLDER)
-        self.__daily_pay_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__subject_input = Input(placeholder="e.g: example subject")
+        self.__start_date_input = CustomInput(label="start date", placeholder=DATE_PLACEHOLDER)
+        self.__end_date_input = CustomInput(label="end date", placeholder=DATE_PLACEHOLDER)
+        self.__daily_pay_input = CustomInput(label="daily pay", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__subject_input = CustomInput(label="subject", placeholder="e.g: example subject")
         self.__permlink_input = PermlinkInput(label="permlink")
 
     def create_left_panel(self) -> ComposeResult:
@@ -44,14 +45,10 @@ class CreateProposal(RawOperationBaseScreen):
                 yield Static("creator", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
                 yield from self.__receiver_input.compose()
-                yield Static("start date", classes="label")
-                yield self.__start_date_input
-                yield Static("end date", classes="label")
-                yield self.__end_date_input
-                yield Static("daily pay", classes="label")
-                yield self.__daily_pay_input
-                yield Static("subject", classes="label")
-                yield self.__subject_input
+                yield from self.__start_date_input.compose()
+                yield from self.__end_date_input.compose()
+                yield from self.__daily_pay_input.compose()
+                yield from self.__subject_input.compose()
                 yield from self.__permlink_input.compose()
 
     def _create_operation(self) -> CreateProposalOperation[Asset.Hbd]:

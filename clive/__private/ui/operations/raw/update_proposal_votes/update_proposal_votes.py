@@ -3,12 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Checkbox, Input, Static
+from textual.widgets import Checkbox, Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import UpdateProposalVotesOperation
 
@@ -30,7 +31,7 @@ class UpdateProposalVotes(RawOperationBaseScreen):
 
         default_approve = get_default_from_model(UpdateProposalVotesOperation, "approve", bool)
 
-        self.__proposal_ids = Input(placeholder="e.g.: 10,11,12")
+        self.__proposal_ids = CustomInput(label="proposal ids", placeholder="e.g.: 10,11,12")
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:
@@ -40,8 +41,7 @@ class UpdateProposalVotes(RawOperationBaseScreen):
                 yield Static("voter", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="voter-label")
                 yield PlaceTaker()
-                yield Static("proposal ids", classes="label")
-                yield self.__proposal_ids
+                yield from self.__proposal_ids.compose()
                 yield self.__approve_input
 
     def _create_operation(self) -> UpdateProposalVotesOperation:

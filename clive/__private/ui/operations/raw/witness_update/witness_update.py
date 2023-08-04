@@ -3,11 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER, KEY_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -29,12 +30,18 @@ class WitnessUpdate(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__url_input = Input(placeholder="e.g: witness-category/my-witness")
-        self.__block_signing_key_input = Input(placeholder=KEY_PLACEHOLDER)
-        self.__account_creation_fee_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__maximum_block_size_input = Input(value="131072", placeholder="maximum block size")
-        self.__hbd_interest_rate_input = Input(value="1000", placeholder="hbd interest rate")
-        self.__fee_input = Input(placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__url_input = CustomInput(label="url", placeholder="e.g: witness-category/my-witness")
+        self.__block_signing_key_input = CustomInput(label="block signing key", placeholder=KEY_PLACEHOLDER)
+        self.__account_creation_fee_input = CustomInput(
+            label="account creation fee", placeholder=ASSET_AMOUNT_PLACEHOLDER
+        )
+        self.__maximum_block_size_input = CustomInput(
+            label="maximum block size", default_value="131072", placeholder="maximum block size"
+        )
+        self.__hbd_interest_rate_input = CustomInput(
+            label="hbd interest rate", default_value="1000", placeholder="hbd interest rate"
+        )
+        self.__fee_input = CustomInput(label="fee", placeholder=ASSET_AMOUNT_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -42,20 +49,14 @@ class WitnessUpdate(RawOperationBaseScreen):
             with Body():
                 yield Static("owner", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield Static("url", classes="label")
-                yield self.__url_input
-                yield Static("block signing key", classes="label")
-                yield self.__block_signing_key_input
-                yield Static("fee", classes="label")
-                yield self.__fee_input
+                yield from self.__url_input.compose()
+                yield from self.__block_signing_key_input.compose()
+                yield from self.__fee_input.compose()
                 yield BigTitle("Props")
                 yield PlaceTaker()
-                yield Static("account creation fee", classes="label")
-                yield self.__account_creation_fee_input
-                yield Static("maximum block size", classes="label")
-                yield self.__maximum_block_size_input
-                yield Static("hbd interest rate", classes="label")
-                yield self.__hbd_interest_rate_input
+                yield from self.__account_creation_fee_input.compose()
+                yield from self.__maximum_block_size_input.compose()
+                yield from self.__hbd_interest_rate_input.compose()
 
     def _create_operation(self) -> WitnessUpdateOperation[Asset.Hive]:
         props_field = {

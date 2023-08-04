@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecurrentTransferOperation
@@ -35,8 +36,12 @@ class RecurrentTransfer(RawOperationBaseScreen):
         self.__to_input = AccountNameInput(label="to")
         self.__amount_input = AmountInput()
         self.__memo_input = MemoInput(label="memo")
-        self.__recurrence_input = Input(default_recurrence, placeholder="e.g.: 26")
-        self.__executions_input = Input(default_executions, placeholder="e.g.: 3")
+        self.__recurrence_input = CustomInput(
+            label="recurrence", default_value=default_recurrence, placeholder="e.g.: 26"
+        )
+        self.__executions_input = CustomInput(
+            label="executions", default_value=default_executions, placeholder="e.g.: 3"
+        )
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -48,10 +53,8 @@ class RecurrentTransfer(RawOperationBaseScreen):
                 yield Static("amount", classes="label")
                 yield self.__amount_input
                 yield from self.__memo_input.compose()
-                yield Static("recurrence", classes="label")
-                yield self.__recurrence_input
-                yield Static("executions", classes="label")
-                yield self.__executions_input
+                yield from self.__recurrence_input.compose()
+                yield from self.__executions_input.compose()
 
     def _create_operation(self) -> RecurrentTransferOperation[Asset.Hive, Asset.Hbd] | None:
         amount = self.__amount_input.amount
