@@ -11,7 +11,6 @@ from clive.__private.core.commands.commands import Commands, TextualCommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
-from clive.__private.ui.background_tasks import BackgroundTasks
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -42,12 +41,11 @@ class World:
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
+        Communication.start()
 
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        Communication.start()
-        self._background_tasks = BackgroundTasks()
 
         if use_beekeeper:
             self._beekeeper: Beekeeper | None = self.__setup_beekeeper(remote_endpoint=beekeeper_remote_endpoint)
@@ -59,10 +57,6 @@ class World:
     @property
     def commands(self) -> Commands[World]:
         return self._commands
-
-    @property
-    def background_tasks(self) -> BackgroundTasks:
-        return self._background_tasks
 
     @property
     def beekeeper(self) -> Beekeeper:

@@ -3,10 +3,8 @@ from __future__ import annotations
 import contextlib
 import math
 import traceback
-from datetime import timedelta
 from pathlib import Path
-from time import sleep
-from typing import TYPE_CHECKING, Any, Final, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from textual import on, work
 from textual.app import App, AutopilotCallbackType
@@ -21,7 +19,6 @@ from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.app_messages import ProfileDataUpdated
-from clive.__private.ui.background_tasks import BackgroundErrorOccurred, BackgroundTasks
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -35,6 +32,7 @@ from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from datetime import timedelta
     from typing import ClassVar, Literal
 
     from rich.console import RenderableType
@@ -120,16 +118,17 @@ class Clive(App[int], ManualReactive):
         def __should_enter_onboarding() -> bool:
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
-        self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
-        self.background_tasks.run_every(timedelta(seconds=1.5), self.__update_data_from_node)
+        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
         self.set_interval(1, self.check_if_should_deactivate)  # type: ignore[arg-type]
+
         if settings.LOG_DEBUG_LOOP:
-            self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
+            self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
 
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
         else:
             self.push_screen(DashboardInactive())
+
 
     def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
         new_, _ = self._get_screen(new)
@@ -288,10 +287,6 @@ class Clive(App[int], ManualReactive):
             return screen.__class__.__name__ == other
         return isinstance(screen, other)
 
-    @on(BackgroundErrorOccurred)
-    def background_error_occurred(self, event: BackgroundErrorOccurred) -> None:
-        raise event.exception
-
     @on(ProfileDataUpdated)
     def profile_data_updated(self) -> None:
         self.world.update_reactive("profile_data")
@@ -327,10 +322,8 @@ class Clive(App[int], ManualReactive):
         sorted_keys = container + non_fn_keys + fn_keys
         return {key: data[key] for key in sorted_keys}
 
-    def __handle_background_error(self, error: Exception) -> None:
-        self.post_message(BackgroundErrorOccurred(error))
-
-    async def __update_data_from_node(self) -> None:
+    @work(name="node data update worker")
+    async def update_data_from_node(self) -> None:
         accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
 
         try:
@@ -345,7 +338,6 @@ class Clive(App[int], ManualReactive):
         logger.debug("===================== DEBUG =====================")
         logger.debug(f"Currently focused: {self.focused}")
         logger.debug(f"Screen stack: {self.screen_stack}")
-        logger.debug(f"Background tasks: { {name: task._state for name, task in self.background_tasks.tasks.items()} }")
 
         query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
         response = await Communication.arequest(str(self.world.profile_data.node_address), data=query)

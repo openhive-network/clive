@@ -4,6 +4,7 @@ LOG_DEBUG_LOOP = false
 LOG_DIRECTORY = "" # if not given, logs will be placed in data directory
 LOG_LEVEL = "INFO"
 LOG_LEVEL_3RD_PARTY = "WARNING"
+LOG_DEBUG_PERIOD = 1
 
 [default.beekeeper]
 PATH = "./beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper executable
@@ -11,3 +12,4 @@ REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 
 [default.node]
 CHAIN_ID = "" # chain id used for signing, if empty automatically gathered from node
+REFRESH_RATE = 1.5 # how often information about accounts are fetched from node
