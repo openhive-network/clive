@@ -20,8 +20,8 @@ from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.exceptions import (
     AliasAlreadyInUseFormError,
+    FormValidationError,
     PrivateKeyAlreadyInUseError,
-    PrivateKeyInvalidFormatFormError,
 )
 
 if TYPE_CHECKING:
@@ -108,8 +108,8 @@ class NewAuthorityBase(AuthorityForm, ABC):
         """
         try:
             self.__check_if_authority_already_exists(self._private_key)
-        except PrivateKeyInvalidFormatError:
-            raise PrivateKeyInvalidFormatFormError("Invalid form of private key") from None
+        except PrivateKeyInvalidFormatError as error:
+            raise FormValidationError(str(error), given_value=error.value) from error
 
     def __check_if_authority_already_exists(self, private_key: PrivateKeyAliased) -> None:
         """

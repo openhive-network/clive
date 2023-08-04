@@ -16,7 +16,10 @@ class PrivateKeyError(CliveError):
 
 
 class PrivateKeyInvalidFormatError(PrivateKeyError):
-    """A PrivateKey has an invalid format."""
+    def __init__(self, value: str) -> None:
+        self.value = value
+        self.message = f"Given key is in invalid form: `{value}`"
+        super().__init__(self.message)
 
 
 @dataclass(kw_only=True)
@@ -145,7 +148,7 @@ class PrivateKey(Key):
         try:
             iwax.calculate_public_key(key)
         except iwax.WaxOperationFailedError:
-            raise PrivateKeyInvalidFormatError from None
+            raise PrivateKeyInvalidFormatError(key) from None
 
     @overload
     def calculate_public_key(self) -> PublicKey:
