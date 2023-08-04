@@ -2,17 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
-from enum import Enum
 
-from clive.__private.core.keys import KeyManager
 from clive.models import Asset
-
-
-class AccountType(str, Enum):
-    value: str
-
-    WORKING = "working"
-    WATCHED = "watched"
 
 
 def default_hive() -> Asset.Hive:
@@ -57,20 +48,3 @@ class NodeData:
     rc_manabar: Manabar = field(default_factory=Manabar)
     vote_manabar: Manabar = field(default_factory=Manabar)
     downvote_manabar: Manabar = field(default_factory=Manabar)
-
-
-@dataclass
-class Account:
-    name: str
-    data: NodeData = field(default_factory=NodeData)
-
-    def __hash__(self) -> int:
-        return hash(self.name)
-
-
-@dataclass
-class WorkingAccount(Account):
-    keys: KeyManager = field(default_factory=KeyManager)
-
-    def __hash__(self) -> int:
-        return super().__hash__()

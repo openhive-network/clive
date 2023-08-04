@@ -5,7 +5,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.storage.mock_database import Account
+from clive.__private.storage.accounts import Account
 from clive.models import Asset
 
 

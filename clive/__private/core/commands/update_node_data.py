@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node.node import Node
     from clive.__private.storage import mock_database
-    from clive.__private.storage.mock_database import Account
+    from clive.__private.storage.accounts import Account
     from schemas.__private.hive_fields_custom_schemas import Manabar
     from schemas.database_api.fundaments_of_reponses import AccountItemFundament
     from schemas.rc_api.fundaments_of_responses import RcAccount

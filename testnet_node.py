@@ -13,8 +13,8 @@ from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
-from clive.__private.storage.mock_database import Account as WatchedAccount
-from clive.__private.storage.mock_database import WorkingAccount
+from clive.__private.storage.accounts import Account as WatchedAccount
+from clive.__private.storage.accounts import WorkingAccount
 from clive.main import main as clive_main
 
 ARGS_COUNT = 2

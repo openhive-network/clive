@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
-    from clive.__private.storage.mock_database import Account
+    from clive.__private.storage.accounts import Account
 
 
 class HeaderIcon(TextualHeaderIcon):

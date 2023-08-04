@@ -8,7 +8,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
-from clive.__private.storage.mock_database import Account, AccountType, Manabar, WorkingAccount
+from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
@@ -24,6 +24,8 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from textual.app import ComposeResult
+
+    from clive.__private.storage.mock_database import Manabar
 
 
 class ContainerTitle(Static):
