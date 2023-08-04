@@ -185,7 +185,7 @@ class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
         self.context.working_account.keys.set_to_import([event.private_key])
         logger.debug("New authority is waiting to be imported...")
 
-    def apply_and_validate(self) -> None:
+    async def apply_and_validate(self) -> None:
         if self._is_key_provided:  # NewAuthorityForm step is optional, so we can skip it when no key is provided
             self._save(reraise_exception=True)
 

@@ -28,7 +28,7 @@ class FirstFormScreen(FormScreenBase[ContextT]):
         Binding("ctrl+n", "next_screen", "Next screen"),
     ]
 
-    def action_next_screen(self) -> None:
+    async def action_next_screen(self) -> None:
         self._owner.action_next_screen()
 
 
@@ -38,7 +38,7 @@ class LastFormScreen(FormScreenBase[ContextT]):
         Binding("ctrl+p", "previous_screen", "Previous screen"),
     ]
 
-    def action_previous_screen(self) -> None:
+    async def action_previous_screen(self) -> None:
         self._owner.action_previous_screen()
 
     def action_start_over(self) -> None:
@@ -46,13 +46,13 @@ class LastFormScreen(FormScreenBase[ContextT]):
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
-    def action_next_screen(self) -> None:
+    async def action_next_screen(self) -> None:
         try:
-            self.apply_and_validate()
+            await self.apply_and_validate()
         except FormValidationError as e:
             self.validation_failure(e)
         else:
-            super().action_next_screen()
+            await super().action_next_screen()
             self.validation_success()
 
     def validation_failure(self, exception: FormValidationError) -> None:
@@ -62,5 +62,5 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
         self.notify("Data validated successfully")
 
     @abstractmethod
-    def apply_and_validate(self) -> None:
+    async def apply_and_validate(self) -> None:
         """Should perform its actions and raise FormValidationError if some input is invalid."""

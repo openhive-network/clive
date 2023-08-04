@@ -31,8 +31,8 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
             yield CliveButton("Start!", id_="welcome_button_start")
 
     @on(CliveButton.Pressed, "#welcome_button_start")
-    def begin(self) -> None:
-        self.action_next_screen()
+    async def begin(self) -> None:
+        await self.action_next_screen()
 
     def action_cancel(self) -> None:
         self._cancel()

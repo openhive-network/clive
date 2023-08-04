@@ -176,7 +176,7 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
-    def apply_and_validate(self) -> None:
+    async def apply_and_validate(self) -> None:
         self._valid_and_save_address()
 
 

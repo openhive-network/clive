@@ -54,7 +54,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
                     yield self.__account_name_input
                 yield Checkbox("Working account?", value=True)
 
-    def apply_and_validate(self) -> None:
+    async def apply_and_validate(self) -> None:
         account_name = self.__account_name_input.value
         try:
             Account.validate(account_name)

@@ -128,5 +128,5 @@ class CreateProfile(CreateProfileCommon):
 
 
 class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
-    def apply_and_validate(self) -> None:
+    async def apply_and_validate(self) -> None:
         self._owner.add_post_action(*self._create_profile())
