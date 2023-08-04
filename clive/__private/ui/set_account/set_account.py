@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class InvalidAccountNameError(FormValidationError):
+class InvalidAccountNameFormError(FormValidationError):
     def __init__(self, given_account_name: str) -> None:
         super().__init__(f"Given account name is invalid: `{given_account_name}`", given_value=given_account_name)
 
@@ -74,6 +74,6 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
 
     def apply_and_validate(self) -> None:
         if not AccountNameHighlighter.is_valid_account_name(account_name := self.__account_name_input.value):
-            raise InvalidAccountNameError(account_name)
+            raise InvalidAccountNameFormError(account_name)
 
         self.context.working_account.name = account_name
