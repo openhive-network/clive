@@ -11,10 +11,8 @@ from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsIn
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
-from clive.__private.ui.widgets.placeholders_constants import (
-    KEY_PLACEHOLDER,
-    WEIGHT_THRESHOLD_PLACEHOLDER,
-)
+from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
+from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountUpdate2Operation
 
@@ -39,15 +37,15 @@ class AccountUpdate2(RawOperationBaseScreen):
         self.__json_metadata_input = JsonDataInput(label="json metadata")
         self.__posting_json_metadata = JsonDataInput(label="posting json metadata")
 
-        self.__weight_threshold_owner_input = Input("", placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
+        self.__weight_threshold_owner_input = WeightThresholdInput(label="weight threshold")
         self.__account_auths_owner_input = AccountAuthsInput(label="account auths")
         self.__key_auths_owner_input = KeyAuthsInput(label="key auths")
 
-        self.__weight_threshold_active_input = Input("", placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
+        self.__weight_threshold_active_input = WeightThresholdInput(label="weight threshold")
         self.__account_auths_active_input = AccountAuthsInput(label="account auths")
         self.__key_auths_active_input = KeyAuthsInput(label="key auths")
 
-        self.__weight_threshold_posting_input = Input("", placeholder=WEIGHT_THRESHOLD_PLACEHOLDER)
+        self.__weight_threshold_posting_input = WeightThresholdInput(label="weight threshold")
         self.__account_auths_posting_input = AccountAuthsInput(label="account auths")
         self.__key_auths_posting_input = KeyAuthsInput(label="key auths")
 
@@ -62,20 +60,17 @@ class AccountUpdate2(RawOperationBaseScreen):
                 yield from self.__posting_json_metadata.compose()
                 yield PlaceTaker()
                 yield BigTitle("owner authority")
-                yield Static("weight threshold", classes="label")
-                yield self.__weight_threshold_owner_input
+                yield from self.__weight_threshold_owner_input.compose()
                 yield from self.__account_auths_owner_input.compose()
                 yield from self.__key_auths_owner_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("active authority")
-                yield Static("weight threshold", classes="label")
-                yield self.__weight_threshold_active_input
+                yield from self.__weight_threshold_active_input.compose()
                 yield from self.__account_auths_active_input.compose()
                 yield from self.__key_auths_active_input.compose()
                 yield PlaceTaker()
                 yield BigTitle("posting authority")
-                yield Static("weight threshold", classes="label")
-                yield self.__weight_threshold_posting_input
+                yield from self.__weight_threshold_posting_input.compose()
                 yield from self.__account_auths_posting_input.compose()
                 yield from self.__key_auths_posting_input.compose()
 
