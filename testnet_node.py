@@ -8,8 +8,6 @@ import time
 from random import randint
 from typing import TYPE_CHECKING, Final
 
-import test_tools as tt
-
 from clive.__private.config import settings
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.keys.keys import PrivateKeyAliased
@@ -21,11 +19,6 @@ from clive.main import main as clive_main
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-
-
-CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
-WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
-WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob", "ocdb", "blocktrades")]
 
 
 def init_argparse(args: Sequence[str]) -> argparse.Namespace:
@@ -53,6 +46,22 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
     )
 
     return parser.parse_args(args)
+
+
+# ==>> WORKAROUND:
+# Need to call init_argparse() before test_tools are imported, otherwise "python testnet_node.py --help"
+# will display help of test_tools instead of this script.
+# test_tools.__private.paths_to_executables._PathsToExecutables.parse_command_line_arguments
+
+init_argparse(sys.argv[1:])
+
+import test_tools as tt  # noqa: E402
+
+CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
+WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
+WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob", "timmy", "john")]
+
+# <<== WORKAROUND
 
 
 def prepare_node() -> tuple[tt.InitNode, tt.Wallet]:
