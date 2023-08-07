@@ -73,13 +73,23 @@ class ProfileData(Context):
         ------
         NoWorkingAccountError: If no working account is set.
         """
-        if self._working_account is None:
+        if not self.is_working_account_set():
             raise NoWorkingAccountError
+        assert self._working_account is not None
         return self._working_account
 
     @working_account.setter
     def working_account(self, value: WorkingAccount) -> None:
         self._working_account = value
+
+    def is_working_account_set(self) -> bool:
+        return self._working_account is not None
+
+    def get_tracked_accounts(self) -> set[Account]:
+        accounts = self.watched_accounts.copy()
+        if self.is_working_account_set():
+            accounts.add(self.working_account)
+        return accounts
 
     @property
     def node_address(self) -> Url:

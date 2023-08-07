@@ -19,6 +19,9 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
     beekeeper: Beekeeper
 
     def _execute(self) -> None:
+        if not self.profile_data.is_working_account_set():
+            return
+
         self.__import_pending_keys()
         self.__sync_missing_keys()
 

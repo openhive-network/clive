@@ -314,7 +314,7 @@ class Clive(App[int], ManualReactive):
     def __update_data_from_node(self, closed: ThreadPoolClosedCallbackT) -> None:
         refresh_interval: Final[int] = 3
         while not closed():
-            accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+            accounts = self.world.profile_data.get_tracked_accounts()
 
             try:
                 self.world.commands.update_node_data(accounts=accounts)

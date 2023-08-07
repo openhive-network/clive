@@ -49,3 +49,12 @@ class Onboarding(Form[ProfileData]):
 
     def _rebuild_context(self) -> None:
         self.__context = ProfileData(ProfileData.ONBOARDING_PROFILE_NAME)
+
+    def _skip_during_push_screen(self) -> list[ScreenBuilder[ProfileData]]:
+        screens_to_skip: list[ScreenBuilder[ProfileData]] = []
+
+        # skip NewAuthorityForm if there is no working account set
+        if not self.context.is_working_account_set():
+            screens_to_skip.append(NewAuthorityForm)
+
+        return screens_to_skip

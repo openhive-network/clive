@@ -173,8 +173,9 @@ class DashboardBase(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             with Body() as body:
-                yield ContainerTitle("WORKING ACCOUNT", classes="working")
-                yield WorkingAccountContainer()
+                if self.__has_working_account():
+                    yield ContainerTitle("WORKING ACCOUNT", classes="working")
+                    yield WorkingAccountContainer()
                 if self.__has_watched_accounts():
                     yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
                     yield WatchedAccountContainer()
@@ -182,6 +183,9 @@ class DashboardBase(BaseScreen):
 
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
+
+    def __has_working_account(self) -> bool:
+        return self.app.world.profile_data.is_working_account_set()
 
     def __has_watched_accounts(self) -> bool:
         return bool(self.app.world.profile_data.watched_accounts)

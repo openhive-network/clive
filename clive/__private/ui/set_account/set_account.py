@@ -61,4 +61,12 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         except InvalidAccountNameError as error:
             raise FormValidationError(str(error), given_value=account_name) from error
 
-        self.context.working_account = WorkingAccount(name=account_name)
+        if self.__is_working_account():
+            self.context.working_account = WorkingAccount(name=account_name)
+            self.context.watched_accounts.clear()
+        else:
+            self.context._working_account = None
+            self.context.watched_accounts.add(Account(name=account_name))
+
+    def __is_working_account(self) -> bool:
+        return self.query_one(Checkbox).value
