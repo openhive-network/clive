@@ -9,7 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.fee_input import FeeInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import WitnessSetPropertiesOperation
@@ -31,9 +31,7 @@ class WitnessSetProperties(RawOperationBaseScreen):
         super().__init__()
 
         self.__witness_input = AccountNameInput(label="witness")
-        self.__account_creation_fee_input = CustomInput(
-            label="account creation fee", placeholder=ASSET_AMOUNT_PLACEHOLDER
-        )
+        self.__account_creation_fee_input = FeeInput(label="account creation fee")
         self.__maximum_block_size_input = CustomInput(
             label="maximum block size", value="131072", placeholder="maximum block size"
         )

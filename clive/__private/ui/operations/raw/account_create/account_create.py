@@ -10,13 +10,12 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.fee_input import FeeInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.memo_key_input import MemoKeyInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import AccountCreateOperation
@@ -38,7 +37,7 @@ class AccountCreate(RawOperationBaseScreen):
         super().__init__()
 
         self.__new_account_name_input = AccountNameInput(label="new account name")
-        self.__fee_input = CustomInput(label="fee", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__fee_input = FeeInput()
 
         self.__weight_threshold_owner_input = WeightThresholdInput()
         self.__account_auths_owner_input = AccountAuthsInput()
