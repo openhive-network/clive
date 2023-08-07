@@ -4,10 +4,9 @@ from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Container, Grid, Horizontal
-from textual.notifications import Notification
-from textual.widgets import Button, Checkbox, Input, Static, TabbedContent, TabPane
+from textual.widgets import Button, Checkbox, Input, Static, TabbedContent
 
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
+from clive.__private.ui.operations.operation_base_screen import OperationMethods, OperationBaseScreen
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
@@ -15,6 +14,7 @@ from clive.__private.ui.widgets.account_referencing_widget import AccountReferen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
+from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.models import Asset
 from schemas.__private.operations.transfer_from_savings_operation import TransferFromSavingsOperation
 from schemas.__private.operations.transfer_to_savings_operation import TransferToSavingsOperation
@@ -127,7 +127,7 @@ class PendingHeader(CliveWidget):
             yield Static()
 
 
-class SavingsInfo(TabPane):
+class SavingsInfo(ScrollableTabPane):
     def __init__(
         self,
         working_account: WorkingAccount,
@@ -150,7 +150,7 @@ class SavingsInfo(TabPane):
                 yield Static("No pending transfers from savings now !", id="without-pending-label")
 
 
-class SavingsTransfers(TabPane, OperationMethods):
+class SavingsTransfers(ScrollableTabPane, OperationMethods):
     def __init__(self, working_account: WorkingAccount, title: str = "") -> None:
         self.__title = title
         self.__working_account = working_account
