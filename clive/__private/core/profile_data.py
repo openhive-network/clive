@@ -49,7 +49,7 @@ class ProfileData(Context):
 
     def __init__(
         self,
-        name: str = "",
+        name: str,
         working_account: WorkingAccount | None = None,
         watched_accounts: Iterable[Account] | None = None,
         known_accounts: Iterable[Account] | None = None,

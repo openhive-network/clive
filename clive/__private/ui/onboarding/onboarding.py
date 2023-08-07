@@ -48,4 +48,4 @@ class Onboarding(Form[ProfileData]):
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
-        self.__context = ProfileData()
+        self.__context = ProfileData(ProfileData.ONBOARDING_PROFILE_NAME)
