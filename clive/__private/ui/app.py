@@ -124,9 +124,10 @@ class Clive(App[int], ManualReactive):
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
-        self.push_screen(DashboardInactive())
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
+        else:
+            self.push_screen(DashboardInactive())
 
     def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
         new_, _ = self._get_screen(new)
