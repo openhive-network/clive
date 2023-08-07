@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 from rich.highlighter import Highlighter
 
-from clive.__private.ui.widgets.inputs.base_input import BaseInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER
 
 if TYPE_CHECKING:
@@ -29,18 +29,18 @@ class AccountNameHighlighter(Highlighter):
             text.stylize("red")
 
 
-class AccountNameInput(BaseInput):
+class AccountNameInput(CustomInput):
     def __init__(
         self,
         label: str = "",
         placeholder: str = ACCOUNT_NAME_PLACEHOLDER,
-        default_value: str | None = None,
+        value: str | None = None,
         id_: str | None = None,
     ) -> None:
         super().__init__(
             label=label,
             placeholder=placeholder,
-            default_value=default_value,
+            value=value,
             highlighter=AccountNameHighlighter(),
             id_=id_,
         )

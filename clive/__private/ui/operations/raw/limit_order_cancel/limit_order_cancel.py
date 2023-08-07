@@ -28,9 +28,7 @@ class LimitOrderCancel(RawOperationBaseScreen):
 
         default_order_id = str(get_default_from_model(LimitOrderCancelOperation, "order_id", int))
 
-        self.__order_id_input = CustomInput(
-            label="order id", default_value=default_order_id, placeholder=ID_PLACEHOLDER
-        )
+        self.__order_id_input = CustomInput(label="order id", value=default_order_id, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

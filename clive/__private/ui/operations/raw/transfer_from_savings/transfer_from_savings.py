@@ -34,9 +34,7 @@ class TransferFromSavings(RawOperationBaseScreen):
         default_request_id = str(get_default_from_model(TransferFromSavingsOperation, "request_id", int))
 
         self.__to_input = AccountNameInput(label="to")
-        self.__request_id_input = CustomInput(
-            label="request id", default_value=default_request_id, placeholder=ID_PLACEHOLDER
-        )
+        self.__request_id_input = CustomInput(label="request id", value=default_request_id, placeholder=ID_PLACEHOLDER)
         self.__amount_input = AmountInput()
         self.__memo_input = MemoInput(label="memo")
 

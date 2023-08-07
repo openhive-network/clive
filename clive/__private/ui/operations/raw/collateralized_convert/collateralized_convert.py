@@ -30,9 +30,7 @@ class CollateralizedConvert(RawOperationBaseScreen):
         default_request_id = str(get_default_from_model(CollateralizedConvertOperation, "request_id", int))
 
         self.__amount_input = CustomInput(label="amount", placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__request_id_input = CustomInput(
-            label="request id", default_value=default_request_id, placeholder=ID_PLACEHOLDER
-        )
+        self.__request_id_input = CustomInput(label="request id", value=default_request_id, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

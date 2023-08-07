@@ -9,10 +9,10 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from clive.models.asset import AssetAmountT
