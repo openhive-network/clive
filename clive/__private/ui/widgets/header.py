@@ -16,7 +16,7 @@ from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
 
     from textual import events
     from textual.app import ComposeResult
@@ -40,7 +40,7 @@ class HeaderIcon(TextualHeaderIcon):
 class AlarmDisplay(DynamicLabel):
     def __init__(
         self,
-        account_getter: Callable[[ProfileData], list[Account]],
+        account_getter: Callable[[ProfileData], Iterable[Account]],
         init: str | None = None,
         id_: str | None = None,
         classes: str | None = None,

@@ -22,6 +22,7 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from pathlib import Path
 
     from clive.__private.core.commands.abc.command import Command
@@ -120,9 +121,9 @@ class Commands:
             )
         )
 
-    def update_node_data(self, *, accounts: list[Account] | None = None) -> CommandWrapper:
+    def update_node_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWrapper:
         wrapper = self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=accounts or [], node=self.__world.node)
+            UpdateNodeData(accounts=list(accounts or []), node=self.__world.node)
         )
 
         if wrapper.error_occurred:
