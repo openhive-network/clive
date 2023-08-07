@@ -8,7 +8,7 @@ from textual.widgets import Static, TabbedContent
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
+from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, GOVERNANCE, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 
@@ -22,7 +22,9 @@ if TYPE_CHECKING:
 
 class OperationButton(CliveButton):
     def __init__(
-        self, label: TextType, operation_screen: type[OperationBaseScreen | RawOperationBaseScreen] | None
+        self,
+        label: TextType,
+        operation_screen: type[OperationBaseScreen | RawOperationBaseScreen | CartBasedScreen] | None,
     ) -> None:
         super().__init__(label)
         self.operation_screen = operation_screen
@@ -44,7 +46,7 @@ class Operations(CartBasedScreen):
             with ScrollableTabPane("Social"):
                 yield OperationButton("SOCIAL OPERATIONS", None)
             with ScrollableTabPane("Governance"):
-                yield OperationButton("GOVERNANCE OPERATIONS", None)
+                yield OperationButton("GOVERNANCE OPERATIONS", GOVERNANCE)
             with ScrollableTabPane("Account management"):
                 yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", None)
             with ScrollableTabPane("Raw"):

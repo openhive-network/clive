@@ -24,6 +24,7 @@ from clive.__private.ui.operations import (
     EscrowDispute,
     EscrowRelease,
     EscrowTransfer,
+    Governance,
     LimitOrderCancel,
     LimitOrderCreate,
     LimitOrderCreate2,
@@ -43,6 +44,7 @@ from clive.__private.ui.operations import (
 )
 
 if TYPE_CHECKING:
+    from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
     from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
     from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 
@@ -50,6 +52,9 @@ if TYPE_CHECKING:
 FINANCIAL_OPERATIONS: Final[list[type[OperationBaseScreen]]] = [
     TransferToAccount,
 ]
+
+GOVERNANCE: Final[type[CartBasedScreen]] = Governance
+
 RAW_OPERATIONS: Final[list[type[RawOperationBaseScreen]]] = [
     TransferToVesting,
     WithdrawVesting,
