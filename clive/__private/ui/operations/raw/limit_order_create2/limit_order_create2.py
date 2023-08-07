@@ -52,10 +52,11 @@ class LimitOrderCreate2(RawOperationBaseScreen):
                 yield InputLabel("owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield from self.__order_id_input.compose()
-                yield InputLabel("")
+                yield Static("")
                 yield self.__fill_or_kill_input
                 yield from self.__expiration_input.compose()
-                yield from self.__amount_to_sell_input.compose()
+                yield InputLabel("amount to sell")
+                yield self.__amount_to_sell_input
                 yield Static("")
                 yield BigTitle("Exchange rate")
                 yield InputLabel("base")
