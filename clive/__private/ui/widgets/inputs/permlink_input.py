@@ -5,5 +5,7 @@ from clive.__private.ui.widgets.placeholders_constants import PERMLINK_PLACEHOLD
 
 
 class PermlinkInput(CustomInput):
-    def __init__(self, label: str = "", value: str | None = None, placeholder: str = PERMLINK_PLACEHOLDER) -> None:
+    def __init__(
+        self, label: str = "permlink", value: str | None = None, placeholder: str = PERMLINK_PLACEHOLDER
+    ) -> None:
         super().__init__(label=label, value=value, placeholder=placeholder)

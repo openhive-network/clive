@@ -37,20 +37,20 @@ class CreateClaimedAccount(RawOperationBaseScreen):
 
         self.__new_account_name_input = AccountNameInput(label="new account name")
 
-        self.__weight_threshold_owner_input = WeightThresholdInput(label="weight threshold")
-        self.__account_auths_owner_input = AccountAuthsInput(label="account auths")
-        self.__key_auths_owner_input = KeyAuthsInput(label="key auths")
+        self.__weight_threshold_owner_input = WeightThresholdInput()
+        self.__account_auths_owner_input = AccountAuthsInput()
+        self.__key_auths_owner_input = KeyAuthsInput()
 
-        self.__weight_threshold_active_input = WeightThresholdInput(label="weight threshold")
-        self.__account_auths_active_input = AccountAuthsInput(label="account auths")
-        self.__key_auths_active_input = KeyAuthsInput(label="key auths")
+        self.__weight_threshold_active_input = WeightThresholdInput()
+        self.__account_auths_active_input = AccountAuthsInput()
+        self.__key_auths_active_input = KeyAuthsInput()
 
-        self.__weight_threshold_posting_input = WeightThresholdInput(label="weight threshold")
-        self.__account_auths_posting_input = AccountAuthsInput(label="account auths")
-        self.__key_auths_posting_input = KeyAuthsInput(label="key auths")
+        self.__weight_threshold_posting_input = WeightThresholdInput()
+        self.__account_auths_posting_input = AccountAuthsInput()
+        self.__key_auths_posting_input = KeyAuthsInput()
 
         self.__memo_key_input = CustomInput(label="memo key", placeholder=KEY_PLACEHOLDER)
-        self.__json_metadata_input = JsonDataInput(label="json metadata")
+        self.__json_metadata_input = JsonDataInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

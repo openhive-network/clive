@@ -5,5 +5,7 @@ from clive.__private.ui.widgets.placeholders_constants import KEY_AUTHS_PLACEHOL
 
 
 class KeyAuthsInput(CustomInput):
-    def __init__(self, label: str = "", value: str | None = None, placeholder: str = KEY_AUTHS_PLACEHOLDER) -> None:
+    def __init__(
+        self, label: str = "key auths", value: str | None = None, placeholder: str = KEY_AUTHS_PLACEHOLDER
+    ) -> None:
         super().__init__(label=label, value=value, placeholder=placeholder)

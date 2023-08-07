@@ -36,7 +36,7 @@ class CommentOptions(RawOperationBaseScreen):
         default_allow_votes = get_default_from_model(CommentOptionsOperation, "allow_votes", bool)
         default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
 
-        self.__permlink_input = PermlinkInput(label="permlink")
+        self.__permlink_input = PermlinkInput()
         self.__max_accepted_payout_input = CustomInput(
             label="max accepted payout", placeholder=ASSET_AMOUNT_PLACEHOLDER
         )

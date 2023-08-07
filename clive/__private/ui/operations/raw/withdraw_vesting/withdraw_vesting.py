@@ -25,7 +25,7 @@ class WithdrawVesting(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__account_input = AccountNameInput(label="account", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__account_input = AccountNameInput(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__vesting_shares_input = CustomInput(label="vesting shares", placeholder=ASSET_AMOUNT_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:

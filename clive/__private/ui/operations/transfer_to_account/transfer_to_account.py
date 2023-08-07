@@ -34,7 +34,7 @@ class TransferToAccount(OperationBaseScreen):
         super().__init__()
 
         self.__to_input = AccountNameInput(label="to")
-        self.__memo_input = MemoInput(label="memo")
+        self.__memo_input = MemoInput()
 
         self.__amount_input = AmountInput()
 

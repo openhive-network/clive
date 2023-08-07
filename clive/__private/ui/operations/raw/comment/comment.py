@@ -29,10 +29,10 @@ class Comment(RawOperationBaseScreen):
         self.__parent_author_input = AccountNameInput(label="parent  author")
         self.__parent_permlink_input = PermlinkInput(label="parent permlink")
         self.__author_input = AccountNameInput(label="author", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__permlink_input = PermlinkInput(label="permlink")
+        self.__permlink_input = PermlinkInput()
         self.__title_input = CustomInput(label="title", placeholder="e.g: A post by bob")
         self.__body_input = CustomInput(label="title", placeholder="e.g: Look at my awesome post")
-        self.__json_metadata_input = JsonDataInput(label="json metadata")
+        self.__json_metadata_input = JsonDataInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

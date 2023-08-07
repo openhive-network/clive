@@ -35,7 +35,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
 
         self.__to_input = AccountNameInput(label="to")
         self.__amount_input = AmountInput()
-        self.__memo_input = MemoInput(label="memo")
+        self.__memo_input = MemoInput()
         self.__recurrence_input = CustomInput(label="recurrence", value=default_recurrence, placeholder="e.g.: 26")
         self.__executions_input = CustomInput(label="executions", value=default_executions, placeholder="e.g.: 3")
 

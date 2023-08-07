@@ -30,7 +30,7 @@ class TransferToSavings(RawOperationBaseScreen):
 
         self.__to_input = AccountNameInput(label="to")
         self.__amount_input = AmountInput()
-        self.__memo_input = MemoInput(label="memo")
+        self.__memo_input = MemoInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
