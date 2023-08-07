@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -29,7 +29,7 @@ class Custom(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Custom")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield from self.__required_auths_input.compose()
                 yield from self.__id_input.compose()
                 yield from self.__data_input.compose()

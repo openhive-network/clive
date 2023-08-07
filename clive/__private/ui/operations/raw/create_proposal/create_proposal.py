@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -41,7 +41,7 @@ class CreateProposal(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Create proposal")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield InputLabel("creator")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
                 yield from self.__receiver_input.compose()

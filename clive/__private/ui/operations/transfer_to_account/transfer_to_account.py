@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -41,7 +41,7 @@ class TransferToAccount(OperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Transfer to account")
-            with Body():
+            with ScrollableContainer(), Body():
                 to_label, to_input = self.__to_input.compose()
 
                 yield InputLabel("from")

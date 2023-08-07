@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -60,7 +60,7 @@ class AccountCreate(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Account create")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield InputLabel("creator")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
                 yield from self.__new_account_name_input.compose()

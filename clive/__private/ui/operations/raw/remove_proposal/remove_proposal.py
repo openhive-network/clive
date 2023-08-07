@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -34,7 +34,7 @@ class RemoveProposal(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Remove proposal")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield InputLabel("proposal_owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield PlaceTaker()
