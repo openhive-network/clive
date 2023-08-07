@@ -182,6 +182,10 @@ class DashboardBase(BaseScreen):
             yield CommandLine(focus_on_cancel=body)
 
     def action_operations(self) -> None:
+        if not self.__has_working_account():
+            self.notify("Cannot perform operations without working account", severity="error")
+            return
+
         self.app.push_screen(Operations())
 
     def __has_working_account(self) -> bool:
