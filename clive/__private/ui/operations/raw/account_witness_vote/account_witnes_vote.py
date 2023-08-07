@@ -9,9 +9,8 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.placeholders_constants import WITNESS_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.witness_input import WitnessInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessVoteOperation
 
@@ -29,7 +28,7 @@ class AccountWitnessVote(RawOperationBaseScreen):
 
         default_approve = get_default_from_model(AccountWitnessVoteOperation, "approve", bool)
 
-        self.__witness_input = CustomInput(label="witness", placeholder=WITNESS_PLACEHOLDER)
+        self.__witness_input = WitnessInput()
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:
