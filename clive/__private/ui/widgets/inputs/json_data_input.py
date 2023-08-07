@@ -5,5 +5,7 @@ from clive.__private.ui.widgets.placeholders_constants import JSON_DATA_PLACEHOL
 
 
 class JsonDataInput(CustomInput):
-    def __init__(self, label: str = "", value: str | None = None, placeholder: str = JSON_DATA_PLACEHOLDER) -> None:
+    def __init__(
+        self, label: str = "json metadata", value: str | None = None, placeholder: str = JSON_DATA_PLACEHOLDER
+    ) -> None:
         super().__init__(label=label, value=value, placeholder=placeholder)

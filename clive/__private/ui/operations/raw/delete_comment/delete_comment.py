@@ -24,7 +24,7 @@ class DeleteComment(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__permlink_input = PermlinkInput(label="permlink")
+        self.__permlink_input = PermlinkInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

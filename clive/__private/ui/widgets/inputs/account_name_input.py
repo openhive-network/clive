@@ -32,7 +32,7 @@ class AccountNameHighlighter(Highlighter):
 class AccountNameInput(CustomInput):
     def __init__(
         self,
-        label: str = "",
+        label: str = "account name",
         placeholder: str = ACCOUNT_NAME_PLACEHOLDER,
         value: str | None = None,
         id_: str | None = None,

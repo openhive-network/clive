@@ -36,7 +36,7 @@ class CreateProposal(RawOperationBaseScreen):
         self.__end_date_input = CustomInput(label="end date", placeholder=DATE_PLACEHOLDER)
         self.__daily_pay_input = CustomInput(label="daily pay", placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__subject_input = CustomInput(label="subject", placeholder="e.g: example subject")
-        self.__permlink_input = PermlinkInput(label="permlink")
+        self.__permlink_input = PermlinkInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

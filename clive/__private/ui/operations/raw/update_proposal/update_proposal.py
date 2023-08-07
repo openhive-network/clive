@@ -33,7 +33,7 @@ class UpdateProposal(RawOperationBaseScreen):
         self.__creator_input = AccountNameInput(label="creator")
         self.__daily_pay_input = CustomInput(label="daily pay", placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__subject_input = CustomInput(label="subject", placeholder="e.g.: New subject")
-        self.__permlink_input = PermlinkInput(label="permlink")
+        self.__permlink_input = PermlinkInput()
         self.__extensions_input = CustomInput(label="extensions", placeholder="e.g.: []")
 
     def create_left_panel(self) -> ComposeResult:
