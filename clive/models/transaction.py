@@ -5,7 +5,6 @@ from typing import Any
 
 from pydantic import Field, validator
 
-from clive.__private.core import iwax
 from clive.models import Operation, Signature  # noqa: TCH001
 from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
 from clive.models.convert_to_representation import convert_to_representation
@@ -35,6 +34,8 @@ class Transaction(Hf26Transaction):
         return bool(self.signatures)
 
     def with_hash(self) -> TransactionWithHash:
+        from clive.__private.core import iwax
+
         # TODO: There is an issue with __convert_to_h26(), the type of `operation` is not Operation but could be Any.
         #  After resolving and making it to work with dict, it should be possible to **self.dict(by_alias=True)
         #  like: return TransactionWithHash(**self.dict(by_alias=True) , transaction_id=iwax.calculate_transaction_id(self))
