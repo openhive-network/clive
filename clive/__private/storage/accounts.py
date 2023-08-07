@@ -31,7 +31,7 @@ class AccountType(str, Enum):
 @dataclass
 class Account:
     name: str
-    data: NodeData = field(default_factory=NodeData, compare=False)
+    data: NodeData = field(init=False, default_factory=NodeData, compare=False)
 
     def __post_init__(self) -> None:
         self.validate(self.name)
@@ -64,7 +64,7 @@ class Account:
 
 @dataclass
 class WorkingAccount(Account):
-    keys: KeyManager = field(default_factory=KeyManager, compare=False)
+    keys: KeyManager = field(init=False, default_factory=KeyManager, compare=False)
 
     def __hash__(self) -> int:
         return super().__hash__()
