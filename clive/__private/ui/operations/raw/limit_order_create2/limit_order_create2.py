@@ -11,11 +11,11 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput, OrderIdT
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
     DATE_PLACEHOLDER,
-    ID_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -34,9 +34,9 @@ class LimitOrderCreate2(RawOperationBaseScreen):
         super().__init__()
 
         default_fill_or_kill = get_default_from_model(LimitOrderCreate2Operation, "fill_or_kill", bool)
-        default_order_id = str(0)
+        default_order_id = 0
 
-        self.__order_id_input = CustomInput(label="order id", value=default_order_id, placeholder=ID_PLACEHOLDER)
+        self.__order_id_input = IdInput[OrderIdT](label="order id", value=default_order_id)
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)
         self.__expiration_input = CustomInput(label="expiration", placeholder=DATE_PLACEHOLDER)
         self.__amount_to_sell_input = AmountInput()

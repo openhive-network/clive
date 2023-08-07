@@ -7,6 +7,7 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput, IdT
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomOperation
 
@@ -23,7 +24,7 @@ class Custom(RawOperationBaseScreen):
         super().__init__()
 
         self.__required_auths_input = CustomInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
-        self.__id_input = CustomInput(label="id", value="0")
+        self.__id_input = IdInput[IdT](value=0)
         self.__data_input = CustomInput(label="data", placeholder="Custom data input")
 
     def create_left_panel(self) -> ComposeResult:

@@ -11,10 +11,10 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput, OrderIdT
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import (
     DATE_PLACEHOLDER,
-    ID_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCreateOperation
@@ -33,10 +33,10 @@ class LimitOrderCreate(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_order_id = str(get_default_from_model(LimitOrderCreateOperation, "orderid", int))
+        default_order_id = get_default_from_model(LimitOrderCreateOperation, "orderid", int)
         default_fill_or_kill = get_default_from_model(LimitOrderCreateOperation, "fill_or_kill", bool)
 
-        self.__order_id_input = CustomInput(label="order id", value=default_order_id, placeholder=ID_PLACEHOLDER)
+        self.__order_id_input = IdInput[OrderIdT](label="order id", value=default_order_id)
         self.__amount_to_sell_input = AmountInput()
         self.__min_to_receive_input = AmountInput()
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)

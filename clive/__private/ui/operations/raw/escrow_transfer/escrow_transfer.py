@@ -11,12 +11,12 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import EscrowIdT, IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
     DATE_PLACEHOLDER,
-    ID_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -34,11 +34,11 @@ class EscrowTransfer(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_escrow_id = str(get_default_from_model(EscrowTransferOperation, "escrow_id", int))
+        default_escrow_id = get_default_from_model(EscrowTransferOperation, "escrow_id", int)
 
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__escrow_id_input = CustomInput(label="escrow id", value=default_escrow_id, placeholder=ID_PLACEHOLDER)
+        self.__escrow_id_input = IdInput[EscrowIdT](label="escrow id", value=default_escrow_id)
         self.__hbd_amount_input = CustomInput(
             label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
         )

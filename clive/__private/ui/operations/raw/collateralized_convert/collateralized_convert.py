@@ -9,8 +9,9 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput, RequestIdT
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER, ID_PLACEHOLDER
+from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import CollateralizedConvertOperation
@@ -27,10 +28,10 @@ class CollateralizedConvert(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_request_id = str(get_default_from_model(CollateralizedConvertOperation, "request_id", int))
+        default_request_id = get_default_from_model(CollateralizedConvertOperation, "request_id", int)
 
         self.__amount_input = CustomInput(label="amount", placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__request_id_input = CustomInput(label="request id", value=default_request_id, placeholder=ID_PLACEHOLDER)
+        self.__request_id_input = IdInput[RequestIdT](label="request id", value=default_request_id)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
