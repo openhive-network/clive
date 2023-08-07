@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import asyncio
 import shutil
 import time
 from random import randint
@@ -84,14 +85,16 @@ if not enable_onboarding:
     ).save()
 
     world = World(alice.name)
-    password = CreateWallet(
-        app_state=world.app_state, beekeeper=world.beekeeper, wallet=alice.name, password=alice.name
-    ).execute_with_result()
+    password = asyncio.run(
+        CreateWallet(
+            app_state=world.app_state, beekeeper=world.beekeeper, wallet=alice.name, password=alice.name
+        ).async_execute_with_result()
+    )
     tt.logger.info(f"password for {alice.name} is: `{password}`")
     world.profile_data.working_account.keys.add_to_import(
         PrivateKeyAliased(value=alice.private_key._value, alias=f"default {alice.name} key")
     )
-    world.commands.sync_data_with_beekeeper()
+    asyncio.run(world.commands.sync_data_with_beekeeper())
     world.profile_data.save()
     world.close()
 

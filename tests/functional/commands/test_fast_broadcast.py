@@ -13,14 +13,18 @@ if TYPE_CHECKING:
     from tests import WalletInfo
 
 
-def test_fast_broadcast_smoke_test(world: World, init_node: tt.InitNode, wallet: WalletInfo) -> None:  # noqa: ARG001
+async def test_fast_broadcast_smoke_test(
+    world: World, init_node: tt.InitNode, wallet: WalletInfo  # noqa: ARG001
+) -> None:
     # ARRANGE
-    pubkey = world.commands.import_key(
-        key_to_import=PrivateKeyAliased(value=str(init_node.config.private_key[0]), alias="some-alias")
+    pubkey = (
+        await world.commands.import_key(
+            key_to_import=PrivateKeyAliased(value=str(init_node.config.private_key[0]), alias="some-alias")
+        )
     ).result_or_raise
 
     # ACT & ASSERT
-    world.commands.fast_broadcast(
+    await world.commands.fast_broadcast(
         operation=TransferOperation(from_="initminer", to="null", amount=Asset.hive(1), memo=""),
         sign_with=pubkey,
     )

@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Iterator, Sequence
+from collections.abc import Callable, Coroutine, Iterator, Sequence
 from typing import Literal
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
 
-ImportCallbackT = Callable[[PrivateKeyAliased], PublicKeyAliased]
+ImportCallbackT = Callable[[PrivateKeyAliased], Coroutine[None, None, PublicKeyAliased]]
 
 
 class KeyAliasAlreadyInUseError(CliveError):
@@ -83,9 +83,9 @@ class KeyManager:
     def set_to_import(self, keys: Sequence[PrivateKeyAliased]) -> None:
         self.__keys_to_import = list(keys)
 
-    def import_pending_to_beekeeper(self, import_callback: ImportCallbackT) -> None:
+    async def import_pending_to_beekeeper(self, import_callback: ImportCallbackT) -> None:
         for key in self.__keys_to_import:
-            imported = import_callback(key)
+            imported = await import_callback(key)
             self.add(imported)
         self.__keys_to_import.clear()
         logger.debug("Imported all pending keys to beekeeper.")

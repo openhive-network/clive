@@ -9,4 +9,4 @@ class CustomThreadPoolExecutor(ThreadPoolExecutor):
         super().shutdown(wait=wait, cancel_futures=cancel_futures)
 
 
-thread_pool = CustomThreadPoolExecutor(max_workers=4)
+thread_pool = CustomThreadPoolExecutor(max_workers=4, thread_name_prefix="clive_thread_pool")

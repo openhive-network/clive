@@ -48,10 +48,10 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
 
     @on(CliveButton.Pressed, "#finish-button")
     async def finish(self) -> None:
-        self.action_finish()
+        await self.action_finish()
 
-    def action_finish(self) -> None:
-        self._owner.execute_post_actions()
+    async def action_finish(self) -> None:
+        await self._owner.execute_post_actions()
         self.app.pop_screen_until(WelcomeFormScreen)
 
         # switch WelcomeFormScreen to the proper Dashboard screen

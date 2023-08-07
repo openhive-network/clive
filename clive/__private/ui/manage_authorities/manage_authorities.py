@@ -67,13 +67,13 @@ class Authority(ColumnLayout, CliveWidget):
         self.app.push_screen(EditAuthority(self.__authority))
 
     @on(CliveButton.Pressed, "#remove_authority_button")
-    def remove_authority(self) -> None:
-        @CliveScreen.try_again_after_activation(app=self.app)
-        def __on_confirmation_result(result: str) -> None:
+    async def remove_authority(self) -> None:
+        @CliveScreen.async_try_again_after_activation(app=self.app)
+        async def __on_confirmation_result(result: str) -> None:
             if not result:
                 return
 
-            self.app.world.commands.remove_key(password=result, key_to_remove=self.__authority)
+            await self.app.world.commands.remove_key(password=result, key_to_remove=self.__authority)
             self.app.world.profile_data.working_account.keys.remove(self.__authority)
 
             self.notify(f"Authority `{self.__authority.alias}` was removed.")

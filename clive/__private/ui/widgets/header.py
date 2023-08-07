@@ -89,13 +89,14 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
             id_="last_update",
         )
 
-    def __get_last_block(self, app_state: AppState) -> str:
-        block_num = app_state.get_dynamic_global_properties().head_block_number
-        block_time = app_state.get_dynamic_global_properties().time.time()
+    async def __get_last_block(self, app_state: AppState) -> str:
+        gdpo = await app_state.get_dynamic_global_properties()
+        block_num = gdpo.head_block_number
+        block_time = gdpo.time.time()
         return f"{block_num} ({block_time} UTC)"
 
-    def __get_last_update(self, _: bool) -> str:
-        gdpo = self.app.world.app_state.get_dynamic_global_properties()
+    async def __get_last_update(self, _: bool) -> str:
+        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
         return humanize.naturaltime(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
 
     def __trigger_last_update(self) -> None:

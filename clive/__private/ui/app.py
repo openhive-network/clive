@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 import math
 import traceback
+from asyncio import CancelledError
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
@@ -106,8 +107,11 @@ class Clive(App[int], ManualReactive):
     ) -> int | None:
         try:
             return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
+        except CancelledError:
+            pass
         finally:
             self.__cleanup()
+        return 1
 
     def on_mount(self) -> None:
         self.__class__.is_launched = True

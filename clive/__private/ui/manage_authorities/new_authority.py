@@ -161,12 +161,12 @@ class NewAuthority(NewAuthorityBase):
     def context(self) -> ProfileData:
         return self.app.world.profile_data
 
-    @CliveScreen.try_again_after_activation()
+    @CliveScreen.async_try_again_after_activation()
     @on(NewAuthorityBase.Saved)
-    def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
+    async def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])
 
-        self.app.world.commands.sync_data_with_beekeeper()
+        await self.app.world.commands.sync_data_with_beekeeper()
         self.app.post_message_to_everyone(ProfileDataUpdated())
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()

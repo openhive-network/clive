@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
 
 
-def ensure_transaction(
+async def ensure_transaction(
     content: TransactionConvertibleType, node: Node, expiration: timedelta = timedelta(minutes=30)
 ) -> Transaction:
     """
@@ -48,4 +48,4 @@ def ensure_transaction(
     else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
 
-    return BuildTransaction(operations=operations, node=node, expiration=expiration).execute_with_result()
+    return await BuildTransaction(operations=operations, node=node, expiration=expiration).async_execute_with_result()

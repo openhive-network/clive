@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from textual import on
 from textual.binding import Binding
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-ActivationResultCallbackT = Callable[[bool], None]
+ActivationResultCallbackT = Callable[[bool], Coroutine[Any, Any, None]]
 ActivationResultCallbackOptionalT = ActivationResultCallbackT | None
 
 
@@ -66,11 +66,11 @@ class Activate(BaseScreen):
         self.__temporary_active_mode_input.toggle_class("-hidden")
 
     @on(CliveButton.Pressed, "#cancel-button")
-    def action_cancel(self) -> None:
-        self.__exit_cancel()
+    async def action_cancel(self) -> None:
+        await self.__exit_cancel()
 
     @on(CliveButton.Pressed, "#activate-button")
-    def action_activate(self) -> None:
+    async def action_activate(self) -> None:
         permanent_active = self.__permanent_active_mode_switch.value
         active_mode_time: timedelta | None = None
 
@@ -82,23 +82,25 @@ class Activate(BaseScreen):
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)
 
-        if not self.app.world.commands.activate(password=self.__password_input.value, time=active_mode_time).success:
+        if not (
+            await self.app.world.commands.activate(password=self.__password_input.value, time=active_mode_time)
+        ).success:
             return
 
-        self.__exit_success()
+        await self.__exit_success()
 
-    def __exit_success(self) -> None:
+    async def __exit_success(self) -> None:
         self.app.post_message_to_everyone(self.Succeeded())
         self.app.pop_screen()
-        self.__set_activation_result(True)
+        await self.__set_activation_result(True)
 
-    def __exit_cancel(self) -> None:
+    async def __exit_cancel(self) -> None:
         self.app.pop_screen()
-        self.__set_activation_result(False)
+        await self.__set_activation_result(False)
 
-    def __set_activation_result(self, value: bool) -> None:
+    async def __set_activation_result(self, value: bool) -> None:
         if self.__activation_result_callback is not None:
-            self.__activation_result_callback(value)
+            await self.__activation_result_callback(value)
 
     def __get_active_mode_time(self) -> int | None:
         try:

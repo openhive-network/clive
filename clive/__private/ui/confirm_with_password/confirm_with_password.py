@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-PasswordResultCallbackType = Callable[[str], None]
+PasswordResultCallbackType = Callable[[str], Coroutine[None, None, None]]
 
 
 class ConfirmWithPassword(BaseScreen):
@@ -40,16 +40,16 @@ class ConfirmWithPassword(BaseScreen):
                 yield Static(f"Action: {self.__action_name}", id="action")
             yield self.__password_input
 
-    def action_cancel(self) -> None:
+    async def action_cancel(self) -> None:
         self.app.pop_screen()
-        self.__result_callback("")
+        await self.__result_callback("")
 
-    def action_confirm(self) -> None:
+    async def action_confirm(self) -> None:
         with self.app.batch_update():
             self.app.pop_screen()
 
             try:
-                self.__result_callback(self.__get_password_input())
+                await self.__result_callback(self.__get_password_input())
             except InvalidPasswordError:
                 self.app.push_screen(ConfirmWithPassword(self.__result_callback, self.__action_name))
                 self.notify("Invalid password", severity="error")

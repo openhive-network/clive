@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from inspect import isawaitable
 from typing import TYPE_CHECKING, Any
 
 from textual.widgets import Label
@@ -36,5 +37,8 @@ class DynamicLabel(Label, CliveWidget):
     def on_mount(self) -> None:
         self.watch(self.__obj_to_watch, self.__attribute_name, self.attribute_changed, init=not bool(self.__init))
 
-    def attribute_changed(self, attribute: Any) -> None:
-        self.update(f"{self.__prefix}{self.__callback(attribute)}")
+    async def attribute_changed(self, attribute: Any) -> None:
+        value = self.__callback(attribute)
+        if isawaitable(value):
+            value = await value
+        self.update(f"{self.__prefix}{value}")

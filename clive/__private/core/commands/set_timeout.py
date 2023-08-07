@@ -15,6 +15,6 @@ class SetTimeout(Command):
     beekeeper: Beekeeper
     seconds: int
 
-    def _execute(self) -> None:
+    async def _async_execute(self) -> None:
         self.beekeeper.api.set_timeout(seconds=self.seconds)
         logger.info(f"Timeout set to {self.seconds} s.")

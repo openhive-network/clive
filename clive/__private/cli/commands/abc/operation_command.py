@@ -6,6 +6,7 @@ import rich
 import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Operation, Transaction
 
@@ -23,15 +24,17 @@ class OperationCommand(WorldBasedCommand, ABC):
     def run(self) -> None:
         key_to_sign = self.world.profile_data.working_account.keys.get(self.sign)
 
-        transaction = perform_actions_on_transaction(
-            content=self._create_operation(),
-            app_state=self.world.app_state,
-            beekeeper=self.world.beekeeper,
-            node=self.world.node,
-            sign_key=key_to_sign,
-            save_file_path=Path(self.save_file) if self.save_file is not None else None,
-            broadcast=self.broadcast,
-            chain_id=self.world.node.chain_id,
+        transaction = asyncio_run(
+            perform_actions_on_transaction(
+                content=self._create_operation(),
+                app_state=self.world.app_state,
+                beekeeper=self.world.beekeeper,
+                node=self.world.node,
+                sign_key=key_to_sign,
+                save_file_path=Path(self.save_file) if self.save_file is not None else None,
+                broadcast=self.broadcast,
+                chain_id=asyncio_run(self.world.node.get_chain_id()),
+            )
         )
 
         self.__print_transaction(transaction.with_hash())

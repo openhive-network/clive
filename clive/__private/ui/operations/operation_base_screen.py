@@ -61,14 +61,14 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
         if self.__add_to_cart():
             self.app.pop_screen()
 
-    def action_fast_broadcast(self) -> None:
+    async def action_fast_broadcast(self) -> None:
         if not self.create_operation():  # For faster validation feedback to the user
             return
 
-        self.__fast_broadcast()
+        await self.__fast_broadcast()
 
     @CliveScreen.try_again_after_activation()
-    def __fast_broadcast(self) -> None:
+    async def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
             try:
                 return self.app.world.profile_data.working_account.keys.first
@@ -82,7 +82,7 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
         if not key or not operation:
             return
 
-        if not self.app.world.commands.fast_broadcast(operation=operation, sign_with=key).success:
+        if not (await self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)).success:
             return
 
         self.app.pop_screen()

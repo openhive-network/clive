@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
-from clive.__private.core._async import asyncio_run
 from clive.__private.core.commands.abc.command import SynchronousOnlyCommandError
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
@@ -22,6 +21,7 @@ from clive.__private.core.commands.update_node_data import DynamicGlobalProperti
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
+from clive.__private.core.error_handlers.async_closed import AsyncClosedErrorHandler
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -47,116 +47,98 @@ class Commands(Generic[WorldT]):
         self, world: WorldT, *, exception_handlers: list[type[ErrorHandlerContextManager]] | None = None
     ) -> None:
         self._world = world
-        self.__exception_handlers = exception_handlers
+        self.__exception_handlers = [AsyncClosedErrorHandler, *(exception_handlers or [])]
 
-    def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                Activate(
-                    app_state=self._world.app_state,
-                    beekeeper=self._world.beekeeper,
-                    wallet=self._world.profile_data.name,
-                    password=password,
-                    time=time,
-                )
+    async def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            Activate(
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
+                wallet=self._world.profile_data.name,
+                password=password,
+                time=time,
             )
         )
 
-    def deactivate(self) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                Deactivate(
-                    app_state=self._world.app_state,
-                    beekeeper=self._world.beekeeper,
-                    wallet=self._world.profile_data.name,
-                )
+    async def deactivate(self) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            Deactivate(
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
+                wallet=self._world.profile_data.name,
             )
         )
 
-    def set_timeout(self, *, seconds: int) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds))
+    async def set_timeout(self, *, seconds: int) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds)
         )
 
-    def build_transaction(
+    async def build_transaction(
         self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
     ) -> CommandWithResultWrapper[Transaction]:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
+        return await self.__surround_with_exception_handlers(
+            BuildTransaction(operations=operations, node=self.__world.node, expiration=expiration)
+        )
+
+    async def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
+        return await self.__surround_with_exception_handlers(
+            Sign(
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
+                transaction=transaction,
+                key=sign_with,
+                chain_id=self._world.node.chain_id,
             )
         )
 
-    def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                Sign(
-                    app_state=self._world.app_state,
-                    beekeeper=self._world.beekeeper,
-                    transaction=transaction,
-                    key=sign_with,
-                    chain_id=self._world.node.chain_id,
-                )
+    async def save_to_file(self, *, transaction: Transaction, path: Path) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            SaveToFileAsBinary(transaction=transaction, file_path=path)
+        )
+
+    async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(Broadcast(node=self.__world.node, transaction=transaction))
+
+    async def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            FastBroadcast(
+                app_state=self._world.app_state,
+                node=self._world.node,
+                operation=operation,
+                beekeeper=self._world.beekeeper,
+                sign_with=sign_with,
+                chain_id=self._world.node.chain_id,
             )
         )
 
-    def save_to_file(self, *, transaction: Transaction, path: Path) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(SaveToFileAsBinary(transaction=transaction, file_path=path))
-        )
-
-    def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
-        )
-
-    def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                FastBroadcast(
-                    app_state=self._world.app_state,
-                    node=self._world.node,
-                    operation=operation,
-                    beekeeper=self._world.beekeeper,
-                    sign_with=sign_with,
-                    chain_id=self._world.node.chain_id,
-                )
+    async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
+        return await self.__surround_with_exception_handlers(
+            ImportKey(
+                app_state=self.__world.app_state,
+                wallet=self.__world.profile_data.name,
+                key_to_import=key_to_import,
+                beekeeper=self.__world.beekeeper,
             )
         )
 
-    def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                ImportKey(
-                    app_state=self._world.app_state,
-                    wallet=self._world.profile_data.name,
-                    key_to_import=key_to_import,
-                    beekeeper=self._world.beekeeper,
-                )
+    async def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            RemoveKey(
+                app_state=self.__world.app_state,
+                wallet=self.__world.profile_data.name,
+                beekeeper=self.__world.beekeeper,
+                key_to_remove=key_to_remove,
+                password=password,
             )
         )
 
-    def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                RemoveKey(
-                    app_state=self._world.app_state,
-                    wallet=self._world.profile_data.name,
-                    beekeeper=self._world.beekeeper,
-                    key_to_remove=key_to_remove,
-                    password=password,
-                )
-            )
-        )
-
-    def sync_data_with_beekeeper(self) -> CommandWrapper:
-        return asyncio_run(
-            self.__surround_with_exception_handlers(
-                SyncDataWithBeekeeper(
-                    app_state=self._world.app_state,
-                    profile_data=self._world.profile_data,
-                    beekeeper=self._world.beekeeper,
-                )
+    async def sync_data_with_beekeeper(self) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            SyncDataWithBeekeeper(
+                app_state=self.__world.app_state,
+                profile_data=self.__world.profile_data,
+                beekeeper=self.__world.beekeeper,
             )
         )
 
@@ -195,7 +177,7 @@ class Commands(Generic[WorldT]):
 
             return self.__create_command_wrapper(command)
 
-        return await self.__surround_with_exception_handler(command, self.__exception_handlers)
+        return await self.__surround_with_exception_handler(command, self.__exception_handlers)  # type: ignore[arg-type]
 
     @overload
     async def __surround_with_exception_handler(  # type: ignore[misc]
@@ -271,14 +253,14 @@ class TextualCommands(Commands["TextualWorld"], CliveWidget):
     def __init__(self, world: TextualWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
-    def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
+    async def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
         if time is not None:
-            self.set_timeout(seconds=int(time.total_seconds()))
+            await self.set_timeout(seconds=int(time.total_seconds()))
         wrapper = super().activate(password=password, time=time)
         self._world.update_reactive("app_state")
         return wrapper
 
-    def deactivate(self) -> CommandWrapper:
+    async def deactivate(self) -> CommandWrapper:
         wrapper = super().deactivate()
         self._world.update_reactive("app_state")
         self.app.switch_screen("dashboard_inactive")

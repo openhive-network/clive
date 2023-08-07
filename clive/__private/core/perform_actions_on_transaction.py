@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
 
 
-def perform_actions_on_transaction(  # noqa: PLR0913
+async def perform_actions_on_transaction(  # noqa: PLR0913
     content: TransactionConvertibleType,
     *,
     app_state: AppStateProtocol,
@@ -50,17 +50,17 @@ def perform_actions_on_transaction(  # noqa: PLR0913
     -------
     The transaction object.
     """
-    transaction = ensure_transaction(content, node=node)
+    transaction = await ensure_transaction(content, node=node)
 
     if sign_key:
-        transaction = Sign(
+        transaction = await Sign(
             app_state=app_state, beekeeper=beekeeper, transaction=transaction, key=sign_key, chain_id=chain_id
-        ).execute_with_result()
+        ).async_execute_with_result()
 
     if save_file_path:
-        SaveToFileAsBinary(transaction=transaction, file_path=save_file_path).execute()
+        await SaveToFileAsBinary(transaction=transaction, file_path=save_file_path).async_execute()
 
     if transaction.is_signed() and broadcast:
-        Broadcast(node=node, transaction=transaction).execute()
+        await Broadcast(node=node, transaction=transaction).async_execute()
 
     return transaction

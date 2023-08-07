@@ -18,25 +18,25 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
     profile_data: ProfileData
     beekeeper: Beekeeper
 
-    def _execute(self) -> None:
+    async def _async_execute(self) -> None:
         if not self.profile_data.is_working_account_set():
             return
 
-        self.__import_pending_keys()
-        self.__sync_missing_keys()
+        await self.__import_pending_keys()
+        await self.__sync_missing_keys()
 
-    def __import_pending_keys(self) -> None:
-        def import_key(key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
-            return ImportKey(
+    async def __import_pending_keys(self) -> None:
+        async def import_key(key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
+            return await ImportKey(
                 app_state=self.app_state,
                 wallet=self.profile_data.name,
                 key_to_import=key_to_import,
                 beekeeper=self.beekeeper,
-            ).execute_with_result()
+            ).async_execute_with_result()
 
-        self.profile_data.working_account.keys.import_pending_to_beekeeper(import_key)
+        await self.profile_data.working_account.keys.import_pending_to_beekeeper(import_key)
 
-    def __sync_missing_keys(self) -> None:
+    async def __sync_missing_keys(self) -> None:
         keys_in_clive = self.profile_data.working_account.keys
         keys_in_beekeeper = self.beekeeper.api.get_public_keys().keys
 

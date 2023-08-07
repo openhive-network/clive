@@ -52,9 +52,8 @@ class Node:
 
         return expect_type(**data)
 
-    @property
-    def chain_id(self) -> str:
-        return asyncio_run(self.api.database_api.get_config()).HIVE_CHAIN_ID
+    async def get_chain_id(self) -> str:
+        return (await self.api.database_api.get_config()).HIVE_CHAIN_ID
 
     async def __sync_node_version(self) -> None:
         if self.address:

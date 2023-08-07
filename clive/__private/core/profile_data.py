@@ -182,7 +182,7 @@ class ProfileData(Context):
     @staticmethod
     def __default_node_address() -> list[Url]:
         return [
-            Url("http", "localhost", 8090),
+            Url("http", "127.0.0.1", 8090),
             Url("https", "api.hive.blog"),
             Url("http", "hive-6.pl.syncad.com", 18090),
         ]

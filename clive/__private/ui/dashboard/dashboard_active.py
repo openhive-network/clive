@@ -12,8 +12,8 @@ class DashboardActive(DashboardBase):
         Binding("f9", "config", "Config"),
     ]
 
-    def action_deactivate(self) -> None:
-        self.app.world.commands.deactivate()
+    async def action_deactivate(self) -> None:
+        await self.app.world.commands.deactivate()
 
     def action_config(self) -> None:
         self.app.push_screen(ConfigActive())
