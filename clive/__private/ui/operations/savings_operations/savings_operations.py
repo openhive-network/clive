@@ -214,7 +214,7 @@ class SavingsTransfers(TabPane, OperationMethods):
                 request_id=self.__create_request_id(),
             )
         else:
-            Notification("Please select type of operation", category="warning").show()
+            self.notify("Please select type of operation")
             return None
 
     def __create_request_id(self) -> int:
