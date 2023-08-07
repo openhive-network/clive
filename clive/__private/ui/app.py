@@ -113,6 +113,7 @@ class Clive(App[int], ManualReactive):
 
     def on_mount(self) -> None:
         self.__class__.is_launched = True
+        self.mount(self.world)
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
 

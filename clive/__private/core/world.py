@@ -14,6 +14,7 @@ from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
 from clive.__private.ui.background_tasks import BackgroundTasks
 from clive.__private.ui.manual_reactive import ManualReactive
+from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from clive.core.url import Url
@@ -96,7 +97,7 @@ class World:
         return self._app_state
 
 
-class TextualWorld(World, ManualReactive):
+class TextualWorld(World, CliveWidget, ManualReactive):
     profile_data: ProfileData = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
