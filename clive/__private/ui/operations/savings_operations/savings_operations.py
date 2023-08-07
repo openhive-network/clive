@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from textual import on
+from textual.binding import Binding
 from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Button, Checkbox, Input, Static, TabbedContent
 
@@ -239,7 +241,8 @@ class Savings(OperationBaseScreen):
             )
             yield SavingsTransfers(self.app.world.profile_data.working_account, title="transfer")
 
-    def on_checkbox_changed(self, event: Checkbox.Changed) -> None:
+    @on(Checkbox.Changed)
+    def checkbox_changed(self, event: Checkbox.Changed) -> None:
         if event.checkbox.value:
             _check_boxes = self.query(Checkbox)
 
