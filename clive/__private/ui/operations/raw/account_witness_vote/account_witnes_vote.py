@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Checkbox, Static
+from textual.widgets import Checkbox
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import WITNESS_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessVoteOperation
@@ -20,10 +21,6 @@ if TYPE_CHECKING:
 
 class Body(Grid):
     """All the content of the screen, excluding the title."""
-
-
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
 
 
 class AccountWitnessVote(RawOperationBaseScreen):
@@ -39,9 +36,8 @@ class AccountWitnessVote(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Account witness vote")
             with Body():
-                yield Static("account", classes="label")
+                yield InputLabel("account")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                yield PlaceTaker()
                 yield from self.__witness_input.compose()
                 yield self.__approve_input
 

@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
@@ -42,7 +42,7 @@ class CreateProposal(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Create proposal")
             with Body():
-                yield Static("creator", classes="label")
+                yield InputLabel("creator")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
                 yield from self.__receiver_input.compose()
                 yield from self.__start_date_input.compose()

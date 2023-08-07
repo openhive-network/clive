@@ -1,19 +1,10 @@
 SetWithdrawVestingRoute Body {
-  grid-size: 3;
-  grid-columns: 13 2fr 1fr;
+  grid-size: 2;
+  grid-columns: 17 1fr;
   grid-rows: 3 4 4 4;
   height: 16;
   margin: 0 4;
   background: $panel;
-}
-
-SetWithdrawVestingRoute PlaceTaker {
-  row-span: 3;
-}
-
-SetWithdrawVestingRoute .label {
-  padding: 1 1;
-  text-align: right;
 }
 
 SetWithdrawVestingRoute #from-label {

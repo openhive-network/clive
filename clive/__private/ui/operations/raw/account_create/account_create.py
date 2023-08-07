@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
@@ -60,7 +61,7 @@ class AccountCreate(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Account create")
             with Body():
-                yield Static("creator", classes="label")
+                yield InputLabel("creator")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
                 yield from self.__new_account_name_input.compose()
                 yield from self.__fee_input.compose()

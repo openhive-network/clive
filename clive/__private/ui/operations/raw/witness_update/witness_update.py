@@ -9,6 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER, KEY_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -47,7 +48,7 @@ class WitnessUpdate(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Witness update")
             with Body():
-                yield Static("owner", classes="label")
+                yield InputLabel("owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield from self.__url_input.compose()
                 yield from self.__block_signing_key_input.compose()

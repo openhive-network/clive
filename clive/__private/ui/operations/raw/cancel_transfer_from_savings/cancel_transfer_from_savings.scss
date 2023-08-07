@@ -1,19 +1,10 @@
 CancelTransferFromSavings Body {
-  grid-size: 3;
-  grid-columns: 14 2fr 1fr;
+  grid-size: 2;
+  grid-columns: 17 1fr;
   grid-rows: 4;
   height: 9;
   margin: 0 4;
   background: $panel;
-}
-
-CancelTransferFromSavings PlaceTaker {
-  row-span: 2;
-}
-
-CancelTransferFromSavings .label {
-  padding: 1 2;
-  text-align: right;
 }
 
 CancelTransferFromSavings #from-label {

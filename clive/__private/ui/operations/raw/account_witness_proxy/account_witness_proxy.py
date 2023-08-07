@@ -9,6 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessProxyOperation
 
@@ -34,7 +35,7 @@ class AccountWitnessProxy(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Account witness proxy")
             with Body():
-                yield Static("account", classes="label")
+                yield InputLabel("account")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
                 yield PlaceTaker()
                 yield from self.__proxy_input.compose()

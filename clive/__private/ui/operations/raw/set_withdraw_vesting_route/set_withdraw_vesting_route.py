@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Checkbox, Static
+from textual.widgets import Checkbox
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import PERCENT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import SetWithdrawVestingRouteOperation
@@ -21,10 +22,6 @@ if TYPE_CHECKING:
 
 class Body(Grid):
     """All the content of the screen, excluding the title."""
-
-
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
 
 
 class SetWithdrawVestingRoute(RawOperationBaseScreen):
@@ -44,9 +41,8 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Set withdraw vesting route")
             with Body():
-                yield Static("from", classes="label")
+                yield InputLabel("from")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield PlaceTaker()
                 yield from self.__to_account_input.compose()
                 yield from self.__percent_input.compose()
                 yield self.__auto_vest_input

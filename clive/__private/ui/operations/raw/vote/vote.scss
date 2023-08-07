@@ -1,19 +1,10 @@
 Vote Body {
-  grid-size: 3;
-  grid-columns: 12 2fr 1fr;
+  grid-size: 2;
+  grid-columns: 14 1fr;
   grid-rows: 3 4 4 4;
   height: 15;
   margin: 0 4;
   background: $panel;
-}
-
-Vote PlaceTaker {
-  row-span: 3;
-}
-
-Vote .label {
-  padding: 1 2;
-  text-align: right;
 }
 
 Vote #voter-label {

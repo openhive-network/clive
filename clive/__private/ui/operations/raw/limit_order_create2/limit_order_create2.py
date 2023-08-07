@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
     DATE_PLACEHOLDER,
@@ -48,16 +49,16 @@ class LimitOrderCreate2(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Limit order create two")
             with Body():
-                yield Static("owner", classes="label")
+                yield InputLabel("owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield from self.__order_id_input.compose()
-                yield Static("", classes="label")
+                yield InputLabel("")
                 yield self.__fill_or_kill_input
                 yield from self.__expiration_input.compose()
                 yield from self.__amount_to_sell_input.compose()
                 yield Static("")
                 yield BigTitle("Exchange rate")
-                yield Static("base", classes="label")
+                yield InputLabel("base")
                 yield self.__base_input
                 yield from self.__quote_input.compose()
 

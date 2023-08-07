@@ -1,19 +1,8 @@
 WithdrawVesting Body {
   grid-size: 2;
-  grid-columns: 27 1fr;
-  grid-rows: 5;
-  height: 13;
+  grid-columns: 20 1fr;
+  grid-rows: 4;
+  height: 15;
   margin: 0 4;
   background: $panel;
-}
-
-WithdrawVesting .label {
-  padding: 1 4;
-  text-align: right;
-  margin: 2 2;
-}
-
-WithdrawVesting Input{
-    margin: 2 0;
-    width: 120;
 }

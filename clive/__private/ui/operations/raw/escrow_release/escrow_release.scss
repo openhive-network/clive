@@ -1,19 +1,10 @@
 EscrowRelease Body {
-  grid-size: 3;
-  grid-columns: 16 3fr 1fr;
+  grid-size: 2;
+  grid-columns: 16 1fr;
   grid-rows: 3 4 4 4 4 4 4;
   height: 33;
   margin: 0 4;
   background: $panel;
-}
-
-EscrowRelease PlaceTaker {
-  row-span: 7;
-}
-
-EscrowRelease .label {
-  padding: 1 1;
-  text-align: right;
 }
 
 EscrowRelease #from-label {

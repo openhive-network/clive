@@ -4,7 +4,6 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Static
 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -12,6 +11,7 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -44,12 +44,12 @@ class TransferToAccount(OperationBaseScreen):
             with Body():
                 to_label, to_input = self.__to_input.compose()
 
-                yield Static("from", classes="label")
+                yield InputLabel("from")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield to_label
                 yield to_input
                 yield KnownAccount(to_input)
-                yield Static("amount", classes="label")
+                yield InputLabel("amount")
                 yield self.__amount_input
                 yield from self.__memo_input.compose()
 

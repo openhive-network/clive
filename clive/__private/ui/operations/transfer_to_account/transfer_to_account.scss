@@ -1,15 +1,10 @@
 TransferToAccount Body {
   grid-size: 2;
-  grid-columns: 10 3fr;
+  grid-columns: 11 3fr;
   grid-rows: 3 4 4 4;
   height: 18;
   margin: 0 4;
   background: $panel;
-}
-
-TransferToAccount .label {
-  padding: 1 2;
-  text-align: right;
 }
 
 TransferToAccount #from-label {

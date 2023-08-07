@@ -1,18 +1,8 @@
 RecoverAccount Body {
   grid-size: 2;
-  grid-columns: 22 1fr;
+  grid-columns: 24 1fr;
   grid-rows: 5 1 5 5 5 1 5 5;
   height: auto;
   margin: 0 4;
   background: $panel;
-}
-
-RecoverAccount .label {
-  padding: 2 2;
-  text-align: right;
-}
-
-RecoverAccount Input{
-    width: 120;
-    margin: 1 0;
 }

@@ -3,13 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Checkbox, Static
+from textual.widgets import Checkbox
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
@@ -50,7 +51,7 @@ class CommentOptions(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Comment options")
             with Body():
-                yield Static("author", classes="label")
+                yield InputLabel("author")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
                 yield from self.__permlink_input.compose()
                 yield from self.__max_accepted_payout_input.compose()
