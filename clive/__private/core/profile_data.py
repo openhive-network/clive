@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private import config
-from clive.__private.storage.accounts import Account, WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -16,8 +15,18 @@ from clive.models import Operation
 if TYPE_CHECKING:
     from collections.abc import Iterator
 
+    from clive.__private.storage.accounts import Account, WorkingAccount
 
-class ProfileCouldNotBeLoadedError(CliveError):
+
+class ProfileDataError(CliveError):
+    """An error related to profile data."""
+
+
+class NoWorkingAccountError(ProfileDataError):
+    """No working account is available."""
+
+
+class ProfileCouldNotBeLoadedError(ProfileDataError):
     """Raised when a profile could not be loaded."""
 
 
@@ -42,14 +51,30 @@ class ProfileData(Context):
 
     name: str = ""
 
-    # TODO: Should be None if not set, since we'll allow for using app without a working account
-    working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount(""))
+    _working_account: WorkingAccount | None = None
     watched_accounts: set[Account] = field(default_factory=set)
     known_accounts: set[Account] = field(default_factory=set)
     cart: Cart = field(init=False, default_factory=lambda: Cart())
 
     backup_node_addresses: list[Url] = field(init=False)
     _node_address: Url = field(init=False)
+
+    @property
+    def working_account(self) -> WorkingAccount:
+        """
+        Returns the working account.
+
+        Raises
+        ------
+        NoWorkingAccountError: If no working account is set.
+        """
+        if self._working_account is None:
+            raise NoWorkingAccountError
+        return self._working_account
+
+    @working_account.setter
+    def working_account(self, value: WorkingAccount) -> None:
+        self._working_account = value
 
     @property
     def node_address(self) -> Url:

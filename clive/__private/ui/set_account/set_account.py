@@ -7,7 +7,7 @@ from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Checkbox, Input, Static
 
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.storage.accounts import Account, InvalidAccountNameError
+from clive.__private.storage.accounts import Account, InvalidAccountNameError, WorkingAccount
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -61,4 +61,4 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         except InvalidAccountNameError as error:
             raise FormValidationError(str(error), given_value=account_name) from error
 
-        self.context.working_account.name = account_name
+        self.context.working_account = WorkingAccount(name=account_name)
