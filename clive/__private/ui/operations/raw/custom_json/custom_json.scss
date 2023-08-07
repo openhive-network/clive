@@ -1,18 +1,8 @@
 CustomJson Body {
   grid-size: 2;
-  grid-columns: 22 1fr;
+  grid-columns: 20 1fr;
   grid-rows: 5;
   height: 21;
   margin: 0 4;
   background: $panel;
-}
-
-CustomJson .label {
-  padding: 2 2;
-  text-align: right;
-}
-
-CustomJson Input{
-    width: 120;
-    margin: 1 0;
 }

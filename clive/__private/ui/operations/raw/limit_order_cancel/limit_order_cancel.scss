@@ -7,16 +7,6 @@ LimitOrderCancel Body {
   background: $panel;
 }
 
-LimitOrderCancel .label {
-  padding: 0 3;
-  text-align: right;
-  margin: 1 2;
-}
-
 LimitOrderCancel #owner-label {
   padding: 1 1;
-}
-
-LimitOrderCancel Input{
-    width: 120;
 }

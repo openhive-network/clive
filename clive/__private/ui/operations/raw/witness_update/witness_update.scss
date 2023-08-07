@@ -1,25 +1,12 @@
 WitnessUpdate Body {
   grid-size: 2;
-  grid-columns: 24 1fr;
+  grid-columns: 25 1fr;
   grid-rows: 3 4 4 4 4 4 4;
   height: 32;
   margin: 0 4;
   background: $panel;
 }
 
-WitnessUpdate .label {
-  padding: 1 2;
-  text-align: right;
-}
-
 WitnessUpdate #owner-label {
   padding: 1 2;
-}
-
-WitnessUpdate Input{
-    width: 120;
-}
-
-WitnessUpdate PlaceTaker{
-    row-span: 1;
 }

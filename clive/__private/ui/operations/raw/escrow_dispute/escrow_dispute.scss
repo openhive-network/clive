@@ -1,19 +1,10 @@
 EscrowDispute Body {
-  grid-size: 3;
-  grid-columns: 13 1fr;
+  grid-size: 2;
+  grid-columns: 15 1fr;
   grid-rows: 3 4 4 4;
   height: 20;
   margin: 0 4;
   background: $panel;
-}
-
-EscrowDispute PlaceTaker {
-  row-span: 4;
-}
-
-EscrowDispute .label {
-  padding: 1 1;
-  text-align: right;
 }
 
 EscrowDispute #from-label {

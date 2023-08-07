@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid
-from textual.widgets import Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER, ID_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -21,10 +21,6 @@ if TYPE_CHECKING:
 
 class Body(Grid):
     """All the content of the screen, excluding the title."""
-
-
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
 
 
 class CollateralizedConvert(RawOperationBaseScreen):
@@ -42,9 +38,8 @@ class CollateralizedConvert(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Collateralized convert")
             with Body():
-                yield Static("owner", classes="label")
+                yield InputLabel("owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield PlaceTaker()
                 yield from self.__request_id_input.compose()
                 yield from self.__amount_input.compose()
 

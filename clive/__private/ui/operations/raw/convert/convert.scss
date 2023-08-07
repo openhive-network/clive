@@ -1,6 +1,6 @@
 Convert Body {
-  grid-size: 3;
-  grid-columns: 12 1fr;
+  grid-size: 2;
+  grid-columns: 15 1fr;
   grid-rows: 3 4 4;
   height: 12;
   margin: 0 4;
@@ -9,11 +9,6 @@ Convert Body {
 
 Convert PlaceTaker {
   row-span: 2;
-}
-
-Convert .label {
-  padding: 1 1;
-  text-align: right;
 }
 
 Convert #from-label {

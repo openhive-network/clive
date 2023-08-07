@@ -1,15 +1,10 @@
 RecurrentTransfer Body {
   grid-size: 2;
-  grid-columns: 14 3fr;
+  grid-columns: 15 3fr;
   grid-rows: 3 4 4 4 4;
   height: 25;
   margin: 0 4;
   background: $panel;
-}
-
-RecurrentTransfer .label {
-  padding: 1 2;
-  text-align: right;
 }
 
 RecurrentTransfer #from-label {

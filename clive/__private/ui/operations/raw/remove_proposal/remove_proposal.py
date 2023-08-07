@@ -9,6 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RemoveProposalOperation
 
@@ -34,7 +35,7 @@ class RemoveProposal(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Remove proposal")
             with Body():
-                yield Static("proposal_owner", classes="label")
+                yield InputLabel("proposal_owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield PlaceTaker()
                 yield from self.__proposal_ids_input.compose()

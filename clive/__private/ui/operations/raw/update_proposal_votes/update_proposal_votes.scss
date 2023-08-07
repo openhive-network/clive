@@ -1,19 +1,10 @@
 UpdateProposalVotes Body {
-  grid-size: 3;
-  grid-columns: 16 2fr 1fr;
+  grid-size: 2;
+  grid-columns: 19 1fr;
   grid-rows: 4 5 5;
   height: 13;
   margin: 0 4;
   background: $panel;
-}
-
-UpdateProposalVotes PlaceTaker {
-  row-span: 3;
-}
-
-UpdateProposalVotes .label {
-  padding: 1 2;
-  text-align: right;
 }
 
 UpdateProposalVotes #voter-label {

@@ -10,6 +10,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -38,7 +39,7 @@ class TransferToVesting(RawOperationBaseScreen):
         with ViewBag():
             yield BigTitle("Transfer to vesting")
             with Body():
-                yield Static("from", classes="label")
+                yield InputLabel("from")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield PlaceTaker()
                 yield from self.__to_input.compose()
