@@ -32,9 +32,7 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
         default_auto_vest = get_default_from_model(SetWithdrawVestingRouteOperation, "auto_vest", bool)
 
         self.__to_account_input = AccountNameInput(label="to account")
-        self.__percent_input = CustomInput(
-            label="percent", default_value=default_percent, placeholder=PERCENT_PLACEHOLDER
-        )
+        self.__percent_input = CustomInput(label="percent", value=default_percent, placeholder=PERCENT_PLACEHOLDER)
         self.__auto_vest_input = Checkbox("auto vest", value=default_auto_vest)
 
     def create_left_panel(self) -> ComposeResult:

@@ -35,9 +35,7 @@ class EscrowDispute(RawOperationBaseScreen):
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__who_input = AccountNameInput(label="who", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__escrow_id_input = CustomInput(
-            label="escrow id", default_value=default_escrow_id, placeholder=ID_PLACEHOLDER
-        )
+        self.__escrow_id_input = CustomInput(label="escrow id", value=default_escrow_id, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

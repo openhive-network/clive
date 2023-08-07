@@ -41,7 +41,7 @@ class CommentOptions(RawOperationBaseScreen):
             label="max accepted payout", placeholder=ASSET_AMOUNT_PLACEHOLDER
         )
         self.__percent_hbd_input = CustomInput(
-            label="percent hbd", default_value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
+            label="percent hbd", value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
         )
         self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
         self.__allow_curation_rewards_input = Checkbox("allow curation reward", value=default_allow_curation_rewards)

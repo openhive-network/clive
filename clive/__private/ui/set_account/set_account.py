@@ -10,7 +10,7 @@ from clive.__private.storage.accounts import Account, InvalidAccountNameError, W
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameHighlighter, AccountNameInput
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import FormValidationError
 

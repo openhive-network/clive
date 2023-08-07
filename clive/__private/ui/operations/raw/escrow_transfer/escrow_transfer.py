@@ -38,14 +38,12 @@ class EscrowTransfer(RawOperationBaseScreen):
 
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__escrow_id_input = CustomInput(
-            label="escrow id", default_value=default_escrow_id, placeholder=ID_PLACEHOLDER
-        )
+        self.__escrow_id_input = CustomInput(label="escrow id", value=default_escrow_id, placeholder=ID_PLACEHOLDER)
         self.__hbd_amount_input = CustomInput(
-            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", default_value="0.000"
+            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
         )
         self.__hive_amount_input = CustomInput(
-            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", default_value="0.000"
+            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
         )
         self.__fee_input = AmountInput()
         self.__ratification_deadline_input = CustomInput(label="ratification deadline", placeholder=DATE_PLACEHOLDER)

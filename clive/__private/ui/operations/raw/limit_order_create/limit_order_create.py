@@ -36,9 +36,7 @@ class LimitOrderCreate(RawOperationBaseScreen):
         default_order_id = str(get_default_from_model(LimitOrderCreateOperation, "orderid", int))
         default_fill_or_kill = get_default_from_model(LimitOrderCreateOperation, "fill_or_kill", bool)
 
-        self.__order_id_input = CustomInput(
-            label="order id", default_value=default_order_id, placeholder=ID_PLACEHOLDER
-        )
+        self.__order_id_input = CustomInput(label="order id", value=default_order_id, placeholder=ID_PLACEHOLDER)
         self.__amount_to_sell_input = AmountInput()
         self.__min_to_receive_input = AmountInput()
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)

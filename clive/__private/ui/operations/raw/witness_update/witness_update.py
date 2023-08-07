@@ -37,10 +37,10 @@ class WitnessUpdate(RawOperationBaseScreen):
             label="account creation fee", placeholder=ASSET_AMOUNT_PLACEHOLDER
         )
         self.__maximum_block_size_input = CustomInput(
-            label="maximum block size", default_value="131072", placeholder="maximum block size"
+            label="maximum block size", value="131072", placeholder="maximum block size"
         )
         self.__hbd_interest_rate_input = CustomInput(
-            label="hbd interest rate", default_value="1000", placeholder="hbd interest rate"
+            label="hbd interest rate", value="1000", placeholder="hbd interest rate"
         )
         self.__fee_input = CustomInput(label="fee", placeholder=ASSET_AMOUNT_PLACEHOLDER)
 
