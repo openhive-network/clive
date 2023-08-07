@@ -52,6 +52,7 @@ class NodeData:
     last_refresh: datetime = field(default_factory=lambda: datetime.now())
     last_transaction: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
     recovery_account: str = ""
+    proxy: str = ""
     reputation: int = 0
     warnings: int = 0
     rc_manabar: Manabar = field(default_factory=Manabar)

@@ -71,6 +71,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             account.data.hbd_unclaimed = info.core.reward_hbd_balance
             account.data.hp_unclaimed = info.core.reward_vesting_balance
             account.data.recovery_account = info.core.recovery_account
+            account.data.proxy = info.core.proxy
 
             account.data.hp_balance = self.__calculate_hive_power(gdpo, info.core)
 
