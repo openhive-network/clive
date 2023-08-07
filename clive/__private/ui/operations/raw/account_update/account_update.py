@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -52,7 +52,7 @@ class AccountUpdate(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Account update")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield from self.__account_input.compose()
                 yield from self.__memo_key_input.compose()
                 yield from self.__json_metadata_input.compose()

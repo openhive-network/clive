@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Checkbox, Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
@@ -46,7 +46,7 @@ class LimitOrderCreate2(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Limit order create two")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield InputLabel("owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield from self.__order_id_input.compose()

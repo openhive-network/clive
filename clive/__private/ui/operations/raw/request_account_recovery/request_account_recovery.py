@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid
+from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -42,7 +42,7 @@ class RequestAccountRecovery(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Request account recovery")
-            with Body():
+            with ScrollableContainer(), Body():
                 yield from self.__recovery_account_input.compose()
                 yield from self.__account_to_recover_input.compose()
                 yield PlaceTaker()
