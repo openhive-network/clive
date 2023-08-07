@@ -8,10 +8,10 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput, ProposalIdT
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
-    ID_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -29,7 +29,7 @@ class UpdateProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proposal_id_input = CustomInput(label="proposal id", placeholder=ID_PLACEHOLDER)
+        self.__proposal_id_input = IdInput[ProposalIdT](label="proposal id")
         self.__creator_input = AccountNameInput(label="creator")
         self.__daily_pay_input = CustomInput(label="daily pay", placeholder=ASSET_AMOUNT_PLACEHOLDER)
         self.__subject_input = CustomInput(label="subject", placeholder="e.g.: New subject")

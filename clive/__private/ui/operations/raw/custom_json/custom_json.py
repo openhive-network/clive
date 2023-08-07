@@ -7,6 +7,7 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput, IdT
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomJsonOperation
@@ -27,7 +28,7 @@ class CustomJson(RawOperationBaseScreen):
         self.__required_posting_auths_input = CustomInput(
             label="required posting auths", placeholder="e.g: alice,bob,charlie"
         )
-        self.__id_input = CustomInput(label="id", value="0")
+        self.__id_input = IdInput[IdT](value=0)
         self.__json_input = JsonDataInput(label="json")
 
     def create_left_panel(self) -> ComposeResult:
