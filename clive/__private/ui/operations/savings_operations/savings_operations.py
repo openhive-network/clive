@@ -208,6 +208,7 @@ class SavingsTransfers(TabPane, OperationMethods):
 
             return TransferFromSavingsOperation(
                 from_=self.app.world.profile_data.working_account.name,
+                to=self.__to_account_input.value,
                 amount=asset,
                 memo=self.__memo_input.value,
                 request_id=self.__create_request_id(),
