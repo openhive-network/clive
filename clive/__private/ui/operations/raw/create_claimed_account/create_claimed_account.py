@@ -10,12 +10,11 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
+from clive.__private.ui.widgets.inputs.memo_key_input import MemoKeyInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
-from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CreateClaimedAccountOperation
 
@@ -49,7 +48,7 @@ class CreateClaimedAccount(RawOperationBaseScreen):
         self.__account_auths_posting_input = AccountAuthsInput()
         self.__key_auths_posting_input = KeyAuthsInput()
 
-        self.__memo_key_input = CustomInput(label="memo key", placeholder=KEY_PLACEHOLDER)
+        self.__memo_key_input = MemoKeyInput()
         self.__json_metadata_input = JsonDataInput()
 
     def create_left_panel(self) -> ComposeResult:
