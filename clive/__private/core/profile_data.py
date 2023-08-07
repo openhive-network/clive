@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import shelve
 from contextlib import contextmanager
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
@@ -13,7 +12,7 @@ from clive.exceptions import CliveError
 from clive.models import Operation
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import Iterable, Iterator
 
     from clive.__private.storage.accounts import Account, WorkingAccount
 
@@ -44,20 +43,26 @@ class Cart(list[Operation]):
         self[index_1], self[index_2] = self[index_2], self[index_1]
 
 
-@dataclass
 class ProfileData(Context):
-    ONBOARDING_PROFILE_NAME: Final[str] = field(init=False, default="onboarding")
-    _LAST_USED_IDENTIFIER: Final[str] = field(init=False, default="!last_used")
+    ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
+    _LAST_USED_IDENTIFIER: Final[str] = "!last_used"
 
-    name: str = ""
+    def __init__(
+        self,
+        name: str = "",
+        working_account: WorkingAccount | None = None,
+        watched_accounts: Iterable[Account] | None = None,
+        known_accounts: Iterable[Account] | None = None,
+    ) -> None:
+        self.name = name
+        self._working_account = working_account
+        self.watched_accounts = set(watched_accounts or [])
+        self.known_accounts = set(known_accounts or [])
 
-    _working_account: WorkingAccount | None = None
-    watched_accounts: set[Account] = field(default_factory=set)
-    known_accounts: set[Account] = field(default_factory=set)
-    cart: Cart = field(init=False, default_factory=lambda: Cart())
+        self.cart = Cart()
 
-    backup_node_addresses: list[Url] = field(init=False)
-    _node_address: Url = field(init=False)
+        self.backup_node_addresses = self.__default_node_address()
+        self._node_address = self.backup_node_addresses[0]
 
     @property
     def working_account(self) -> WorkingAccount:
@@ -83,10 +88,6 @@ class ProfileData(Context):
     @classmethod
     def _get_file_storage_path(cls) -> Path:
         return Path(config.settings.data_path) / "data/profile"
-
-    def __post_init__(self) -> None:
-        self.backup_node_addresses = self.__default_node_address()
-        self._node_address = self.backup_node_addresses[0]
 
     def save(self) -> None:
         from clive.__private.ui.app import Clive
