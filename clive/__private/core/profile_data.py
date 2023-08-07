@@ -46,7 +46,7 @@ class ProfileData(Context):
     working_account: WorkingAccount = field(default_factory=lambda: WorkingAccount(""))
     watched_accounts: set[Account] = field(default_factory=set)
     known_accounts: set[Account] = field(default_factory=set)
-    cart = Cart()
+    cart: Cart = field(init=False, default_factory=lambda: Cart())
 
     backup_node_addresses: list[Url] = field(init=False)
     _node_address: Url = field(init=False)
