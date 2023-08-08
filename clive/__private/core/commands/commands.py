@@ -73,6 +73,7 @@ class Commands(Generic[WorldT]):
     def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
         return self.__surround_with_exception_handlers(
             Sign(
+                app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
                 transaction=transaction,
                 key=sign_with,
@@ -84,11 +85,17 @@ class Commands(Generic[WorldT]):
         return self.__surround_with_exception_handlers(SaveToFileAsBinary(transaction=transaction, file_path=path))
 
     def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
+        return self.__surround_with_exception_handlers(
+            Broadcast(
+                node=self._world.node,
+                transaction=transaction,
+            )
+        )
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
             FastBroadcast(
+                app_state=self._world.app_state,
                 node=self._world.node,
                 operation=operation,
                 beekeeper=self._world.beekeeper,

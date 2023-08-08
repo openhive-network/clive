@@ -9,9 +9,9 @@ from textual.widgets import Label, Static
 
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file import SelectFile
@@ -102,10 +102,6 @@ class TransactionSummary(BaseScreen):
                     yield OperationItem(operation.json(by_alias=True), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
-    @on(Activate.Succeeded)
-    def activate_succeeded(self) -> None:
-        self.__broadcast()
-
     @on(SelectFile.Saved)
     def save_to_file(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
@@ -126,12 +122,9 @@ class TransactionSummary(BaseScreen):
         self.app.pop_screen_until(DashboardBase)
 
     def action_broadcast(self) -> None:
-        if not self.app.world.app_state.is_active():
-            self.app.push_screen(Activate())
-            return
-
         self.__broadcast()
 
+    @CliveScreen.try_again_after_activation()
     def __broadcast(self) -> None:
         try:
             signed = self.__sign_transaction()

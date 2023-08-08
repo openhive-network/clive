@@ -25,6 +25,7 @@ class OperationCommand(WorldBasedCommand, ABC):
 
         transaction = perform_actions_on_transaction(
             content=self._create_operation(),
+            app_state=self.world.app_state,
             beekeeper=self.world.beekeeper,
             node=self.world.node,
             sign_key=key_to_sign,

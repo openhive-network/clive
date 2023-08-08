@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command import Command
+from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class FastBroadcast(Command):
+class FastBroadcast(CommandInActive):
     node: Node
     operation: Operation
     beekeeper: Beekeeper
@@ -24,6 +24,7 @@ class FastBroadcast(Command):
     def _execute(self) -> None:
         perform_actions_on_transaction(
             content=self.operation,
+            app_state=self.app_state,
             node=self.node,
             beekeeper=self.beekeeper,
             chain_id=self.chain_id,

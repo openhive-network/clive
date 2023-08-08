@@ -4,16 +4,15 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
-from textual import on
 from textual.binding import Binding
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.transaction_summary import TransactionSummary
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
@@ -53,10 +52,6 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
             self.notify(f"Operation failed the validation process.\n{error}", severity="error")
             return None
 
-    @on(Activate.Succeeded)
-    def activate_succeeded(self) -> None:
-        self.__fast_broadcast()
-
     def action_finalize(self) -> None:
         if self.__add_to_cart():
             self.app.switch_screen(TransactionSummary())
@@ -70,12 +65,9 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
         if not self.create_operation():  # For faster validation feedback to the user
             return
 
-        if not self.app.world.app_state.is_active():
-            self.app.push_screen(Activate())
-            return
-
         self.__fast_broadcast()
 
+    @CliveScreen.try_again_after_activation()
     def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
             try:

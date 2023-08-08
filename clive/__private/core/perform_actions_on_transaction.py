@@ -8,6 +8,7 @@ from clive.__private.core.commands.sign import Sign
 from clive.__private.core.ensure_transaction import ensure_transaction
 
 if TYPE_CHECKING:
+    from clive.__private.core.commands.abc.command_in_active import AppStateProtocol
     from clive.models import Transaction
 
 if TYPE_CHECKING:
@@ -22,6 +23,7 @@ if TYPE_CHECKING:
 def perform_actions_on_transaction(  # noqa: PLR0913
     content: TransactionConvertibleType,
     *,
+    app_state: AppStateProtocol,
     node: Node,
     beekeeper: Beekeeper,
     chain_id: str,
@@ -36,6 +38,7 @@ def perform_actions_on_transaction(  # noqa: PLR0913
     ----
     content: The content to be converted to a transaction.
         (This can be a transaction object, a list of operations, or a single operation.)
+    app_state: The app state.
     node: The node which will be used for transaction broadcasting.
     beekeeper: The beekeeper to use to sign the transaction.
     chain_id: The chain id to use for signing the transaction.
@@ -51,7 +54,7 @@ def perform_actions_on_transaction(  # noqa: PLR0913
 
     if sign_key:
         transaction = Sign(
-            beekeeper=beekeeper, transaction=transaction, key=sign_key, chain_id=chain_id
+            app_state=app_state, beekeeper=beekeeper, transaction=transaction, key=sign_key, chain_id=chain_id
         ).execute_with_result()
 
     if save_file_path:
