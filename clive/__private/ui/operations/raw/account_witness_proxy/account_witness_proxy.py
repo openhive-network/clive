@@ -25,7 +25,8 @@ class PlaceTaker(Static):
 
 
 class AccountWitnessProxy(RawOperationBaseScreen):
-    def __init__(self) -> None:
+    def __init__(self, delete_proxy: bool = False) -> None:
+        self.__delete_proxy = delete_proxy
         super().__init__()
 
         self.__proxy_input = Input(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
@@ -36,9 +37,14 @@ class AccountWitnessProxy(RawOperationBaseScreen):
             with Body():
                 yield Static("account", classes="label")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                yield PlaceTaker()
-                yield Static("proxy", classes="label")
-                yield self.__proxy_input
+                if not self.__delete_proxy:
+                    yield Static("proxy", classes="label")
+                    yield self.__proxy_input
+                else:
+                    yield Static()
+                    yield Static(
+                        "Notice: after broadcast you will delete proxy for your account", id="proxy-notification"
+                    )
 
     def _create_operation(self) -> AccountWitnessProxyOperation:
         return AccountWitnessProxyOperation(
