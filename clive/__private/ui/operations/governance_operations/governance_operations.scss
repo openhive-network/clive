@@ -1,3 +1,68 @@
 Governance Tab {
     width: 1fr;
 }
+
+/* Proxy Tab*/
+
+ProxyTab #proxy-vote-information {
+    text-align: center;
+    background: $primary-lighten-1;
+    text-style: bold;
+}
+
+ProxyTab .action-proxy-label {
+    width: 50%;
+    text-align: center;
+    background: $primary-lighten-1;
+    height: 3;
+    content-align: center middle;
+    text-style: bold;
+}
+
+ProxyTab .empty {
+    width: 10%;
+}
+
+ProxyTab ProxyPresent {
+    height: auto;
+    margin-top: 2;
+}
+
+ProxyTab ProxyPresent #current-proxy {
+    text-align: center;
+    background: $panel-lighten-2;
+    text-style: bold;
+}
+
+ProxyTab ProxyPresent #delete-proxy-container{
+    height: 3;
+    margin-top: 1;
+}
+
+ProxyTab ProxyPresent #delete-proxy-button {
+    width: 30%;
+    background: $error-darken-1;
+    text-style: bold;
+}
+
+ProxyTab ProxyAbsent {
+    height: auto;
+    margin-top: 2;
+}
+
+ProxyTab ProxyAbsent #set-proxy-container {
+    height: 5;
+    margin-top: 1;
+}
+
+ProxyTab ProxyAbsent #set-proxy-button {
+    width: 30%;
+}
+
+ProxyTab ProxyAbsent #proxy-warning {
+    text-align: center;
+    content-align: center middle;
+    margin-top: 1;
+    background: $secondary-darken-3;
+    text-style: bold;
+}
