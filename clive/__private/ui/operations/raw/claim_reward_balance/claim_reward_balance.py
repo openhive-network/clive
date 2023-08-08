@@ -8,9 +8,8 @@ from textual.widgets import Static
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import ClaimRewardBalanceOperation
@@ -31,9 +30,9 @@ class ClaimRewardBalance(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__reward_hive_input = CustomInput(label="reward hive", placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__reward_hbd_input = CustomInput(label="reward hbd", placeholder=ASSET_AMOUNT_PLACEHOLDER)
-        self.__reward_vests_input = CustomInput(label="reward vests", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__reward_hive_input = AmountInput(label="reward hive")
+        self.__reward_hbd_input = AmountInput(label="reward hbd")
+        self.__reward_vests_input = AmountInput(label="reward vests")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

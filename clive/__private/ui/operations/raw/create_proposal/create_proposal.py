@@ -8,11 +8,11 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
-    ASSET_AMOUNT_PLACEHOLDER,
     DATE_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -34,7 +34,7 @@ class CreateProposal(RawOperationBaseScreen):
         self.__receiver_input = AccountNameInput(label="receiver")
         self.__start_date_input = CustomInput(label="start date", placeholder=DATE_PLACEHOLDER)
         self.__end_date_input = CustomInput(label="end date", placeholder=DATE_PLACEHOLDER)
-        self.__daily_pay_input = CustomInput(label="daily pay", placeholder=ASSET_AMOUNT_PLACEHOLDER)
+        self.__daily_pay_input = AmountInput(label="daily pay")
         self.__subject_input = CustomInput(label="subject", placeholder="e.g: example subject")
         self.__permlink_input = PermlinkInput()
 
