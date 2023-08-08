@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, overload
+from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
@@ -37,9 +37,12 @@ if TYPE_CHECKING:
     from clive.models import Operation, Transaction
 
 
-class Commands:
+WorldT = TypeVar("WorldT", bound="World")
+
+
+class Commands(Generic[WorldT]):
     def __init__(
-        self, world: World, *, exception_handlers: list[type[ErrorHandlerContextManager]] | None = None
+        self, world: WorldT, *, exception_handlers: list[type[ErrorHandlerContextManager]] | None = None
     ) -> None:
         self._world = world
         self.__exception_handlers = exception_handlers
@@ -221,6 +224,6 @@ class Commands:
         return CommandWrapper(command=command, error=error)
 
 
-class TextualCommands(Commands):
+class TextualCommands(Commands["TextualWorld"]):
     def __init__(self, world: TextualWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])

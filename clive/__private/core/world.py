@@ -55,7 +55,7 @@ class World:
         self._node = Node(self._profile_data)
 
     @property
-    def commands(self) -> Commands:
+    def commands(self) -> Commands[World]:
         return self._commands
 
     @property
@@ -78,7 +78,7 @@ class World:
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)
 
-    def _setup_commands(self) -> Commands:
+    def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
     def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
@@ -106,7 +106,7 @@ class TextualWorld(World, CliveWidget, ManualReactive):
         self.app_state = self._app_state
         self.node = self._node
 
-    def _setup_commands(self) -> Commands:
+    def _setup_commands(self) -> TextualCommands:  # type: ignore[override]
         return TextualCommands(self)
 
 
