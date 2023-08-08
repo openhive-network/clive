@@ -19,5 +19,5 @@ class SaveToFileAsBinary(Command):
 
     def _execute(self) -> None:
         serialized = serialize_transaction(self.transaction)
-        with self.file_path.open("wb", encoding="utf-8") as file:
+        with self.file_path.open("wb") as file:
             file.write(serialized)
