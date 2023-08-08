@@ -9,7 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
@@ -34,7 +34,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
         default_executions = get_default_from_model(RecurrentTransferOperation, "executions", int)
 
         self.__to_input = AccountNameInput(label="to")
-        self.__amount_input = AmountInput()
+        self.__amount_input = AssetAmountInput()
         self.__memo_input = MemoInput()
         self.__recurrence_input = IntegerInput(label="recurrence", value=default_recurrence, placeholder="e.g.: 26")
         self.__executions_input = IntegerInput(label="executions", value=default_executions, placeholder="e.g.: 3")

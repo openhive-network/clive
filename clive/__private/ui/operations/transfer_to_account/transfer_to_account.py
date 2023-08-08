@@ -9,10 +9,10 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
+from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from clive.models.asset import AssetAmountT
@@ -36,7 +36,7 @@ class TransferToAccount(OperationBaseScreen):
         self.__to_input = AccountNameInput(label="to")
         self.__memo_input = MemoInput()
 
-        self.__amount_input = AmountInput()
+        self.__amount_input = AssetAmountInput()
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
