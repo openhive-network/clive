@@ -133,7 +133,7 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: f"Update: {self.__humanize_datetime(self._account.data.last_refresh)}",
+            lambda _: f"Account update: {self.__humanize_datetime(self._account.data.last_account_update)}",
         )
 
     @classmethod

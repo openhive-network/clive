@@ -61,6 +61,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         for account, info in api_accounts.items():
             account.data.reputation = info.reputation
             account.data.last_history_entry = info.last_history_entry
+            account.data.last_account_update = info.core.last_account_update
             account.data.warnings = info.warnings
 
             account.data.hive_balance = info.core.balance
