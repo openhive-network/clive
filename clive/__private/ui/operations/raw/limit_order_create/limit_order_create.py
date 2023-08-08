@@ -10,12 +10,9 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.date_input import DateInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput, OrderIdT
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.placeholders_constants import (
-    DATE_PLACEHOLDER,
-)
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCreateOperation
 
@@ -40,7 +37,7 @@ class LimitOrderCreate(RawOperationBaseScreen):
         self.__amount_to_sell_input = AssetAmountInput()
         self.__min_to_receive_input = AssetAmountInput()
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)
-        self.__expiration_input = CustomInput(label="expiration", placeholder=DATE_PLACEHOLDER)
+        self.__expiration_input = DateInput(label="expiration")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
