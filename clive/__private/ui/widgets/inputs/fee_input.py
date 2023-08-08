@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 
 
-class FeeInput(CustomInput):
-    def __init__(
-        self, label: str = "fee", value: str | None = None, placeholder: str = ASSET_AMOUNT_PLACEHOLDER
-    ) -> None:
-        super().__init__(label=label, value=value, placeholder=placeholder)
+class FeeInput(AmountInput):
+    def __init__(self, label: str = "fee", value: float | int | None = None) -> None:
+        super().__init__(label=label, value=value)
