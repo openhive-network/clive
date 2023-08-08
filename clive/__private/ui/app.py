@@ -40,7 +40,6 @@ if TYPE_CHECKING:
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
-    from clive.__private.core.commands.command_wrappers import CommandWrapper
     from clive.__private.ui.app_messages import NodeDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
@@ -233,18 +232,6 @@ class Clive(App[int], ManualReactive):
             text = f"{prefix} {text}"
 
         self.logs += [text]
-
-    def activate(self, password: str, active_mode_time: timedelta | None = None) -> CommandWrapper:
-        if active_mode_time is not None:
-            self.world.commands.set_timeout(seconds=int(active_mode_time.total_seconds()))
-        wrapper = self.world.commands.activate(password=password, time=active_mode_time)
-        self.world.update_reactive("app_state")
-        return wrapper
-
-    def deactivate(self) -> None:
-        self.world.commands.deactivate()
-        self.world.update_reactive("app_state")
-        self.switch_screen("dashboard_inactive")
 
     def post_message_to_everyone(self, message: Message) -> None:
         """Post a message to all screens in the stack."""

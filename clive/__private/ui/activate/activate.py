@@ -82,7 +82,7 @@ class Activate(BaseScreen):
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)
 
-        if not self.app.activate(self.__password_input.value, active_mode_time).success:
+        if not self.app.world.commands.activate(password=self.__password_input.value, time=active_mode_time).success:
             return
 
         self.__exit_success()

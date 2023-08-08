@@ -22,6 +22,7 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
 )
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
+from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -224,6 +225,19 @@ class Commands(Generic[WorldT]):
         return CommandWrapper(command=command, error=error)
 
 
-class TextualCommands(Commands["TextualWorld"]):
+class TextualCommands(Commands["TextualWorld"], CliveWidget):
     def __init__(self, world: TextualWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
+
+    def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
+        if time is not None:
+            self.set_timeout(seconds=int(time.total_seconds()))
+        wrapper = super().activate(password=password, time=time)
+        self._world.update_reactive("app_state")
+        return wrapper
+
+    def deactivate(self) -> CommandWrapper:
+        wrapper = super().deactivate()
+        self._world.update_reactive("app_state")
+        self.app.switch_screen("dashboard_inactive")
+        return wrapper

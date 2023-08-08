@@ -13,7 +13,7 @@ class DashboardActive(DashboardBase):
     ]
 
     def action_deactivate(self) -> None:
-        self.app.deactivate()
+        self.app.world.commands.deactivate()
 
     def action_config(self) -> None:
         self.app.push_screen(ConfigActive())
