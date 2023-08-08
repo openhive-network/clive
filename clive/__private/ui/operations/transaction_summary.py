@@ -102,6 +102,7 @@ class TransactionSummary(BaseScreen):
                     yield OperationItem(operation.json(by_alias=True), classes="-even" if idx % 2 == 0 else "")
             yield Static()
 
+    @CliveScreen.try_again_after_activation()
     @on(SelectFile.Saved)
     def save_to_file(self, event: SelectFile.Saved) -> None:
         file_path = event.file_path
