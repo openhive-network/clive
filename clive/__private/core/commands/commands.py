@@ -20,6 +20,8 @@ from clive.__private.core.commands.update_node_data import UpdateNodeData
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
+from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
+from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -30,7 +32,7 @@ if TYPE_CHECKING:
         ErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
-    from clive.__private.core.world import World
+    from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Operation, Transaction
 
@@ -217,3 +219,8 @@ class Commands:
             result = command.result if error is None else ResultNotAvailable(exception=error)
             return CommandWithResultWrapper(command=command, result=result, error=error)
         return CommandWrapper(command=command, error=error)
+
+
+class TextualCommands(Commands):
+    def __init__(self, world: TextualWorld) -> None:
+        super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])

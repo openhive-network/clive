@@ -7,9 +7,7 @@ from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.commands.commands import Commands
-from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
-from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
+from clive.__private.core.commands.commands import Commands, TextualCommands
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
 from clive.__private.ui.background_tasks import BackgroundTasks
@@ -109,7 +107,7 @@ class TextualWorld(World, CliveWidget, ManualReactive):
         self.node = self._node
 
     def _setup_commands(self) -> Commands:
-        return Commands(self, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
+        return TextualCommands(self)
 
 
 class TyperWorld(World):
