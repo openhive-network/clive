@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import TYPE_CHECKING, Final
 
 import humanize
@@ -21,7 +22,6 @@ from clive.models import Asset
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from datetime import datetime
 
     from textual.app import ComposeResult
 
@@ -137,8 +137,11 @@ class AccountInfo(Container, AccountReferencingWidget):
         )
 
     @classmethod
-    def __humanize_datetime(cls, dt: datetime) -> str:
-        return dt.replace(tzinfo=None).isoformat()
+    def __humanize_datetime(cls, value: datetime) -> str:
+        value = value.replace(tzinfo=None)
+        if value == datetime(1970, 1, 1):
+            return "never"
+        return value.isoformat()
 
 
 class AccountRow(AccountReferencingWidget):
