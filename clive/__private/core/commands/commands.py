@@ -41,38 +41,38 @@ class Commands:
     def __init__(
         self, world: World, *, exception_handlers: list[type[ErrorHandlerContextManager]] | None = None
     ) -> None:
-        self.__world = world
+        self._world = world
         self.__exception_handlers = exception_handlers
 
     def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
             Activate(
-                beekeeper=self.__world.beekeeper, wallet=self.__world.profile_data.name, password=password, time=time
+                beekeeper=self._world.beekeeper, wallet=self._world.profile_data.name, password=password, time=time
             )
         )
 
     def deactivate(self) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
-            Deactivate(beekeeper=self.__world.beekeeper, wallet=self.__world.profile_data.name)
+            Deactivate(beekeeper=self._world.beekeeper, wallet=self._world.profile_data.name)
         )
 
     def set_timeout(self, *, seconds: int) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(SetTimeout(beekeeper=self.__world.beekeeper, seconds=seconds))
+        return self.__surround_with_exception_handlers(SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds))
 
     def build_transaction(
         self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
     ) -> CommandWithResultWrapper[Transaction]:
         return self.__surround_with_exception_handlers(
-            BuildTransaction(operations=operations, node=self.__world.node, expiration=expiration)
+            BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
         )
 
     def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
         return self.__surround_with_exception_handlers(
             Sign(
-                beekeeper=self.__world.beekeeper,
+                beekeeper=self._world.beekeeper,
                 transaction=transaction,
                 key=sign_with,
-                chain_id=self.__world.node.chain_id,
+                chain_id=self._world.node.chain_id,
             )
         )
 
@@ -80,35 +80,35 @@ class Commands:
         return self.__surround_with_exception_handlers(SaveToFileAsBinary(transaction=transaction, file_path=path))
 
     def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
-        return self.__surround_with_exception_handlers(Broadcast(node=self.__world.node, transaction=transaction))
+        return self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
 
     def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
             FastBroadcast(
-                node=self.__world.node,
+                node=self._world.node,
                 operation=operation,
-                beekeeper=self.__world.beekeeper,
+                beekeeper=self._world.beekeeper,
                 sign_with=sign_with,
-                chain_id=self.__world.node.chain_id,
+                chain_id=self._world.node.chain_id,
             )
         )
 
     def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return self.__surround_with_exception_handlers(
             ImportKey(
-                app_state=self.__world.app_state,
-                wallet=self.__world.profile_data.name,
+                app_state=self._world.app_state,
+                wallet=self._world.profile_data.name,
                 key_to_import=key_to_import,
-                beekeeper=self.__world.beekeeper,
+                beekeeper=self._world.beekeeper,
             )
         )
 
     def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
             RemoveKey(
-                app_state=self.__world.app_state,
-                wallet=self.__world.profile_data.name,
-                beekeeper=self.__world.beekeeper,
+                app_state=self._world.app_state,
+                wallet=self._world.profile_data.name,
+                beekeeper=self._world.beekeeper,
                 key_to_remove=key_to_remove,
                 password=password,
             )
@@ -117,21 +117,21 @@ class Commands:
     def sync_data_with_beekeeper(self) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
-                app_state=self.__world.app_state,
-                profile_data=self.__world.profile_data,
-                beekeeper=self.__world.beekeeper,
+                app_state=self._world.app_state,
+                profile_data=self._world.profile_data,
+                beekeeper=self._world.beekeeper,
             )
         )
 
     def update_node_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWrapper:
         wrapper = self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=list(accounts or []), node=self.__world.node)
+            UpdateNodeData(accounts=list(accounts or []), node=self._world.node)
         )
 
         if wrapper.error_occurred:
             return CommandWrapper(command=wrapper.command, error=wrapper.error)
 
-        self.__world.app_state._dynamic_global_properties = wrapper.result_or_raise
+        self._world.app_state._dynamic_global_properties = wrapper.result_or_raise
         return CommandWrapper(command=wrapper.command)
 
     @overload
