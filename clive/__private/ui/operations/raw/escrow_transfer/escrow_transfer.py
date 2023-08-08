@@ -11,13 +11,12 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.date_input import DateInput
 from clive.__private.ui.widgets.inputs.id_input import EscrowIdT, IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
-    DATE_PLACEHOLDER,
 )
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -40,15 +39,15 @@ class EscrowTransfer(RawOperationBaseScreen):
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__escrow_id_input = IdInput[EscrowIdT](label="escrow id", value=default_escrow_id)
-        self.__hbd_amount_input = CustomInput(
-            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
+        self.__hbd_amount_input = AmountInput(
+            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
         self.__hive_amount_input = AmountInput(
             label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
         self.__fee_input = AssetAmountInput()
-        self.__ratification_deadline_input = CustomInput(label="ratification deadline", placeholder=DATE_PLACEHOLDER)
-        self.__escrow_expiration_input = CustomInput(label="escrow expiration", placeholder=DATE_PLACEHOLDER)
+        self.__ratification_deadline_input = DateInput(label="ratification deadline")
+        self.__escrow_expiration_input = DateInput(label="escrow expiration")
         self.__json_meta_input = JsonDataInput(label="json meta")
 
     def create_left_panel(self) -> ComposeResult:

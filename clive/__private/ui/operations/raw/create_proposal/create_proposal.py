@@ -9,13 +9,10 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.date_input import DateInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.placeholders_constants import (
-    DATE_PLACEHOLDER,
-)
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import CreateProposalOperation
@@ -33,8 +30,8 @@ class CreateProposal(RawOperationBaseScreen):
         super().__init__()
 
         self.__receiver_input = AccountNameInput(label="receiver")
-        self.__start_date_input = CustomInput(label="start date", placeholder=DATE_PLACEHOLDER)
-        self.__end_date_input = CustomInput(label="end date", placeholder=DATE_PLACEHOLDER)
+        self.__start_date_input = DateInput(label="start date")
+        self.__end_date_input = DateInput(label="end date")
         self.__daily_pay_input = AmountInput(label="daily pay")
         self.__subject_input = TextInput(label="subject", placeholder="e.g: example subject")
         self.__permlink_input = PermlinkInput()
