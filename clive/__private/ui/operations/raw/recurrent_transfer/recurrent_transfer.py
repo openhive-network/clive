@@ -10,8 +10,8 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecurrentTransferOperation
@@ -30,14 +30,14 @@ class RecurrentTransfer(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_recurrence = str(get_default_from_model(RecurrentTransferOperation, "recurrence", int))
-        default_executions = str(get_default_from_model(RecurrentTransferOperation, "executions", int))
+        default_recurrence = get_default_from_model(RecurrentTransferOperation, "recurrence", int)
+        default_executions = get_default_from_model(RecurrentTransferOperation, "executions", int)
 
         self.__to_input = AccountNameInput(label="to")
         self.__amount_input = AmountInput()
         self.__memo_input = MemoInput()
-        self.__recurrence_input = CustomInput(label="recurrence", value=default_recurrence, placeholder="e.g.: 26")
-        self.__executions_input = CustomInput(label="executions", value=default_executions, placeholder="e.g.: 3")
+        self.__recurrence_input = IntegerInput(label="recurrence", value=default_recurrence, placeholder="e.g.: 26")
+        self.__executions_input = IntegerInput(label="executions", value=default_executions, placeholder="e.g.: 3")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

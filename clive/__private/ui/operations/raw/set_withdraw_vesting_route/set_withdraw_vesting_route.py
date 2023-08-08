@@ -10,8 +10,8 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.placeholders_constants import PERCENT_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import SetWithdrawVestingRouteOperation
@@ -28,11 +28,11 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_percent = str(get_default_from_model(SetWithdrawVestingRouteOperation, "percent", int))
+        default_percent = get_default_from_model(SetWithdrawVestingRouteOperation, "percent", int)
         default_auto_vest = get_default_from_model(SetWithdrawVestingRouteOperation, "auto_vest", bool)
 
         self.__to_account_input = AccountNameInput(label="to account")
-        self.__percent_input = CustomInput(label="percent", value=default_percent, placeholder=PERCENT_PLACEHOLDER)
+        self.__percent_input = IntegerInput(label="percent", value=default_percent, placeholder=PERCENT_PLACEHOLDER)
         self.__auto_vest_input = Checkbox("auto vest", value=default_auto_vest)
 
     def create_left_panel(self) -> ComposeResult:

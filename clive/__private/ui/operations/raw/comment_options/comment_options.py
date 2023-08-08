@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ASSET_AMOUNT_PLACEHOLDER,
@@ -32,7 +33,7 @@ class CommentOptions(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_percent_hbd = str(get_default_from_model(CommentOptionsOperation, "percent_hbd", int))
+        default_percent_hbd = get_default_from_model(CommentOptionsOperation, "percent_hbd", int)
         default_allow_votes = get_default_from_model(CommentOptionsOperation, "allow_votes", bool)
         default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
 
@@ -40,7 +41,7 @@ class CommentOptions(RawOperationBaseScreen):
         self.__max_accepted_payout_input = CustomInput(
             label="max accepted payout", placeholder=ASSET_AMOUNT_PLACEHOLDER
         )
-        self.__percent_hbd_input = CustomInput(
+        self.__percent_hbd_input = IntegerInput(
             label="percent hbd", value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
         )
         self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
