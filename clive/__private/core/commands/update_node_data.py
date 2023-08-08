@@ -46,7 +46,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
     @dataclass
     class AccountApiInfo:
         core: AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests]
-        latest_interaction: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
+        last_history_entry: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
         rc: RcAccount[Asset.Vests] | None = None
         warnings: int = 0
         reputation: int = 0
@@ -60,7 +60,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
 
         for account, info in api_accounts.items():
             account.data.reputation = info.reputation
-            account.data.last_transaction = info.latest_interaction
+            account.data.last_history_entry = info.last_history_entry
             account.data.warnings = info.warnings
 
             account.data.hive_balance = info.core.balance
@@ -115,7 +115,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             )
             info.warnings = self.__count_warning(account, info)
             with SuppressNotExistingApi("account_history_api"):
-                info.latest_interaction = self.__get_newest_account_interactions(account.name)
+                info.last_history_entry = self.__get_account_last_history_entry(account.name)
             result[account] = info
         return result
 
@@ -165,7 +165,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             > self.__normalize_datetime(datetime.utcnow())
         )
 
-    def __get_newest_account_interactions(self, account_name: str) -> datetime:
+    def __get_account_last_history_entry(self, account_name: str) -> datetime:
         non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
         return self.__normalize_datetime(
             self.node.api.account_history_api.get_account_history(
