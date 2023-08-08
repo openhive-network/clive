@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput, ProposalIdT
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import UpdateProposalOperation
@@ -30,7 +31,7 @@ class UpdateProposal(RawOperationBaseScreen):
         self.__proposal_id_input = IdInput[ProposalIdT](label="proposal id")
         self.__creator_input = AccountNameInput(label="creator")
         self.__daily_pay_input = AmountInput(label="daily pay")
-        self.__subject_input = CustomInput(label="subject", placeholder="e.g.: New subject")
+        self.__subject_input = TextInput(label="subject", placeholder="e.g.: New subject")
         self.__permlink_input = PermlinkInput()
         self.__extensions_input = CustomInput(label="extensions", placeholder="e.g.: []")
 

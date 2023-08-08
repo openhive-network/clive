@@ -12,6 +12,7 @@ from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import (
     DATE_PLACEHOLDER,
 )
@@ -35,7 +36,7 @@ class CreateProposal(RawOperationBaseScreen):
         self.__start_date_input = CustomInput(label="start date", placeholder=DATE_PLACEHOLDER)
         self.__end_date_input = CustomInput(label="end date", placeholder=DATE_PLACEHOLDER)
         self.__daily_pay_input = AmountInput(label="daily pay")
-        self.__subject_input = CustomInput(label="subject", placeholder="e.g: example subject")
+        self.__subject_input = TextInput(label="subject", placeholder="e.g: example subject")
         self.__permlink_input = PermlinkInput()
 
     def create_left_panel(self) -> ComposeResult:
