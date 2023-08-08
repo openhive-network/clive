@@ -9,6 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.id_input import EscrowIdT, IdInput
@@ -42,8 +43,8 @@ class EscrowTransfer(RawOperationBaseScreen):
         self.__hbd_amount_input = CustomInput(
             label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
         )
-        self.__hive_amount_input = CustomInput(
-            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
+        self.__hive_amount_input = AmountInput(
+            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
         self.__fee_input = AssetAmountInput()
         self.__ratification_deadline_input = CustomInput(label="ratification deadline", placeholder=DATE_PLACEHOLDER)
