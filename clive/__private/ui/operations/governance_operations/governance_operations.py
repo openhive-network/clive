@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import DataTable, Input, SelectionList, Static, TabbedContent
+from textual.widgets import DataTable, Input, SelectionList, Static, TabbedContent, Checkbox
 
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
@@ -152,8 +152,36 @@ class WitnessesTab(ScrollableTabPane, CliveWidget):
                 id_ += 1
 
 
+class Proposal(Container):
+    def compose(self) -> ComposeResult:
+        with Horizontal(id="proposal-container"):
+            yield Checkbox()
+            with Vertical(id="proposal-parameters"):
+                yield Static("HBD stabilizer evolution May 2023 #264", id="proposal-title")
+                yield Static("May 23, 2023 - Nov 22, 2023 (183 days) 4.39m HBD (Daily 24k HBD)",
+                             id="proposal-pay")
+                yield Static("by smooth for hbdstabilizer", id="proposal-author")
+
+
 class ProposalsTab(ScrollableTabPane):
     """Tab with all activities related with witnesses."""
+    def compose(self) -> ComposeResult:
+        with Horizontal(id="list-proposals"):
+            with Vertical(id="proposale"):
+                yield Proposal()
+                yield Proposal()
+                yield Proposal()
+                yield Proposal()
+                yield Proposal()
+                yield Proposal()
+                yield Proposal()
+                yield Proposal()
+            with Vertical(id="voted-proposals"):
+                yield Static("You will vote for the proposals:", id="vote-proposals")
+                with Horizontal(id="proposal-x"):
+                    yield Static("HBD stabilizer evolution May 2023", id="first-proposal")
+                    yield Static("X", id="remove")
+            yield Static("You will cancel votes for the proposals:", id="delete-vote-proposals")
 
 
 class Governance(CartBasedScreen):

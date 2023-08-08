@@ -97,3 +97,79 @@ WitnessesTab Input {
 WitnessesTab DataTable Cell {
     width: 1;
 }
+
+/* Proposals */
+
+ProposalsTab #proposal-container {
+    height: 3;
+    width: 100%;
+}
+
+ProposalsTab Proposal {
+    height: 3;
+    margin-top: 1;
+}
+
+ProposalsTab #proposal-parameters {
+    height: 3;
+    width: 100%;
+}
+
+ProposalsTab #proposal-pay {
+    background:  $panel-lighten-1;
+    text-style: bold;
+}
+
+ProposalsTab #proposal-author {
+    background:  $panel-lighten-2;
+    text-style: bold;
+}
+
+ProposalsTab #proposal-title {
+    background:  $primary-lighten-1;
+    text-style: bold;
+}
+
+ProposalsTab #proposale {
+    width: 39%;
+}
+
+ProposalsTab #list-proposals {
+    height: 40;
+}
+
+ProposalsTab #voted-proposals {
+    width: 25%;
+    margin-left: 1;
+}
+
+ProposalsTab #vote-proposals {
+    background: $primary-lighten-1;
+    text-style: bold;
+    text-align: center;
+}
+
+ProposalsTab #first-proposal {
+    background: $accent-lighten-1;
+    text-style: bold;
+    text-align: center;
+    width: 94%;
+}
+
+ProposalsTab #delete-vote-proposals {
+    text-align: center;
+    text-style: bold;
+    width: 25%;
+    background: $primary-lighten-2;
+    margin-left: 2;
+}
+
+ProposalsTab #proposal-x {
+}
+
+ProposalsTab #remove {
+    text-align: center;
+    text-style: bold;
+    width: 6%;
+    background: $error-darken-3;
+}
