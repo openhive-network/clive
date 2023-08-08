@@ -21,7 +21,7 @@ def test_activate(world: clive.World, wallet: WalletInfo) -> None:
     world.commands.activate(password=wallet.password)
 
     # ASSERT
-    assert world.app_state.is_active()
+    assert world.app_state.is_active
 
 
 def test_activate_non_existing_wallet(world: clive.World) -> None:
@@ -32,21 +32,21 @@ def test_activate_non_existing_wallet(world: clive.World) -> None:
 
 def test_deactivate(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001
     # ARRANGE & ACT
-    assert world.app_state.is_active()
+    assert world.app_state.is_active
     world.commands.deactivate()
 
     # ASSERT
-    assert not world.app_state.is_active()
+    assert not world.app_state.is_active
 
 
 def test_reactivate(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE & ACT
-    assert world.app_state.is_active()
+    assert world.app_state.is_active
     world.commands.deactivate()
     world.commands.activate(password=wallet.password)
 
     # ASSERT
-    assert world.app_state.is_active()
+    assert world.app_state.is_active
 
 
 def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> None:
@@ -56,8 +56,8 @@ def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> 
 
     # ACT
     world.commands.activate(password=wallet.password, time=time_to_sleep)
-    assert world.app_state.is_active()
+    assert world.app_state.is_active
     sleep(time_to_sleep.total_seconds())
 
     # ASSERT
-    assert not world.app_state.is_active()
+    assert not world.app_state.is_active

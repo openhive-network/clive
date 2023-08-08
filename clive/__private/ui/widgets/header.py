@@ -135,7 +135,7 @@ class Header(TextualHeader, CliveWidget):
                     "Mode",
                     obj_to_watch=self.app.world,
                     attribute_name="app_state",
-                    callback=lambda app_state: "active" if app_state.is_active() else "inactive",
+                    callback=lambda app_state: "active" if app_state.is_active else "inactive",
                     id_="mode-label",
                 )
             yield DynamicPropertiesClock()
@@ -158,7 +158,7 @@ class Header(TextualHeader, CliveWidget):
         self.add_class("-tall") if expanded else self.remove_class("-tall")
 
     def app_state_changed(self, app_state: AppState) -> None:
-        if app_state.is_active():
+        if app_state.is_active:
             self.add_class("-active")
         else:
             self.remove_class("-active")

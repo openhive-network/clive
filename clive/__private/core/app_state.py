@@ -21,6 +21,7 @@ class AppState:
         assert self._dynamic_global_properties is not None
         return self._dynamic_global_properties
 
+    @property
     def is_active(self) -> bool:
         wallets = self.world.beekeeper.api.list_wallets().wallets
         for wallet in wallets:
