@@ -9,8 +9,8 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ID_PLACEHOLDER,
@@ -30,11 +30,11 @@ class Vote(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        default_weight = str(get_default_from_model(VoteOperation, "weight", int))
+        default_weight = get_default_from_model(VoteOperation, "weight", int)
 
         self.__author_input = AccountNameInput(label="author")
         self.__permlink_input = PermlinkInput()
-        self.__weight_input = CustomInput(label="weight", value=default_weight, placeholder=ID_PLACEHOLDER)
+        self.__weight_input = IntegerInput(label="weight", value=default_weight, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

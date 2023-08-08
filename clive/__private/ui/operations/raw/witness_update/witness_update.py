@@ -11,6 +11,7 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.fee_input import FeeInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -35,11 +36,11 @@ class WitnessUpdate(RawOperationBaseScreen):
         self.__url_input = CustomInput(label="url", placeholder="e.g: witness-category/my-witness")
         self.__block_signing_key_input = CustomInput(label="block signing key", placeholder=KEY_PLACEHOLDER)
         self.__account_creation_fee_input = FeeInput(label="account creation fee")
-        self.__maximum_block_size_input = CustomInput(
-            label="maximum block size", value="131072", placeholder="maximum block size"
+        self.__maximum_block_size_input = IntegerInput(
+            label="maximum block size", value=131072, placeholder="maximum block size"
         )
-        self.__hbd_interest_rate_input = CustomInput(
-            label="hbd interest rate", value="1000", placeholder="hbd interest rate"
+        self.__hbd_interest_rate_input = IntegerInput(
+            label="hbd interest rate", value=1000, placeholder="hbd interest rate"
         )
         self.__fee_input = FeeInput()
 
@@ -61,8 +62,8 @@ class WitnessUpdate(RawOperationBaseScreen):
     def _create_operation(self) -> WitnessUpdateOperation[Asset.Hive]:
         props_field = {
             "account_creation_fee": Asset.hive(self.__account_creation_fee_input.value),
-            "maximum_block_size": int(self.__maximum_block_size_input.value),
-            "hbd_interest_rate": int(self.__hbd_interest_rate_input.value),
+            "maximum_block_size": self.__maximum_block_size_input.value,
+            "hbd_interest_rate": self.__hbd_interest_rate_input.value,
         }
 
         return WitnessUpdateOperation(
