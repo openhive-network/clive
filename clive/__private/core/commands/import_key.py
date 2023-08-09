@@ -17,6 +17,6 @@ class ImportKey(CommandInActive, CommandWithResult[PublicKeyAliased]):
     key_to_import: PrivateKeyAliased
     beekeeper: Beekeeper
 
-    async def _async_execute(self) -> None:
-        imported = self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.value)
+    async def _execute(self) -> None:
+        imported = await self.beekeeper.api.import_key(wallet_name=self.wallet, wif_key=self.key_to_import.value)
         self._result = PublicKeyAliased(alias=self.key_to_import.alias, value=imported.public_key)

@@ -25,7 +25,7 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
     """
 
     @staticmethod
-    def async_try_again_after_activation(
+    def try_again_after_activation(
         *, app: Clive | None = None
     ) -> Callable[[Callable[P, Coroutine[None, None, None]]], Callable[P, Coroutine[None, None, None]]]:
         def decorator(func: Callable[P, Coroutine[None, None, None]]) -> Callable[P, Coroutine[None, None, None]]:

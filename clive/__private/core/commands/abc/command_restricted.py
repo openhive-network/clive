@@ -18,7 +18,7 @@ class CommandRestricted(Command, ABC):
 
     _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandExecutionNotPossibleError
 
-    def execute(self) -> None:
+    async def execute(self) -> None:
         """
         Execute the command if the conditions are met.
 
@@ -26,10 +26,10 @@ class CommandRestricted(Command, ABC):
         ------
             CommandExecutionNotPossibleError: If the command cannot be executed.
         """
-        if not self._is_execution_possible():
+        if not await self._is_execution_possible():
             raise self._execution_impossible_error(self)
-        super().execute()
+        await super().execute()
 
     @abstractmethod
-    def _is_execution_possible(self) -> bool:
+    async def _is_execution_possible(self) -> bool:
         """The condition that must be met for the command to be executed. When execution is not possible, error is raised."""

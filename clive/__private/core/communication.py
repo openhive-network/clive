@@ -41,13 +41,10 @@ class Communication:
             cls.__async_client = httpx.AsyncClient(timeout=2, http2=True)
 
     @classmethod
-    def close(cls) -> None:
-        async def __close() -> None:
-            if cls.__async_client is not None:
-                await cls.__async_client.aclose()
-                cls.__async_client = None
-
-        asyncio_run(__close())
+    async def close(cls) -> None:
+        if cls.__async_client is not None:
+            await cls.__async_client.aclose()
+            cls.__async_client = None
 
     @classmethod
     def get_async_client(cls) -> httpx.AsyncClient:

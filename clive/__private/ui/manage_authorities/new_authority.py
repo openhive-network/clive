@@ -161,7 +161,7 @@ class NewAuthority(NewAuthorityBase):
     def context(self) -> ProfileData:
         return self.app.world.profile_data
 
-    @CliveScreen.async_try_again_after_activation()
+    @CliveScreen.try_again_after_activation()
     @on(NewAuthorityBase.Saved)
     async def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])

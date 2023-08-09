@@ -8,33 +8,33 @@ list_ = typer.Typer(help="List various things.")
 
 @list_.command()
 @WithWorld.decorator(use_beekeeper=False)
-def keys(
+async def keys(
     ctx: typer.Context,
 ) -> None:
     """List all Public keys stored in the wallet."""
     from clive.__private.cli.commands.list import ListKeys
 
     common = WithWorld(**ctx.params)
-    ListKeys(world=common.world).run()
+    await ListKeys(world=common.world).run()
 
 
 @list_.command()
 @WithWorld.decorator(use_beekeeper=False)
-def node(
+async def node(
     ctx: typer.Context,
 ) -> None:
     """List address of the currently selected node."""
     from clive.__private.cli.commands.list import ListNode
 
     common = WithWorld(**ctx.params)
-    ListNode(world=common.world).run()
+    await ListNode(world=common.world).run()
 
 
 @list_.command()
 @WithWorld.decorator(use_beekeeper=False)
-def balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:
+async def balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:
     """List balances of the currently selected account."""
     from clive.__private.cli.commands.list import ListBalances
 
     common = WithWorld(**ctx.params)
-    ListBalances(world=common.world, account_name=account_name).run()
+    await ListBalances(world=common.world, account_name=account_name).run()

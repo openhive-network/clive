@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
 
@@ -7,7 +7,7 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel
-from clive.__private.core.commands.activate import Activate
+from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
+PreWrapFuncT = Callable[Concatenate[typer.Context, P], Coroutine[None, None, None]]
 PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
@@ -62,25 +62,23 @@ class OperationCommon(CommonBaseModel):
 
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)
 
-            with ExitCallHandler(
-                TyperWorld(
-                    profile_name=profile,
-                    beekeeper_remote_endpoint=beekeeper_remote_endpoint,
-                ),
-                finally_callback=lambda w: w.close(),
-            ) as world:
-                cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
+            async def impl() -> None:
+                async def close_world(world: TyperWorld) -> None:
+                    await world.close()
 
-                ctx.params.update(world=world)
+                async with ExitCallHandler(
+                    TyperWorld(
+                        profile_name=profile,
+                        beekeeper_remote_endpoint=beekeeper_remote_endpoint,
+                    ),
+                    finally_callback=close_world,
+                ) as world:
+                    cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
+                    ctx.params.update(world=world)
+                    await world.commands.activate()
+                    await func(ctx, *args, **kwargs)
 
-                Activate(
-                    app_state=world.app_state,
-                    beekeeper=world.beekeeper,
-                    wallet=world.profile_data.name,
-                    password=password,
-                ).execute()
-
-                func(ctx, *args, **kwargs)
+            asyncio_run(impl())
 
         return wrapper  # type: ignore[no-any-return]
 

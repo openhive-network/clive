@@ -1,7 +1,7 @@
 from __future__ import annotations
 
+import asyncio
 import json
-from time import sleep
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -22,64 +22,64 @@ def check_wallets(given: ListWallets, valid: list[str], *, unlocked: bool = True
 
 
 @pytest.mark.parametrize("wallet_name", ["test", "123"])
-def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
+async def test_create_wallet(beekeeper: Beekeeper, wallet_name: str) -> None:
     # ARRANGE & ACT
-    beekeeper.api.create(wallet_name=wallet_name)
+    await beekeeper.api.create(wallet_name=wallet_name)
 
     # ASSERT
-    check_wallets(beekeeper.api.list_wallets(), [wallet_name])
+    check_wallets(await beekeeper.api.list_wallets(), [wallet_name])
 
 
 @pytest.mark.parametrize("invalid_wallet_name", [(",,,", "*", "   a   ", " ", "", json.dumps({"a": None, "b": 21.37}))])
-def test_invalid_wallet_names(beekeeper: Beekeeper, invalid_wallet_name: str) -> None:
+async def test_invalid_wallet_names(beekeeper: Beekeeper, invalid_wallet_name: str) -> None:
     # ARRANGE, ACT & ASSERT
     with pytest.raises(CommunicationError):
-        beekeeper.api.create(wallet_name=invalid_wallet_name)
+        await beekeeper.api.create(wallet_name=invalid_wallet_name)
 
 
-def test_wallet_open(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
+async def test_wallet_open(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     # ARRANGE
-    beekeeper.restart()  # this will close
+    await beekeeper.restart()  # this will close
 
     # ACT & ASSERT
-    check_wallets(beekeeper.api.list_wallets(), [])
-    beekeeper.api.open(wallet_name=wallet.name)
-    check_wallets(beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
+    check_wallets(await beekeeper.api.list_wallets(), [])
+    await beekeeper.api.open(wallet_name=wallet.name)
+    check_wallets(await beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
 
 
-def test_wallet_unlock(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
+async def test_wallet_unlock(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     # ARRANGE
-    beekeeper.api.lock_all()  # after creation wallet is opened and unlocked by default
+    await beekeeper.api.lock_all()  # after creation wallet is opened and unlocked by default
 
     # ACT
-    beekeeper.api.unlock(wallet_name=wallet.name, password=wallet.password)
+    await beekeeper.api.unlock(wallet_name=wallet.name, password=wallet.password)
 
     # ASSERT
-    check_wallets(beekeeper.api.list_wallets(), [wallet.name])
+    check_wallets(await beekeeper.api.list_wallets(), [wallet.name])
 
 
-def test_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
+async def test_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     timeout: Final[int] = 5
     comparison_error_max_delta: Final[float] = 1.0
 
     # ARRANGE
-    beekeeper.api.set_timeout(seconds=timeout)
+    await beekeeper.api.set_timeout(seconds=timeout)
 
     # ASSERT
-    info = beekeeper.api.get_info()
+    info = await beekeeper.api.get_info()
     assert timeout - (info.timeout_time - info.now).total_seconds() <= comparison_error_max_delta
-    check_wallets(beekeeper.api.list_wallets(), [wallet.name])
+    check_wallets(await beekeeper.api.list_wallets(), [wallet.name])
 
     # ACT
-    sleep(timeout)
+    await asyncio.sleep(timeout)
 
     # ASSERT
-    check_wallets(beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
+    check_wallets(await beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
 
 
-def test_create_wallet_with_custom_password(beekeeper: Beekeeper, wallet_name: str) -> None:
+async def test_create_wallet_with_custom_password(beekeeper: Beekeeper, wallet_name: str) -> None:
     # ARRANGE & ACT
-    password = beekeeper.api.create(wallet_name=wallet_name, password=wallet_name).password
+    password = (await beekeeper.api.create(wallet_name=wallet_name, password=wallet_name)).password
 
     # ASSERT
     assert password == wallet_name

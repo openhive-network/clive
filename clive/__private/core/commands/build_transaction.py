@@ -18,7 +18,7 @@ class BuildTransaction(CommandWithResult[Transaction]):
     node: Node
     expiration: timedelta = timedelta(minutes=30)
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         self._result = Transaction(operations=self.operations)
 
         # get dynamic global properties

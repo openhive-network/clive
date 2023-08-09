@@ -1,4 +1,4 @@
-from collections.abc import Callable
+from collections.abc import Callable, Coroutine
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
 
@@ -7,6 +7,8 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel
+from clive.__private.core._async import asyncio_run
+from clive.__private.core.communication import Communication
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -14,7 +16,7 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], None]
+PreWrapFuncT = Callable[Concatenate[typer.Context, P], Coroutine[None, None, None]]
 PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
@@ -42,13 +44,21 @@ class WithBeekeeper(CommonBaseModel):
 
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)
 
-            with ExitCallHandler(
-                Beekeeper(remote_endpoint=beekeeper_remote_endpoint),
-                finally_callback=lambda bk: bk.close(),
-            ) as beekeeper:
-                beekeeper.start()
-                ctx.params.update(beekeeper=beekeeper)
-                func(ctx, *args, **kwargs)
+            async def impl() -> None:
+                async def close_beekeeper(beekeeper: Beekeeper) -> None:
+                    await beekeeper.close()
+                    await Communication.close()
+
+                Communication.start()
+                async with ExitCallHandler(
+                    Beekeeper(remote_endpoint=beekeeper_remote_endpoint),
+                    finally_callback=close_beekeeper,
+                ) as beekeeper:
+                    await beekeeper.start()
+                    ctx.params.update(beekeeper=beekeeper)
+                    await func(ctx, *args, **kwargs)
+
+            asyncio_run(impl())
 
         return wrapper  # type: ignore[no-any-return]
 

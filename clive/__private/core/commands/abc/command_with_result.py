@@ -39,10 +39,6 @@ class CommandWithResult(Command, Generic[CommandResultT], ABC):
             raise ValueError("The result is not set yet.")
         return self._result
 
-    def execute_with_result(self) -> CommandResultT:
-        self.execute()
-        return self.result
-
-    async def async_execute_with_result(self) -> CommandResultT:
-        await self.async_execute()
+    async def execute_with_result(self) -> CommandResultT:
+        await self.execute()
         return self.result

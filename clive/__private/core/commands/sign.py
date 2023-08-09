@@ -20,8 +20,8 @@ class Sign(CommandInActive, CommandWithResult[Transaction]):
     key: PublicKey
     chain_id: str
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
-        result = self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.value)
+        result = await self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.value)
         self.transaction.signatures = [Signature(result.signature)]
         self._result = self.transaction

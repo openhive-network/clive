@@ -18,9 +18,9 @@ class CommandPasswordSecured(Command, ABC):
 
     password: str
 
-    def execute(self) -> None:
+    async def execute(self) -> None:
         try:
-            super().execute()
+            await super().execute()
         except CommunicationError as error:
             if InvalidPasswordError.ERROR_MESSAGE in str(error):
                 raise InvalidPasswordError(f"Command {self.__class__.__name__} received wrong password.") from error

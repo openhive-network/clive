@@ -106,7 +106,6 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
 class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
-        self.app_state_changed(self.app.world.app_state)
         self.__node_version_label = DynamicLabel(
             obj_to_watch=self.app.world,
             attribute_name="node",
@@ -116,7 +115,6 @@ class Header(TextualHeader, CliveWidget):
 
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
-        self.watch(self.app.world, "app_state", self.app_state_changed, init=False)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
@@ -132,11 +130,18 @@ class Header(TextualHeader, CliveWidget):
                 )
                 yield AlarmsSummary()
 
+                async def mode_callback(app_state: AppState) -> str:
+                    if await app_state.is_active():
+                        self.add_class("-active")
+                        return "active"
+                    self.remove_class("-active")
+                    return "inactive"
+
                 yield TitledLabel(
                     "Mode",
                     obj_to_watch=self.app.world,
                     attribute_name="app_state",
-                    callback=lambda app_state: "active" if app_state.is_active else "inactive",
+                    callback=mode_callback,
                     id_="mode-label",
                 )
             yield DynamicPropertiesClock()
@@ -157,12 +162,6 @@ class Header(TextualHeader, CliveWidget):
 
     def header_expanded_changed(self, expanded: bool) -> None:
         self.add_class("-tall") if expanded else self.remove_class("-tall")
-
-    def app_state_changed(self, app_state: AppState) -> None:
-        if app_state.is_active:
-            self.add_class("-active")
-        else:
-            self.remove_class("-active")
 
     @staticmethod
     def __get_node_address(node: Node) -> str:

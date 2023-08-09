@@ -12,7 +12,7 @@ from clive.__private.core.error_handlers.failed_command_notificator import Faile
 
 @dataclass(kw_only=True)
 class MockCommand(Command):
-    def _execute(self) -> None:
+    async def _execute(self) -> None:
         """Just a mock command."""
 
 
@@ -20,10 +20,10 @@ class MockCommand(Command):
 class MockCommandInActive(CommandInActive):
     app_state: None = field(init=False, default=None)  # type: ignore
 
-    def _execute(self) -> None:
+    async def _execute(self) -> None:
         """Just a mock command."""
 
-    def _is_execution_possible(self) -> bool:
+    async def _is_execution_possible(self) -> bool:
         return True
 
 

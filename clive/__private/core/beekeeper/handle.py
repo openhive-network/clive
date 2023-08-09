@@ -55,11 +55,12 @@ class Beekeeper:
         self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)
         self.__token: str | None = None
 
-    @property
-    def token(self) -> str:
+    async def get_token(self) -> str:
         if self.__token is None:
-            self.__token = self.api.create_session(
-                notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
+            self.__token = (
+                await self.api.create_session(
+                    notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
+                )
             ).token
         return self.__token
 
@@ -85,12 +86,14 @@ class Beekeeper:
     def is_already_running_locally() -> bool:
         return BeekeeperExecutable.is_already_running()
 
-    def _send(self, result_model: type[T], endpoint: str, **kwargs: Any) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
-        self.__assert_is_running()
+    async def _send(
+        self, result_model: type[T], endpoint: str, **kwargs: Any  # noqa: ARG002
+    ) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
+        await self.__assert_is_running()
 
         url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        response = Communication.request(url, data=request.json(by_alias=True))
+        response = await Communication.arequest(url, data=request.json(by_alias=True))
 
         if response.status_code != codes.OK:
             raise BeekeeperNon200StatusCodeError
@@ -107,19 +110,19 @@ class Beekeeper:
         logger.info(f"Returning model: {return_value}")
         return return_value
 
-    def __assert_is_running(self) -> None:
+    async def __assert_is_running(self) -> None:
         if self.is_starting:
             return
 
         if not self.is_running:
             if self.__token is not None:
-                self.close()
+                await self.close()
             raise BeekeeperNotRunningError
 
-    def close(self) -> None:
+    async def close(self) -> None:
         logger.info("Closing Beekeeper...")
         if self.__token:
-            self.api.close_session()
+            await self.api.close_session()
             self.__token = None
         self.__close_beekeeper()
         self.is_running = False
@@ -131,7 +134,7 @@ class Beekeeper:
     def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__notification_server.detach_wallet_closing_listener(listener)
 
-    def start(self, *, timeout: float = 5.0) -> None:
+    async def start(self, *, timeout: float = 5.0) -> None:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
         self.__notification_server_port = self.__notification_server.listen()
@@ -141,14 +144,14 @@ class Beekeeper:
             self.config.webserver_http_endpoint = remote
 
         assert self.config.webserver_http_endpoint is not None
-        assert self.token is not None
+        assert (await self.get_token()) is not None
         self.is_running = True
         self.is_starting = False
         logger.info(f"Beekeeper started on {self.config.webserver_http_endpoint}.")
 
-    def restart(self) -> None:
-        self.close()
-        self.start()
+    async def restart(self) -> None:
+        await self.close()
+        await self.start()
 
     def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)

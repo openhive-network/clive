@@ -16,15 +16,15 @@ from clive.__private.core.exit_call_handler import ExitCallHandler
 class BeekeeperInfo(ExternalCLICommand):
     beekeeper: Beekeeper
 
-    def run(self) -> None:
-        typer.echo(self.beekeeper.api.get_info().json(by_alias=True))
+    async def run(self) -> None:
+        typer.echo((await self.beekeeper.api.get_info()).json(by_alias=True))
 
 
 @dataclass(kw_only=True)
 class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
-    def run(self) -> None:
+    async def run(self) -> None:
         if Beekeeper.is_already_running_locally():
             typer.echo(
                 f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
@@ -34,11 +34,15 @@ class BeekeeperSpawn(ExternalCLICommand):
 
         typer.echo("Launching beekeeper...")
 
-        with ExitCallHandler(
+        async def close_beekeeper(beekeeper: Beekeeper) -> None:
+            if not self.background:
+                await beekeeper.close()
+
+        async with ExitCallHandler(
             Beekeeper(run_in_background=self.background),
-            finally_callback=lambda bk: bk.close() if not self.background else None,
+            finally_callback=close_beekeeper,
         ) as beekeeper:
-            beekeeper.start()
+            await beekeeper.start()
 
             typer.echo(f"Beekeeper started on {beekeeper.http_endpoint} with pid {beekeeper.pid}.")
 
@@ -55,7 +59,7 @@ class BeekeeperSpawn(ExternalCLICommand):
 
 @dataclass(kw_only=True)
 class BeekeeperClose(ExternalCLICommand):
-    def run(self) -> None:
+    async def run(self) -> None:
         pid = Beekeeper.get_pid_from_file()
         typer.echo(f"Closing beekeeper with pid {pid}...")
 

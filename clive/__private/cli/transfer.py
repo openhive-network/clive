@@ -16,7 +16,7 @@ transfer = typer.Typer(
 
 @transfer.callback(invoke_without_command=True)
 @OperationCommon.decorator
-def _main(
+async def _main(
     ctx: typer.Context,
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
     amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
@@ -25,4 +25,4 @@ def _main(
     from clive.__private.cli.commands.transfer import Transfer
 
     common = OperationCommon(**ctx.params)
-    Transfer.from_(to=to, amount=amount, memo=memo, **common.dict()).run()
+    await Transfer.from_(to=to, amount=amount, memo=memo, **common.dict()).run()

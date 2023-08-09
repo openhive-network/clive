@@ -17,7 +17,7 @@ class SaveToFileAsBinary(Command):
     transaction: Transaction
     file_path: Path
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         serialized = serialize_transaction(self.transaction)
         with self.file_path.open("wb") as file:
             file.write(serialized)

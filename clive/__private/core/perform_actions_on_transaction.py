@@ -55,12 +55,12 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
     if sign_key:
         transaction = await Sign(
             app_state=app_state, beekeeper=beekeeper, transaction=transaction, key=sign_key, chain_id=chain_id
-        ).async_execute_with_result()
+        ).execute_with_result()
 
     if save_file_path:
-        await SaveToFileAsBinary(transaction=transaction, file_path=save_file_path).async_execute()
+        await SaveToFileAsBinary(transaction=transaction, file_path=save_file_path).execute()
 
     if transaction.is_signed() and broadcast:
-        await Broadcast(node=node, transaction=transaction).async_execute()
+        await Broadcast(node=node, transaction=transaction).execute()
 
     return transaction

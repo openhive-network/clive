@@ -17,7 +17,7 @@ from clive.core.url import Url
 from tests import WalletInfo
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import AsyncIterator, Iterator
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
@@ -60,10 +60,10 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
 
 
 @pytest.fixture()
-def world(wallet_name: str) -> Iterator[World]:
+async def world(wallet_name: str) -> AsyncIterator[World]:
     world = World(profile_name=wallet_name)
     yield world
-    world.close()
+    await world.close()
 
 
 @pytest.fixture()
@@ -76,8 +76,8 @@ def init_node(world: World) -> Iterator[tt.InitNode]:
 
 
 @pytest.fixture()
-def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
-    CreateWallet(
+async def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
+    await CreateWallet(
         app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet_name, password=wallet_password
     ).execute()
 

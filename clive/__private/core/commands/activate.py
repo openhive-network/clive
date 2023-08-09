@@ -25,12 +25,12 @@ class Activate(CommandPasswordSecured):
     wallet: str
     time: timedelta | None = None
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         try:
-            self.beekeeper.api.open(wallet_name=self.wallet)
-            self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
+            await self.beekeeper.api.open(wallet_name=self.wallet)
+            await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
             if self.time is not None:
-                await SetTimeout(beekeeper=self.beekeeper, seconds=int(self.time.total_seconds())).async_execute()
+                await SetTimeout(beekeeper=self.beekeeper, seconds=int(self.time.total_seconds())).execute()
         except CommunicationError as error:
             for arg_raw in error.args:
                 arg = arg_raw["error"]["message"] if isinstance(arg_raw, dict) else arg_raw

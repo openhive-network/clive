@@ -16,6 +16,6 @@ class Deactivate(Command):
     beekeeper: Beekeeper
     wallet: str
 
-    async def _async_execute(self) -> None:
-        self.beekeeper.api.lock(wallet_name=self.wallet)
+    async def _execute(self) -> None:
+        await self.beekeeper.api.lock(wallet_name=self.wallet)
         self.app_state.deactivate()

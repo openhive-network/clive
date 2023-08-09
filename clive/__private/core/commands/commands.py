@@ -3,7 +3,6 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Generic, TypeVar, overload
 
-from clive.__private.core.commands.abc.command import SynchronousOnlyCommandError
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
@@ -164,16 +163,10 @@ class Commands(Generic[WorldT]):
         self, command: CommandWithResult[CommandResultT] | Command
     ) -> CommandWithResultWrapper[CommandResultT] | CommandWrapper:
         if not self.__exception_handlers:
-            try:
-                if isinstance(command, CommandWithResult):
-                    await command.async_execute_with_result()
-                else:
-                    await command.async_execute()
-            except SynchronousOnlyCommandError:
-                if isinstance(command, CommandWithResult):
-                    command.execute_with_result()
-                else:
-                    command.execute()
+            if isinstance(command, CommandWithResult):
+                await command.execute_with_result()
+            else:
+                await command.execute()
 
             return self.__create_command_wrapper(command)
 
@@ -218,12 +211,7 @@ class Commands(Generic[WorldT]):
             else:
                 # exectue the command only once
                 await handler.execute(
-                    (
-                        command.async_execute_with_result()
-                        if isinstance(command, CommandWithResult)
-                        else command.async_execute()
-                    ),
-                    command.execute_with_result if isinstance(command, CommandWithResult) else command.execute,
+                    command.execute_with_result() if isinstance(command, CommandWithResult) else command.execute(),
                 )
         except Exception as error:  # noqa: BLE001
             # Try to handle the error with the next exception handler

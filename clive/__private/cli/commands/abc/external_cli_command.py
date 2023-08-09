@@ -9,7 +9,7 @@ from typing_extensions import Self
 @dataclass(kw_only=True)
 class ExternalCLICommand(ABC):
     @abstractmethod
-    def run(self) -> None:
+    async def run(self) -> None:
         """Run the command."""
 
     @classmethod

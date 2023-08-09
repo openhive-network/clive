@@ -48,4 +48,4 @@ async def ensure_transaction(
     else:
         raise TypeError(f"Expected a transaction, operation or iterable of operations, got {type(content)}")
 
-    return await BuildTransaction(operations=operations, node=node, expiration=expiration).async_execute_with_result()
+    return await BuildTransaction(operations=operations, node=node, expiration=expiration).execute_with_result()

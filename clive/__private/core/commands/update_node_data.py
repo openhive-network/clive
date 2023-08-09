@@ -58,7 +58,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         warnings: int = 0
         reputation: int = 0
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
 
         gdpo, api_accounts = await gather(

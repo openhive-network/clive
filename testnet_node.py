@@ -88,7 +88,7 @@ if not enable_onboarding:
     password = asyncio.run(
         CreateWallet(
             app_state=world.app_state, beekeeper=world.beekeeper, wallet=alice.name, password=alice.name
-        ).async_execute_with_result()
+        ).execute_with_result()
     )
     tt.logger.info(f"password for {alice.name} is: `{password}`")
     world.profile_data.working_account.keys.add_to_import(
@@ -96,7 +96,7 @@ if not enable_onboarding:
     )
     asyncio.run(world.commands.sync_data_with_beekeeper())
     world.profile_data.save()
-    world.close()
+    asyncio.run(world.close())
 
 
 def random_assets(asset: type[AssetBase]) -> dict[str, Any]:

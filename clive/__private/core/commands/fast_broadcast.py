@@ -21,7 +21,7 @@ class FastBroadcast(CommandInActive):
     sign_with: PublicKey
     chain_id: str
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         await perform_actions_on_transaction(
             content=self.operation,
             app_state=self.app_state,

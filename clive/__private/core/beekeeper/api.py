@@ -14,13 +14,15 @@ FooT = TypeVar("FooT", bound=Callable[..., object])
 
 def api(foo: FooT) -> FooT:
     @wraps(foo)
-    def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
+    async def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
         if foo.__name__ not in ["create_session"]:
-            kwargs["token"] = this._owner.token
-        return this._owner._send(
-            result_model=get_type_hints(foo)["return"],
-            endpoint=f"beekeeper_api.{foo.__name__}",
-            **kwargs,
+            kwargs["token"] = await this._owner.get_token()
+        return (
+            await this._owner._send(
+                result_model=get_type_hints(foo)["return"],
+                endpoint=f"beekeeper_api.{foo.__name__}",
+                **kwargs,
+            )
         ).result
 
     return impl  # type: ignore
@@ -31,67 +33,67 @@ class BeekeeperApi:
         self._owner = owner
 
     @api
-    def create(self, *, wallet_name: str, password: str | None = None) -> model.Create:
+    async def create(self, *, wallet_name: str, password: str | None = None) -> model.Create:
         raise NotImplementedError
 
     @api
-    def open(self, *, wallet_name: str) -> model.EmptyResponse:  # noqa: A003
+    async def open(self, *, wallet_name: str) -> model.EmptyResponse:  # noqa: A003
         raise NotImplementedError
 
     @api
-    def set_timeout(self, *, seconds: int) -> model.EmptyResponse:
+    async def set_timeout(self, *, seconds: int) -> model.EmptyResponse:
         raise NotImplementedError
 
     @api
-    def lock_all(self) -> model.EmptyResponse:
+    async def lock_all(self) -> model.EmptyResponse:
         raise NotImplementedError
 
     @api
-    def lock(self, *, wallet_name: str) -> model.EmptyResponse:
+    async def lock(self, *, wallet_name: str) -> model.EmptyResponse:
         raise NotImplementedError
 
     @api
-    def unlock(self, *, wallet_name: str, password: str) -> model.EmptyResponse:
+    async def unlock(self, *, wallet_name: str, password: str) -> model.EmptyResponse:
         raise NotImplementedError
 
     @api
-    def import_key(self, *, wallet_name: str, wif_key: str) -> model.ImportKey:
+    async def import_key(self, *, wallet_name: str, wif_key: str) -> model.ImportKey:
         raise NotImplementedError
 
     @api
-    def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> model.EmptyResponse:
+    async def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> model.EmptyResponse:
         raise NotImplementedError
 
     @api
-    def list_wallets(self) -> model.ListWallets:
+    async def list_wallets(self) -> model.ListWallets:
         raise NotImplementedError
 
     @api
-    def list_keys(self, *, wallet_name: str, password: str) -> model.ListKeys:
+    async def list_keys(self, *, wallet_name: str, password: str) -> model.ListKeys:
         raise NotImplementedError
 
     @api
-    def get_public_keys(self) -> model.GetPublicKeys:
+    async def get_public_keys(self) -> model.GetPublicKeys:
         raise NotImplementedError
 
     @api
-    def sign_digest(self, *, sig_digest: str, public_key: str) -> model.SignDigest:
+    async def sign_digest(self, *, sig_digest: str, public_key: str) -> model.SignDigest:
         raise NotImplementedError
 
     @api
-    def sign_transaction(
+    async def sign_transaction(
         self, *, transaction: dict[str, Any], chain_id: str, public_key: str, sig_digest: str
     ) -> model.SignTransaction:
         raise NotImplementedError
 
     @api
-    def get_info(self) -> model.GetInfo:
+    async def get_info(self) -> model.GetInfo:
         raise NotImplementedError
 
     @api
-    def create_session(self, *, notifications_endpoint: str, salt: str) -> model.CreateSession:
+    async def create_session(self, *, notifications_endpoint: str, salt: str) -> model.CreateSession:
         raise NotImplementedError
 
     @api
-    def close_session(self) -> model.EmptyResponse:
+    async def close_session(self) -> model.EmptyResponse:
         raise NotImplementedError

@@ -23,9 +23,9 @@ class RemoveKey(CommandInActive, CommandPasswordSecured):
     def __post_init__(self) -> None:
         self.action_name = f"Removing a `{self.__get_key_description()}` key."
 
-    def _execute(self) -> None:
+    async def _execute(self) -> None:
         public_key = self.key_to_remove.value
-        self.beekeeper.api.remove_key(wallet_name=self.wallet, password=self.password, public_key=public_key)
+        await self.beekeeper.api.remove_key(wallet_name=self.wallet, password=self.password, public_key=public_key)
 
     def __get_key_description(self) -> str:
         if isinstance(self.key_to_remove, PublicKey):

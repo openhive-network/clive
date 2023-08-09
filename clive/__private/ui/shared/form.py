@@ -113,4 +113,4 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     async def execute_post_actions(self) -> None:
         while not self._post_actions.empty():
-            await self._post_actions.get_nowait().async_execute()
+            await self._post_actions.get_nowait().execute()

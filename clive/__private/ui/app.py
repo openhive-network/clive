@@ -14,6 +14,7 @@ from textual.notifications import Notification, SeverityLevel
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.communication import Communication
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
@@ -110,7 +111,7 @@ class Clive(App[int], ManualReactive):
         except CancelledError:
             pass
         finally:
-            self.__cleanup()
+            asyncio_run(self.__cleanup())
         return 1
 
     def on_mount(self) -> None:
@@ -372,9 +373,9 @@ class Clive(App[int], ManualReactive):
         # We already had a situation where Textual swallowed an exception without logging it.
         # This is a safeguard to prevent that from happening again.
         logger.error(f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}")
-        self.__cleanup()
+        asyncio_run(self.__cleanup())
         super()._handle_exception(error)
 
-    def __cleanup(self) -> None:
+    async def __cleanup(self) -> None:
         self.__class__.is_launched = False
-        self.world.close()
+        await self.world.close()

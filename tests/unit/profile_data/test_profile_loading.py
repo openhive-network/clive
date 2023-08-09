@@ -9,15 +9,15 @@ from clive.__private.core.profile_data import NoLastlyUsedProfileError
 from clive.__private.core.world import TyperWorld, World
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
+    from collections.abc import AsyncIterator
 
 
 @pytest.fixture()
-def world_cleanup() -> Iterator[list[World]]:
+async def world_cleanup() -> AsyncIterator[list[World]]:
     worlds_to_close: list[World] = []
     yield worlds_to_close
     for world in worlds_to_close:
-        world.close()
+        await world.close()
 
 
 def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
@@ -25,12 +25,12 @@ def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
     assert world.profile_data.name == wallet_name
 
 
-def test_if_lastly_used_profile_is_loaded(world_cleanup: list[World]) -> None:
+async def test_if_lastly_used_profile_is_loaded(world_cleanup: list[World]) -> None:
     # ARRANGE
     expected_profile_name = "first"
     world = World(expected_profile_name)
     world.profile_data.save()  # this one should be lastly used
-    world.close()  # close world so beekeeper can be closed
+    await world.close()  # close world so beekeeper can be closed
 
     # ACT
     world = World()
@@ -40,13 +40,13 @@ def test_if_lastly_used_profile_is_loaded(world_cleanup: list[World]) -> None:
     assert world.profile_data.list_profiles() == [expected_profile_name]
 
 
-def test_if_correct_profile_is_loaded_when_something_is_stored(world_cleanup: list[World]) -> None:
+async def test_if_correct_profile_is_loaded_when_something_is_stored(world_cleanup: list[World]) -> None:
     # ARRANGE
     expected_profile_name = "first"
     additional_profile_name = "second"
     world = World(additional_profile_name)
     world.profile_data.save()  # lastly used is other than we're loading
-    world.close()  # close world so beekeeper can be closed
+    await world.close()  # close world so beekeeper can be closed
 
     # ACT
     world = World(expected_profile_name)
@@ -74,12 +74,12 @@ def test_loading_non_existing_profile_with_auto_create_disabled() -> None:
     assert exception_message in str(error.value)
 
 
-def test_loading_existing_profile_with_auto_create_disabled(world_cleanup: list[World]) -> None:
+async def test_loading_existing_profile_with_auto_create_disabled(world_cleanup: list[World]) -> None:
     # ARRANGE
     profile_name = "existing_profile"
     world = World(profile_name)
     world.profile_data.save()
-    world.close()
+    await world.close()
 
     # ACT
     world = TyperWorld(profile_name)

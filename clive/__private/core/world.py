@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Any
 import typer
 from textual.reactive import var
 
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
@@ -47,10 +48,9 @@ class World:
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
+        self._beekeeper: Beekeeper | None = None
         if use_beekeeper:
-            self._beekeeper: Beekeeper | None = self.__setup_beekeeper(remote_endpoint=beekeeper_remote_endpoint)
-        else:
-            self._beekeeper = None
+            self._beekeeper = asyncio_run(self.__setup_beekeeper(remote_endpoint=beekeeper_remote_endpoint))
 
         self._node = Node(self._profile_data)
 
@@ -67,11 +67,11 @@ class World:
     def node(self) -> Node:
         return self._node
 
-    def close(self) -> None:
+    async def close(self) -> None:
         self.profile_data.save()
         if self._beekeeper is not None:
-            self._beekeeper.close()
-        Communication.close()
+            await self._beekeeper.close()
+        await Communication.close()
 
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)
@@ -79,11 +79,11 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
-        keeper = Beekeeper(remote_endpoint=remote_endpoint)
-        keeper.attach_wallet_closing_listener(self)
-        keeper.start()
-        return keeper
+    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
+        beekeeper = Beekeeper(remote_endpoint=remote_endpoint)
+        beekeeper.attach_wallet_closing_listener(self)
+        await beekeeper.start()
+        return beekeeper
 
     @property
     def profile_data(self) -> ProfileData:

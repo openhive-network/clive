@@ -5,10 +5,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.commands.abc.command import SynchronousOnlyCommandError
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable
+    from collections.abc import Awaitable
     from types import TracebackType
 
     from typing_extensions import Self
@@ -60,13 +59,8 @@ class ErrorHandlerContextManager(ABC):
     def error_occurred(self) -> bool:
         return self.error is not None
 
-    async def execute(
-        self, async_func: Awaitable[ExecuteResultT], func: Callable[[], ExecuteResultT]
-    ) -> ExecuteResultT | ResultNotAvailable:
+    async def execute(self, async_func: Awaitable[ExecuteResultT]) -> ExecuteResultT | ResultNotAvailable:
         try:
-            try:
-                return await async_func
-            except SynchronousOnlyCommandError:
-                return func()
+            return await async_func
         except Exception as error:  # noqa: BLE001
             return await self.try_to_handle_error(error)

@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Coroutine
     from types import TracebackType
 
 T = TypeVar("T")
+
+
+async def dummy(*_: Any) -> None:
+    """This is dummy function to fill default values."""  # noqa: D404
 
 
 class ExitCallHandler(Generic[T]):
@@ -14,19 +18,19 @@ class ExitCallHandler(Generic[T]):
         self,
         obj: T,
         *,
-        exception_callback: Callable[[T, Exception], None] = lambda _, __: None,
-        finally_callback: Callable[[T], None] = lambda _: None,
+        exception_callback: Callable[[T, Exception], Coroutine[None, None, None]] = dummy,
+        finally_callback: Callable[[T], Coroutine[None, None, None]] = dummy,
     ) -> None:
         self.__obj = obj
         self.__exception_callback = exception_callback
         self.__finally_callback = finally_callback
 
-    def __enter__(self) -> T:
+    async def __aenter__(self) -> T:
         return self.__obj
 
-    def __exit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
         try:
             if ex is not None:
-                self.__exception_callback(self.__obj, ex)
+                await self.__exception_callback(self.__obj, ex)
         finally:
-            self.__finally_callback(self.__obj)
+            await self.__finally_callback(self.__obj)

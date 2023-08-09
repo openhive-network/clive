@@ -17,6 +17,6 @@ class CreateWallet(CommandWithResult[str]):
     wallet: str
     password: str | None
 
-    def _execute(self) -> None:
-        self._result = self.beekeeper.api.create(wallet_name=self.wallet, password=self.password).password
+    async def _execute(self) -> None:
+        self._result = (await self.beekeeper.api.create(wallet_name=self.wallet, password=self.password)).password
         self.app_state.activate()

@@ -68,7 +68,7 @@ class Authority(ColumnLayout, CliveWidget):
 
     @on(CliveButton.Pressed, "#remove_authority_button")
     async def remove_authority(self) -> None:
-        @CliveScreen.async_try_again_after_activation(app=self.app)
+        @CliveScreen.try_again_after_activation(app=self.app)
         async def __on_confirmation_result(result: str) -> None:
             if not result:
                 return

@@ -18,7 +18,7 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
     profile_data: ProfileData
     beekeeper: Beekeeper
 
-    async def _async_execute(self) -> None:
+    async def _execute(self) -> None:
         if not self.profile_data.is_working_account_set():
             return
 
@@ -32,13 +32,13 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
                 wallet=self.profile_data.name,
                 key_to_import=key_to_import,
                 beekeeper=self.beekeeper,
-            ).async_execute_with_result()
+            ).execute_with_result()
 
         await self.profile_data.working_account.keys.import_pending_to_beekeeper(import_key)
 
     async def __sync_missing_keys(self) -> None:
         keys_in_clive = self.profile_data.working_account.keys
-        keys_in_beekeeper = self.beekeeper.api.get_public_keys().keys
+        keys_in_beekeeper = (await self.beekeeper.api.get_public_keys()).keys
 
         keys_missing_in_clive = [key for key in keys_in_beekeeper if key not in keys_in_clive]
 
