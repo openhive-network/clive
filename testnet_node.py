@@ -84,7 +84,9 @@ if not enable_onboarding:
     ).save()
 
     world = World(alice.name)
-    password = CreateWallet(beekeeper=world.beekeeper, wallet=alice.name, password=alice.name).execute_with_result()
+    password = CreateWallet(
+        app_state=world.app_state, beekeeper=world.beekeeper, wallet=alice.name, password=alice.name
+    ).execute_with_result()
     tt.logger.info(f"password for {alice.name} is: `{password}`")
     world.profile_data.working_account.keys.add_to_import(
         PrivateKeyAliased(value=alice.private_key._value, alias=f"default {alice.name} key")

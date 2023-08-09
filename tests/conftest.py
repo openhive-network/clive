@@ -11,6 +11,7 @@ from clive.__private.before_launch import prepare_before_launch
 from clive.__private.config import settings
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.world import World
 from clive.core.url import Url
 from tests import WalletInfo
@@ -76,7 +77,9 @@ def init_node(world: World) -> Iterator[tt.InitNode]:
 
 @pytest.fixture()
 def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
-    world.beekeeper.api.create(wallet_name=wallet_name, password=wallet_password)
+    CreateWallet(
+        app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet_name, password=wallet_password
+    ).execute()
 
     return WalletInfo(
         password=wallet_password,

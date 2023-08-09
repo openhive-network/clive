@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.logger import logger
+
 if TYPE_CHECKING:
     from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT
     from clive.__private.core.world import World
@@ -13,6 +15,7 @@ class AppState:
     """A class that holds information about the current state of an application."""
 
     world: World
+    _is_active: bool = False
     _dynamic_global_properties: DynamicGlobalPropertiesT | None = None
 
     def get_dynamic_global_properties(self) -> DynamicGlobalPropertiesT:
@@ -23,11 +26,15 @@ class AppState:
 
     @property
     def is_active(self) -> bool:
-        wallets = self.world.beekeeper.api.list_wallets().wallets
-        for wallet in wallets:
-            if wallet.name == self.world.profile_data.name:
-                return wallet.unlocked
-        return False
+        return self._is_active
+
+    def activate(self) -> None:
+        self._is_active = True
+        logger.info("Mode switched to ACTIVE.")
+
+    def deactivate(self) -> None:
+        self._is_active = False
+        logger.info("Mode switched to INACTIVE.")
 
     def __hash__(self) -> int:
         return id(self.world)

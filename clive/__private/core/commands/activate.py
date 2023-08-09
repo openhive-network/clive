@@ -5,12 +5,12 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.__private.logger import logger
 from clive.exceptions import CannotActivateError, CommunicationError
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
+    from clive.__private.core.app_state import AppState
     from clive.__private.core.beekeeper import Beekeeper
 
 
@@ -20,6 +20,7 @@ class WalletDoesNotExistsError(CannotActivateError):
 
 @dataclass(kw_only=True)
 class Activate(CommandPasswordSecured):
+    app_state: AppState
     beekeeper: Beekeeper
     wallet: str
     time: timedelta | None = None
@@ -37,4 +38,4 @@ class Activate(CommandPasswordSecured):
                     raise WalletDoesNotExistsError(error) from error
             raise CannotActivateError(error) from error
 
-        logger.info("Mode switched to [bold green]active[/].")
+        self.app_state.activate()

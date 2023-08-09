@@ -27,7 +27,7 @@ def test_activate(world: clive.World, wallet: WalletInfo) -> None:
 def test_activate_non_existing_wallet(world: clive.World) -> None:
     # ARRANGE, ACT & ASSERT
     with pytest.raises(WalletDoesNotExistsError):
-        Activate(beekeeper=world.beekeeper, wallet="blabla", password="blabla").execute()
+        Activate(app_state=world.app_state, beekeeper=world.beekeeper, wallet="blabla", password="blabla").execute()
 
 
 def test_deactivate(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001
@@ -51,7 +51,7 @@ def test_reactivate(world: clive.World, wallet: WalletInfo) -> None:
 
 def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE
-    time_to_sleep: Final[timedelta] = timedelta(seconds=2)
+    time_to_sleep: Final[timedelta] = timedelta(seconds=2.2)
     world.beekeeper.api.lock_all()
 
     # ACT

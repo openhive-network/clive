@@ -51,13 +51,19 @@ class Commands(Generic[WorldT]):
     def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
             Activate(
-                beekeeper=self._world.beekeeper, wallet=self._world.profile_data.name, password=password, time=time
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
+                wallet=self._world.profile_data.name,
+                password=password,
+                time=time,
             )
         )
 
     def deactivate(self) -> CommandWrapper:
         return self.__surround_with_exception_handlers(
-            Deactivate(beekeeper=self._world.beekeeper, wallet=self._world.profile_data.name)
+            Deactivate(
+                app_state=self._world.app_state, beekeeper=self._world.beekeeper, wallet=self._world.profile_data.name
+            )
         )
 
     def set_timeout(self, *, seconds: int) -> CommandWrapper:

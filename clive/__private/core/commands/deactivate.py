@@ -4,17 +4,18 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command import Command
-from clive.__private.logger import logger
 
 if TYPE_CHECKING:
+    from clive.__private.core.app_state import AppState
     from clive.__private.core.beekeeper import Beekeeper
 
 
 @dataclass(kw_only=True)
 class Deactivate(Command):
+    app_state: AppState
     beekeeper: Beekeeper
     wallet: str
 
     def _execute(self) -> None:
         self.beekeeper.api.lock(wallet_name=self.wallet)
-        logger.info("Deactivated")
+        self.app_state.deactivate()

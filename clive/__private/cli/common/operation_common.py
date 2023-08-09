@@ -7,6 +7,7 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel
+from clive.__private.core.commands.activate import Activate
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -72,7 +73,12 @@ class OperationCommon(CommonBaseModel):
 
                 ctx.params.update(world=world)
 
-                world.beekeeper.api.unlock(wallet_name=world.profile_data.name, password=password)
+                Activate(
+                    app_state=world.app_state,
+                    beekeeper=world.beekeeper,
+                    wallet=world.profile_data.name,
+                    password=password,
+                ).execute()
 
                 func(ctx, *args, **kwargs)
 
