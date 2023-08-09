@@ -107,14 +107,7 @@ class PendingTransfer(CliveWidget):
 
     @on(Button.Pressed, "#delete-transfer-button")
     def move_to_cancel_transfer(self) -> None:
-        self.app.push_screen(
-            CancelTransferFromSavings(
-                request_id=self.__transfer.request_id,
-                to=self.__transfer.to,
-                amount=Asset.to_legacy(self.__transfer.amount),
-                memo=self.__transfer.memo,
-            )
-        )
+        self.app.push_screen(CancelTransferFromSavings(self.__transfer))
 
 
 class PendingHeader(CliveWidget):
@@ -202,7 +195,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             )
         elif self.__from_checkbox.value:  # noqa: RET505
             try:
-                self.__create_request_id()
+                request_id = self.__create_request_id()
             except RequestIdError:
                 self.notify("Maximum quantity of request ids is 100!", severity="error")
                 return None
@@ -212,7 +205,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
                 to=self.__to_account_input.value,
                 amount=asset,
                 memo=self.__memo_input.value,
-                request_id=self.__create_request_id(),
+                request_id=request_id,
             )
         else:
             self.notify("Please select type of operation")
