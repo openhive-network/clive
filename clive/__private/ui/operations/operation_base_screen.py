@@ -23,6 +23,12 @@ if TYPE_CHECKING:
 class OperationMethods(CliveWidget, AbstractClassMessagePump):
     """Class to provide access to methods related with operations to not just screens."""
 
+    BINDINGS = [
+        Binding("f2", "add_to_cart", "Add to cart"),
+        Binding("f5", "fast_broadcast", "Fast broadcast"),
+        Binding("f10", "finalize", "Finalize transaction"),
+    ]
+
     @abstractmethod
     def _create_operation(self) -> Operation | None:
         """Should return a new operation based on the data from screen."""
@@ -102,9 +108,4 @@ class OperationMethods(CliveWidget, AbstractClassMessagePump):
 class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
     """Base class for all screens that represent operations."""
 
-    BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
-        Binding("f2", "add_to_cart", "Add to cart"),
-        Binding("f5", "fast_broadcast", "Fast broadcast"),
-        Binding("f10", "finalize", "Finalize transaction"),
-    ]
+    BINDINGS = [Binding("escape", "pop_screen", "Cancel")]

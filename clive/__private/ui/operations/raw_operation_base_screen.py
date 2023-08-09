@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from schemas.__private.hive_fields_basic_schemas import Authority
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
 
 
-class RawOperationBaseScreen(OperationBaseScreen, AbstractClassMessagePump):
+class RawOperationBaseScreen(OperationBaseScreen, OperationMethods, AbstractClassMessagePump):
     """Base class for all raw operations."""
 
     @staticmethod

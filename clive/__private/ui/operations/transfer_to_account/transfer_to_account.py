@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -30,7 +30,7 @@ class Body(Grid):
     """All the content of the screen, excluding the title."""
 
 
-class TransferToAccount(OperationBaseScreen):
+class TransferToAccount(OperationBaseScreen, OperationMethods):
     def __init__(self) -> None:
         super().__init__()
 
