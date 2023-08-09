@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Button, Checkbox, Input, Static, TabbedContent
 
-from clive.__private.ui.operations.operation_base_screen import OperationMethods, OperationBaseScreen
+from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
