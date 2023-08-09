@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import math
+import traceback
 from datetime import timedelta
 from pathlib import Path
 from time import sleep
@@ -343,7 +344,7 @@ class Clive(App[int], ManualReactive):
     def _handle_exception(self, error: Exception) -> None:
         # We already had a situation where Textual swallowed an exception without logging it.
         # This is a safeguard to prevent that from happening again.
-        logger.error(str(error))
+        logger.error(f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}")
         self.__cleanup()
         super()._handle_exception(error)
 
