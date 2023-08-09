@@ -83,6 +83,7 @@ class World:
 
     def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         keeper = Beekeeper(remote_endpoint=remote_endpoint)
+        keeper.attach_wallet_closing_listener(self)
         keeper.start()
         return keeper
 
@@ -93,6 +94,9 @@ class World:
     @property
     def app_state(self) -> AppState:
         return self._app_state
+
+    def notify_wallet_closing(self) -> None:
+        self.app_state.deactivate()
 
 
 class TextualWorld(World, CliveWidget, ManualReactive):
@@ -108,6 +112,10 @@ class TextualWorld(World, CliveWidget, ManualReactive):
 
     def _setup_commands(self) -> TextualCommands:  # type: ignore[override]
         return TextualCommands(self)
+
+    def notify_wallet_closing(self) -> None:
+        super().notify_wallet_closing()
+        self.app_state.is_deactivation_pending = True
 
 
 class TyperWorld(World):

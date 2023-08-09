@@ -15,6 +15,7 @@ class AppState:
     """A class that holds information about the current state of an application."""
 
     world: World
+    is_deactivation_pending = False
     _is_active: bool = False
     _dynamic_global_properties: DynamicGlobalPropertiesT | None = None
 

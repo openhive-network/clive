@@ -18,7 +18,7 @@ from clive.__private.core.beekeeper.exceptions import (
 )
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
-from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer
+from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer, WalletClosingListener
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
@@ -123,6 +123,12 @@ class Beekeeper:
         self.__close_beekeeper()
         self.is_running = False
         logger.info("Beekeeper closed.")
+
+    def attach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
+        self.__notification_server.attach_wallet_closing_listener(listener)
+
+    def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
+        self.__notification_server.detach_wallet_closing_listener(listener)
 
     def start(self, *, timeout: float = 5.0) -> None:
         logger.info("Starting Beekeeper...")

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import math
 import traceback
 from datetime import timedelta
@@ -7,7 +8,7 @@ from pathlib import Path
 from time import sleep
 from typing import TYPE_CHECKING, Any, Final, TypeVar
 
-from textual import on
+from textual import on, work
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.notifications import Notification, SeverityLevel
@@ -122,6 +123,8 @@ class Clive(App[int], ManualReactive):
 
         self.background_tasks = BackgroundTasks(exception_handler=self.__handle_background_error)
         self.background_tasks.run_in_thread(self.__update_data_from_node)
+        self.set_interval(1, self.check_if_should_deactivate)  # type: ignore[arg-type]
+
         if settings.LOG_DEBUG_LOOP:
             self.background_tasks.run_every(timedelta(seconds=1), self.__debug_log)
 
@@ -173,6 +176,33 @@ class Clive(App[int], ManualReactive):
     def pop_screen(self) -> Screen[Any]:
         fun = super().pop_screen
         return self.__update_screen(lambda: fun())
+
+    @work(
+        name="Inactive state guarantor",
+        description="Checks if should deactivate TUI after beekeeper notification about closing wallets",
+    )
+    async def check_if_should_deactivate(self) -> None:
+        """
+        Ensures that TUI is in the INACTIVE mode after beekeeper notification about closing wallets is received.
+
+        This is a workaround, because we re unable to run some actions on the TUI application in
+        TextualWorld.notify_wallet_closing, because it is called from NotificationServer thread and not from
+        the TUI thread. It might be possible to do it in the mentioned place if NotificationServer will be able
+        to run async.
+        """
+        if self.world.app_state.is_active:
+            return
+
+        if not self.world.app_state.is_deactivation_pending:
+            return
+
+        self.world.app_state.is_deactivation_pending = False
+
+        with contextlib.suppress(ScreenNotFoundError):
+            self.replace_screen("DashboardActive", "dashboard_inactive")
+
+        self.notify("Switched to the INACTIVE mode.", severity="warning", timeout=5)
+        self.world.update_reactive("app_state")
 
     def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> None:
         """
