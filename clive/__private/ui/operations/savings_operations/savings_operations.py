@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Button, Checkbox, Input, Static, TabbedContent
 
@@ -121,34 +120,27 @@ class PendingHeader(CliveWidget):
             yield Static()
 
 
-class SavingsInfo(ScrollableTabPane):
-    def __init__(
-        self,
-        working_account: WorkingAccount,
-        pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]],
-        title: str = "",
-    ):
-        self.__working_account = working_account
-        self.__pending_transfers = pending_transfers
-        super().__init__(title=title)
-
+class SavingsInfo(ScrollableTabPane, CliveWidget):
     def compose(self) -> ComposeResult:
         with Container():
-            yield SavingsInterestInfo(self.__working_account)
-            if self.__pending_transfers:
+            working_account: WorkingAccount = self.app.world.profile_data.working_account
+            pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = (
+                self.app.world.node.api.database_api.find_savings_withdrawals(account=working_account.name).withdrawals
+            )
+
+            yield SavingsInterestInfo(working_account)
+            if pending_transfers:
                 yield PendingHeader()
                 with Container(id="pending-transfers"):
-                    for transfer in self.__pending_transfers:
+                    for transfer in pending_transfers:
                         yield PendingTransfer(transfer)
             else:
                 yield Static("No pending transfers from savings now !", id="without-pending-label")
 
 
 class SavingsTransfers(ScrollableTabPane, OperationMethods):
-    def __init__(self, working_account: WorkingAccount, title: str = "") -> None:
-        self.__title = title
-        self.__working_account = working_account
-        super().__init__(title=self.__title)
+    def __init__(self, title: str = "") -> None:
+        super().__init__(title=title)
 
         self.__amount_input = Input(placeholder="put amount to transfer here", id="amount-input")
         self.__memo_input = Input(placeholder="put memo here")
@@ -166,7 +158,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             yield self.__from_checkbox
             yield self.__to_checkbox
 
-        yield SavingsBalances(self.__working_account, classes="transfer-savings-balances")
+        yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
         with self.__to_account:
             yield Static("to", classes="label")
             yield self.__to_account_input
@@ -233,14 +225,8 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 class Savings(OperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent():
-            yield SavingsInfo(
-                self.app.world.profile_data.working_account,
-                self.app.world.node.api.database_api.find_savings_withdrawals(
-                    account=self.app.world.profile_data.working_account.name
-                ).withdrawals,
-                title="savings info",
-            )
-            yield SavingsTransfers(self.app.world.profile_data.working_account, title="transfer")
+            yield SavingsInfo("savings info")
+            yield SavingsTransfers("transfer")
 
     @on(Checkbox.Changed)
     def checkbox_changed(self, event: Checkbox.Changed) -> None:
