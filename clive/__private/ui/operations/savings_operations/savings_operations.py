@@ -96,6 +96,8 @@ class PendingTransfer(CliveWidget):
         self.__realized_in = pending_transfer.complete.replace(tzinfo=None).isoformat()
         self.__memo = pending_transfer.memo
         self.__request_id = str(pending_transfer.request_id)
+
+        self.__pending_transfer = pending_transfer
         super().__init__()
 
     def compose(self) -> ComposeResult:
@@ -108,11 +110,7 @@ class PendingTransfer(CliveWidget):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "delete-transfer-button":
-            self.app.push_screen(
-                CancelTransferFromSavings(
-                    request_id=self.__request_id, to=self.__to_account, amount=self.__amount, memo=self.__memo
-                )
-            )
+            self.app.push_screen(CancelTransferFromSavings(self.__pending_transfer))
 
 
 class PendingHeader(CliveWidget):
