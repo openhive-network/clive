@@ -64,7 +64,7 @@ class EscrowTransfer(RawOperationBaseScreen):
                 yield from self.__ratification_deadline_input.compose()
                 yield from self.__escrow_expiration_input.compose()
                 yield from self.__json_meta_input.compose()
-                yield self.__fee_input
+                yield from self.__fee_input.compose()
 
     def _create_operation(self) -> EscrowTransferOperation[Asset.Hive, Asset.Hbd] | None:
         fee = self.__fee_input.amount
