@@ -57,7 +57,7 @@ class CartOverview(CliveWidget):
 
     def compose(self) -> ComposeResult:
         with Resources():
-            yield Static("Resource credits (RC):")
+            yield Static("RC:")
             yield DynamicLabel(self.app.world, "profile_data", self.__get_rc)
             yield Static("HIVE balance:")
             yield DynamicLabel(self.app.world, "profile_data", self.__get_hive_balance)
