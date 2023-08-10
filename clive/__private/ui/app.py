@@ -286,7 +286,7 @@ class Clive(App[int], ManualReactive):
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
         """
-        Sorts bindings by placing the ESC key at first place and fn keys at the end of the dictionary.
+        Sorts bindings by placing the CTRL+X key at first place, then the ESC, then non-fn keys and fn keys at the end of the dictionary.
 
         This is done so that the bindings in the footer are displayed in a correct, uniform way.
 
@@ -301,12 +301,14 @@ class Clive(App[int], ManualReactive):
         fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
         non_fn_keys = [key for key in data if key not in fn_keys]
 
-        # place ESC key before other non-fn keys
-        if "escape" in non_fn_keys:
-            non_fn_keys.remove("escape")
-            non_fn_keys.insert(0, "escape")
+        # place keys stored in container at the beginning of the list
+        container = []
+        for key in ("ctrl+x", "escape"):
+            if key in non_fn_keys:
+                non_fn_keys.remove(key)
+                container.append(key)
 
-        sorted_keys = non_fn_keys + fn_keys
+        sorted_keys = container + non_fn_keys + fn_keys
         return {key: data[key] for key in sorted_keys}
 
     def __handle_background_error(self, error: Exception) -> None:
