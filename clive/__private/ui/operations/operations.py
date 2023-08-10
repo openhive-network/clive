@@ -47,10 +47,7 @@ class Operations(CartBasedScreen):
                 yield OperationButton("GOVERNANCE OPERATIONS", None)
             with ScrollableTabPane("Account management"):
                 yield OperationButton("ACCOUNT MANAGEMENT OPERATIONS", None)
-            with ScrollableTabPane("Raw"):
-                yield Static("select one of the following operation:", id="hint")
-                for operation in RAW_OPERATIONS:
-                    yield OperationButton(self.__humanize_class_name(operation), operation)
+            yield from self.__create_raw_operations_tab(hide=True)
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
@@ -81,3 +78,12 @@ class Operations(CartBasedScreen):
                 result += " "
             result += char.lower()
         return result.strip().title()
+
+    def __create_raw_operations_tab(self, *, hide: bool = False) -> ComposeResult:
+        if hide:
+            return []
+
+        with ScrollableTabPane("Raw"):
+            yield Static("select one of the following operation:", id="hint")
+            for operation in RAW_OPERATIONS:
+                yield OperationButton(self.__humanize_class_name(operation), operation)
