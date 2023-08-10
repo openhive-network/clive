@@ -59,8 +59,6 @@ class CartOverview(CliveWidget):
         with Resources():
             yield Static("Resource credits (RC):")
             yield DynamicLabel(self.app.world, "profile_data", self.__get_rc)
-            yield Static("Enough RC for approx.:")
-            yield Static("17 transfers")
             yield Static("HIVE balance:")
             yield DynamicLabel(self.app.world, "profile_data", self.__get_hive_balance)
             yield Static("HBD balance:")
