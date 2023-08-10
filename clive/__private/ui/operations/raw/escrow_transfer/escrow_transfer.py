@@ -12,7 +12,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.date_input import DateInput
-from clive.__private.ui.widgets.inputs.id_input import EscrowIdT, IdInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.placeholders_constants import (
@@ -38,7 +38,7 @@ class EscrowTransfer(RawOperationBaseScreen):
 
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__escrow_id_input = IdInput[EscrowIdT](label="escrow id", value=default_escrow_id)
+        self.__escrow_id_input = IdInput(label="escrow id", value=default_escrow_id)
         self.__hbd_amount_input = AmountInput(
             label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
@@ -75,7 +75,7 @@ class EscrowTransfer(RawOperationBaseScreen):
             from_=self.app.world.profile_data.name,
             to=self.__to_input.value,
             agent=self.__agent_input.value,
-            escrow_id=int(self.__escrow_id_input.value),
+            escrow_id=self.__escrow_id_input.value,
             hbd_amount=Asset.hbd(self.__hbd_amount_input.value),
             hive_amount=Asset.hive(self.__hive_amount_input.value),
             ratification_deadline=self.__ratification_deadline_input.value,

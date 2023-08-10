@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.placeholders_constants import WEIGHT_THRESHOLD_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 
 
-class WeightThresholdInput(CustomInput):
-    def __init__(
-        self, label: str = "weight threshold", value: str | None = None, placeholder: str = WEIGHT_THRESHOLD_PLACEHOLDER
-    ) -> None:
-        super().__init__(label=label, value=value, placeholder=placeholder)
+class WeightThresholdInput(IntegerInput):
+    def __init__(self, label: str = "weight threshold", value: int | None = None) -> None:
+        super().__init__(label=label, value=value)

@@ -8,10 +8,10 @@ from textual.widgets import Static
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.fee_input import FeeInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -33,8 +33,8 @@ class WitnessUpdate(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__url_input = CustomInput(label="url", placeholder="e.g: witness-category/my-witness")
-        self.__block_signing_key_input = CustomInput(label="block signing key", placeholder=KEY_PLACEHOLDER)
+        self.__url_input = TextInput(label="url", placeholder="e.g: witness-category/my-witness")
+        self.__block_signing_key_input = TextInput(label="block signing key", placeholder=KEY_PLACEHOLDER)
         self.__account_creation_fee_input = FeeInput(label="account creation fee")
         self.__maximum_block_size_input = IntegerInput(
             label="maximum block size", value=131072, placeholder="maximum block size"

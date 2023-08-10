@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import WITNESS_PLACEHOLDER
 
 
-class WitnessInput(CustomInput):
+class WitnessInput(TextInput):
     def __init__(
         self, label: str = "witness", value: str | None = None, placeholder: str = WITNESS_PLACEHOLDER
     ) -> None:

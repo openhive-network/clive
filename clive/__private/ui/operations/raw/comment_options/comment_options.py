@@ -10,10 +10,10 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import (
     PERCENT_PLACEHOLDER,
 )
@@ -44,7 +44,7 @@ class CommentOptions(RawOperationBaseScreen):
         )
         self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
         self.__allow_curation_rewards_input = Checkbox("allow curation reward", value=default_allow_curation_rewards)
-        self.__extensions_input = CustomInput(label="extensions", placeholder="e.g: []")
+        self.__extensions_input = TextInput(label="extensions", placeholder="e.g: []")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

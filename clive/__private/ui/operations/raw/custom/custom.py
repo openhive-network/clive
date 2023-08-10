@@ -6,8 +6,8 @@ from textual.containers import Grid, ScrollableContainer
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.inputs.id_input import IdInput, IdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomOperation
 
@@ -23,9 +23,9 @@ class Custom(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__required_auths_input = CustomInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
-        self.__id_input = IdInput[IdT](value=0)
-        self.__data_input = CustomInput(label="data", placeholder="Custom data input")
+        self.__required_auths_input = TextInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
+        self.__id_input = IdInput(value=0)
+        self.__data_input = TextInput(label="data", placeholder="Custom data input")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -41,6 +41,6 @@ class Custom(RawOperationBaseScreen):
 
         return CustomOperation(
             required_auths=required_auths_in_list,
-            id_=int(self.__id_input.value),
+            id_=self.__id_input.value,
             data=[self.__data_input.value],
         )

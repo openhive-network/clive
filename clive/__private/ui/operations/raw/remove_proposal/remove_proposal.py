@@ -8,8 +8,8 @@ from textual.widgets import Static
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RemoveProposalOperation
 
@@ -29,7 +29,7 @@ class RemoveProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proposal_ids_input = CustomInput(label="proposal ids", placeholder="e.g.: 10,11,12")
+        self.__proposal_ids_input = TextInput(label="proposal ids", placeholder="e.g.: 10,11,12")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

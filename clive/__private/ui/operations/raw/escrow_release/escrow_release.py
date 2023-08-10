@@ -9,8 +9,8 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.inputs.id_input import EscrowIdT, IdInput
+from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
@@ -37,12 +37,12 @@ class EscrowRelease(RawOperationBaseScreen):
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__who_input = AccountNameInput(label="who", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__receiver_input = AccountNameInput(label="receiver")
-        self.__escrow_id_input = IdInput[EscrowIdT](label="escrow id", value=default_escrow_id)
-        self.__hbd_amount_input = CustomInput(
-            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
+        self.__escrow_id_input = IdInput(label="escrow id", value=default_escrow_id)
+        self.__hbd_amount_input = AmountInput(
+            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
-        self.__hive_amount_input = CustomInput(
-            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value="0.000"
+        self.__hive_amount_input = AmountInput(
+            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
 
     def create_left_panel(self) -> ComposeResult:
