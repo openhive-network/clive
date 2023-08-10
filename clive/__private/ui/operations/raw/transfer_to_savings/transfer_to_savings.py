@@ -39,8 +39,7 @@ class TransferToSavings(RawOperationBaseScreen):
                 yield InputLabel("from")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield from self.__to_input.compose()
-                yield InputLabel("amount")
-                yield self.__amount_input
+                yield from self.__amount_input.compose()
                 yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferToSavingsOperation[Asset.Hive, Asset.Hbd] | None:

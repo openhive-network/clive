@@ -47,10 +47,8 @@ class LimitOrderCreate(RawOperationBaseScreen):
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield from self.__order_id_input.compose()
                 yield from self.__expiration_input.compose()
-                yield InputLabel("amount to sell")
-                yield self.__amount_to_sell_input
-                yield InputLabel("min to receive")
-                yield self.__min_to_receive_input
+                yield from self.__amount_to_sell_input.compose()
+                yield from self.__min_to_receive_input.compose()
                 yield self.__fill_or_kill_input
 
     def _create_operation(self) -> LimitOrderCreateOperation[Asset.Hive, Asset.Hbd] | None:

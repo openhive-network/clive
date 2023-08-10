@@ -49,8 +49,7 @@ class TransferToAccount(OperationBaseScreen):
                 yield to_label
                 yield to_input
                 yield KnownAccount(to_input)
-                yield InputLabel("amount")
-                yield self.__amount_input
+                yield from self.__amount_input.compose()
                 yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferOperation[Asset.Hive, Asset.Hbd] | None:

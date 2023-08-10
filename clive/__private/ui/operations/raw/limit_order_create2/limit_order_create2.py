@@ -36,8 +36,8 @@ class LimitOrderCreate2(RawOperationBaseScreen):
         self.__order_id_input = IdInput(label="order id", value=default_order_id)
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)
         self.__expiration_input = DateInput(label="expiration")
-        self.__amount_to_sell_input = AssetAmountInput()
-        self.__base_input = AssetAmountInput()
+        self.__amount_to_sell_input = AssetAmountInput(label="amount to sell")
+        self.__base_input = AssetAmountInput(label="base")
         self.__quote_input = AmountInput(label="quote")
 
     def create_left_panel(self) -> ComposeResult:
@@ -47,15 +47,13 @@ class LimitOrderCreate2(RawOperationBaseScreen):
                 yield InputLabel("owner")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
                 yield from self.__order_id_input.compose()
-                yield Static("")
                 yield self.__fill_or_kill_input
+                yield Static()
                 yield from self.__expiration_input.compose()
-                yield InputLabel("amount to sell")
-                yield self.__amount_to_sell_input
-                yield Static("")
+                yield from self.__amount_to_sell_input.compose()
                 yield BigTitle("Exchange rate")
-                yield InputLabel("base")
-                yield self.__base_input
+                yield Static()
+                yield from self.__base_input.compose()
                 yield from self.__quote_input.compose()
 
     def _create_operation(self) -> LimitOrderCreate2Operation[Asset.Hbd, Asset.Hive] | None:
