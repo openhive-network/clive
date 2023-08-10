@@ -2,44 +2,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.widgets import Input
-
-from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.placeholders_constants import INTEGER_PLACEHOLDER
 
 if TYPE_CHECKING:
-    from rich.console import RenderableType
     from rich.highlighter import Highlighter
-    from textual.app import ComposeResult
 
 
-class IntegerInput(CliveWidget):
-    DEFAULT_CSS = """
-        IntegerInput Input {
-            width: 80%;
-            }
-    """
-
+class IntegerInput(CustomInput[int]):
     def __init__(
         self,
-        label: RenderableType,
+        label: str,
         value: int | None = None,
-        placeholder: str = "",
+        placeholder: str = INTEGER_PLACEHOLDER,
         highlighter: Highlighter | None = None,
-        id_: str | None = None,
-        classes: str | None = None,
-        disabled: bool = False,
     ):
-        self.__label = label
-
-        self.__input = Input(value=str(value), placeholder=placeholder, highlighter=highlighter)
-
-        super().__init__(id=id_, classes=classes, disabled=disabled)
-
-    def compose(self) -> ComposeResult:
-        yield InputLabel(self.__label)
-        yield self.__input
+        super().__init__(label=label, value=value, placeholder=placeholder, highlighter=highlighter)
 
     @property
     def value(self) -> int:
-        return int(self.__input.value)
+        return int(self._input.value)

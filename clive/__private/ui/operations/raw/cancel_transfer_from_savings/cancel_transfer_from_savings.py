@@ -8,7 +8,7 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.id_input import IdInput, RequestIdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CancelTransferFromSavingsOperation
@@ -27,7 +27,7 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
 
         default_request_id = get_default_from_model(CancelTransferFromSavingsOperation, "request_id", int)
 
-        self.__request_id_input = IdInput[RequestIdT](label="request id", value=default_request_id)
+        self.__request_id_input = IdInput(label="request id", value=default_request_id)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

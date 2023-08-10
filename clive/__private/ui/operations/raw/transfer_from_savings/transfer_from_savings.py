@@ -10,7 +10,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
-from clive.__private.ui.widgets.inputs.id_input import IdInput, RequestIdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -33,7 +33,7 @@ class TransferFromSavings(RawOperationBaseScreen):
         default_request_id = get_default_from_model(TransferFromSavingsOperation, "request_id", int)
 
         self.__to_input = AccountNameInput(label="to")
-        self.__request_id_input = IdInput[RequestIdT](label="request id", value=default_request_id)
+        self.__request_id_input = IdInput(label="request id", value=default_request_id)
         self.__amount_input = AssetAmountInput()
         self.__memo_input = MemoInput()
 

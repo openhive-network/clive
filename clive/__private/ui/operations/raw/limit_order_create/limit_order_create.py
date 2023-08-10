@@ -11,7 +11,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.date_input import DateInput
-from clive.__private.ui.widgets.inputs.id_input import IdInput, OrderIdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCreateOperation
@@ -33,7 +33,7 @@ class LimitOrderCreate(RawOperationBaseScreen):
         default_order_id = get_default_from_model(LimitOrderCreateOperation, "orderid", int)
         default_fill_or_kill = get_default_from_model(LimitOrderCreateOperation, "fill_or_kill", bool)
 
-        self.__order_id_input = IdInput[OrderIdT](label="order id", value=default_order_id)
+        self.__order_id_input = IdInput(label="order id", value=default_order_id)
         self.__amount_to_sell_input = AssetAmountInput()
         self.__min_to_receive_input = AssetAmountInput()
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)
@@ -62,7 +62,7 @@ class LimitOrderCreate(RawOperationBaseScreen):
 
         return LimitOrderCreateOperation(
             owner=self.app.world.profile_data.name,
-            orderid=int(self.__order_id_input.value),
+            orderid=self.__order_id_input.value,
             amount_to_sell=asset_to_sell,
             min_to_receive=asset_min_receive,
             fill_or_kill=bool(self.__fill_or_kill_input.value),

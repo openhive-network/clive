@@ -9,8 +9,8 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import UpdateProposalVotesOperation
 
@@ -28,7 +28,7 @@ class UpdateProposalVotes(RawOperationBaseScreen):
 
         default_approve = get_default_from_model(UpdateProposalVotesOperation, "approve", bool)
 
-        self.__proposal_ids = CustomInput(label="proposal ids", placeholder="e.g.: 10,11,12")
+        self.__proposal_ids = TextInput(label="proposal ids", placeholder="e.g.: 10,11,12")
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:

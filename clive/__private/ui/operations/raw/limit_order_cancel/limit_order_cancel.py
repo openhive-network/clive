@@ -8,7 +8,7 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.id_input import IdInput, OrderIdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCancelOperation
@@ -27,7 +27,7 @@ class LimitOrderCancel(RawOperationBaseScreen):
 
         default_order_id = get_default_from_model(LimitOrderCancelOperation, "order_id", int)
 
-        self.__order_id_input = IdInput[OrderIdT](label="order id", value=default_order_id)
+        self.__order_id_input = IdInput(label="order id", value=default_order_id)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -40,5 +40,5 @@ class LimitOrderCancel(RawOperationBaseScreen):
     def _create_operation(self) -> LimitOrderCancelOperation:
         return LimitOrderCancelOperation(
             owner=self.app.world.profile_data.working_account.name,
-            order_id=int(self.__order_id_input.value),
+            order_id=self.__order_id_input.value,
         )

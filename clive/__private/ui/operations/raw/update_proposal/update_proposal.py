@@ -8,8 +8,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.inputs.id_input import IdInput, ProposalIdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -28,12 +27,12 @@ class UpdateProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proposal_id_input = IdInput[ProposalIdT](label="proposal id")
+        self.__proposal_id_input = IdInput(label="proposal id")
         self.__creator_input = AccountNameInput(label="creator")
         self.__daily_pay_input = AmountInput(label="daily pay")
         self.__subject_input = TextInput(label="subject", placeholder="e.g.: New subject")
         self.__permlink_input = PermlinkInput()
-        self.__extensions_input = CustomInput(label="extensions", placeholder="e.g.: []")
+        self.__extensions_input = TextInput(label="extensions", placeholder="e.g.: []")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
@@ -48,7 +47,7 @@ class UpdateProposal(RawOperationBaseScreen):
 
     def _create_operation(self) -> UpdateProposalOperation[Asset.Hbd]:
         return UpdateProposalOperation(
-            proposal_id=int(self.__proposal_id_input.value),
+            proposal_id=self.__proposal_id_input.value,
             creator=self.__creator_input.value,
             daily_pay=Asset.hbd(self.__daily_pay_input.value),
             subject=self.__subject_input.value,

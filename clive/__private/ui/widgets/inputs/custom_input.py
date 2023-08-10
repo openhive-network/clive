@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from abc import abstractmethod
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from textual.widgets import Input
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 
@@ -13,7 +15,10 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class CustomInput(CliveWidget):
+ValueT = TypeVar("ValueT")
+
+
+class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
     """Base class for all others customize inputs, can also use independently."""
 
     DEFAULT_CSS = """
@@ -25,7 +30,7 @@ class CustomInput(CliveWidget):
     def __init__(
         self,
         label: RenderableType,
-        value: str | None = None,
+        value: ValueT | None = None,
         placeholder: str = "",
         highlighter: Highlighter | None = None,
         id_: str | None = None,
@@ -33,7 +38,7 @@ class CustomInput(CliveWidget):
         disabled: bool = False,
         password: bool = False,
     ):
-        self.__label = label
+        self._label = label
 
         if value is not None:
             self._input = Input(value=str(value), placeholder=placeholder, highlighter=highlighter, password=password)
@@ -43,9 +48,14 @@ class CustomInput(CliveWidget):
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
     def compose(self) -> ComposeResult:
-        yield InputLabel(self.__label)
-        yield self.__input
+        yield InputLabel(self._label)
+        yield self._input
 
     @property
-    def value(self) -> str:
-        return self.__input.value
+    def raw_value(self) -> str:
+        return self._input.value
+
+    @property
+    @abstractmethod
+    def value(self) -> ValueT:
+        ...

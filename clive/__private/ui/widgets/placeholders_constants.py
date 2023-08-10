@@ -12,7 +12,7 @@ KEY_AUTHS_PLACEHOLDER: Final[str] = (
     "e.g: STM6vJmrwaX5TjgTS9dPH8KsArso5m91fVodJvv91j7G765wqcNM9, 1. Notice: split pair of values by ;"
 )
 JSON_DATA_PLACEHOLDER: Final[str] = "e.g: {}"
-WEIGHT_THRESHOLD_PLACEHOLDER: Final[str] = "e.g: 1"
+INTEGER_PLACEHOLDER: Final[str] = "e.g: 1"
 ID_PLACEHOLDER: Final[str] = "e.g: 1000"
 PERMLINK_PLACEHOLDER: Final[str] = "e.g: a-post-by-alice"
 DATE_PLACEHOLDER: Final[str] = "e.g: e.g: 2019-08-27T11:22:39"

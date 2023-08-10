@@ -9,7 +9,7 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
-from clive.__private.ui.widgets.inputs.id_input import IdInput, RequestIdT
+from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -29,7 +29,7 @@ class Convert(RawOperationBaseScreen):
 
         default_request_id = get_default_from_model(ConvertOperation, "request_id", int)
 
-        self.__request_id_input = IdInput[RequestIdT](label="request id", value=default_request_id)
+        self.__request_id_input = IdInput(label="request id", value=default_request_id)
         self.__amount_input = AmountInput(label="amount")
 
     def create_left_panel(self) -> ComposeResult:
@@ -44,6 +44,6 @@ class Convert(RawOperationBaseScreen):
     def _create_operation(self) -> ConvertOperation[Asset.Hbd]:
         return ConvertOperation(
             from_=self.app.world.profile_data.working_account.name,
-            request_id=int(self.__request_id_input.value),
+            request_id=self.__request_id_input.value,
             amount=Asset.hbd(self.__amount_input.value),
         )
