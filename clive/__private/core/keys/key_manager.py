@@ -1,13 +1,13 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Coroutine, Iterator, Sequence
+from collections.abc import Awaitable, Callable, Iterator, Sequence
 from typing import Literal
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
 
-ImportCallbackT = Callable[[PrivateKeyAliased], Coroutine[None, None, PublicKeyAliased]]
+ImportCallbackT = Callable[[PrivateKeyAliased], Awaitable[PublicKeyAliased]]
 
 
 class KeyAliasAlreadyInUseError(CliveError):

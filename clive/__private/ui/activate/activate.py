@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-ActivationResultCallbackT = Callable[[bool], Coroutine[Any, Any, None]]
+ActivationResultCallbackT = Callable[[bool], Awaitable[None]]
 ActivationResultCallbackOptionalT = ActivationResultCallbackT | None
 
 

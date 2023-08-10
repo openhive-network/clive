@@ -1,4 +1,4 @@
-from collections.abc import Callable, Coroutine
+from collections.abc import Awaitable, Callable
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], Coroutine[None, None, None]]
+PreWrapFuncT = Callable[Concatenate[typer.Context, P], Awaitable[None]]
 PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 

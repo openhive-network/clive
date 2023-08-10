@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine
+    from collections.abc import Awaitable, Callable
     from types import TracebackType
 
 T = TypeVar("T")
@@ -18,8 +18,8 @@ class ExitCallHandler(Generic[T]):
         self,
         obj: T,
         *,
-        exception_callback: Callable[[T, Exception], Coroutine[None, None, None]] = dummy,
-        finally_callback: Callable[[T], Coroutine[None, None, None]] = dummy,
+        exception_callback: Callable[[T, Exception], Awaitable[None]] = dummy,
+        finally_callback: Callable[[T], Awaitable[None]] = dummy,
     ) -> None:
         self.__obj = obj
         self.__exception_callback = exception_callback

@@ -9,7 +9,7 @@ from clive.__private.core.commands.abc.command_in_active import CommandRequiresA
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine
+    from collections.abc import Awaitable, Callable
 
     from clive.__private.ui.app import Clive
 
@@ -27,8 +27,8 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
     @staticmethod
     def try_again_after_activation(
         *, app: Clive | None = None
-    ) -> Callable[[Callable[P, Coroutine[None, None, None]]], Callable[P, Coroutine[None, None, None]]]:
-        def decorator(func: Callable[P, Coroutine[None, None, None]]) -> Callable[P, Coroutine[None, None, None]]:
+    ) -> Callable[[Callable[P, Awaitable[None]]], Callable[P, Awaitable[None]]]:
+        def decorator(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
             @wraps(func)
             async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
                 if not app:
