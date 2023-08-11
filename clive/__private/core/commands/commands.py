@@ -77,7 +77,7 @@ class Commands(Generic[WorldT]):
         self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
-            BuildTransaction(operations=operations, node=self.__world.node, expiration=expiration)
+            BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
         )
 
     async def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
@@ -87,7 +87,7 @@ class Commands(Generic[WorldT]):
                 beekeeper=self._world.beekeeper,
                 transaction=transaction,
                 key=sign_with,
-                chain_id=self._world.node.chain_id,
+                chain_id=await self._world.node.chain_id,
             )
         )
 
@@ -97,7 +97,7 @@ class Commands(Generic[WorldT]):
         )
 
     async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
-        return await self.__surround_with_exception_handlers(Broadcast(node=self.__world.node, transaction=transaction))
+        return await self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
 
     async def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
@@ -107,26 +107,26 @@ class Commands(Generic[WorldT]):
                 operation=operation,
                 beekeeper=self._world.beekeeper,
                 sign_with=sign_with,
-                chain_id=self._world.node.chain_id,
+                chain_id=await self._world.node.chain_id,
             )
         )
 
     async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return await self.__surround_with_exception_handlers(
             ImportKey(
-                app_state=self.__world.app_state,
-                wallet=self.__world.profile_data.name,
+                app_state=self._world.app_state,
+                wallet=self._world.profile_data.name,
                 key_to_import=key_to_import,
-                beekeeper=self.__world.beekeeper,
+                beekeeper=self._world.beekeeper,
             )
         )
 
     async def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             RemoveKey(
-                app_state=self.__world.app_state,
-                wallet=self.__world.profile_data.name,
-                beekeeper=self.__world.beekeeper,
+                app_state=self._world.app_state,
+                wallet=self._world.profile_data.name,
+                beekeeper=self._world.beekeeper,
                 key_to_remove=key_to_remove,
                 password=password,
             )
@@ -135,16 +135,18 @@ class Commands(Generic[WorldT]):
     async def sync_data_with_beekeeper(self) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
-                app_state=self.__world.app_state,
-                profile_data=self.__world.profile_data,
-                beekeeper=self.__world.beekeeper,
+                app_state=self._world.app_state,
+                profile_data=self._world.profile_data,
+                beekeeper=self._world.beekeeper,
             )
         )
 
     async def update_node_data(
         self, *, accounts: list[Account] | None = None
     ) -> CommandWithResultWrapper[DynamicGlobalPropertiesT]:
-        result = self.__surround_with_exception_handlers(UpdateNodeData(accounts=accounts or [], node=self._world.node))
+        result = await self.__surround_with_exception_handlers(
+            UpdateNodeData(accounts=accounts or [], node=self._world.node)
+        )
         if result.success:
             self._world.app_state._dynamic_global_properties = result.result_or_raise
         return result
@@ -244,12 +246,12 @@ class TextualCommands(Commands["TextualWorld"], CliveWidget):
     async def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
         if time is not None:
             await self.set_timeout(seconds=int(time.total_seconds()))
-        wrapper = super().activate(password=password, time=time)
+        wrapper = await super().activate(password=password, time=time)
         self._world.update_reactive("app_state")
         return wrapper
 
     async def deactivate(self) -> CommandWrapper:
-        wrapper = super().deactivate()
+        wrapper = await super().deactivate()
         self._world.update_reactive("app_state")
         self.app.switch_screen("dashboard_inactive")
         return wrapper

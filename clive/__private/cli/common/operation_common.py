@@ -75,7 +75,7 @@ class OperationCommon(CommonBaseModel):
                 ) as world:
                     cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
                     ctx.params.update(world=world)
-                    await world.commands.activate()
+                    await world.commands.activate(password=password)
                     await func(ctx, *args, **kwargs)
 
             asyncio_run(impl())

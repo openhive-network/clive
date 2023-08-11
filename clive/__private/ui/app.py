@@ -34,7 +34,6 @@ from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from datetime import timedelta
     from typing import ClassVar, Literal
 
     from rich.console import RenderableType
