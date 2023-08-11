@@ -27,7 +27,7 @@ class DynamicLabel(Label, CliveWidget):
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
-        super().__init__(init if init else "DynamicLabel was not updated!", id=id_, classes=classes)
+        super().__init__(init if init else "loading...", id=id_, classes=classes)
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__callback = callback
