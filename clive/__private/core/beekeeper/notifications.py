@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-from threading import Event
+from asyncio import Event
 from typing import Protocol
 
-from clive.__private.core.beekeeper.notification_http_server import HttpServer, JsonT
+from clive.__private.core.beekeeper.notification_http_server import AsyncHttpServer, JsonT
 from clive.__private.logger import logger
 from clive.core.url import Url
 
@@ -15,7 +15,7 @@ class WalletClosingListener(Protocol):
 
 class BeekeeperNotificationsServer:
     def __init__(self) -> None:
-        self.server = HttpServer(self, name="NotificationsServer")
+        self.server = AsyncHttpServer(self)
 
         self.opening_beekeeper_failed = Event()
         self.http_listening_event = Event()
@@ -23,8 +23,8 @@ class BeekeeperNotificationsServer:
         self.http_endpoint: Url | None = None
         self.__wallet_closing_listeners: set[WalletClosingListener] = set()
 
-    def listen(self) -> int:
-        self.server.run()
+    async def listen(self) -> int:
+        await self.server.run()
         logger.debug(f"Notifications server is listening on {self.server.port}...")
         return self.server.port
 
@@ -54,8 +54,8 @@ class BeekeeperNotificationsServer:
             f"{details['address'].replace('0.0.0.0', '127.0.0.1')}:{details['port']}", protocol=details["type"].lower()
         )
 
-    def close(self) -> None:
-        self.server.close()
+    async def close(self) -> None:
+        await self.server.close()
 
         self.http_listening_event.clear()
 

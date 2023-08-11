@@ -61,9 +61,8 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
 
 @pytest.fixture()
 async def world(wallet_name: str) -> AsyncIterator[World]:
-    world = World(profile_name=wallet_name)
-    yield world
-    await world.close()
+    async with World(profile_name=wallet_name) as world:
+        yield world
 
 
 @pytest.fixture()

@@ -6,6 +6,7 @@ from httpx import codes
 from pydantic import Field, validator
 
 from clive.__private.config import settings
+from clive.__private.core._async import event_wait
 from clive.__private.core.beekeeper.api import BeekeeperApi
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
 from clive.__private.core.beekeeper.exceptions import (
@@ -124,7 +125,7 @@ class Beekeeper:
         if self.__token:
             await self.api.close_session()
             self.__token = None
-        self.__close_beekeeper()
+        await self.__close_beekeeper()
         self.is_running = False
         logger.info("Beekeeper closed.")
 
@@ -137,9 +138,9 @@ class Beekeeper:
     async def start(self, *, timeout: float = 5.0) -> None:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
-        self.__notification_server_port = self.__notification_server.listen()
+        self.__notification_server_port = await self.__notification_server.listen()
         if not (remote := self.get_remote_address_from_settings()):
-            self.__run_beekeeper(timeout=timeout)
+            await self.__run_beekeeper(timeout=timeout)
         else:
             self.config.webserver_http_endpoint = remote
 
@@ -153,31 +154,31 @@ class Beekeeper:
         await self.close()
         await self.start()
 
-    def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
+    async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         self.__executable.run()
 
-        if self.__notification_server.opening_beekeeper_failed.wait(timeout):
-            self.__close_beekeeper()
-            self.__notification_server_port = self.__notification_server.listen()
+        if await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
+            await self.__close_beekeeper()
+            self.__notification_server_port = await self.__notification_server.listen()
             self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         elif not (
-            self.__notification_server.http_listening_event.wait(timeout)
-            and self.__notification_server.ready.wait(timeout)
+            await event_wait(self.__notification_server.http_listening_event, timeout)
+            and await event_wait(self.__notification_server.ready, timeout)
         ):
-            self.__close_beekeeper()
+            await self.__close_beekeeper()
             return
 
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
 
-    def __close_beekeeper(self) -> None:
+    async def __close_beekeeper(self) -> None:
         try:
             self.__executable.close()
         finally:
             self.__notification_server_port = None
             self.config.webserver_http_endpoint = webserver_default()
-            self.__notification_server.close()
+            await self.__notification_server.close()
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:

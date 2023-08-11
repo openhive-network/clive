@@ -107,6 +107,7 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
+            self.__class__.world = await TextualWorld().setup()
             return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
         except CancelledError:
             pass
@@ -364,7 +365,6 @@ class Clive(App[int], ManualReactive):
     @classmethod
     def app_instance(cls) -> Clive:
         if not cls.is_app_exist():
-            cls.world = TextualWorld()
             cls.__app_instance = Clive()
         assert cls.__app_instance is not None
         return cls.__app_instance

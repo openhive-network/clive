@@ -84,7 +84,7 @@ if not enable_onboarding:
         watched_accounts={WatchedAccount(acc.name) for acc in watched_accounts},
     ).save()
 
-    world = World(alice.name)
+    world = asyncio.run(World(alice.name).setup())
     password = asyncio.run(
         CreateWallet(
             app_state=world.app_state, beekeeper=world.beekeeper, wallet=alice.name, password=alice.name

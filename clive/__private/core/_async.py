@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from typing import TYPE_CHECKING, TypeVar
 
 from clive.__private.core._thread import thread_pool
@@ -22,3 +23,10 @@ def asyncio_run(awaitable: Awaitable[T]) -> T:
         return await awaitable
 
     return thread_pool.submit(asyncio.run, await_for_given_awaitable()).result()
+
+
+async def event_wait(event: asyncio.Event, timeout: float | None = None) -> bool:
+    # suppress TimeoutError because we'll return False in case of timeout
+    with contextlib.suppress(asyncio.TimeoutError):
+        await asyncio.wait_for(event.wait(), timeout)
+    return event.is_set()

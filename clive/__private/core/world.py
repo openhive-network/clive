@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Any
 import typer
 from textual.reactive import var
 
-from clive.__private.core._async import asyncio_run
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
@@ -16,6 +15,10 @@ from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
+    from types import TracebackType
+
+    from typing_extensions import Self
+
     from clive.core.url import Url
 
 
@@ -48,11 +51,17 @@ class World:
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
+        self._use_beekeeper = use_beekeeper
+        self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
-        if use_beekeeper:
-            self._beekeeper = asyncio_run(self.__setup_beekeeper(remote_endpoint=beekeeper_remote_endpoint))
 
         self._node = Node(self._profile_data)
+
+    async def __aenter__(self) -> Self:
+        return await self.setup()
+
+    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+        await self.close()
 
     @property
     def commands(self) -> Commands[World]:
@@ -66,6 +75,11 @@ class World:
     @property
     def node(self) -> Node:
         return self._node
+
+    async def setup(self) -> Self:
+        if self._use_beekeeper:
+            self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+        return self
 
     async def close(self) -> None:
         self.profile_data.save()
