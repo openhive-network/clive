@@ -34,4 +34,4 @@ def convert_to_representation(
         operation = operation.value
     if isinstance(operation, __Hf26OperationRepresentationBase):
         return operation
-    return get_hf26_representation(operation.get_name())(type=operation.get_name(), value=operation)
+    return get_hf26_representation(operation.get_name())(type=operation.get_name_with_suffix(), value=operation)
