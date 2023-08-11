@@ -8,7 +8,7 @@ source "$SCRIPTPATH/common.sh"
 
 log_exec_params "$@"
 
-# Script reponsible for starting a docker container built for image specified at command line.
+# Script responsible for starting a docker container built for image specified at command line.
 
 print_help () {
     echo "Usage: $0 <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."

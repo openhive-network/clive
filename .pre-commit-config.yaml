@@ -35,3 +35,7 @@ repos:
       entry: mypy
       language: system
       types: [ python ]
+  - repo: https://github.com/codespell-project/codespell
+    rev: v2.2.4
+    hooks:
+    - id: codespell
