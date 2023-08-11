@@ -40,7 +40,7 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
         keys_in_clive = self.profile_data.working_account.keys
         keys_in_beekeeper = (await self.beekeeper.api.get_public_keys()).keys
 
-        keys_missing_in_clive = [key for key in keys_in_beekeeper if key not in keys_in_clive]
+        keys_missing_in_clive = [key.public_key for key in keys_in_beekeeper if key.public_key not in keys_in_clive]
 
         self.profile_data.working_account.keys.add(
             *[PublicKeyAliased(value=key, alias=key) for key in keys_missing_in_clive]

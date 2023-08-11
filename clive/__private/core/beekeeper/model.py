@@ -44,8 +44,12 @@ class ListWallets(BeekeeperResponse):
     wallets: list[ListWallets.WalletDetails]
 
 
+class BeekeeperPublicKeyType(CliveBaseModel):
+    public_key: str
+
+
 class GetPublicKeys(BeekeeperResponse):
-    keys: list[str]
+    keys: list[BeekeeperPublicKeyType]
 
 
 class SignDigest(BeekeeperResponse):
