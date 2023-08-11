@@ -32,10 +32,10 @@ class TransferFromSavings(RawOperationBaseScreen):
 
         default_request_id = get_default_from_model(TransferFromSavingsOperation, "request_id", int)
 
-        self.__to_input = AccountNameInput(label="to")
-        self.__request_id_input = IdInput(label="request id", value=default_request_id)
-        self.__amount_input = AssetAmountInput()
-        self.__memo_input = MemoInput()
+        self.__to_input = AccountNameInput(self, label="to")
+        self.__request_id_input = IdInput(self, label="request id", value=default_request_id)
+        self.__amount_input = AssetAmountInput(self)
+        self.__memo_input = MemoInput(self)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

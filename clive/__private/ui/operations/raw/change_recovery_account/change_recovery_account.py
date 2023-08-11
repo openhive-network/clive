@@ -23,9 +23,9 @@ class ChangeRecoveryAccount(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__account_to_recover_input = AccountNameInput(label="account to recover")
+        self.__account_to_recover_input = AccountNameInput(self, label="account to recover")
         self.__new_recovery_account_input = AccountNameInput(
-            label="new recovery account", placeholder=ACCOUNT_NAME2_PLACEHOLDER
+            self, label="new recovery account", placeholder=ACCOUNT_NAME2_PLACEHOLDER
         )
 
     def create_left_panel(self) -> ComposeResult:

@@ -33,16 +33,16 @@ class WitnessUpdate(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__url_input = TextInput(label="url", placeholder="e.g: witness-category/my-witness")
-        self.__block_signing_key_input = TextInput(label="block signing key", placeholder=KEY_PLACEHOLDER)
-        self.__account_creation_fee_input = FeeInput(label="account creation fee")
+        self.__url_input = TextInput(self, label="url", placeholder="e.g: witness-category/my-witness")
+        self.__block_signing_key_input = TextInput(self, label="block signing key", placeholder=KEY_PLACEHOLDER)
+        self.__account_creation_fee_input = FeeInput(self, label="account creation fee")
         self.__maximum_block_size_input = IntegerInput(
-            label="maximum block size", value=131072, placeholder="maximum block size"
+            self, label="maximum block size", value=131072, placeholder="maximum block size"
         )
         self.__hbd_interest_rate_input = IntegerInput(
-            label="hbd interest rate", value=1000, placeholder="hbd interest rate"
+            self, label="hbd interest rate", value=1000, placeholder="hbd interest rate"
         )
-        self.__fee_input = FeeInput()
+        self.__fee_input = FeeInput(self)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

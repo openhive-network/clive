@@ -36,19 +36,19 @@ class EscrowTransfer(RawOperationBaseScreen):
 
         default_escrow_id = get_default_from_model(EscrowTransferOperation, "escrow_id", int)
 
-        self.__to_input = AccountNameInput(label="to")
-        self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__escrow_id_input = IdInput(label="escrow id", value=default_escrow_id)
+        self.__to_input = AccountNameInput(self, label="to")
+        self.__agent_input = AccountNameInput(self, label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__escrow_id_input = IdInput(self, label="escrow id", value=default_escrow_id)
         self.__hbd_amount_input = AmountInput(
-            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
+            self, label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
         self.__hive_amount_input = AmountInput(
-            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
+            self, label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
-        self.__fee_input = AssetAmountInput()
-        self.__ratification_deadline_input = DateInput(label="ratification deadline")
-        self.__escrow_expiration_input = DateInput(label="escrow expiration")
-        self.__json_meta_input = JsonDataInput(label="json meta")
+        self.__fee_input = AssetAmountInput(self)
+        self.__ratification_deadline_input = DateInput(self, label="ratification deadline")
+        self.__escrow_expiration_input = DateInput(self, label="escrow expiration")
+        self.__json_meta_input = JsonDataInput(self, label="json meta")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

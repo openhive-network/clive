@@ -9,6 +9,7 @@ from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.widget import Widget
 
     from clive.models.asset import Asset
 
@@ -30,10 +31,10 @@ class AssetAmountInput(Horizontal):
             yield self.__input
             yield self.__currency_selector
 
-    def __init__(self, label: str = "amount") -> None:
-        self.__input = AmountInput(label=label)
+    def __init__(self, to_mount: Widget, label: str = "amount") -> None:
+        self.__input = AmountInput(self, label=label)
         self.__currency_selector = CurrencySelectorLiquid()
-
+        self.mount(to_mount)
         super().__init__()
 
     def compose(self) -> ComposeResult:

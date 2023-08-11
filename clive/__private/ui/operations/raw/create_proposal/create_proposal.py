@@ -29,12 +29,12 @@ class CreateProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__receiver_input = AccountNameInput(label="receiver")
-        self.__start_date_input = DateInput(label="start date")
-        self.__end_date_input = DateInput(label="end date")
-        self.__daily_pay_input = AmountInput(label="daily hbd pay")
-        self.__subject_input = TextInput(label="subject", placeholder="e.g: example subject")
-        self.__permlink_input = PermlinkInput()
+        self.__receiver_input = AccountNameInput(self, label="receiver")
+        self.__start_date_input = DateInput(self, label="start date")
+        self.__end_date_input = DateInput(self, label="end date")
+        self.__daily_pay_input = AmountInput(self, label="daily hbd pay")
+        self.__subject_input = TextInput(self, label="subject", placeholder="e.g: example subject")
+        self.__permlink_input = PermlinkInput(self)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

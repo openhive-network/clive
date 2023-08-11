@@ -26,8 +26,8 @@ class DelegateVestingShares(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__delegatee_input = AccountNameInput(label="delegatee")
-        self.__vesting_shares_input = AmountInput(label="vesting shares")
+        self.__delegatee_input = AccountNameInput(self, label="delegatee")
+        self.__vesting_shares_input = AmountInput(self, label="vesting shares")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

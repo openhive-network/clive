@@ -29,7 +29,7 @@ class RemoveProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proposal_ids_input = TextInput(label="proposal ids", placeholder="e.g.: 10,11,12")
+        self.__proposal_ids_input = TextInput(self, label="proposal ids", placeholder="e.g.: 10,11,12")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

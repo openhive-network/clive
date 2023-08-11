@@ -24,8 +24,8 @@ class ClaimAccount(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__creator_input = AccountNameInput(label="creator")
-        self.__fee_input = FeeInput()
+        self.__creator_input = AccountNameInput(self, label="creator")
+        self.__fee_input = FeeInput(self)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

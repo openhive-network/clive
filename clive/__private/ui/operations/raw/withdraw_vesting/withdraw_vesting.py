@@ -25,8 +25,8 @@ class WithdrawVesting(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__account_input = AccountNameInput(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__vesting_shares_input = AmountInput(label="vesting shares")
+        self.__account_input = AccountNameInput(self, placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__vesting_shares_input = AmountInput(self, label="vesting shares")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

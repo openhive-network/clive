@@ -32,9 +32,9 @@ class Vote(RawOperationBaseScreen):
 
         default_weight = get_default_from_model(VoteOperation, "weight", int)
 
-        self.__author_input = AccountNameInput(label="author")
-        self.__permlink_input = PermlinkInput()
-        self.__weight_input = IntegerInput(label="weight", value=default_weight, placeholder=ID_PLACEHOLDER)
+        self.__author_input = AccountNameInput(self, label="author")
+        self.__permlink_input = PermlinkInput(self)
+        self.__weight_input = IntegerInput(self, label="weight", value=default_weight, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

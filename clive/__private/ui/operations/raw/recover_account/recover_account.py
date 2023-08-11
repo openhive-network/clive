@@ -30,13 +30,13 @@ class RecoverAccount(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__account_to_recover_input = AccountNameInput()
-        self.__weight_threshold_new_input = WeightThresholdInput()
-        self.__account_auths_new_input = AccountAuthsInput()
-        self.__key_auths_new_input = KeyAuthsInput()
-        self.__weight_threshold_recent_input = WeightThresholdInput()
-        self.__account_auths_recent_input = AccountAuthsInput()
-        self.__key_auths_recent_input = KeyAuthsInput()
+        self.__account_to_recover_input = AccountNameInput(self)
+        self.__weight_threshold_new_input = WeightThresholdInput(self)
+        self.__account_auths_new_input = AccountAuthsInput(self)
+        self.__key_auths_new_input = KeyAuthsInput(self)
+        self.__weight_threshold_recent_input = WeightThresholdInput(self)
+        self.__account_auths_recent_input = AccountAuthsInput(self)
+        self.__key_auths_recent_input = KeyAuthsInput(self)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

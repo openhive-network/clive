@@ -34,10 +34,10 @@ class TransferToAccount(OperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__to_input = AccountNameInput(label="to")
-        self.__memo_input = MemoInput()
+        self.__to_input = AccountNameInput(self, label="to")
+        self.__memo_input = MemoInput(self)
 
-        self.__amount_input = AssetAmountInput()
+        self.__amount_input = AssetAmountInput(self)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

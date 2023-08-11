@@ -23,9 +23,9 @@ class Custom(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__required_auths_input = TextInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
-        self.__id_input = IdInput(value=0)
-        self.__data_input = TextInput(label="data", placeholder="Custom data input")
+        self.__required_auths_input = TextInput(self, label="required auths", placeholder="e.g.: alice,bob,charlie")
+        self.__id_input = IdInput(self, value=0)
+        self.__data_input = TextInput(self, label="data", placeholder="Custom data input")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

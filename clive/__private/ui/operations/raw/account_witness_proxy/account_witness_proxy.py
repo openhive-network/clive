@@ -29,7 +29,7 @@ class AccountWitnessProxy(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proxy_input = AccountNameInput(label="proxy")
+        self.__proxy_input = AccountNameInput(self, label="proxy")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

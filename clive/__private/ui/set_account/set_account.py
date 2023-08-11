@@ -33,7 +33,8 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         super().__init__(owner)
 
         self.__account_name_input = AccountNameInput(
-            str(self.context.working_account.name),
+            self,
+            label=str(self.context.working_account.name),
             placeholder="Please enter hive account name, without @",
             id_="set_account_name",
         )

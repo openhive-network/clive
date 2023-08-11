@@ -30,9 +30,9 @@ class ClaimRewardBalance(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__reward_hive_input = AmountInput(label="reward hive")
-        self.__reward_hbd_input = AmountInput(label="reward hbd")
-        self.__reward_vests_input = AmountInput(label="reward vests")
+        self.__reward_hive_input = AmountInput(self, label="reward hive")
+        self.__reward_hbd_input = AmountInput(self, label="reward hbd")
+        self.__reward_vests_input = AmountInput(self, label="reward vests")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

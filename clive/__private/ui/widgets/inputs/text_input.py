@@ -6,11 +6,13 @@ from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 
 if TYPE_CHECKING:
     from rich.highlighter import Highlighter
+    from textual.widget import Widget
 
 
 class TextInput(CustomInput[str]):
     def __init__(
         self,
+        to_mount: Widget,
         label: str,
         value: str | None = None,
         placeholder: str = "",
@@ -19,7 +21,13 @@ class TextInput(CustomInput[str]):
         password: bool = False,
     ) -> None:
         super().__init__(
-            label=label, value=value, placeholder=placeholder, id_=id_, highlighter=highlighter, password=password
+            to_mount=to_mount,
+            label=label,
+            value=value,
+            placeholder=placeholder,
+            id_=id_,
+            highlighter=highlighter,
+            password=password,
         )
 
     @property

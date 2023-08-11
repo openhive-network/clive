@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from rich.console import RenderableType
     from rich.highlighter import Highlighter
     from textual.app import ComposeResult
+    from textual.widget import Widget
 
 
 ValueT = TypeVar("ValueT")
@@ -29,6 +30,7 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
 
     def __init__(
         self,
+        to_mount: Widget,
         label: RenderableType,
         value: ValueT | None = None,
         placeholder: str = "",
@@ -38,14 +40,14 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         disabled: bool = False,
         password: bool = False,
     ):
+        super().__init__(id=id_, classes=classes, disabled=disabled)
         self._label = label
 
+        to_mount.mount(self)
         if value is not None:
             self._input = Input(value=str(value), placeholder=placeholder, highlighter=highlighter, password=password)
         else:
             self._input = Input(placeholder=placeholder, highlighter=highlighter, password=password)
-
-        super().__init__(id=id_, classes=classes, disabled=disabled)
 
     def compose(self) -> ComposeResult:
         yield InputLabel(self._label)

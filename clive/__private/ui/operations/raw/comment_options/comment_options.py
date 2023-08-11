@@ -37,14 +37,14 @@ class CommentOptions(RawOperationBaseScreen):
         default_allow_votes = get_default_from_model(CommentOptionsOperation, "allow_votes", bool)
         default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
 
-        self.__permlink_input = PermlinkInput()
-        self.__max_accepted_payout_input = AmountInput(label="max accepted payout")
+        self.__permlink_input = PermlinkInput(self)
+        self.__max_accepted_payout_input = AmountInput(self, label="max accepted payout")
         self.__percent_hbd_input = IntegerInput(
-            label="percent hbd", value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
+            self, label="percent hbd", value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
         )
         self.__allow_votes_input = Checkbox("allow votes", value=default_allow_votes)
         self.__allow_curation_rewards_input = Checkbox("allow curation reward", value=default_allow_curation_rewards)
-        self.__extensions_input = TextInput(label="extensions", placeholder="e.g: []")
+        self.__extensions_input = TextInput(self, label="extensions", placeholder="e.g: []")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

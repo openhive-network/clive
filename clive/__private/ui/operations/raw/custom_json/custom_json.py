@@ -24,12 +24,12 @@ class CustomJson(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__required_auths_input = TextInput(label="required auths", placeholder="e.g.: alice,bob,charlie")
+        self.__required_auths_input = TextInput(self, label="required auths", placeholder="e.g.: alice,bob,charlie")
         self.__required_posting_auths_input = TextInput(
-            label="required posting auths", placeholder="e.g: alice,bob,charlie"
+            self, label="required posting auths", placeholder="e.g: alice,bob,charlie"
         )
-        self.__id_input = IdInput(value=0)
-        self.__json_input = JsonDataInput(label="json")
+        self.__id_input = IdInput(self, value=0)
+        self.__json_input = JsonDataInput(self, label="json")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

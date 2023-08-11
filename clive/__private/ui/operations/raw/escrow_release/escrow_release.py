@@ -33,16 +33,16 @@ class EscrowRelease(RawOperationBaseScreen):
 
         default_escrow_id = get_default_from_model(EscrowReleaseOperation, "escrow_id", int)
 
-        self.__to_input = AccountNameInput(label="to")
-        self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__who_input = AccountNameInput(label="who", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__receiver_input = AccountNameInput(label="receiver")
-        self.__escrow_id_input = IdInput(label="escrow id", value=default_escrow_id)
+        self.__to_input = AccountNameInput(self, label="to")
+        self.__agent_input = AccountNameInput(self, label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__who_input = AccountNameInput(self, label="who", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
+        self.__receiver_input = AccountNameInput(self, label="receiver")
+        self.__escrow_id_input = IdInput(self, label="escrow id", value=default_escrow_id)
         self.__hbd_amount_input = AmountInput(
-            label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
+            self, label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
         self.__hive_amount_input = AmountInput(
-            label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
+            self, label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
 
     def create_left_panel(self) -> ComposeResult:

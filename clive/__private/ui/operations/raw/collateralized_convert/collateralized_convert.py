@@ -29,8 +29,8 @@ class CollateralizedConvert(RawOperationBaseScreen):
 
         default_request_id = get_default_from_model(CollateralizedConvertOperation, "request_id", int)
 
-        self.__amount_input = AmountInput("amount hive")
-        self.__request_id_input = IdInput(label="request id", value=default_request_id)
+        self.__amount_input = AmountInput(self, label="amount hive")
+        self.__request_id_input = IdInput(self, label="request id", value=default_request_id)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

@@ -33,11 +33,11 @@ class LimitOrderCreate(RawOperationBaseScreen):
         default_order_id = get_default_from_model(LimitOrderCreateOperation, "orderid", int)
         default_fill_or_kill = get_default_from_model(LimitOrderCreateOperation, "fill_or_kill", bool)
 
-        self.__order_id_input = IdInput(label="order id", value=default_order_id)
-        self.__amount_to_sell_input = AssetAmountInput()
-        self.__min_to_receive_input = AssetAmountInput()
+        self.__order_id_input = IdInput(self, label="order id", value=default_order_id)
+        self.__amount_to_sell_input = AssetAmountInput(self)
+        self.__min_to_receive_input = AssetAmountInput(self)
         self.__fill_or_kill_input = Checkbox("fill or kill", value=default_fill_or_kill)
-        self.__expiration_input = DateInput(label="expiration")
+        self.__expiration_input = DateInput(self, label="expiration")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

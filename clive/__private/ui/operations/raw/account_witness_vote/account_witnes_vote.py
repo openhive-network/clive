@@ -28,7 +28,7 @@ class AccountWitnessVote(RawOperationBaseScreen):
 
         default_approve = get_default_from_model(AccountWitnessVoteOperation, "approve", bool)
 
-        self.__witness_input = WitnessInput()
+        self.__witness_input = WitnessInput(self)
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:

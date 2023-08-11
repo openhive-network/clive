@@ -27,12 +27,12 @@ class UpdateProposal(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__proposal_id_input = IdInput(label="proposal id")
-        self.__creator_input = AccountNameInput(label="creator")
-        self.__daily_pay_input = AmountInput(label="daily hbd pay")
-        self.__subject_input = TextInput(label="subject", placeholder="e.g.: New subject")
-        self.__permlink_input = PermlinkInput()
-        self.__extensions_input = TextInput(label="extensions", placeholder="e.g.: []")
+        self.__proposal_id_input = IdInput(self, label="proposal id")
+        self.__creator_input = AccountNameInput(self, label="creator")
+        self.__daily_pay_input = AmountInput(self, label="daily hbd pay")
+        self.__subject_input = TextInput(self, label="subject", placeholder="e.g.: New subject")
+        self.__permlink_input = PermlinkInput(self)
+        self.__extensions_input = TextInput(self, label="extensions", placeholder="e.g.: []")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

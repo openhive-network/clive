@@ -28,7 +28,7 @@ class UpdateProposalVotes(RawOperationBaseScreen):
 
         default_approve = get_default_from_model(UpdateProposalVotesOperation, "approve", bool)
 
-        self.__proposal_ids = TextInput(label="proposal ids", placeholder="e.g.: 10,11,12")
+        self.__proposal_ids = TextInput(self, label="proposal ids", placeholder="e.g.: 10,11,12")
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:

@@ -10,6 +10,7 @@ from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACE
 
 if TYPE_CHECKING:
     from rich.text import Text
+    from textual.widget import Widget
 
 
 class AccountNameHighlighter(Highlighter):
@@ -32,12 +33,14 @@ class AccountNameHighlighter(Highlighter):
 class AccountNameInput(TextInput):
     def __init__(
         self,
+        to_mount: Widget,
         label: str = "account name",
         placeholder: str = ACCOUNT_NAME_PLACEHOLDER,
         value: str | None = None,
         id_: str | None = None,
     ) -> None:
         super().__init__(
+            to_mount=to_mount,
             label=label,
             placeholder=placeholder,
             value=value,

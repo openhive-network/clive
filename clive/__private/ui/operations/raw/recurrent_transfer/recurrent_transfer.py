@@ -33,11 +33,15 @@ class RecurrentTransfer(RawOperationBaseScreen):
         default_recurrence = get_default_from_model(RecurrentTransferOperation, "recurrence", int)
         default_executions = get_default_from_model(RecurrentTransferOperation, "executions", int)
 
-        self.__to_input = AccountNameInput(label="to")
-        self.__amount_input = AssetAmountInput()
-        self.__memo_input = MemoInput()
-        self.__recurrence_input = IntegerInput(label="recurrence", value=default_recurrence, placeholder="e.g.: 26")
-        self.__executions_input = IntegerInput(label="executions", value=default_executions, placeholder="e.g.: 3")
+        self.__to_input = AccountNameInput(self, label="to")
+        self.__amount_input = AssetAmountInput(self)
+        self.__memo_input = MemoInput(self)
+        self.__recurrence_input = IntegerInput(
+            self, label="recurrence", value=default_recurrence, placeholder="e.g.: 26"
+        )
+        self.__executions_input = IntegerInput(
+            self, label="executions", value=default_executions, placeholder="e.g.: 3"
+        )
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

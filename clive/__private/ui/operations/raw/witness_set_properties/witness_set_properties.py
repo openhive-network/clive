@@ -30,13 +30,13 @@ class WitnessSetProperties(RawOperationBaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__witness_input = WitnessInput()
-        self.__account_creation_fee_input = FeeInput(label="account creation fee")
+        self.__witness_input = WitnessInput(self)
+        self.__account_creation_fee_input = FeeInput(self, label="account creation fee")
         self.__maximum_block_size_input = IntegerInput(
-            label="maximum block size", value=131072, placeholder="maximum block size"
+            self, label="maximum block size", value=131072, placeholder="maximum block size"
         )
         self.__hbd_interest_rate_input = IntegerInput(
-            label="hbd interest rate", value=1000, placeholder="hbd interest rate"
+            self, label="hbd interest rate", value=1000, placeholder="hbd interest rate"
         )
 
     def create_left_panel(self) -> ComposeResult:
