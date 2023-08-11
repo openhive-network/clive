@@ -54,12 +54,12 @@ async def test_reactivate(world: clive.World, wallet: WalletInfo) -> None:
 async def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE
     time_to_sleep: Final[timedelta] = timedelta(seconds=2)
-    await world.beekeeper.api.lock_all()
+    await world.commands.deactivate()
 
     # ACT
     await world.commands.activate(password=wallet.password, time=time_to_sleep)
     assert await world.app_state.is_active
-    await asyncio.sleep(time_to_sleep.total_seconds())
+    await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
     assert not await world.app_state.is_active
