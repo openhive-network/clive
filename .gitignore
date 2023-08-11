@@ -198,3 +198,6 @@ pyrightconfig.json
 # Custom
 logs/
 **/generated*
+
+# To ignore symbolic link to this binary
+beekeeper
