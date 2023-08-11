@@ -32,7 +32,7 @@ class TransferToVesting(RawOperationBaseScreen):
         super().__init__()
 
         self.__to_input = AccountNameInput(label="to")
-        self.__amount_input = AmountInput()
+        self.__amount_input = AmountInput("amount hive")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

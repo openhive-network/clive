@@ -29,7 +29,7 @@ class UpdateProposal(RawOperationBaseScreen):
 
         self.__proposal_id_input = IdInput(label="proposal id")
         self.__creator_input = AccountNameInput(label="creator")
-        self.__daily_pay_input = AmountInput(label="daily pay")
+        self.__daily_pay_input = AmountInput(label="daily hbd pay")
         self.__subject_input = TextInput(label="subject", placeholder="e.g.: New subject")
         self.__permlink_input = PermlinkInput()
         self.__extensions_input = TextInput(label="extensions", placeholder="e.g.: []")
