@@ -1311,7 +1311,7 @@ pydantic = "1.10.11"
 
 [package.source]
 type = "directory"
-url = "schemas"
+url = "hive/tests/hive-local-tools/test-tools/schemas"
 
 [[package]]
 name = "setuptools"
@@ -1374,6 +1374,7 @@ develop = true
 abstractcp = "0.9.9"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
+schemas = {path = "schemas", develop = true}
 
 [package.source]
 type = "directory"
@@ -1654,4 +1655,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4f11b10be46537c2cd902035a9c5d643de4d7f391682e3dcb4cca6b94e9af358"
+content-hash = "7aae270fa8cfc55871cec356637f595f6cb5954ea366fe75c8ed2edcb16a50a6"

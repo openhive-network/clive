@@ -39,7 +39,7 @@ inflection = "0.5.1"
 wax = "0.0.1a1.post5+99ad1da"
 humanize = "4.6.0"
 
-schemas = { path = "schemas", develop = true }
+schemas = { path = "hive/tests/hive-local-tools/test-tools/schemas", develop = true }
 
 
 [tool.poetry.group.dev.dependencies]
