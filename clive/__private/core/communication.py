@@ -106,9 +106,9 @@ class Communication:
             except httpx.ConnectError as error:
                 raise CommunicationError(url, data_serialized) from error
 
-            result = response.json()
-
             if response.is_success:
+                result = response.json()
+
                 if "result" in result:
                     return response
 
@@ -117,10 +117,7 @@ class Communication:
                 else:
                     raise UnknownResponseFormatError(url, data_serialized, result)
             else:
-                logger.error(
-                    f"Received bad status code: {response.status_code} from {url=}, request={data_serialized},"
-                    f" response={result}"
-                )
+                logger.error(f"Received bad status code: {response.status_code} from {url=}, request={data_serialized}")
 
             if attempts_left > 0:
                 await __sleep()
