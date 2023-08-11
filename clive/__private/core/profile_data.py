@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private import config
+from clive.__private.config import settings
 from clive.__private.storage.contextual import Context
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -61,8 +62,12 @@ class ProfileData(Context):
 
         self.cart = Cart()
 
-        self.backup_node_addresses = self.__default_node_address()
-        self._node_address = self.backup_node_addresses[0]
+        if address := self.__get_secret_node_address():
+            self.backup_node_addresses = [address]
+            self._node_address = address
+        else:
+            self.backup_node_addresses = self.__default_node_address()
+            self._node_address = self.backup_node_addresses[0]
 
     @property
     def working_account(self) -> WorkingAccount:
@@ -189,3 +194,8 @@ class ProfileData(Context):
             Url("https", "hive-api.3speak.tv"),
             Url("https", "api.deathwing.me"),
         ]
+
+    @staticmethod
+    def __get_secret_node_address() -> Url | None:
+        node_address = settings.get("secrets.node_address", None)
+        return Url.parse(node_address) if node_address else None
