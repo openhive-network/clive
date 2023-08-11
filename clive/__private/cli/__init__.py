@@ -8,7 +8,6 @@ from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.list import list_
 from clive.__private.cli.transfer import transfer
 from clive.__private.run_tui import run_tui
-from clive.version import VERSION_INFO
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
@@ -29,6 +28,8 @@ def _main(
     ),
 ) -> None:
     if version:
+        from clive.version import VERSION_INFO
+
         typer.echo(f"CLIVE Version: {VERSION_INFO}")
         raise typer.Exit
 

@@ -30,7 +30,6 @@ from clive.__private.ui.shared.help import Help
 from clive.__private.ui.terminal.command_line import CommandLinePrompt
 from clive.__private.ui.terminal.terminal_screen import TerminalScreen
 from clive.exceptions import ScreenNotFoundError
-from clive.version import VERSION_INFO
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -49,6 +48,8 @@ UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
 class Clive(App[int], ManualReactive):
     """A singleton instance of the Clive app."""
+
+    from clive.version import VERSION_INFO
 
     SUB_TITLE = VERSION_INFO
 
