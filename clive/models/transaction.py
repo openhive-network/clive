@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, validator
 
@@ -9,8 +9,10 @@ from clive.models import Operation, Signature  # noqa: TCH001
 from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
 from clive.models.convert_to_representation import convert_to_representation
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
-from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
 from schemas.transaction_model.transaction import Hf26Transaction
+
+if TYPE_CHECKING:
+    from schemas.__private.hive_fields_custom_schemas import TransactionId
 
 
 class Transaction(Hf26Transaction):
