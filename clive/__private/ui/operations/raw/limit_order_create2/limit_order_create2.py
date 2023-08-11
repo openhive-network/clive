@@ -38,7 +38,7 @@ class LimitOrderCreate2(RawOperationBaseScreen):
         self.__expiration_input = DateInput(label="expiration")
         self.__amount_to_sell_input = AssetAmountInput(label="amount to sell")
         self.__base_input = AssetAmountInput(label="base")
-        self.__quote_input = AmountInput(label="quote")
+        self.__quote_input = AmountInput(label="quote hive")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

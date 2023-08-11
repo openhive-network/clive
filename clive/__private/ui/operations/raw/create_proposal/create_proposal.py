@@ -32,7 +32,7 @@ class CreateProposal(RawOperationBaseScreen):
         self.__receiver_input = AccountNameInput(label="receiver")
         self.__start_date_input = DateInput(label="start date")
         self.__end_date_input = DateInput(label="end date")
-        self.__daily_pay_input = AmountInput(label="daily pay")
+        self.__daily_pay_input = AmountInput(label="daily hbd pay")
         self.__subject_input = TextInput(label="subject", placeholder="e.g: example subject")
         self.__permlink_input = PermlinkInput()
 

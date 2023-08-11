@@ -30,7 +30,7 @@ class Convert(RawOperationBaseScreen):
         default_request_id = get_default_from_model(ConvertOperation, "request_id", int)
 
         self.__request_id_input = IdInput(label="request id", value=default_request_id)
-        self.__amount_input = AmountInput(label="amount")
+        self.__amount_input = AmountInput(label="amount hbd")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
