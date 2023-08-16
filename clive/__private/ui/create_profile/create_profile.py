@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Final
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
@@ -18,6 +18,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.exceptions import FormValidationError, InputTooShortError, RepeatedPasswordIsDifferentError
 
 if TYPE_CHECKING:
@@ -31,16 +32,19 @@ class ButtonsContainer(Horizontal):
 class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
-            yield Static("Profile name", classes="label")
-            yield Input(placeholder="e.x.: Master", id="profile_name_input")
-            yield Static("Password", classes="label")
-            yield Input(placeholder="Password", password=True, id="password_input")
-            yield Static("Repeat password", classes="label")
-            yield Input(placeholder="Repeat Password", password=True, id="repeat_password_input")
+            yield from TextInput(
+                self, label="profile name", placeholder="e.g: Master", id_="profile_name_input"
+            ).compose()
+            yield from TextInput(
+                self, label="password", placeholder="Password", id_="password_input", password=True
+            ).compose()
+            yield from TextInput(
+                self, label="repeat password", placeholder="Repeat Password", id_="repeat_password_input", password=True
+            ).compose()
             yield from self._additional_content()
 
     def on_mount(self) -> None:
-        self.query(Input).first().focus()
+        self.query(TextInput).first().focus()
 
     def _additional_content(self) -> ComposeResult:
         """Additional content to be added to the form."""
@@ -50,9 +54,9 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         """Selects all input fields and validates them, if something is invalid throws an exception."""
         minimum_input_length: Final[int] = 3
 
-        profile_name = self.get_widget_by_id("profile_name_input", expect_type=Input).value
-        password = self.get_widget_by_id("password_input", expect_type=Input).value
-        repeated_password = self.get_widget_by_id("repeat_password_input", expect_type=Input).value
+        profile_name = self.get_widget_by_id("profile_name_input", expect_type=TextInput).value
+        password = self.get_widget_by_id("password_input", expect_type=TextInput).value
+        repeated_password = self.get_widget_by_id("repeat_password_input", expect_type=TextInput).value
 
         if len(profile_name) < minimum_input_length:
             raise InputTooShortError(expected_length=minimum_input_length, given_value=profile_name)
