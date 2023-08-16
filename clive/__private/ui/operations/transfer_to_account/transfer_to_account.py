@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
+from clive.__private.logger import logger
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -24,6 +25,10 @@ if TYPE_CHECKING:
 
 
 LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
+
+
+class PlaceTaker(Static):
+    """Container used for making correct layout of a grid."""
 
 
 class Body(Grid):
@@ -47,12 +52,12 @@ class TransferToAccount(OperationBaseScreen):
 
                 yield InputLabel("from")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield Static()
+                yield PlaceTaker()
                 yield to_label
                 yield to_input
                 yield KnownAccount(to_input)  # type: ignore[arg-type]
                 yield from self.__amount_input.compose()
-                yield Static()
+                yield PlaceTaker()
                 yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferOperation[Asset.Hive, Asset.Hbd] | None:

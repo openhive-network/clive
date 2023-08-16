@@ -15,6 +15,13 @@ if TYPE_CHECKING:
 
 
 class AssetAmountInput(Horizontal):
+    DEFAULT_CSS = """
+    AssetAmountInput {
+        width: 0;
+        height: 0;
+    }
+    """
+
     class Wrapper(Horizontal):
         DEFAULT_CSS = """
         Wrapper Input {
@@ -32,10 +39,12 @@ class AssetAmountInput(Horizontal):
             yield self.__currency_selector
 
     def __init__(self, to_mount: Widget, label: str = "amount") -> None:
+        super().__init__()
+
         self.__input = AmountInput(self, label=label)
         self.__currency_selector = CurrencySelectorLiquid()
-        self.mount(to_mount)
-        super().__init__()
+
+        to_mount.mount(self)
 
     def compose(self) -> ComposeResult:
         input_: AmountInput

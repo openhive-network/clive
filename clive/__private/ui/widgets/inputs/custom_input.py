@@ -23,9 +23,10 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
     """Base class for all others customize inputs, can also use independently."""
 
     DEFAULT_CSS = """
-        CustomInput Input {
-            width: 80%;
-            }
+    CustomInput {
+        width: 0;
+        height: 0;
+    }
     """
 
     def __init__(
@@ -43,11 +44,12 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         super().__init__(id=id_, classes=classes, disabled=disabled)
         self._label = label
 
-        to_mount.mount(self)
         if value is not None:
             self._input = Input(value=str(value), placeholder=placeholder, highlighter=highlighter, password=password)
         else:
             self._input = Input(placeholder=placeholder, highlighter=highlighter, password=password)
+
+        to_mount.mount(self)
 
     def compose(self) -> ComposeResult:
         yield InputLabel(self._label)

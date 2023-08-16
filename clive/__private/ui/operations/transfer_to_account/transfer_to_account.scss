@@ -1,6 +1,6 @@
 TransferToAccount Body {
   grid-size: 3;
-  grid-columns: 11 2fr 23%;
+  grid-columns: 11 2fr 1fr;
   grid-rows: 3 4 4 4;
   height: 18;
   margin: 0 4;
@@ -13,4 +13,9 @@ TransferToAccount #from-label {
 
 TransferToAccount KnownAccount {
   column-span: 1;
+}
+
+TransferToAccount Input {
+  background: red;
+  width: 100%;
 }
