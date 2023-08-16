@@ -59,6 +59,8 @@ class AssetAmountInput(Horizontal):
 
     @property
     def amount(self) -> Asset.Hive | Asset.Hbd | None:
-        if self.__input.value:
+        try:
             return self.__currency_selector.create_asset(self.__input.value)
-        return None
+        except ValueError:
+            self.notify("The amount of assets is not stated!", severity="warning")
+            return None
