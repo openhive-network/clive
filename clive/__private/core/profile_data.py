@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private import config
 from clive.__private.config import settings
+from clive.__private.core.clive_import import get_clive
 from clive.__private.storage.contextual import Context
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -101,10 +102,10 @@ class ProfileData(Context):
         return Path(config.settings.data_path) / "data/profile"
 
     def save(self) -> None:
-        from clive.__private.ui.app import Clive
+        clive = get_clive().app_instance()
 
-        if Clive.is_app_exist():
-            Clive.app_instance().world.update_reactive("profile_data")
+        if clive.is_launched:
+            clive.world.update_reactive("profile_data")
 
         with self.__open_database() as db:
             db[self.name] = self

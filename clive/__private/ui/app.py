@@ -99,7 +99,7 @@ class Clive(App[int], ManualReactive):
         timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
 
-    def run(
+    async def run_async(
         self,
         *,
         headless: bool = False,
@@ -107,11 +107,11 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
-            return super().run(headless=headless, size=size, auto_pilot=auto_pilot)
+            return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
         except CancelledError:
             pass
         finally:
-            asyncio_run(self.__cleanup())
+            await self.__cleanup()
         return 1
 
     def on_mount(self) -> None:
