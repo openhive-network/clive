@@ -9,6 +9,7 @@ import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.communication import Communication
 from clive.__private.core.exit_call_handler import ExitCallHandler
 
 
@@ -38,8 +39,8 @@ class BeekeeperSpawn(ExternalCLICommand):
             if not self.background:
                 await beekeeper.close()
 
-        async with ExitCallHandler(
-            Beekeeper(run_in_background=self.background),
+        async with Communication() as com, ExitCallHandler(
+            Beekeeper(communication=com, run_in_background=self.background),
             finally_callback=close_beekeeper,
         ) as beekeeper:
             await beekeeper.start()

@@ -6,8 +6,6 @@ from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICom
 from clive.__private.cli.common import options
 from clive.__private.cli.common.with_beekeeper import WithBeekeeper
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.communication import Communication
-from clive.__private.core.exit_call_handler import ExitCallHandler
 
 beekeeper = typer.Typer(help="Beekeeper-related commands.")
 
@@ -26,14 +24,7 @@ async def info(
 
 
 async def run_external_cli_command(command: ExternalCLICommand) -> None:
-    async def close_communication(_: None) -> None:
-        await Communication.close()
-
-    async with ExitCallHandler(
-        Communication.start(),
-        finally_callback=close_communication,
-    ):
-        await command.run()
+    await command.run()
 
 
 @beekeeper.command()

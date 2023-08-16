@@ -45,17 +45,17 @@ class World:
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
-        Communication.start()
 
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
+        self.__communication = Communication()
 
         self._use_beekeeper = use_beekeeper
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
 
-        self._node = Node(self._profile_data)
+        self._node = Node(self.__communication, self._profile_data)
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -85,7 +85,7 @@ class World:
         self.profile_data.save()
         if self._beekeeper is not None:
             await self._beekeeper.close()
-        await Communication.close()
+        await self.__communication.close()
 
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)
@@ -94,7 +94,7 @@ class World:
         return Commands(self)
 
     async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
-        beekeeper = Beekeeper(remote_endpoint=remote_endpoint)
+        beekeeper = Beekeeper(communication=self.__communication, remote_endpoint=remote_endpoint)
         beekeeper.attach_wallet_closing_listener(self)
         await beekeeper.start()
         return beekeeper

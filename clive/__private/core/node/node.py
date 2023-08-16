@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from clive.__private.core._async import asyncio_run
 from clive.__private.core.beekeeper.model import JSONRPCResponse
-from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.model import JSONRPCRequest
+    from clive.__private.core.communication import Communication
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
 
@@ -17,7 +17,8 @@ T = TypeVar("T")
 
 
 class Node:
-    def __init__(self, profile_data: ProfileData) -> None:
+    def __init__(self, communication: Communication, profile_data: ProfileData) -> None:
+        self.__communication = communication
         self.__profile_data = profile_data
         self.api = Apis(self)
         self.__network_type = ""
@@ -44,7 +45,7 @@ class Node:
         ...
 
     async def send(self, request: JSONRPCRequest, *, expect_type: type[T] | None = None) -> T | JSONRPCResponse[Any]:
-        response = await Communication.arequest(str(self.address), data=request.json(by_alias=True))
+        response = await self.__communication.arequest(str(self.address), data=request.json(by_alias=True))
         data = response.json()
 
         if not expect_type:

@@ -2,11 +2,9 @@ from __future__ import annotations
 
 import asyncio
 import json
-import time
-import typing
 from datetime import datetime, timedelta
 from functools import partial
-from typing import Any, ClassVar, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import httpx
 
@@ -15,8 +13,10 @@ from clive.__private.core.callback import invoke
 from clive.__private.logger import logger
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
 
-if typing.TYPE_CHECKING:
-    from collections.abc import Callable
+if TYPE_CHECKING:
+    from types import TracebackType
+
+    from typing_extensions import Self
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -33,27 +33,31 @@ class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 1
 
-    __async_client: ClassVar[httpx.AsyncClient | None] = None
+    def __init__(self) -> None:
+        self.__async_client: httpx.AsyncClient | None = None
+        self.start()
 
-    @classmethod
-    def start(cls) -> None:
-        if cls.__async_client is None:
-            cls.__async_client = httpx.AsyncClient(timeout=2, http2=True)
+    def start(self) -> None:
+        if self.__async_client is None:
+            self.__async_client = httpx.AsyncClient(timeout=2, http2=True)
 
-    @classmethod
-    async def close(cls) -> None:
-        if cls.__async_client is not None:
-            await cls.__async_client.aclose()
-            cls.__async_client = None
+    async def close(self) -> None:
+        if self.__async_client is not None:
+            await self.__async_client.aclose()
+            self.__async_client = None
 
-    @classmethod
-    def get_async_client(cls) -> httpx.AsyncClient:
-        assert cls.__async_client is not None, "Session is closed."
-        return cls.__async_client
+    async def __aenter__(self) -> Self:
+        return self
 
-    @classmethod
+    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+        await self.close()
+
+    def __get_async_client(self) -> httpx.AsyncClient:
+        assert self.__async_client is not None, "Session is closed."
+        return self.__async_client
+
     def request(
-        cls,
+        self,
         url: str,
         *,
         data: Any,
@@ -61,38 +65,34 @@ class Communication:
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> httpx.Response:
         return asyncio_run(
-            cls.__request(url, sync=True, data=data, max_attempts=max_attempts, pool_time=pool_time),
+            self.__request(url, data=data, max_attempts=max_attempts, pool_time=pool_time),
         )
 
-    @classmethod
     async def arequest(
-        cls,
+        self,
         url: str,
         *,
         data: Any,
         max_attempts: int = DEFAULT_ATTEMPTS,
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> httpx.Response:
-        return await cls.__request(url, sync=False, data=data, max_attempts=max_attempts, pool_time=pool_time)
+        return await self.__request(url, data=data, max_attempts=max_attempts, pool_time=pool_time)
 
-    @classmethod
-    async def __request(  # noqa: PLR0913
-        cls,
+    async def __request(
+        self,
         url: str,
         *,
-        sync: bool,
         data: Any,
         max_attempts: int,
         pool_time: timedelta,
     ) -> httpx.Response:
         async def __sleep() -> None:
             seconds_to_sleep = pool_time.total_seconds()
-            time.sleep(seconds_to_sleep) if sync else await asyncio.sleep(seconds_to_sleep)  # noqa: ASYNC101
+            await asyncio.sleep(seconds_to_sleep)
 
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
         result: dict[str, Any] = {}
-        post_method: Callable[..., httpx.Response] = httpx.post if sync else cls.get_async_client().post  # type: ignore
 
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
@@ -100,7 +100,10 @@ class Communication:
             try:
                 response: httpx.Response = await invoke(
                     callback=partial(
-                        post_method, url, content=data_serialized, headers={"Content-Type": "application/json"}
+                        self.__get_async_client().post,
+                        url,
+                        content=data_serialized,
+                        headers={"Content-Type": "application/json"},
                     )
                 )
             except httpx.ConnectError as error:

@@ -47,11 +47,9 @@ class WithBeekeeper(CommonBaseModel):
             async def impl() -> None:
                 async def close_beekeeper(beekeeper: Beekeeper) -> None:
                     await beekeeper.close()
-                    await Communication.close()
 
-                Communication.start()
-                async with ExitCallHandler(
-                    Beekeeper(remote_endpoint=beekeeper_remote_endpoint),
+                async with Communication() as com, ExitCallHandler(
+                    Beekeeper(communication=com, remote_endpoint=beekeeper_remote_endpoint),
                     finally_callback=close_beekeeper,
                 ) as beekeeper:
                     await beekeeper.start()

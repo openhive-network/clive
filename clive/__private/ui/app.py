@@ -15,7 +15,6 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.communication import Communication
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
@@ -351,10 +350,8 @@ class Clive(App[int], ManualReactive):
         logger.debug(f"Currently focused: {self.focused}")
         logger.debug(f"Screen stack: {self.screen_stack}")
 
-        query = {"jsonrpc": "2.0", "method": "database_api.get_dynamic_global_properties", "id": 1}
-        response = await Communication.arequest(str(self.world.node.address), data=query)
-        result = response.json()
-        logger.debug(f'Current block: {result["result"]["head_block_number"]}')
+        response = await self.world.node.api.database_api.get_dynamic_global_properties()
+        logger.debug(f"Current block: {response.head_block_number}")
 
         logger.debug("=================================================")
 
