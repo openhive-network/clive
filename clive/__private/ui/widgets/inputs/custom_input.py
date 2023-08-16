@@ -19,7 +19,19 @@ ValueT = TypeVar("ValueT")
 
 
 class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
-    """Base class for all others customize inputs, can also use independently."""
+    """
+    Base class for customizable input elements. Can be used both as a base class for other elements or independently.
+
+    Examples:
+    --------
+    yield from instance_of_custom_input.compose()
+
+    Note:
+    ----
+    When using this widget, it will not be included in the list of nodes.
+    Querying this widget is not supported.
+    You must use it like the way in example.
+    """
 
     DEFAULT_CSS = """
         CustomInput Input {

@@ -14,6 +14,20 @@ if TYPE_CHECKING:
 
 
 class AssetAmountInput(Horizontal):
+    """
+    Class for selecting asset types and specifying their amounts.
+
+    Examples:
+    --------
+    yield from instance_of_asset_amount_input.compose()
+
+    Note:
+    ----
+    When using this widget, it will not be included in the list of nodes.
+    Querying this widget is not supported.
+    You must use it like the way in example.
+    """
+
     class Wrapper(Horizontal):
         DEFAULT_CSS = """
         Wrapper Input {
