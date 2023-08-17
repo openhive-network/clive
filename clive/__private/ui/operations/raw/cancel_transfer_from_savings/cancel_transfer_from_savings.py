@@ -11,12 +11,12 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
-from clive.models import Asset
 from schemas.operations import CancelTransferFromSavingsOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.models import Asset
     from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 
