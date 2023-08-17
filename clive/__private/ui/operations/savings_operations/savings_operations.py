@@ -150,7 +150,9 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
         self.__amount_input = Input(placeholder="put amount to transfer here", id="amount-input")
         self.__memo_input = Input(placeholder="put memo here")
-        self.__to_account_input = Input(placeholder="put to-account here")
+        self.__to_account_input = Input(
+            value=self.app.world.profile_data.working_account.name, placeholder="put to-account here"
+        )
         self.__currency_selector = CurrencySelectorLiquid()
 
         self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
