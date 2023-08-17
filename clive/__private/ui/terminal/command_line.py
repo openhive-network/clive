@@ -38,11 +38,11 @@ class CommandLineInput(Input, CliveWidget):
         super().__init__(placeholder="Enter command...", id="command-line-input")
 
     @on(Input.Submitted)
-    def handle_command(self, event: Input.Submitted) -> None:
+    async def handle_command(self, event: Input.Submitted) -> None:
         raw_input = event.value
 
         if raw_input:
-            self.app.write(raw_input, message_type="input")
+            await self.app.write(raw_input, message_type="input")
         self.value = ""
 
 

@@ -253,11 +253,13 @@ class Clive(App[int], ManualReactive):
         message = f"Screenshot saved to [bold green]'{path}'[/]"
         self.notify(message)
 
-    def write(self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None) -> None:
+    async def write(
+        self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None
+    ) -> None:
         if message_type == "info":
             text = f"[blue]INFO:[/blue] {text}"
         elif message_type == "input":
-            prefix = self.query(CommandLinePrompt).first(CommandLinePrompt).get_current_prompt()
+            prefix = await self.query(CommandLinePrompt).first(CommandLinePrompt).get_current_prompt()
             text = f"{prefix} {text}"
 
         self.logs += [text]
