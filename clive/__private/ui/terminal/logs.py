@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.widgets import TextLog
+from textual.widgets import RichLog
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
 
 
-class Logs(TextLog):
+class Logs(RichLog):
     def __init__(self) -> None:
         super().__init__(wrap=True, highlight=True, markup=True)
 
