@@ -56,7 +56,6 @@ class Clive(App[int], ManualReactive):
 
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding("l", "mock_log", "Mock log", show=False),
         Binding("ctrl+x", "push_screen('quit')", "Quit"),
         Binding("f1", "help", "Help"),
     ]
@@ -244,9 +243,6 @@ class Clive(App[int], ManualReactive):
 
     def action_terminal(self) -> None:
         self.push_screen(TerminalScreen())
-
-    def action_mock_log(self) -> None:
-        self.write("This is a mock log.", message_type="info")
 
     def action_help(self) -> None:
         self.push_screen(Help(self.screen))
