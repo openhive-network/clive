@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import sys
 
 from pydantic import Extra
@@ -20,7 +21,7 @@ def __any_arguments_given() -> bool:
     return len(sys.argv) > 1
 
 
-def main() -> None:
+async def _main() -> None:
     __disable_schemas_extra_fields_check()
     with thread_pool:
         if is_tab_completion_active():
@@ -28,10 +29,14 @@ def main() -> None:
             return
 
         if not __any_arguments_given():
-            run_tui()
+            await run_tui()
             return
 
         run_cli()
+
+
+def main() -> None:
+    asyncio.run(_main())
 
 
 if __name__ == "__main__":

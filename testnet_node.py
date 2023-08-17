@@ -15,7 +15,7 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
-from clive.main import main as clive_main
+from clive.main import _main as clive_main
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -101,8 +101,9 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
         )
 
 
-async def prepare_profile() -> None:
+async def prepare_profile(node: tt.InitNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
+    settings["secrets.node_address"] = f"http://{node.http_endpoint}"
 
     ProfileData(
         WORKING_ACCOUNT.name,
@@ -135,9 +136,9 @@ def print_working_account_keys() -> None:
     tt.logger.info(f"{WORKING_ACCOUNT.name} private key: {WORKING_ACCOUNT.private_key}")
 
 
-def launch_clive() -> None:
+async def launch_clive() -> None:
     tt.logger.info("Attempting to start a clive interactive mode - exit to finish")
-    clive_main()
+    await clive_main()
 
 
 def serve_forever() -> None:
@@ -161,12 +162,12 @@ async def main() -> None:
 
     if not enable_clive_onboarding:
         shutil.rmtree(settings.data_path, ignore_errors=True)
-        await prepare_profile()
+        await prepare_profile(node)
 
     if disable_tui:
         serve_forever()
     else:
-        launch_clive()
+        await launch_clive()
 
 
 if __name__ == "__main__":
