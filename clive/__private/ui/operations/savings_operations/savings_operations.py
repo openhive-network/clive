@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from textual import on
 from textual.containers import Container, Grid, Horizontal
-from textual.widgets import Button, Checkbox, Input, Static, TabbedContent
+from textual.widgets import Button, Input, RadioButton, RadioSet, Static, TabbedContent
 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
@@ -29,6 +28,12 @@ if TYPE_CHECKING:
 
 odd = "OddColumn"
 even = "EvenColumn"
+
+
+class CliveRadioButton(RadioButton):
+    """Due to bug in Ubuntu we have to replace icon of the RadioButton by simple 'O'."""
+
+    BUTTON_INNER = "O"
 
 
 class Body(Grid):
@@ -150,16 +155,16 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         self.__to_account_input = Input(placeholder="put to-account here")
         self.__currency_selector = CurrencySelectorLiquid()
 
-        self.__to_checkbox = Checkbox("transfer to savings", id="to-savings-choose")
-        self.__from_checkbox = Checkbox("transfer from savings", id="from-savings-choose")
+        self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose")
+        self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
 
         self.__to_account = Horizontal(id="to-parameter")
 
     def compose(self) -> ComposeResult:
         yield Static("Choose type of operation", id="savings-transfer-header")
-        with Horizontal(id="operation-type-choose"):
-            yield self.__from_checkbox
-            yield self.__to_checkbox
+        with RadioSet(id="operation-type-choose"):
+            yield self.__from_button
+            yield self.__to_button
 
         yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
         with self.__to_account:
@@ -180,14 +185,14 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
         if not asset:
             return None
-        if self.__to_checkbox.value:
+        if self.__to_button.value:
             return TransferToSavingsOperation(
                 from_=self.app.world.profile_data.working_account.name,
                 to=self.__to_account_input.value,
                 amount=asset,
                 memo=self.__memo_input.value,
             )
-        elif self.__from_checkbox.value:  # noqa: RET505
+        elif self.__from_button.value:  # noqa: RET505
             return TransferFromSavingsOperation(
                 from_=self.app.world.profile_data.working_account.name,
                 to=self.__to_account_input.value,
@@ -224,13 +229,3 @@ class Savings(OperationBaseScreen):
         with TabbedContent():
             yield SavingsInfo("savings info")
             yield SavingsTransfers("transfer")
-
-    @on(Checkbox.Changed)
-    def checkbox_changed(self, event: Checkbox.Changed) -> None:
-        if event.checkbox.value:
-            _check_boxes = self.query(Checkbox)
-
-            for check_box in _check_boxes.filter(".-on"):
-                if check_box != event.checkbox:
-                    check_box.value = False
-                    break
