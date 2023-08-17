@@ -80,7 +80,11 @@ class AccountCreate(RawOperationBaseScreen):
                 yield from self.__account_auths_posting_input.compose()
                 yield from self.__key_auths_posting_input.compose()
 
-    def _create_operation(self) -> AccountCreateOperation[Asset.Hive]:
+    def _create_operation(self) -> AccountCreateOperation[Asset.Hive] | None:
+        fee = self.__fee_input.value
+        if not fee:
+            return None
+
         owner_authority = self._create_authority_field(
             self.__weight_threshold_owner_input, self.__account_auths_owner_input, self.__key_auths_owner_input
         )
@@ -95,7 +99,7 @@ class AccountCreate(RawOperationBaseScreen):
 
         return AccountCreateOperation(
             creator=self.app.world.profile_data.name,
-            fee=Asset.hive(self.__fee_input.value),
+            fee=Asset.hive(fee),
             new_account_name=self.__new_account_name_input.value,
             owner=owner_authority,
             active=active_authority,

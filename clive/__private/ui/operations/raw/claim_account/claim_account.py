@@ -34,5 +34,9 @@ class ClaimAccount(RawOperationBaseScreen):
                 yield from self.__creator_input.compose()
                 yield from self.__fee_input.compose()
 
-    def _create_operation(self) -> ClaimAccountOperation[Asset.Hive]:
-        return ClaimAccountOperation(creator=self.__creator_input.value, fee=Asset.hive(self.__fee_input.value))
+    def _create_operation(self) -> ClaimAccountOperation[Asset.Hive] | None:
+        fee = self.__fee_input.value
+        if not fee:
+            return None
+
+        return ClaimAccountOperation(creator=self.__creator_input.value, fee=Asset.hive(fee))

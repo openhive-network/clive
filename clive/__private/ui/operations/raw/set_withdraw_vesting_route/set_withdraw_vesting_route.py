@@ -45,10 +45,14 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
                 yield from self.__percent_input.compose()
                 yield self.__auto_vest_input
 
-    def _create_operation(self) -> SetWithdrawVestingRouteOperation:
+    def _create_operation(self) -> SetWithdrawVestingRouteOperation | None:
+        percent = self.__percent_input.value
+        if not percent:
+            return None
+
         return SetWithdrawVestingRouteOperation(
             from_account=self.app.world.profile_data.name,
             to_account=self.__to_account_input.value,
             auto_vest=self.__auto_vest_input.value,
-            percent=int(self.__percent_input.value),
+            percent=percent,
         )

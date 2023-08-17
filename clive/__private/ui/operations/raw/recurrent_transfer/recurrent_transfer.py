@@ -53,7 +53,9 @@ class RecurrentTransfer(RawOperationBaseScreen):
 
     def _create_operation(self) -> RecurrentTransferOperation[Asset.Hive, Asset.Hbd] | None:
         amount = self.__amount_input.amount
-        if not amount:
+        recurrence = self.__recurrence_input.value
+        executions = self.__executions_input.value
+        if not amount or not recurrence or not executions:
             return None
 
         return RecurrentTransferOperation(
@@ -61,6 +63,6 @@ class RecurrentTransfer(RawOperationBaseScreen):
             to=self.__to_input.value,
             amount=amount,
             memo=self.__memo_input.value,
-            recurrence=int(self.__recurrence_input.value),
-            executions=int(self.__executions_input.value),
+            recurrence=recurrence,
+            executions=executions,
         )

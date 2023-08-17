@@ -59,11 +59,18 @@ class WitnessUpdate(RawOperationBaseScreen):
                 yield from self.__maximum_block_size_input.compose()
                 yield from self.__hbd_interest_rate_input.compose()
 
-    def _create_operation(self) -> WitnessUpdateOperation[Asset.Hive]:
+    def _create_operation(self) -> WitnessUpdateOperation[Asset.Hive] | None:
+        fee = self.__fee_input.value
+        creation_fee = self.__account_creation_fee_input.value
+        max_block_size = self.__maximum_block_size_input.value
+        hbd_interest_rate = self.__hbd_interest_rate_input.value
+        if not fee or not max_block_size or not hbd_interest_rate or not creation_fee:
+            return None
+
         props_field = {
-            "account_creation_fee": Asset.hive(self.__account_creation_fee_input.value),
-            "maximum_block_size": self.__maximum_block_size_input.value,
-            "hbd_interest_rate": self.__hbd_interest_rate_input.value,
+            "account_creation_fee": Asset.hive(creation_fee),
+            "maximum_block_size": max_block_size,
+            "hbd_interest_rate": hbd_interest_rate,
         }
 
         return WitnessUpdateOperation(
@@ -71,5 +78,5 @@ class WitnessUpdate(RawOperationBaseScreen):
             url=self.__url_input.value,
             block_signing_key=self.__block_signing_key_input.value,
             props=props_field,
-            fee=Asset.hive(self.__fee_input.value),
+            fee=Asset.hive(fee),
         )

@@ -58,16 +58,16 @@ class LimitOrderCreate2(RawOperationBaseScreen):
 
     def _create_operation(self) -> LimitOrderCreate2Operation[Asset.Hbd, Asset.Hive] | None:
         base = self.__base_input.amount
+        quote = self.__quote_input.value
+        amount_to_sell = self.__amount_to_sell_input.amount
+
+        if not amount_to_sell or not base or not quote:
+            return None
 
         exchange_rate = {
             "base": base,
-            "quote": Asset.hive(self.__quote_input.value),
+            "quote": Asset.hive(quote),
         }
-
-        amount_to_sell = self.__amount_to_sell_input.amount
-
-        if not amount_to_sell or not base:
-            return None
 
         return LimitOrderCreate2Operation(
             owner=self.app.world.profile_data.name,

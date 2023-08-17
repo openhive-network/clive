@@ -46,10 +46,14 @@ class Vote(RawOperationBaseScreen):
                 yield from self.__permlink_input.compose()
                 yield from self.__weight_input.compose()
 
-    def _create_operation(self) -> VoteOperation:
+    def _create_operation(self) -> VoteOperation | None:
+        weight = self.__weight_input.value
+        if not weight:
+            return None
+
         return VoteOperation(
             voter=self.app.world.profile_data.working_account.name,
             author=self.__author_input.value,
             permlink=self.__permlink_input.value,
-            weight=int(self.__weight_input.value),
+            weight=weight,
         )

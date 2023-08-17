@@ -47,11 +47,15 @@ class EscrowDispute(RawOperationBaseScreen):
                 yield from self.__who_input.compose()
                 yield from self.__escrow_id_input.compose()
 
-    def _create_operation(self) -> EscrowDisputeOperation:
+    def _create_operation(self) -> EscrowDisputeOperation | None:
+        escrow_id = self.__escrow_id_input.value
+        if not escrow_id:
+            return None
+
         return EscrowDisputeOperation(
-            from_=str(self.app.world.profile_data.name),
+            from_=self.app.world.profile_data.name,
             to=self.__to_input.value,
             agent=self.__agent_input.value,
-            escrow_id=int(self.__escrow_id_input.value),
+            escrow_id=escrow_id,
             who=self.__who_input.value,
         )

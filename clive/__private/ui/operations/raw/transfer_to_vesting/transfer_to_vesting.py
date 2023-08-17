@@ -44,9 +44,13 @@ class TransferToVesting(RawOperationBaseScreen):
                 yield from self.__to_input.compose()
                 yield from self.__amount_input.compose()
 
-    def _create_operation(self) -> TransferToVestingOperation[Asset.Hive]:
+    def _create_operation(self) -> TransferToVestingOperation[Asset.Hive] | None:
+        amount = self.__amount_input.value
+        if not amount:
+            return None
+
         return TransferToVestingOperation(
             from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
-            amount=Asset.hive(self.__amount_input.value),
+            amount=Asset.hive(amount),
         )

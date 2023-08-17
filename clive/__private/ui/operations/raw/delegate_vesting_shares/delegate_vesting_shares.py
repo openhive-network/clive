@@ -38,9 +38,13 @@ class DelegateVestingShares(RawOperationBaseScreen):
                 yield from self.__delegatee_input.compose()
                 yield from self.__vesting_shares_input.compose()
 
-    def _create_operation(self) -> DelegateVestingSharesOperation[Asset.Vests]:
+    def _create_operation(self) -> DelegateVestingSharesOperation[Asset.Vests] | None:
+        vesting_shares = self.__vesting_shares_input.value
+        if not vesting_shares:
+            return None
+
         return DelegateVestingSharesOperation(
             delegator=self.app.world.profile_data.name,
             delegatee=self.__delegatee_input.value,
-            vesting_shares=Asset.vests(self.__vesting_shares_input.value),
+            vesting_shares=Asset.vests(vesting_shares),
         )

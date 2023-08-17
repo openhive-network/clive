@@ -59,13 +59,20 @@ class CommentOptions(RawOperationBaseScreen):
                 yield self.__allow_votes_input
                 yield self.__allow_curation_rewards_input
 
-    def _create_operation(self) -> CommentOptionsOperation[Asset.Hbd]:
+    def _create_operation(self) -> CommentOptionsOperation[Asset.Hbd] | None:
+        max_accepted_payout = self.__max_accepted_payout_input.value
+        percent_hbd = self.__percent_hbd_input.value
+        extensions = self.__extensions_input.value
+
+        if not max_accepted_payout or not percent_hbd or not extensions:
+            return None
+
         return CommentOptionsOperation(
             author=self.app.world.profile_data.name,
             permlink=self.__permlink_input.value,
-            max_accepted_payout=Asset.hbd(self.__max_accepted_payout_input.value),
-            percent_hbd=int(self.__percent_hbd_input.value),
+            max_accepted_payout=Asset.hbd(max_accepted_payout),
+            percent_hbd=percent_hbd,
             allow_votes=self.__allow_votes_input.value,
             allow_curation_rewards=self.__allow_curation_rewards_input.value,
-            extensions=self.__extensions_input.value,
+            extensions=extensions,
         )

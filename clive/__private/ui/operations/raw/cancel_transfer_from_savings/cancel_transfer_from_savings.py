@@ -37,8 +37,12 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
                 yield from self.__request_id_input.compose()
 
-    def _create_operation(self) -> CancelTransferFromSavingsOperation:
+    def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
+        request_id = self.__request_id_input.value
+        if not request_id:
+            return None
+
         return CancelTransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
-            request_id=int(self.__request_id_input.value),
+            request_id=request_id,
         )

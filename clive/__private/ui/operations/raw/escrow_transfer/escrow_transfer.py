@@ -68,7 +68,9 @@ class EscrowTransfer(RawOperationBaseScreen):
 
     def _create_operation(self) -> EscrowTransferOperation[Asset.Hive, Asset.Hbd] | None:
         fee = self.__fee_input.amount
-        if not fee:
+        hbd_amount = self.__hbd_amount_input.value
+        hive_amount = self.__hive_amount_input.value
+        if not fee or not hbd_amount or not hive_amount:
             return None
 
         return EscrowTransferOperation(
@@ -76,8 +78,8 @@ class EscrowTransfer(RawOperationBaseScreen):
             to=self.__to_input.value,
             agent=self.__agent_input.value,
             escrow_id=self.__escrow_id_input.value,
-            hbd_amount=Asset.hbd(self.__hbd_amount_input.value),
-            hive_amount=Asset.hive(self.__hive_amount_input.value),
+            hbd_amount=Asset.hbd(hbd_amount),
+            hive_amount=Asset.hive(hive_amount),
             ratification_deadline=self.__ratification_deadline_input.value,
             escrow_expiration=self.__ratification_deadline_input.value,
             json_meta=self.__json_meta_input.value,

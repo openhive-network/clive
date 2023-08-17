@@ -35,8 +35,12 @@ class WithdrawVesting(RawOperationBaseScreen):
                 yield from self.__account_input.compose()
                 yield from self.__vesting_shares_input.compose()
 
-    def _create_operation(self) -> WithdrawVestingOperation[Asset.Vests]:
+    def _create_operation(self) -> WithdrawVestingOperation[Asset.Vests] | None:
+        vesting_shares = self.__vesting_shares_input.value
+        if not vesting_shares:
+            return None
+
         return WithdrawVestingOperation(
             account=self.__account_input.value,
-            vesting_shares=Asset.vests(self.__vesting_shares_input.value),
+            vesting_shares=Asset.vests(vesting_shares),
         )

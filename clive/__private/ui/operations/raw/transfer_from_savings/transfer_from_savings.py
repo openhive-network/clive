@@ -50,13 +50,15 @@ class TransferFromSavings(RawOperationBaseScreen):
 
     def _create_operation(self) -> TransferFromSavingsOperation[Asset.Hive, Asset.Hbd] | None:
         amount = self.__amount_input.amount
-        if not amount:
+        request_id = self.__request_id_input.value
+
+        if not amount or not request_id:
             return None
 
         return TransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
-            request_id=int(self.__request_id_input.value),
+            request_id=request_id,
             amount=amount,
             memo=self.__memo_input.value,
         )

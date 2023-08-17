@@ -40,15 +40,20 @@ class CustomJson(RawOperationBaseScreen):
                 yield from self.__id_input.compose()
                 yield from self.__json_input.compose()
 
-    def _create_operation(self) -> CustomJsonOperation:
+    def _create_operation(self) -> CustomJsonOperation | None:
         required_auths_in_list = self.__required_auths_input.value.split(",")
         required_auths_in_list = [x.strip(" ") for x in required_auths_in_list]
 
         required_posting_auths_in_list = self.__required_posting_auths_input.value.split(",")
         required_posting_auths_in_list = [x.strip(" ") for x in required_posting_auths_in_list]
+
+        id_value = self.__id_input.value
+        if not id_value:
+            return None
+
         return CustomJsonOperation(
             required_auths=required_auths_in_list,
             required_posting_auths=required_posting_auths_in_list,
-            id_=int(self.__id_input.value),
+            id_=id_value,
             json_=self.__json_input.value,
         )

@@ -49,13 +49,17 @@ class CreateProposal(RawOperationBaseScreen):
                 yield from self.__subject_input.compose()
                 yield from self.__permlink_input.compose()
 
-    def _create_operation(self) -> CreateProposalOperation[Asset.Hbd]:
+    def _create_operation(self) -> CreateProposalOperation[Asset.Hbd] | None:
+        daily_pay_value = self.__daily_pay_input.value
+        if not daily_pay_value:
+            return None
+
         return CreateProposalOperation(
             creator=self.app.world.profile_data.name,
             receiver=self.__receiver_input.value,
             start_date=self.__start_date_input.value,
             end_date=self.__end_date_input.value,
-            daily_pay=Asset.hbd(self.__daily_pay_input.value),
+            daily_pay=Asset.hbd(daily_pay_value),
             subject=self.__subject_input.value,
             permlink=self.__permlink_input.value,
         )

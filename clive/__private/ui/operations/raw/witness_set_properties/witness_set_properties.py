@@ -50,11 +50,17 @@ class WitnessSetProperties(RawOperationBaseScreen):
                 yield from self.__maximum_block_size_input.compose()
                 yield from self.__hbd_interest_rate_input.compose()
 
-    def _create_operation(self) -> WitnessSetPropertiesOperation:
+    def _create_operation(self) -> WitnessSetPropertiesOperation | None:
+        account_creation_fee = self.__account_creation_fee_input.value
+        max_block_size = self.__maximum_block_size_input.value
+        hbd_interest_rate = self.__hbd_interest_rate_input.value
+        if not account_creation_fee or not max_block_size or not hbd_interest_rate:
+            return None
+
         props_field = {
-            "account_creation_fee": Asset.hive(self.__account_creation_fee_input.value),
-            "maximum_block_size": self.__maximum_block_size_input.value,
-            "hbd_interest_rate": self.__hbd_interest_rate_input.value,
+            "account_creation_fee": Asset.hive(account_creation_fee),
+            "maximum_block_size": max_block_size,
+            "hbd_interest_rate": hbd_interest_rate,
         }
 
         return WitnessSetPropertiesOperation(witness=self.__witness_input.value, props=props_field)

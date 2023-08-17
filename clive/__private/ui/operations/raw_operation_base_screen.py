@@ -38,9 +38,9 @@ class RawOperationBaseScreen(OperationBaseScreen, AbstractClassMessagePump):
         account_auths_input: AccountAuthsInput,
         key_auths_input: KeyAuthsInput,
     ) -> Authority | None:
-        if not weight_threshold_input.value:
+        if weight_threshold_input.value:
             return Authority(
-                weight_threshold=int(weight_threshold_input.value),
+                weight_threshold=weight_threshold_input.value,
                 account_auths=self._split_auths_fields(account_auths_input.value),
                 key_auths=self._split_auths_fields(key_auths_input.value),
             )

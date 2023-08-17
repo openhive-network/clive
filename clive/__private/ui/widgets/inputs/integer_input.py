@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from rich.highlighter import Highlighter
 
 
-class IntegerInput(CustomInput[int]):
+class IntegerInput(CustomInput[int | None]):
     def __init__(
         self,
         label: str,
@@ -20,5 +20,9 @@ class IntegerInput(CustomInput[int]):
         super().__init__(label=label, value=value, placeholder=placeholder, highlighter=highlighter)
 
     @property
-    def value(self) -> int:
-        return int(self._input.value)
+    def value(self) -> int | None:
+        try:
+            return int(self._input.value)
+        except ValueError:
+            self.notify("The specified string could no be converted to a integer value", severity="error")
+            return None

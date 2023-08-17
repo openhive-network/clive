@@ -41,9 +41,15 @@ class Convert(RawOperationBaseScreen):
                 yield from self.__request_id_input.compose()
                 yield from self.__amount_input.compose()
 
-    def _create_operation(self) -> ConvertOperation[Asset.Hbd]:
+    def _create_operation(self) -> ConvertOperation[Asset.Hbd] | None:
+        request_id = self.__request_id_input.value
+        amount = self.__amount_input.value
+
+        if not request_id or not amount:
+            return None
+
         return ConvertOperation(
             from_=self.app.world.profile_data.working_account.name,
-            request_id=self.__request_id_input.value,
-            amount=Asset.hbd(self.__amount_input.value),
+            request_id=request_id,
+            amount=Asset.hbd(amount),
         )
