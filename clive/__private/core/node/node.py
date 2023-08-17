@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
-from clive.__private.core._async import asyncio_run
 from clive.__private.core.beekeeper.model import JSONRPCResponse
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CommunicationError
@@ -22,7 +21,9 @@ class Node:
         self.__profile_data = profile_data
         self.api = Apis(self)
         self.__network_type = ""
-        asyncio_run(self.__sync_node_version())
+
+    async def setup(self) -> None:
+        await self.__sync_node_version()
 
     @property
     def network_type(self) -> str:

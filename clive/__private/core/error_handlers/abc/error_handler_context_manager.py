@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, TypeVar
 
-from clive.__private.core._async import asyncio_run
-
 if TYPE_CHECKING:
     from collections.abc import Awaitable
     from types import TracebackType
@@ -24,10 +22,10 @@ class ErrorHandlerContextManager(ABC):
     def __init__(self) -> None:
         self._error: Exception | None = None
 
-    def __enter__(self) -> Self:
+    async def __aenter__(self) -> Self:
         return self
 
-    def __exit__(
+    async def __aexit__(
         self,
         exc_type: type[BaseException] | None,
         exc_val: BaseException | None,
@@ -36,7 +34,7 @@ class ErrorHandlerContextManager(ABC):
         """Return false if exception should be re-raised."""
         if exc_val is not None and isinstance(exc_val, Exception):
             try:
-                asyncio_run(self.try_to_handle_error(exc_val))
+                await self.try_to_handle_error(exc_val)
             except Exception:  # noqa: BLE001
                 return False
             else:

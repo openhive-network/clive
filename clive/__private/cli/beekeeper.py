@@ -2,7 +2,6 @@ from typing import Optional
 
 import typer
 
-from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.common import options
 from clive.__private.cli.common.with_beekeeper import WithBeekeeper
 from clive.__private.core._async import asyncio_run
@@ -23,10 +22,6 @@ async def info(
     await BeekeeperInfo(beekeeper=common.beekeeper).run()
 
 
-async def run_external_cli_command(command: ExternalCLICommand) -> None:
-    await command.run()
-
-
 @beekeeper.command()
 def spawn(
     background: bool = typer.Option(True, help="Run in background."),
@@ -34,7 +29,7 @@ def spawn(
     """Spawn beekeeper process."""
     from clive.__private.cli.commands.beekeeper import BeekeeperSpawn
 
-    asyncio_run(run_external_cli_command(BeekeeperSpawn(background=background)))
+    asyncio_run(BeekeeperSpawn(background=background).run())
 
 
 @beekeeper.command()
@@ -42,4 +37,4 @@ def close() -> None:
     """Close beekeeper process."""
     from clive.__private.cli.commands.beekeeper import BeekeeperClose
 
-    asyncio_run(run_external_cli_command(BeekeeperClose()))
+    asyncio_run(BeekeeperClose().run())

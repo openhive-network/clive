@@ -77,6 +77,7 @@ class World:
         return self._node
 
     async def setup(self) -> Self:
+        await self.node.setup()
         if self._use_beekeeper:
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
         return self

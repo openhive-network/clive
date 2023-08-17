@@ -28,20 +28,22 @@ class MockCommandInActive(CommandInActive):
 
 
 @pytest.mark.parametrize("exception", [CommandError, CommandExecutionNotPossibleError, CommandRequiresActiveModeError])
-def test_catching_correct_exception(exception: type[CommandError]) -> None:
-    with FailedCommandNotificator():
+async def test_catching_correct_exception(exception: type[CommandError]) -> None:
+    async with FailedCommandNotificator():
         raise exception(MockCommand())
 
 
 @pytest.mark.parametrize("exception", [Exception, AssertionError, ValueError, TypeError])
-def test_catching_incorrect_exception(exception: type[Exception]) -> None:
-    with pytest.raises(exception), FailedCommandNotificator():
-        raise exception
+async def test_catching_incorrect_exception(exception: type[Exception]) -> None:
+    with pytest.raises(exception):  # noqa: PT012
+        async with FailedCommandNotificator():
+            raise exception
 
 
-def test_catch_only() -> None:
-    with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
+async def test_catch_only() -> None:
+    async with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
         raise CommandRequiresActiveModeError(MockCommandInActive())
 
-    with pytest.raises(CommandError), FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
-        raise CommandError(MockCommand())
+    with pytest.raises(CommandError):  # noqa: PT012
+        async with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
+            raise CommandError(MockCommand())
