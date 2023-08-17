@@ -1,28 +1,22 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from pydantic import ValidationError
 
-from rich.highlighter import Highlighter
-
+from clive.__private.core.validate_schema_field import validate_schema_field
+from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import PERMLINK_PLACEHOLDER
-
-if TYPE_CHECKING:
-    from rich.text import Text
+from schemas.__private.hive_fields_custom_schemas import Permlink
 
 
-class PermlinkHighlighter(Highlighter):
-    MAX_PERMLINK_LENGTH: Final[int] = 256
-
-    @classmethod
-    def is_valid_permlink(cls, permlink: str) -> bool:
-        return len(permlink) <= cls.MAX_PERMLINK_LENGTH
-
-    def highlight(self, text: Text) -> None:
-        if self.is_valid_permlink(str(text)):
-            text.stylize("green")
+class PermlinkHighlighter(CliveHighlighter):
+    def is_valid_value(self, value: str) -> bool:
+        try:
+            validate_schema_field(Permlink, value)
+        except ValidationError:
+            return False
         else:
-            text.stylize("red")
+            return True
 
 
 class PermlinkInput(TextInput):

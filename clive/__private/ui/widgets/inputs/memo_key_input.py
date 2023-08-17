@@ -1,31 +1,22 @@
 from __future__ import annotations
 
-from re import Pattern, compile
-from typing import TYPE_CHECKING, Final
+from pydantic import ValidationError
 
-from rich.highlighter import Highlighter
-
+from clive.__private.core.validate_schema_field import validate_schema_field
+from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
-
-if TYPE_CHECKING:
-    from rich.text import Text
+from schemas.__private.hive_fields_basic_schemas import PublicKey
 
 
-class MemoKeyHighlighter(Highlighter):
-    HIVE_MEMO_KEY_REGEX: Final[Pattern[str]] = compile(
-        r"^(?:STM|TST)[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{7,51}$"
-    )
-
-    @classmethod
-    def is_valid_memo_keys(cls, memo_key: str) -> bool:
-        return cls.HIVE_MEMO_KEY_REGEX.match(memo_key) is not None
-
-    def highlight(self, text: Text) -> None:
-        if self.is_valid_memo_keys(str(text)):
-            text.stylize("green")
+class MemoKeyHighlighter(CliveHighlighter):
+    def is_valid_value(self, value: str) -> bool:
+        try:
+            validate_schema_field(PublicKey, value)
+        except ValidationError:
+            return False
         else:
-            text.stylize("red")
+            return True
 
 
 class MemoKeyInput(TextInput):
