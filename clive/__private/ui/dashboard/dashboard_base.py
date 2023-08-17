@@ -30,10 +30,6 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import Manabar
 
 
-class ContainerTitle(Static):
-    """A title for working/watched accounts container."""
-
-
 class Body(ScrollableContainer, can_focus=True):
     """A body for working/watched accounts container."""
 
@@ -126,11 +122,15 @@ class AccountRow(AccountReferencingWidget):
 
 
 class WorkingAccountContainer(Static, CliveWidget):
+    BORDER_TITLE = "WORKING ACCOUNT"
+
     def compose(self) -> ComposeResult:
         yield AccountRow(self.app.world.profile_data.working_account)
 
 
 class WatchedAccountContainer(Static, CliveWidget):
+    BORDER_TITLE = "WATCHED ACCOUNTS"
+
     def compose(self) -> ComposeResult:
         account_rows = [AccountRow(account) for account in self.app.world.profile_data.watched_accounts]
         last_account_row = account_rows[-1]
@@ -151,10 +151,8 @@ class DashboardBase(BaseScreen):
         with ViewBag():
             with Body() as body:
                 if self.__has_working_account():
-                    yield ContainerTitle("WORKING ACCOUNT", classes="working")
                     yield WorkingAccountContainer()
                 if self.__has_watched_accounts():
-                    yield ContainerTitle("WATCHED ACCOUNTS", classes="watched")
                     yield WatchedAccountContainer()
             yield CommandLine(focus_on_cancel=body)
 

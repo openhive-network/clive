@@ -60,9 +60,7 @@ class ActionsContainer(Horizontal):
 class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
-
-class ContainerTitle(Static):
-    """A title for the container."""
+    BORDER_TITLE = "TRANSACTION METADATA"
 
 
 class TransactionContentHint(Label):
@@ -137,7 +135,6 @@ class TransactionSummaryCommon(BaseScreen):
         with StaticPart():
             yield BigTitle("transaction summary")
             yield SubTitle(self._get_subtitle())
-            yield ContainerTitle("TRANSACTION METADATA")
             yield self.__transaction_metadata_container
             with ActionsContainer():
                 yield from self._actions_container_content()

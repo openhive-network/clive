@@ -1,26 +1,19 @@
 $working-color: $secondary-darken-2;
 $watched-color: $primary-darken-1;
 
+DashboardBase WorkingAccountContainer, DashboardBase WatchedAccountContainer {
+  border-title-color: $text;
+  border-title-style: bold;
+}
+
 DashboardBase WorkingAccountContainer {
   border: $working-color;
+  border-title-background: $working-color;
 }
 
 DashboardBase WatchedAccountContainer {
   border: $watched-color;
-}
-
-DashboardBase ContainerTitle {
-  color: $text;
-  text-style: bold;
-  padding-left: 2;
-}
-
-DashboardBase ContainerTitle.watched {
-  background: $watched-color;
-}
-
-DashboardBase ContainerTitle.working {
-  background: $working-color;
+  border-title-background: $watched-color;
 }
 
 /* AccountRow */

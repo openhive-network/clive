@@ -41,16 +41,11 @@ OperationItem.-even {
 
 TransactionMetadataContainer {
   border: $metadata-color;
+  border-title-background: $metadata-color;
+  border-title-color: $text;
+  border-title-style: bold;
   height: auto;
   margin: 0 1; /* bug there, if margin is not set or set to 0, margin-right: 2 appears */
-}
-
-ContainerTitle {
-  color: $text;
-  text-style: bold;
-  padding-left: 2;
-  background: $metadata-color;
-  margin-top: 1;
 }
 
 TransactionMetadataContainer Label {
