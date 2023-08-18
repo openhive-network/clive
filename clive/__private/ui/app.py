@@ -191,7 +191,7 @@ class Clive(App[int], ManualReactive):
         the TUI thread. It might be possible to do it in the mentioned place if NotificationServer will be able
         to run async.
         """
-        if self.world.app_state.is_active:
+        if await self.world.app_state.is_active:
             return
 
         if not self.world.app_state.is_deactivation_pending:
