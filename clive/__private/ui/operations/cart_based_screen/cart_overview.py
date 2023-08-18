@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Grid
+from textual.containers import Container, Grid, VerticalScroll
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_operation_name
@@ -46,7 +46,7 @@ class CartItemsAmount(DynamicLabel):
         return "CART IS EMPTY"
 
 
-class CartItemsContainer(Container):
+class CartItemsContainer(VerticalScroll):
     """A container that holds the cart items."""
 
 
