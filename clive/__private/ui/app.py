@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 import math
 import traceback
 from asyncio import CancelledError
@@ -123,7 +122,6 @@ class Clive(App[int], ManualReactive):
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
-        self.set_interval(1, self.check_if_should_deactivate)  # type: ignore[arg-type]
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
@@ -177,33 +175,6 @@ class Clive(App[int], ManualReactive):
     def pop_screen(self) -> Screen[Any]:
         fun = super().pop_screen
         return self.__update_screen(lambda: fun())
-
-    @work(
-        name="Inactive state guarantor",
-        description="Checks if should deactivate TUI after beekeeper notification about closing wallets",
-    )
-    async def check_if_should_deactivate(self) -> None:
-        """
-        Ensures that TUI is in the INACTIVE mode after beekeeper notification about closing wallets is received.
-
-        This is a workaround, because we re unable to run some actions on the TUI application in
-        TextualWorld.notify_wallet_closing, because it is called from NotificationServer thread and not from
-        the TUI thread. It might be possible to do it in the mentioned place if NotificationServer will be able
-        to run async.
-        """
-        if await self.world.app_state.is_active:
-            return
-
-        if not self.world.app_state.is_deactivation_pending:
-            return
-
-        self.world.app_state.is_deactivation_pending = False
-
-        with contextlib.suppress(ScreenNotFoundError):
-            self.replace_screen("DashboardActive", "dashboard_inactive")
-
-        self.notify("Switched to the INACTIVE mode.", severity="warning", timeout=5)
-        self.world.update_reactive("app_state")
 
     def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> None:
         """

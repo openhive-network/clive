@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any
 
 import typer
@@ -13,6 +14,7 @@ from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -128,7 +130,12 @@ class TextualWorld(World, CliveWidget, ManualReactive):
 
     def notify_wallet_closing(self) -> None:
         super().notify_wallet_closing()
-        self.app_state.is_deactivation_pending = True
+
+        with contextlib.suppress(ScreenNotFoundError):
+            self.app.replace_screen("DashboardActive", "dashboard_inactive")
+
+        self.notify("Switched to the INACTIVE mode.", severity="warning", timeout=5)
+        self.update_reactive("app_state")
 
 
 class TyperWorld(World):
