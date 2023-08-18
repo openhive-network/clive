@@ -113,13 +113,13 @@ class Clive(App[int], ManualReactive):
         return 1
 
     def on_mount(self) -> None:
+        def __should_enter_onboarding() -> bool:
+            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
+
         self.__class__.is_launched = True
         self.mount(self.world)
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
-
-        def __should_enter_onboarding() -> bool:
-            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
 
@@ -298,7 +298,6 @@ class Clive(App[int], ManualReactive):
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
         allowed_fails_of_update_node_data = 5
-        accounts = []
         try:
             accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
         except NoWorkingAccountError:
