@@ -238,8 +238,6 @@ class Cart(BaseScreen):
             with self.__scrollable_part:
                 yield from self.__rebuild_items()
 
-            yield Static()
-
     def __rebuild_items(self) -> ComposeResult:
         for idx in range(len(self.app.world.profile_data.cart)):
             yield CartItem(idx)

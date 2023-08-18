@@ -69,7 +69,6 @@ class CartOverview(CliveWidget):
             yield CartItemsAmount()
             with self.__cart_items_container:
                 yield from self.__create_cart_items()
-        yield Static()
 
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", callback=self.__sync_cart_items)

@@ -140,7 +140,6 @@ class TransactionSummaryCommon(BaseScreen):
                 yield from self._actions_container_content()
             yield TransactionContentHint("This transaction will contain following operations in the presented order:")
         yield self.__scrollable_part
-        yield Static()
 
     def _actions_container_content(self) -> ComposeResult:
         yield KeyHint("Sign with key:")
