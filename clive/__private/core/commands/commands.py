@@ -244,8 +244,6 @@ class TextualCommands(Commands["TextualWorld"], CliveWidget):
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
     async def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
-        if time is not None:
-            await self.set_timeout(seconds=int(time.total_seconds()))
         wrapper = await super().activate(password=password, time=time)
         self._world.update_reactive("app_state")
         return wrapper
