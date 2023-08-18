@@ -43,7 +43,7 @@ class Onboarding(Form[ProfileData]):
         return lambda owner: OnboardingWelcomeScreen(
             owner,
             """Let's start onboarding!
-In any moment you can press the `[blue]?[/]` button to see the help page.""",
+In any moment you can press the `[blue]F1[/]` button to see the help page.""",
         )
 
     def create_finish_screen(self) -> ScreenBuilder[ProfileData]:
