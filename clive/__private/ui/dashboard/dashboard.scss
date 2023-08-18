@@ -35,6 +35,10 @@ DashboardBase AccountRow.watched {
   border-bottom: $primary-lighten-1;
 }
 
+DashboardBase AccountRow.watched.last {
+  border-bottom: none;
+}
+
 DashboardBase AccountRow #tables {
   width: 1fr;
 }

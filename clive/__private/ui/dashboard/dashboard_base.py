@@ -151,8 +151,10 @@ class WorkingAccountContainer(Static, CliveWidget):
 
 class WatchedAccountContainer(Static, CliveWidget):
     def compose(self) -> ComposeResult:
-        for acc in self.app.world.profile_data.watched_accounts:
-            yield AccountRow(acc)
+        account_rows = [AccountRow(account) for account in self.app.world.profile_data.watched_accounts]
+        last_account_row = account_rows[-1]
+        last_account_row.add_class("last")
+        yield from account_rows
 
 
 class DashboardBase(BaseScreen):
