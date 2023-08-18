@@ -111,13 +111,13 @@ class CartItem(ColumnLayout, CliveWidget):
 
     def compose(self) -> ComposeResult:
         def get_operation_index(_: ProfileData) -> str:
-            return f"{self.__idx + 1}."
+            return f"{self.__idx + 1}." if self.is_valid() else "?"
 
         def get_operation_name(_: ProfileData) -> str:
-            return humanize_operation_name(self.operation)
+            return humanize_operation_name(self.operation) if self.is_valid() else "?"
 
         def get_operation_details(_: ProfileData) -> str:
-            return humanize_operation_details(self.operation)
+            return humanize_operation_details(self.operation) if self.is_valid() else "?"
 
         yield DynamicColumn(
             self.app.world,
