@@ -105,7 +105,7 @@ class Beekeeper:
 
         result = response.json()
         if "error" in result:
-            raise BeekeeperResponseError(url, request, result)
+            raise BeekeeperResponseError(url, request, response)
 
         return_value = JSONRPCResponse[T](**result)
 

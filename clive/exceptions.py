@@ -1,8 +1,14 @@
 from __future__ import annotations
 
-from typing import Any
+from json import JSONDecodeError
+from typing import TYPE_CHECKING
 
 from clive.__private.logger import logger
+
+if TYPE_CHECKING:
+    import httpx
+
+    from clive.__private.core.beekeeper.notification_http_server import JsonT
 
 
 class CliveError(Exception):
@@ -12,7 +18,7 @@ class CliveError(Exception):
 class CommunicationError(CliveError):
     """Base class for all communication exceptions."""
 
-    def __init__(self, url: str, request: str, response: dict[str, Any] | None = None, *, message: str = "") -> None:
+    def __init__(self, url: str, request: str, response: httpx.Response | None = None, *, message: str = "") -> None:
         self.url = url
         self.request = request
         self.response = response
@@ -21,25 +27,38 @@ class CommunicationError(CliveError):
         super().__init__(message)
 
     def get_response_error_message(self) -> str | None:
+        result = self.get_response_json()
+        if result is None:
+            return None
+
+        message = result.get("error", {}).get("message", None)
+        return str(message) if message is not None else message
+
+    def get_response_json(self) -> JsonT | None:
         if self.response is None:
             return None
 
-        message = self.response.get("error", {}).get("message", None)
-        return str(message) if message is not None else message
+        try:
+            return self.response.json()  # type: ignore[no-any-return]
+        except JSONDecodeError:
+            return None
+
+    def _get_reply(self) -> str:
+        result = self.get_response_json()
+        return f"result={result}" if result is not None else f"response={self.response.text}"  # type: ignore[union-attr]
 
     def __create_message(self) -> str:
-        message = f"Problem occurred during communication with: url={self.url}, request={self.request}"
-        if self.response is not None:
-            message += f", response={self.response}"
-
-        return message
+        return (
+            f"Problem occurred during communication with: url={self.url}, request={self.request}, {self._get_reply()}"
+        )
 
 
 class UnknownResponseFormatError(CommunicationError):
     """Raised when the response format is unknown."""
 
-    def __init__(self, url: str, request: str, response: dict[str, Any]) -> None:
-        message = f"Unknown response format from: {url=}, {request=}, {response=}"
+    def __init__(self, url: str, request: str, response: httpx.Response) -> None:
+        self.response = response
+        message = f"Unknown response format from: {url=}, {request=}, {self._get_reply()}"
         super().__init__(url, request, response, message=message)
 
 

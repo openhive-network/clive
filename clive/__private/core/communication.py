@@ -92,13 +92,13 @@ class Communication:
 
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
-        result: dict[str, Any] = {}
+        response: httpx.Response | None = None
 
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
         for attempts_left in reversed(range(max_attempts)):
             try:
-                response: httpx.Response = await invoke(
+                response = await invoke(
                     callback=partial(
                         self.__get_async_client().post,
                         url,
@@ -109,6 +109,7 @@ class Communication:
             except httpx.ConnectError as error:
                 raise CommunicationError(url, data_serialized) from error
 
+            assert response is not None
             if response.is_success:
                 result = response.json()
 
@@ -116,13 +117,16 @@ class Communication:
                     return response
 
                 if "error" in result:
-                    logger.debug(f"Error in response from {url=}, request={data_serialized}, response={result}")
+                    logger.debug(f"Error in response from {url=}, request={data_serialized}, result={result}")
                 else:
-                    raise UnknownResponseFormatError(url, data_serialized, result)
+                    raise UnknownResponseFormatError(url, data_serialized, response)
             else:
-                logger.error(f"Received bad status code: {response.status_code} from {url=}, request={data_serialized}")
+                logger.error(
+                    f"Received bad status code: {response.status_code} from {url=}, request={data_serialized},"
+                    f" response={response.text}"
+                )
 
             if attempts_left > 0:
                 await __sleep()
 
-        raise CommunicationError(url, data_serialized, result)
+        raise CommunicationError(url, data_serialized, response)
