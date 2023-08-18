@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import socket
 from http import HTTPStatus
 from typing import Any, Protocol
 
@@ -9,12 +8,6 @@ from aiohttp import web
 from clive.exceptions import CliveError
 
 JsonT = dict[str, Any]
-
-
-def pickup_free_port() -> int:
-    sock = socket.socket()
-    sock.bind(("", 0))
-    return sock.getsockname()[1]  # type: ignore[no-any-return]
 
 
 class AsyncHttpServerError(CliveError):
@@ -37,7 +30,7 @@ class Notifiable(Protocol):
 
 
 class AsyncHttpServer:
-    __ADDRESS = ("127.0.0.1", pickup_free_port())
+    __ADDRESS = ("127.0.0.1", 0)
 
     def __init__(self, observer: Notifiable) -> None:
         self.__observer = observer
@@ -47,11 +40,12 @@ class AsyncHttpServer:
 
     @property
     def port(self) -> int:
-        return self.__ADDRESS[1]
+        self.__assert_running()
+        assert self.__site
+        return self.__site._server.sockets[0].getsockname()[1]  # type: ignore[no-any-return, union-attr]
 
     async def run(self) -> web.AppRunner:
-        if self.__site:
-            raise ServerAlreadyRunningError
+        self.__assert_not_running()
 
         runner = web.AppRunner(self.__app)
         await runner.setup()
@@ -60,8 +54,8 @@ class AsyncHttpServer:
         return runner
 
     async def close(self) -> None:
-        if not self.__site:
-            raise ServerNotRunningError
+        self.__assert_running()
+        assert self.__site
 
         await self.__site.stop()
         self.__site = None
@@ -70,3 +64,11 @@ class AsyncHttpServer:
         data = await request.json()
         self.__observer.notify(data)
         return web.Response(status=HTTPStatus.NO_CONTENT)
+
+    def __assert_running(self) -> None:
+        if not self.__site:
+            raise ServerNotRunningError
+
+    def __assert_not_running(self) -> None:
+        if self.__site:
+            raise ServerAlreadyRunningError
