@@ -78,7 +78,7 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         )
 
     def __get_regeneration_time(self) -> str:
-        natural_time = humanize_natural_time(self.__manabar.full_regeneration)
+        natural_time = humanize_natural_time(-self.__manabar.full_regeneration)
         return natural_time if natural_time != "now" else "Full!"
 
 
