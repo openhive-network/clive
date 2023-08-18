@@ -62,7 +62,7 @@ class Operations(CartBasedScreen):
                 yield OperationButton(None, label="Governance operations")
             with ScrollableTabPane("Account management"):
                 yield OperationButton(None, label="Account management operations")
-            yield from self.__create_raw_operations_tab(hide=False)
+            yield from self.__create_raw_operations_tab(hide=True)
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
