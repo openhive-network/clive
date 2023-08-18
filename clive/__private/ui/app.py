@@ -125,7 +125,6 @@ class Clive(App[int], ManualReactive):
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
-        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
 
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
