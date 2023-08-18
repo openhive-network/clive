@@ -14,7 +14,7 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
@@ -299,7 +299,14 @@ class Clive(App[int], ManualReactive):
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
         allowed_fails_of_update_node_data = 5
-        accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+        accounts = []
+        try:
+            accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
+        except NoWorkingAccountError:
+            logger.warning(
+                "No working account set, if you see this in logs after onboarding, here you can start debugging"
+            )
+            return  # just ignore this for onboarding state
         self.__amount_of_fails_during_update_node_data = 0
 
         try:
