@@ -18,6 +18,10 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
+class WelcomeTitle(Static):
+    """Title of the welcome screen."""
+
+
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     BINDINGS = [Binding("escape", "cancel", "Cancel")]
 
@@ -27,7 +31,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):
-            yield Static(self.__title, id="title")
+            yield WelcomeTitle(self.__title)
             yield CliveButton("Start!", id_="welcome_button_start")
 
     @on(CliveButton.Pressed, "#welcome_button_start")
