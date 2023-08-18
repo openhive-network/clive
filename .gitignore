@@ -201,3 +201,7 @@ logs/
 
 # To ignore symbolic link to this binary
 beekeeper
+
+# Do not display dirty state of the repository in the docker container
+docker_image_name.env
+hived-binaries/
