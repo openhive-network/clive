@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from datetime import datetime
 from typing import TYPE_CHECKING, Any
 
 import humanize
@@ -10,7 +11,11 @@ from clive.__private.core.formatters.case import underscore
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
-    from datetime import datetime, timedelta
+    from datetime import timedelta
+
+
+def _is_null_date(value: datetime) -> bool:
+    return value == datetime(1970, 1, 1, 0, 0, 0)
 
 
 def humanize_natural_time(value: datetime | timedelta) -> str:
@@ -24,6 +29,8 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     now=datetime(1999, 12, 31, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "a day ago"
     now=datetime(2000, 1, 1, 1, 30), value=datetime(2000, 1, 1, 0, 0) -> "an hour from now"
     """
+    if isinstance(value, datetime) and _is_null_date(value):
+        return "never"
     return humanize.naturaltime(value)
 
 
@@ -35,7 +42,10 @@ def humanize_datetime(value: datetime) -> str:
     --------
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
     """
-    return value.replace(tzinfo=None).isoformat()
+    value = value.replace(tzinfo=None)
+    if _is_null_date(value):
+        return "never"
+    return value.isoformat()
 
 
 def humanize_class_name(cls: str | type[Any]) -> str:
