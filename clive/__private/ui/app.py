@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import math
 import traceback
 from asyncio import CancelledError
@@ -38,6 +39,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
+    from clive.__private.storage.accounts import Account
     from clive.__private.ui.app_messages import NodeDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
@@ -298,13 +300,10 @@ class Clive(App[int], ManualReactive):
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
         allowed_fails_of_update_node_data = 5
-        try:
-            accounts = [self.world.profile_data.working_account, *self.world.profile_data.watched_accounts]
-        except NoWorkingAccountError:
-            logger.warning(
-                "No working account set, if you see this in logs after onboarding, here you can start debugging"
-            )
-            return  # just ignore this for onboarding state
+        accounts: list[Account] = []  # accounts list gonna be empty, but dgpo will be refreshed
+        with contextlib.suppress(NoWorkingAccountError):
+            accounts.append(self.world.profile_data.working_account)
+        accounts.extend(self.world.profile_data.watched_accounts)
         self.__amount_of_fails_during_update_node_data = 0
 
         try:

@@ -61,10 +61,12 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
     async def _execute(self) -> None:
         downvote_vote_ratio: Final[int] = 4
 
-        gdpo, api_accounts = await gather(
-            self.node.api.database_api.get_dynamic_global_properties(), self.__harvest_data_from_api()
-        )
-        self._result = gdpo
+        self._result = await self.node.api.database_api.get_dynamic_global_properties()
+        if not self.accounts:
+            return
+
+        api_accounts = await self.__harvest_data_from_api()
+        gdpo = self._result
 
         for account, info in api_accounts.items():
             account.data.reputation = info.reputation
