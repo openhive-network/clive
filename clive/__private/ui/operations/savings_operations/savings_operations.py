@@ -30,6 +30,10 @@ odd = "OddColumn"
 even = "EvenColumn"
 
 
+class PlaceTaker(Static):
+    """Using to ensure valid display of the grid."""
+
+
 class CliveRadioButton(RadioButton):
     """Due to bug in Ubuntu we have to replace icon of the RadioButton by simple 'O'."""
 
@@ -159,8 +163,6 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
         self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
 
-        self.__to_account = Horizontal(id="to-parameter")
-
     def compose(self) -> ComposeResult:
         yield Static("Choose type of operation", id="savings-transfer-header")
         with RadioSet(id="operation-type-choose"):
@@ -168,10 +170,10 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             yield self.__from_button
 
         yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
-        with self.__to_account:
+        with Body():
             yield Static("to", classes="label")
             yield self.__to_account_input
-        with Body():
+            yield PlaceTaker()
             yield Static("amount", classes="label")
             yield self.__amount_input
             yield self.__currency_selector
