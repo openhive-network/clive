@@ -71,7 +71,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
         return PrivateKeyAliased(value=self._private_key_raw, file_path=self.__key_file_path, alias=self._key_alias_raw)
 
     def action_load_from_file(self) -> None:
-        self.app.push_screen(SelectFile())
+        self.app.push_screen(SelectFile(placeholder="e.g. /home/me/my-active-key.wif"))
 
     @on(SelectFile.Saved)
     def load_authority_from_file(self, event: SelectFile.Saved) -> None:

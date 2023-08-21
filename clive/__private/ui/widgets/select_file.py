@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.binding import Binding
@@ -34,6 +34,8 @@ class SelectFile(BaseScreen):
         Binding("f2", "save", "Ok"),
     ]
 
+    _DEFAULT_PLACEHOLDER: Final[str] = "e.g.: /home/me/some-path"
+
     class Saved(Message):
         """Emitted when user saves the form."""
 
@@ -41,10 +43,16 @@ class SelectFile(BaseScreen):
             self.file_path = file_path
             super().__init__()
 
-    def __init__(self, default_file_path: str | None = None, *, file_must_exist: bool = True) -> None:
+    def __init__(
+        self,
+        default_file_path: str | None = None,
+        *,
+        file_must_exist: bool = True,
+        placeholder: str = _DEFAULT_PLACEHOLDER,
+    ) -> None:
         super().__init__()
         self.__file_must_exist = file_must_exist
-        self.__file_path_input = Input(default_file_path, placeholder="e.g.: /home/me/my-active-key")
+        self.__file_path_input = Input(default_file_path, placeholder=placeholder)
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("Select file"), Body():
