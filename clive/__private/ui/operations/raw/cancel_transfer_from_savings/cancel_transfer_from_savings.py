@@ -24,7 +24,11 @@ if TYPE_CHECKING:
 
 
 class Body(Grid):
-    """All the content of the screen, excluding the title."""
+    """Content that includes from and request_id parameter. In savings tab also parameters of transfer."""
+
+
+class FromSavingsTransferParameters(Grid):
+    """Content that includes data about transfer from savings when cancelling it by button."""
 
 
 class PlaceTaker(Static):
@@ -38,6 +42,7 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
             self.__to_account = cancelling_transfer.to
             self.__amount = cancelling_transfer.amount
             self.__memo = cancelling_transfer.memo
+            self.__realized_on = datetime.strftime(cancelling_transfer.complete, "%Y-%m-%dT%H:%M:%S")
         self.__cancelling_transfer = cancelling_transfer
         super().__init__()
 
@@ -62,15 +67,16 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                 else:
                     yield InputLabel("request id")
                     yield EllipsedStatic(str(self.__request_id), classes="parameters-label")
-                    yield InputLabel("to")
-                    yield EllipsedStatic(self.__to_account, classes="parameters-label")  # type: ignore
-                    yield InputLabel("amount")
-                    yield EllipsedStatic(self.__amount, classes="parameters-label")  # type: ignore
-                    yield InputLabel("memo")
-                    yield EllipsedStatic(self.__memo, classes="parameters-label")  # type: ignore
-
-    def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
-
+                if self.__cancelling_transfer is not None:
+                    with FromSavingsTransferParameters():
+                        yield Static("to-account", id="to-column")
+                        yield Static("realized-on (UTC)", id="realized-column")
+                        yield Static("amount", id="amount-column")
+                        yield Static("memo", id="memo-column")
+                        yield Static(self.__to_account, classes="transfer-parameters")
+                        yield Static(self.__realized_on, classes="transfer-parameters")
+                        yield Static(Asset.to_legacy(self.__amount), classes="transfer-parameters")
+                        yield Static(self.__memo, classes="transfer-parameters")
 
     @on(IdInput.Changed)
     def find_typed_id(self, event: IdInput.Changed) -> None:
