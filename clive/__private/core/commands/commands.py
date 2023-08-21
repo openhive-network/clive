@@ -13,6 +13,7 @@ from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
+from clive.__private.core.commands.save_json import SaveToFileAsJson
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
@@ -91,9 +92,11 @@ class Commands(Generic[WorldT]):
             )
         )
 
-    async def save_to_file(self, *, transaction: Transaction, path: Path) -> CommandWrapper:
+    async def save_to_file(self, *, transaction: Transaction, path: Path, binary: bool = False) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SaveToFileAsBinary(transaction=transaction, file_path=path)
+            if binary
+            else SaveToFileAsJson(transaction=transaction, file_path=path)
         )
 
     async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:

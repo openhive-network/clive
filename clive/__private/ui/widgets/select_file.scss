@@ -1,23 +1,19 @@
-SelectFile DialogContainer {
-  overflow: hidden;
-}
-
-SelectFile Body {
-  layout: grid;
-  grid-size: 2;
-  grid-columns: 12 1fr;
-  grid-rows: 4 2 1fr;
+SelectFile FilePathInputContainer {
+  height: auto;
 }
 
 SelectFile FilePathLabel {
-  padding: 1 0;
+  padding: 1 2;
+}
+
+SelectFile Input {
+  width: 1fr;
 }
 
 SelectFile DirectoryTreeHint {
-  column-span: 2;
   color: $text-muted;
 }
 
 SelectFile DirectoryTree {
-  column-span: 2;
+  min-height: 3;
 }

@@ -14,7 +14,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select_file import SelectFile
+from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import CliveError, NoItemSelectedError
 
@@ -103,19 +103,23 @@ class TransactionSummary(BaseScreen):
             yield Static()
 
     @CliveScreen.try_again_after_activation()
-    @on(SelectFile.Saved)
-    async def save_to_file(self, event: SelectFile.Saved) -> None:
+    @on(SelectFileToSaveTransaction.Saved)
+    async def save_to_file(self, event: SelectFileToSaveTransaction.Saved) -> None:
         file_path = event.file_path
+        is_binary = event.binary
 
         signed = None
         try:
             signed = await self.__sign_transaction()
         except TransactionCouldNotBeSignedError as error:
-            await self.app.world.commands.save_to_file(transaction=error.transaction, path=file_path)
+            await self.app.world.commands.save_to_file(transaction=error.transaction, path=file_path, binary=is_binary)
         else:
-            await self.app.world.commands.save_to_file(transaction=signed, path=file_path)
+            await self.app.world.commands.save_to_file(transaction=signed, path=file_path, binary=is_binary)
 
-        self.notify(f"Transaction saved to [bold blue]'{file_path}'[/] {'(signed)' if signed else ''}")
+        self.notify(
+            f"Transaction ({'binary' if is_binary else 'json'}) saved to [bold blue]'{file_path}'[/]"
+            f" {'(signed)' if signed else ''}"
+        )
 
     def action_dashboard(self) -> None:
         from clive.__private.ui.dashboard.dashboard_base import DashboardBase
@@ -141,7 +145,7 @@ class TransactionSummary(BaseScreen):
         self.notify("Transaction broadcast successfully!")
 
     def action_save(self) -> None:
-        self.app.push_screen(SelectFile(file_must_exist=False))
+        self.app.push_screen(SelectFileToSaveTransaction())
 
     def __clear_all(self) -> None:
         self.app.world.profile_data.cart.clear()
