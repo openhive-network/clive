@@ -92,4 +92,4 @@ class SelectFile(BaseScreen):
     def __is_valid(self) -> bool:
         if self.__file_must_exist:
             return self.file_path.is_file()
-        return True
+        return self.file_path.exists() and not self.file_path.is_dir()
