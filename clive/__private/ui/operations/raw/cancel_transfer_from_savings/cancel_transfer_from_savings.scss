@@ -1,9 +1,9 @@
 CancelTransferFromSavings Body {
   grid-size: 2;
-  grid-columns: 14 2fr;
+  grid-columns: 14 1fr;
   grid-rows: 4 3 3 3;
-  height: auto;
   margin: 0 4;
+  height: auto;
   background: $panel;
 }
 
@@ -25,4 +25,31 @@ CancelTransferFromSavings #transfer-searching-label {
 
 CancelTransferFromSavings Pretty {
     content-align: center middle;
+}
+
+CancelTransferFromSavings FromSavingsTransferParameters {
+    grid-size: 4;
+    grid-rows: 1;
+    margin: 0 4;
+}
+
+CancelTransferFromSavings FromSavingsTransferParameters Static {
+    text-align: center;
+    text-style: bold;
+}
+
+CancelTransferFromSavings #to-column {
+    background: $accent-lighten-1;
+}
+
+CancelTransferFromSavings #realized-column {
+    background: $primary-lighten-1;
+}
+
+CancelTransferFromSavings #amount-column {
+        background: $accent-lighten-2;
+}
+
+CancelTransferFromSavings #memo-column {
+    background: $primary-lighten-2;
 }
