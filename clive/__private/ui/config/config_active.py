@@ -20,4 +20,10 @@ class ConfigActive(ConfigBase):
 
     @on(CliveButton.Pressed, "#manage-authorities")
     def push_manage_authorities_screen(self) -> None:
+        if not self.__has_working_account():
+            self.notify("Cannot manage authorities without working account", severity="error")
+            return
         self.app.push_screen(ManageAuthorities())
+
+    def __has_working_account(self) -> bool:
+        return self.app.world.profile_data.is_working_account_set()
