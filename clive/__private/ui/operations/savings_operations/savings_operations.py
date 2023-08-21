@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.containers import Container, Grid, Horizontal
+from textual.containers import Container, Grid, Horizontal, ScrollableContainer
 from textual.widgets import Button, Input, RadioButton, RadioSet, Static, TabbedContent
 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
@@ -137,7 +137,7 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
             yield SavingsInterestInfo(working_account)
             if pending_transfers:
                 yield PendingHeader()
-                with Container(id="pending-transfers"):
+                with ScrollableContainer(id="pending-transfers"):
                     for transfer in pending_transfers:
                         yield PendingTransfer(transfer)
                     yield Static()
