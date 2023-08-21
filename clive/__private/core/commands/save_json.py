@@ -18,5 +18,5 @@ class SaveToFileAsJson(Command):
 
     async def _execute(self) -> None:
         serialized = self.transaction.json(by_alias=True)
-        with self.file_path.open("wb", encoding="utf-8") as file:
+        with self.file_path.open("w", encoding="utf-8") as file:
             file.write(serialized)
