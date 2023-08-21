@@ -49,8 +49,6 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         if self.__cancelling_transfer is None:
             default_request_id = str(get_default_from_model(CancelTransferFromSavingsOperation, "request_id", int))
             self.__request_id_input = IdInput(label="request id", value=default_request_id)
-        else:
-            self.__request_id_input = IdInput(label="request id", value=self.__request_id)
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
