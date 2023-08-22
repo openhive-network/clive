@@ -44,8 +44,13 @@ class CommunicationError(CliveError):
             return None
 
     def _get_reply(self) -> str:
-        result = self.get_response_json()
-        return f"result={result}" if result is not None else f"response={self.response.text}"  # type: ignore[union-attr]
+        if (result := self.get_response_json()) is not None:
+            return f"{result=}"
+
+        if self.response is not None:
+            return f"response={self.response.text}"
+
+        return "no response available"
 
     def __create_message(self) -> str:
         return (
