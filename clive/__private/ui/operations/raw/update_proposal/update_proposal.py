@@ -7,8 +7,8 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput
+from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -29,7 +29,7 @@ class UpdateProposal(RawOperationBaseScreen):
 
         self.__proposal_id_input = IdInput(label="proposal id")
         self.__creator_input = AccountNameInput(label="creator")
-        self.__daily_pay_input = AmountInput(label="daily hbd pay")
+        self.__daily_pay_input = NumericInput(label="daily hbd pay")
         self.__subject_input = TextInput(label="subject", placeholder="e.g.: New subject")
         self.__permlink_input = PermlinkInput()
         self.__extensions_input = TextInput(label="extensions", placeholder="e.g.: []")

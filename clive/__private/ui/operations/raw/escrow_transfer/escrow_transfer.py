@@ -9,12 +9,12 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.date_input import DateInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
+from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
 )
@@ -39,10 +39,10 @@ class EscrowTransfer(RawOperationBaseScreen):
         self.__to_input = AccountNameInput(label="to")
         self.__agent_input = AccountNameInput(label="agent", placeholder=ACCOUNT_NAME2_PLACEHOLDER)
         self.__escrow_id_input = IdInput(label="escrow id", value=default_escrow_id)
-        self.__hbd_amount_input = AmountInput(
+        self.__hbd_amount_input = NumericInput(
             label="hbd amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
-        self.__hive_amount_input = AmountInput(
+        self.__hive_amount_input = NumericInput(
             label="hive amount", placeholder="Notice: if don't want to use, leave 0.000 here", value=0.000
         )
         self.__fee_input = AssetAmountInput()

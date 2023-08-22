@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.models.asset import Asset
 
 if TYPE_CHECKING:
@@ -46,7 +46,7 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
             yield self.__currency_selector
 
     def __init__(self, label: str = "amount") -> None:
-        self.__custom_input = AmountInput(label=label)
+        self.__custom_input = NumericInput(label=label)
 
         super().__init__(label)
 

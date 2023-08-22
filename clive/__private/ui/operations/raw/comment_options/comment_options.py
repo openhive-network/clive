@@ -9,9 +9,9 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
+from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import (
@@ -38,7 +38,7 @@ class CommentOptions(RawOperationBaseScreen):
         default_allow_curation_rewards = get_default_from_model(CommentOptionsOperation, "allow_curation_rewards", bool)
 
         self.__permlink_input = PermlinkInput()
-        self.__max_accepted_payout_input = AmountInput(label="max accepted payout")
+        self.__max_accepted_payout_input = NumericInput(label="max accepted payout")
         self.__percent_hbd_input = IntegerInput(
             label="percent hbd", value=default_percent_hbd, placeholder=PERCENT_PLACEHOLDER
         )

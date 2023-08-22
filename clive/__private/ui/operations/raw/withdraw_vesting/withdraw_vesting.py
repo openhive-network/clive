@@ -7,7 +7,7 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -26,7 +26,7 @@ class WithdrawVesting(RawOperationBaseScreen):
         super().__init__()
 
         self.__account_input = AccountNameInput(placeholder=ACCOUNT_NAME2_PLACEHOLDER)
-        self.__vesting_shares_input = AmountInput(label="vesting shares")
+        self.__vesting_shares_input = NumericInput(label="vesting shares")
 
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():

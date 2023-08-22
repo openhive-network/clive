@@ -4,7 +4,7 @@ from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
 
 
-class AmountInput(CustomInput[float | None]):
+class NumericInput(CustomInput[float | None]):
     def __init__(
         self, label: str = "amount", value: float | None = None, placeholder: str = ASSET_AMOUNT_PLACEHOLDER
     ) -> None:

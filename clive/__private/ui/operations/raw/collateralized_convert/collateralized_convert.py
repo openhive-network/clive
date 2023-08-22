@@ -8,9 +8,9 @@ from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.amount_input import AmountInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
+from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import CollateralizedConvertOperation
@@ -29,7 +29,7 @@ class CollateralizedConvert(RawOperationBaseScreen):
 
         default_request_id = get_default_from_model(CollateralizedConvertOperation, "request_id", int)
 
-        self.__amount_input = AmountInput("amount hive")
+        self.__amount_input = NumericInput("amount hive")
         self.__request_id_input = IdInput(label="request id", value=default_request_id)
 
     def create_left_panel(self) -> ComposeResult:
