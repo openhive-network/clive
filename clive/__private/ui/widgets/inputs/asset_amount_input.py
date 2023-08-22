@@ -6,14 +6,15 @@ from textual.containers import Horizontal
 
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.inputs.amount_input import AmountInput
+from clive.__private.ui.widgets.inputs.custom_input import CustomInput
+from clive.models.asset import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.widgets import Input
 
-    from clive.models.asset import Asset
 
-
-class AssetAmountInput(Horizontal):
+class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
     """
     Class for selecting asset types and specifying their amounts.
 
@@ -35,7 +36,7 @@ class AssetAmountInput(Horizontal):
         }
         """
 
-        def __init__(self, input_: AmountInput, currency_selector: CurrencySelectorLiquid) -> None:
+        def __init__(self, input_: Input, currency_selector: CurrencySelectorLiquid) -> None:
             self.__input = input_
             self.__currency_selector = currency_selector
             super().__init__()
@@ -45,20 +46,21 @@ class AssetAmountInput(Horizontal):
             yield self.__currency_selector
 
     def __init__(self, label: str = "amount") -> None:
-        self.__input = AmountInput(label=label)
+        self.__custom_input = AmountInput(label=label)
+
+        super().__init__(label)
+
         self.__currency_selector = CurrencySelectorLiquid()
 
-        super().__init__()
-
     def compose(self) -> ComposeResult:
-        input_: AmountInput
-        label, input_ = self.__input.compose()  # type: ignore[assignment]
-
-        yield label
-        yield self.Wrapper(input_, self.__currency_selector)
+        yield self._input_label
+        yield self.Wrapper(self._input, self.__currency_selector)
 
     @property
     def value(self) -> Asset.Hive | Asset.Hbd | None:
-        if self.__input.value:
-            return self.__currency_selector.create_asset(self.__input.value)
+        if self._input.value:
+            return self.__currency_selector.create_asset(self._input.value)
         return None
+
+    def _create_input(self) -> Input:
+        return self.__custom_input._input
