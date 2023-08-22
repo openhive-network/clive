@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 
 def validate_schema_field(schema_field: type[Any], value: Any) -> None:
@@ -21,3 +21,12 @@ def validate_schema_field(schema_field: type[Any], value: Any) -> None:
 
     Model.update_forward_refs(**locals())
     Model(value=value)
+
+
+def is_schema_field_valid(schema_field: type[Any], value: Any) -> bool:
+    try:
+        validate_schema_field(schema_field, value)
+    except ValidationError:
+        return False
+    else:
+        return True

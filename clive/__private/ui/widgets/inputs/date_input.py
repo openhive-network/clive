@@ -3,9 +3,7 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Final
 
-from pydantic import ValidationError
-
-from clive.__private.core.validate_schema_field import validate_schema_field
+from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import DATE_PLACEHOLDER
@@ -14,12 +12,7 @@ from schemas.__private.hive_fields_basic_schemas import HiveDateTime
 
 class DateHighlighter(CliveHighlighter):
     def is_valid_value(self, value: str) -> bool:
-        try:
-            validate_schema_field(HiveDateTime, value)
-        except ValidationError:
-            return False
-        else:
-            return True
+        return is_schema_field_valid(HiveDateTime, value)
 
 
 class DateInput(CustomInput[datetime]):

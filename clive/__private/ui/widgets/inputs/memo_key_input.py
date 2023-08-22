@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-from pydantic import ValidationError
-
-from clive.__private.core.validate_schema_field import validate_schema_field
+from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
@@ -11,12 +9,7 @@ from schemas.__private.hive_fields_basic_schemas import PublicKey
 
 class MemoKeyHighlighter(CliveHighlighter):
     def is_valid_value(self, value: str) -> bool:
-        try:
-            validate_schema_field(PublicKey, value)
-        except ValidationError:
-            return False
-        else:
-            return True
+        return is_schema_field_valid(PublicKey, value)
 
 
 class MemoKeyInput(TextInput):
