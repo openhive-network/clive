@@ -51,22 +51,17 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         password: bool = False,
         tooltip: str | None = None,
     ):
-        self._label = label
-        self.__tooltip = tooltip
-
-        if value is not None:
-            self._input = Input(value=str(value), placeholder=placeholder, highlighter=highlighter, password=password)
-        else:
-            self._input = Input(placeholder=placeholder, highlighter=highlighter, password=password)
-
         super().__init__(id=id_, classes=classes, disabled=disabled)
 
-    def compose(self) -> ComposeResult:
-        yield InputLabel(self._label)
-        yield self._input
+        self._input_label = InputLabel(label)
 
-        if self.__tooltip:
-            self._input.tooltip = self.__tooltip
+        value_processed = str(value) if value is not None else None
+        self._input = Input(value_processed, placeholder=placeholder, highlighter=highlighter, password=password)
+        self._input.tooltip = tooltip
+
+    def compose(self) -> ComposeResult:
+        yield self._input_label
+        yield self._input
 
     @property
     def raw_value(self) -> str:
