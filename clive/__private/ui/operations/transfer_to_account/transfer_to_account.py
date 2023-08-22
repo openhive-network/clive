@@ -56,7 +56,7 @@ class TransferToAccount(OperationBaseScreen):
                 yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferOperation[Asset.Hive, Asset.Hbd] | None:
-        amount = self.__amount_input.amount
+        amount = self.__amount_input.value
         if not amount:
             return None
 

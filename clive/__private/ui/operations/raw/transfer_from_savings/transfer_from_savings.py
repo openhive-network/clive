@@ -49,7 +49,7 @@ class TransferFromSavings(RawOperationBaseScreen):
                 yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferFromSavingsOperation[Asset.Hive, Asset.Hbd] | None:
-        amount = self.__amount_input.amount
+        amount = self.__amount_input.value
         request_id = self.__request_id_input.value
 
         if not amount or not request_id:

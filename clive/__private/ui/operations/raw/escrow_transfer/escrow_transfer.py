@@ -67,7 +67,7 @@ class EscrowTransfer(RawOperationBaseScreen):
                 yield from self.__fee_input.compose()
 
     def _create_operation(self) -> EscrowTransferOperation[Asset.Hive, Asset.Hbd] | None:
-        fee = self.__fee_input.amount
+        fee = self.__fee_input.value
         hbd_amount = self.__hbd_amount_input.value
         hive_amount = self.__hive_amount_input.value
         if not fee or not hbd_amount or not hive_amount:

@@ -58,7 +58,7 @@ class AssetAmountInput(Horizontal):
         yield self.Wrapper(input_, self.__currency_selector)
 
     @property
-    def amount(self) -> Asset.Hive | Asset.Hbd | None:
+    def value(self) -> Asset.Hive | Asset.Hbd | None:
         if self.__input.value:
             return self.__currency_selector.create_asset(self.__input.value)
         return None

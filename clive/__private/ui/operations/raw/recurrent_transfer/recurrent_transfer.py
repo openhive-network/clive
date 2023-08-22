@@ -52,7 +52,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
                 yield from self.__executions_input.compose()
 
     def _create_operation(self) -> RecurrentTransferOperation[Asset.Hive, Asset.Hbd] | None:
-        amount = self.__amount_input.amount
+        amount = self.__amount_input.value
         recurrence = self.__recurrence_input.value
         executions = self.__executions_input.value
         if not amount or not recurrence or not executions:

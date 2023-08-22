@@ -52,8 +52,8 @@ class LimitOrderCreate(RawOperationBaseScreen):
                 yield self.__fill_or_kill_input
 
     def _create_operation(self) -> LimitOrderCreateOperation[Asset.Hive, Asset.Hbd] | None:
-        asset_to_sell = self.__amount_to_sell_input.amount
-        asset_min_receive = self.__min_to_receive_input.amount
+        asset_to_sell = self.__amount_to_sell_input.value
+        asset_min_receive = self.__min_to_receive_input.value
 
         if not asset_to_sell or not asset_min_receive:
             return None
