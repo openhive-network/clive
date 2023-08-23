@@ -76,6 +76,14 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
     def value(self) -> ValueT:
         ...
 
+    @property
+    def input(self) -> Input:  # noqa: A003
+        return self._input
+
+    @property
+    def label(self) -> InputLabel:
+        return self._input_label
+
     def _create_input(self) -> Input:
         return Input(
             self._value_processed, placeholder=self._placeholder, highlighter=self._highlighter, password=self._password
