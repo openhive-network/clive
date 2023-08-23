@@ -9,11 +9,11 @@ from clive.__private.core.node.api.rc_api import RcApi
 from clive.__private.core.node.api.reputation_api import ReputationApi
 
 if TYPE_CHECKING:
-    from clive.__private.core.node import Node
+    from clive.__private.core.node.node import BaseNode
 
 
 class Apis:
-    def __init__(self, node: Node) -> None:
+    def __init__(self, node: BaseNode) -> None:
         self.network_broadcast = NetworkBroadcastApi(node)
         self.database_api = DatabaseApi(node)
         self.account_history_api = AccountHistoryApi(node)

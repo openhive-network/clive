@@ -4,7 +4,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
 
 from clive.__private.abstract_class import AbstractClass
-from clive.__private.core.beekeeper.model import JSONRPCProtocol, JSONRPCRequest
+from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.core.formatters.case import underscore
 
 if TYPE_CHECKING:
@@ -12,14 +12,15 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.core.node import Node
+    from clive.__private.core.node.node import BaseNode
+
 
 P = ParamSpec("P")
 R = TypeVar("R")
 
 
 class Api(AbstractClass):
-    def __init__(self, node: Node):
+    def __init__(self, node: BaseNode):
         self._node = node
 
     @staticmethod
@@ -32,12 +33,7 @@ class Api(AbstractClass):
                 if key.endswith("_"):
                     kwargs[key.rstrip("_")] = kwargs.pop(key)
             request = JSONRPCRequest(method=endpoint, params=kwargs)
-
-            class Response(JSONRPCProtocol):
-                result: return_type  # type: ignore[valid-type]
-
-            Response.update_forward_refs(**locals())
-            return (await this._node.send(request, expect_type=Response)).result
+            return await this._node.handle_request(request, expect_type=return_type)
 
         return wrapper  # type: ignore
 
