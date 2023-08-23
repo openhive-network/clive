@@ -6,18 +6,33 @@ from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import INTEGER_PLACEHOLDER
 
 if TYPE_CHECKING:
+    from rich.console import RenderableType
     from rich.highlighter import Highlighter
 
 
 class IntegerInput(CustomInput[int | None]):
     def __init__(
         self,
-        label: str,
+        label: str = "amount",
         value: int | None = None,
+        *,
         placeholder: str = INTEGER_PLACEHOLDER,
+        tooltip: RenderableType | None = None,
+        disabled: bool = False,
         highlighter: Highlighter | None = None,
+        id_: str | None = None,
+        classes: str | None = None,
     ):
-        super().__init__(label=label, value=value, placeholder=placeholder, highlighter=highlighter)
+        super().__init__(
+            label=label,
+            value=value,
+            placeholder=placeholder,
+            tooltip=tooltip,
+            disabled=disabled,
+            highlighter=highlighter,
+            id_=id_,
+            classes=classes,
+        )
 
     @property
     def value(self) -> int | None:

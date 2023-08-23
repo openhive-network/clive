@@ -7,9 +7,11 @@ from textual.containers import Horizontal
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
+from clive.__private.ui.widgets.placeholders_constants import NUMERIC_PLACEHOLDER
 from clive.models.asset import Asset
 
 if TYPE_CHECKING:
+    from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.widgets import Input
 
@@ -45,10 +47,19 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
             yield self.__input
             yield self.__currency_selector
 
-    def __init__(self, label: str = "amount") -> None:
-        self.__custom_input = NumericInput(label=label)
-
-        super().__init__(label)
+    def __init__(
+        self,
+        label: str = "amount",
+        *,
+        placeholder: str = NUMERIC_PLACEHOLDER,
+        tooltip: RenderableType | None = None,
+        disabled: bool = False,
+        id_: str | None = None,
+        classes: str | None = None,
+    ) -> None:
+        super().__init__(
+            label=label, placeholder=placeholder, tooltip=tooltip, disabled=disabled, id_=id_, classes=classes
+        )
 
         self.__currency_selector = CurrencySelectorLiquid()
 
@@ -63,4 +74,5 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
         return None
 
     def _create_input(self) -> Input:
-        return self.__custom_input._input
+        custom_input = NumericInput(label=self._label, placeholder=self._placeholder, tooltip=self.tooltip)
+        return custom_input._input

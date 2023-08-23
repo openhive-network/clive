@@ -10,8 +10,13 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from rich.console import RenderableType
     from rich.highlighter import Highlighter
     from textual.app import ComposeResult
+    from textual.suggester import Suggester
+    from textual.validation import Validator
 
 
 ValueT = TypeVar("ValueT")
@@ -42,21 +47,28 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         self,
         label: str,
         value: ValueT | None = None,
+        *,
         placeholder: str = "",
-        highlighter: Highlighter | None = None,
-        id_: str | None = None,
-        classes: str | None = None,
+        tooltip: RenderableType | None = None,
         disabled: bool = False,
         password: bool = False,
-        tooltip: str | None = None,
+        highlighter: Highlighter | None = None,
+        suggester: Suggester | None = None,
+        validators: Validator | Iterable[Validator] | None = None,
+        id_: str | None = None,
+        classes: str | None = None,
     ):
-        super().__init__(id=id_, classes=classes, disabled=disabled)
+        super().__init__(disabled=disabled, id=id_, classes=classes)
 
+        self.tooltip = tooltip
+
+        self._label = label
         self._value_processed = str(value) if value is not None else None
         self._placeholder = placeholder
-        self._highlighter = highlighter
         self._password = password
-        self._tooltip = tooltip
+        self._highlighter = highlighter
+        self._suggester = suggester
+        self._validators = validators
 
         self._input_label = InputLabel(
             label,
@@ -89,8 +101,11 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         return Input(
             self._value_processed,
             placeholder=self._placeholder,
-            highlighter=self._highlighter,
+            disabled=self.disabled,
             password=self._password,
+            highlighter=self._highlighter,
+            suggester=self._suggester,
+            validators=self._validators,
             id=f"{self.id}--input" if self.id else None,
         )
 
