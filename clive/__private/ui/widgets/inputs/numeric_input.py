@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
-from clive.__private.ui.widgets.placeholders_constants import ASSET_AMOUNT_PLACEHOLDER
+from clive.__private.ui.widgets.placeholders_constants import NUMERIC_PLACEHOLDER
 
 
 class NumericInput(CustomInput[float | None]):
     def __init__(
-        self, label: str = "amount", value: float | None = None, placeholder: str = ASSET_AMOUNT_PLACEHOLDER
+        self, label: str = "amount", value: float | None = None, placeholder: str = NUMERIC_PLACEHOLDER
     ) -> None:
         super().__init__(label=label, value=value, placeholder=placeholder)
 

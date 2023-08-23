@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import Final
 
-ASSET_AMOUNT_PLACEHOLDER: Final[str] = "e.g: 1.000"
+NUMERIC_PLACEHOLDER: Final[str] = "e.g: 1.000"
 ACCOUNT_NAME_PLACEHOLDER: Final[str] = "e.g: alice"
 ACCOUNT_NAME2_PLACEHOLDER: Final[str] = "e.g: bob"
 WITNESS_PLACEHOLDER: Final[str] = "e.g: hiveio"
