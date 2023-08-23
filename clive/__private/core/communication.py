@@ -3,13 +3,11 @@ from __future__ import annotations
 import asyncio
 import json
 from datetime import datetime, timedelta
-from functools import partial
 from typing import TYPE_CHECKING, Any, Final
 
 import httpx
 
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.callback import invoke
 from clive.__private.logger import logger
 from clive.exceptions import CommunicationError, UnknownResponseFormatError
 
@@ -98,13 +96,10 @@ class Communication:
 
         for attempts_left in reversed(range(max_attempts)):
             try:
-                response = await invoke(
-                    callback=partial(
-                        self.__get_async_client().post,
-                        url,
-                        content=data_serialized,
-                        headers={"Content-Type": "application/json"},
-                    )
+                response = await self.__get_async_client().post(
+                    url,
+                    content=data_serialized,
+                    headers={"Content-Type": "application/json"},
                 )
             except httpx.ConnectError as error:
                 raise CommunicationError(url, data_serialized) from error
@@ -113,20 +108,23 @@ class Communication:
             if response.is_success:
                 result = response.json()
 
-                if "result" in result:
-                    return response
-
-                if "error" in result:
-                    logger.debug(f"Error in response from {url=}, request={data_serialized}, result={result}")
-                else:
-                    raise UnknownResponseFormatError(url, data_serialized, response)
-            else:
-                logger.error(
-                    f"Received bad status code: {response.status_code} from {url=}, request={data_serialized},"
-                    f" response={response.text}"
-                )
+                if isinstance(result, list):
+                    for item in result:
+                        self.__check_response_item(item=item, url=url, request=data_serialized)
+                if isinstance(result, dict):
+                    self.__check_response_item(item=result, url=url, request=data_serialized)
+                return response
+            logger.error(f"Received bad status code: {response.status_code} from {url=}, request={data_serialized}")
 
             if attempts_left > 0:
                 await __sleep()
 
         raise CommunicationError(url, data_serialized, response)
+
+    @classmethod
+    def __check_response_item(cls, item: dict[str, Any], url: str, request: str) -> dict[str, Any]:
+        if "error" in item:
+            logger.debug(f"Error in response from {url=}, request={request}, response={item}")
+        elif "result" not in item:
+            raise UnknownResponseFormatError(url, request, item)
+        return item
