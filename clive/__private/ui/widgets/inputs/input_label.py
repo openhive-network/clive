@@ -17,5 +17,5 @@ class InputLabel(Label):
         }
     """
 
-    def __init__(self, renderable: RenderableType = "", classes: str | None = None):
-        super().__init__(renderable=f"{renderable.capitalize()}:", classes=classes)  # type: ignore
+    def __init__(self, renderable: RenderableType = "", id_: str | None = None, classes: str | None = None):
+        super().__init__(renderable=f"{renderable.capitalize()}:", id=id_, classes=classes)  # type: ignore

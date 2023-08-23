@@ -58,9 +58,14 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         self._highlighter = highlighter
         self._password = password
 
-        self._input_label = InputLabel(label)
+        self._input_label = InputLabel(
+            label,
+            id_=f"{id_}--label" if id_ else None,
+        )
 
         self._input = self._create_input()
+        if self._id:
+            self._input.id = f"{id_}--input"
         self._input.tooltip = tooltip
 
     def compose(self) -> ComposeResult:
