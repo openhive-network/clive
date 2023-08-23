@@ -10,7 +10,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 
 if TYPE_CHECKING:
-    from rich.console import RenderableType
     from rich.highlighter import Highlighter
     from textual.app import ComposeResult
 
@@ -41,7 +40,7 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
 
     def __init__(
         self,
-        label: RenderableType,
+        label: str,
         value: ValueT | None = None,
         placeholder: str = "",
         highlighter: Highlighter | None = None,
