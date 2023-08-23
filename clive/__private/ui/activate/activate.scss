@@ -9,8 +9,8 @@ Activate ButtonsContainer {
   height: auto;
 }
 
-Activate Button{
-    width: 1fr;
+Activate Button {
+  width: 1fr;
 }
 
 Activate #activate-button {
@@ -25,20 +25,11 @@ Activate #cancel-button:focus {
   background: $error-darken-1;
 }
 
-Activate .label {
-    padding: 1 2;
-    text-align: right;
-}
-
-Activate #active-mode-label {
-    text-align: left;
-}
-
 Activate Checkbox {
   column-span: 2;
-  margin: 1 2;
+  margin: 0 1;
 }
 
-Activate #active-mode-input {
-    width: 25;
+Activate #active-mode-input--input {
+  width: 25;
 }

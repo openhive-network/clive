@@ -8,11 +8,13 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.message import Message
-from textual.widgets import Checkbox, Input, Static
+from textual.widgets import Checkbox, Static
 
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -38,23 +40,22 @@ class Activate(BaseScreen):
     def __init__(self, *, activation_result_callback: ActivationResultCallbackOptionalT = None) -> None:
         super().__init__()
         self.__activation_result_callback = activation_result_callback
-        self.__password_input = Input(placeholder="Password", password=True)
-        self.__permanent_active_mode_switch = Checkbox("Permanent active mode")
-        self.__temporary_active_mode_label = Static("Active mode time (minutes)", classes="label")
-        self.__temporary_active_mode_input = Input("60", placeholder="Time in minutes", id="active-mode-input")
+        self.__name_input = TextInput(label="profile name", value=self.app.world.profile_data.name, disabled=True)
+        self.__password_input = TextInput(label="password", placeholder="Password", password=True)
+        self.__permanent_active_mode_switch = Checkbox("Permanent active mode?")
+        self.__temporary_active_mode_input = IntegerInput(
+            label="Active mode time (minutes)", value=60, placeholder="Time in minutes", id_="active-mode-input"
+        )
 
     def on_mount(self) -> None:
         self.__password_input.focus()
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
-            yield Static("Profile name", classes="label")
-            yield Input(self.app.world.profile_data.name, disabled=True)
-            yield Static("Password", classes="label", id="password-label")
-            yield self.__password_input
+            yield from self.__name_input.compose()
+            yield from self.__password_input.compose()
             yield self.__permanent_active_mode_switch
-            yield self.__temporary_active_mode_label
-            yield self.__temporary_active_mode_input
+            yield from self.__temporary_active_mode_input.compose()
             yield Static()
             with ButtonsContainer():
                 yield CliveButton("Ok", variant="primary", id_="activate-button")
@@ -62,8 +63,9 @@ class Activate(BaseScreen):
 
     @on(Checkbox.Changed)
     def toggle_active_mode_temporary_time(self) -> None:
-        self.__temporary_active_mode_label.toggle_class("-hidden")
-        self.__temporary_active_mode_input.toggle_class("-hidden")
+        custom_input = self.__temporary_active_mode_input
+        for widget in [custom_input.label, custom_input.input]:
+            widget.toggle_class("-hidden")
 
     @on(CliveButton.Pressed, "#cancel-button")
     async def action_cancel(self) -> None:
@@ -103,9 +105,6 @@ class Activate(BaseScreen):
             await self.__activation_result_callback(value)
 
     def __get_active_mode_time(self) -> int | None:
-        try:
-            value = int(self.__temporary_active_mode_input.value)
-        except ValueError:
-            return None
-        else:
-            return value if value >= 1 else None
+        with self.app.suppressed_notifications():
+            value = self.__temporary_active_mode_input.value
+        return value if value is not None and value >= 1 else None
