@@ -24,13 +24,13 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
 
     Examples:
     --------
-    yield from instance_of_custom_input.compose()
+    1. yield SomeCustomInputSubclass()
+    2. yield from SomeCustomInputSubclass().compose()
 
     Note:
     ----
-    When using this widget, it will not be included in the list of nodes.
-    Querying this widget is not supported.
-    You must use it like the way in example.
+    When using this widget like showed in 2nd example, it will not be included in the list of nodes.
+    That means that you can't query it or use it as a parent for other widgets for e.g. setting styles.
     """
 
     DEFAULT_CSS = """
