@@ -4,6 +4,7 @@ import contextlib
 import math
 import traceback
 from asyncio import CancelledError
+from contextlib import contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
@@ -30,7 +31,7 @@ from clive.__private.ui.terminal.terminal_screen import TerminalScreen
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
     from typing import ClassVar, Literal
 
     from rich.console import RenderableType
@@ -96,6 +97,24 @@ class Clive(App[int], ManualReactive):
         title = title if title else severity.capitalize()
         timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
+
+    @contextmanager
+    def suppressed_notifications(self) -> Iterator[None]:
+        """Suppress all notifications while in context."""
+
+        def dummy_notify(
+            message: str,
+            *,
+            title: str = "",
+            severity: SeverityLevel = "information",
+            timeout: float = Notification.timeout,
+        ) -> Notification:
+            return Notification(message, title, severity, timeout)
+
+        old_notify = self.notify
+        self.notify = dummy_notify  # type: ignore[method-assign]
+        yield
+        self.notify = old_notify  # type: ignore[method-assign]
 
     async def run_async(
         self,
