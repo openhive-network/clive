@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from json import JSONDecodeError
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.logger import logger
 
@@ -18,7 +18,9 @@ class CliveError(Exception):
 class CommunicationError(CliveError):
     """Base class for all communication exceptions."""
 
-    def __init__(self, url: str, request: str, response: httpx.Response | None = None, *, message: str = "") -> None:
+    def __init__(
+        self, url: str, request: str, response: httpx.Response | dict[str, Any] | None = None, *, message: str = ""
+    ) -> None:
         self.url = url
         self.request = request
         self.response = response
@@ -38,6 +40,9 @@ class CommunicationError(CliveError):
         if self.response is None:
             return None
 
+        if isinstance(self.response, dict):
+            return self.response
+
         try:
             return self.response.json()  # type: ignore[no-any-return]
         except JSONDecodeError:
@@ -48,6 +53,7 @@ class CommunicationError(CliveError):
             return f"{result=}"
 
         if self.response is not None:
+            assert not isinstance(self.response, dict)  # mypy check
             return f"response={self.response.text}"
 
         return "no response available"
@@ -61,7 +67,7 @@ class CommunicationError(CliveError):
 class UnknownResponseFormatError(CommunicationError):
     """Raised when the response format is unknown."""
 
-    def __init__(self, url: str, request: str, response: httpx.Response) -> None:
+    def __init__(self, url: str, request: str, response: httpx.Response | dict[str, Any]) -> None:
         self.response = response
         message = f"Unknown response format from: {url=}, {request=}, {self._get_reply()}"
         super().__init__(url, request, response, message=message)
