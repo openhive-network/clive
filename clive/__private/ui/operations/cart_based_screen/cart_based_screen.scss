@@ -18,10 +18,9 @@ CartBasedScreen CartOverview CartItemsAmount {
   padding: 1;
   color: $text;
   background: $secondary-lighten-1;
-  column-span: 2;
-  text-align: center;
+  align: center middle;
   text-style: bold;
-  width: 100%;
+  width: 1fr;
 }
 
 CartBasedScreen CartOverview CartInfoContainer {

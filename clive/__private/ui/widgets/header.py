@@ -41,7 +41,6 @@ class AlarmDisplay(DynamicLabel):
     def __init__(
         self,
         account_getter: Callable[[ProfileData], Iterable[Account]],
-        init: str | None = None,
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
@@ -54,7 +53,7 @@ class AlarmDisplay(DynamicLabel):
             self.add_class(class_name)
             return "No alarms"
 
-        super().__init__(self.app.world, "profile_data", update_callback, init=init, id_=id_, classes=classes)
+        super().__init__(self.app.world, "profile_data", update_callback, id_=id_, classes=classes)
 
 
 class AlarmsSummary(Container, CliveWidget):
@@ -149,7 +148,7 @@ class Header(TextualHeader, CliveWidget):
         with Vertical(id="expandable"):
             yield HeaderTitle()
             yield TitledLabel(
-                "node address",
+                "Node address",
                 obj_to_watch=self.app.world,
                 attribute_name="node",
                 callback=self.__get_node_address,

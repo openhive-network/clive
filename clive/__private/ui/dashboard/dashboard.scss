@@ -75,8 +75,8 @@ DashboardBase ManabarRepresentation {
 }
 
 DashboardBase ManabarRepresentation DynamicLabel {
-  text-align: center;
-  width: 100%;
+  align: center middle;
+  width: 1fr;
 }
 
 DashboardBase ManabarRepresentation .percentage {
@@ -106,7 +106,8 @@ DashboardBase ActivityStats Static {
 }
 
 DashboardBase ActivityStats DynamicLabel {
-  text-align: center;
+  align: center middle;
+  width: 1fr;
 }
 
 DashboardBase ActivityStats .title {
