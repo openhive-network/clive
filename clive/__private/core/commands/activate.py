@@ -27,7 +27,6 @@ class Activate(CommandPasswordSecured):
 
     async def _execute(self) -> None:
         try:
-            await self.beekeeper.api.open(wallet_name=self.wallet)
             await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
             if self.time is not None:
                 await SetTimeout(beekeeper=self.beekeeper, seconds=int(self.time.total_seconds())).execute()
