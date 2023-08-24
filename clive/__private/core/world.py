@@ -99,7 +99,7 @@ class World:
     async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         beekeeper = Beekeeper(communication=self.__communication, remote_endpoint=remote_endpoint)
         beekeeper.attach_wallet_closing_listener(self)
-        await beekeeper.start()
+        await beekeeper.launch()
         return beekeeper
 
     @property

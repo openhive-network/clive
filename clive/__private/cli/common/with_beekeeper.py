@@ -37,7 +37,6 @@ class WithBeekeeper(CommonBaseModel):
             **kwargs: Any,
         ) -> None:
             from clive.__private.core.beekeeper import Beekeeper
-            from clive.__private.core.exit_call_handler import ExitCallHandler
             from clive.core.url import Url
 
             beekeeper_remote_endpoint = Url.parse(beekeeper_remote) if beekeeper_remote else None
@@ -45,14 +44,9 @@ class WithBeekeeper(CommonBaseModel):
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)
 
             async def impl() -> None:
-                async def close_beekeeper(beekeeper: Beekeeper) -> None:
-                    await beekeeper.close()
-
-                async with Communication() as com, ExitCallHandler(
-                    Beekeeper(communication=com, remote_endpoint=beekeeper_remote_endpoint),
-                    finally_callback=close_beekeeper,
+                async with Communication() as com, Beekeeper(
+                    communication=com, remote_endpoint=beekeeper_remote_endpoint
                 ) as beekeeper:
-                    await beekeeper.start()
                     ctx.params.update(beekeeper=beekeeper)
                     await func(ctx, *args, **kwargs)
 

@@ -10,7 +10,6 @@ import typer
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.communication import Communication
-from clive.__private.core.exit_call_handler import ExitCallHandler
 
 
 @dataclass(kw_only=True)
@@ -35,16 +34,7 @@ class BeekeeperSpawn(ExternalCLICommand):
 
         typer.echo("Launching beekeeper...")
 
-        async def close_beekeeper(beekeeper: Beekeeper) -> None:
-            if not self.background:
-                await beekeeper.close()
-
-        async with Communication() as com, ExitCallHandler(
-            Beekeeper(communication=com, run_in_background=self.background),
-            finally_callback=close_beekeeper,
-        ) as beekeeper:
-            await beekeeper.start()
-
+        async with Communication() as com, Beekeeper(communication=com, run_in_background=self.background) as beekeeper:
             typer.echo(f"Beekeeper started on {beekeeper.http_endpoint} with pid {beekeeper.pid}.")
 
             if not self.background:
