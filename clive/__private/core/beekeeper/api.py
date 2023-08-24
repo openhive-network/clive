@@ -16,7 +16,7 @@ def api(foo: FooT) -> FooT:
     @wraps(foo)
     async def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
         if foo.__name__ not in ["create_session"]:
-            kwargs["token"] = await this._owner.get_token()
+            kwargs["token"] = this._owner.token
         return (
             await this._owner._send(
                 result_model=get_type_hints(foo)["return"],
