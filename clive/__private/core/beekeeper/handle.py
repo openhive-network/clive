@@ -26,6 +26,9 @@ from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
     from pathlib import Path
+    from types import TracebackType
+
+    from typing_extensions import Self
 
     from clive.__private.core.communication import Communication
 
@@ -51,6 +54,7 @@ class Beekeeper:
             raise BeekeeperNotConfiguredError
 
         self.__communication = communication
+        self.__run_in_background = run_in_background
         self.is_running = False
         self.is_starting = False
         self.config = BeekeeperConfig()
@@ -59,6 +63,17 @@ class Beekeeper:
         self.api = BeekeeperApi(self)
         self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)
         self.__token: str | None = None
+
+    async def __aenter__(self) -> Self:
+        return await self.launch()
+
+    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+        if not self.__run_in_background:
+            await self.close()
+
+    async def launch(self) -> Self:
+        await self.__start()
+        return self
 
     async def get_token(self) -> str:
         if self.__token is None:
@@ -139,7 +154,7 @@ class Beekeeper:
     def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__notification_server.detach_wallet_closing_listener(listener)
 
-    async def start(self, *, timeout: float = 5.0) -> None:
+    async def __start(self, *, timeout: float = 5.0) -> None:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
         self.__notification_server_port = await self.__notification_server.listen()
@@ -156,7 +171,7 @@ class Beekeeper:
 
     async def restart(self) -> None:
         await self.close()
-        await self.start()
+        await self.launch()
 
     async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
