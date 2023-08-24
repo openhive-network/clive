@@ -38,6 +38,7 @@ class BeekeeperApi:
 
     @api
     async def open(self, *, wallet_name: str) -> model.EmptyResponse:  # noqa: A003
+        """Open wallet file / mount hardware key."""
         raise NotImplementedError
 
     @api
@@ -50,10 +51,16 @@ class BeekeeperApi:
 
     @api
     async def lock(self, *, wallet_name: str) -> model.EmptyResponse:
+        """Wallet still can be unlocked again and is visible, but private keys are secure."""
         raise NotImplementedError
 
     @api
     async def unlock(self, *, wallet_name: str, password: str) -> model.EmptyResponse:
+        """
+        Pass password so private keys are available for signing.
+
+        Can be called without open, which is done implicitly.
+        """
         raise NotImplementedError
 
     @api
