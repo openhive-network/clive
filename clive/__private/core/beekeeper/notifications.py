@@ -30,22 +30,24 @@ class BeekeeperNotificationsServer:
 
     def notify(self, message: JsonT) -> None:
         logger.info(f"Got notification: {message}")
+        name = message["name"]
         details = message["value"]
-        if message["name"] == "webserver listening":
+
+        if name == "webserver listening":
             if details["type"] == "HTTP":
                 self.http_endpoint = self.__parse_endpoint_notification(details)
                 logger.debug(f"Got notification with http address on: {self.http_endpoint}")
                 self.http_listening_event.set()
-        elif message["name"] == "hived_status" and details["current_status"] == "signals attached":
+        elif name == "hived_status" and details["current_status"] == "signals attached":
             logger.debug("Beekeeper reports to be ready")
             self.ready.set()
-        elif message["name"] == "opening_beekeeper_failed":
+        elif name == "opening_beekeeper_failed":
             details = details["connection"]
             assert details["type"] == "HTTP"
             self.http_endpoint = self.__parse_endpoint_notification(details)
             logger.debug(f"Got notification with http address, but beekeeper failed when opening: {self.http_endpoint}")
             self.opening_beekeeper_failed.set()
-        elif message["name"] == "Attempt of closing all wallets":
+        elif name == "Attempt of closing all wallets":
             self.__notify_listeners_about_wallets_closing()
 
     @classmethod
