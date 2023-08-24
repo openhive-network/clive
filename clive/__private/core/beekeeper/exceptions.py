@@ -14,6 +14,10 @@ class BeekeeperError(CliveError):
     """Base class for Beekeeper errors."""
 
 
+class BeekeeperTokenNotAvailableError(BeekeeperError):
+    pass
+
+
 class BeekeeperNotConfiguredError(BeekeeperError):
     pass
 

@@ -15,6 +15,7 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperNotMatchingIdJsonRPCError,
     BeekeeperNotRunningError,
     BeekeeperResponseError,
+    BeekeeperTokenNotAvailableError,
     BeekeeperUrlNotSetError,
 )
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
@@ -73,16 +74,29 @@ class Beekeeper:
 
     async def launch(self) -> Self:
         await self.__start()
+        await self.__set_token()
+        assert self.token
         return self
 
-    async def get_token(self) -> str:
+    @property
+    def token(self) -> str:
+        """
+        Get token for current session.
+
+        Raises
+        ------
+        BeekeeperTokenNotAvailableError: If token was not set yet.
+        """
         if self.__token is None:
-            self.__token = (
-                await self.api.create_session(
-                    notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
-                )
-            ).token
+            raise BeekeeperTokenNotAvailableError
         return self.__token
+
+    async def __set_token(self) -> None:
+        self.__token = (
+            await self.api.create_session(
+                notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
+            )
+        ).token
 
     @property
     def http_endpoint(self) -> Url:
@@ -164,7 +178,6 @@ class Beekeeper:
             self.config.webserver_http_endpoint = remote
 
         assert self.config.webserver_http_endpoint is not None
-        assert (await self.get_token()) is not None
         self.is_running = True
         self.is_starting = False
         logger.info(f"Beekeeper started on {self.config.webserver_http_endpoint}.")
