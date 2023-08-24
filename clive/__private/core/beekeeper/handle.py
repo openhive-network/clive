@@ -26,6 +26,7 @@ from clive.core.url import Url
 from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from pathlib import Path
     from types import TracebackType
 
@@ -46,7 +47,12 @@ class Beekeeper:
             return value.lower()
 
     def __init__(
-        self, *, communication: Communication, remote_endpoint: Url | None = None, run_in_background: bool = False
+        self,
+        *,
+        communication: Communication,
+        remote_endpoint: Url | None = None,
+        run_in_background: bool = False,
+        notify_closing_wallet_name_cb: Callable[[], str] | None = None,
     ) -> None:
         if remote_endpoint:
             settings.set("beekeeper.remote_address", str(remote_endpoint))
@@ -59,7 +65,7 @@ class Beekeeper:
         self.is_running = False
         self.is_starting = False
         self.config = BeekeeperConfig()
-        self.__notification_server = BeekeeperNotificationsServer()
+        self.__notification_server = BeekeeperNotificationsServer(lambda: self.token, notify_closing_wallet_name_cb)
         self.__notification_server_port: int | None = None
         self.api = BeekeeperApi(self)
         self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)

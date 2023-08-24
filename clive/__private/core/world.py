@@ -97,7 +97,11 @@ class World:
         return Commands(self)
 
     async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
-        beekeeper = Beekeeper(communication=self.__communication, remote_endpoint=remote_endpoint)
+        beekeeper = Beekeeper(
+            communication=self.__communication,
+            remote_endpoint=remote_endpoint,
+            notify_closing_wallet_name_cb=lambda: self.profile_data.name,
+        )
         beekeeper.attach_wallet_closing_listener(self)
         await beekeeper.launch()
         return beekeeper
