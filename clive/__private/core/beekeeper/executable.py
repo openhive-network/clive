@@ -76,7 +76,9 @@ class BeekeeperExecutable:
         self.__prepare_files_for_streams(self.__config.wallet_dir)
 
         command = ["nohup"] if self.__run_in_background else []
-        command += [str(self.__executable.absolute()), "--data-dir", self.__config.wallet_dir.as_posix()]
+        command += [str(self.__executable.absolute())]
+        command += ["--data-dir", self.__config.wallet_dir.as_posix()]
+        command += ["--unlock-timeout", "10"]
 
         try:
             self.__process = Popen(
