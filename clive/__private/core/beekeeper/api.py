@@ -42,6 +42,15 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
+    async def close(self, *, wallet_name: str) -> model.EmptyResponse:
+        """
+        Wallet file has been closed / hardware key has been unmounted, other app can access it now.
+
+        Can be called without lock, which is done implicitly.
+        """
+        raise NotImplementedError
+
+    @api
     async def set_timeout(self, *, seconds: int) -> model.EmptyResponse:
         raise NotImplementedError
 
