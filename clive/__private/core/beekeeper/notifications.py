@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 from asyncio import Event
-from typing import Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from clive.__private.core.beekeeper.notification_http_server import AsyncHttpServer, JsonT
 from clive.__private.logger import logger
 from clive.core.url import Url
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class WalletClosingListener(Protocol):
@@ -14,7 +17,12 @@ class WalletClosingListener(Protocol):
 
 
 class BeekeeperNotificationsServer:
-    def __init__(self) -> None:
+    def __init__(
+        self, token_cb: Callable[[], str], notify_closing_wallet_name_cb: Callable[[], str] | None = None
+    ) -> None:
+        self.__token_cb = token_cb
+        self.__notify_closing_wallet_name_cb = notify_closing_wallet_name_cb
+
         self.server = AsyncHttpServer(self)
 
         self.opening_beekeeper_failed = Event()
@@ -48,7 +56,11 @@ class BeekeeperNotificationsServer:
             logger.debug(f"Got notification with http address, but beekeeper failed when opening: {self.http_endpoint}")
             self.opening_beekeeper_failed.set()
         elif name == "Attempt of closing all wallets":
-            self.__notify_listeners_about_wallets_closing()
+            logger.debug("Got notification about closing all wallets")
+            if self.__is_tracked_wallet_closing(details):
+                self.__notify_listeners_about_wallets_closing()
+            else:
+                logger.debug("The tracked wallet is not closing, ignoring notification")
 
     @classmethod
     def __parse_endpoint_notification(cls, details: dict[str, str]) -> Url:
@@ -69,7 +81,28 @@ class BeekeeperNotificationsServer:
     def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__wallet_closing_listeners.discard(listener)
 
+    def __is_tracked_wallet_closing(self, details: dict[str, Any]) -> bool:
+        if self.__notify_closing_wallet_name_cb is None:
+            return False
+
+        token = self.__token_cb()
+        if token != details["token"]:
+            logger.debug(f"Token mismatch in notification: {token} != {details['token']}")
+            return False
+
+        tracked_wallet_name = self.__notify_closing_wallet_name_cb()
+        for wallet in details["wallets"]:
+            if wallet["name"] != tracked_wallet_name:
+                continue
+
+            if not wallet["unlocked"]:
+                logger.debug(f"The tracked wallet {tracked_wallet_name} is not unlocked, ignoring notification")
+                return False
+            return True
+
+        return False
+
     def __notify_listeners_about_wallets_closing(self) -> None:
-        logger.debug("Notifying listeners about wallets closing")
+        logger.debug("Notifying listeners about tracked wallet closing")
         for listener in self.__wallet_closing_listeners:
             listener.notify_wallet_closing()
