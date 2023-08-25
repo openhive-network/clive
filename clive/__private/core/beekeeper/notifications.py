@@ -49,7 +49,7 @@ class BeekeeperNotificationsServer:
         elif name == "hived_status" and details["current_status"] == "signals attached":
             logger.debug("Beekeeper reports to be ready")
             self.ready.set()
-        elif name == "opening_beekeeper_failed":
+        elif name == "Opening beekeeper failed":
             details = details["connection"]
             assert details["type"] == "HTTP"
             self.http_endpoint = self.__parse_endpoint_notification(details)
