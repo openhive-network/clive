@@ -14,7 +14,6 @@ from textual.notifications import Notification, SeverityLevel
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
-from clive.__private.core._async import asyncio_run
 from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
 from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
@@ -106,12 +105,13 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
-            self.__class__.world = await TextualWorld().setup()
-            return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
+            async with TextualWorld() as world:
+                self.__class__.world = world
+                return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
         except CancelledError:
             pass
         finally:
-            await self.__cleanup()
+            self.__cleanup()
         return 1
 
     def on_mount(self) -> None:
@@ -343,9 +343,9 @@ class Clive(App[int], ManualReactive):
         # We already had a situation where Textual swallowed an exception without logging it.
         # This is a safeguard to prevent that from happening again.
         logger.error(f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}")
-        asyncio_run(self.__cleanup())
+        self.__cleanup()
         super()._handle_exception(error)
 
-    async def __cleanup(self) -> None:
+    def __cleanup(self) -> None:
+        logger.debug("Cleaning up...")
         self.__class__.is_launched = False
-        await self.world.close()
