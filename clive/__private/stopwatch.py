@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
-class ScopeStopper:
+class Stopwatch:
     def __init__(self, name: str) -> None:
         self.__start = self.__now()
         self.__name = name

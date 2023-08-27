@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Final, cast
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import calculate_current_manabar_value, calculate_manabar_full_regeneration_time
-from clive.__private.scope_timer import ScopeStopper
+from clive.__private.stopwatch import Stopwatch
 from clive.exceptions import CommunicationError
 from clive.models import Asset
 from schemas.database_api.response_schemas import (
@@ -82,10 +82,10 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         if not self.accounts:
             return
 
-        with ScopeStopper("harvesting"):
+        with Stopwatch("harvesting"):
             api_accounts = await self.__harvest_data_from_api()
 
-        with ScopeStopper("processing"):
+        with Stopwatch("processing"):
             self.__process_data(api_accounts)
 
     def __process_data(self, api_accounts: dict[Account, _AccountApiInfo]) -> None:
