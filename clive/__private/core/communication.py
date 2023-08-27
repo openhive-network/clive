@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Any, Final
@@ -9,7 +10,7 @@ import httpx
 
 from clive.__private.core._async import asyncio_run
 from clive.__private.logger import logger
-from clive.exceptions import CommunicationError, UnknownResponseFormatError
+from clive.exceptions import CliveError, CommunicationError, UnknownResponseFormatError
 
 if TYPE_CHECKING:
     from types import TracebackType
@@ -25,6 +26,10 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.strftime(self.TIME_FORMAT_WITH_MILLIS)
 
         return super().default(obj)
+
+
+class ErrorInResponseJsonError(CliveError):
+    """Raised if "error" field found in response json."""
 
 
 class Communication:
@@ -107,14 +112,15 @@ class Communication:
             assert response is not None
             if response.is_success:
                 result = response.json()
-
-                if isinstance(result, list):
-                    for item in result:
-                        self.__check_response_item(item=item, url=url, request=data_serialized)
-                if isinstance(result, dict):
-                    self.__check_response_item(item=result, url=url, request=data_serialized)
-                return response
-            logger.error(f"Received bad status code: {response.status_code} from {url=}, request={data_serialized}")
+                with contextlib.suppress(ErrorInResponseJsonError):
+                    if isinstance(result, list):
+                        for item in result:
+                            self.__check_response_item(item=item, url=url, request=data_serialized)
+                    if isinstance(result, dict):
+                        self.__check_response_item(item=result, url=url, request=data_serialized)
+                    return response
+            else:
+                logger.error(f"Received bad status code: {response.status_code} from {url=}, request={data_serialized}")
 
             if attempts_left > 0:
                 await __sleep()
@@ -125,6 +131,7 @@ class Communication:
     def __check_response_item(cls, item: dict[str, Any], url: str, request: str) -> dict[str, Any]:
         if "error" in item:
             logger.debug(f"Error in response from {url=}, request={request}, response={item}")
-        elif "result" not in item:
+            raise ErrorInResponseJsonError
+        if "result" not in item:
             raise UnknownResponseFormatError(url, request, item)
         return item
