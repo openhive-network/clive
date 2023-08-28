@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
-from httpx import codes
 from pydantic import Field, validator
 
 from clive.__private.config import settings
@@ -135,12 +135,12 @@ class Beekeeper:
         request = JSONRPCRequest(method=endpoint, params=kwargs)
         response = await self.__communication.arequest(url, data=request.json(by_alias=True))
 
-        if response.status_code != codes.OK:
+        if response.status != HTTPStatus.OK:
             raise BeekeeperNon200StatusCodeError
 
-        result = response.json()
+        result = await response.json()
         if "error" in result:
-            raise BeekeeperResponseError(url, request, response)
+            raise BeekeeperResponseError(url, request, result)
 
         return_value = JSONRPCResponse[T](**result)
 

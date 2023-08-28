@@ -88,7 +88,7 @@ class _BatchNode(BaseNode):
 
     async def __evaluate(self) -> None:
         query = "[" + ",".join([x.request for x in self.__batch]) + "]"
-        responses: list[dict[str, Any]] = (
+        responses: list[dict[str, Any]] = await (
             await self.__communication.arequest(url=self.__url.as_string(), data=query)
         ).json()
         assert len(responses) == len(self.__batch), "invalid amount of responses"
@@ -143,7 +143,7 @@ class Node(BaseNode):
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
         response = await self.__communication.arequest(address, data=serialized_request)
-        data = response.json()
+        data = await response.json()
         response_model: HiveResult[T] | HiveError = HiveResult.factory(expect_type, **data)
         if isinstance(response_model, HiveResult):
             return response_model.result

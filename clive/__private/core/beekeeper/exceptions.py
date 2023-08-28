@@ -5,9 +5,8 @@ from typing import TYPE_CHECKING, Any
 from clive.exceptions import CliveError, CommunicationError
 
 if TYPE_CHECKING:
-    import httpx
-
     from clive.__private.core.beekeeper.model import JSONRPCRequest
+    from clive.__private.core.beekeeper.notification_http_server import JsonT
 
 
 class BeekeeperError(CliveError):
@@ -51,7 +50,7 @@ class BeekeeperNonZeroExitCodeError(BeekeeperError):
 
 
 class BeekeeperResponseError(BeekeeperError, CommunicationError):
-    def __init__(self, url: str, request: JSONRPCRequest, response: httpx.Response) -> None:
+    def __init__(self, url: str, request: JSONRPCRequest, response: str | JsonT | None = None) -> None:
         super().__init__(url, request.json(by_alias=True), response)
 
 
