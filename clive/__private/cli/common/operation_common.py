@@ -51,7 +51,6 @@ class OperationCommon(CommonBaseModel):
             *args: P.args,
             **kwargs: Any,
         ) -> None:
-            from clive.__private.core.exit_call_handler import ExitCallHandler
             from clive.__private.core.world import TyperWorld
             from clive.core.url import Url
 
@@ -63,15 +62,9 @@ class OperationCommon(CommonBaseModel):
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)
 
             async def impl() -> None:
-                async def close_world(world: TyperWorld) -> None:
-                    await world.close()
-
-                async with ExitCallHandler(
-                    TyperWorld(
-                        profile_name=profile,
-                        beekeeper_remote_endpoint=beekeeper_remote_endpoint,
-                    ),
-                    finally_callback=close_world,
+                async with TyperWorld(
+                    profile_name=profile,
+                    beekeeper_remote_endpoint=beekeeper_remote_endpoint,
                 ) as world:
                     cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
                     ctx.params.update(world=world)

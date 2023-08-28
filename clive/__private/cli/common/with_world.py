@@ -49,7 +49,6 @@ class WithWorld(CommonBaseModel):
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> None:
-                from clive.__private.core.exit_call_handler import ExitCallHandler
                 from clive.__private.core.world import TyperWorld
 
                 beekeeper_remote_endpoint = cls.__get_beekeeper_remote(kwargs)
@@ -57,16 +56,10 @@ class WithWorld(CommonBaseModel):
                 cls._print_launching_beekeeper(beekeeper_remote_endpoint, use_beekeeper)
 
                 async def impl() -> None:
-                    async def world_close(world: TyperWorld) -> None:
-                        await world.close()
-
-                    async with ExitCallHandler(
-                        TyperWorld(
-                            profile_name=profile,
-                            use_beekeeper=use_beekeeper,
-                            beekeeper_remote_endpoint=beekeeper_remote_endpoint,
-                        ),
-                        finally_callback=world_close,
+                    async with TyperWorld(
+                        profile_name=profile,
+                        use_beekeeper=use_beekeeper,
+                        beekeeper_remote_endpoint=beekeeper_remote_endpoint,
                     ) as world:
                         cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
 
