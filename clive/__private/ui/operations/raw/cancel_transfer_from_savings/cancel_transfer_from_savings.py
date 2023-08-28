@@ -65,16 +65,16 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                 else:
                     yield InputLabel("request id")
                     yield EllipsedStatic(str(self.__request_id), classes="parameters-label")
-                if self.__cancelling_transfer is not None:
-                    with FromSavingsTransferParameters():
-                        yield Static("to-account", id="to-column")
-                        yield Static("realized-on (UTC)", id="realized-column")
-                        yield Static("amount", id="amount-column")
-                        yield Static("memo", id="memo-column")
-                        yield Static(self.__to_account, classes="transfer-parameters")
-                        yield Static(self.__realized_on, classes="transfer-parameters")
-                        yield Static(Asset.to_legacy(self.__amount), classes="transfer-parameters")
-                        yield Static(self.__memo, classes="transfer-parameters")
+            if self.__cancelling_transfer is not None:
+                with FromSavingsTransferParameters():
+                    yield Static("to-account", id="to-column")
+                    yield Static("realized-on (UTC)", id="realized-column")
+                    yield Static("amount", id="amount-column")
+                    yield Static("memo", id="memo-column")
+                    yield Static(self.__to_account, classes="transfer-parameters")
+                    yield Static(self.__realized_on, classes="transfer-parameters")
+                    yield Static(Asset.to_legacy(self.__amount), classes="transfer-parameters")
+                    yield Static(self.__memo, classes="transfer-parameters")
 
     @on(Input.Changed)
     def find_typed_id(self, event: Input.Changed) -> None:
