@@ -21,6 +21,7 @@ from clive.__private.core.beekeeper.exceptions import (
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
 from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer, WalletClosingListener
+from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
 from clive.models.base import CliveBaseModel
@@ -31,8 +32,6 @@ if TYPE_CHECKING:
     from types import TracebackType
 
     from typing_extensions import Self
-
-    from clive.__private.core.communication import Communication
 
 
 class Beekeeper:
@@ -49,7 +48,6 @@ class Beekeeper:
     def __init__(
         self,
         *,
-        communication: Communication,
         remote_endpoint: Url | None = None,
         run_in_background: bool = False,
         notify_closing_wallet_name_cb: Callable[[], str] | None = None,
@@ -60,7 +58,6 @@ class Beekeeper:
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError
 
-        self.__communication = communication
         self.__run_in_background = run_in_background
         self.is_running = False
         self.is_starting = False
@@ -133,7 +130,7 @@ class Beekeeper:
 
         url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        response = await self.__communication.arequest(url, data=request.json(by_alias=True))
+        response = await Communication.arequest(url, data=request.json(by_alias=True))
 
         if response.status != HTTPStatus.OK:
             raise BeekeeperNon200StatusCodeError

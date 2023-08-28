@@ -4,6 +4,7 @@ from abc import abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
 from schemas.__private.hive_factory import HiveError, HiveResult, T
@@ -14,7 +15,6 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse
-    from clive.__private.core.communication import Communication
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
 
@@ -73,8 +73,7 @@ class _BatchRequestResponseItem:
 
 
 class _BatchNode(BaseNode):
-    def __init__(self, communication: Communication, url: Url) -> None:
-        self.__communication = communication
+    def __init__(self, url: Url) -> None:
         self.__url = url
         self.__batch: list[_BatchRequestResponseItem] = []
         self.api = Apis(self)
@@ -89,7 +88,7 @@ class _BatchNode(BaseNode):
     async def __evaluate(self) -> None:
         query = "[" + ",".join([x.request for x in self.__batch]) + "]"
         responses: list[dict[str, Any]] = await (
-            await self.__communication.arequest(url=self.__url.as_string(), data=query)
+            await Communication.arequest(url=self.__url.as_string(), data=query)
         ).json()
         assert len(responses) == len(self.__batch), "invalid amount of responses"
         for response in responses:
@@ -104,8 +103,7 @@ class _BatchNode(BaseNode):
 
 
 class Node(BaseNode):
-    def __init__(self, communication: Communication, profile_data: ProfileData) -> None:
-        self.__communication = communication
+    def __init__(self, profile_data: ProfileData) -> None:
         self.__profile_data = profile_data
         self.api = Apis(self)
         self.__network_type = ""
@@ -122,7 +120,7 @@ class Node(BaseNode):
             # dgpo.time # this will raise Error
         dgpo.time # this is legit call
         """
-        return _BatchNode(communication=self.__communication, url=self.address)
+        return _BatchNode(url=self.address)
 
     async def setup(self) -> None:
         await self.__sync_node_version()
@@ -142,7 +140,7 @@ class Node(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
-        response = await self.__communication.arequest(address, data=serialized_request)
+        response = await Communication.arequest(address, data=serialized_request)
         data = await response.json()
         response_model: HiveResult[T] | HiveError = HiveResult.factory(expect_type, **data)
         if isinstance(response_model, HiveResult):

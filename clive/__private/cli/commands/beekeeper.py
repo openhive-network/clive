@@ -9,7 +9,6 @@ import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.communication import Communication
 
 
 @dataclass(kw_only=True)
@@ -34,7 +33,7 @@ class BeekeeperSpawn(ExternalCLICommand):
 
         typer.echo("Launching beekeeper...")
 
-        async with Communication() as com, Beekeeper(communication=com, run_in_background=self.background) as beekeeper:
+        async with Beekeeper(run_in_background=self.background) as beekeeper:
             typer.echo(f"Beekeeper started on {beekeeper.http_endpoint} with pid {beekeeper.pid}.")
 
             if not self.background:

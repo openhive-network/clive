@@ -13,10 +13,6 @@ from clive.__private.logger import logger
 from clive.exceptions import CliveError, CommunicationError, UnknownResponseFormatError
 
 if TYPE_CHECKING:
-    from types import TracebackType
-
-    from typing_extensions import Self
-
     from clive.__private.core.beekeeper.notification_http_server import JsonT
 
 
@@ -38,31 +34,9 @@ class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 1
 
-    def __init__(self) -> None:
-        self.__async_client: aiohttp.ClientSession | None = None
-        self.start()
-
-    def start(self) -> None:
-        if self.__async_client is None:
-            self.__async_client = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=2))
-
-    async def close(self) -> None:
-        if self.__async_client is not None:
-            await self.__async_client.close()
-            self.__async_client = None
-
-    async def __aenter__(self) -> Self:
-        return self
-
-    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
-        await self.close()
-
-    def __get_async_client(self) -> aiohttp.ClientSession:
-        assert self.__async_client is not None, "Session is closed."
-        return self.__async_client
-
+    @classmethod
     def request(
-        self,
+        cls,
         url: str,
         *,
         data: Any,
@@ -70,21 +44,23 @@ class Communication:
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> aiohttp.ClientResponse:
         return asyncio_run(
-            self.__request(url, data=data, max_attempts=max_attempts, pool_time=pool_time),
+            cls.__request(url, data=data, max_attempts=max_attempts, pool_time=pool_time),
         )
 
+    @classmethod
     async def arequest(
-        self,
+        cls,
         url: str,
         *,
         data: Any,
         max_attempts: int = DEFAULT_ATTEMPTS,
         pool_time: timedelta = timedelta(seconds=DEFAULT_POOL_TIME_SECONDS),
     ) -> aiohttp.ClientResponse:
-        return await self.__request(url, data=data, max_attempts=max_attempts, pool_time=pool_time)
+        return await cls.__request(url, data=data, max_attempts=max_attempts, pool_time=pool_time)
 
+    @classmethod
     async def __request(
-        self,
+        cls,
         url: str,
         *,
         data: Any,
@@ -103,12 +79,12 @@ class Communication:
 
         for attempts_left in reversed(range(max_attempts)):
             try:
-                response = await self.__get_async_client().post(
-                    url,
-                    data=data_serialized,
-                    headers={"Content-Type": "application/json"},
-                )
-
+                async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=2)) as session:
+                    response = await session.post(
+                        url,
+                        data=data_serialized,
+                        headers={"Content-Type": "application/json"},
+                    )
             except aiohttp.ClientError as error:
                 raise CommunicationError(url, data_serialized) from error
 
@@ -118,9 +94,9 @@ class Communication:
                 with contextlib.suppress(ErrorInResponseJsonError):
                     if isinstance(result, list):
                         for item in result:
-                            self.__check_response_item(item=item, url=url, request=data_serialized)
+                            cls.__check_response_item(item=item, url=url, request=data_serialized)
                     if isinstance(result, dict):
-                        self.__check_response_item(item=result, url=url, request=data_serialized)
+                        cls.__check_response_item(item=result, url=url, request=data_serialized)
                     return response
             else:
                 logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")

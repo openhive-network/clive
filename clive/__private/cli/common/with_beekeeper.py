@@ -8,7 +8,6 @@ from merge_args import merge_args  # type: ignore[import]
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.communication import Communication
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -44,9 +43,7 @@ class WithBeekeeper(CommonBaseModel):
             cls._print_launching_beekeeper(beekeeper_remote_endpoint)
 
             async def impl() -> None:
-                async with Communication() as com, Beekeeper(
-                    communication=com, remote_endpoint=beekeeper_remote_endpoint
-                ) as beekeeper:
+                async with Beekeeper(remote_endpoint=beekeeper_remote_endpoint) as beekeeper:
                     ctx.params.update(beekeeper=beekeeper)
                     await func(ctx, *args, **kwargs)
 

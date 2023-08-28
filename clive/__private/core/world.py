@@ -9,7 +9,6 @@ from textual.reactive import var
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
-from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -51,13 +50,12 @@ class World:
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
-        self.__communication = Communication()
 
         self._use_beekeeper = use_beekeeper
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
 
-        self._node = Node(self.__communication, self._profile_data)
+        self._node = Node(self._profile_data)
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -88,7 +86,6 @@ class World:
         self.profile_data.save()
         if self._beekeeper is not None:
             await self._beekeeper.close()
-        await self.__communication.close()
 
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)
@@ -98,7 +95,6 @@ class World:
 
     async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         beekeeper = Beekeeper(
-            communication=self.__communication,
             remote_endpoint=remote_endpoint,
             notify_closing_wallet_name_cb=lambda: self.profile_data.name,
         )
