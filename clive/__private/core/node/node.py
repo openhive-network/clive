@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
-from schemas.__private.hive_factory import HiveError, HiveResult
+from schemas.__private.hive_factory import HiveError, HiveResult, T
 from schemas.__private.preconfigured_base_model import PreconfiguredBaseModel
 
 if TYPE_CHECKING:
@@ -18,8 +18,6 @@ if TYPE_CHECKING:
     from clive.__private.core.communication import Communication
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
-
-T = TypeVar("T")
 
 
 class ResponseNotReadyError(CliveError):
@@ -146,7 +144,7 @@ class Node(BaseNode):
         serialized_request = request.json(by_alias=True)
         response = await self.__communication.arequest(address, data=serialized_request)
         data = response.json()
-        response_model: HiveResult[T] | HiveError[T] = HiveResult.factory(expect_type, **data)  # type: ignore
+        response_model: HiveResult[T] | HiveError = HiveResult.factory(expect_type, **data)
         if isinstance(response_model, HiveResult):
             return response_model.result
         raise CommunicationError(address, serialized_request, data)
