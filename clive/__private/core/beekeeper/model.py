@@ -93,7 +93,7 @@ class JSONRPCProtocol(CliveBaseModel):
 
 class JSONRPCRequest(JSONRPCProtocol):
     method: str
-    params: dict[str, Any]
+    params: dict[str, Any] = Field(default_factory=dict)
 
 
 class JSONRPCResponse(JSONRPCProtocol, Generic[T]):

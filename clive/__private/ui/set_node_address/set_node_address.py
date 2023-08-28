@@ -1,11 +1,9 @@
 from __future__ import annotations
 
-import contextlib
 from abc import ABC
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Final
 
-import httpx
 from rich.highlighter import Highlighter
 from textual import on
 from textual.binding import Binding
@@ -13,6 +11,7 @@ from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Input, Select, Static, Switch
 
 from clive.__private.core.beekeeper.model import JSONRPCRequest
+from clive.__private.core.communication import Communication
 from clive.__private.ui.app_messages import NodeDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -21,14 +20,14 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.core.url import Url
-from clive.exceptions import NodeAddressError
+from clive.exceptions import CommunicationError, NodeAddressError
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from rich.text import Text
-    from textual import Logger
     from textual.app import ComposeResult
 
+    from clive.__private.core.node import Node
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.ui.shared.form import Form
 
@@ -66,8 +65,8 @@ class NodesList(Container, CliveWidget):
 
 
 class NodeUrlHighlighter(Highlighter):
-    def __init__(self, logger: Logger) -> None:
-        self.logger = logger
+    def __init__(self, node: Node) -> None:
+        self.node = node
         self.__last_highlight_time = datetime.now()
         self.__last_style = "white"
         super().__init__()
@@ -81,18 +80,11 @@ class NodeUrlHighlighter(Highlighter):
         return False
 
     def is_valid_url(self, url: str) -> bool:
-        ok_status: Final[int] = 200
-        with contextlib.suppress(httpx.HTTPError):
-            return (
-                httpx.post(
-                    url,
-                    json=JSONRPCRequest(method="database_api.get_config", params={}),
-                    headers={"Content-Type": "application/json"},
-                    timeout=0.5,
-                ).status_code
-                == ok_status
-            )
-        return False
+        try:
+            Communication.request(url, data=JSONRPCRequest(method="database_api.get_config"))
+        except CommunicationError:
+            return False
+        return True
 
     def highlight(self, text: Text) -> None:
         if self.__check_and_update_highlight_period():
@@ -109,7 +101,7 @@ class ManualNode(Container, CliveWidget):
         yield Input(
             placeholder=f"e.g.: {self.app.world.node.address}",
             id="node-address-input",
-            highlighter=NodeUrlHighlighter(self.log),
+            highlighter=NodeUrlHighlighter(self.app.world.node),
         )
         yield CliveButton("Save", id_="save-node-address-button")
 
