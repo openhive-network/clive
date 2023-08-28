@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
-from textual.widgets import Button, Input, RadioButton, RadioSet, Static, TabbedContent
+from textual.widgets import Button, RadioButton, RadioSet, Static, TabbedContent
 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
@@ -12,7 +12,9 @@ from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_trans
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
@@ -160,12 +162,9 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
     def __init__(self, title: str = "") -> None:
         super().__init__(title=title)
 
-        self.__amount_input = Input(placeholder="put amount to transfer here", id="amount-input")
-        self.__memo_input = Input(placeholder="put memo here")
-        self.__to_account_input = Input(
-            value=self.app.world.profile_data.working_account.name, placeholder="put to-account here"
-        )
-        self.__currency_selector = CurrencySelectorLiquid()
+        self.__amount_input = AssetAmountInput()
+        self.__memo_input = MemoInput()
+        self.__to_account_input = AccountNameInput(value=self.app.world.profile_data.working_account.name)
 
         self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose")
         self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
@@ -178,20 +177,15 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
         yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
         with ViewBag(), Body():
-            yield Static("to", classes="label")
-            yield self.__to_account_input
-            yield PlaceTaker()
-            yield Static("amount", classes="label")
-            yield self.__amount_input
-            yield self.__currency_selector
-            yield Static("memo", classes="label")
-            yield self.__memo_input
+            yield from self.__to_account_input.compose()
+            yield from self.__amount_input.compose()
+            yield from self.__memo_input.compose()
         yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
 
     def _create_operation(
         self,
     ) -> TransferToSavingsOperation[Asset.Hive, Asset.Hbd] | TransferFromSavingsOperation[Asset.Hive, Asset.Hbd] | None:
-        asset = self.__currency_selector.create_asset(self.__amount_input.value)
+        asset = self.__amount_input.value
 
         if not asset:
             return None

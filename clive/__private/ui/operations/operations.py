@@ -55,7 +55,7 @@ class Operations(CartBasedScreen):
                 yield OperationButton(FINANCIAL_OPERATIONS[0], label="Transfer")
                 yield OperationButton(None, label="Hive power management")
                 yield OperationButton(None, label="Convert")
-                yield OperationButton(None, label="Saving")
+                yield OperationButton(FINANCIAL_OPERATIONS[1], label="Saving")
             with ScrollableTabPane("Social"):
                 yield OperationButton(None, label="Social operations")
             with ScrollableTabPane("Governance"):
