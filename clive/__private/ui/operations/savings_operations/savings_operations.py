@@ -18,12 +18,12 @@ from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.models import Asset
 from schemas.__private.operations.transfer_from_savings_operation import TransferFromSavingsOperation
 from schemas.__private.operations.transfer_to_savings_operation import TransferToSavingsOperation
+from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.storage.accounts import WorkingAccount
-    from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 
 odd = "OddColumn"
@@ -82,10 +82,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
             )
 
         def get_interest_rate_for_hbd() -> str:
-            return (
-                "APR interest rate for HBD($) is"
-                f" {self.app.world.node.api.database_api.get_dynamic_global_properties()['hbd_interest_rate']/100} %"
-            )
+            return "APR interest rate for HBD($) is"  # TODO: interest rate will be searched in database api
 
         with Horizontal():
             yield SavingsBalances(self._account)
@@ -134,9 +131,17 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
     def compose(self) -> ComposeResult:
         with Container():
             working_account: WorkingAccount = self.app.world.profile_data.working_account
-            pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = (
-                self.app.world.node.api.database_api.find_savings_withdrawals(account=working_account.name).withdrawals
-            )
+            pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = [
+                SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](
+                    id_=1,
+                    to="bob",
+                    from_="alice",
+                    memo="",
+                    request_id=0,
+                    amount=Asset.hbd(1),
+                    complete="1970-01-01T00:00:00",
+                )
+            ]  # TODO: pending transfers will be searched in database api, .find_savings_withdrawals
 
             yield SavingsInterestInfo(working_account)
             if pending_transfers:
@@ -211,11 +216,17 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         )
 
     def __create_request_id(self) -> int:
-        pending_transfers = (
-            self.app.world.node.api.database_api.find_savings_withdrawals(
-                account=self.app.world.profile_data.working_account.name
-            ).withdrawals,
-        )
+        pending_transfers = [
+            SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](
+                id_=1,
+                to="bob",
+                from_="alice",
+                memo="",
+                request_id=0,
+                amount=Asset.hbd(1),
+                complete="1970-01-01T00:00:00",
+            )
+        ]  # TODO: pending transfers will be searched in database api, .find_savings_withdrawals
         max_number_of_request_ids: Final[int] = 100
 
         if not pending_transfers[0]:
@@ -224,7 +235,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         if len(pending_transfers) >= max_number_of_request_ids:
             raise RequestIdError("Maximum quantity of request ids is 100")
 
-        sorted_transfers = sorted(pending_transfers[0], key=lambda x: x.request_id)
+        sorted_transfers = sorted(pending_transfers, key=lambda x: x.request_id)
         last_occupied_id = sorted_transfers[-1].request_id
 
         return last_occupied_id + 1

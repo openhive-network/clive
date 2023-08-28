@@ -3,9 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from textual._on import on
+from textual import on
 from textual.containers import Grid, ScrollableContainer
-from textual.widgets import Pretty, Static
+from textual.widgets import Input, Pretty, Static
 
 from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -14,12 +14,12 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.view_bag import ViewBag
+from clive.models import Asset
 from schemas.operations import CancelTransferFromSavingsOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Asset
     from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 
@@ -47,7 +47,7 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         super().__init__()
 
         if self.__cancelling_transfer is None:
-            default_request_id = str(get_default_from_model(CancelTransferFromSavingsOperation, "request_id", int))
+            default_request_id = get_default_from_model(CancelTransferFromSavingsOperation, "request_id", int)
             self.__request_id_input = IdInput(label="request id", value=default_request_id)
 
     def create_left_panel(self) -> ComposeResult:
@@ -76,27 +76,25 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                         yield Static(Asset.to_legacy(self.__amount), classes="transfer-parameters")
                         yield Static(self.__memo, classes="transfer-parameters")
 
-    @on(IdInput.Changed)
-    def find_typed_id(self, event: IdInput.Changed) -> None:
-        pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = (
-            self.app.world.node.api.database_api.find_savings_withdrawals(
-                account=self.app.world.profile_data.working_account.name
-            ).withdrawals
-        )
+    @on(Input.Changed)
+    def find_typed_id(self, event: Input.Changed) -> None:
+        transfer: SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd] = SavingsWithdrawalsFundament[
+            Asset.Hive, Asset.Hbd
+        ](id_=1, to="bob", from_="alice", memo="", request_id=0, amount=Asset.hbd(1), complete="1970-01-01T00:00:00")
+        # TODO: transfer will be searched in database api, .find_savings_withdrawals
+
         transfer_pretty: Pretty = self.query_one(Pretty)
-        for transfer in pending_transfers:
-            if str(transfer.request_id) == event.value:
-                transfer_pretty.update(
-                    {
-                        "to": transfer.to,
-                        "amount": Asset.to_legacy(transfer.amount),
-                        "realized_on": datetime.strftime(transfer.complete, "%Y-%m-%dT%H:%M:%S"),
-                    }
-                )
-                break
+        if str(transfer.request_id) == event.value:
+            transfer_pretty.update(
+                {
+                    "to": transfer.to,
+                    "amount": Asset.to_legacy(transfer.amount),
+                    "realized_on": datetime.strftime(transfer.complete, "%Y-%m-%dT%H:%M:%S"),
+                }
+            )
             transfer_pretty.update("No transfer with the specified request_id")
 
-    def _create_operation(self) -> CancelTransferFromSavingsOperation:
+    def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
         request_id = self.__request_id_input.value
         if not request_id:
             return None
