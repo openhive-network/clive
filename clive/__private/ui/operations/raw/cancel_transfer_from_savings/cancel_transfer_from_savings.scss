@@ -1,7 +1,7 @@
 CancelTransferFromSavings Body {
   grid-size: 2;
-  grid-columns: 14 1fr;
-  grid-rows: 4 3 3 3;
+  grid-columns: 15 1fr;
+  grid-rows: 4;
   margin: 0 4;
   height: auto;
   background: $panel;
@@ -47,7 +47,7 @@ CancelTransferFromSavings #realized-column {
 }
 
 CancelTransferFromSavings #amount-column {
-        background: $accent-lighten-2;
+    background: $accent-lighten-2;
 }
 
 CancelTransferFromSavings #memo-column {
