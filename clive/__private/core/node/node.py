@@ -144,7 +144,7 @@ class Node(BaseNode):
         serialized_request = request.json(by_alias=True)
         response = await self.__communication.arequest(address, data=serialized_request)
         data = response.json()
-        response_model: HiveResult[T] | HiveError[T] = HiveResult.factory(expect_type, **data)  # type: ignore
+        response_model: HiveResult[T] | HiveError = HiveResult.factory(expect_type, **data)
         if isinstance(response_model, HiveResult):
             return response_model.result
         raise CommunicationError(address, serialized_request, data)
