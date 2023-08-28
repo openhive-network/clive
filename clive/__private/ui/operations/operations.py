@@ -53,9 +53,9 @@ class Operations(CartBasedScreen):
         with TabbedContent(initial="financial"):
             with ScrollableTabPane("Financial", id="financial"):
                 yield OperationButton(FINANCIAL_OPERATIONS[0], label="Transfer")
+                yield OperationButton(FINANCIAL_OPERATIONS[1], label="Saving")
                 yield OperationButton(None, label="Hive power management")
                 yield OperationButton(None, label="Convert")
-                yield OperationButton(None, label="Saving")
             with ScrollableTabPane("Social"):
                 yield OperationButton(None, label="Social operations")
             with ScrollableTabPane("Governance"):
