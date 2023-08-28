@@ -19,7 +19,7 @@ Savings SavingsBalances {
 }
 
 Savings SavingsBalances DynamicLabel {
-    text-align: center;
+    align: center middle;
     width: 100%;
     column-span: 5;
     text-style: bold;
@@ -27,8 +27,8 @@ Savings SavingsBalances DynamicLabel {
 
 Savings SavingsBalances Static {
     column-span: 5;
-    text-align: center;
     text-style: bold;
+    text-align: center;
 }
 
 Savings SavingsBalances #savings-title {
@@ -61,10 +61,11 @@ SavingsInterestInfo #interest-rate {
     width: 50%;
 }
 
-SavingsInterestInfo #interest-rate Static {
-    content-align: center middle;
-    text-style:bold;
+SavingsInterestInfo #interest-rate DynamicLabel {
     width: 100%;
+    text-style: bold;
+    align: center middle;
+
 }
 
 SavingsInterestInfo .interest-rate-date {
@@ -73,8 +74,6 @@ SavingsInterestInfo .interest-rate-date {
 
 SavingsInterestInfo .interest-rate-value {
     background: $primary-lighten-1;
-    content-align: center middle;
-
 }
 
 SavingsInterestInfo .interest-rate-value-percent {
@@ -155,28 +154,6 @@ Savings Body {
   grid-columns: 17 1fr;
   grid-rows: 4 4 4 4 4;
   height: auto;
-}
-
-
-Savings .label {
-  padding: 1 1;
-}
-
-Savings .to-label {
-  padding: 1 1;
-}
-
-Savings #to-parameter Input {
-    width: 55%;
-}
-
-Savings #to-parameter Static {
-    width: 11%;
-}
-
-Savings Checkbox {
-    width: 50%;
-    content-align: center middle;
 }
 
 Savings #operation-type-choose {
