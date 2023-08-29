@@ -89,7 +89,16 @@ class SelectFile(BaseScreen):
     def _create_saved_message(self) -> Saved:
         return self.Saved(self.file_path)
 
+    @staticmethod
+    def __is_path_valid(path: Path) -> bool:
+        try:
+            path.resolve()
+        except (OSError, RuntimeError):
+            return False
+        return True
+
     def __is_valid(self) -> bool:
+        path = self.file_path
         if self.__file_must_exist:
-            return self.file_path.is_file()
-        return self.file_path.exists() and not self.file_path.is_dir()
+            return path.is_file()
+        return self.__is_path_valid(path) and not path.is_dir()
