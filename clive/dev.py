@@ -1,12 +1,18 @@
 from __future__ import annotations
 
-import os
 
-from textual.features import parse_features
-from textual_dev.tools.run import run_app
+def is_in_dev_mode() -> bool:
+    from clive.__private.config import settings
+
+    return settings.get("dev", False)  # type: ignore[no-any-return]
 
 
 def main() -> None:
+    import os
+
+    from textual.features import parse_features
+    from textual_dev.tools.run import run_app
+
     environment = dict(os.environ)
 
     features = set(parse_features(environment.get("TEXTUAL", "")))

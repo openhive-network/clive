@@ -5,6 +5,7 @@ from pathlib import Path
 
 from clive.__private.config import ROOT_DIRECTORY, settings
 from clive.__private.logger import logger
+from clive.dev import is_in_dev_mode
 
 
 def prepare_before_launch(*, enable_textual_logger: bool = True) -> None:
@@ -21,4 +22,5 @@ def prepare_before_launch(*, enable_textual_logger: bool = True) -> None:
     _create_clive_data_directory()
     _copy_settings()
 
-    logger.debug(f"settings:\n{settings.as_dict()}")
+    if is_in_dev_mode():
+        logger.debug(f"settings:\n{settings.as_dict()}")
