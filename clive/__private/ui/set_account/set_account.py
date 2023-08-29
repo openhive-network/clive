@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, ScrollableContainer
-from textual.widgets import Checkbox, Static
+from textual.containers import ScrollableContainer
+from textual.widgets import Checkbox
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.accounts import Account, InvalidAccountNameError, WorkingAccount
@@ -24,27 +24,17 @@ class ScrollablePart(ScrollableContainer):
     """All the content of the screen, excluding the title."""
 
 
-class AccountNameInputContainer(Horizontal):
-    """Container for account name input and label."""
-
-
 class SetAccount(BaseScreen, FormScreen[ProfileData]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner)
 
-        self.__account_name_input = AccountNameInput(
-            placeholder="Please enter hive account name, without @",
-            id_="set_account_name",
-        )
+        self.__account_name_input = AccountNameInput(placeholder="Please enter hive account name, without @")
 
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("set account name")
             with ScrollablePart():
-                with AccountNameInputContainer():
-                    yield Static("Account name:", id="account-name-label")
-                    yield Static("@", id="account-name-at")
-                    yield self.__account_name_input
+                yield self.__account_name_input
                 yield Checkbox("Working account?", value=True)
 
     async def apply_and_validate(self) -> None:

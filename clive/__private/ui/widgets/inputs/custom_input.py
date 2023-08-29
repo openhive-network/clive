@@ -38,9 +38,12 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
     """
 
     DEFAULT_CSS = """
+        CustomInput {
+            layout: horizontal;
+        }
         CustomInput Input {
             width: 80%;
-            }
+        }
     """
 
     def __init__(

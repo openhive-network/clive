@@ -3,23 +3,10 @@ SetAccount ScrollablePart {
   height: 1fr;
 }
 
-SetAccount AccountNameInputContainer {
+SetAccount AccountNameInput {
   height: auto;
 }
 
-SetAccount #account-name-label {
-  padding: 1 2;
-  width: 1fr;
-}
-
-SetAccount #account-name-at {
-  padding: 1 2;
-  text-align: right;
-  text-style: bold;
-  color: $secondary;
-  width: auto;
-}
-
-SetAccount AccountNameInputContainer Input {
-  width: 3fr
+SetAccount AccountNameInput InputLabel {
+  width: 18;
 }
