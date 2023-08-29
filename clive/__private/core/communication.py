@@ -92,11 +92,7 @@ class Communication:
             if response.ok:
                 result = await response.json()
                 with contextlib.suppress(ErrorInResponseJsonError):
-                    if isinstance(result, list):
-                        for item in result:
-                            cls.__check_response_item(item=item, url=url, request=data_serialized)
-                    if isinstance(result, dict):
-                        cls.__check_response_item(item=result, url=url, request=data_serialized)
+                    cls.__check_response(url=url, request=data_serialized, result=result)
                     return response
             else:
                 logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
@@ -113,10 +109,19 @@ class Communication:
         raise CommunicationError(url, data_serialized, result)
 
     @classmethod
-    def __check_response_item(cls, item: JsonT, url: str, request: str) -> JsonT:
+    def __check_response(cls, url: str, request: str, result: Any) -> None:
+        if isinstance(result, dict):
+            cls.__check_response_item(url=url, request=request, response=result, item=result)
+        elif isinstance(result, list):
+            for item in result:
+                cls.__check_response_item(url=url, request=request, response=result, item=item)
+        else:
+            raise UnknownResponseFormatError(url, request, result)
+
+    @classmethod
+    def __check_response_item(cls, url: str, request: str, response: Any, item: JsonT) -> None:
         if "error" in item:
-            logger.debug(f"Error in response from {url=}, request={request}, response={item}")
+            logger.debug(f"Error in response from {url=}, request={request}, response={response}")
             raise ErrorInResponseJsonError
         if "result" not in item:
-            raise UnknownResponseFormatError(url, request, item)
-        return item
+            raise UnknownResponseFormatError(url, request, response)
