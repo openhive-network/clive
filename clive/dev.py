@@ -14,6 +14,7 @@ def main() -> None:
     features.add("devtools")
 
     environment["TEXTUAL"] = ",".join(sorted(features))
+    environment["CLIVE_DEV"] = "1"
 
     run_app("clive/main.py", [], environment)
 
