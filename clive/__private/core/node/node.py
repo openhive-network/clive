@@ -1,20 +1,23 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
+
+from test_tools import logger
 
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
 from schemas.__private.hive_factory import HiveError, HiveResult, T
-from schemas.__private.preconfigured_base_model import PreconfiguredBaseModel
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from types import TracebackType
 
     from typing_extensions import Self
 
-    from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse
+    from clive.__private.core.beekeeper.model import JSONRPCRequest
     from clive.__private.core.communication import Communication
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
@@ -30,40 +33,52 @@ class BaseNode:
         ...
 
 
-class _DelayedResponseWrapper(PreconfiguredBaseModel):
-    def __init__(self, url: str, request: str, expected_type: type[JSONRPCResponse[Any]]) -> None:
-        self.__dict__["_url"] = url
-        self.__dict__["_request"] = request
-        self.__dict__["_data"] = None
-        self.__dict__["_expected_type"] = expected_type
+class _DelayedResponseWrapper:
+    def __init__(self, url: str, request: str, expected_type: type[T]) -> None:
+        with self.__omit_overriden_set_get_attr():
+            self.__url = url
+            self.__request = request
+            self.__expected_type = expected_type
+            self.__data: HiveResult[Any] | HiveError | None = None
 
     def __check_is_response_available(self) -> None:
         if self.__get_data() is None:
             raise ResponseNotReadyError
 
     def __get_data(self) -> Any:
-        _data: HiveResult | HiveError = self.__dict__["_data"]  # type: ignore[type-arg]
-        if _data is None:
-            return None
+        with self.__omit_overriden_set_get_attr():
+            if self.__data is None:
+                return None
 
-        if isinstance(_data, HiveResult):
-            return _data.result
+            if isinstance(self.__data, HiveResult):
+                return self.__data.result
 
-        raise CommunicationError(
-            url=self.__dict__["_url"], request=self.__dict__["_request"], response=self.__dict__["_data"]
-        )
+            raise CommunicationError(url=self.__url, request=self.__request, response=self.__data)  # type: ignore[arg-type]
 
-    def __setattr__(self, __name: str, __value: Any) -> None:
+    def __setattr__(self, name: str, value: Any) -> None:
         self.__check_is_response_available()
-        setattr(self.__get_data(), __name, __value)
+        setattr(self.__get_data(), name, value)
 
-    def __getattr__(self, __name: str) -> Any:
+    def __getattr__(self, name: str) -> Any:
         self.__check_is_response_available()
-        return getattr(self.__get_data(), __name)
+        return getattr(self.__get_data(), name)
 
     def _set_response(self, **kwargs: Any) -> None:
-        expected_type = self.__dict__["_expected_type"]
-        self.__dict__["_data"] = HiveResult.factory(expected_type, **kwargs)
+        with self.__omit_overriden_set_get_attr():
+            self.__data = HiveResult.factory(self.__expected_type, **kwargs)
+
+    @contextmanager
+    def __omit_overridden_set_get_attr(self) -> Iterator[None]:
+        original_setattr = self.__class__.__setattr__
+        original_getattr = self.__class__.__getattr__
+
+        self.__class__.__setattr__ = super().__class__.__setattr__  # type: ignore[method-assign]
+        self.__class__.__getattr__ = super().__class__.__getattribute__  # type: ignore[method-assign]
+        try:
+            yield None
+        finally:
+            self.__class__.__setattr__ = original_setattr  # type: ignore[method-assign]
+            self.__class__.__getattr__ = original_getattr  # type: ignore[method-assign]
 
 
 @dataclass(kw_only=True)
@@ -82,12 +97,16 @@ class _BatchNode(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
         request.id_ = len(self.__batch)
         serialized_request = request.json(by_alias=True)
-        delayed_result = _DelayedResponseWrapper(url=self.__url.as_string(), request=serialized_request, expected_type=expect_type)  # type: ignore[arg-type]
+        delayed_result = _DelayedResponseWrapper(
+            url=self.__url.as_string(), request=serialized_request, expected_type=expect_type
+        )
+        logger.debug("Never reached")
         self.__batch.append(_BatchRequestResponseItem(request=serialized_request, delayed_result=delayed_result))
         return delayed_result  # type: ignore[return-value]
 
     async def __evaluate(self) -> None:
         query = "[" + ",".join([x.request for x in self.__batch]) + "]"
+        logger.debug(f"Sending batch request to {self.__url.as_string()}, request={query}")
         responses: list[dict[str, Any]] = (
             await self.__communication.arequest(url=self.__url.as_string(), data=query)
         ).json()
