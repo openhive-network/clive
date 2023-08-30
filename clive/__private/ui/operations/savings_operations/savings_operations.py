@@ -1,10 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Any, Final
 
+from textual import work
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
+from textual.reactive import var
 from textual.widgets import Button, RadioButton, RadioSet, Static, TabbedContent
 
+from clive.__private.config import settings
+from clive.__private.logger import logger
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -20,12 +25,54 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.__private.operations.transfer_from_savings_operation import TransferFromSavingsOperation
 from schemas.__private.operations.transfer_to_savings_operation import TransferToSavingsOperation
-from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.storage.accounts import WorkingAccount
+    from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
+
+
+@dataclass
+class SavingsData:
+    pending_transfers: Any = None
+    hbd_interest_rate: Any = None
+    last_interest_payment: Any = None
+
+
+class GetSavingsInformation(CliveWidget):
+
+    content = var(None)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__information = SavingsData()
+        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.on_data_refresh())  # type: ignore
+    #
+    # @property
+    # def content(self) -> Any:
+    #     return self.__information
+
+    async def on_data_refresh(self) -> None:
+        self._update_savings_data()
+        self.content = self.__information
+        logger.debug(f"GetSavingsInformation {self.content}")
+
+    def update(self) -> None:
+        self._update_savings_data()
+
+    @work(name="savings data update worker")
+    async def _update_savings_data(self) -> None:
+        working_account_name = self.app.world.profile_data.working_account.name
+
+        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
+        response_db_api = await self.app.world.node.api.database_api.find_accounts(accounts=[working_account_name])
+        pending_transfers = await self.app.world.node.api.database_api.find_savings_withdrawals(
+            account=working_account_name
+        )
+
+        self.__information.hbd_interest_rate = gdpo.hbd_interest_rate
+        self.__information.last_interest_payment = response_db_api.accounts[0].hbd_last_interest_payment
+        self.__information.pending_transfers = pending_transfers.withdrawals
 
 
 odd = "OddColumn"
@@ -66,25 +113,25 @@ class SavingsBalances(AccountReferencingWidget):
 
 
 class SavingsInterestInfo(AccountReferencingWidget):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.provider = GetSavingsInformation()
+
     def compose(self) -> ComposeResult:
         def get_interest_date() -> str:
-            last_interest_payment = (
-                self.app.world.profile_data.working_account.data.savings_hbd_last_interest_payment.replace(
-                    tzinfo=None
-                ).isoformat()
-            )
-            if last_interest_payment == "1970-01-01T00:00:00":
+            last_interest_payment = self.provider.content.last_interest_payment
+            if last_interest_payment is None:
                 return "Last interest payment: Never"
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
 
         def get_estimated_interest() -> str:
             return (
                 "Interest since last payment:"
-                f" {self.app.world.profile_data.working_account.data.hbd_reward_balance.amount} HBD"
+                f" {self.app.world.profile_data.working_account.data.hbd_unclaimed.amount} HBD"
             )
 
         def get_interest_rate_for_hbd() -> str:
-            return "APR interest rate for HBD($) is"  # TODO: interest rate will be searched in database api
+            return f"APR interest rate for HBD($) is {self.provider.content.hbd_interest_rate}%"
 
         with Horizontal():
             yield SavingsBalances(self._account)
@@ -120,47 +167,41 @@ class PendingTransfer(CliveWidget):
             self.app.push_screen(CancelTransferFromSavings(self.__pending_transfer))
 
 
-class PendingHeader(CliveWidget):
+class PendingTransfers(ScrollableContainer, CliveWidget):
     def compose(self) -> ComposeResult:
-        yield Static("Pending transfers from savings", id="pending-title")
-        with Horizontal(id="header-pending"):
-            yield Static("To", classes=even)
-            yield Static("Amount", classes=odd)
-            yield Static("Realized on (UTC)", classes=even)
-            yield Static("Memo", classes=odd)
-            yield Static()
+        pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = (
+            self.__provider.content.pending_transfers
+        )
+        if pending_transfers:
+            with ScrollableContainer(id="pending-transfers"):
+                for transfer in pending_transfers:
+                    yield PendingTransfer(transfer)
+                yield Static()
+        else:
+            yield Static("Now pending transfers from savings now !", id="without-pending-label")
 
 
 class SavingsInfo(ScrollableTabPane, CliveWidget):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+
+        self.__provider = GetSavingsInformation()
+
+
+    def on_mount(self) -> None:
+        self.watch(self.__provider, "trigger", self.rebuild_pending_transfers)
+
     def compose(self) -> ComposeResult:
         with Container():
             working_account: WorkingAccount = self.app.world.profile_data.working_account
-            pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = [
-                SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](
-                    id_=1,
-                    to="bob",
-                    from_="alice",
-                    memo="",
-                    request_id=0,
-                    amount=Asset.hbd(1),
-                    complete="1970-01-01T00:00:00",
-                )
-            ]  # TODO: pending transfers will be searched in database api, .find_savings_withdrawals
-
             yield SavingsInterestInfo(working_account)
-            if pending_transfers:
-                yield PendingHeader()
-                with ScrollableContainer(id="pending-transfers"):
-                    for transfer in pending_transfers:
-                        yield PendingTransfer(transfer)
-                    yield Static()
-            else:
-                yield Static("No pending transfers from savings now !", id="without-pending-label")
+            yield PendingTransfers()
 
 
 class SavingsTransfers(ScrollableTabPane, OperationMethods):
     def __init__(self, title: str = "") -> None:
         super().__init__(title=title)
+        self.provider = GetSavingsInformation()
 
         self.__amount_input = AssetAmountInput()
         self.__memo_input = MemoInput()
@@ -209,20 +250,10 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             return None
 
     def __create_request_id(self) -> int:
-        pending_transfers = [
-            SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](
-                id_=1,
-                to="bob",
-                from_="alice",
-                memo="",
-                request_id=0,
-                amount=Asset.hbd(1),
-                complete="1970-01-01T00:00:00",
-            )
-        ]  # TODO: pending transfers will be searched in database api, .find_savings_withdrawals
+        pending_transfers = self.provider.content.pending_transfers
         max_number_of_request_ids: Final[int] = 100
 
-        if not pending_transfers[0]:
+        if not pending_transfers:
             return 0
 
         if len(pending_transfers) >= max_number_of_request_ids:
@@ -230,7 +261,6 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
         sorted_transfers = sorted(pending_transfers, key=lambda x: x.request_id)
         last_occupied_id = sorted_transfers[-1].request_id
-
         return last_occupied_id + 1
 
 
