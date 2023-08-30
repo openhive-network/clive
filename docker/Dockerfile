@@ -9,6 +9,7 @@ FROM $BASE_IMAGE AS instance
 
 SHELL ["/bin/bash", "-c"]
 
+ADD --chown=hived_admin:users ./docker/entrypoint.sh .
 ADD --chown=hived_admin:users . /clive
 
 WORKDIR /clive
@@ -22,7 +23,12 @@ RUN poetry self update && \
 # crucial for proper display
 ENV COLORTERM=truecolor
 
-ENTRYPOINT ["poetry", "run", "clive"]
+ARG INTERACTIVE_CLI_MODE=0
+ENV INTERACTIVE_CLI_MODE=${INTERACTIVE_CLI_MODE}
+
+ENV TESTNET_MODE=0
+
+ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
 
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
 FROM instance as embedded_testnet_instance
@@ -43,4 +49,6 @@ WORKDIR /clive
 # Run installation once again to supplement extras and development dependencies
 RUN poetry install
 
-ENTRYPOINT ["poetry", "run", "python", "testnet_node.py"]
+ENV TESTNET_MODE=1
+
+ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
