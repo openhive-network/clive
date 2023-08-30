@@ -58,6 +58,7 @@ class Clive(App[int], ManualReactive):
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("ctrl+x", "push_screen('quit')", "Quit"),
+        Binding("ctrl+n", "clear_notifications", "Clear notifications"),
         Binding("f1", "help", "Help"),
     ]
 
@@ -243,6 +244,9 @@ class Clive(App[int], ManualReactive):
         path = self.save_screenshot(filename, path)
         message = f"Screenshot saved to [bold green]'{path}'[/]"
         self.notify(message)
+
+    def action_clear_notifications(self) -> None:
+        self.clear_notifications()
 
     async def write(
         self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None
