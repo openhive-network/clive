@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING, Any, Final
 
 from textual import work
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
-from textual.reactive import var
 from textual.widgets import Button, RadioButton, RadioSet, Static, TabbedContent
 
 from clive.__private.config import settings
-from clive.__private.logger import logger
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -25,37 +24,33 @@ from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.__private.operations.transfer_from_savings_operation import TransferFromSavingsOperation
 from schemas.__private.operations.transfer_to_savings_operation import TransferToSavingsOperation
+from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.storage.accounts import WorkingAccount
-    from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 
 @dataclass
 class SavingsData:
     pending_transfers: Any = None
-    hbd_interest_rate: Any = None
-    last_interest_payment: Any = None
+    hbd_interest_rate: Any = 1000
+    last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
 
 
 class GetSavingsInformation(CliveWidget):
-
-    content = var(None)
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.__information = SavingsData()
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.on_data_refresh())  # type: ignore
-    #
-    # @property
-    # def content(self) -> Any:
-    #     return self.__information
+
+    @property
+    def content(self) -> Any:
+        return self.__information
 
     async def on_data_refresh(self) -> None:
         self._update_savings_data()
-        self.content = self.__information
-        logger.debug(f"GetSavingsInformation {self.content}")
 
     def update(self) -> None:
         self._update_savings_data()
@@ -119,8 +114,9 @@ class SavingsInterestInfo(AccountReferencingWidget):
 
     def compose(self) -> ComposeResult:
         def get_interest_date() -> str:
-            last_interest_payment = self.provider.content.last_interest_payment
-            if last_interest_payment is None:
+            last_interest_payment = self.provider.content.last_interest_payment.replace(tzinfo=None).isoformat()
+
+            if last_interest_payment == "1970-01-01T00:00:00":
                 return "Last interest payment: Never"
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
 
@@ -131,7 +127,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
             )
 
         def get_interest_rate_for_hbd() -> str:
-            return f"APR interest rate for HBD($) is {self.provider.content.hbd_interest_rate}%"
+            return f"APR interest rate for HBD($) is {self.provider.content.hbd_interest_rate/100}%"
 
         with Horizontal():
             yield SavingsBalances(self._account)
@@ -164,21 +160,18 @@ class PendingTransfer(CliveWidget):
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         if event.button.id == "delete-transfer-button":
-            self.app.push_screen(CancelTransferFromSavings(self.__pending_transfer))
+            self.app.push_screen(CancelTransferFromSavings(SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](id_=0, from_="alice", to="alice", request_id=0, amount=Asset.hive(1), complete="2023-02-09T11:20:48", memo="memo")))
 
 
-class PendingTransfers(ScrollableContainer, CliveWidget):
+class PendingHeader(CliveWidget):
     def compose(self) -> ComposeResult:
-        pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = (
-            self.__provider.content.pending_transfers
-        )
-        if pending_transfers:
-            with ScrollableContainer(id="pending-transfers"):
-                for transfer in pending_transfers:
-                    yield PendingTransfer(transfer)
-                yield Static()
-        else:
-            yield Static("Now pending transfers from savings now !", id="without-pending-label")
+        yield Static("Pending transfers from savings", id="pending-title")
+        with Horizontal(id="header-pending"):
+            yield Static("To", classes=even)
+            yield Static("Amount", classes=odd)
+            yield Static("Realized on (UTC)", classes=even)
+            yield Static("Memo", classes=odd)
+            yield Static()
 
 
 class SavingsInfo(ScrollableTabPane, CliveWidget):
@@ -187,15 +180,17 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
 
         self.__provider = GetSavingsInformation()
 
-
-    def on_mount(self) -> None:
-        self.watch(self.__provider, "trigger", self.rebuild_pending_transfers)
-
     def compose(self) -> ComposeResult:
         with Container():
             working_account: WorkingAccount = self.app.world.profile_data.working_account
+            pending_transfers: SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd] = SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](id_=0, from_="alice", to="alice", request_id=0, amount=Asset.hive(1), complete="2023-02-09T11:20:48", memo="memo")
+
             yield SavingsInterestInfo(working_account)
-            yield PendingTransfers()
+            yield PendingHeader()
+
+            with ScrollableContainer(id="pending-transfers"):
+                yield PendingTransfer(pending_transfers)
+                yield Static()
 
 
 class SavingsTransfers(ScrollableTabPane, OperationMethods):
