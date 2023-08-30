@@ -181,12 +181,22 @@ testing_clive:
 build_and_push_clive_image:
   extends: .prepare_clive_image
 
+build_and_push_clive_cli_image:
+  extends: build_and_push_clive_image
+  variables:
+      BUILD_INSTANCE_ARGS: "--interactive-cli"
+
 build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
   <<: *clive_testnet_needs
   variables:
     BASE_IMAGE: ${HIVED_IMAGE_NAME}
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
+
+build_and_push_clive_cli_testnet_image:
+  extends: build_and_push_clive_testnet_image
+  variables:
+    BUILD_INSTANCE_ARGS: "--embedded-testnet --interactive-cli"
 
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
@@ -207,11 +217,21 @@ build_and_push_clive_testnet_image:
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
 
+build_and_push_clive_cli_stable_image:
+  extends: build_and_push_clive_stable_image
+  variables:
+      BUILD_INSTANCE_ARGS: "--interactive-cli"
+
 build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
   <<: *clive_testnet_needs
   variables:
     BASE_IMAGE: ${HIVED_IMAGE_NAME}
     BUILD_INSTANCE_ARGS: "--embedded-testnet --image-path-suffix=-${CI_COMMIT_REF_NAME}"
+
+build_and_push_clive_cli_stable_testnet_image:
+  extends: build_and_push_clive_stable_testnet_image
+  variables:
+    BUILD_INSTANCE_ARGS: "--embedded-testnet --image-path-suffix=-${CI_COMMIT_REF_NAME} --interactive-cli"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
