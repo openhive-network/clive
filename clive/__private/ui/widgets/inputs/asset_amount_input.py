@@ -69,10 +69,10 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
 
     @property
     def value(self) -> Asset.Hive | Asset.Hbd | None:
-        if self._input.value:
-            return self.__currency_selector.create_asset(self._input.value)
+        if value := self.__numeric_input.value:
+            return self.__currency_selector.create_asset(value)
         return None
 
     def _create_input(self) -> Input:
-        custom_input = NumericInput(label=self._label, placeholder=self._placeholder, tooltip=self.tooltip)
-        return custom_input._input
+        self.__numeric_input = NumericInput(label=self._label, placeholder=self._placeholder, tooltip=self.tooltip)
+        return self.__numeric_input._input
