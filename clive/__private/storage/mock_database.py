@@ -36,7 +36,6 @@ class NodeData:
     hbd_balance: Asset.Hbd = field(default_factory=default_hbd)
     hbd_savings: Asset.Hbd = field(default_factory=default_hbd)
     hbd_unclaimed: Asset.Hbd = field(default_factory=default_hbd)
-    hbd_reward_balance: Asset.Hbd = field(default_factory=default_hbd)
     hive_balance: Asset.Hive = field(default_factory=default_hive)
     hive_savings: Asset.Hive = field(default_factory=default_hive)
     hive_unclaimed: Asset.Hive = field(default_factory=default_hive)
@@ -45,7 +44,6 @@ class NodeData:
     last_refresh: datetime = field(default_factory=lambda: datetime.now())
     last_history_entry: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
     last_account_update: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
-    savings_hbd_last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
     recovery_account: str = ""
     reputation: int = 0
     warnings: int = 0
