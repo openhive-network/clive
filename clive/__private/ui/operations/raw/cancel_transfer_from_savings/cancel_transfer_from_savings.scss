@@ -1,4 +1,4 @@
-CancelTransferFromSavings Body {
+CancelTransferFromSavings CancelTransferParameters {
   grid-size: 2;
   grid-columns: 15 1fr;
   grid-rows: 4;
@@ -13,18 +13,6 @@ CancelTransferFromSavings #from-label {
 
 CancelTransferFromSavings .parameters-label {
   padding: 1 2;
-}
-
-CancelTransferFromSavings #transfer-searching-label {
-    margin-top: 1;
-    content-align: center middle;
-    text-align: center;
-    background: $accent-lighten-1;
-    text-style: bold
-}
-
-CancelTransferFromSavings Pretty {
-    content-align: center middle;
 }
 
 CancelTransferFromSavings FromSavingsTransferParameters {
