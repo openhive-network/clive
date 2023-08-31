@@ -16,6 +16,7 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   PACKAGES_TO_CHECK: "clive/ tests/"
   # colors:
+  TXT_GREEN: "\e[1;32m"
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
 
@@ -164,6 +165,7 @@ testing_clive:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
+    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${CLIVE_IMAGE_NAME}${TXT_CLEAR}"
   artifacts:
     reports:
       dotenv: docker_image_name.env
@@ -210,9 +212,10 @@ build_and_push_clive_cli_testnet_image:
   after_script:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
     - export LATEST_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-latest"
-    - echo Tagging ${CLIVE_IMAGE_NAME} with additional ${LATEST_IMAGE_TAG}
+    - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${LATEST_IMAGE_TAG}${TXT_CLEAR}"
     - docker tag ${CLIVE_IMAGE_NAME} ${LATEST_IMAGE_TAG}
     - docker push ${LATEST_IMAGE_TAG}
+    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${LATEST_IMAGE_TAG}${TXT_CLEAR}"
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
