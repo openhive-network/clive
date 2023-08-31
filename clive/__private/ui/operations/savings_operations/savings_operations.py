@@ -1,11 +1,16 @@
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from datetime import datetime
 from typing import TYPE_CHECKING, Final
 
-from textual import on
+from textual import on, work
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
+from textual.css.query import NoMatches
+from textual.reactive import var
 from textual.widgets import Button, RadioButton, RadioSet, Static, TabbedContent
 
+from clive.__private.config import settings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -23,9 +28,54 @@ from schemas.__private.operations.transfer_to_savings_operation import TransferT
 from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 
 if TYPE_CHECKING:
+    from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.storage.accounts import WorkingAccount
+
+
+SavingsWithdrawalsT = SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]
+
+
+@dataclass
+class SavingsData:
+    pending_transfers: list[SavingsWithdrawalsT] | None = None
+    hbd_interest_rate: int = 1000
+    last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
+
+
+class SavingsDataProvider(CliveWidget):
+    """
+    A class for retrieving information about savings stored in a SavingsData dataclass.
+
+    To access the data after initializing the class, use the content property.
+    """
+
+    content: SavingsData = var(SavingsData())  # type: ignore[assignment]
+    """It is used to check whether savings data has been refreshed and to store savings data."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.set_interval(settings.get("node.refresh_rate", 1.5), self._update_savings_data)  # type: ignore[arg-type]
+
+    @work(name="savings data update worker")
+    async def _update_savings_data(self) -> None:
+        working_account_name = self.app.world.profile_data.working_account.name
+
+        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
+        response_db_api = await self.app.world.node.api.database_api.find_accounts(accounts=[working_account_name])
+        pending_transfers = await self.app.world.node.api.database_api.find_savings_withdrawals(
+            account=working_account_name
+        )
+
+        new_savings_data = SavingsData(
+            hbd_interest_rate=gdpo.hbd_interest_rate,
+            last_interest_payment=response_db_api.accounts[0].savings_hbd_last_interest_payment,
+            pending_transfers=pending_transfers.withdrawals,
+        )
+
+        if self.content != new_savings_data:
+            self.content = new_savings_data
 
 
 odd = "OddColumn"
@@ -66,25 +116,23 @@ class SavingsBalances(AccountReferencingWidget):
 
 
 class SavingsInterestInfo(AccountReferencingWidget):
+    def __init__(self, working_account: WorkingAccount) -> None:
+        super().__init__(account=working_account)
+        self.__provider = SavingsDataProvider()
+
     def compose(self) -> ComposeResult:
         def get_interest_date() -> str:
-            last_interest_payment = (
-                self.app.world.profile_data.working_account.data.savings_hbd_last_interest_payment.replace(
-                    tzinfo=None
-                ).isoformat()
-            )
+            last_interest_payment = self.__provider.content.last_interest_payment.replace(tzinfo=None).isoformat()
+
             if last_interest_payment == "1970-01-01T00:00:00":
                 return "Last interest payment: Never"
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
 
         def get_estimated_interest() -> str:
-            return (
-                "Interest since last payment:"
-                f" {self.app.world.profile_data.working_account.data.hbd_reward_balance.amount} HBD"
-            )
+            return f"Interest since last payment: {self._account.data.hbd_unclaimed.amount} HBD"
 
         def get_interest_rate_for_hbd() -> str:
-            return "APR interest rate for HBD($) is"  # TODO: interest rate will be searched in database api
+            return f"APR interest rate for HBD($) is {self.__provider.content.hbd_interest_rate / 100}%"
 
         with Horizontal():
             yield SavingsBalances(self._account)
@@ -97,7 +145,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
 class PendingTransfer(CliveWidget):
     """class which represents one pending transfer."""
 
-    def __init__(self, transfer: SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]):
+    def __init__(self, transfer: SavingsWithdrawalsT):
         super().__init__()
         self.__transfer = transfer
 
@@ -120,7 +168,6 @@ class PendingTransfer(CliveWidget):
 
 class PendingHeader(CliveWidget):
     def compose(self) -> ComposeResult:
-        yield Static("Pending transfers from savings", id="pending-title")
         with Horizontal(id="header-pending"):
             yield Static("To", classes=even)
             yield Static("Amount", classes=odd)
@@ -129,36 +176,51 @@ class PendingHeader(CliveWidget):
             yield Static()
 
 
-class SavingsInfo(ScrollableTabPane, CliveWidget):
-    def compose(self) -> ComposeResult:
-        with Container():
-            working_account: WorkingAccount = self.app.world.profile_data.working_account
-            pending_transfers: list[SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]] = [
-                SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](
-                    id_=1,
-                    to="bob",
-                    from_="alice",
-                    memo="",
-                    request_id=0,
-                    amount=Asset.hbd(1),
-                    complete="1970-01-01T00:00:00",
-                )
-            ]  # TODO: pending transfers will be searched in database api, .find_savings_withdrawals
+class PendingTransfers(ScrollableContainer, CliveWidget):
+    def __init__(self, pending_transfers: list[SavingsWithdrawalsT] | None = None) -> None:
+        super().__init__()
+        self.__pending_transfers = pending_transfers
 
-            yield SavingsInterestInfo(working_account)
-            if pending_transfers:
-                yield PendingHeader()
-                with ScrollableContainer(id="pending-transfers"):
-                    for transfer in pending_transfers:
-                        yield PendingTransfer(transfer)
-                    yield Static()
-            else:
-                yield Static("No pending transfers from savings now !", id="without-pending-label")
+    def compose(self) -> ComposeResult:
+        if self.__pending_transfers:
+            number_of_transfers = len(self.__pending_transfers)
+            yield Static(f"Number of transfers from savings now: {number_of_transfers}", classes="number-of-transfers")
+            yield PendingHeader()
+            for transfer in self.__pending_transfers:
+                yield PendingTransfer(transfer)
+        else:
+            yield Static("No transfers from savings now", classes="number-of-transfers")
+
+
+class SavingsInfo(ScrollableTabPane, CliveWidget):
+    def __init__(self, title: TextType) -> None:
+        super().__init__(title=title)
+        self.__provider = SavingsDataProvider()
+
+    def compose(self) -> ComposeResult:
+        working_account: WorkingAccount = self.app.world.profile_data.working_account
+
+        yield SavingsInterestInfo(working_account)
+        yield PendingTransfers()
+
+    def on_mount(self) -> None:
+        self.watch(self.__provider, "content", callback=self.__sync_pending_transfers)
+
+    def __sync_pending_transfers(self, content: SavingsData) -> None:
+        try:
+            pending_transfers_container = self.query_one(PendingTransfers)
+        except NoMatches:
+            return
+
+        pending_transfers_container.remove()
+        new_transfers_item = PendingTransfers(content.pending_transfers)
+        self.mount(new_transfers_item)
 
 
 class SavingsTransfers(ScrollableTabPane, OperationMethods):
     def __init__(self, title: str = "") -> None:
         super().__init__(title=title)
+        self.provider = SavingsDataProvider()
 
         self.__amount_input = AssetAmountInput()
         self.__memo_input = MemoInput()
@@ -210,20 +272,10 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         )
 
     def __create_request_id(self) -> int:
-        pending_transfers = [
-            SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd](
-                id_=1,
-                to="bob",
-                from_="alice",
-                memo="",
-                request_id=0,
-                amount=Asset.hbd(1),
-                complete="1970-01-01T00:00:00",
-            )
-        ]  # TODO: pending transfers will be searched in database api, .find_savings_withdrawals
+        pending_transfers = self.provider.content.pending_transfers
         max_number_of_request_ids: Final[int] = 100
 
-        if not pending_transfers[0]:
+        if not pending_transfers:
             return 0
 
         if len(pending_transfers) >= max_number_of_request_ids:
@@ -232,7 +284,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         sorted_transfers = sorted(pending_transfers, key=lambda x: x.request_id)
         last_occupied_id = sorted_transfers[-1].request_id
 
-        return last_occupied_id + 1
+        return int(last_occupied_id) + 1
 
 
 class Savings(OperationBaseScreen):
