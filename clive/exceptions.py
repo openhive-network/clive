@@ -62,6 +62,12 @@ class UnknownResponseFormatError(CommunicationError):
         super().__init__(url, request, response, message=message)
 
 
+class CommunicationTimeoutError(CommunicationError):
+    def __init__(self, url: str, request: str, timeout: float) -> None:
+        message = f"Timeout occurred during communication with: {url=}. Exceeded {timeout:.2f} seconds."
+        super().__init__(url, request, message=message)
+
+
 class NoItemSelectedError(CliveError):
     """Raised when tried to access `selected` property of Select widget when no item was selected."""
 

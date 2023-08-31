@@ -10,7 +10,7 @@ import aiohttp
 
 from clive.__private.core._async import asyncio_run
 from clive.__private.logger import logger
-from clive.exceptions import CliveError, CommunicationError, UnknownResponseFormatError
+from clive.exceptions import CliveError, CommunicationError, CommunicationTimeoutError, UnknownResponseFormatError
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
@@ -34,6 +34,7 @@ class ErrorInResponseJsonError(CliveError):
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 1
+    TIMEOUT_TOTAL: Final[float] = 2
 
     @classmethod
     def request(
@@ -79,7 +80,7 @@ class Communication:
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
         for attempts_left in reversed(range(max_attempts)):
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=2)) as session:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=cls.TIMEOUT_TOTAL)) as session:
                 try:
                     response = await session.post(
                         url,
@@ -88,6 +89,8 @@ class Communication:
                     )
                 except aiohttp.ClientError as error:
                     raise CommunicationError(url, data_serialized) from error
+                except asyncio.TimeoutError as error:
+                    raise CommunicationTimeoutError(url, data_serialized, cls.TIMEOUT_TOTAL) from error
 
                 if response.ok:
                     try:
