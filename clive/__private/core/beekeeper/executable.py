@@ -4,6 +4,7 @@ import json
 import os
 import signal
 import subprocess
+import time
 import warnings
 from pathlib import Path
 from subprocess import Popen
@@ -16,6 +17,7 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperNotConfiguredError,
     BeekeeperNotificationServerNotConfiguredError,
     BeekeeperNotRunningError,
+    BeekeeperTimeoutError,
 )
 from clive.__private.logger import logger
 
@@ -40,9 +42,9 @@ class BeekeeperExecutable:
             return self.get_pid_from_file()
         return self.__process.pid
 
-    @staticmethod
-    def get_pid_from_file() -> int:
-        pid_file = BeekeeperConfig.get_wallet_dir() / "beekeeper.pid"
+    @classmethod
+    def get_pid_from_file(cls) -> int:
+        pid_file = cls.__get_pid_file_path()
         if not pid_file.is_file():
             raise BeekeeperNotRunningError("Cannot get PID, Beekeeper is not running.")
 
@@ -110,6 +112,7 @@ class BeekeeperExecutable:
         finally:
             self.__close_files_for_streams()
             self.__process = None
+            self.__wait_for_pid_file_to_be_deleted()
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
@@ -126,3 +129,18 @@ class BeekeeperExecutable:
             if file is not None:
                 file.close()
                 self.__files[name] = None
+
+    def __wait_for_pid_file_to_be_deleted(self, *, timeout_secs: float = 10.0) -> None:
+        pid_file = self.__get_pid_file_path()
+        start_time = time.perf_counter()
+        while pid_file.exists():
+            if time.perf_counter() - start_time > timeout_secs:
+                message = f"Beekeeper PID file was NOT deleted in {timeout_secs} seconds."
+                logger.error(message)
+                raise BeekeeperTimeoutError(message)
+            time.sleep(0.1)
+        logger.debug(f"Beekeeper PID file was deleted in {time.perf_counter() - start_time:.2f} seconds.")
+
+    @staticmethod
+    def __get_pid_file_path() -> Path:
+        return BeekeeperConfig.get_wallet_dir() / "beekeeper.pid"
