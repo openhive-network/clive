@@ -26,6 +26,7 @@ if [ "${TESTNET_MODE}" = "0" ]; then
     clive
   else
     echo "Launching clive in CLI mode on mainnet"
+    clive beekeeper spawn  # Spawn the beekeeper so commands that require it don't have to do it every time
     bash
   fi
 else
@@ -37,6 +38,7 @@ else
 
     python3 testnet_node.py --no-tui >${TESTNET_NODE_LOG_FILE} 2>&1 &
     wait_for_testnet
+    clive beekeeper spawn  # Spawn the beekeeper so commands that require it don't have to do it every time
     bash
   fi
 fi
