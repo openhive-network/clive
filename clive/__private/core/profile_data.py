@@ -189,11 +189,9 @@ class ProfileData(Context):
     def __default_node_address() -> list[Url]:
         return [
             Url("https", "api.hive.blog"),
-            Url("https", "rpc.ausbit.dev"),
-            Url("https", "anyx.io"),
-            Url("https", "hived.splinterlands.com"),
-            Url("https", "hive-api.3speak.tv"),
+            Url("https", "api.openhive.network"),
             Url("https", "api.deathwing.me"),
+            Url("https", "hive-api.arcange.eu"),
         ]
 
     @staticmethod
