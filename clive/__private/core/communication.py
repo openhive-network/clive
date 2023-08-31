@@ -14,6 +14,7 @@ from clive.exceptions import CliveError, CommunicationError, UnknownResponseForm
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
+    from clive.exceptions import CommunicationResponseT
 
 
 class CustomJSONEncoder(json.JSONEncoder):
@@ -73,39 +74,40 @@ class Communication:
 
         assert max_attempts > 0, "Max attempts must be greater than 0."
 
-        response: aiohttp.ClientResponse | None = None
+        result: CommunicationResponseT | None = None
 
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
         for attempts_left in reversed(range(max_attempts)):
-            try:
-                async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=2)) as session:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=2)) as session:
+                try:
                     response = await session.post(
                         url,
                         data=data_serialized,
                         headers={"Content-Type": "application/json"},
                     )
-            except aiohttp.ClientError as error:
-                raise CommunicationError(url, data_serialized) from error
+                except aiohttp.ClientError as error:
+                    raise CommunicationError(url, data_serialized) from error
 
-            assert response is not None
-            if response.ok:
-                result = await response.json()
-                with contextlib.suppress(ErrorInResponseJsonError):
-                    cls.__check_response(url=url, request=data_serialized, result=result)
-                    return response
-            else:
-                logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
+                if response.ok:
+                    try:
+                        result = await response.json()
+                    except aiohttp.ContentTypeError:
+                        result = await response.text()
+                        break
+
+                    with contextlib.suppress(ErrorInResponseJsonError):
+                        cls.__check_response(url=url, request=data_serialized, result=result)
+                        await response.read()  # Ensure response is available outside of the context manager.
+                        return response
+                else:
+                    logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
+                    result = await response.text()
 
             if attempts_left > 0:
                 await __sleep()
 
-        assert response is not None
-
-        try:
-            result = await response.json()
-        except aiohttp.ContentTypeError as error:
-            raise CommunicationError(url, data_serialized, await response.text()) from error
+        assert result is not None, "Result should be set at this point."
         raise CommunicationError(url, data_serialized, result)
 
     @classmethod

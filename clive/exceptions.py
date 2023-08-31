@@ -1,11 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, TypeAlias
 
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
+
+    CommunicationResponseT: TypeAlias = str | JsonT
 
 
 class CliveError(Exception):
@@ -16,7 +18,7 @@ class CommunicationError(CliveError):
     """Base class for all communication exceptions."""
 
     def __init__(
-        self, url: str, request: str, response: str | JsonT | dict[str, Any] | None = None, *, message: str = ""
+        self, url: str, request: str, response: CommunicationResponseT | None = None, *, message: str = ""
     ) -> None:
         self.url = url
         self.request = request
@@ -54,7 +56,7 @@ class CommunicationError(CliveError):
 class UnknownResponseFormatError(CommunicationError):
     """Raised when the response format is unknown."""
 
-    def __init__(self, url: str, request: str, response: str | JsonT | None = None) -> None:
+    def __init__(self, url: str, request: str, response: CommunicationResponseT | None = None) -> None:
         self.response = response
         message = f"Unknown response format from: {url=}, {request=}, {self._get_reply()}"
         super().__init__(url, request, response, message=message)
