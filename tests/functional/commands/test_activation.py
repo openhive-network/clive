@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.commands.activate import Activate, WalletDoesNotExistsError
+from clive.__private.core.communication import Communication
 
 if TYPE_CHECKING:
     import clive
@@ -25,8 +26,8 @@ async def test_activate(world: clive.World, wallet: WalletInfo) -> None:
 
 
 async def test_activate_non_existing_wallet(world: clive.World) -> None:
-    # ARRANGE, ACT & ASSERT
-    with pytest.raises(WalletDoesNotExistsError):
+    # ACT & ASSERT
+    with pytest.raises(WalletDoesNotExistsError), Communication.overriden_attempts():
         await Activate(
             app_state=world.app_state, beekeeper=world.beekeeper, wallet="blabla", password="blabla"
         ).execute()

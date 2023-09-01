@@ -9,6 +9,7 @@ from textual.reactive import var
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
+from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -46,6 +47,8 @@ class World:
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
+
+        Communication.start()
 
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
@@ -86,6 +89,7 @@ class World:
         self.profile_data.save()
         if self._beekeeper is not None:
             await self._beekeeper.close()
+        await Communication.close()
 
     def _load_profile(self, profile_name: str) -> ProfileData:
         return ProfileData.load(profile_name)

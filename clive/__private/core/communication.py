@@ -13,6 +13,8 @@ from clive.__private.logger import logger
 from clive.exceptions import CliveError, CommunicationError, CommunicationTimeoutError, UnknownResponseFormatError
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncIterator, Iterator
+
     from clive.__private.core.beekeeper.notification_http_server import JsonT
     from clive.exceptions import CommunicationResponseT
 
@@ -35,6 +37,40 @@ class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 1
     TIMEOUT_TOTAL: Final[float] = 2
+    _SESSION: aiohttp.ClientSession | None = None
+    _overriden_attempts: int | None = None
+
+    @classmethod
+    def start(cls) -> None:
+        if cls._SESSION is None:
+            cls._SESSION = aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=cls.TIMEOUT_TOTAL))
+
+    @classmethod
+    async def close(cls) -> None:
+        if cls._SESSION is not None:
+            await cls._SESSION.close()
+            cls._SESSION = None
+
+    @classmethod
+    def __get_session(cls) -> aiohttp.ClientSession:
+        assert cls._SESSION is not None, "Communication was not started."
+        return cls._SESSION
+
+    @classmethod
+    @contextlib.contextmanager
+    def overriden_attempts(cls, attempts: int = 1) -> Iterator[None]:
+        cls._overriden_attempts = attempts
+        yield
+        cls._overriden_attempts = None
+
+    @classmethod
+    @contextlib.asynccontextmanager
+    async def lifecycle(cls) -> AsyncIterator[None]:
+        cls.start()
+        try:
+            yield
+        finally:
+            await cls.close()
 
     @classmethod
     def request(
@@ -74,41 +110,44 @@ class Communication:
             await asyncio.sleep(seconds_to_sleep)
 
         assert max_attempts > 0, "Max attempts must be greater than 0."
+        max_attempts = max_attempts if not cls._overriden_attempts else 1
 
         result: CommunicationResponseT | None = None
 
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
-        for attempts_left in reversed(range(max_attempts)):
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=cls.TIMEOUT_TOTAL)) as session:
+        attempt = 0
+        while attempt < max_attempts:
+            try:
+                response = await cls.__get_session().post(
+                    url,
+                    data=data_serialized,
+                    headers={"Content-Type": "application/json"},
+                )
+            except aiohttp.ClientOSError:
+                # https://github.com/aio-libs/aiohttp/issues/6138
+                continue
+            except aiohttp.ClientError as error:
+                raise CommunicationError(url, data_serialized) from error
+            except asyncio.TimeoutError as error:
+                raise CommunicationTimeoutError(url, data_serialized, cls.TIMEOUT_TOTAL) from error
+
+            if response.ok:
                 try:
-                    response = await session.post(
-                        url,
-                        data=data_serialized,
-                        headers={"Content-Type": "application/json"},
-                    )
-                except aiohttp.ClientError as error:
-                    raise CommunicationError(url, data_serialized) from error
-                except asyncio.TimeoutError as error:
-                    raise CommunicationTimeoutError(url, data_serialized, cls.TIMEOUT_TOTAL) from error
-
-                if response.ok:
-                    try:
-                        result = await response.json()
-                    except aiohttp.ContentTypeError:
-                        result = await response.text()
-                        break
-
-                    with contextlib.suppress(ErrorInResponseJsonError):
-                        cls.__check_response(url=url, request=data_serialized, result=result)
-                        await response.read()  # Ensure response is available outside of the context manager.
-                        return response
-                else:
-                    logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
+                    result = await response.json()
+                except aiohttp.ContentTypeError:
                     result = await response.text()
+                    break
 
-            if attempts_left > 0:
-                await __sleep()
+                with contextlib.suppress(ErrorInResponseJsonError):
+                    cls.__check_response(url=url, request=data_serialized, result=result)
+                    return response
+            else:
+                logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
+                result = await response.text()
+
+            await __sleep()
+            attempt += 1
 
         assert result is not None, "Result should be set at this point."
         raise CommunicationError(url, data_serialized, result)
