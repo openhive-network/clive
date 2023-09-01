@@ -13,6 +13,8 @@ from clive.__private.logger import logger
 from clive.exceptions import CliveError, CommunicationError, CommunicationTimeoutError, UnknownResponseFormatError
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from clive.__private.core.beekeeper.notification_http_server import JsonT
     from clive.exceptions import CommunicationResponseT
 
@@ -33,8 +35,16 @@ class ErrorInResponseJsonError(CliveError):
 
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
-    DEFAULT_ATTEMPTS: Final[int] = 1
+    DEFAULT_ATTEMPTS: Final[int] = 5
     TIMEOUT_TOTAL: Final[float] = 3
+    _overriden_attempts: int | None = None
+
+    @classmethod
+    @contextlib.contextmanager
+    def overriden_attempts(cls, attempts: int = 1) -> Iterator[None]:
+        cls._overriden_attempts = attempts
+        yield
+        cls._overriden_attempts = None
 
     @classmethod
     def request(
@@ -74,12 +84,15 @@ class Communication:
             await asyncio.sleep(seconds_to_sleep)
 
         assert max_attempts > 0, "Max attempts must be greater than 0."
+        max_attempts = max_attempts if not cls._overriden_attempts else 1
 
         result: CommunicationResponseT | None = None
 
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
-        for attempts_left in reversed(range(max_attempts)):
+        attempt = 0
+        timeouts_count = 0
+        while attempt < max_attempts:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=cls.TIMEOUT_TOTAL)) as session:
                 try:
                     response = await session.post(
@@ -90,7 +103,13 @@ class Communication:
                 except aiohttp.ClientError as error:
                     raise CommunicationError(url, data_serialized) from error
                 except asyncio.TimeoutError as error:
-                    raise CommunicationTimeoutError(url, data_serialized, cls.TIMEOUT_TOTAL) from error
+                    timeouts_count += 1
+                    logger.warning(f"Timeout error, request to {url=} took over {cls.TIMEOUT_TOTAL} seconds.")
+                    if timeouts_count >= max_attempts:  # there were only timeouts
+                        raise CommunicationTimeoutError(
+                            url, data_serialized, cls.TIMEOUT_TOTAL, timeouts_count
+                        ) from error
+                    continue
 
                 if response.ok:
                     try:
@@ -107,8 +126,8 @@ class Communication:
                     logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
                     result = await response.text()
 
-            if attempts_left > 0:
-                await __sleep()
+            await __sleep()
+            attempt += 1
 
         assert result is not None, "Result should be set at this point."
         raise CommunicationError(url, data_serialized, result)

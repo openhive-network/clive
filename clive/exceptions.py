@@ -63,8 +63,10 @@ class UnknownResponseFormatError(CommunicationError):
 
 
 class CommunicationTimeoutError(CommunicationError):
-    def __init__(self, url: str, request: str, timeout: float) -> None:
-        message = f"Timeout occurred during communication with: {url=}. Exceeded {timeout:.2f} seconds."
+    def __init__(self, url: str, request: str, timeout: float, attempts: int) -> None:
+        message = (
+            f"Timeout occurred during communication with: {url=}. Exceeded {attempts} attempts, each of {timeout:.2f}s."
+        )
         super().__init__(url, request, message=message)
 
 
