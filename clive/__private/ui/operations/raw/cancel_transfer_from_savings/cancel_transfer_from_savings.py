@@ -51,6 +51,12 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                 yield Static(self.__transfer.memo, classes="transfer-parameters")
             yield Static()
 
+    def action_add_to_cart(self) -> None:
+        if self.create_operation() in self.app.world.profile_data.cart:
+            self.notify("Operation already in the cart", severity="error")
+        else:
+            super().action_add_to_cart()
+
     def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
         request_id = self.__transfer.request_id
         return CancelTransferFromSavingsOperation(
