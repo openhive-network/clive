@@ -31,8 +31,6 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.storage.accounts import WorkingAccount
-
 
 SavingsWithdrawalsT = SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]
 
@@ -116,9 +114,9 @@ class SavingsBalances(AccountReferencingWidget):
 
 
 class SavingsInterestInfo(AccountReferencingWidget):
-    def __init__(self, working_account: WorkingAccount) -> None:
-        super().__init__(account=working_account)
-        self.__provider = SavingsDataProvider()
+    def __init__(self, provider: SavingsDataProvider) -> None:
+        super().__init__(account=self.app.world.profile_data.working_account)
+        self.__provider = provider
 
     def compose(self) -> ComposeResult:
         def get_interest_date() -> str:
@@ -193,14 +191,12 @@ class PendingTransfers(ScrollableContainer, CliveWidget):
 
 
 class SavingsInfo(ScrollableTabPane, CliveWidget):
-    def __init__(self, title: TextType) -> None:
+    def __init__(self, provider: SavingsDataProvider, title: TextType) -> None:
         super().__init__(title=title)
-        self.__provider = SavingsDataProvider()
+        self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        working_account: WorkingAccount = self.app.world.profile_data.working_account
-
-        yield SavingsInterestInfo(working_account)
+        yield SavingsInterestInfo(self.__provider)
         yield PendingTransfers()
 
     def on_mount(self) -> None:
@@ -218,9 +214,9 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
 
 
 class SavingsTransfers(ScrollableTabPane, OperationMethods):
-    def __init__(self, title: str = "") -> None:
+    def __init__(self, provider: SavingsDataProvider, title: TextType = "") -> None:
         super().__init__(title=title)
-        self.provider = SavingsDataProvider()
+        self.__provider = provider
 
         self.__amount_input = AssetAmountInput()
         self.__memo_input = MemoInput()
@@ -272,7 +268,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         )
 
     def __create_request_id(self) -> int:
-        pending_transfers = self.provider.content.pending_transfers
+        pending_transfers = self.__provider.content.pending_transfers
         max_number_of_request_ids: Final[int] = 100
 
         if not pending_transfers:
@@ -288,7 +284,11 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
 
 class Savings(OperationBaseScreen):
+    def __init__(self) -> None:
+        self.__provider = SavingsDataProvider()
+        super().__init__()
+
     def create_left_panel(self) -> ComposeResult:
         with TabbedContent():
-            yield SavingsInfo("savings info")
-            yield SavingsTransfers("transfer")
+            yield SavingsInfo(self.__provider, "savings info")
+            yield SavingsTransfers(self.__provider, "transfer")
