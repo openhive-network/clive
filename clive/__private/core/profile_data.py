@@ -65,10 +65,10 @@ class ProfileData(Context):
 
         if address := self.__get_secret_node_address():
             self.backup_node_addresses = [address]
-            self._node_address = address
+            self.__node_address = address
         else:
             self.backup_node_addresses = self.__default_node_address()
-            self._node_address = self.backup_node_addresses[0]
+            self.__node_address = self.backup_node_addresses[0]
 
     @property
     def working_account(self) -> WorkingAccount:
@@ -87,6 +87,14 @@ class ProfileData(Context):
     @working_account.setter
     def working_account(self, value: WorkingAccount) -> None:
         self._working_account = value
+
+    @property
+    def _node_address(self) -> Url:
+        return self.__get_secret_node_address() or self.__node_address
+
+    @_node_address.setter
+    def _node_address(self, value: Url) -> None:
+        self.__node_address = value
 
     def is_working_account_set(self) -> bool:
         return self._working_account is not None
