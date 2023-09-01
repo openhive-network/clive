@@ -86,6 +86,7 @@ class OperationMethods(CliveWidget, AbstractClassMessagePump):
             return
 
         self.app.pop_screen()
+        self.app.pop_screen()
         self.notify(f"Operation `{operation.__class__.__name__}` broadcast successfully.")
 
     def __add_to_cart(self) -> bool:
