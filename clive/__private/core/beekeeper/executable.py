@@ -106,9 +106,10 @@ class BeekeeperExecutable:
         except subprocess.TimeoutExpired:
             self.__process.kill()
             self.__process.wait()
-            warnings.warn(
-                "Beekeeper process was force-closed with SIGKILL, because didn't close before timeout", stacklevel=2
-            )
+
+            message = "Beekeeper process was force-closed with SIGKILL, because didn't close before timeout"
+            logger.error(message)
+            warnings.warn(message, stacklevel=2)
         finally:
             self.__close_files_for_streams()
             self.__process = None
