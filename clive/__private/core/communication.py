@@ -35,7 +35,7 @@ class ErrorInResponseJsonError(CliveError):
 
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
-    DEFAULT_ATTEMPTS: Final[int] = 1
+    DEFAULT_ATTEMPTS: Final[int] = 5
     TIMEOUT_TOTAL: Final[float] = 3
     _SESSION: aiohttp.ClientSession | None = None
     _overriden_attempts: int | None = None
@@ -117,6 +117,7 @@ class Communication:
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
         attempt = 0
+        timeouts_count = 0
         while attempt < max_attempts:
             try:
                 response = await cls.__get_session().post(
@@ -130,7 +131,12 @@ class Communication:
             except aiohttp.ClientError as error:
                 raise CommunicationError(url, data_serialized) from error
             except asyncio.TimeoutError as error:
-                raise CommunicationTimeoutError(url, data_serialized, cls.TIMEOUT_TOTAL) from error
+                attempt += 1
+                timeouts_count += 1
+                logger.warning(f"Timeout error, request to {url=} took over {cls.TIMEOUT_TOTAL} seconds.")
+                if timeouts_count >= max_attempts:  # there were only timeouts
+                    raise CommunicationTimeoutError(url, data_serialized, cls.TIMEOUT_TOTAL, timeouts_count) from error
+                continue
 
             if response.ok:
                 try:
