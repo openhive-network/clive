@@ -36,7 +36,7 @@ class ErrorInResponseJsonError(CliveError):
 class Communication:
     DEFAULT_POOL_TIME_SECONDS: Final[float] = 0.2
     DEFAULT_ATTEMPTS: Final[int] = 1
-    TIMEOUT_TOTAL: Final[float] = 2
+    TIMEOUT_TOTAL: Final[float] = 3
     _SESSION: aiohttp.ClientSession | None = None
     _overriden_attempts: int | None = None
 
