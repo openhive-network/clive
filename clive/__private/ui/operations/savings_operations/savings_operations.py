@@ -284,11 +284,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
 
 class Savings(OperationBaseScreen):
-    def __init__(self) -> None:
-        self.__provider = SavingsDataProvider()
-        super().__init__()
-
     def create_left_panel(self) -> ComposeResult:
-        with TabbedContent():
-            yield SavingsInfo(self.__provider, "savings info")
-            yield SavingsTransfers(self.__provider, "transfer")
+        with SavingsDataProvider() as provider, TabbedContent():
+            yield SavingsInfo(provider, "savings info")
+            yield SavingsTransfers(provider, "transfer")
