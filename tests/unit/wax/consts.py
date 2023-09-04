@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Final
+from typing import Any, Final
 
 MAINNET_CHAIN_ID: Final[bytes] = b"beeab0de00000000000000000000000000000000000000000000000000000000"
 
@@ -141,6 +141,23 @@ VALID_TRXID_SIGDIGEST_TRX: Final[list[tuple[str, str, str]]] = [
     ),
 ]
 
-
 VALID_SIG_DIGEST_WITH_TRANSACTIONS = {sig_digest: trx for _, sig_digest, trx in VALID_TRXID_SIGDIGEST_TRX}
 VALID_TRX_ID_WITH_TRANSACTIONS = {trx_id: trx for trx_id, _, trx in VALID_TRXID_SIGDIGEST_TRX}
+
+VALID_PROTO_OPERATIONS: Final[list[dict[str, Any]]] = [
+    {
+        "comment": {
+            "parent_permlink": "/",
+            "author": "alice",
+            "permlink": "/",
+            "title": "Best comment",
+            "body": "<span>comment</span>",
+            "json_metadata": "{}",
+        }
+    },
+    {"vote": {"voter": "bob", "author": "alice", "permlink": "/", "weight": 1}},
+]
+
+VALID_PROTO_TRANSACTION: Final[dict[str, Any]] = {
+    "operations": VALID_PROTO_OPERATIONS,
+}
