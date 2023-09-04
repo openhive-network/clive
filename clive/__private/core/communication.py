@@ -125,8 +125,9 @@ class Communication:
                     data=data_serialized,
                     headers={"Content-Type": "application/json"},
                 )
-            except aiohttp.ClientOSError:
+            except (aiohttp.ClientOSError, aiohttp.ServerDisconnectedError):
                 # https://github.com/aio-libs/aiohttp/issues/6138
+                logger.debug(f"Connection error, request to {url=} failed. Retrying...")
                 continue
             except aiohttp.ClientError as error:
                 raise CommunicationError(url, data_serialized) from error
