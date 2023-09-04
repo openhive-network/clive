@@ -14,6 +14,12 @@ wait_for_testnet() {
   echo "Testnet node is ready to use"
 }
 
+launch_cli() {
+  clive --install-completion >/dev/null 2>&1
+  clive beekeeper spawn # Spawn the beekeeper so commands that require it don't have to do it every time
+  bash
+}
+
 echo "TESTNET_MODE=${TESTNET_MODE}"
 echo "INTERACTIVE_CLI_MODE=${INTERACTIVE_CLI_MODE}"
 
@@ -26,8 +32,7 @@ if [ "${TESTNET_MODE}" = "0" ]; then
     clive
   else
     echo "Launching clive in CLI mode on mainnet"
-    clive beekeeper spawn  # Spawn the beekeeper so commands that require it don't have to do it every time
-    bash
+    launch_cli
   fi
 else
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
@@ -38,7 +43,6 @@ else
 
     python3 testnet_node.py --no-tui >${TESTNET_NODE_LOG_FILE} 2>&1 &
     wait_for_testnet
-    clive beekeeper spawn  # Spawn the beekeeper so commands that require it don't have to do it every time
-    bash
+    launch_cli
   fi
 fi
