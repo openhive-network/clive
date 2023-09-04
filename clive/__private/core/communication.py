@@ -125,10 +125,16 @@ class Communication:
                     data=data_serialized,
                     headers={"Content-Type": "application/json"},
                 )
-            except (aiohttp.ClientOSError, aiohttp.ServerDisconnectedError):
-                # https://github.com/aio-libs/aiohttp/issues/6138
-                logger.debug(f"Connection error, request to {url=} failed. Retrying...")
-                continue
+            except (aiohttp.ClientOSError, aiohttp.ServerDisconnectedError) as error:
+                if isinstance(error, aiohttp.ServerDisconnectedError) or "Can not write request body" in str(error):
+                    # hived webserver seems to have an issue with keep-alive connections
+                    # sometimes `aiohttp.ServerDisconnectedError` is raised, sometimes
+                    # `aiohttp.ClientOSError: [Errno None] Can not write request body` is raised.
+                    # This workaround of ignoring the error and retrying is better in terms of performance than using
+                    # a new session per every request or setting the `force_close` parameter of the aiohttp.TCPConnector
+                    logger.debug(f"Connection error, request to {url=} failed. Retrying...")
+                    continue
+                raise CommunicationError(url, data_serialized) from error
             except aiohttp.ClientError as error:
                 raise CommunicationError(url, data_serialized) from error
             except asyncio.TimeoutError as error:
