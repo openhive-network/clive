@@ -4,8 +4,10 @@ from pathlib import Path
 
 import rich
 import typer
+from click import ClickException
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Operation, Transaction
 
@@ -21,7 +23,10 @@ class OperationCommand(WorldBasedCommand, ABC):
         """Create the operation."""
 
     async def run(self) -> None:
-        key_to_sign = self.world.profile_data.working_account.keys.get(self.sign)
+        try:
+            key_to_sign = self.world.profile_data.working_account.keys.get(self.sign)
+        except KeyNotFoundError:
+            raise ClickException(f"Key `{self.sign}` was not found in the working account keys.") from None
 
         transaction = await perform_actions_on_transaction(
             content=self._create_operation(),
