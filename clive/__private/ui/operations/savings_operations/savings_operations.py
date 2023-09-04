@@ -16,6 +16,7 @@ from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_trans
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
+from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -285,6 +286,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
 class Savings(OperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
+        yield BigTitle("Savings operations")
         with SavingsDataProvider() as provider, TabbedContent():
             yield SavingsInfo(provider, "savings info")
             yield SavingsTransfers(provider, "transfer")
