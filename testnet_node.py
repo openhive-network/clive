@@ -121,7 +121,7 @@ async def prepare_profile(node: tt.InitNode) -> None:
 
         tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
         world.profile_data.working_account.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key._value, alias=f"default {WORKING_ACCOUNT.name} key")
+            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key._value, alias=f"{WORKING_ACCOUNT.name}_key")
         )
         await world.commands.sync_data_with_beekeeper()
         world.profile_data.save()
