@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import datetime
-from typing import TYPE_CHECKING
+import json
+from typing import TYPE_CHECKING, Any
 
 import wax
+from clive.__private.core.communication import CustomJSONEncoder
 from clive.exceptions import CliveError
 from clive.models import Transaction
 from clive.models.convert_to_representation import convert_to_representation
@@ -22,7 +24,10 @@ def __validate_wax_response(response: wax.python_result) -> None:
         raise WaxOperationFailedError(response.exception_message.decode())
 
 
-def __as_binary_json(item: Operation | Transaction) -> bytes:
+def __as_binary_json(item: Operation | Transaction | dict[str, Any]) -> bytes:
+    if isinstance(item, dict):
+        return json.dumps(item, cls=CustomJSONEncoder).encode()
+
     if not isinstance(item, Transaction):
         item = convert_to_representation(item)
 
@@ -35,6 +40,14 @@ def validate_transaction(transaction: Transaction) -> None:
 
 def validate_operation(operation: Operation) -> None:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
+
+
+def validate_proto_transaction(transaction: dict[str, Any]) -> None:
+    return __validate_wax_response(wax.validate_proto_transaction(__as_binary_json(transaction)))
+
+
+def validate_proto_operation(operation: dict[str, Any]) -> None:
+    return __validate_wax_response(wax.validate_proto_operation(__as_binary_json(operation)))
 
 
 def calculate_sig_digest(transaction: Transaction, chain_id: str) -> str:
