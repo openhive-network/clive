@@ -100,3 +100,19 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
     )
     __validate_wax_response(result)
     return int(result.result.decode())
+
+
+def general_asset(asset_num: int, amount: int) -> wax.python_json_asset:
+    return wax.general_asset(asset_num=asset_num, amount=amount)
+
+
+def hive(amount: int) -> wax.python_json_asset:
+    return wax.hive(amount=amount)
+
+
+def hbd(amount: int) -> wax.python_json_asset:
+    return wax.hbd(amount=amount)
+
+
+def vests(amount: int) -> wax.python_json_asset:
+    return wax.vests(amount=amount)
