@@ -134,12 +134,12 @@ class Clive(App[int], ManualReactive):
             self.__cleanup()
         return 1
 
-    def on_mount(self) -> None:
+    async def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
         self.__class__.is_launched = True
-        self.mount(self.world)
+        await self.mount(self.world)
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
 
@@ -149,9 +149,9 @@ class Clive(App[int], ManualReactive):
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
 
         if __should_enter_onboarding():
-            self.push_screen(Onboarding())
+            await self.push_screen(Onboarding())
         else:
-            self.push_screen(DashboardInactive())
+            await self.push_screen(DashboardInactive())
 
     def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
         new_, _ = self._get_screen(new)
