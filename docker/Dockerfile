@@ -23,9 +23,6 @@ RUN poetry self update && \
 # crucial for proper display
 ENV COLORTERM=truecolor
 
-ARG INTERACTIVE_CLI_MODE=0
-ENV INTERACTIVE_CLI_MODE=${INTERACTIVE_CLI_MODE}
-
 ENV TESTNET_MODE=0
 
 ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
