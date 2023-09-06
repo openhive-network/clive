@@ -128,12 +128,11 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
-            async with TextualWorld() as world:
-                self.__class__.world = world
-                return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
+            return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
         except CancelledError:
             pass
         finally:
+            await self.__close_world()
             self.__cleanup()
         return 1
 
@@ -141,7 +140,8 @@ class Clive(App[int], ManualReactive):
         def __should_enter_onboarding() -> bool:
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
-        await self.mount(self.world)
+        await self.__create_world()
+
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
 
@@ -156,7 +156,9 @@ class Clive(App[int], ManualReactive):
             await self.push_screen(DashboardInactive())
         self.__set_launched()
 
-    def on_unmount(self) -> None:
+    async def on_unmount(self) -> None:
+        logger.debug("Unmounting...")  # BUG: this is called executed 2 times
+        await self.__close_world()
         self.__cleanup()
 
     def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
@@ -398,3 +400,22 @@ class Clive(App[int], ManualReactive):
     @classmethod
     def __is_already_cleaned_up(cls) -> bool:
         return cls.__is_cleaned_up
+
+    async def __create_world(self) -> TextualWorld:
+        world = await TextualWorld().setup()
+        self.__class__.world = world
+        await self.mount(world)
+        return world
+
+    async def __close_world(self) -> None:
+        if self.__is_world_set():
+            await self.world.close()
+            self.__set_world(None)
+
+    @classmethod
+    def __set_world(cls, world: TextualWorld | None) -> None:
+        cls.world = world  # type: ignore[assignment]
+
+    @classmethod
+    def __is_world_set(cls) -> bool:
+        return cls.world is not None
