@@ -4,6 +4,16 @@ set -euo pipefail
 
 TESTNET_NODE_LOG_FILE=testnet_node.log
 
+print_help() {
+  echo "Usage: $0 [OPTION]..."
+  echo
+  echo "An entrypoint script for the clive docker container."
+  echo "OPTIONS:"
+  echo "  --cli                                 Launch clive in the interactive CLI mode (default is TUI)"
+  echo "  -h / --help                           Display this help screen and exit"
+  echo
+}
+
 wait_for_testnet() {
   LIMIT=120 # seconds
   TARGET_SUBSTRING="Serving forever"
@@ -20,8 +30,32 @@ launch_cli() {
   bash
 }
 
-echo "TESTNET_MODE=${TESTNET_MODE}"
-echo "INTERACTIVE_CLI_MODE=${INTERACTIVE_CLI_MODE}"
+INTERACTIVE_CLI_MODE=0
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+  --cli)
+    INTERACTIVE_CLI_MODE=1
+    ;;
+  -h | --help)
+    print_help
+    exit 0
+    ;;
+  -*)
+    echo "ERROR: '$1' is not a valid option"
+    echo
+    print_help
+    exit 1
+    ;;
+  *)
+    echo "ERROR: '$1' is not a valid argument"
+    echo
+    print_help
+    exit 2
+    ;;
+  esac
+  shift
+done
 
 # Activate the virtual environment
 source $(poetry env info --path)/bin/activate
