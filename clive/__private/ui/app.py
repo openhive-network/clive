@@ -77,6 +77,9 @@ class Clive(App[int], ManualReactive):
     is_launched: ClassVar[bool] = False
     """Whether the Clive app is currently launched."""
 
+    __is_cleaned_up: ClassVar[bool] = False
+    """Whether the Clive app is currently cleaned up."""
+
     world: ClassVar[TextualWorld] = None  # type: ignore
 
     logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
@@ -138,7 +141,6 @@ class Clive(App[int], ManualReactive):
         def __should_enter_onboarding() -> bool:
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
-        self.__class__.is_launched = True
         await self.mount(self.world)
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
@@ -152,6 +154,10 @@ class Clive(App[int], ManualReactive):
             await self.push_screen(Onboarding())
         else:
             await self.push_screen(DashboardInactive())
+        self.__set_launched()
+
+    def on_unmount(self) -> None:
+        self.__cleanup()
 
     def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
         new_, _ = self._get_screen(new)
@@ -370,5 +376,25 @@ class Clive(App[int], ManualReactive):
         super()._handle_exception(error)
 
     def __cleanup(self) -> None:
+        if self.__is_already_cleaned_up():
+            return
+
         logger.debug("Cleaning up...")
-        self.__class__.is_launched = False
+        self.__set_closed()
+        self.__set_cleaned_up()
+
+    @classmethod
+    def __set_launched(cls) -> None:
+        cls.is_launched = True
+
+    @classmethod
+    def __set_closed(cls) -> None:
+        cls.is_launched = False
+
+    @classmethod
+    def __set_cleaned_up(cls) -> None:
+        cls.__is_cleaned_up = True
+
+    @classmethod
+    def __is_already_cleaned_up(cls) -> bool:
+        return cls.__is_cleaned_up
