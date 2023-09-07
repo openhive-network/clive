@@ -172,12 +172,13 @@ class Beekeeper:
         self.__notification_server.detach_wallet_closing_listener(listener)
 
     async def __start(self, *, timeout: float = 5.0) -> None:
-        logger.info("Starting Beekeeper...")
         self.is_starting = True
         self.__notification_server_port = await self.__notification_server.listen()
         if not (remote := self.get_remote_address_from_settings()):
+            logger.info("Starting Beekeeper...")
             await self.__run_beekeeper(timeout=timeout)
         else:
+            logger.info(f"Using remote Beekeeper on {remote}.")
             self.config.webserver_http_endpoint = remote
 
         assert self.config.webserver_http_endpoint is not None
