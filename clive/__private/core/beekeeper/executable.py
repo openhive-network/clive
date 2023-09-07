@@ -78,7 +78,6 @@ class BeekeeperExecutable:
         command = ["nohup"] if self.__run_in_background else []
         command += [str(self.__executable.absolute())]
         command += ["--data-dir", self.__config.wallet_dir.as_posix()]
-        command += ["--allow-implicit-session", "0"]
 
         try:
             self.__process = Popen(

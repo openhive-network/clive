@@ -77,7 +77,6 @@ class Beekeeper:
 
     async def launch(self) -> Self:
         await self.__start()
-        await self.__set_token()
         assert self.token
         return self
 
@@ -94,7 +93,11 @@ class Beekeeper:
             raise BeekeeperTokenNotAvailableError
         return self.__token
 
-    async def __set_token(self) -> None:
+    async def __set_token(self, value: str | None = None) -> None:
+        if value:
+            self.__token = value
+            return
+
         self.__token = (
             await self.api.create_session(
                 notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
@@ -180,6 +183,7 @@ class Beekeeper:
         else:
             logger.info(f"Using remote Beekeeper on {remote}.")
             self.config.webserver_http_endpoint = remote
+            await self.__set_token()
 
         assert self.config.webserver_http_endpoint is not None
         self.is_running = True
@@ -201,9 +205,13 @@ class Beekeeper:
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         self.__executable.run()
 
+        if await event_wait(self.__notification_server.startup_token_available, timeout):
+            await self.__set_token(self.__notification_server.startup_token)
+
         if await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
             # another instance of beekeeper is already running
             await self.__close_beekeeper(close_notification_server=False)
+            await self.__set_token()
         elif not (
             await event_wait(self.__notification_server.http_listening_event, timeout)
             and await event_wait(self.__notification_server.ready, timeout)

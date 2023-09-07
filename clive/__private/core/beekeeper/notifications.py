@@ -28,7 +28,9 @@ class BeekeeperNotificationsServer:
         self.opening_beekeeper_failed = Event()
         self.http_listening_event = Event()
         self.ready = Event()
+        self.startup_token_available = Event()
         self.http_endpoint: Url | None = None
+        self.startup_token: str | None = None
         self.__wallet_closing_listeners: set[WalletClosingListener] = set()
 
     async def listen(self) -> int:
@@ -41,7 +43,10 @@ class BeekeeperNotificationsServer:
         name = message["name"]
         details = message["value"]
 
-        if name == "webserver listening":
+        if name == "hived_status" and "starting a session with token" in details["current_status"]:
+            self.startup_token = details["current_status"].split()[-1]
+            self.startup_token_available.set()
+        elif name == "webserver listening":
             if details["type"] == "HTTP":
                 self.http_endpoint = self.__parse_endpoint_notification(details)
                 logger.debug(f"Got notification with http address on: {self.http_endpoint}")
