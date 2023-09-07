@@ -191,6 +191,13 @@ class Beekeeper:
         await self.launch()
 
     async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
+        """
+        RUn the local beekeeper instance.
+
+        Raises
+        ------
+        BeekeeperCouldNotStartError: If failed to start new beekeeper instance / connect to existing one
+        """
         self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         self.__executable.run()
 
@@ -202,7 +209,7 @@ class Beekeeper:
             and await event_wait(self.__notification_server.ready, timeout)
         ):
             await self.__close_beekeeper()
-            return
+            raise BeekeeperNotRunningError("Mandatory notifications did not arrive on time.")
 
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
