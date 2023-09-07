@@ -195,9 +195,8 @@ class Beekeeper:
         self.__executable.run()
 
         if await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
-            await self.__close_beekeeper()
-            self.__notification_server_port = await self.__notification_server.listen()
-            self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
+            # another instance of beekeeper is already running
+            await self.__close_beekeeper(close_notification_server=False)
         elif not (
             await event_wait(self.__notification_server.http_listening_event, timeout)
             and await event_wait(self.__notification_server.ready, timeout)
@@ -208,13 +207,15 @@ class Beekeeper:
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
 
-    async def __close_beekeeper(self) -> None:
+    async def __close_beekeeper(self, *, close_notification_server: bool = True) -> None:
         try:
             self.__executable.close()
         finally:
-            self.__notification_server_port = None
             self.config.webserver_http_endpoint = webserver_default()
-            await self.__notification_server.close()
+
+            if close_notification_server:
+                await self.__notification_server.close()
+                self.__notification_server_port = None
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
