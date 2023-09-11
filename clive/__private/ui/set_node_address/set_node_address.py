@@ -27,7 +27,6 @@ if TYPE_CHECKING:
     from rich.text import Text
     from textual.app import ComposeResult
 
-    from clive.__private.core.node import Node
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.ui.shared.form import Form
 
@@ -65,8 +64,7 @@ class NodesList(Container, CliveWidget):
 
 
 class NodeUrlHighlighter(Highlighter):
-    def __init__(self, node: Node) -> None:
-        self.node = node
+    def __init__(self) -> None:
         self.__last_highlight_time = datetime.now()
         self.__last_style = "white"
         super().__init__()
@@ -81,7 +79,7 @@ class NodeUrlHighlighter(Highlighter):
 
     def is_valid_url(self, url: str) -> bool:
         try:
-            Communication.request(url, data=JSONRPCRequest(method="database_api.get_config"))
+            Communication().request(url, data=JSONRPCRequest(method="database_api.get_config"))
         except CommunicationError:
             return False
         return True
@@ -101,7 +99,7 @@ class ManualNode(Container, CliveWidget):
         yield Input(
             placeholder=f"e.g.: {self.app.world.node.address}",
             id="node-address-input",
-            highlighter=NodeUrlHighlighter(self.app.world.node),
+            highlighter=NodeUrlHighlighter(),
         )
         yield CliveButton("Save", id_="save-node-address-button")
 

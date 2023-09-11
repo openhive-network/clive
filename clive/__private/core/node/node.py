@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -10,6 +11,7 @@ from clive.exceptions import CliveError, CommunicationError
 from schemas.__private.hive_factory import HiveError, HiveResult, T
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from types import TracebackType
 
     from typing_extensions import Self
@@ -73,8 +75,9 @@ class _BatchRequestResponseItem:
 
 
 class _BatchNode(BaseNode):
-    def __init__(self, url: Url) -> None:
+    def __init__(self, url: Url, communication: Communication) -> None:
         self.__url = url
+        self.__communication = communication
         self.__batch: list[_BatchRequestResponseItem] = []
         self.api = Apis(self)
 
@@ -88,7 +91,7 @@ class _BatchNode(BaseNode):
     async def __evaluate(self) -> None:
         query = "[" + ",".join([x.request for x in self.__batch]) + "]"
         responses: list[dict[str, Any]] = await (
-            await Communication.arequest(url=self.__url.as_string(), data=query)
+            await self.__communication.arequest(url=self.__url.as_string(), data=query)
         ).json()
         assert len(responses) == len(self.__batch), "invalid amount of responses"
         for response in responses:
@@ -103,8 +106,9 @@ class _BatchNode(BaseNode):
 
 
 class Node(BaseNode):
-    def __init__(self, profile_data: ProfileData) -> None:
+    def __init__(self, profile_data: ProfileData, communication: Communication | None = None) -> None:
         self.__profile_data = profile_data
+        self.__communication = communication or Communication()
         self.api = Apis(self)
         self.__network_type = ""
 
@@ -120,7 +124,18 @@ class Node(BaseNode):
             # dgpo.time # this will raise Error
         dgpo.time # this is legit call
         """
-        return _BatchNode(url=self.address)
+        return _BatchNode(self.address, self.__communication)
+
+    @contextmanager
+    def modified_connection_details(
+        self,
+        max_attempts: int = Communication.DEFAULT_ATTEMPTS,
+        timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
+    ) -> Iterator[None]:
+        """Allows to temporarily change connection details."""
+        with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
+            yield
 
     async def setup(self) -> None:
         await self.__sync_node_version()
@@ -140,7 +155,7 @@ class Node(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
-        response = await Communication.arequest(address, data=serialized_request)
+        response = await self.__communication.arequest(address, data=serialized_request)
         data = await response.json()
         response_model: HiveResult[T] | HiveError = HiveResult.factory(expect_type, **data)
         if isinstance(response_model, HiveResult):

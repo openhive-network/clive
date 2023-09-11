@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from contextlib import contextmanager
 from http import HTTPStatus
 from typing import TYPE_CHECKING, Any
 
@@ -27,7 +28,7 @@ from clive.core.url import Url
 from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
     from pathlib import Path
     from types import TracebackType
 
@@ -48,6 +49,7 @@ class Beekeeper:
     def __init__(
         self,
         *,
+        communication: Communication | None = None,
         remote_endpoint: Url | None = None,
         run_in_background: bool = False,
         notify_closing_wallet_name_cb: Callable[[], str] | None = None,
@@ -58,6 +60,7 @@ class Beekeeper:
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError
 
+        self.__communication = communication or Communication()
         self.__run_in_background = run_in_background
         self.is_running = False
         self.is_starting = False
@@ -115,6 +118,17 @@ class Beekeeper:
     def pid(self) -> int:
         return self.__executable.pid
 
+    @contextmanager
+    def modified_connection_details(
+        self,
+        max_attempts: int = Communication.DEFAULT_ATTEMPTS,
+        timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
+    ) -> Iterator[None]:
+        """Allows to temporarily change connection details."""
+        with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
+            yield
+
     @staticmethod
     def get_pid_from_file() -> int:
         return BeekeeperExecutable.get_pid_from_file()
@@ -130,7 +144,7 @@ class Beekeeper:
 
         url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        response = await Communication.arequest(url, data=request.json(by_alias=True))
+        response = await self.__communication.arequest(url, data=request.json(by_alias=True))
 
         if response.status != HTTPStatus.OK:
             raise BeekeeperNon200StatusCodeError
