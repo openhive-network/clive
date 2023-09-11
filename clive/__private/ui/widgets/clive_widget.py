@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing
 from typing import TYPE_CHECKING
 
+from textual.css.query import NoMatches
 from textual.widget import Widget
 from textual.widgets import Footer
 
@@ -58,6 +59,10 @@ class CliveWidget(Widget):
         self._refresh_footer_bindings()
 
     def _refresh_footer_bindings(self) -> None:
-        footer = self.app.query_one(Footer)
+        try:
+            footer = self.app.query_one(Footer)
+        except NoMatches:
+            return
+
         footer._key_text = None  # needs to be set to None, otherwise the footer won't update bindings on refresh()
         footer.refresh()
