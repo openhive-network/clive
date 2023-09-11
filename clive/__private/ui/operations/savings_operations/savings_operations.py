@@ -11,6 +11,7 @@ from textual.reactive import var
 from textual.widgets import Button, RadioButton, RadioSet, Static, TabbedContent
 
 from clive.__private.config import settings
+from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -81,10 +82,6 @@ odd = "OddColumn"
 even = "EvenColumn"
 
 
-class PlaceTaker(Static):
-    """Using to ensure valid display of the grid."""
-
-
 class CliveRadioButton(RadioButton):
     """Due to bug in Ubuntu we have to replace icon of the RadioButton by simple 'O'."""
 
@@ -121,10 +118,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
 
     def compose(self) -> ComposeResult:
         def get_interest_date() -> str:
-            last_interest_payment = self.__provider.content.last_interest_payment.replace(tzinfo=None).isoformat()
-
-            if last_interest_payment == "1970-01-01T00:00:00":
-                return "Last interest payment: Never"
+            last_interest_payment = humanize_datetime(self.__provider.content.last_interest_payment)
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
 
         def get_estimated_interest() -> str:
@@ -158,7 +152,7 @@ class PendingTransfer(CliveWidget):
 
     @property
     def __realized_on(self) -> str:
-        return self.__transfer.complete.replace(tzinfo=None).isoformat()
+        return humanize_datetime(self.__transfer.complete)
 
     @on(Button.Pressed, "#delete-transfer-button")
     def move_to_cancel_transfer(self) -> None:
