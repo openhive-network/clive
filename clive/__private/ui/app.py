@@ -139,6 +139,7 @@ class Clive(App[int], ManualReactive):
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
         self.__class__.is_launched = True
+        self.__amount_of_fails_during_update_node_data = 0
         self.mount(self.world)
         self.console.set_window_title("Clive")
         RaiseExceptionHelper.initialize()
@@ -327,7 +328,6 @@ class Clive(App[int], ManualReactive):
         with contextlib.suppress(NoWorkingAccountError):
             accounts.append(self.world.profile_data.working_account)
         accounts.extend(self.world.profile_data.watched_accounts)
-        self.__amount_of_fails_during_update_node_data = 0
 
         try:
             await self.world.commands.update_node_data(accounts=accounts)
