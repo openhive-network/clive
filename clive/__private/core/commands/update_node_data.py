@@ -7,7 +7,10 @@ from math import ceil
 from typing import TYPE_CHECKING, Final, cast
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.core.iwax import calculate_current_manabar_value, calculate_manabar_full_regeneration_time
+from clive.__private.core.iwax import (
+    calculate_current_manabar_value,
+    calculate_manabar_full_regeneration_time,
+)
 from clive.__private.stopwatch import Stopwatch
 from clive.exceptions import CommunicationError
 from clive.models import Asset
@@ -314,14 +317,23 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             ).amount
         )
 
-        dest.full_regeneration = (
+        dest.full_regeneration = self.__get_manabar_regeneration_time(
+            gdpo_time=gdpo.time, max_mana=max_mana, current_mana=power_from_api, last_update_time=last_update
+        )
+
+    def __get_manabar_regeneration_time(
+        self, gdpo_time: datetime, max_mana: int, current_mana: int, last_update_time: int
+    ) -> timedelta:
+        if max_mana <= 0:
+            return timedelta(0)
+        return (
             calculate_manabar_full_regeneration_time(
-                now=int(gdpo.time.timestamp()),
+                now=int(gdpo_time.timestamp()),
                 max_mana=max_mana,
-                current_mana=power_from_api,
-                last_update_time=last_update,
+                current_mana=current_mana,
+                last_update_time=last_update_time,
             )
-            - gdpo.time
+            - gdpo_time
         )
 
     def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: DynamicGlobalPropertiesT) -> Asset.Hive:
