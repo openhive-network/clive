@@ -25,21 +25,16 @@ from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInpu
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.models import Asset
-from schemas.__private.operations.transfer_from_savings_operation import TransferFromSavingsOperation
-from schemas.__private.operations.transfer_to_savings_operation import TransferToSavingsOperation
-from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
+from clive.models.aliased import SavingsWithdrawals, TransferFromSavings, TransferToSavings
 
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
 
-SavingsWithdrawalsT = SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]
-
-
 @dataclass
 class SavingsData:
-    pending_transfers: list[SavingsWithdrawalsT] | None = None
+    pending_transfers: list[SavingsWithdrawals] | None = None
     hbd_interest_rate: int = 1000
     last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
 
@@ -80,6 +75,9 @@ class SavingsDataProvider(CliveWidget):
 
 odd = "OddColumn"
 even = "EvenColumn"
+
+TransferToSavingsT = TransferToSavings[Asset.Hive, Asset.Hbd]
+TransferFromSavingsT = TransferFromSavings[Asset.Hive, Asset.Hbd]
 
 
 class CliveRadioButton(RadioButton):
@@ -138,7 +136,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
 class PendingTransfer(CliveWidget):
     """class which represents one pending transfer."""
 
-    def __init__(self, transfer: SavingsWithdrawalsT):
+    def __init__(self, transfer: SavingsWithdrawals):
         super().__init__()
         self.__transfer = transfer
 
@@ -170,7 +168,7 @@ class PendingHeader(CliveWidget):
 
 
 class PendingTransfers(ScrollableContainer, CliveWidget):
-    def __init__(self, pending_transfers: list[SavingsWithdrawalsT] | None = None) -> None:
+    def __init__(self, pending_transfers: list[SavingsWithdrawals] | None = None) -> None:
         super().__init__()
         self.__pending_transfers = pending_transfers
 
@@ -235,14 +233,14 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
     def _create_operation(
         self,
-    ) -> TransferToSavingsOperation[Asset.Hive, Asset.Hbd] | TransferFromSavingsOperation[Asset.Hive, Asset.Hbd] | None:
+    ) -> TransferToSavingsT | TransferFromSavingsT | None:
         asset = self.__amount_input.value
 
         if not asset:
             return None
 
         if self.__to_button.value:
-            return TransferToSavingsOperation(
+            return TransferToSavings(
                 from_=self.app.world.profile_data.working_account.name,
                 to=self.__to_account_input.value,
                 amount=asset,
@@ -254,7 +252,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             self.notify("Maximum quantity of request ids is 100!", severity="error")
             return None
 
-        return TransferFromSavingsOperation(
+        return TransferFromSavings(
             from_=self.app.world.profile_data.working_account.name,
             to=self.__to_account_input.value,
             amount=asset,
