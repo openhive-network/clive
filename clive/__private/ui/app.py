@@ -16,7 +16,6 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
-from clive.__private.core.raise_exception_helper import RaiseExceptionHelper
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.app_messages import ProfileDataUpdated
@@ -142,7 +141,6 @@ class Clive(App[int], ManualReactive):
         self.__amount_of_fails_during_update_node_data = 0
         self.mount(self.world)
         self.console.set_window_title("Clive")
-        RaiseExceptionHelper.initialize()
 
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
 
@@ -336,7 +334,7 @@ class Clive(App[int], ManualReactive):
             self.__amount_of_fails_during_update_node_data += 1
             logger.warning(f"Update node data failed {self.__amount_of_fails_during_update_node_data} times: {error}")
             if self.__amount_of_fails_during_update_node_data >= allowed_fails_of_update_node_data:
-                RaiseExceptionHelper.raise_exception_in_main_thread(error)
+                raise
         else:
             self.world.update_reactive("profile_data")
             self.world.update_reactive("app_state")
