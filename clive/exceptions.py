@@ -132,3 +132,7 @@ class CannotActivateError(CliveError):
 
 class TransactionNotSignedError(CliveError):
     pass
+
+
+class RequestIdError(CliveError):
+    """Raise when quantity of request_ids is greater than 100."""
