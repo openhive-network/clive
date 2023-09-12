@@ -22,6 +22,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
+from clive.exceptions import RequestIdError
 from clive.models import Asset
 from clive.models.aliased import SavingsWithdrawals, TransferFromSavings, TransferToSavings
 
@@ -39,10 +40,6 @@ TransferFromSavingsT = TransferFromSavings[Asset.Hive, Asset.Hbd]
 
 class Body(Grid):
     """Holds all places using to create transfers from/to savings."""
-
-
-class RequestIdError(Exception):
-    """Raise when quantity of request_ids is greater than 100."""
 
 
 class SavingsBalances(AccountReferencingWidget):
