@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Generic, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
@@ -44,8 +44,15 @@ WorldT = TypeVar("WorldT", bound="World")
 
 class Commands(Generic[WorldT]):
     def __init__(
-        self, world: WorldT, *, exception_handlers: list[type[ErrorHandlerContextManager]] | None = None
+        self,
+        world: WorldT,
+        exception_handlers: list[type[ErrorHandlerContextManager]] | None = None,
+        *args: Any,
+        **kwargs: Any,
     ) -> None:
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(*args, **kwargs)
+
         self._world = world
         self.__exception_handlers = [AsyncClosedErrorHandler, *(exception_handlers or [])]
 
