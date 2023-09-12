@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual import on
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
 from textual.css.query import NoMatches
-from textual.widgets import Button, RadioButton, RadioSet, Static, TabbedContent
+from textual.widgets import Button, RadioSet, Static, TabbedContent
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
@@ -16,6 +16,7 @@ from clive.__private.ui.operations.savings_operations.savings_data import Saving
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
@@ -34,12 +35,6 @@ even = "EvenColumn"
 
 TransferToSavingsT = TransferToSavings[Asset.Hive, Asset.Hbd]
 TransferFromSavingsT = TransferFromSavings[Asset.Hive, Asset.Hbd]
-
-
-class CliveRadioButton(RadioButton):
-    """Due to bug in Ubuntu we have to replace icon of the RadioButton by simple 'O'."""
-
-    BUTTON_INNER = "O"
 
 
 class Body(Grid):
