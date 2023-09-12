@@ -21,12 +21,13 @@ def default_vests() -> Asset.Vests:
 @dataclass
 class Manabar:
     value: int = 0
-    max_value: int = 1
+    max_value: int = 0
     full_regeneration: timedelta = field(default_factory=timedelta)
 
     @property
     def percentage(self) -> float:
-        assert self.max_value > 0
+        if self.max_value <= 0:
+            return 0.0
         return (self.value * 100.0) / self.max_value
 
 
