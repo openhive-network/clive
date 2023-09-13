@@ -22,11 +22,12 @@ def __any_arguments_given() -> bool:
 
 
 async def _main() -> None:
-    __disable_schemas_extra_fields_check()
     with thread_pool:
         if is_tab_completion_active():
             cli()
             return
+
+        __disable_schemas_extra_fields_check()
 
         if not __any_arguments_given():
             await run_tui()
