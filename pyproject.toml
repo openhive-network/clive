@@ -149,6 +149,3 @@ required-imports = ["from __future__ import annotations"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "--strict-markers"
-markers = [
-    "sequential: mark test to run sequentially, skipping pytest-xdist",
-]

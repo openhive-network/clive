@@ -2,12 +2,9 @@ from __future__ import annotations
 
 import subprocess
 
-import pytest
-
 from clive.__private.logger import logger
 
 
-@pytest.mark.sequential()
 def test_autocompletion_time() -> None:
     # ARRANGE
     seconds_threshold = 0.5
