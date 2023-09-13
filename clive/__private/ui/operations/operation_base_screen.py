@@ -85,8 +85,7 @@ class OperationMethods(CliveWidget, AbstractClassMessagePump):
         if not (await self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)).success:
             return
 
-        self.app.pop_screen()
-        self.app.pop_screen()
+        self.app.pop_screen_until("Operations")
         self.notify(f"Operation `{operation.__class__.__name__}` broadcast successfully.")
 
     def __add_to_cart(self) -> bool:
