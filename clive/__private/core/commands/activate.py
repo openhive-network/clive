@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.exceptions import CannotActivateError, CommunicationError
+from clive.exceptions import CannotActivateError, CommunicationError, KnownError
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
 
 
-class WalletDoesNotExistsError(CannotActivateError):
+class WalletDoesNotExistsError(KnownError, CannotActivateError):
     ERROR_MESSAGE: ClassVar[str] = "Assert Exception:wallet->load_wallet_file(): Unable to open file: "
 
 

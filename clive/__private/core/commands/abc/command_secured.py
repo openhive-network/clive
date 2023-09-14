@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from abc import ABC
 from dataclasses import dataclass
-from typing import Final
+from typing import ClassVar
 
 from clive.__private.core.commands.abc.command import Command
-from clive.exceptions import CliveError, CommunicationError
+from clive.exceptions import CommunicationError, KnownError
 
 
-class InvalidPasswordError(CliveError):
-    ERROR_MESSAGE: Final[str] = "Invalid password for wallet: "
+class InvalidPasswordError(KnownError):
+    ERROR_MESSAGE: ClassVar[str] = "Invalid password for wallet: "
 
 
 @dataclass(kw_only=True)

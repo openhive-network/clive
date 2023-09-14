@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, TypeAlias
 
+from clive.__private.abstract_class import AbstractClass
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
@@ -12,6 +13,16 @@ if TYPE_CHECKING:
 
 class CliveError(Exception):
     """Base class for all clive exceptions."""
+
+
+class KnownError(CliveError, AbstractClass):
+    """
+    A CliveError that stores the error message that is known to be raised by some external service.
+
+    All errors of this type should define `ERROR_MESSAGE` class variable.
+    """
+
+    ERROR_MESSAGE: ClassVar[str]
 
 
 class CommunicationError(CliveError):
