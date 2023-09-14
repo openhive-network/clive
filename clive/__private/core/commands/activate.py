@@ -24,12 +24,13 @@ class Activate(CommandPasswordSecured):
     beekeeper: Beekeeper
     wallet: str
     time: timedelta | None = None
+    permanent: bool = False
 
     async def _execute(self) -> None:
         try:
             await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
-            if self.time is not None:
-                await SetTimeout(beekeeper=self.beekeeper, seconds=int(self.time.total_seconds())).execute()
+            if activation_seconds := self.__get_activation_seconds():
+                await SetTimeout(beekeeper=self.beekeeper, seconds=activation_seconds).execute()
         except CommunicationError as error:
             for arg_raw in error.args:
                 arg = arg_raw["error"]["message"] if isinstance(arg_raw, dict) else arg_raw
@@ -38,3 +39,14 @@ class Activate(CommandPasswordSecured):
             raise CannotActivateError(error) from error
 
         self.app_state.activate()
+
+    def __get_activation_seconds(self) -> int | None:
+        if self.permanent:
+            # beekeeper does not support permanent activation in a convenient way, we have to pass a very big number
+            # which is uint32 max value
+            return 2**32 - 1
+
+        if self.time is None:
+            return None
+
+        return int(self.time.total_seconds())

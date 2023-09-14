@@ -56,7 +56,9 @@ class Commands(Generic[WorldT]):
         self._world = world
         self.__exception_handlers = [AsyncClosedErrorHandler, *(exception_handlers or [])]
 
-    async def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
+    async def activate(
+        self, *, password: str, time: timedelta | None = None, permanent: bool = False
+    ) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             Activate(
                 app_state=self._world.app_state,
@@ -64,6 +66,7 @@ class Commands(Generic[WorldT]):
                 wallet=self._world.profile_data.name,
                 password=password,
                 time=time,
+                permanent=permanent,
             )
         )
 
@@ -253,8 +256,10 @@ class TextualCommands(Commands["TextualWorld"], CliveWidget):
     def __init__(self, world: TextualWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
-    async def activate(self, *, password: str, time: timedelta | None = None) -> CommandWrapper:
-        wrapper = await super().activate(password=password, time=time)
+    async def activate(
+        self, *, password: str, time: timedelta | None = None, permanent: bool = False
+    ) -> CommandWrapper:
+        wrapper = await super().activate(password=password, time=time, permanent=permanent)
         self._world.update_reactive("app_state")
         return wrapper
 
