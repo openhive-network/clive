@@ -3,11 +3,13 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
 
 import typer
+from click import ClickException
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel
 from clive.__private.core._async import asyncio_run
+from clive.__private.core.commands.activate import ActivateInvalidPasswordError
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -68,7 +70,10 @@ class OperationCommon(CommonBaseModel):
                 ) as world:
                     cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
                     ctx.params.update(world=world)
-                    await world.commands.activate(password=password)
+                    try:
+                        await world.commands.activate(password=password)
+                    except ActivateInvalidPasswordError:
+                        raise ClickException("Invalid password.") from None
                     await func(ctx, *args, **kwargs)
 
             asyncio_run(impl())
