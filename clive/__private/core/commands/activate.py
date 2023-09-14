@@ -32,10 +32,8 @@ class Activate(CommandPasswordSecured):
             if activation_seconds := self.__get_activation_seconds():
                 await SetTimeout(beekeeper=self.beekeeper, seconds=activation_seconds).execute()
         except CommunicationError as error:
-            for arg_raw in error.args:
-                arg = arg_raw["error"]["message"] if isinstance(arg_raw, dict) else arg_raw
-                if WalletDoesNotExistsError.ERROR_MESSAGE in arg:
-                    raise WalletDoesNotExistsError(error) from error
+            if WalletDoesNotExistsError.ERROR_MESSAGE in str(error):
+                raise WalletDoesNotExistsError(error) from error
             raise CannotActivateError(error) from error
 
         self.app_state.activate()
