@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import asyncio
 from contextlib import contextmanager
 from http import HTTPStatus
+from time import perf_counter
 from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, validator
@@ -70,6 +72,7 @@ class Beekeeper:
         self.api = BeekeeperApi(self)
         self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)
         self.__token: str | None = None
+        self.__next_time_unlock = perf_counter()
 
     async def __aenter__(self) -> Self:
         return await self.launch()
@@ -144,6 +147,8 @@ class Beekeeper:
 
         url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
+
+        await self.__delay_on_unlock(endpoint)
         response = await self.__communication.arequest(
             url,
             data=request.json(by_alias=True),
@@ -164,6 +169,18 @@ class Beekeeper:
 
         logger.info(f"Returning model: {return_value}")
         return return_value
+
+    async def __delay_on_unlock(self, endpoint: str) -> None:
+        seconds_to_wait = 0.6
+        endpoint_to_wait = "beekeeper_api.unlock"
+        if endpoint != endpoint_to_wait:
+            return
+
+        while perf_counter() < self.__next_time_unlock:
+            logger.debug(f"Waiting for {endpoint_to_wait} to be available...")
+            await asyncio.sleep(0.1)
+
+        self.__next_time_unlock = perf_counter() + seconds_to_wait
 
     async def __assert_is_running(self) -> None:
         if self.is_starting:
