@@ -129,6 +129,12 @@ class Beekeeper:
         with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
             yield
 
+    @contextmanager
+    def do_not_retry_on_error(self, error_message: str = "") -> Iterator[None]:
+        """Allows to temporarily disable retrying on error."""
+        with self.__communication.do_not_retry_on_error(error_message):
+            yield
+
     @staticmethod
     def get_pid_from_file() -> int:
         return BeekeeperExecutable.get_pid_from_file()

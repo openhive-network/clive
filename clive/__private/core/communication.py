@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+from dataclasses import dataclass
 import json
 from contextlib import contextmanager
 from datetime import datetime
@@ -32,6 +33,15 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 class ErrorInResponseJsonError(CliveError):
     """Raised if "error" field found in response json."""
+    def __init__(self, error_content: str) -> None:
+        self.error_content = error_content
+        super().__init__(f"Error in response json: {error_content}")
+
+
+@dataclass
+class DoNotRetryOnError:
+    enabled: bool = False
+    error_message: str | None = None
 
 
 class Communication:
@@ -49,6 +59,7 @@ class Communication:
         self.__max_attempts = max_attempts
         self.__timeout_secs = timeout_secs
         self.__pool_time_secs = pool_time_secs
+        self.__do_not_retry_on_error = DoNotRetryOnError()
 
         assert self.__max_attempts > 0, "Max attempts must be greater than 0."
         assert self.__timeout_secs > 0, "Timeout must be greater than 0."
@@ -76,6 +87,15 @@ class Communication:
             self.__max_attempts = before["max_attempts"]  # type: ignore[assignment]
             self.__timeout_secs = before["timeout_secs"]
             self.__pool_time_secs = before["pool_time_secs"]
+
+    @contextmanager
+    def do_not_retry_on_error(self, error_message: str | None = None) -> Iterator[None]:
+        """Allows to temporarily disable retrying on error."""
+        self.__do_not_retry_on_error = DoNotRetryOnError(enabled=True, error_message=error_message)
+        try:
+            yield
+        finally:
+            self.__do_not_retry_on_error = DoNotRetryOnError()
 
     def request(  # noqa: PLR0913
         self,
@@ -179,8 +199,18 @@ class Communication:
                         result = await response.text()
                         break
 
-                    with contextlib.suppress(ErrorInResponseJsonError):
+                    try:
                         self.__check_response(url=url, request=data_serialized, result=result)
+                    except ErrorInResponseJsonError as error:
+                        if self.__do_not_retry_on_error.enabled:
+                            if self.__do_not_retry_on_error.error_message is not None:
+                                if self.__do_not_retry_on_error.error_message in error.error_content:
+                                    raise error
+                            else:
+                                raise error
+
+                        continue
+                    else:
                         await response.read()  # Ensure response is available outside of the context manager.
                         return response
                 else:
@@ -205,8 +235,9 @@ class Communication:
 
     @classmethod
     def __check_response_item(cls, url: str, request: str, response: Any, item: JsonT) -> None:
-        if "error" in item:
+        error = item.get("error", None)
+        if error:
             logger.debug(f"Error in response from {url=}, request={request}, response={response}")
-            raise ErrorInResponseJsonError
+            raise ErrorInResponseJsonError(error)
         if "result" not in item:
             raise UnknownResponseFormatError(url, request, response)
