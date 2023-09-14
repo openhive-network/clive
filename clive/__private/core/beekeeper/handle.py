@@ -144,7 +144,11 @@ class Beekeeper:
 
         url = self.http_endpoint.as_string()
         request = JSONRPCRequest(method=endpoint, params=kwargs)
-        response = await self.__communication.arequest(url, data=request.json(by_alias=True))
+        response = await self.__communication.arequest(
+            url,
+            data=request.json(by_alias=True),
+            max_attempts=1,  # Beekeeper is not idempotent, so we don't retry e.g. unlock can't be retried to fast.
+        )
 
         if response.status != HTTPStatus.OK:
             raise BeekeeperNon200StatusCodeError
