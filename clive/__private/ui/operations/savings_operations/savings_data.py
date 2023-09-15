@@ -33,7 +33,7 @@ class SavingsDataProvider(CliveWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        self.set_interval(settings.get("node.refresh_rate", 1.5), self._update_savings_data)  # type: ignore[arg-type]
+        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self._update_savings_data)  # type: ignore[arg-type]
 
     @work(name="savings data update worker")
     async def _update_savings_data(self) -> None:
