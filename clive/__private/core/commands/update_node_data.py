@@ -14,7 +14,7 @@ from clive.__private.core.iwax import (
 from clive.__private.stopwatch import Stopwatch
 from clive.exceptions import CommunicationError
 from clive.models import Asset
-from schemas.database_api.response_schemas import (
+from schemas.apis.database_api import (
     FindAccounts,
     GetDynamicGlobalProperties,
     ListChangeRecoveryAccountRequests,
@@ -28,12 +28,12 @@ if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
     from clive.__private.storage import mock_database
     from clive.__private.storage.accounts import Account
-    from schemas.__private.hive_fields_custom_schemas import Manabar
-    from schemas.account_history_api.response_schemas import GetAccountHistory
-    from schemas.database_api.fundaments_of_reponses import AccountItemFundament
-    from schemas.rc_api.fundaments_of_responses import RcAccount
-    from schemas.rc_api.response_schemas import FindRcAccounts
-    from schemas.reputation_api.response_schemas import GetAccountReputations
+    from schemas.apis.account_history_api import GetAccountHistory
+    from schemas.apis.database_api.fundaments_of_reponses import AccountItemFundament
+    from schemas.apis.rc_api import FindRcAccounts
+    from schemas.apis.rc_api.fundaments_of_responses import RcAccount
+    from schemas.apis.reputation_api import GetAccountReputations
+    from schemas.fields.compound import Manabar
 
     AccountFundamentT = AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests]
     CoreAccountsInfoT = dict[str, AccountFundamentT]

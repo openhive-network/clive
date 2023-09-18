@@ -7,7 +7,7 @@ from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import DATE_PLACEHOLDER
-from schemas.__private.hive_fields_basic_schemas import HiveDateTime
+from schemas.fields.hive_datetime import HiveDateTime
 
 
 class DateHighlighter(CliveHighlighter):

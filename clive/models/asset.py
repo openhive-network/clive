@@ -5,7 +5,7 @@ from typing import TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
 from clive.exceptions import CliveError
-from schemas.__private.hive_fields_basic_schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
 AssetAmountT = int | float | str
 

@@ -6,7 +6,7 @@ from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import PERMLINK_PLACEHOLDER
-from schemas.__private.hive_fields_custom_schemas import Permlink
+from schemas.fields.basic import Permlink
 
 if TYPE_CHECKING:
     from rich.console import RenderableType

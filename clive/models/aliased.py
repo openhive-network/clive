@@ -1,19 +1,15 @@
 from __future__ import annotations
 
-from schemas.__private.hive_fields_basic_schemas import AccountName as SchemasAccountName
-from schemas.__private.hive_fields_basic_schemas import AssetBase as SchemasAssetBase
-from schemas.__private.hive_fields_custom_schemas import Signature as SchemasSignature
-from schemas.__private.operation import Operation as SchemasBaseOperationType
-from schemas.__private.operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
-from schemas.__private.virtual_operation import VirtualOperation as SchemasBaseVirtualOperationType
-from schemas.operations import (
-    AnyOperation,
-    Hf26OperationRepresentationType,
-)
-from schemas.virtual_operations import (
-    AnyVirtualOperation,
-    Hf26VirtualOperationRepresentationType,
-)
+from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
+from schemas.fields.assets._base import AssetBase as SchemasAssetBase
+from schemas.fields.basic import AccountName as SchemasAccountName
+from schemas.fields.hex import Signature as SchemasSignature
+from schemas.operation import Operation as SchemasBaseOperationType
+from schemas.operations import AnyOperation
+from schemas.operations.representation_types import Hf26OperationRepresentationType
+from schemas.operations.virtual import AnyVirtualOperation
+from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
+from schemas.virtual_operation import VirtualOperation as SchemasBaseVirtualOperationType
 
 AssetBase = SchemasAssetBase
 Operation = AnyOperation

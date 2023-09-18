@@ -3,13 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.models.aliased import OperationBaseClass
-from schemas.__private.operations.representations import (
+from schemas.operations.representations import (
     Hf26OperationRepresentation as __Hf26OperationRepresentationBase,  # such name is used to avoid showing in suggested imports
 )
-from schemas.__private.operations.representations import (
+from schemas.operations.representations import (
     LegacyOperationRepresentation as __LegacyOperationRepresentationBase,  # such name is used to avoid showing in suggested imports
 )
-from schemas.__private.operations.representations import get_hf26_representation
+from schemas.operations.representations import get_hf26_representation
 
 if TYPE_CHECKING:
     from typing import Any

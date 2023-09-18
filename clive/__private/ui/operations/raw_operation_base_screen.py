@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-from schemas.__private.hive_fields_basic_schemas import Authority
+from schemas.fields.compound import Authority
 
 if TYPE_CHECKING:
     from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsInput

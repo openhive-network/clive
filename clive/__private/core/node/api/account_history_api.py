@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from clive.__private.core.node.api.api import Api
-from schemas.account_history_api import response_schemas as account_history_api  # noqa: TCH001
+
+if TYPE_CHECKING:
+    from schemas.apis import account_history_api
 
 
 class AccountHistoryApi(Api):

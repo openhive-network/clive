@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from clive.__private.core.node.api.api import Api
 from clive.models import Asset  # noqa: TCH001
-from schemas import rc_api  # noqa: TCH001
+from schemas.apis import rc_api  # noqa: TCH001
 
 
 class RcApi(Api):

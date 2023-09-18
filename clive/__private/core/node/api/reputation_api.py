@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from clive.__private.core.node.api.api import Api
-from schemas.reputation_api import response_schemas as reputation_api  # noqa: TCH001
+
+if TYPE_CHECKING:
+    from schemas.apis import reputation_api
 
 
 class ReputationApi(Api):

@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
-from schemas.__private.hive_factory import HiveError, HiveResult, T
+from schemas.jsonrpc import ExpectResultT, JSONRPCResult, get_response_model
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -27,7 +27,7 @@ class ResponseNotReadyError(CliveError):
 
 class BaseNode:
     @abstractmethod
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
+    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         ...
 
 
@@ -47,7 +47,7 @@ class _DelayedResponseWrapper:
         if _data is None:
             return None
 
-        if isinstance(_data, HiveResult):
+        if isinstance(_data, JSONRPCResult):
             return _data.result
 
         raise CommunicationError(
@@ -65,7 +65,7 @@ class _DelayedResponseWrapper:
         return getattr(self.__get_data(), __name)
 
     def _set_response(self, **kwargs: Any) -> None:
-        self.__dict__["_data"] = HiveResult.factory(self.__dict__["_expected_type"], **kwargs)
+        self.__dict__["_data"] = get_response_model(self.__dict__["_expected_type"], **kwargs)
 
 
 @dataclass(kw_only=True)
@@ -81,7 +81,7 @@ class _BatchNode(BaseNode):
         self.__batch: list[_BatchRequestResponseItem] = []
         self.api = Apis(self)
 
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
+    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         request.id_ = len(self.__batch)
         serialized_request = request.json(by_alias=True)
         delayed_result = _DelayedResponseWrapper(url=self.__url.as_string(), request=serialized_request, expected_type=expect_type)  # type: ignore[arg-type]
@@ -152,13 +152,13 @@ class Node(BaseNode):
         self.__profile_data._node_address = address
         await self.__sync_node_version()
 
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[T]) -> T:
+    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
         response = await self.__communication.arequest(address, data=serialized_request)
         data = await response.json()
-        response_model: HiveResult[T] | HiveError = HiveResult.factory(expect_type, **data)
-        if isinstance(response_model, HiveResult):
+        response_model = get_response_model(expect_type, **data)
+        if isinstance(response_model, JSONRPCResult):
             return response_model.result
         raise CommunicationError(address, serialized_request, data)
 

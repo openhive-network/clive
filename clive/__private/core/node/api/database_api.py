@@ -5,7 +5,7 @@ from typing import Literal
 
 from clive.__private.core.node.api.api import Api
 from clive.models import Asset, Transaction  # noqa: TCH001
-from schemas import database_api  # noqa: TCH001
+from schemas.apis import database_api  # noqa: TCH001
 
 
 class DatabaseApi(Api):
