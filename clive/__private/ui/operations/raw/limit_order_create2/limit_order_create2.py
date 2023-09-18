@@ -56,7 +56,7 @@ class LimitOrderCreate2(RawOperationBaseScreen):
                 yield from self.__base_input.compose()
                 yield from self.__quote_input.compose()
 
-    def _create_operation(self) -> LimitOrderCreate2Operation[Asset.Hbd, Asset.Hive] | None:
+    def _create_operation(self) -> LimitOrderCreate2Operation | None:
         base = self.__base_input.value
         quote = self.__quote_input.value
         amount_to_sell = self.__amount_to_sell_input.value

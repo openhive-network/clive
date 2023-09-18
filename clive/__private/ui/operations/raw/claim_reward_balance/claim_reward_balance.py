@@ -45,7 +45,7 @@ class ClaimRewardBalance(RawOperationBaseScreen):
                 yield from self.__reward_hbd_input.compose()
                 yield from self.__reward_vests_input.compose()
 
-    def _create_operation(self) -> ClaimRewardBalanceOperation[Asset.Hive, Asset.Hbd, Asset.Vests] | None:
+    def _create_operation(self) -> ClaimRewardBalanceOperation | None:
         reward_hive = self.__reward_hive_input.value
         reward_hbd = self.__reward_hbd_input.value
         reward_vests = self.__reward_vests_input.value

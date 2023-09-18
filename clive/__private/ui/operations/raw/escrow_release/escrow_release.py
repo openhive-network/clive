@@ -59,7 +59,7 @@ class EscrowRelease(RawOperationBaseScreen):
                 yield from self.__hbd_amount_input.compose()
                 yield from self.__hive_amount_input.compose()
 
-    def _create_operation(self) -> EscrowReleaseOperation[Asset.Hive, Asset.Hbd] | None:
+    def _create_operation(self) -> EscrowReleaseOperation | None:
         hbd_amount = self.__hbd_amount_input.value
         hive_amount = self.__hive_amount_input.value
         escrow_id = self.__escrow_id_input.value

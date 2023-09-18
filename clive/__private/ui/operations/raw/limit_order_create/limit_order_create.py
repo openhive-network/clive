@@ -19,8 +19,6 @@ from schemas.operations import LimitOrderCreateOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Asset
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title."""
@@ -51,7 +49,7 @@ class LimitOrderCreate(RawOperationBaseScreen):
                 yield from self.__min_to_receive_input.compose()
                 yield self.__fill_or_kill_input
 
-    def _create_operation(self) -> LimitOrderCreateOperation[Asset.Hive, Asset.Hbd] | None:
+    def _create_operation(self) -> LimitOrderCreateOperation | None:
         asset_to_sell = self.__amount_to_sell_input.value
         asset_min_receive = self.__min_to_receive_input.value
 
