@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+from clive.models.asset import Asset
 from schemas.__private.hive_fields_basic_schemas import AccountName as SchemasAccountName
 from schemas.__private.hive_fields_basic_schemas import AssetBase as SchemasAssetBase
 from schemas.__private.hive_fields_custom_schemas import Signature as SchemasSignature
 from schemas.__private.operation import Operation as SchemasBaseOperationType
 from schemas.__private.operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
 from schemas.__private.virtual_operation import VirtualOperation as SchemasBaseVirtualOperationType
+from schemas.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
 from schemas.operations import (
     AnyOperation,
     Hf26OperationRepresentationType,
@@ -26,3 +28,4 @@ ApiOperationObject = Hf26ApiOperationObject
 ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 Signature = SchemasSignature
 AccountName = SchemasAccountName
+SavingsWithdrawals = SavingsWithdrawalsFundament[Asset.Hive, Asset.Hbd]
