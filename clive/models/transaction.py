@@ -10,10 +10,10 @@ from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
 from clive.models.convert_to_representation import convert_to_representation
 from schemas.__private.hive_fields_basic_schemas import HiveDateTime, HiveInt
 from schemas.__private.hive_fields_custom_schemas import TransactionId  # noqa: TCH001
-from schemas.transaction_model.transaction import Hf26Transaction
+from schemas.transaction_model.transaction import Transaction as SchemasTransaction
 
 
-class Transaction(Hf26Transaction):
+class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationType] = Field(default_factory=list)
     ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(0))
     ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(0))
