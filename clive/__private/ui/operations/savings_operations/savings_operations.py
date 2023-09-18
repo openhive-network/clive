@@ -24,18 +24,17 @@ from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.exceptions import RequestIdError
 from clive.models import Asset
-from clive.models.aliased import SavingsWithdrawals, TransferFromSavings, TransferToSavings
+from schemas.operations import TransferFromSavingsOperation, TransferToSavingsOperation
 
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
+    from clive.models.aliased import SavingsWithdrawals
+
 
 odd = "OddColumn"
 even = "EvenColumn"
-
-TransferToSavingsT = TransferToSavings[Asset.Hive, Asset.Hbd]
-TransferFromSavingsT = TransferFromSavings[Asset.Hive, Asset.Hbd]
 
 
 class Body(Grid):
@@ -181,14 +180,14 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
 
     def _create_operation(
         self,
-    ) -> TransferToSavingsT | TransferFromSavingsT | None:
+    ) -> TransferToSavingsOperation | TransferFromSavingsOperation | None:
         asset = self.__amount_input.value
 
         if not asset:
             return None
 
         if self.__to_button.value:
-            return TransferToSavings(
+            return TransferToSavingsOperation(
                 from_=self.app.world.profile_data.working_account.name,
                 to=self.__to_account_input.value,
                 amount=asset,
@@ -200,7 +199,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             self.notify("Maximum quantity of request ids is 100!", severity="error")
             return None
 
-        return TransferFromSavings(
+        return TransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
             to=self.__to_account_input.value,
             amount=asset,
