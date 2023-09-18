@@ -80,7 +80,7 @@ class AccountCreate(RawOperationBaseScreen):
                 yield from self.__account_auths_posting_input.compose()
                 yield from self.__key_auths_posting_input.compose()
 
-    def _create_operation(self) -> AccountCreateOperation[Asset.Hive] | None:
+    def _create_operation(self) -> AccountCreateOperation | None:
         fee = self.__fee_input.value
         if not fee:
             return None

@@ -49,7 +49,7 @@ class CreateProposal(RawOperationBaseScreen):
                 yield from self.__subject_input.compose()
                 yield from self.__permlink_input.compose()
 
-    def _create_operation(self) -> CreateProposalOperation[Asset.Hbd] | None:
+    def _create_operation(self) -> CreateProposalOperation | None:
         daily_pay_value = self.__daily_pay_input.value
         if not daily_pay_value:
             return None

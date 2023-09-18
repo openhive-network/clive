@@ -19,8 +19,6 @@ from schemas.operations import TransferFromSavingsOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Asset
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title."""
@@ -48,7 +46,7 @@ class TransferFromSavings(RawOperationBaseScreen):
                 yield from self.__amount_input.compose()
                 yield from self.__memo_input.compose()
 
-    def _create_operation(self) -> TransferFromSavingsOperation[Asset.Hive, Asset.Hbd] | None:
+    def _create_operation(self) -> TransferFromSavingsOperation | None:
         amount = self.__amount_input.value
         request_id = self.__request_id_input.value
 

@@ -59,7 +59,7 @@ class CommentOptions(RawOperationBaseScreen):
                 yield self.__allow_votes_input
                 yield self.__allow_curation_rewards_input
 
-    def _create_operation(self) -> CommentOptionsOperation[Asset.Hbd] | None:
+    def _create_operation(self) -> CommentOptionsOperation | None:
         max_accepted_payout = self.__max_accepted_payout_input.value
         percent_hbd = self.__percent_hbd_input.value
         extensions = self.__extensions_input.value

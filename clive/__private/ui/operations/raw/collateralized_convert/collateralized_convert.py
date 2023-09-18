@@ -41,7 +41,7 @@ class CollateralizedConvert(RawOperationBaseScreen):
                 yield from self.__request_id_input.compose()
                 yield from self.__amount_input.compose()
 
-    def _create_operation(self) -> CollateralizedConvertOperation[Asset.Hive] | None:
+    def _create_operation(self) -> CollateralizedConvertOperation | None:
         amount = self.__amount_input.value
         if not amount:
             return None

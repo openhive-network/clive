@@ -45,7 +45,7 @@ class UpdateProposal(RawOperationBaseScreen):
                 yield from self.__permlink_input.compose()
                 yield from self.__extensions_input.compose()
 
-    def _create_operation(self) -> UpdateProposalOperation[Asset.Hbd] | None:
+    def _create_operation(self) -> UpdateProposalOperation | None:
         daily_pay_value = self.__daily_pay_input.value
         if not daily_pay_value:
             return None

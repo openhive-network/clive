@@ -19,8 +19,6 @@ from schemas.operations import RecurrentTransferOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Asset
-
 
 class Body(Grid):
     """All the content of the screen, excluding the title."""
@@ -51,7 +49,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
                 yield from self.__recurrence_input.compose()
                 yield from self.__executions_input.compose()
 
-    def _create_operation(self) -> RecurrentTransferOperation[Asset.Hive, Asset.Hbd] | None:
+    def _create_operation(self) -> RecurrentTransferOperation | None:
         amount = self.__amount_input.value
         recurrence = self.__recurrence_input.value
         executions = self.__executions_input.value
