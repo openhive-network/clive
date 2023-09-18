@@ -101,7 +101,7 @@ def humanize_operation_details(operation: Operation) -> str:
 def humanize_hive_power(value: int) -> str:
     """Return pretty formatted hive power."""
     formatted_string = humanize.naturalsize(value, binary=False)
-    if "Bytes" in formatted_string:
+    if "Byte" in formatted_string:
         return f"{value} HP"
 
     format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
