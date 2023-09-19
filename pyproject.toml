@@ -36,7 +36,7 @@ pydantic = "1.10.11"
 merge-args = "0.1.5"
 typer = { extras = ["all"], version = "0.8.0" }
 inflection = "0.5.1"
-wax = "0.0.1a4.post9+17cc616"
+wax = "0.0.1a5+f650c37"
 humanize = "4.6.0"
 
 schemas = { path = "hive/tests/hive-local-tools/test-tools/schemas", develop = true }
