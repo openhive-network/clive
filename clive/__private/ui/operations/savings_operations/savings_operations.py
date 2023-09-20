@@ -165,6 +165,11 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
         self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
 
+        self.__transfer_time_reminder = Static(
+            "Notice: transfer from savings will take 3 days", id="transfer-time-reminder"
+        )
+        self.__transfer_time_reminder.visible = False
+
     def compose(self) -> ComposeResult:
         yield Static("Choose type of operation", id="savings-transfer-header")
         with RadioSet(id="operation-type-choose"):
@@ -176,7 +181,14 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
             yield from self.__to_account_input.compose()
             yield from self.__amount_input.compose()
             yield from self.__memo_input.compose()
-        yield Static("Notice: transfer from savings will take 3 days", id="transfer-time-reminder")
+        yield self.__transfer_time_reminder
+
+    @on(RadioSet.Changed)
+    def visibility_of_transfer_time_reminder(self, event: RadioSet.Changed) -> None:
+        if event.radio_set.pressed_button.id == "from-savings-choose":  # type: ignore[union-attr]
+            self.__transfer_time_reminder.visible = True
+            return
+        self.__transfer_time_reminder.visible = False
 
     def _create_operation(
         self,
