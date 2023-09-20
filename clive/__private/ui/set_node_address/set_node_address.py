@@ -10,7 +10,6 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Input, Select, Static, Switch
 
-from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.core.communication import Communication
 from clive.__private.ui.app_messages import NodeDataUpdated
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -21,6 +20,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
+from schemas.jsonrpc import JSONRPCRequest
 
 if TYPE_CHECKING:
     from rich.console import RenderableType

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Any
 from clive.exceptions import CliveError, CommunicationError
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper.model import JSONRPCRequest
     from clive.exceptions import CommunicationResponseT
+    from schemas.jsonrpc import JSONRPCRequest
 
 
 class BeekeeperError(CliveError):

@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Generic, TypeVar
 
-from pydantic import Field, validator
+from pydantic import validator
 
 from clive.models.base import CliveBaseModel
 
@@ -68,33 +67,3 @@ class GetInfo(BeekeeperResponse):
     @classmethod
     def time_validate(cls, v: str) -> datetime:
         return datetime.fromisoformat(v)
-
-
-T = TypeVar(
-    "T",
-    Create,
-    CreateSession,
-    ImportKey,
-    ListWallets,
-    ListKeys,
-    GetPublicKeys,
-    SignDigest,
-    SignTransaction,
-    GetInfo,
-    EmptyResponse,
-    BeekeeperSession,
-)
-
-
-class JSONRPCProtocol(CliveBaseModel):
-    id_: int = Field(alias="id", default=0)
-    jsonrpc: str = "2.0"
-
-
-class JSONRPCRequest(JSONRPCProtocol):
-    method: str
-    params: dict[str, Any] = Field(default_factory=dict)
-
-
-class JSONRPCResponse(JSONRPCProtocol, Generic[T]):
-    result: T

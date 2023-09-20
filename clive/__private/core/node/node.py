@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
-from schemas.jsonrpc import ExpectResultT, JSONRPCResult, get_response_model
+from schemas.jsonrpc import ExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -16,7 +16,6 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
 
@@ -32,7 +31,7 @@ class BaseNode:
 
 
 class _DelayedResponseWrapper:
-    def __init__(self, url: str, request: str, expected_type: type[JSONRPCResponse[Any]]) -> None:
+    def __init__(self, url: str, request: str, expected_type: type[JSONRPCResult[Any]]) -> None:
         self.__dict__["_url"] = url
         self.__dict__["_request"] = request
         self.__dict__["_data"] = None

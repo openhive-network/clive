@@ -22,12 +22,12 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperUrlNotSetError,
 )
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
-from clive.__private.core.beekeeper.model import JSONRPCRequest, JSONRPCResponse, T
 from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer, WalletClosingListener
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
 from clive.models.base import CliveBaseModel
+from schemas.jsonrpc import ExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
@@ -141,8 +141,8 @@ class Beekeeper:
         return BeekeeperExecutable.is_already_running()
 
     async def _send(
-        self, result_model: type[T], endpoint: str, **kwargs: Any  # noqa: ARG002
-    ) -> JSONRPCResponse[T]:  # noqa: ARG002, RUF100
+        self, result_model: type[ExpectResultT], endpoint: str, **kwargs: Any
+    ) -> JSONRPCResult[ExpectResultT]:  # noqa: ARG002, RUF100
         await self.__assert_is_running()
 
         url = self.http_endpoint.as_string()
@@ -159,16 +159,16 @@ class Beekeeper:
             raise BeekeeperNon200StatusCodeError
 
         result = await response.json()
-        if "error" in result:
+        response_model = get_response_model(result_model, **result)
+
+        logger.info(f"Got beekeeper response: {response_model}")
+
+        if response_model.id_ != request.id_:
+            raise BeekeeperNotMatchingIdJsonRPCError(request.id_, response_model.id_)
+
+        if not isinstance(response_model, JSONRPCResult):
             raise BeekeeperResponseError(url, request, result)
-
-        return_value = JSONRPCResponse[T](**result)
-
-        if return_value.id_ != request.id_:
-            raise BeekeeperNotMatchingIdJsonRPCError(request.id_, return_value.id_)
-
-        logger.info(f"Returning model: {return_value}")
-        return return_value
+        return response_model
 
     async def __delay_on_unlock(self, endpoint: str) -> None:
         seconds_to_wait = 0.6

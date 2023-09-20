@@ -4,8 +4,8 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
 
 from clive.__private.abstract_class import AbstractClass
-from clive.__private.core.beekeeper.model import JSONRPCRequest
 from clive.__private.core.formatters.case import underscore
+from schemas.jsonrpc import JSONRPCRequest
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
