@@ -25,6 +25,7 @@ from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.exceptions import RequestIdError
 from clive.models import Asset
 from schemas.operations import (
+    CancelTransferFromSavingsOperation,
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
@@ -104,6 +105,12 @@ class PendingTransfer(CliveWidget):
 
     @on(Button.Pressed, "#delete-transfer-button")
     def move_to_cancel_transfer(self) -> None:
+        if (
+            CancelTransferFromSavingsOperation(from_=self.__transfer.from_, request_id=self.__transfer.request_id)
+            in self.app.world.profile_data.cart
+        ):
+            self.notify("The operation is already in the cart!", severity="error")
+            return
         self.app.push_screen(CancelTransferFromSavings(self.__transfer))
 
 
