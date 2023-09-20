@@ -31,7 +31,7 @@ class BaseNode:
 
 
 class _DelayedResponseWrapper:
-    def __init__(self, url: str, request: str, expected_type: type[JSONRPCResult[Any]]) -> None:
+    def __init__(self, url: str, request: str, expected_type: type[ExpectResultT]) -> None:
         self.__dict__["_url"] = url
         self.__dict__["_request"] = request
         self.__dict__["_data"] = None
@@ -83,7 +83,9 @@ class _BatchNode(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         request.id_ = len(self.__batch)
         serialized_request = request.json(by_alias=True)
-        delayed_result = _DelayedResponseWrapper(url=self.__url.as_string(), request=serialized_request, expected_type=expect_type)  # type: ignore[arg-type]
+        delayed_result = _DelayedResponseWrapper(
+            url=self.__url.as_string(), request=serialized_request, expected_type=expect_type
+        )
         self.__batch.append(_BatchRequestResponseItem(request=serialized_request, delayed_result=delayed_result))
         return delayed_result  # type: ignore[return-value]
 
