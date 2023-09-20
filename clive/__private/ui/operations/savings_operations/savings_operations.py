@@ -24,7 +24,10 @@ from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.exceptions import RequestIdError
 from clive.models import Asset
-from schemas.operations import TransferFromSavingsOperation, TransferToSavingsOperation
+from schemas.operations import (
+    TransferFromSavingsOperation,
+    TransferToSavingsOperation,
+)
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -223,6 +226,10 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         pending_transfers = self.__provider.content.pending_transfers
         max_number_of_request_ids: Final[int] = 100
 
+        for cart_transfer in self.app.world.profile_data.cart:
+            if isinstance(cart_transfer, TransferFromSavingsOperation):
+                pending_transfers.append(cart_transfer)  # type: ignore[union-attr, arg-type]
+
         if not pending_transfers:
             return 0
 
@@ -232,7 +239,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         sorted_transfers = sorted(pending_transfers, key=lambda x: x.request_id)
         last_occupied_id = sorted_transfers[-1].request_id
 
-        return int(last_occupied_id) + 1
+        return last_occupied_id + 1
 
 
 class Savings(OperationBaseScreen):
