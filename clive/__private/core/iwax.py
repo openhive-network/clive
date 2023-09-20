@@ -8,7 +8,7 @@ import wax
 from clive.__private.core.communication import CustomJSONEncoder
 from clive.exceptions import CliveError
 from clive.models import Transaction
-from clive.models.convert_to_representation import convert_to_representation
+from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKey, PublicKey
