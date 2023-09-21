@@ -92,12 +92,11 @@ class PendingTransfer(CliveWidget):
         self.__transfer = transfer
 
     def compose(self) -> ComposeResult:
-        with Horizontal():
-            yield Static(self.__transfer.to, classes=odd)
-            yield Static(Asset.to_legacy(self.__transfer.amount), classes=even)
-            yield Static(str(self.__realized_on), classes=odd)
-            yield Static(self.__transfer.memo, classes=even)
-            yield CliveButton("Cancel", id_="delete-transfer-button")
+        yield Static(self.__transfer.to, classes=odd)
+        yield Static(Asset.to_legacy(self.__transfer.amount), classes=even)
+        yield Static(str(self.__realized_on), classes=odd)
+        yield Static(self.__transfer.memo, classes=even)
+        yield CliveButton("Cancel", id_="delete-transfer-button")
 
     @property
     def __realized_on(self) -> str:
@@ -114,14 +113,13 @@ class PendingTransfer(CliveWidget):
         self.app.push_screen(CancelTransferFromSavings(self.__transfer))
 
 
-class PendingHeader(Container):
+class PendingHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        with Horizontal(id="header-pending"):
-            yield Static("To", classes=even)
-            yield Static("Amount", classes=odd)
-            yield Static("Realized on (UTC)", classes=even)
-            yield Static("Memo", classes=odd)
-            yield Static()
+        yield Static("To", classes=even)
+        yield Static("Amount", classes=odd)
+        yield Static("Realized on (UTC)", classes=even)
+        yield Static("Memo", classes=odd)
+        yield Static()
 
 
 class PendingTransfers(ScrollableContainer):
