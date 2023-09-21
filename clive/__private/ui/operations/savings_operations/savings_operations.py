@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
+from textual.binding import Binding
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
 from textual.css.query import NoMatches
 from textual.widgets import Button, Label, RadioSet, Static, TabbedContent
@@ -140,6 +141,10 @@ class PendingTransfers(ScrollableContainer):
 
 
 class SavingsInfo(ScrollableTabPane):
+    BINDINGS = [
+        Binding("f2", "cart", "Cart"),
+    ]
+
     def __init__(self, provider: SavingsDataProvider, title: TextType) -> None:
         super().__init__(title=title)
         self.__provider = provider
