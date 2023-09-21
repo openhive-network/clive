@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual import on
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
 from textual.css.query import NoMatches
-from textual.widgets import Button, RadioSet, Static, TabbedContent
+from textual.widgets import Button, Label, RadioSet, Static, TabbedContent
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
@@ -92,10 +92,10 @@ class PendingTransfer(CliveWidget):
         self.__transfer = transfer
 
     def compose(self) -> ComposeResult:
-        yield Static(self.__transfer.to, classes=odd)
-        yield Static(Asset.to_legacy(self.__transfer.amount), classes=even)
-        yield Static(str(self.__realized_on), classes=odd)
-        yield Static(self.__transfer.memo, classes=even)
+        yield Label(self.__transfer.to, classes=odd)
+        yield Label(Asset.to_legacy(self.__transfer.amount), classes=even)
+        yield Label(str(self.__realized_on), classes=odd)
+        yield Label(self.__transfer.memo, classes=even)
         yield CliveButton("Cancel", id_="delete-transfer-button")
 
     @property
@@ -115,11 +115,11 @@ class PendingTransfer(CliveWidget):
 
 class PendingHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("To", classes=even)
-        yield Static("Amount", classes=odd)
-        yield Static("Realized on (UTC)", classes=even)
-        yield Static("Memo", classes=odd)
-        yield Static()
+        yield Label("To", classes=even)
+        yield Label("Amount", classes=odd)
+        yield Label("Realized on (UTC)", classes=even)
+        yield Label("Memo", classes=odd)
+        yield Label()
 
 
 class PendingTransfers(ScrollableContainer):
@@ -134,6 +134,7 @@ class PendingTransfers(ScrollableContainer):
             yield PendingHeader()
             for transfer in self.__pending_transfers:
                 yield PendingTransfer(transfer)
+            yield Static()
         else:
             yield Static("No transfers from savings now", classes="number-of-transfers")
 
