@@ -114,7 +114,7 @@ class PendingTransfer(CliveWidget):
         self.app.push_screen(CancelTransferFromSavings(self.__transfer))
 
 
-class PendingHeader(CliveWidget):
+class PendingHeader(Container):
     def compose(self) -> ComposeResult:
         with Horizontal(id="header-pending"):
             yield Static("To", classes=even)
@@ -124,7 +124,7 @@ class PendingHeader(CliveWidget):
             yield Static()
 
 
-class PendingTransfers(ScrollableContainer, CliveWidget):
+class PendingTransfers(ScrollableContainer):
     def __init__(self, pending_transfers: list[SavingsWithdrawals] | None = None) -> None:
         super().__init__()
         self.__pending_transfers = pending_transfers
@@ -140,7 +140,7 @@ class PendingTransfers(ScrollableContainer, CliveWidget):
             yield Static("No transfers from savings now", classes="number-of-transfers")
 
 
-class SavingsInfo(ScrollableTabPane, CliveWidget):
+class SavingsInfo(ScrollableTabPane):
     def __init__(self, provider: SavingsDataProvider, title: TextType) -> None:
         super().__init__(title=title)
         self.__provider = provider
