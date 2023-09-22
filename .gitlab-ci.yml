@@ -158,6 +158,7 @@ testing_clive_import_times_during_autocompletion:
     - develop
     - master
   variables:
+    GIT_DEPTH: 0
     BASE_IMAGE: ${CI_BASE_IMAGE}
     BUILD_INSTANCE_ARGS: ""
 

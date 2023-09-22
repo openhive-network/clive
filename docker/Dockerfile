@@ -17,8 +17,11 @@ WORKDIR /clive
 ENV BEEKEEPER_PATH="/clive/beekeeper"
 COPY --from=beekeper_source --chown=hived_admin:users "/home/hived/bin/beekeeper" "${BEEKEEPER_PATH}"
 
-RUN poetry self update && \
-    poetry install --only main
+RUN poetry self update
+RUN poetry self add "poetry-dynamic-versioning[plugin]@>=1.0.0,<2.0.0"
+
+# Using pip here, because poetry always installs in editable mode, so version substitution is reverted https://github.com/mtkennerly/poetry-dynamic-versioning/issues/25#issuecomment-698193152
+RUN pip install -i https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple .
 
 # crucial for proper display
 ENV COLORTERM=truecolor
@@ -45,6 +48,7 @@ WORKDIR /clive
 
 # Run installation once again to supplement extras and development dependencies
 RUN poetry install
+RUN poetry dynamic-versioning  # Substitute versions because of https://github.com/mtkennerly/poetry-dynamic-versioning/issues/25#issuecomment-698193152, has to be done after installation otherwise pip will show "dirty" version
 
 ENV TESTNET_MODE=1
 

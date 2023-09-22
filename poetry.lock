@@ -283,20 +283,6 @@ files = [
 ]
 
 [[package]]
-name = "dunamai"
-version = "1.15.0"
-description = "Dynamic version generation"
-optional = false
-python-versions = ">=3.5,<4.0"
-files = [
-    {file = "dunamai-1.15.0-py3-none-any.whl", hash = "sha256:646d7a6c07d0ec8412ac43c1a3546f1d1b52f3ed918f4bfbefe32439b49dec7e"},
-    {file = "dunamai-1.15.0.tar.gz", hash = "sha256:d6088922df3226a8234c228803bb01902a83766d04c2cddb33d4dd3bf85ec9a5"},
-]
-
-[package.dependencies]
-packaging = ">=20.9"
-
-[[package]]
 name = "dynaconf"
 version = "3.1.11"
 description = "The dynamic configurator for your Python Project"
@@ -1513,4 +1499,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "56a4d0f66cd0f7e34fd5ce43a48ba6059cfd606a12680c288db35bcb2cdbddd6"
+content-hash = "96f08c25d452a4cdb84f2eb15186c106df44f7688a1cb551559869339cd498d3"

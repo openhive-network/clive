@@ -48,9 +48,9 @@ UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 class Clive(App[int], ManualReactive):
     """A singleton instance of the Clive app."""
 
-    from clive.version import VERSION_INFO
+    from clive import __version__
 
-    SUB_TITLE = VERSION_INFO
+    SUB_TITLE = __version__
 
     CSS_PATH = list(Path(__file__).parent.glob("**/*.scss"))
 

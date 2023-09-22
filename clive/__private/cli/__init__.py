@@ -27,7 +27,7 @@ def main(
     ),
 ) -> None:
     if version:
-        from clive.version import VERSION_INFO
+        from clive import __version__
 
-        typer.echo(f"CLIVE Version: {VERSION_INFO}")
+        typer.echo(f"CLIVE Version: {__version__}")
         raise typer.Exit
