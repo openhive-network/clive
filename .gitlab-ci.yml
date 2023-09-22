@@ -2,6 +2,7 @@ stages:
   - static_code_analysis
   - build
   - tests
+  - deploy
   - build_and_deploy_docker
 
 workflow:
@@ -82,6 +83,10 @@ prepare_testnet_hived_image:
   variables:
     HIVE_NETWORK_TYPE: testnet
 
+build_wheel:
+  extends: .build_wheel_template
+  stage: build
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| TESTS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -119,6 +124,19 @@ testing_clive_import_times_during_autocompletion:
     - python3 -m pytest -k "test_autocompletion_time" --durations 0 --junitxml=report.xml tests/
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| DEPLOY |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+deploy_wheel:
+  extends: .deploy_wheel_template
+  stage: deploy
+  needs:
+    - job: testing_clive
+    - job: testing_clive_import_times_during_autocompletion
+    - job: build_wheel
+      artifacts: true
+
+#<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD AND DEPLOY DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
