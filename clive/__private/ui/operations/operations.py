@@ -71,7 +71,7 @@ class Operations(CartBasedScreen, CartBinding):
             with ScrollableTabPane("Social"):
                 yield OperationButton(None, label="Social operations")
             with ScrollableTabPane("Governance"):
-                yield OperationButton(None, label="Governance operations")
+                yield OperationButton(MAJOR_OPERATIONS[2], label="Governance operations")
             with ScrollableTabPane("Account management"):
                 yield OperationButton(None, label="Account management operations")
             yield from self.__create_raw_operations_tab(hide=not is_in_dev_mode())
