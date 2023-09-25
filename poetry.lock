@@ -1154,19 +1154,21 @@ files = [
 
 [[package]]
 name = "schemas"
-version = "0.0.0"
+version = "0.0.0.post236.dev0+5f473da"
 description = "Tools for checking if message fits expected format"
 optional = false
-python-versions = "^3.10"
-files = []
-develop = true
+python-versions = ">=3.10,<4.0"
+files = [
+    {file = "schemas-0.0.0.post236.dev0+5f473da-py3-none-any.whl", hash = "sha256:54fc8d28ec78f9f6cb4443866b54c8b38499337961482ffcb5c7c6a6a6e9e904"},
+]
 
 [package.dependencies]
 pydantic = "1.10.11"
 
 [package.source]
-type = "directory"
-url = "hive/tests/hive-local-tools/test-tools/schemas"
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple"
+reference = "gitlab-schemas"
 
 [[package]]
 name = "setuptools"
@@ -1218,7 +1220,7 @@ develop = true
 abstractcp = "0.9.9"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
-schemas = {path = "schemas", develop = true}
+schemas = "0.0.0.post236.dev0+5f473da"
 
 [package.source]
 type = "directory"
@@ -1378,7 +1380,7 @@ files = [
 [package.source]
 type = "legacy"
 url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple"
-reference = "gitlab"
+reference = "gitlab-wax"
 
 [[package]]
 name = "win32-setctime"
@@ -1499,4 +1501,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "96f08c25d452a4cdb84f2eb15186c106df44f7688a1cb551559869339cd498d3"
+content-hash = "4d0610a15c6176c6a18cee7a4bac2cb420828bddb976eaae8cced2017d349620"
