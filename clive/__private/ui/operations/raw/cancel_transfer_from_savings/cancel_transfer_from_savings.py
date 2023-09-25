@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Grid, ScrollableContainer
-from textual.events import ScreenSuspend
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -61,9 +60,10 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         super().__init__()
         self.__transfer = transfer
         self.__scrollable_container = ScrollableContainer()
+        self.__provider: SavingsDataProvider | None = None
+
         if transfer is None:
-            self.__provider = SavingsDataProvider()
-            self.__id_input = IdInput("request id")
+            self.__id_input = IdInput("request id", id_="id-input")
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Cancel transfer")
@@ -76,10 +76,14 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                     yield EllipsedStatic(str(self.__transfer.request_id), classes="parameters-label")
                 else:
                     yield from self.__id_input.compose()
+                    with SavingsDataProvider() as provider:
+                        self.__provider = provider
             yield FromSavingsTransferParameters(self.__transfer)
 
-    @on(Input.Changed)
+    @on(Input.Changed, "#id-input")
     def search_given_transfer(self, event: Input.Changed) -> None:
+        if self.__provider is None:
+            return
         if self.__provider.content.pending_transfers:
             for transfer in self.__provider.content.pending_transfers:
                 if event.value == str(transfer.request_id):
@@ -104,8 +108,3 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
             from_=self.app.world.profile_data.working_account.name,
             request_id=request_id,
         )
-
-    @on(ScreenSuspend)
-    def delete_savings_data_provider(self) -> None:
-        if not self.__transfer:
-            self.__provider.interval.stop()
