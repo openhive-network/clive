@@ -11,7 +11,7 @@ from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
+from clive.__private.ui.operations.operations_list import MAJOR_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
@@ -64,8 +64,8 @@ class Operations(CartBasedScreen, CartBinding):
     def create_left_panel(self) -> ComposeResult:
         with CliveTabbedContent(initial="financial"):
             with ScrollableTabPane("Financial", id="financial"):
-                yield OperationButton(FINANCIAL_OPERATIONS[0], label="Transfer")
-                yield OperationButton(FINANCIAL_OPERATIONS[1], label="Saving")
+                yield OperationButton(MAJOR_OPERATIONS[0], label="Transfer")
+                yield OperationButton(MAJOR_OPERATIONS[1], label="Saving")
                 yield OperationButton(None, label="Hive power management")
                 yield OperationButton(None, label="Convert")
             with ScrollableTabPane("Social"):
