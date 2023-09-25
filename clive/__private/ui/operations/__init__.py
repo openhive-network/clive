@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from clive.__private.ui.operations.governance_operations.governance_operations import Governance
 from clive.__private.ui.operations.raw.account_create.account_create import AccountCreate
 from clive.__private.ui.operations.raw.account_update.account_update import AccountUpdate
 from clive.__private.ui.operations.raw.account_update2.account_update2 import AccountUpdate2
@@ -88,4 +89,5 @@ __all__ = [
     "AccountUpdate2",
     "CollateralizedConvert",
     "Savings",
+    "Governance",
 ]
