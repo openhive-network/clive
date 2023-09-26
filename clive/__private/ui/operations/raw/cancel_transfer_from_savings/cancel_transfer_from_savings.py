@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Grid, ScrollableContainer
+from textual.css.query import NoMatches
 from textual.widgets import Input, Static
 
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -27,26 +28,21 @@ class CancelTransferParameters(Grid):
 
 
 class FromSavingsTransferParameters(Grid):
-    """
-    Content containing data cancelling transfers from savings when canceled via a button or searched through input.
+    """Content containing data cancelling transfers from savings when canceled via a button or searched through input."""
 
-    Content is displayed only if the transfer parameter is provided.
-    """
-
-    def __init__(self, transfer: SavingsWithdrawals | None = None) -> None:
+    def __init__(self, transfer: SavingsWithdrawals) -> None:
         super().__init__()
         self.__transfer = transfer
 
     def compose(self) -> ComposeResult:
-        if self.__transfer:
-            yield Static("to-account", id="to-column")
-            yield Static("realized-on (UTC)", id="realized-column")
-            yield Static("amount", id="amount-column")
-            yield Static("memo", id="memo-column")
-            yield Static(self.__transfer.to, classes="transfer-parameters")
-            yield Static(self.__realized_on, classes="transfer-parameters")  # type: ignore[arg-type]
-            yield Static(Asset.to_legacy(self.__transfer.amount), classes="transfer-parameters")
-            yield Static(self.__transfer.memo, classes="transfer-parameters")
+        yield Static("to-account", id="to-column")
+        yield Static("realized-on (UTC)", id="realized-column")
+        yield Static("amount", id="amount-column")
+        yield Static("memo", id="memo-column")
+        yield Static(self.__transfer.to, classes="transfer-parameters")
+        yield Static(self.__realized_on, classes="transfer-parameters")  # type: ignore[arg-type]
+        yield Static(Asset.to_legacy(self.__transfer.amount), classes="transfer-parameters")
+        yield Static(self.__transfer.memo, classes="transfer-parameters")
 
     @property
     def __realized_on(self) -> str | None:
@@ -79,13 +75,13 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
                     with SavingsDataProvider() as provider:
                         self.__provider = provider
             if self.is_transfer_given:
-                yield FromSavingsTransferParameters(self.__transfer)
+                yield FromSavingsTransferParameters(self.__transfer)  # type: ignore[arg-type]
 
     @property
     def is_transfer_given(self) -> bool:
         return self.__transfer is not None
 
-    @on(Input.Changed, "#id-input")
+    @on(Input.Changed)
     def search_given_transfer(self, event: Input.Changed) -> None:
         if self.__provider is None:
             return
@@ -97,9 +93,14 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         self.replace_displayed_transfer()
 
     def replace_displayed_transfer(self, transfer: SavingsWithdrawals | None = None) -> None:
-        self.query_one(FromSavingsTransferParameters).remove()
-        new_transfer_container = FromSavingsTransferParameters(transfer)
-        self.__scrollable_container.mount(new_transfer_container)
+        try:
+            self.query_one(FromSavingsTransferParameters).remove()
+        except NoMatches:
+            pass
+        finally:
+            if transfer is not None:
+                new_transfer_container = FromSavingsTransferParameters(transfer)
+                self.__scrollable_container.mount(new_transfer_container)
 
     def action_add_to_cart(self) -> None:
         if self.create_operation() in self.app.world.profile_data.cart:
