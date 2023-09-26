@@ -1,3 +1,35 @@
 Governance Tab {
     width: 1fr;
 }
+
+Governance Label {
+    text-style: bold;
+    text-align: center;
+}
+
+/* witnesses */
+
+Governance WitnessCheckbox Checkbox {
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: auto;
+}
+
+Governance WitnessCheckbox {
+    layout: horizontal;
+    height: 1;
+    width: auto;
+}
+
+Governance WitnessCheckbox.-voted {
+    color: green;
+}
+
+Governance WitnessCheckbox.-unvoted {
+    color: red;
+}
+
+Governance WitnessCheckbox:focus Label {
+    text-style: bold reverse;
+}
