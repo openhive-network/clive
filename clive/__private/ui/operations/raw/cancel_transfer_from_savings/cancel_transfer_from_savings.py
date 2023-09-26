@@ -61,24 +61,29 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         self.__transfer = transfer
         self.__scrollable_container = ScrollableContainer()
         self.__provider: SavingsDataProvider | None = None
-
-        if transfer is None:
-            self.__id_input = IdInput("request id", id_="id-input")
+        self.__id_input = IdInput(
+            "request id",
+            id_="id-input",
+            disabled=self.is_transfer_given,
+            value=transfer.request_id if self.is_transfer_given else None,  # type: ignore[union-attr]
+        )
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Cancel transfer")
         with self.__scrollable_container:
             with CancelTransferParameters():
                 yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, classes="parameters-label")
-                if self.__transfer:
-                    yield InputLabel("request id")
-                    yield EllipsedStatic(str(self.__transfer.request_id), classes="parameters-label")
-                else:
-                    yield from self.__id_input.compose()
+                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
+                yield from self.__id_input.compose()
+                if not self.is_transfer_given:
                     with SavingsDataProvider() as provider:
                         self.__provider = provider
-            yield FromSavingsTransferParameters(self.__transfer)
+            if self.is_transfer_given:
+                yield FromSavingsTransferParameters(self.__transfer)
+
+    @property
+    def is_transfer_given(self) -> bool:
+        return self.__transfer is not None
 
     @on(Input.Changed, "#id-input")
     def search_given_transfer(self, event: Input.Changed) -> None:
