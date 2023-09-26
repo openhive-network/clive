@@ -25,7 +25,9 @@ class SavingsDataProvider(CliveWidget):
     """
     A class for retrieving information about savings stored in a SavingsData dataclass.
 
-    To access the data after initializing the class, use the content property.
+    To access the data after initializing the class, use the 'content' property.
+    Management of savings data refreshing should be handled by a context manager,
+    but it can also be manually stopped using the 'stop' method.
     """
 
     content: SavingsData = var(SavingsData())  # type: ignore[assignment]
@@ -53,3 +55,6 @@ class SavingsDataProvider(CliveWidget):
 
         if self.content != new_savings_data:
             self.content = new_savings_data
+
+    def stop(self) -> None:
+        self.interval.stop()
