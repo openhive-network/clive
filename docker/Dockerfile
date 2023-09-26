@@ -7,6 +7,8 @@ FROM $BEEKEEPER_IMAGE as beekeper_source
 
 FROM $BASE_IMAGE AS instance
 
+ARG CLIVE_VERSION
+
 SHELL ["/bin/bash", "-c"]
 
 ADD --chown=hived_admin:users ./docker/entrypoint.sh .
@@ -17,8 +19,17 @@ WORKDIR /clive
 ENV BEEKEEPER_PATH="/clive/beekeeper"
 COPY --from=beekeper_source --chown=hived_admin:users "/home/hived/bin/beekeeper" "${BEEKEEPER_PATH}"
 
-RUN poetry install --only main
-RUN poetry dynamic-versioning  # Substitute versions because of https://github.com/mtkennerly/poetry-dynamic-versioning/issues/25#issuecomment-698193152, has to be done after installation otherwise pip will show "dirty" version
+RUN poetry env use python3
+RUN source "$(poetry env info --path)/bin/activate"
+
+# Project IDS:
+# - 362 -> schemas
+# - 392 -> clive
+# - 419 -> wax
+RUN pip install clive=="${CLIVE_VERSION}" \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
 
 # crucial for proper display
 ENV COLORTERM=truecolor
@@ -44,7 +55,6 @@ ENV COMPRESS_BLOCK_LOG_PATH="/home/hived/bin/compress_block_log"
 WORKDIR /clive
 
 # Run installation once again to supplement extras and development dependencies
-RUN git restore pyproject.toml clive/__init__.py  # Restore files that were modified by previous dynamic-versioning
 RUN poetry install
 RUN poetry dynamic-versioning  # Substitute versions because of https://github.com/mtkennerly/poetry-dynamic-versioning/issues/25#issuecomment-698193152, has to be done after installation otherwise pip will show "dirty" version
 

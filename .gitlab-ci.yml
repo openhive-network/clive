@@ -33,7 +33,7 @@ include:
     ref: fc899116bf691309cc618e51a9c2d8c6d5edb8cd #develop
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
-    ref: 899a376c9b56d79000372903e75af544c90596ab # develop
+    ref: e619fae3c482fec7394d024f5446367adeed0852
     file: '/templates/python_projects.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
@@ -147,6 +147,8 @@ deploy_wheel:
     - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
+    - job: deploy_wheel
+      artifacts: true
   when: manual
   except:
     - develop
@@ -160,7 +162,15 @@ deploy_wheel:
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
 
   script:
-    - $SCRIPTS_PATH/ci-helpers/build_instance.sh "${TAG_COMMIT}" "${CI_PROJECT_DIR}" $CI_REGISTRY_IMAGE --beekeeper-source-image=${HIVED_IMAGE_NAME} --base-image=${BASE_IMAGE} ${BUILD_INSTANCE_ARGS}
+    - echo "WHEEL_BUILD_VERSION is ${WHEEL_BUILD_VERSION}"
+    - $SCRIPTS_PATH/ci-helpers/build_instance.sh
+      "${TAG_COMMIT}"
+      "${CI_PROJECT_DIR}"
+      "${CI_REGISTRY_IMAGE}"
+      --beekeeper-source-image=${HIVED_IMAGE_NAME}
+      --base-image=${BASE_IMAGE}
+      --clive-version=${WHEEL_BUILD_VERSION}
+      ${BUILD_INSTANCE_ARGS}
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
@@ -175,6 +185,8 @@ deploy_wheel:
 .clive_testnet_needs: &clive_testnet_needs
   needs:
     - job: prepare_testnet_hived_image
+      artifacts: true
+    - job: deploy_wheel
       artifacts: true
 
 build_and_push_clive_image:
