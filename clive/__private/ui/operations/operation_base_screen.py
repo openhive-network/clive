@@ -109,3 +109,15 @@ class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
     """Base class for all screens that represent operations."""
 
     BINDINGS = [Binding("escape", "pop_screen", "Cancel")]
+
+
+class SavingsBaseScreen(OperationBaseScreen):
+    BINDINGS = [
+        Binding("f2", "cart", "Cart"),
+    ]
+
+    def action_cart(self) -> None:
+        if not self.app.world.profile_data.cart:
+            self.notify("There are no operations in the cart! Cannot continue.", severity="warning")
+            return
+        self.app.push_screen(Cart())

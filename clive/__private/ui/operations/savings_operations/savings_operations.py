@@ -3,14 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
 from textual.css.query import NoMatches
 from textual.widgets import Button, Label, RadioSet, Static, TabbedContent
 
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen, OperationMethods
+from clive.__private.ui.operations.operation_base_screen import OperationMethods, SavingsBaseScreen
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
@@ -142,10 +140,6 @@ class PendingTransfers(ScrollableContainer):
 
 
 class SavingsInfo(ScrollableTabPane, CliveWidget):
-    BINDINGS = [
-        Binding("f2", "cart", "Cart"),
-    ]
-
     def __init__(self, provider: SavingsDataProvider, title: TextType) -> None:
         super().__init__(title=title)
         self.__provider = provider
@@ -153,12 +147,6 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
     def compose(self) -> ComposeResult:
         yield SavingsInterestInfo(self.__provider)
         yield PendingTransfers()
-
-    def action_cart(self) -> None:
-        if not self.app.world.profile_data.cart:
-            self.notify("There are no operations in the cart! Cannot continue.", severity="warning")
-            return
-        self.app.push_screen(Cart())
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_pending_transfers)
@@ -260,7 +248,7 @@ class SavingsTransfers(ScrollableTabPane, OperationMethods):
         return last_occupied_id + 1
 
 
-class Savings(OperationBaseScreen):
+class Savings(SavingsBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Savings operations")
         with SavingsDataProvider() as provider, TabbedContent():
