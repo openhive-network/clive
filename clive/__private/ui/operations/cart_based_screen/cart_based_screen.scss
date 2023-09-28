@@ -33,3 +33,7 @@ CartBasedScreen CartOverview CartItemsContainer {
   padding: 1;
   height: 1fr;
 }
+
+CartBasedScreen CartInfoContainer:focus-within {
+  background: $panel-darken-1;
+}
