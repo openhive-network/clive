@@ -6,6 +6,7 @@ from textual.containers import Container, Grid, VerticalScroll
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_operation_name
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.models import Asset
@@ -46,7 +47,7 @@ class CartItemsAmount(DynamicLabel):
         return "CART IS EMPTY"
 
 
-class CartItemsContainer(VerticalScroll):
+class CartItemsContainer(VerticalScroll, CanFocusWithScrollbarsOnly):
     """A container that holds the cart items."""
 
 
