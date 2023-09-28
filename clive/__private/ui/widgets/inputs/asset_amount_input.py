@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
@@ -69,9 +70,24 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
 
     @property
     def value(self) -> Asset.Hive | Asset.Hbd | None:
-        if value := self.__numeric_input.value:
-            return self.__currency_selector.create_asset(value)
-        return None
+        value = self.__numeric_input.value
+
+        if value is not None:
+            decimal_places = Decimal(str(value)).as_tuple().exponent
+        else:
+            return None
+
+        if isinstance(decimal_places, int):
+            decimal_places = -decimal_places
+        else:
+            raise TypeError("Unknown value of decimal places")
+
+        precision = 3
+        if decimal_places > precision:
+            self.notify(f"The maximum number of decimal places is {precision}!", severity="error")
+            return None
+
+        return self.__currency_selector.create_asset(value)
 
     def _create_input(self) -> Input:
         self.__numeric_input = NumericInput(label=self._label, placeholder=self._placeholder, tooltip=self.tooltip)
