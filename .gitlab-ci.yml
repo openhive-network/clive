@@ -136,6 +136,16 @@ deploy_wheel_to_gitlab:
     - job: build_wheel
       artifacts: true
 
+
+deploy_wheel_to_pypi:
+  extends: .deploy_wheel_to_pypi_template
+  stage: deploy
+  needs:
+    - job: testing_clive
+    - job: testing_clive_import_times_during_autocompletion
+    - job: build_wheel
+      artifacts: true
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD AND DEPLOY DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
