@@ -49,7 +49,7 @@ class AlarmDisplay(DynamicLabel):
             alarm_count = sum([acc.data.warnings for acc in account_getter(pd)])
             if alarm_count:
                 self.remove_class(class_name)
-                return f"!{alarm_count}x ALARMS!"
+                return f"{alarm_count} ALARM{'S' if alarm_count > 1 else ''}!"
             self.add_class(class_name)
             return "No alarms"
 

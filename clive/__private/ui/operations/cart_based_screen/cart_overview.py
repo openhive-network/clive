@@ -43,7 +43,7 @@ class CartItemsAmount(DynamicLabel):
     def __get_cart_item_count(self, profile_data: ProfileData) -> str:
         amount = len(profile_data.cart)
         if amount > 0:
-            return f"{amount} OPERATIONS IN THE CART"
+            return f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART"
         return "CART IS EMPTY"
 
 
