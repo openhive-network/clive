@@ -33,7 +33,7 @@ include:
     ref: fc899116bf691309cc618e51a9c2d8c6d5edb8cd #develop
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
-    ref: e619fae3c482fec7394d024f5446367adeed0852
+    ref: b5202fecccf40845099da351cbc0c38a6205339c
     file: '/templates/python_projects.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
@@ -127,8 +127,8 @@ testing_clive_import_times_during_autocompletion:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| DEPLOY |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-deploy_wheel:
-  extends: .deploy_wheel_template
+deploy_wheel_to_gitlab:
+  extends: .deploy_wheel_to_gitlab_template
   stage: deploy
   needs:
     - job: testing_clive
@@ -147,7 +147,7 @@ deploy_wheel:
     - job: pre_commit_checks
     - job: prepare_mainnet_hived_image
       artifacts: true
-    - job: deploy_wheel
+    - job: deploy_wheel_to_gitlab
       artifacts: true
   when: manual
   except:
@@ -186,7 +186,7 @@ deploy_wheel:
   needs:
     - job: prepare_testnet_hived_image
       artifacts: true
-    - job: deploy_wheel
+    - job: deploy_wheel_to_gitlab
       artifacts: true
 
 build_and_push_clive_image:
