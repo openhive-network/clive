@@ -17,11 +17,12 @@ from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import CliveError, NoItemSelectedError
+from schemas.operations.representations import Hf26OperationRepresentation, convert_to_representation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Transaction
+    from clive.models import Operation, Transaction
 
 
 class TransactionCouldNotBeSignedError(CliveError):
@@ -99,7 +100,9 @@ class TransactionSummary(BaseScreen):
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
                 for idx, operation in enumerate(self.app.world.profile_data.cart):
-                    yield OperationItem(operation.json(by_alias=True), classes="-even" if idx % 2 == 0 else "")
+                    yield OperationItem(
+                        self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
+                    )
             yield Static()
 
     @CliveScreen.try_again_after_activation()
@@ -165,3 +168,8 @@ class TransactionSummary(BaseScreen):
         return (
             await self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)
         ).result_or_raise
+
+    @staticmethod
+    def __get_operation_representation_json(operation: Operation) -> str:
+        representation: Hf26OperationRepresentation = convert_to_representation(operation=operation)
+        return representation.json(by_alias=True)
