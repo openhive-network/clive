@@ -23,7 +23,7 @@ class WelcomeTitle(Static):
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
-    BINDINGS = [Binding("escape", "cancel", "Back")]
+    BINDINGS = [Binding("escape", "pop_screen", "Back")]
 
     def __init__(self, owner: Form[ContextT], title: str) -> None:
         self.__title = title
@@ -37,9 +37,3 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     @on(CliveButton.Pressed, "#welcome_button_start")
     async def begin(self) -> None:
         await self.action_next_screen()
-
-    def action_cancel(self) -> None:
-        self._cancel()
-
-    def _cancel(self) -> None:
-        self.app.pop_screen()

@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual.binding import Binding
+
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
 from clive.__private.ui.manage_authorities import NewAuthorityForm
-from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.set_account.set_account import SetAccount
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -17,8 +18,7 @@ if TYPE_CHECKING:
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
-    def _cancel(self) -> None:
-        self.app.push_screen(Quit())
+    BINDINGS = [Binding("escape", "dummy", show=False)]
 
 
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
