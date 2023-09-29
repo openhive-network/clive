@@ -1,11 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from itertools import zip_longest
+from typing import TYPE_CHECKING, ClassVar, Final, TypeVar
 
 from textual import on
+from textual.binding import Binding, BindingType
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
 from textual.css.query import NoMatches
-from textual.widgets import Button, Label, RadioSet, Static, TabbedContent
+from textual.widget import Widget
+from textual.widgets import Button, ContentSwitcher, Label, RadioSet, Static, TabbedContent, TabPane, Tabs
+from textual.widgets._tabbed_content import ContentTab
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
@@ -250,6 +254,45 @@ class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
         return last_occupied_id + 1
 
 
+class CustomTabs(Tabs):
+    BINDINGS: ClassVar[list[BindingType]] = [
+        Binding("left", "previous_tab", "Previous tab", show=True),
+        Binding("right", "next_tab", "Next tab", show=True),
+    ]
+
+
+ExpectType = TypeVar("ExpectType", bound=Widget)
+
+
+class CustomTabbedContent(TabbedContent):
+    """Compose the tabbed content."""
+
+    # Wrap content in a `TabPane` if required.
+    def compose(self) -> ComposeResult:
+        pane_content = [
+            self._set_id(
+                content if isinstance(content, TabPane) else TabPane(title or self.render_str(f"Tab {index}"), content),
+                index,
+            )
+            for index, (title, content) in enumerate(zip_longest(self.titles, self._tab_content), 1)
+        ]
+        # Get a tab for each pane
+        tabs = [ContentTab(content._title, content.id or "") for content in pane_content]
+        # Yield the tabs
+        yield CustomTabs(*tabs, active=self._initial or None)
+        # Yield the content switcher and panes
+        with ContentSwitcher(initial=self._initial or None):
+            yield from pane_content
+
+    def get_child_by_type(self, expect_type: type[ExpectType]) -> ExpectType:
+        for child in self._nodes:
+            if isinstance(child, CustomTabs):
+                return child  # type: ignore[return-value]
+
+        super().get_child_by_type(expect_type)
+        return None  # type: ignore[return-value]
+
+
 class Savings(OperationBaseScreen, CartBinding):
     CSS_PATH = [
         *OperationBaseScreen.CSS_PATH,
@@ -258,6 +301,6 @@ class Savings(OperationBaseScreen, CartBinding):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Savings operations")
-        with SavingsDataProvider() as provider, TabbedContent():
+        with SavingsDataProvider() as provider, CustomTabbedContent():
             yield SavingsInfo(provider, "savings info")
             yield SavingsTransfers(provider, "transfer")
