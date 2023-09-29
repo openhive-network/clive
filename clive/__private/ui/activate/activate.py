@@ -30,7 +30,7 @@ class ButtonsContainer(Horizontal):
 
 class Activate(BaseScreen):
     BINDINGS = [
-        Binding("escape", "cancel", "Cancel"),
+        Binding("escape", "cancel", "Back"),
         Binding("f2", "activate", "Ok"),
     ]
 

@@ -19,7 +19,7 @@ PasswordResultCallbackType = Callable[[str], Awaitable[None]]
 
 class ConfirmWithPassword(BaseScreen):
     BINDINGS = [
-        Binding("escape", "cancel", "Cancel"),
+        Binding("escape", "cancel", "Back"),
         Binding("f2", "confirm", "Ok"),
     ]
 

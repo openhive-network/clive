@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class TerminalScreen(BaseScreen):
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),
-        Binding("ctrl+o", "pop_screen", "Cancel", show=False),
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("ctrl+o", "pop_screen", show=False),
+        Binding("escape", "pop_screen", "Back"),
     ]
 
     def __init__(self) -> None:

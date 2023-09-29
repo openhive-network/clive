@@ -48,7 +48,7 @@ class CommandLineInput(Input, CliveWidget):
 
 class CommandLine(Widget):
     BINDINGS = [
-        Binding("escape", "cancel", "Cancel"),
+        Binding("escape", "cancel", "Back"),
     ]
 
     def __init__(self, *, focus_on_cancel: Widget) -> None:

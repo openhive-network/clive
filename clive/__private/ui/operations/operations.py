@@ -45,7 +45,7 @@ class OperationButton(CliveButton):
 
 class Operations(CartBasedScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
         Binding("f2", "cart", "Cart"),
     ]
 

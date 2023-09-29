@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 class Quit(BaseScreen):
     BINDINGS = [
         Binding("ctrl+x", "exit_cleanly", "Quit"),
-        Binding("escape", "cancel", "Cancel"),
+        Binding("escape", "cancel", "Back"),
     ]
 
     def create_main_panel(self) -> ComposeResult:

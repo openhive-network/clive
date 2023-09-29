@@ -35,7 +35,7 @@ class Body(VerticalScroll):
 
 class SelectFile(BaseScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
         Binding("f2", "save", "Ok"),
     ]
 

@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 class ConfigBase(BaseScreen, AbstractClassMessagePump):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
     ]
 
     def additional_buttons(self) -> ComposeResult:

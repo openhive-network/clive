@@ -153,7 +153,7 @@ class NewAuthorityBase(AuthorityForm, ABC):
 
 class NewAuthority(NewAuthorityBase):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
         Binding("f10", "save", "Save"),
     ]
 

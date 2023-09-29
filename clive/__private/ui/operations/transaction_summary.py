@@ -77,7 +77,7 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
 
 class TransactionSummary(BaseScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
         Binding("f2", "save", "Save"),
         Binding("f3", "dashboard", "Dashboard"),
         Binding("f10", "broadcast", "Broadcast"),

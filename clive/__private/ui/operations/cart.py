@@ -211,7 +211,7 @@ class CartHeader(ColumnLayout):
 
 class Cart(BaseScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
         Binding("f9", "clear_all", "Clear all"),
         Binding("f10", "summary", "Summary"),
     ]

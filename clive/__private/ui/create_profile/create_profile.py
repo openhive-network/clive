@@ -101,7 +101,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
 class CreateProfile(CreateProfileCommon):
     BINDINGS = [
-        Binding("escape", "dashboard", "Cancel"),
+        Binding("escape", "dashboard", "Back"),
         Binding("f2", "create_profile", "Ok"),
     ]
 

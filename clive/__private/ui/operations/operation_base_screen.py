@@ -108,7 +108,7 @@ class OperationMethods(CliveWidget, AbstractClassMessagePump):
 class OperationBaseScreen(CartBasedScreen, AbstractClassMessagePump):
     """Base class for all screens that represent operations."""
 
-    BINDINGS = [Binding("escape", "pop_screen", "Cancel")]
+    BINDINGS = [Binding("escape", "pop_screen", "Back")]
 
 
 class SavingsBaseScreen(OperationBaseScreen):

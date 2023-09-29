@@ -23,7 +23,7 @@ class WelcomeTitle(Static):
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
-    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS = [Binding("escape", "cancel", "Back")]
 
     def __init__(self, owner: Form[ContextT], title: str) -> None:
         self.__title = title

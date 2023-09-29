@@ -96,7 +96,7 @@ class AuthorityHeader(ColumnLayout):
 
 class ManageAuthorities(BaseScreen):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Cancel"),
+        Binding("escape", "pop_screen", "Back"),
         Binding("f2", "new_authority", "New authority"),
     ]
 
