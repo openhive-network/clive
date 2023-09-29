@@ -127,24 +127,23 @@ testing_clive_import_times_during_autocompletion:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| DEPLOY |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-deploy_wheel_to_gitlab:
-  extends: .deploy_wheel_to_gitlab_template
-  stage: deploy
-  needs:
+.deploy_wheel_needs : &deploy_wheel_needs
+    needs:
     - job: testing_clive
     - job: testing_clive_import_times_during_autocompletion
     - job: build_wheel
       artifacts: true
+
+deploy_wheel_to_gitlab:
+  extends: .deploy_wheel_to_gitlab_template
+  stage: deploy
+  <<: *deploy_wheel_needs
 
 
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
   stage: deploy
-  needs:
-    - job: testing_clive
-    - job: testing_clive_import_times_during_autocompletion
-    - job: build_wheel
-      artifacts: true
+  <<: *deploy_wheel_needs
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| DEPLOY |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
