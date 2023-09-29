@@ -93,7 +93,7 @@ class BeekeeperExecutable:
             self.close()
             raise e from e
 
-    def close(self) -> None:
+    def close(self, *, wait_for_deleted_pid: bool = False) -> None:
         if self.__process is None:
             self.__close_files_for_streams()
             return
@@ -112,7 +112,8 @@ class BeekeeperExecutable:
         finally:
             self.__close_files_for_streams()
             self.__process = None
-            self.__wait_for_pid_file_to_be_deleted()
+            if wait_for_deleted_pid:
+                self.__wait_for_pid_file_to_be_deleted()
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
