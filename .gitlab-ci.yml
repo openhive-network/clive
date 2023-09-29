@@ -129,6 +129,7 @@ testing_clive_import_times_during_autocompletion:
 
 .deploy_wheel_needs : &deploy_wheel_needs
     needs:
+    - job: pre_commit_checks
     - job: testing_clive
     - job: testing_clive_import_times_during_autocompletion
     - job: build_wheel
