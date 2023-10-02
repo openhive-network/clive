@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from decimal import Decimal
 from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
 
+from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
@@ -71,20 +71,14 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
     @property
     def value(self) -> Asset.Hive | Asset.Hbd | None:
         value = self.__numeric_input.value
-
-        if value is not None:
-            decimal_places = Decimal(str(value)).as_tuple().exponent
-        else:
+        if value is None:
             return None
 
-        if isinstance(decimal_places, int):
-            decimal_places = -decimal_places
-        else:
-            raise TypeError("Unknown value of decimal places")
+        value_precision = DecimalConverter.get_precision(value)
 
-        precision = 3
-        if decimal_places > precision:
-            self.notify(f"The maximum number of decimal places is {precision}!", severity="error")
+        max_allowed_precision = 3
+        if value_precision > max_allowed_precision:
+            self.notify(f"The maximum allowed precision is {max_allowed_precision}!", severity="error")
             return None
 
         return self.__currency_selector.create_asset(value)

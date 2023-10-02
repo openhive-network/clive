@@ -17,6 +17,23 @@ class DecimalConversionNotANumberError(CliveError):
 
 class DecimalConverter:
     @classmethod
+    def get_precision(cls, amount: int | float | str | Decimal) -> int:
+        """
+        Get precision of given amount.
+
+        Args:
+        ----
+        amount: Amount to get precision of.
+
+        Raises:
+        ------
+        DecimalConversionNotANumberError: Raised when given amount is in invalid format.
+        """
+        converted = cls.convert(amount)
+        exponent = int(converted.as_tuple().exponent)
+        return -1 * exponent
+
+    @classmethod
     def convert(cls, amount: int | float | str | Decimal, *, precision: int | None = None) -> Decimal:
         """
         Convert given amount to Decimal.
