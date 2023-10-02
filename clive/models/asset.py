@@ -2,14 +2,16 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from typing import TypeAlias, TypeVar
+from typing import Generic, TypeAlias, TypeVar
+
+from pydantic.generics import GenericModel
 
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
 from clive.exceptions import CliveError
-from clive.models.aliased import AssetBase
+from clive.models.base import CliveBaseModel
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
-AssetT = TypeVar("AssetT", bound=AssetBase)
+AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
 AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
 
 AssetAmount = int | float | str
@@ -29,6 +31,13 @@ class AssetAmountInvalidFormatError(CliveError):
     def __init__(self, value: str) -> None:
         self.message = f"Invalid asset amount format: '{value}'. Should be a number."
         super().__init__(self.message)
+
+
+class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
+    """Holds factory for asset."""
+
+    asset_cls: type[AssetT]
+    asset_factory: AssetFactory[AssetT]
 
 
 class Asset:
@@ -133,7 +142,7 @@ class Asset:
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
-        return f"{int(asset.amount) / 10**asset.precision :.{asset.precision}f}"
+        return f"{int(asset.amount) / 10 ** asset.precision :.{asset.precision}f}"
 
     @staticmethod
     def __convert_amount_to_internal_representation(amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
