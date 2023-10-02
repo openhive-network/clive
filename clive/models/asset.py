@@ -1,15 +1,19 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Callable
 from typing import TypeAlias, TypeVar
 
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
 from clive.exceptions import CliveError
+from clive.models.aliased import AssetBase
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
-AssetAmount = int | float | str
-
+AssetT = TypeVar("AssetT", bound=AssetBase)
 AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
+
+AssetAmount = int | float | str
+AssetFactory = Callable[[AssetAmount], AssetT]
 
 
 class AssetError(CliveError):

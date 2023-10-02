@@ -1,21 +1,14 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from collections.abc import Callable
-from typing import TypeVar
 
 from textual.widgets import Select
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.models.aliased import AssetBase
-from clive.models.asset import AssetAmount, AssetAmountInvalidFormatError
-
-CurrencySelectorValueT = TypeVar("CurrencySelectorValueT", bound=AssetBase)
-
-CurrencySelectorCallableT = Callable[[AssetAmount], CurrencySelectorValueT]
+from clive.models.asset import AssetAmount, AssetAmountInvalidFormatError, AssetFactory, AssetT
 
 
-class CurrencySelectorBase(Select[CurrencySelectorCallableT[CurrencySelectorValueT]], AbstractClassMessagePump):
+class CurrencySelectorBase(Select[AssetFactory[AssetT]], AbstractClassMessagePump):
     """Base Currency Selector for operations, which require to choose type of Assets."""
 
     def __init__(self) -> None:
@@ -30,10 +23,10 @@ class CurrencySelectorBase(Select[CurrencySelectorCallableT[CurrencySelectorValu
 
     @staticmethod
     @abstractmethod
-    def _create_selectable() -> dict[str, CurrencySelectorCallableT[CurrencySelectorValueT]]:
+    def _create_selectable() -> dict[str, AssetFactory[AssetT]]:
         """Should return dict of selectable items."""
 
-    def create_asset(self, amount: AssetAmount) -> CurrencySelectorValueT | None:
+    def create_asset(self, amount: AssetAmount) -> AssetT | None:
         asset = self.value
         assert asset is not None
         try:
