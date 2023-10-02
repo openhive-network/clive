@@ -5,7 +5,6 @@ import math
 import traceback
 from asyncio import CancelledError
 from contextlib import contextmanager
-from pathlib import Path
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from textual import on, work
@@ -21,6 +20,7 @@ from clive.__private.logger import logger
 from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.quit.quit import Quit
@@ -52,7 +52,7 @@ class Clive(App[int], ManualReactive):
 
     SUB_TITLE = __version__
 
-    CSS_PATH = list(Path(__file__).parent.glob("**/*.scss"))
+    CSS_PATH = [get_relative_css_path(__file__, name="global")]
 
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),

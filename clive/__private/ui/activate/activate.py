@@ -10,6 +10,7 @@ from textual.containers import Horizontal
 from textual.message import Message
 from textual.widgets import Checkbox, Static
 
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
@@ -29,6 +30,8 @@ class ButtonsContainer(Horizontal):
 
 
 class Activate(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("escape", "cancel", "Back"),
         Binding("f2", "activate", "Ok"),

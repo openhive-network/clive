@@ -12,6 +12,7 @@ from textual.widgets import Input, Select, Static, Switch
 
 from clive.__private.core.communication import Communication
 from clive.__private.ui.app_messages import NodeDataUpdated
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -111,6 +112,8 @@ class ModeSwitchContainer(Horizontal):
 
 
 class SetNodeAddressBase(BaseScreen, ABC):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
 

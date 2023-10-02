@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid, ScrollableContainer
 from textual.widgets import Static
 
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -33,6 +34,8 @@ class PlaceTaker(Static):
 
 
 class AccountCreate(RawOperationBaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     def __init__(self) -> None:
         super().__init__()
 

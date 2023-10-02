@@ -14,6 +14,7 @@ from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithB
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.app_messages import ProfileDataUpdated
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -30,6 +31,8 @@ class ButtonsContainer(Horizontal):
 
 
 class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.__profile_name_input = TextInput(label="profile name", placeholder="e.g: Master", id_="profile_name_input")
         self.__password_input = TextInput(label="password", placeholder="Password", password=True, id_="password_input")

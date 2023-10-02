@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Static
 
 from clive.__private.storage.contextual import ContextT
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FirstFormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -23,6 +24,8 @@ class WelcomeTitle(Static):
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [Binding("escape", "pop_screen", "Back")]
 
     def __init__(self, owner: Form[ContextT], title: str) -> None:

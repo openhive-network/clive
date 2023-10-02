@@ -9,6 +9,7 @@ from textual.widgets import Label, Static
 
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_screen import CliveScreen
@@ -76,6 +77,8 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
 
 
 class TransactionSummary(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f2", "save", "Save"),

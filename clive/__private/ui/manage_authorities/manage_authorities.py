@@ -9,6 +9,7 @@ from textual.message import Message
 from textual.widgets import Static
 
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.manage_authorities.edit_authority import EditAuthority
 from clive.__private.ui.manage_authorities.new_authority import NewAuthority
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
@@ -95,6 +96,8 @@ class AuthorityHeader(ColumnLayout):
 
 
 class ManageAuthorities(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f2", "new_authority", "New authority"),

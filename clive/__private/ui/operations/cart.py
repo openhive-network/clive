@@ -11,6 +11,7 @@ from textual.message import Message
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.transaction_summary import TransactionSummary
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -210,6 +211,8 @@ class CartHeader(ColumnLayout):
 
 
 class Cart(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f9", "clear_all", "Clear all"),

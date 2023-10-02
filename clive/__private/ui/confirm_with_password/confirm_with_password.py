@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Input, Static
 
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
@@ -18,6 +19,8 @@ PasswordResultCallbackType = Callable[[str], Awaitable[None]]
 
 
 class ConfirmWithPassword(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("escape", "cancel", "Back"),
         Binding("f2", "confirm", "Ok"),

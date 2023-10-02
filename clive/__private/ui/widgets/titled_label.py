@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 from textual.widgets import Label
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 
@@ -22,6 +23,8 @@ class TitledLabel(CliveWidget):
     The value can be updated dynamically if :obj_to_watch: and :attribute_name: is given.
     When :value: is provided with both of the mentioned parameters, it will be used as a prefix for the dynamic value.
     """
+
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(
         self,

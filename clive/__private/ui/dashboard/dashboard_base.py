@@ -12,6 +12,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_natural_time,
 )
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
@@ -138,6 +139,8 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 
 class DashboardBase(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
+
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),
         Binding("ctrl+o", "terminal", "Extend terminal", show=False),

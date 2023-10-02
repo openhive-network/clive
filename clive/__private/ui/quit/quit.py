@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Static
 
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
@@ -16,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class Quit(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("ctrl+x", "exit_cleanly", "Quit"),
         Binding("escape", "cancel", "Back"),

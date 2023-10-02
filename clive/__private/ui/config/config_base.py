@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 
 class ConfigBase(BaseScreen, AbstractClassMessagePump):
+    CSS_PATH = [get_relative_css_path(__file__, name="config")]
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
     ]

@@ -11,6 +11,7 @@ from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.formatters.humanize import humanize_natural_time
 from clive.__private.core.profile_data import ProfileData
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
@@ -103,6 +104,8 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
 
 
 class Header(TextualHeader, CliveWidget):
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
     def __init__(self) -> None:
         super().__init__()
         self.__node_version_label = DynamicLabel(

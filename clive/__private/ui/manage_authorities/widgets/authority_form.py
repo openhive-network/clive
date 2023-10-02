@@ -9,6 +9,7 @@ from textual.widgets import Input, Static
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.view_bag import ViewBag
@@ -31,6 +32,8 @@ class SubTitle(Static):
 
 
 class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     class AuthoritiesChanged(Message):
         """Emitted when authorities have been changed."""
 

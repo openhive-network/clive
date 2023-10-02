@@ -10,6 +10,7 @@ from textual.containers import Horizontal, VerticalScroll
 from textual.message import Message
 from textual.widgets import DirectoryTree, Input, Label
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
@@ -34,6 +35,8 @@ class Body(VerticalScroll):
 
 
 class SelectFile(BaseScreen):
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f2", "save", "Ok"),

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Container, Horizontal
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.cart_based_screen.cart_overview import CartOverview
 from clive.__private.ui.shared.base_screen import BaseScreen
 
@@ -23,6 +24,8 @@ class RightContainer(Container):
 
 class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
     """Base class for all screens that should show a brief cart summary."""
+
+    CSS_PATH = [get_relative_css_path(__file__)]
 
     def create_main_panel(self) -> ComposeResult:
         with Horizontal():

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
 from clive.__private.ui.terminal.logs import Logs
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
 
 
 class TerminalScreen(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__, name="terminal")]
+
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),
         Binding("ctrl+o", "pop_screen", show=False),

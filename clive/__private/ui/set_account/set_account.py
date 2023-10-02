@@ -7,6 +7,7 @@ from textual.widgets import Checkbox
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.accounts import Account, InvalidAccountNameError, WorkingAccount
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -25,6 +26,8 @@ class ScrollablePart(ScrollableContainer):
 
 
 class SetAccount(BaseScreen, FormScreen[ProfileData]):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner)
 

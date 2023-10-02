@@ -7,6 +7,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static, TabbedContent
 
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
@@ -44,6 +45,8 @@ class OperationButton(CliveButton):
 
 
 class Operations(CartBasedScreen):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f2", "cart", "Cart"),

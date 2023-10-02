@@ -8,6 +8,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.storage.contextual import ContextT
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.shared.form_screen import LastFormScreen
@@ -29,6 +30,8 @@ class ButtonsContainer(Horizontal):
 
 
 class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
+    CSS_PATH = [get_relative_css_path(__file__)]
+
     BINDINGS = [Binding("f10", "finish", "Ok")]
 
     def __init__(self, owner: Form[ContextT], end_note: str) -> None:

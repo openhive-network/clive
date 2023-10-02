@@ -2,11 +2,14 @@ from __future__ import annotations
 
 from textual.containers import ScrollableContainer
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.big_title import BigTitle
 
 
 class DialogContainer(ScrollableContainer):
     """A container for dialog-like looking widgets. Content stored inside this container will be centered."""
+
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, title: str = "", *, id_: str | None = None, classes: str | None = None) -> None:
         self.__title = title
