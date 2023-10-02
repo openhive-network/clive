@@ -9,7 +9,6 @@ from textual.widgets._tabbed_content import ContentTab
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from textual.widget import Widget
 
 
 class CliveTabs(Tabs):
@@ -39,10 +38,10 @@ class CliveTabbedContent(TabbedContent):
         with ContentSwitcher(initial=self._initial or None):
             yield from pane_content
 
-    def get_child_by_type(self, expect_type: type[Widget.ExpectType]) -> Widget.ExpectType:
-        for child in self._nodes:
-            if isinstance(child, CliveTabs):
-                return child  # type: ignore[return-value]
+    def get_child_by_type(self, expect_type: type[TabbedContent.ExpectType]) -> TabbedContent.ExpectType:
+        if expect_type is Tabs:
+            for child in self._nodes:
+                if isinstance(child, CliveTabs):
+                    return child  # type: ignore[return-value]
 
-        super().get_child_by_type(expect_type)
-        return None  # type: ignore[return-value]
+        return super().get_child_by_type(expect_type)
