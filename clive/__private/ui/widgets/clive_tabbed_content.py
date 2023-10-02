@@ -19,9 +19,8 @@ class CliveTabs(Tabs):
 
 
 class CliveTabbedContent(TabbedContent):
-    """Compose the tabbed content."""
+    """A tabbed content that shows "left" and "right" bindings in the footer when header (Tabs) is focused."""
 
-    # Wrap content in a `TabPane` if required.
     def compose(self) -> ComposeResult:
         pane_content = [
             self._set_id(
@@ -39,6 +38,7 @@ class CliveTabbedContent(TabbedContent):
             yield from pane_content
 
     def get_child_by_type(self, expect_type: type[TabbedContent.ExpectType]) -> TabbedContent.ExpectType:
+        """Returns CliveTabs instead of Tabs because get_child_by_type checks for the exact type (not subclasses)."""
         if expect_type is Tabs:
             for child in self._nodes:
                 if isinstance(child, CliveTabs):
