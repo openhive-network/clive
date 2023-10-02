@@ -76,9 +76,13 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
 
         value_precision = DecimalConverter.get_precision(value)
 
-        max_allowed_precision = self.__currency_selector.asset_cls.get_asset_information().precision
+        asset_info = self.__currency_selector.asset_cls.get_asset_information()
+        asset_symbol = asset_info.symbol[0]
+        max_allowed_precision = asset_info.precision
         if value_precision > max_allowed_precision:
-            self.notify(f"The maximum allowed precision is {max_allowed_precision}!", severity="error")
+            self.notify(
+                f"The maximum allowed precision for {asset_symbol} is {max_allowed_precision}!", severity="error"
+            )
             return None
 
         return self.__currency_selector.create_asset(value)
