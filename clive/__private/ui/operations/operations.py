@@ -5,13 +5,14 @@ from typing import TYPE_CHECKING
 import inflection
 from textual import on
 from textual.binding import Binding
-from textual.widgets import Static, TabbedContent
+from textual.widgets import Static
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.dev import is_in_dev_mode
 
@@ -57,7 +58,7 @@ class Operations(CartBasedScreen, CartBinding):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        with TabbedContent(initial="financial"):
+        with CliveTabbedContent(initial="financial"):
             with ScrollableTabPane("Financial", id="financial"):
                 yield OperationButton(FINANCIAL_OPERATIONS[0], label="Transfer")
                 yield OperationButton(FINANCIAL_OPERATIONS[1], label="Saving")
@@ -73,7 +74,7 @@ class Operations(CartBasedScreen, CartBinding):
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
-        self.get_child_by_type(TabbedContent).active = tab
+        self.get_child_by_type(CliveTabbedContent).active = tab
 
     @on(OperationButton.Pressed)
     def push_operation_screen(self, event: OperationButton.Pressed) -> None:
