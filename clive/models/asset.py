@@ -7,9 +7,9 @@ from clive.__private.core.decimal_conventer import DecimalConversionNotANumberEr
 from clive.exceptions import CliveError
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
-AssetAmountT = int | float | str
+AssetAmount = int | float | str
 
-AssetT = TypeVar("AssetT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
+AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
 
 
 class AssetError(CliveError):
@@ -35,7 +35,7 @@ class Asset:
     AnyT: TypeAlias = Hive | Hbd | Vests
 
     @classmethod
-    def hive(cls, amount: AssetAmountT) -> Asset.Hive:
+    def hive(cls, amount: AssetAmount) -> Asset.Hive:
         """
         Create Hive asset.
 
@@ -50,7 +50,7 @@ class Asset:
         return cls.__create(Asset.Hive, amount)
 
     @classmethod
-    def hbd(cls, amount: AssetAmountT) -> Asset.Hbd:
+    def hbd(cls, amount: AssetAmount) -> Asset.Hbd:
         """
         Create Hbd asset.
 
@@ -65,7 +65,7 @@ class Asset:
         return cls.__create(Asset.Hbd, amount)
 
     @classmethod
-    def vests(cls, amount: AssetAmountT) -> Asset.Vests:
+    def vests(cls, amount: AssetAmount) -> Asset.Vests:
         """
         Create Vests asset.
 
@@ -80,7 +80,7 @@ class Asset:
         return cls.__create(Asset.Vests, amount)
 
     @classmethod
-    def __create(cls, asset: type[AssetT], amount: AssetAmountT) -> AssetT:
+    def __create(cls, asset: type[AssetExplicitT], amount: AssetAmount) -> AssetExplicitT:
         """
         Create asset.
 
@@ -132,7 +132,7 @@ class Asset:
         return f"{int(asset.amount) / 10**asset.precision :.{asset.precision}f}"
 
     @staticmethod
-    def __convert_amount_to_internal_representation(amount: AssetAmountT, precision: int | type[Asset.AnyT]) -> int:
+    def __convert_amount_to_internal_representation(amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
         """
         Convert given amount to internal representation of integer value.
 

@@ -18,14 +18,14 @@ from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.known_account import KnownAccount
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
-from clive.models.asset import AssetAmountT
+from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-LiquidAssetCallableT = Callable[[AssetAmountT], Asset.LiquidT]
+LiquidAssetCallableT = Callable[[AssetAmount], Asset.LiquidT]
 
 
 class Body(Grid):

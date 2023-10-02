@@ -8,11 +8,11 @@ from textual.widgets import Select
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.models.aliased import AssetBase
-from clive.models.asset import AssetAmountInvalidFormatError, AssetAmountT
+from clive.models.asset import AssetAmount, AssetAmountInvalidFormatError
 
 CurrencySelectorValueT = TypeVar("CurrencySelectorValueT", bound=AssetBase)
 
-CurrencySelectorCallableT = Callable[[AssetAmountT], CurrencySelectorValueT]
+CurrencySelectorCallableT = Callable[[AssetAmount], CurrencySelectorValueT]
 
 
 class CurrencySelectorBase(Select[CurrencySelectorCallableT[CurrencySelectorValueT]], AbstractClassMessagePump):
@@ -33,7 +33,7 @@ class CurrencySelectorBase(Select[CurrencySelectorCallableT[CurrencySelectorValu
     def _create_selectable() -> dict[str, CurrencySelectorCallableT[CurrencySelectorValueT]]:
         """Should return dict of selectable items."""
 
-    def create_asset(self, amount: AssetAmountT) -> CurrencySelectorValueT | None:
+    def create_asset(self, amount: AssetAmount) -> CurrencySelectorValueT | None:
         asset = self.value
         assert asset is not None
         try:
