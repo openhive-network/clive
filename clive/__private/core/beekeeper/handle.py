@@ -231,13 +231,31 @@ class Beekeeper:
     async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
         self.__executable.run()
 
-        if await event_wait(self.__notification_server.ready, timeout) and await event_wait(self.__notification_server.http_listening_event, timeout):
-            self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
-        elif await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
-            await self.__close_beekeeper(wait_for_deleted_pid=False, close_notifications_server=False)
-            self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
-        else:
+        start_task = asyncio.create_task(self.__wait_for_beekeeper_to_start(timeout))
+        already_running_task = asyncio.create_task(self.__wait_for_beekeeper_report_already_running(timeout))
+
+        try:
+            done, _ = await asyncio.wait(
+                [start_task, already_running_task],
+                timeout=timeout,
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+        except asyncio.TimeoutError:
             await self.__close_beekeeper()
+        else:
+            if already_running_task in done:
+                await self.__close_beekeeper(wait_for_deleted_pid=False, close_notifications_server=False)
+            self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
+
+    async def __wait_for_beekeeper_to_start(self, timeout: float) -> bool:
+        ready_event, http_listening_event = await asyncio.gather(
+            event_wait(self.__notification_server.ready, timeout),
+            event_wait(self.__notification_server.http_listening_event, timeout),
+        )
+        return ready_event and http_listening_event
+
+    async def __wait_for_beekeeper_report_already_running(self, timeout: float) -> bool:
+        return await event_wait(self.__notification_server.opening_beekeeper_failed, timeout)
 
     async def __close_beekeeper(
         self, *, wait_for_deleted_pid: bool = False, close_notifications_server: bool = True
