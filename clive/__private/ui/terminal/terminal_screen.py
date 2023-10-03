@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class TerminalScreen(BaseScreen):
-    CSS_PATH = [get_relative_css_path(__file__, name="terminal")]
+    CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),

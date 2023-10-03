@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.widget import Widget
 from textual.widgets import Input, Static
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
@@ -47,6 +48,8 @@ class CommandLineInput(Input, CliveWidget):
 
 
 class CommandLine(Widget):
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
     BINDINGS = [
         Binding("escape", "cancel", "Back"),
     ]
