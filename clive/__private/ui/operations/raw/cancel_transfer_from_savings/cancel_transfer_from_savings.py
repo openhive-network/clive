@@ -31,7 +31,10 @@ class CancelTransferParameters(Grid):
 class FromSavingsTransferParameters(Grid):
     """Content containing data cancelling transfers from savings when canceled via a button or searched through input."""
 
-    CSS_PATH = [get_relative_css_path(__file__)]
+    CSS_PATH = [
+        *RawOperationBaseScreen.CSS_PATH,
+        get_relative_css_path(__file__),
+    ]
 
     def __init__(self, transfer: SavingsWithdrawals) -> None:
         super().__init__()

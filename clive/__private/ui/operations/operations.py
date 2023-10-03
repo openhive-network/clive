@@ -45,7 +45,10 @@ class OperationButton(CliveButton):
 
 
 class Operations(CartBasedScreen):
-    CSS_PATH = [get_relative_css_path(__file__)]
+    CSS_PATH = [
+        *CartBasedScreen.CSS_PATH,
+        get_relative_css_path(__file__),
+    ]
 
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),

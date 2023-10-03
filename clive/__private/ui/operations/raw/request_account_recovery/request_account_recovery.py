@@ -29,7 +29,10 @@ class PlaceTaker(Static):
 
 
 class RequestAccountRecovery(RawOperationBaseScreen):
-    CSS_PATH = [get_relative_css_path(__file__)]
+    CSS_PATH = [
+        *RawOperationBaseScreen.CSS_PATH,
+        get_relative_css_path(__file__),
+    ]
 
     def __init__(self) -> None:
         super().__init__()
