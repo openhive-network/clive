@@ -13,6 +13,7 @@ from clive.__private.ui.operations.cart_based_screen.cart_based_screen import Ca
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
+from clive.dev import is_in_dev_mode
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -68,7 +69,7 @@ class Operations(CartBasedScreen):
                 yield OperationButton(None, label="Governance operations")
             with ScrollableTabPane("Account management"):
                 yield OperationButton(None, label="Account management operations")
-            yield from self.__create_raw_operations_tab(hide=True)
+            yield from self.__create_raw_operations_tab(hide=not is_in_dev_mode())
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
