@@ -229,9 +229,7 @@ class Beekeeper:
         self.__executable.run()
 
         if await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
-            await self.__close_beekeeper(wait_for_deleted_pid=False)
-            self.__notification_server_port = await self.__notification_server.listen()
-            self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
+            await self.__close_beekeeper(wait_for_deleted_pid=False, close_notifications_server=False)
         elif not (
             await event_wait(self.__notification_server.http_listening_event, timeout)
             and await event_wait(self.__notification_server.ready, timeout)
@@ -242,13 +240,16 @@ class Beekeeper:
         logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
         self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
 
-    async def __close_beekeeper(self, *, wait_for_deleted_pid: bool = False) -> None:
+    async def __close_beekeeper(
+        self, *, wait_for_deleted_pid: bool = False, close_notifications_server: bool = True
+    ) -> None:
         try:
             self.__executable.close(wait_for_deleted_pid=wait_for_deleted_pid)
         finally:
-            self.__notification_server_port = None
-            self.config.webserver_http_endpoint = webserver_default()
-            await self.__notification_server.close()
+            if close_notifications_server:
+                await self.__notification_server.close()
+                self.config.webserver_http_endpoint = webserver_default()
+                self.__notification_server_port = None
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
