@@ -68,7 +68,6 @@ class Beekeeper:
         self.is_starting = False
         self.config = BeekeeperConfig()
         self.__notification_server = BeekeeperNotificationsServer(lambda: self.token, notify_closing_wallet_name_cb)
-        self.__notification_server_port: int | None = None
         self.api = BeekeeperApi(self)
         self.__executable = BeekeeperExecutable(self.config, run_in_background=run_in_background)
         self.__token: str | None = None
@@ -103,7 +102,8 @@ class Beekeeper:
     async def __set_token(self) -> None:
         self.__token = (
             await self.api.create_session(
-                notifications_endpoint=f"127.0.0.1:{self.__notification_server_port}", salt=str(id(self))
+                notifications_endpoint=self.__notification_server.http_endpoint.as_string(with_protocol=False),
+                salt=str(id(self)),
             )
         ).token
 
@@ -209,7 +209,7 @@ class Beekeeper:
     async def __start(self, *, timeout: float = 5.0) -> None:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
-        self.__notification_server_port = await self.__notification_server.listen()
+        await self.__start_notifications_server()
         if not (remote := self.get_remote_address_from_settings()):
             await self.__run_beekeeper(timeout=timeout)
         else:
@@ -220,12 +220,15 @@ class Beekeeper:
         self.is_starting = False
         logger.info(f"Beekeeper started on {self.config.webserver_http_endpoint}.")
 
+    async def __start_notifications_server(self) -> None:
+        address = await self.__notification_server.listen()
+        self.config.notifications_endpoint = address
+
     async def restart(self) -> None:
         await self.close()
         await self.launch()
 
     async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
-        self.config.notifications_endpoint = Url("http", "127.0.0.1", self.__notification_server_port)
         self.__executable.run()
 
         if await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
@@ -237,8 +240,8 @@ class Beekeeper:
             await self.__close_beekeeper()
             return
 
-        logger.debug(f"Got webserver http endpoint: `{self.__notification_server.http_endpoint}`")
-        self.config.webserver_http_endpoint = self.__notification_server.http_endpoint
+        logger.debug(f"Got webserver http endpoint: `{self.__notification_server.beekeeper_webserver_http_endpoint}`")
+        self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
 
     async def __close_beekeeper(
         self, *, wait_for_deleted_pid: bool = False, close_notifications_server: bool = True
@@ -249,7 +252,6 @@ class Beekeeper:
             if close_notifications_server:
                 await self.__notification_server.close()
                 self.config.webserver_http_endpoint = webserver_default()
-                self.__notification_server_port = None
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:

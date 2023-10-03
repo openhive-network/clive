@@ -5,6 +5,7 @@ from typing import Any, Protocol
 
 from aiohttp import web
 
+from clive.core.url import Url
 from clive.exceptions import CliveError
 
 JsonT = dict[str, Any]
@@ -43,6 +44,10 @@ class AsyncHttpServer:
         self.__assert_running()
         assert self.__site
         return self.__site._server.sockets[0].getsockname()[1]  # type: ignore[no-any-return, union-attr]
+
+    @property
+    def address(self) -> Url:
+        return Url(proto="http", host=self.__ADDRESS[0], port=self.port)
 
     async def run(self) -> web.AppRunner:
         self.__assert_not_running()

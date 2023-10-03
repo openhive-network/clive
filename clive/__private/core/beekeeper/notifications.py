@@ -28,13 +28,23 @@ class BeekeeperNotificationsServer:
         self.opening_beekeeper_failed = Event()
         self.http_listening_event = Event()
         self.ready = Event()
-        self.http_endpoint: Url | None = None
+        self.__beekeeper_webserver_http_endpoint_from_notification: Url | None = None
         self.__wallet_closing_listeners: set[WalletClosingListener] = set()
 
-    async def listen(self) -> int:
+    @property
+    def beekeeper_webserver_http_endpoint(self) -> Url:
+        message = "Beekeeper webserver HTTP endpoint is not known yet"
+        assert self.__beekeeper_webserver_http_endpoint_from_notification is not None, message
+        return self.__beekeeper_webserver_http_endpoint_from_notification
+
+    @property
+    def http_endpoint(self) -> Url:
+        return self.server.address
+
+    async def listen(self) -> Url:
         await self.server.run()
         logger.debug(f"Notifications server is listening on {self.server.port}...")
-        return self.server.port
+        return self.http_endpoint
 
     def notify(self, message: JsonT) -> None:
         logger.info(f"Got notification: {message}")
@@ -43,8 +53,10 @@ class BeekeeperNotificationsServer:
 
         if name == "webserver listening":
             if details["type"] == "HTTP":
-                self.http_endpoint = self.__parse_endpoint_notification(details)
-                logger.debug(f"Got notification with http address on: {self.http_endpoint}")
+                self.__beekeeper_webserver_http_endpoint_from_notification = self.__parse_endpoint_notification(details)
+                logger.debug(
+                    f"Got notification with webserver http address on: {self.beekeeper_webserver_http_endpoint}"
+                )
                 self.http_listening_event.set()
         elif name == "hived_status" and details["current_status"] == "signals attached":
             logger.debug("Beekeeper reports to be ready")
@@ -52,8 +64,11 @@ class BeekeeperNotificationsServer:
         elif name == "Opening beekeeper failed":
             details = details["connection"]
             assert details["type"] == "HTTP"
-            self.http_endpoint = self.__parse_endpoint_notification(details)
-            logger.debug(f"Got notification with http address, but beekeeper failed when opening: {self.http_endpoint}")
+            self.__beekeeper_webserver_http_endpoint_from_notification = self.__parse_endpoint_notification(details)
+            logger.debug(
+                "Got notification with webserver http address, but beekeeper failed when opening:"
+                f" {self.beekeeper_webserver_http_endpoint}"
+            )
             self.opening_beekeeper_failed.set()
         elif name == "Attempt of closing all wallets":
             logger.debug("Got notification about closing all wallets")
