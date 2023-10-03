@@ -231,17 +231,13 @@ class Beekeeper:
     async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
         self.__executable.run()
 
-        if await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
+        if await event_wait(self.__notification_server.ready, timeout) and await event_wait(self.__notification_server.http_listening_event, timeout):
+            self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
+        elif await event_wait(self.__notification_server.opening_beekeeper_failed, timeout):
             await self.__close_beekeeper(wait_for_deleted_pid=False, close_notifications_server=False)
-        elif not (
-            await event_wait(self.__notification_server.http_listening_event, timeout)
-            and await event_wait(self.__notification_server.ready, timeout)
-        ):
+            self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
+        else:
             await self.__close_beekeeper()
-            return
-
-        logger.debug(f"Got webserver http endpoint: `{self.__notification_server.beekeeper_webserver_http_endpoint}`")
-        self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
 
     async def __close_beekeeper(
         self, *, wait_for_deleted_pid: bool = False, close_notifications_server: bool = True
