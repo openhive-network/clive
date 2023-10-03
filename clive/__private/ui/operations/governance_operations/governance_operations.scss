@@ -2,12 +2,21 @@ Governance Tab {
     width: 1fr;
 }
 
-Governance Label {
+Governance Witnesses Label {
+    text-style: bold;
+    text-align: center;
+}
+
+Governance Witnesses Static {
     text-style: bold;
     text-align: center;
 }
 
 /* witnesses */
+Governance Witnesses {
+    layout: horizontal;
+}
+
 
 Governance WitnessCheckbox Checkbox {
     padding: 0;
@@ -32,4 +41,29 @@ Governance WitnessCheckbox.-unvoted {
 
 Governance WitnessCheckbox:focus Label {
     text-style: bold reverse;
+}
+
+Governance #witnesses {
+    width: 50%;
+    height: auto;
+}
+
+Governance Witness {
+    grid-size: 5 1;
+    grid-columns: 15% 10% 35% 20% 20%;
+}
+
+Governance Witness .witness-name {
+    background: rgb(83, 158, 255);
+}
+
+Governance Witness .witness-rank {
+    background: rgb(1, 120, 212);
+}
+Governance Witness .witness-votes {
+    background: rgb(1, 120, 212);
+}
+
+Governance Witness .witness-details {
+    background: rgb(0, 83, 170);
 }
