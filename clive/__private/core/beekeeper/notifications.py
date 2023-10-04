@@ -86,6 +86,7 @@ class BeekeeperNotificationsServer:
     async def close(self) -> None:
         await self.server.close()
         self.__clear_events()
+        self.__beekeeper_webserver_http_endpoint_from_notification = None
         logger.debug("Notifications server closed")
 
     def __clear_events(self) -> None:
