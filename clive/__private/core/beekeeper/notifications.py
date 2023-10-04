@@ -85,10 +85,13 @@ class BeekeeperNotificationsServer:
 
     async def close(self) -> None:
         await self.server.close()
-
-        self.http_listening_event.clear()
-
+        self.__clear_events()
         logger.debug("Notifications server closed")
+
+    def __clear_events(self) -> None:
+        self.opening_beekeeper_failed.clear()
+        self.http_listening_event.clear()
+        self.ready.clear()
 
     def attach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__wallet_closing_listeners.add(listener)
