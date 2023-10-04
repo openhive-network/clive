@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
-from schemas.apis.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
+from schemas.apis.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament, WitnessesFundament
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
 from schemas.fields.basic import AccountName as SchemasAccountName
@@ -25,3 +25,4 @@ ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 Signature = SchemasSignature
 AccountName = SchemasAccountName
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
+WitnessType = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
