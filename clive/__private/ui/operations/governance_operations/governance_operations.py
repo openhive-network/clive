@@ -40,9 +40,20 @@ class WitnessesList(ScrollableContainer):
 
     def compose(self) -> ComposeResult:
         if self.__witnesses is not None:
+            yield Static("Modify the votes for witnesses", id="witnesses-headline")
+            yield WitnessesListHeader()
             for rank, witness in enumerate(self.__witnesses, start=1):
                 yield Witness(rank, witness.owner, str(witness.votes))
                 yield Static()
+
+
+class WitnessesListHeader(Grid):
+    def compose(self) -> ComposeResult:
+        yield Static()
+        yield Static("rank", id="rank-column")
+        yield Static("witness", id="name-column")
+        yield Static("votes", id="votes-column")
+        yield Static()
 
 
 class Proxy(ScrollableTabPane):
