@@ -93,7 +93,7 @@ class BeekeeperExecutable:
             self.close()
             raise e from e
 
-    def close(self, *, wait_for_deleted_pid: bool = False) -> None:
+    def close(self, *, wait_for_deleted_pid: bool = True) -> None:
         if self.__process is None:
             self.__close_files_for_streams()
             return

@@ -259,7 +259,7 @@ class Beekeeper:
         return await event_wait(self.__notification_server.opening_beekeeper_failed, timeout)
 
     async def __close_beekeeper(
-        self, *, wait_for_deleted_pid: bool = False, close_notifications_server: bool = True
+        self, *, wait_for_deleted_pid: bool = True, close_notifications_server: bool = True
     ) -> None:
         try:
             self.__executable.close(wait_for_deleted_pid=wait_for_deleted_pid)
