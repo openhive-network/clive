@@ -6,8 +6,10 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     AccountItemFundament,
     ListChangeRecoveryAccountRequestsFundament,
     ListDeclineVotingRightsRequestsFundament,
+    ListWitnessVotesFundament,
     OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
+    WitnessesFundament,
 )
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
@@ -40,6 +42,8 @@ Reputation = GetAccountReputationsFundament
 OwnerHistory = OwnerHistoriesFundament
 FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
+WitnessType = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
+WitnessesVotes = ListWitnessVotesFundament
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 DynamicGlobalProperties = GetDynamicGlobalProperties[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
