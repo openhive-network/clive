@@ -172,12 +172,13 @@ class Beekeeper:
 
     async def __delay_on_unlock(self, endpoint: str) -> None:
         seconds_to_wait = 0.6
-        endpoint_to_wait = "beekeeper_api.unlock"
-        if endpoint != endpoint_to_wait:
+        endpoints_to_wait = ("beekeeper_api.unlock", "beekeeper_api.create_session")
+
+        if endpoint not in endpoints_to_wait:
             return
 
         while perf_counter() < self.__next_time_unlock:
-            logger.debug(f"Waiting for {endpoint_to_wait} to be available...")
+            logger.debug(f"Waiting for {endpoint} to be available...")
             await asyncio.sleep(0.1)
 
         self.__next_time_unlock = perf_counter() + seconds_to_wait
