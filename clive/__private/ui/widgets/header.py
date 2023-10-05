@@ -72,7 +72,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     """A value that is used to trigger a re-rendering of the last update time."""
 
     def compose(self) -> ComposeResult:
-        self.set_interval(0.25, self.__trigger_last_update)
+        self.set_interval(1, self.__trigger_last_update)
 
         yield TitledLabel(
             "Block",
@@ -93,6 +93,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         gdpo = await app_state.get_dynamic_global_properties()
         block_num = gdpo.head_block_number
         block_time = gdpo.time.time()
+        self.__trigger_last_update()
         return f"{block_num} ({block_time} UTC)"
 
     async def __get_last_update(self, _: bool) -> str:
