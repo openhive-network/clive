@@ -8,8 +8,9 @@ from textual.css.query import NoMatches
 from textual.widgets import Button, Label, RadioSet, Static, TabbedContent
 
 from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.ui.operations.cart_binding import CartBinding
 from clive.__private.ui.operations.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.operations.operation_base_screen import SavingsBaseScreen
+from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
@@ -249,7 +250,7 @@ class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
         return last_occupied_id + 1
 
 
-class Savings(SavingsBaseScreen):
+class Savings(OperationBaseScreen, CartBinding):
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Savings operations")
         with SavingsDataProvider() as provider, TabbedContent():

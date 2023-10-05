@@ -8,8 +8,8 @@ from textual.binding import Binding
 from textual.widgets import Static, TabbedContent
 
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.operations.cart_binding import CartBinding
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
@@ -45,15 +45,15 @@ class OperationButton(CliveButton):
         return inflection.humanize(inflection.underscore(class_name))
 
 
-class Operations(CartBasedScreen):
+class Operations(CartBasedScreen, CartBinding):
     CSS_PATH = [
         *CartBasedScreen.CSS_PATH,
         get_relative_css_path(__file__),
     ]
 
     BINDINGS = [
+        *CartBinding.BINDINGS,
         Binding("escape", "pop_screen", "Back"),
-        Binding("f2", "cart", "Cart"),
     ]
 
     def create_left_panel(self) -> ComposeResult:
@@ -82,13 +82,6 @@ class Operations(CartBasedScreen):
             self.notify("Not implemented yet!", severity="error")
             return
         self.app.push_screen(button.operation_screen())
-
-    def action_cart(self) -> None:
-        if not self.app.world.profile_data.cart:
-            self.notify("There are no operations in the cart! Cannot continue.", severity="warning")
-            return
-
-        self.app.push_screen(Cart())
 
     def __create_raw_operations_tab(self, *, hide: bool = False) -> ComposeResult:
         if hide:
