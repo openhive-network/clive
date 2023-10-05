@@ -65,10 +65,11 @@ class DynamicLabel(CliveWidget):
         value = self.__callback(attribute)
         if isawaitable(value):
             value = await value
-        self.__label.update(f"{self.__prefix}{value}")
+        if value != self.__label.renderable:
+            self.__label.update(f"{self.__prefix}{value}")
         self.__loading_done()
 
     def __loading_done(self) -> None:
         if self.__loading_indicator.display:
-            self.__loading_indicator.display = False
+            self.__loading_indicator.remove()  # Setting display to False causes CPU usage to go up like 20% (from 15% to 35% on 5600x)
             self.__label.display = True
