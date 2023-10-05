@@ -8,7 +8,8 @@ from textual.css.query import NoMatches
 from textual.widgets import Button, Label, RadioSet, Static, TabbedContent
 
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.ui.operations.operation_base_screen import OperationMethods, SavingsBaseScreen
+from clive.__private.ui.operations.operation_action_bindings import OperationActionBindings
+from clive.__private.ui.operations.operation_base_screen import SavingsBaseScreen
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
@@ -162,7 +163,7 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
         self.mount(new_transfers_item)
 
 
-class SavingsTransfers(ScrollableTabPane, OperationMethods):
+class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
     def __init__(self, provider: SavingsDataProvider, title: TextType = "") -> None:
         super().__init__(title=title)
         self.__provider = provider
