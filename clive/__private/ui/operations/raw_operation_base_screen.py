@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.operations.operation_action_bindings import OperationActionBindings
+from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from schemas.fields.compound import Authority
 
