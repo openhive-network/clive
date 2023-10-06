@@ -21,14 +21,15 @@ if TYPE_CHECKING:
 
 
 class Witness(Grid):
-    def __init__(self, rank: int, name: str, votes: int) -> None:
+    def __init__(self, rank: int, name: str, votes: int, is_voted: bool = False) -> None:
         super().__init__()
         self.__rank = rank
         self.__name = name
         self.__votes = votes
+        self.__is_voted = is_voted
 
     def compose(self) -> ComposeResult:
-        yield WitnessCheckbox()
+        yield WitnessCheckbox(is_voted=self.__is_voted)
         yield Label(str(self.__rank), classes="witness-rank")
         yield Label(self.__name, classes="witness-name")
         yield Label(str(self.__votes), classes="witness-votes")
