@@ -17,38 +17,39 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.models.aliased import WitnessType
+    from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessT
 
 
 class Witness(Grid):
-    def __init__(self, rank: int, name: str, votes: int, is_voted: bool = False) -> None:
+    """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
+
+    def __init__(self, witness: WitnessT) -> None:
         super().__init__()
-        self.__rank = rank
-        self.__name = name
-        self.__votes = votes
-        self.__is_voted = is_voted
+        self.__witness = witness
 
     def compose(self) -> ComposeResult:
-        yield WitnessCheckbox(is_voted=self.__is_voted)
-        yield Label(str(self.__rank), classes="witness-rank")
-        yield Label(self.__name, classes="witness-name")
-        yield Label(str(self.__votes), classes="witness-votes")
+        yield WitnessCheckbox(is_voted=self.__witness.voted)
+        yield Label(
+            str(self.__witness.rank) if self.__witness.rank is not None else "Outside top 105", classes="witness-rank"
+        )
+        yield Label(self.__witness.name, classes="witness-name")
+        yield Label(str(self.__witness.votes), classes="witness-votes")
         yield Label("details", classes="witness-details")
 
 
-class WitnessesList(Container):
-    def __init__(self, witnesses: list[WitnessType] | None, first_witness_index: int):
+class WitnessesList(Container, CliveWidget):
+    def __init__(self, witnesses: list[WitnessT] | None, first_witness_index: int) -> None:
         super().__init__()
         self.__witnesses = witnesses
         self.__first_witness_index = first_witness_index
 
     def compose(self) -> ComposeResult:
-        for rank, witness in enumerate(
-            self.__witnesses[self.__first_witness_index : self.__first_witness_index + 15],  # type: ignore[index]
-            start=self.__first_witness_index + 1,
-        ):
-            yield Witness(rank, witness.owner, witness.votes)
-            yield Static()
+        if self.__witnesses is None:
+            yield Static("Loading the list of witnesses")
+        else:
+            for witness in self.__witnesses[self.__first_witness_index : self.__first_witness_index + 15]:
+                yield Witness(witness)
+                yield Static()
 
 
 class WitnessesListHeader(Grid):
@@ -63,7 +64,7 @@ class WitnessesListHeader(Grid):
 class WitnessesTable(Container, CliveWidget):
     can_focus = True
 
-    def __init__(self, witnesses: list[WitnessType] | None):
+    def __init__(self, witnesses: list[WitnessT] | None):
         super().__init__()
         self.__witnesses = witnesses
         self.__witness_index = 0
@@ -117,7 +118,7 @@ class Witnesses(ScrollableTabPane):
         self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        yield WitnessesTable(self.__provider.content.top_100_witnesses)
+        yield WitnessesTable(self.__provider.content.witnesses)
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
@@ -129,7 +130,7 @@ class Witnesses(ScrollableTabPane):
             return
 
         witnesses_list_container.remove()
-        new_witnesses_table_container = WitnessesTable(content.top_100_witnesses)
+        new_witnesses_table_container = WitnessesTable(content.witnesses)
         self.mount(new_witnesses_table_container)
 
 
