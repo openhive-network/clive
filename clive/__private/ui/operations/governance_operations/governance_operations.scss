@@ -17,7 +17,6 @@ Governance Witnesses {
     layout: horizontal;
 }
 
-
 Governance WitnessCheckbox Checkbox {
     padding: 0;
     border: none;
@@ -44,11 +43,15 @@ Governance WitnessCheckbox:focus Label {
 }
 
 Governance WitnessesList {
+    height: 30;
+}
+
+Governance WitnessesTable {
     width: 50%;
     height: auto;
 }
 
-Governance Witness {
+Governance WitnessesList Witness {
     grid-size: 5 1;
     grid-columns: 15% 16% 29% 20% 20%;
 }
@@ -60,6 +63,7 @@ Governance Witness .witness-name {
 Governance Witness .witness-rank {
     background: rgb(1, 120, 212);
 }
+
 Governance Witness .witness-votes {
     background: rgb(1, 120, 212);
 }
