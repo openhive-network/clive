@@ -27,9 +27,15 @@ class GovernanceData:
 
 
 class GovernanceDataProvider(CliveWidget):
-    """A class for retrieving information about governance stored in a GovernanceData dataclass."""
+    """
+    A class for retrieving information about governance stored in a GovernanceData dataclass.
+
+    To access the data after initializing the class, use the 'content' property.
+    Management of governance data refreshing should be handled by a context manager.
+    """
 
     content: GovernanceData = var(GovernanceData())  # type: ignore[assignment]
+    """It is used to check whether governance data has been refreshed and to store governance data."""
 
     def __init__(self) -> None:
         super().__init__()
@@ -37,6 +43,7 @@ class GovernanceDataProvider(CliveWidget):
 
     @work(name="governance data update worker")
     async def _update_governance_data(self) -> None:
+        """Method fill witnesses GovernanceData by a list of witnesses, which user voted for and witnesses from top 100."""
         working_account_name = self.app.world.profile_data.working_account.name
 
         list_witnesses_response = await self.app.world.node.api.database_api.list_witnesses(
