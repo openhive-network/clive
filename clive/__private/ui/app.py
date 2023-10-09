@@ -137,7 +137,6 @@ class Clive(App[int], ManualReactive):
 
         self.__class__.is_launched = True
         self.__amount_of_fails_during_update_node_data = 0
-        self.mount(self.world)
         self.console.set_window_title("Clive")
 
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
