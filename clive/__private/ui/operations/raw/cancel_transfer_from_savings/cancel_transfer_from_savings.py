@@ -58,6 +58,11 @@ class FromSavingsTransferParameters(Grid):
 
 
 class CancelTransferFromSavings(RawOperationBaseScreen):
+    CSS_PATH = [
+        *RawOperationBaseScreen.CSS_PATH,
+        get_relative_css_path(__file__),
+    ]
+
     def __init__(self, transfer: SavingsWithdrawals | None = None) -> None:
         super().__init__()
         self.__transfer = transfer
