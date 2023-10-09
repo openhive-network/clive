@@ -11,7 +11,7 @@ CommandLine {
 
 CommandLineInput {
   margin-left: 1;
-  border: none;
+  border: none !important;
   padding: 0;
   background: $panel;
 }
