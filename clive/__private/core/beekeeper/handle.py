@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import asyncio
+import json
+import shutil
+import tempfile
 from contextlib import contextmanager
 from http import HTTPStatus
+from pathlib import Path
 from time import perf_counter
 from typing import TYPE_CHECKING, Any
 
@@ -11,7 +15,9 @@ from pydantic import Field, validator
 from clive.__private.config import settings
 from clive.__private.core._async import event_wait
 from clive.__private.core.beekeeper.api import BeekeeperApi
+from clive.__private.core.beekeeper.command_line_args import BeekeeperCLIArguments
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
+from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.__private.core.beekeeper.exceptions import (
     BeekeeperNon200StatusCodeError,
     BeekeeperNotConfiguredError,
@@ -22,16 +28,24 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperUrlNotSetError,
 )
 from clive.__private.core.beekeeper.executable import BeekeeperExecutable
-from clive.__private.core.beekeeper.notifications import BeekeeperNotificationsServer, WalletClosingListener
+from clive.__private.core.beekeeper.notifications import (
+    BeekeeperNotificationsServer,
+    WalletClosingListener,
+)
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
 from clive.models.base import CliveBaseModel
-from schemas.jsonrpc import ExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
+from clive_local_tools.network import get_port
+from schemas.jsonrpc import (
+    ExpectResultT,
+    JSONRPCRequest,
+    JSONRPCResult,
+    get_response_model,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
-    from pathlib import Path
     from types import TracebackType
 
     from typing_extensions import Self
@@ -80,8 +94,31 @@ class Beekeeper:
         if not self.__run_in_background:
             await self.close()
 
-    async def launch(self) -> Self:
-        await self.__start()
+    async def launch(  # noqa: PLR0913
+        self,
+        *,
+        backtrace: str = BeekeeperDefaults.DEFAULT_BACKTRACE,
+        data_dir: Path = BeekeeperDefaults.DEFAULT_DATA_DIR,
+        log_json_rpc: Path | None = BeekeeperDefaults.DEFAULT_LOG_JSON_RPC,
+        notifications_endpoint: Url | None = BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT,
+        unlock_timeout: int = BeekeeperDefaults.DEFAULT_UNLOCK_TIMEOUT,
+        wallet_dir: Path = BeekeeperDefaults.DEFAULT_WALLET_DIR,
+        webserver_thread_pool_size: int = BeekeeperDefaults.DEFAULT_WEBSERVER_THREAD_POOL_SIZE,
+        webserver_http_endpoint: Url | None = BeekeeperDefaults.DEFAULT_WEBSERVER_HTTP_ENDPOINT,
+    ) -> Self:
+        arguments: BeekeeperCLIArguments = BeekeeperCLIArguments(
+            help=False,
+            version=False,
+            backtrace=backtrace,
+            data_dir=data_dir,
+            log_json_rpc=log_json_rpc,
+            notifications_endpoint=notifications_endpoint,
+            unlock_timeout=unlock_timeout,
+            wallet_dir=wallet_dir,
+            webserver_thread_pool_size=webserver_thread_pool_size,
+            webserver_http_endpoint=webserver_http_endpoint,
+        )
+        await self.__start(arguments=arguments)
         await self.__set_token()
         assert self.token
         return self
@@ -120,6 +157,10 @@ class Beekeeper:
     @property
     def pid(self) -> int:
         return self.__executable.pid
+
+    @property
+    def notification_server_http_endpoint(self) -> Url | None:
+        return self.config.notifications_endpoint
 
     @contextmanager
     def modified_connection_details(
@@ -192,6 +233,9 @@ class Beekeeper:
                 await self.close()
             raise BeekeeperNotRunningError
 
+    def get_wallet_dir(self) -> Path:
+        return self.__executable.get_wallet_dir()
+
     async def close(self) -> None:
         logger.info("Closing Beekeeper...")
         if self.__token:
@@ -207,12 +251,12 @@ class Beekeeper:
     def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__notification_server.detach_wallet_closing_listener(listener)
 
-    async def __start(self, *, timeout: float = 5.0) -> None:
+    async def __start(self, *, timeout: float = 5.0, arguments: BeekeeperCLIArguments | None = None) -> None:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
         await self.__start_notifications_server()
         if not (remote := self.get_remote_address_from_settings()):
-            await self.__run_beekeeper(timeout=timeout)
+            await self.__run_beekeeper(timeout=timeout, arguments=arguments)
         else:
             self.config.webserver_http_endpoint = remote
 
@@ -229,8 +273,8 @@ class Beekeeper:
         await self.close()
         await self.launch()
 
-    async def __run_beekeeper(self, *, timeout: float = 5.0) -> None:
-        self.__executable.run()
+    async def __run_beekeeper(self, *, timeout: float = 5.0, arguments: BeekeeperCLIArguments | None = None) -> None:
+        self.__executable.run(arguments=arguments)
 
         start_task = asyncio.create_task(self.__wait_for_beekeeper_to_start(timeout))
         already_running_task = asyncio.create_task(self.__wait_for_beekeeper_report_already_running(timeout))
@@ -286,3 +330,55 @@ class Beekeeper:
         connection = cls.ConnectionFileData.parse_file(connection_file)
 
         return Url(connection.type_, connection.address, connection.port)
+
+    def help(self) -> str:  # noqa: A003
+        arguments = BeekeeperCLIArguments(help=True)
+        return self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
+
+    def version(self) -> str:
+        arguments = BeekeeperCLIArguments(version=True)
+        return self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
+
+    def generate_beekeepers_default_config(self) -> BeekeeperConfig:
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            arguments = BeekeeperCLIArguments(
+                backtrace=None,
+                data_dir=tmpdirname,
+                log_json_rpc=None,
+                notifications_endpoint=None,
+                unlock_timeout=None,
+                wallet_dir=None,
+                webserver_thread_pool_size=None,
+                webserver_http_endpoint=None,
+            )
+            self.__executable.run_and_get_output(
+                allow_empty_notification_server=True, allow_timeout=True, arguments=arguments
+            )
+
+            return BeekeeperConfig.load(Path(tmpdirname) / "config.ini")
+
+    async def export_keys_wallet(
+        self, *, wallet_name: str, wallet_password: str, extract_to: Path | None = None
+    ) -> dict[str, str]:
+        with tempfile.TemporaryDirectory() as tmpdirname:
+            shutil.copy(self.get_wallet_dir() / f"{wallet_name}.wallet", tmpdirname)
+            bk = Beekeeper()
+            arguments = BeekeeperCLIArguments(
+                # We need to pass here notification flag because bk will parse it during exporting wallet
+                # and if it empty, it will end with error. This notification server endpoint does not
+                # need to point to running server, it just need to be passed.
+                notifications_endpoint=Url(proto="http", host="127.0.0.1", port=get_port()),
+                export_keys_wallet_name=wallet_name,
+                export_keys_wallet_password=wallet_password,
+                data_dir=tmpdirname,
+            )
+            bk.__executable.run_and_get_output(
+                allow_empty_notification_server=True, allow_timeout=True, arguments=arguments
+            )
+            """Check if keys has been saved in dumped {wallet_name}.keys file."""
+            wallet_path = Path.cwd() / f"{wallet_name}.keys"
+            with wallet_path.open() as keys_file:
+                if extract_to:
+                    shutil.copy(wallet_path, extract_to)
+                keys: dict[str, str] = json.load(keys_file)
+                return keys
