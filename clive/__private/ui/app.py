@@ -8,6 +8,7 @@ from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar
 
 from textual import work
+from textual._context import active_message_pump
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.notifications import Notification, SeverityLevel
@@ -186,10 +187,16 @@ class Clive(App[int], ManualReactive):
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
     ) -> AwaitMount:
         """Push a screen at the given index in the stack."""
-        screen_, await_mount = self.app._get_screen(screen)
-        screen_._push_result_callback(self.screen if self._screen_stack else None, callback)
-        self._load_screen_css(screen_)
-        self.app._screen_stack.insert(index, screen_)
+        next_screen, await_mount = self.app._get_screen(screen)
+
+        try:
+            message_pump = active_message_pump.get()
+        except LookupError:
+            message_pump = self.app
+
+        next_screen._push_result_callback(message_pump, callback)
+        self._load_screen_css(next_screen)
+        self.app._screen_stack.insert(index, next_screen)
         return await_mount
 
     def pop_screen(self) -> Screen[Any]:
