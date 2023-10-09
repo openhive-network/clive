@@ -11,6 +11,7 @@ from subprocess import Popen
 from typing import TextIO
 
 from clive.__private.config import settings
+from clive.__private.core.beekeeper.command_line_args import BeekeeperCLIArguments
 from clive.__private.core.beekeeper.config import BeekeeperConfig
 from clive.__private.core.beekeeper.exceptions import (
     BeekeeperAlreadyRunningError,
@@ -23,7 +24,12 @@ from clive.__private.logger import logger
 
 
 class BeekeeperExecutable:
-    def __init__(self, config: BeekeeperConfig, *, run_in_background: bool = False) -> None:
+    def __init__(
+        self,
+        config: BeekeeperConfig,
+        *,
+        run_in_background: bool = False,
+    ) -> None:
         self.__config = config
         self.__executable: Path = self.get_path_from_settings()  # type: ignore
         if self.__executable is None:
@@ -62,11 +68,31 @@ class BeekeeperExecutable:
         else:
             return True
 
-    def run(self) -> None:
+    def prepare_command(self, *, arguments: BeekeeperCLIArguments | None = None) -> list[str]:
+        command = ["nohup"] if self.__run_in_background else []
+        command += [str(self.__executable.absolute())]
+
+        if arguments:
+            if arguments.notifications_endpoint and arguments.notifications_endpoint.port is None:
+                arguments.notifications_endpoint = self.__config.notifications_endpoint
+            if not arguments.data_dir or arguments.data_dir == Path().home() / ".beekeeper":
+                # We set default value for arguments.data_dir to home dir (mostly for documenting) but we should not
+                # pollute it during tests.
+                arguments.data_dir = self.__config.wallet_dir
+            command += arguments.process()
+        else:
+            arguments = BeekeeperCLIArguments()
+            arguments.data_dir = self.__config.wallet_dir
+            command += arguments.process()
+        return command
+
+    def pre_run_preparation(
+        self, *, allow_empty_notification_server: bool = False, arguments: BeekeeperCLIArguments | None = None
+    ) -> list[str]:
         if self.__process is not None:
             raise BeekeeperAlreadyRunningError
 
-        if self.__config.notifications_endpoint is None:
+        if not allow_empty_notification_server and self.__config.notifications_endpoint is None:
             raise BeekeeperNotificationServerNotConfiguredError
 
         # prepare config
@@ -74,13 +100,47 @@ class BeekeeperExecutable:
             self.__config.wallet_dir.mkdir()
         config_filename = self.__config.wallet_dir / "config.ini"
         self.__config.save(config_filename)
+        if allow_empty_notification_server and (arguments and arguments.notifications_endpoint):
+            self.__config.notifications_endpoint = arguments.notifications_endpoint
 
+        return self.prepare_command(arguments=arguments)
+
+    def run_and_get_output(
+        self,
+        *,
+        allow_empty_notification_server: bool = False,
+        allow_timeout: bool = False,
+        arguments: BeekeeperCLIArguments | None = None,
+    ) -> str:
+        command = self.pre_run_preparation(
+            allow_empty_notification_server=allow_empty_notification_server, arguments=arguments
+        )
+        logger.info("Executing beekeeper:", command)
+        try:
+            result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=1)
+            return result.decode("utf-8").strip()
+        except subprocess.CalledProcessError as e:
+            if arguments and (arguments.help_ is True or arguments.version is True):
+                # I dont know why, but help and version have returncode != 0
+                output: str = e.output.decode("utf-8")
+                return output.strip()
+            raise
+        except subprocess.TimeoutExpired as e:
+            # If we set allow_timeout, it means that we only want bk to dump something, like default_config, or export keys
+            # and we don't want to keep it.
+            if allow_timeout:
+                output_t: str = e.output.decode("utf-8")
+                return output_t.strip()
+            raise
+
+    def run(
+        self, *, allow_empty_notification_server: bool = False, arguments: BeekeeperCLIArguments | None = None
+    ) -> None:
+        command = self.pre_run_preparation(
+            allow_empty_notification_server=allow_empty_notification_server, arguments=arguments
+        )
         self.__prepare_files_for_streams(self.__config.wallet_dir)
-
-        command = ["nohup"] if self.__run_in_background else []
-        command += [str(self.__executable.absolute())]
-        command += ["--data-dir", self.__config.wallet_dir.as_posix()]
-
+        logger.info("Executing beekeeper:", command)
         try:
             self.__process = Popen(
                 command,
@@ -114,6 +174,9 @@ class BeekeeperExecutable:
             self.__process = None
             if wait_for_deleted_pid:
                 self.__wait_for_pid_file_to_be_deleted()
+
+    def get_wallet_dir(self) -> Path:
+        return self.__config.wallet_dir
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
