@@ -3,7 +3,10 @@ from __future__ import annotations
 from asyncio import Event
 from typing import TYPE_CHECKING, Any, Protocol
 
-from clive.__private.core.beekeeper.notification_http_server import AsyncHttpServer, JsonT
+from clive.__private.core.beekeeper.notification_http_server import (
+    AsyncHttpServer,
+    JsonT,
+)
 from clive.__private.logger import logger
 from clive.core.url import Url
 
@@ -30,6 +33,7 @@ class BeekeeperNotificationsServer:
         self.ready = Event()
         self.__beekeeper_webserver_http_endpoint_from_notification: Url | None = None
         self.__wallet_closing_listeners: set[WalletClosingListener] = set()
+        self.__http_endpoint: Url | None = None
 
     @property
     def beekeeper_webserver_http_endpoint(self) -> Url:
