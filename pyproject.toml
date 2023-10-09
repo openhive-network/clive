@@ -54,7 +54,7 @@ pytest-xdist = "3.1.0"
 ruff = "0.0.277"
 types-pyyaml = "6.0.12.4"
 textual_dev = "1.0.1"
-
+clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/hive-local-tools/test-tools", develop = true }
 
 
@@ -151,7 +151,7 @@ ignore = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["clive", "wax", "schemas"]
+known-first-party = ["clive", "wax", "schemas", "clive_local_tools"]
 required-imports = ["from __future__ import annotations"]
 
 

@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "clive-local-tools"
+version = "0.0.0"
+description = ""
+authors = ["Wiesław Kędzierski <wkedzierski@syncad.com>"]
+packages = [
+    { include = "clive_local_tools" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

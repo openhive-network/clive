@@ -261,6 +261,19 @@ files = [
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
+name = "clive-local-tools"
+version = "0.0.0"
+description = ""
+optional = false
+python-versions = "^3.10"
+files = []
+develop = true
+
+[package.source]
+type = "directory"
+url = "tests/clive-local-tools"
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -1501,4 +1514,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4d0610a15c6176c6a18cee7a4bac2cb420828bddb976eaae8cced2017d349620"
+content-hash = "31db677de40d12193b097a1c499930eb388eb7acd929262a054519a4aa350b07"
