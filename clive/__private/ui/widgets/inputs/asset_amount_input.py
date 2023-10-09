@@ -2,19 +2,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.containers import Horizontal
 
 from clive.__private.core.decimal_conventer import DecimalConverter
+from clive.__private.logger import logger
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.placeholders_constants import NUMERIC_PLACEHOLDER
 from clive.models.asset import Asset
+from textual.widgets import Input
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.app import ComposeResult
-    from textual.widgets import Input
 
 
 class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
@@ -39,7 +41,8 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
         }
         """
 
-        def __init__(self, input_: Input, currency_selector: CurrencySelectorLiquid) -> None:
+        def __init__(self, parent: AssetAmountInput, input_: NumericInput.Wrapper, currency_selector: CurrencySelectorLiquid) -> None:
+            self.__parent = parent
             self.__input = input_
             self.__currency_selector = currency_selector
             super().__init__()
@@ -47,6 +50,11 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
         def compose(self) -> ComposeResult:
             yield self.__input
             yield self.__currency_selector
+
+        @on(Input.Changed)
+        def notify_parent(self, event: Input.Changed) -> None:
+            logger.info(f"Input {event.input} in {self} value changed: {event.value}")
+            self.__parent.post_message(event)  # parent is not mounted because yield  from compose is used
 
     def __init__(
         self,
@@ -66,7 +74,11 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
 
     def compose(self) -> ComposeResult:
         yield self._input_label
-        yield self.Wrapper(self._input, self.__currency_selector)
+        yield self.Wrapper(
+            self,
+            NumericInput.Wrapper(self._input, self._pretty),
+            self.__currency_selector,
+        )
 
     @property
     def value(self) -> Asset.Hive | Asset.Hbd | None:
@@ -88,5 +100,7 @@ class AssetAmountInput(CustomInput[Asset.Hive | Asset.Hbd | None]):
         return self.__currency_selector.create_asset(value)
 
     def _create_input(self) -> Input:
-        self.__numeric_input = NumericInput(label=self._label, placeholder=self._placeholder, tooltip=self.tooltip)
+        self.__numeric_input = NumericInput(
+            label=self._label, placeholder=self._placeholder, tooltip=self.tooltip
+        )
         return self.__numeric_input._input

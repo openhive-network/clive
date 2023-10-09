@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Iterable, TYPE_CHECKING
+
+from textual.validation import Number, Validator
 
 from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 from clive.__private.ui.widgets.placeholders_constants import NUMERIC_PLACEHOLDER
@@ -18,6 +20,7 @@ class NumericInput(CustomInput[float | None]):
         placeholder: str = NUMERIC_PLACEHOLDER,
         tooltip: RenderableType | None = None,
         disabled: bool = False,
+        validators: Validator | Iterable[Validator] | None = None,
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
@@ -27,6 +30,7 @@ class NumericInput(CustomInput[float | None]):
             placeholder=placeholder,
             tooltip=tooltip,
             disabled=disabled,
+            validators=validators or [Number(failure_description="The specified value is not a number")],
             id_=id_,
             classes=classes,
         )

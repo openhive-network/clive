@@ -28,3 +28,12 @@ Tabs:focus .underline--bar {
 Tabs:focus Tab.-active {
   text-style: bold reverse;
 }
+
+
+NumericInput Input {
+  background: red !important;
+}
+
+NumericInput Pretty {
+  background: blue !important;
+}

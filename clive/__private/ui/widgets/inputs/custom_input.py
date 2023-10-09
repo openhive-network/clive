@@ -3,9 +3,13 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, Generic, TypeVar
 
-from textual.widgets import Input
+from textual import on
+from textual.containers import Vertical
+from textual.reactive import var
+from textual.widgets import Input, Pretty
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.logger import logger
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 
@@ -17,7 +21,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.suggester import Suggester
     from textual.validation import Validator
-
 
 ValueT = TypeVar("ValueT")
 
@@ -37,6 +40,25 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
     That means that you can't query it or use it as a parent for other widgets for e.g. setting styles.
     """
 
+    class Wrapper(Vertical):
+        value = var("", init=False)
+        """Redirect value from input to this reactive."""
+
+        def __init__(self, input_: Input, pretty: Pretty) -> None:
+            self.__input = input_
+            self.__pretty = pretty
+            super().__init__()
+
+        def on_mount(self) -> None:
+            self.watch(self.__input, "value", self.__set_value)
+
+        def compose(self) -> ComposeResult:
+            yield self.__input
+            yield self.__pretty
+
+        def __set_value(self, value: str) -> None:
+            self.value = value
+
     DEFAULT_CSS = """
         CustomInput {
             layout: horizontal;
@@ -47,19 +69,19 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
     """
 
     def __init__(
-        self,
-        label: str,
-        value: ValueT | None = None,
-        *,
-        placeholder: str = "",
-        tooltip: RenderableType | None = None,
-        disabled: bool = False,
-        password: bool = False,
-        highlighter: Highlighter | None = None,
-        suggester: Suggester | None = None,
-        validators: Validator | Iterable[Validator] | None = None,
-        id_: str | None = None,
-        classes: str | None = None,
+            self,
+            label: str,
+            value: ValueT | None = None,
+            *,
+            placeholder: str = "",
+            tooltip: RenderableType | None = None,
+            disabled: bool = False,
+            password: bool = False,
+            highlighter: Highlighter | None = None,
+            suggester: Suggester | None = None,
+            validators: Validator | Iterable[Validator] | None = None,
+            id_: str | None = None,
+            classes: str | None = None,
     ):
         super().__init__(disabled=disabled, id=id_, classes=classes)
 
@@ -78,10 +100,23 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
             id_=f"{id_}--label" if id_ else None,
         )
         self._input = self.__create_input()
+        self._pretty = Pretty([])
+        self._pretty.disabled = True
 
     def compose(self) -> ComposeResult:
         yield self._input_label
-        yield self._input
+        yield self.Wrapper(self._input, self._pretty)
+
+    @on(Input.Changed)
+    def show_invalid_reasons(self, event: Input.Changed) -> None:
+        logger.info(f"Input {event.input} in {self} value changed: {event.value}")
+        if event.validation_result.is_valid:
+            self._pretty.disabled = True
+            return
+
+        # Updating the UI to show the reasons why validation failed
+        self._pretty.update(event.validation_result.failure_descriptions)
+        self._pretty.disabled = False
 
     @property
     def raw_value(self) -> str:
