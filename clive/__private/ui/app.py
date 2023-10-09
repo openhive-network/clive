@@ -91,7 +91,7 @@ class Clive(App[int], ManualReactive):
         title: str = "",
         severity: SeverityLevel = "information",
         timeout: float = Notification.timeout,
-    ) -> Notification:
+    ) -> None:
         title = title if title else severity.capitalize()
         timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
@@ -101,13 +101,13 @@ class Clive(App[int], ManualReactive):
         """Suppress all notifications while in context."""
 
         def dummy_notify(
-            message: str,
+            message: str,  # noqa: ARG001
             *,
-            title: str = "",
-            severity: SeverityLevel = "information",
-            timeout: float = Notification.timeout,
-        ) -> Notification:
-            return Notification(message, title, severity, timeout)
+            title: str = "",  # noqa: ARG001
+            severity: SeverityLevel = "information",  # noqa: ARG001
+            timeout: float = Notification.timeout,  # noqa: ARG001
+        ) -> None:
+            return
 
         old_notify = self.notify
         self.notify = dummy_notify  # type: ignore[method-assign]
