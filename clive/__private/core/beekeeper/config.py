@@ -7,6 +7,7 @@ from typing import get_args
 from pydantic import Field
 
 from clive.__private.config import settings
+from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.base import CliveBaseModel
@@ -28,16 +29,18 @@ def _wallet_dir_default() -> Path:
 
 class BeekeeperConfig(CliveBaseModel):
     wallet_dir: Path = Field(default_factory=_wallet_dir_default)
-    unlock_timeout: int = 900
-    log_json_rpc: Path | None = None
+    unlock_timeout: int = BeekeeperDefaults.DEFAULT_UNLOCK_TIMEOUT
+    log_json_rpc: Path | None = BeekeeperDefaults.DEFAULT_LOG_JSON_RPC
     webserver_http_endpoint: Url | None = Field(default_factory=webserver_default)
     webserver_unix_endpoint: Url | None = None
     webserver_ws_endpoint: Url | None = None
     webserver_ws_deflate: int = 0
     webserver_thread_pool_size: int = 1
-    notifications_endpoint: Url | None = None
-    backtrace: bool = True
+    notifications_endpoint: Url | None = BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT
+    backtrace: str = BeekeeperDefaults.DEFAULT_BACKTRACE
     plugin: list[str] = Field(default_factory=lambda: ["json_rpc", "webserver"])
+    export_keys_wallet_name: str | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_NAME
+    export_keys_wallet_password: str | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_PASSWORD
 
     class Config:
         arbitrary_types_allowed = True
@@ -100,16 +103,21 @@ class BeekeeperConfig(CliveBaseModel):
         return str(member_value)
 
     @classmethod
-    def __convert_config_value_to_member_value(
+    def __convert_config_value_to_member_value(  # noqa: PLR0911
         cls, config_value: str, *, expected: type[AllowedTypesT]
     ) -> AllowedTypesT | None:
         config_value = config_value.strip()
-
         if not config_value:
             return None
 
+        if expected == Path:
+            return Path(config_value.replace('"', ""))
+
         if expected == list[str]:
             return config_value.split()
+
+        if expected == Url:
+            return Url.parse(config_value)
 
         if expected == bool:
             cv_lower = config_value.lower()
@@ -120,8 +128,5 @@ class BeekeeperConfig(CliveBaseModel):
                 return False
 
             raise InvalidOptionError(f"Expected `yes` or `no`, got: `{config_value}`")
-
-        if expected == Url:
-            return Url.parse(config_value)
 
         return expected(config_value) if expected is not None else None  # type: ignore[call-arg]
