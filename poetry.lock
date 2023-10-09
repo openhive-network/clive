@@ -1241,13 +1241,13 @@ url = "hive/tests/python/hive-local-tools/test-tools"
 
 [[package]]
 name = "textual"
-version = "0.38.0"
+version = "0.38.1"
 description = "Modern Text User Interface framework"
 optional = false
 python-versions = ">=3.7,<4.0"
 files = [
-    {file = "textual-0.38.0-py3-none-any.whl", hash = "sha256:88bd75f57cc03f575fbc2ccc2fd3e91aa6b6cf3e66afac39d9505140539afc4d"},
-    {file = "textual-0.38.0.tar.gz", hash = "sha256:1b384c09f138f2bdc33c673e8046f437ff5df49cd63f5b79d1c12dce7fb54687"},
+    {file = "textual-0.38.1-py3-none-any.whl", hash = "sha256:8d38cbad6ac0b1320e52c7516e96b817e448d7c58d991269d3cf300108bbd191"},
+    {file = "textual-0.38.1.tar.gz", hash = "sha256:504c934c3281217a29e7a95d498aacb7fbc629f6430895f7ac51ea7ba66e5d99"},
 ]
 
 [package.dependencies]
@@ -1655,4 +1655,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "3a05281afb628936a46c7327bddbeece0fac028202a6b8ec69c97efba635c668"
+content-hash = "79917d8f993d0fc4a9924b0ea9b844b0536d062c5dcb13beacda58409ae73cd2"
