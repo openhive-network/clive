@@ -35,10 +35,11 @@ class SavingsDataProvider(CliveWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self._update_savings_data)  # type: ignore[arg-type]
+        self.update_savings_data()
+        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update_savings_data)  # type: ignore[arg-type]
 
     @work(name="savings data update worker")
-    async def _update_savings_data(self) -> None:
+    async def update_savings_data(self) -> None:
         working_account_name = self.app.world.profile_data.working_account.name
 
         gdpo = await self.app.world.app_state.get_dynamic_global_properties()
