@@ -36,12 +36,13 @@ class DynamicLabel(CliveWidget):
         callback: Callable[[Any], Any],
         *,
         prefix: str = "",
+        shrink: bool = False,
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
         super().__init__(id=id_, classes=classes)
 
-        self.__label = Label("loading...")
+        self.__label = Label("loading...", shrink=shrink)
         self.__label.display = False
 
         self.__loading_indicator = LoadingIndicator()

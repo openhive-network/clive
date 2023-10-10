@@ -131,11 +131,17 @@ class CartItem(ColumnLayout, CliveWidget):
             self.app.world,
             "profile_data",
             get_operation_name,
+            shrink=True,
             id_="operation_type",
             classes="cell cell-variant cell-middle",
         )
         yield DynamicColumn(
-            self.app.world, "profile_data", get_operation_details, id_="operation_details", classes="cell"
+            self.app.world,
+            "profile_data",
+            get_operation_details,
+            shrink=True,
+            id_="operation_details",
+            classes="cell",
         )
         yield ButtonMoveUp(disabled=self.__is_first)
         yield ButtonMoveDown(disabled=self.__is_last)
