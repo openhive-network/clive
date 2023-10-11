@@ -164,6 +164,7 @@ class Communication:
                         headers={"Content-Type": "application/json"},
                     )
                 except aiohttp.ClientError as error:
+                    logger.error(f"ClientError occurred: {error} from {url=}, request={data_serialized}")
                     raise CommunicationError(url, data_serialized) from error
                 except asyncio.TimeoutError as error:
                     timeouts_count += 1
@@ -171,6 +172,9 @@ class Communication:
                     if timeouts_count >= _max_attempts:  # there were only timeouts
                         raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, timeouts_count) from error
                     continue
+                except Exception as error:
+                    logger.error(f"Unexpected error occurred: {error} from {url=}, request={data_serialized}")
+                    raise
 
                 if response.ok:
                     try:
