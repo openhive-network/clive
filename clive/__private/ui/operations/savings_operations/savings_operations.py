@@ -99,7 +99,7 @@ class PendingTransfer(CliveWidget):
         yield Label(Asset.to_legacy(self.__transfer.amount), classes=even)
         yield Label(str(self.__realized_on), classes=odd)
         yield Label(self.__transfer.memo, classes=even)
-        yield CliveButton("Cancel", id_="delete-transfer-button")
+        yield CliveButton("Cancel", id_="delete-transfer-button", disabled=self.is_operation_in_the_cart)
 
     @property
     def __realized_on(self) -> str:
@@ -107,13 +107,17 @@ class PendingTransfer(CliveWidget):
 
     @on(Button.Pressed, "#delete-transfer-button")
     def move_to_cancel_transfer(self) -> None:
-        if (
-            CancelTransferFromSavingsOperation(from_=self.__transfer.from_, request_id=self.__transfer.request_id)
-            in self.app.world.profile_data.cart
-        ):
+        if self.is_operation_in_the_cart:
             self.notify("The operation is already in the cart!", severity="error")
             return
         self.app.push_screen(CancelTransferFromSavings(self.__transfer))
+
+    @property
+    def is_operation_in_the_cart(self) -> bool:
+        return (
+            CancelTransferFromSavingsOperation(from_=self.__transfer.from_, request_id=self.__transfer.request_id)
+            in self.app.world.profile_data.cart
+        )
 
 
 class PendingHeader(Horizontal):
