@@ -105,6 +105,11 @@ Savings .OddColumn {
     width: 1fr;
 }
 
+Savings PendingTransfers LoadingIndicator {
+    height: 1;
+    margin-top: 2;
+}
+
 Savings PendingTransfer Label{
     width: 1fr;
     content-align: center middle;

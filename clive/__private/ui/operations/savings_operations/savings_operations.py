@@ -4,8 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
-from textual.css.query import NoMatches
-from textual.widgets import Button, Label, RadioSet, Static
+from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
@@ -126,20 +125,30 @@ class PendingHeader(Horizontal):
 
 
 class PendingTransfers(ScrollableContainer):
-    def __init__(self, pending_transfers: list[SavingsWithdrawals] | None = None) -> None:
+    def __init__(self, provider: SavingsDataProvider) -> None:
         super().__init__()
-        self.__pending_transfers = pending_transfers
+        self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        if self.__pending_transfers:
-            number_of_transfers = len(self.__pending_transfers)
-            yield Static(f"Number of transfers from savings now: {number_of_transfers}", classes="number-of-transfers")
-            yield PendingHeader()
-            for transfer in self.__pending_transfers:
-                yield PendingTransfer(transfer)
-            yield Static()
-        else:
-            yield Static("No transfers from savings now", classes="number-of-transfers")
+        yield LoadingIndicator()
+
+    def on_mount(self) -> None:
+        self.watch(self.__provider, "content", callback=self.__sync_pending_transfers, init=False)
+
+    def __sync_pending_transfers(self, content: SavingsData) -> None:
+        self.query("*").remove()
+
+        pending_transfers = content.pending_transfers
+        if not pending_transfers:
+            self.mount(Static("No transfers from savings now", classes="number-of-transfers"))
+            return
+
+        things_to_mount = [
+            Static(f"Number of transfers from savings now: {len(pending_transfers)}", classes="number-of-transfers"),
+            PendingHeader(),
+            *[PendingTransfer(transfer) for transfer in pending_transfers],
+        ]
+        self.mount_all(things_to_mount)
 
 
 class SavingsInfo(ScrollableTabPane, CliveWidget):
@@ -149,20 +158,7 @@ class SavingsInfo(ScrollableTabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield SavingsInterestInfo(self.__provider)
-        yield PendingTransfers()
-
-    def on_mount(self) -> None:
-        self.watch(self.__provider, "content", callback=self.__sync_pending_transfers)
-
-    def __sync_pending_transfers(self, content: SavingsData) -> None:
-        try:
-            pending_transfers_container = self.query_one(PendingTransfers)
-        except NoMatches:
-            return
-
-        pending_transfers_container.remove()
-        new_transfers_item = PendingTransfers(content.pending_transfers)
-        self.mount(new_transfers_item)
+        yield PendingTransfers(self.__provider)
 
 
 class SavingsTransfers(ScrollableTabPane, OperationActionBindings):

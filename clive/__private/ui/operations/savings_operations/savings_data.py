@@ -30,7 +30,7 @@ class SavingsDataProvider(CliveWidget):
     but it can also be manually stopped using the 'stop' method.
     """
 
-    content: SavingsData = var(SavingsData())  # type: ignore[assignment]
+    content: SavingsData = var(SavingsData(), init=False)  # type: ignore[assignment]
     """It is used to check whether savings data has been refreshed and to store savings data."""
 
     def __init__(self) -> None:
