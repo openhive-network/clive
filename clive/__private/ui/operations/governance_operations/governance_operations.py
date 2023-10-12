@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
-from textual.containers import Container, Grid
+from textual.containers import Container, Grid, Horizontal, VerticalScroll
 from textual.css.query import NoMatches
 from textual.widgets import Label, Static, TabbedContent
 
@@ -35,6 +35,22 @@ class Witness(Grid):
         yield Label(self.__witness.name, classes="witness-name")
         yield Label(str(self.__witness.votes), classes="witness-votes")
         yield Label("details", classes="witness-details")
+
+
+class WitnessesActions(VerticalScroll):
+    """
+    Contains a table of operations to be performed after confirmation.
+
+    Attributes
+    ----------
+    __actions_to_perform (dict): A dictionary with the witness name as the key and the action to perform (vote/unvote, represented as a boolean value).
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Static("Actions to be performed:", id="witnesses-actions-header")
+        with Horizontal(id="name-and-action"):
+            yield Static("Action", id="action-row")
+            yield Static("Witness", id="witness-row")
 
 
 class WitnessesList(Container, CliveWidget):
@@ -119,6 +135,7 @@ class Witnesses(ScrollableTabPane):
 
     def compose(self) -> ComposeResult:
         yield WitnessesTable(self.__provider.content.witnesses)
+        yield WitnessesActions()
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)

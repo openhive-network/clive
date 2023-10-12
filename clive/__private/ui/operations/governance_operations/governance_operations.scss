@@ -47,8 +47,9 @@ Governance WitnessesList {
 }
 
 Governance WitnessesTable {
-    width: 50%;
+    width: 55%;
     height: auto;
+    margin-left: 9;
 }
 
 Governance WitnessesList Witness {
@@ -90,5 +91,25 @@ Governance WitnessesListHeader #votes-column {
 }
 
 Governance #witnesses-headline {
+    background: rgb(83, 158, 255);
+}
+
+Governance WitnessesActions {
+    width: 40%;
+    margin-left: 1;
+    max-height: 30;
+}
+
+Governance #action-row {
+    width: 50%;
+    background: rgb(255, 186, 65);
+}
+
+Governance #witness-row {
+    width: 50%;
+    background: rgb(0, 83, 170);
+}
+
+Governance #witnesses-actions-header {
     background: rgb(83, 158, 255);
 }
