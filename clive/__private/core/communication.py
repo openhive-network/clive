@@ -5,6 +5,7 @@ import contextlib
 import json
 from contextlib import contextmanager
 from datetime import datetime
+from json import JSONDecodeError
 from typing import TYPE_CHECKING, Any, Final
 
 import aiohttp
@@ -138,9 +139,6 @@ class Communication:
         timeout_secs: float | None = None,
         pool_time_secs: float | None = None,
     ) -> aiohttp.ClientResponse:
-        async def __sleep() -> None:
-            await asyncio.sleep(_pool_time_secs)
-
         _max_attempts = max_attempts or self.__max_attempts
         _timeout_secs = timeout_secs or self.__timeout_secs
         _pool_time_secs = pool_time_secs or self.__pool_time_secs
@@ -150,11 +148,19 @@ class Communication:
         assert _pool_time_secs >= 0, "Pool time must be greater or equal to 0."
 
         result: CommunicationResponseT | None = None
+        exception: Exception | None = None
 
         data_serialized = data if isinstance(data, str) else json.dumps(data, cls=CustomJSONEncoder)
 
         attempt = 0
         timeouts_count = 0
+
+        async def next_try(error_: Exception | None = None) -> None:
+            nonlocal attempt, exception
+            exception = error_
+            attempt += 1
+            await asyncio.sleep(_pool_time_secs)
+
         while attempt < _max_attempts:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=_timeout_secs)) as session:
                 try:
@@ -165,23 +171,26 @@ class Communication:
                     )
                 except aiohttp.ClientError as error:
                     logger.error(f"ClientError occurred: {error} from {url=}, request={data_serialized}")
-                    raise CommunicationError(url, data_serialized) from error
+                    await next_try(error)
+                    continue
                 except asyncio.TimeoutError as error:
                     timeouts_count += 1
                     logger.warning(f"Timeout error, request to {url=} took over {_timeout_secs} seconds.")
                     if timeouts_count >= _max_attempts:  # there were only timeouts
                         raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, timeouts_count) from error
                     continue
-                except Exception as error:
+                except Exception as error:  # noqa: BLE001
                     logger.error(f"Unexpected error occurred: {error} from {url=}, request={data_serialized}")
-                    raise
+                    await next_try(error)
+                    continue
 
                 if response.ok:
                     try:
                         result = await response.json()
-                    except aiohttp.ContentTypeError:
+                    except (aiohttp.ContentTypeError, JSONDecodeError) as error:
                         result = await response.text()
-                        break
+                        await next_try(error)
+                        continue
 
                     with contextlib.suppress(ErrorInResponseJsonError):
                         self.__check_response(url=url, request=data_serialized, result=result)
@@ -191,11 +200,9 @@ class Communication:
                     logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
                     result = await response.text()
 
-            await __sleep()
-            attempt += 1
+            await next_try()
 
-        assert result is not None, "Result should be set at this point."
-        raise CommunicationError(url, data_serialized, result)
+        raise CommunicationError(url, data_serialized, result) from exception
 
     @classmethod
     def __check_response(cls, url: str, request: str, result: Any) -> None:
