@@ -63,20 +63,21 @@ class SavingsBalances(AccountReferencingWidget):
 
 
 class SavingsInterestInfo(AccountReferencingWidget):
-    def __init__(self, provider: SavingsDataProvider) -> None:
+    def __init__(self) -> None:
         super().__init__(account=self.app.world.profile_data.working_account)
-        self.__provider = provider
 
     def compose(self) -> ComposeResult:
+        provider = self.app.query_one(SavingsDataProvider)
+
         def get_interest_date() -> str:
-            last_interest_payment = humanize_datetime(self.__provider.content.last_interest_payment)
+            last_interest_payment = humanize_datetime(provider.content.last_interest_payment)
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
 
         def get_estimated_interest() -> str:
             return f"Interest since last payment: {self._account.data.hbd_unclaimed.amount} HBD"
 
         def get_interest_rate_for_hbd() -> str:
-            return f"APR interest rate for HBD($) is {self.__provider.content.hbd_interest_rate / 100}%"
+            return f"APR interest rate for HBD($) is {provider.content.hbd_interest_rate / 100}%"
 
         with Horizontal():
             yield SavingsBalances(self._account)
@@ -125,15 +126,12 @@ class PendingHeader(Horizontal):
 
 
 class PendingTransfers(ScrollableContainer):
-    def __init__(self, provider: SavingsDataProvider) -> None:
-        super().__init__()
-        self.__provider = provider
-
     def compose(self) -> ComposeResult:
         yield LoadingIndicator()
 
     def on_mount(self) -> None:
-        self.watch(self.__provider, "content", callback=self.__sync_pending_transfers, init=False)
+        provider = self.app.query_one(SavingsDataProvider)
+        self.watch(provider, "content", callback=self.__sync_pending_transfers, init=False)
 
     def __sync_pending_transfers(self, content: SavingsData) -> None:
         self.query("*").remove()
@@ -152,19 +150,14 @@ class PendingTransfers(ScrollableContainer):
 
 
 class SavingsInfo(ScrollableTabPane, CliveWidget):
-    def __init__(self, provider: SavingsDataProvider, title: TextType) -> None:
-        super().__init__(title=title)
-        self.__provider = provider
-
     def compose(self) -> ComposeResult:
-        yield SavingsInterestInfo(self.__provider)
-        yield PendingTransfers(self.__provider)
+        yield SavingsInterestInfo()
+        yield PendingTransfers()
 
 
 class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
-    def __init__(self, provider: SavingsDataProvider, title: TextType = "") -> None:
+    def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
-        self.__provider = provider
 
         self.__amount_input = AssetAmountInput()
         self.__memo_input = MemoInput()
@@ -228,7 +221,8 @@ class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
         )
 
     def __create_request_id(self) -> int:
-        pending_transfers = self.__provider.content.pending_transfers
+        provider = self.app.query_one(SavingsDataProvider)
+        pending_transfers = provider.content.pending_transfers
         max_number_of_request_ids: Final[int] = 100
 
         for cart_transfer in self.app.world.profile_data.cart:
@@ -255,6 +249,6 @@ class Savings(OperationBaseScreen, CartBinding):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Savings operations")
-        with SavingsDataProvider() as provider, CliveTabbedContent():
-            yield SavingsInfo(provider, "savings info")
-            yield SavingsTransfers(provider, "transfer")
+        with SavingsDataProvider(), CliveTabbedContent():
+            yield SavingsInfo(title="savings info")
+            yield SavingsTransfers(title="transfer")
