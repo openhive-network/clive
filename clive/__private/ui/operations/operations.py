@@ -7,6 +7,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static
 
+from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
@@ -14,6 +15,7 @@ from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, 
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
+from clive.__private.ui.widgets.select_file import SelectFile
 from clive.dev import is_in_dev_mode
 
 if TYPE_CHECKING:
@@ -55,6 +57,7 @@ class Operations(CartBasedScreen, CartBinding):
     BINDINGS = [
         *CartBinding.BINDINGS,
         Binding("escape", "pop_screen", "Back"),
+        Binding("f3", "load_transaction_from_file", "Load from file"),
     ]
 
     def create_left_panel(self) -> ComposeResult:
@@ -76,6 +79,10 @@ class Operations(CartBasedScreen, CartBinding):
         """Switch to a new tab."""
         self.get_child_by_type(CliveTabbedContent).active = tab
 
+    def action_load_transaction_from_file(self) -> None:
+        self.app.push_screen(SelectFile())
+        self.notify("This action will replace your current cart!", severity="warning")
+
     @on(OperationButton.Pressed)
     def push_operation_screen(self, event: OperationButton.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
@@ -83,6 +90,20 @@ class Operations(CartBasedScreen, CartBinding):
             self.notify("Not implemented yet!", severity="error")
             return
         self.app.push_screen(button.operation_screen())
+
+    @on(SelectFile.Saved)
+    async def load_transaction_from_file(self, event: SelectFile.Saved) -> None:
+        file_path = event.file_path
+
+        try:
+            transaction = (await self.app.world.commands.load_transaction_from_file(path=file_path)).result_or_raise
+        except LoadTransactionError as error:
+            self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
+            return
+
+        self.app.world.profile_data.cart.clear()
+        self.app.world.profile_data.cart.extend(transaction.operations_models)
+        self.app.world.update_reactive("profile_data")
 
     def __create_raw_operations_tab(self, *, hide: bool = False) -> ComposeResult:
         if hide:

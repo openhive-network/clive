@@ -11,6 +11,7 @@ from clive.__private.core.commands.command_wrappers import CommandWithResultWrap
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.save_json import SaveToFileAsJson
@@ -108,6 +109,9 @@ class Commands(Generic[WorldT]):
             if binary
             else SaveToFileAsJson(transaction=transaction, file_path=path)
         )
+
+    async def load_transaction_from_file(self, *, path: Path) -> CommandWithResultWrapper[Transaction]:
+        return await self.__surround_with_exception_handlers(LoadTransaction(file_path=path))
 
     async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))

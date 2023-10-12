@@ -22,6 +22,11 @@ class Transaction(SchemasTransaction):
     extensions: list[Any] = Field(default_factory=list)
     signatures: list[Signature] = Field(default_factory=list)
 
+    @property
+    def operations_models(self) -> list[Operation]:
+        """Get only the operation models from already stored operations representations."""
+        return [op.value for op in self.operations]  # type: ignore[attr-defined]
+
     @validator("operations", pre=True)
     @classmethod
     def convert_operations(cls, value: Any) -> list[OperationRepresentationType]:
