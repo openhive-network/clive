@@ -36,7 +36,6 @@ from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
 from clive.models.base import CliveBaseModel
-from clive_local_tools.network import get_port
 from schemas.jsonrpc import (
     ExpectResultT,
     JSONRPCRequest,
@@ -367,7 +366,7 @@ class Beekeeper:
                 # We need to pass here notification flag because bk will parse it during exporting wallet
                 # and if it empty, it will end with error. This notification server endpoint does not
                 # need to point to running server, it just need to be passed.
-                notifications_endpoint=Url(proto="http", host="127.0.0.1", port=get_port()),
+                notifications_endpoint=Url(proto="http", host="127.0.0.1", port=0),
                 export_keys_wallet_name=wallet_name,
                 export_keys_wallet_password=wallet_password,
                 data_dir=tmpdirname,
