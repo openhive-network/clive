@@ -9,18 +9,21 @@ from textual.css.query import NoMatches
 from textual.widgets import Label, Static
 
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceData, GovernanceDataProvider
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.__private.ui.widgets.witness_checkbox import WitnessCheckbox, WitnessCheckBoxChanged
+from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessT
+    from clive.models import Operation
 
 
 class Witness(Grid):
@@ -74,6 +77,10 @@ class WitnessesActions(VerticalScroll):
     __actions_to_perform (dict): A dictionary with the witness name as the key and the action to perform (vote/unvote, represented as a boolean value).
     """
 
+    def __init__(self) -> None:
+        super().__init__()
+        self.__actions_to_perform: dict[str, bool] = {}
+
     def compose(self) -> ComposeResult:
         yield Static("Actions to be performed:", id="witnesses-actions-header")
         with Horizontal(id="name-and-action"):
@@ -82,9 +89,15 @@ class WitnessesActions(VerticalScroll):
 
     def mount_witness(self, name: str, vote: bool) -> None:
         self.mount(WitnessActionRow(name=name, vote=vote))
+        self.__actions_to_perform[name] = vote
 
     def unmount_witness(self, name: str) -> None:
         self.query_one(f"#{name}-witness").remove()
+        self.__actions_to_perform.pop(name)
+
+    @property
+    def actions_to_perform(self) -> dict[str, bool]:
+        return self.__actions_to_perform
 
 
 class WitnessesList(Container, CliveWidget):
@@ -160,7 +173,7 @@ class Proposals(ScrollableTabPane):
     """TabPane with all content about proposals."""
 
 
-class Witnesses(ScrollableTabPane):
+class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
     """TabPane with all content about witnesses."""
 
     def __init__(self, provider: GovernanceDataProvider, title: TextType) -> None:
@@ -183,6 +196,20 @@ class Witnesses(ScrollableTabPane):
         witnesses_list_container.remove()
         new_witnesses_table_container = WitnessesTable(content.witnesses)
         self.mount(new_witnesses_table_container)
+
+    def _create_operation(self) -> list[Operation] | None:
+        working_account_name = self.app.world.profile_data.working_account.name
+        operations_to_perform = self.app.query_one(WitnessesActions).actions_to_perform
+        list_of_operations = []
+
+        for witness, approve in operations_to_perform.items():
+            if witness is None or approve is None:
+                return None
+
+            list_of_operations.append(
+                AccountWitnessVoteOperation(account=working_account_name, witness=witness, approve=approve)
+            )
+        return list_of_operations  # type: ignore[return-value]
 
 
 class Governance(OperationBaseScreen):
