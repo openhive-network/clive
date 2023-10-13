@@ -145,6 +145,8 @@ class PendingTransfers(ScrollableContainer):
             Static(f"Number of transfers from savings now: {len(pending_transfers)}", classes="number-of-transfers"),
             PendingHeader(),
             *[PendingTransfer(transfer) for transfer in pending_transfers],
+            Static(),
+            Static(),
         ]
         self.mount_all(things_to_mount)
 
@@ -182,7 +184,8 @@ class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
             yield from self.__to_account_input.compose()
             yield from self.__amount_input.compose()
             yield from self.__memo_input.compose()
-        yield self.__transfer_time_reminder
+            yield self.__transfer_time_reminder
+        yield Static()
 
     @on(RadioSet.Changed)
     def visibility_of_transfer_time_reminder(self, event: RadioSet.Changed) -> None:

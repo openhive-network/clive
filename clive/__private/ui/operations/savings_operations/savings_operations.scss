@@ -2,8 +2,12 @@ Savings Tab{
     width: 1fr;
 }
 
-Savings TabPane {
-   height: 40;
+Savings CliveTabbedContent {
+    height: 1fr;
+}
+
+Savings ScrollableTabPane {
+    height: 1fr;
 }
 
 Savings SavingsInterestInfo {
@@ -150,8 +154,8 @@ Savings #savings-transfer-header {
 Savings Body {
   grid-size: 2;
   grid-columns: 17 1fr;
-  grid-rows: 4 4 4 4 4;
-  height: auto;
+  grid-rows: 4 4 4 4;
+  height: 16;
 }
 
 Savings #operation-type-choose {
@@ -169,8 +173,9 @@ Savings #transfer-time-reminder {
     background: $accent-lighten-1;
     text-style: bold;
     margin-top: 1;
+    column-span: 2;
 }
 
-Savings Body {
-    height: 40%;
+Savings PendingTransfers {
+    height: auto;
 }
