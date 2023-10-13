@@ -8,6 +8,7 @@ from textual.containers import Container, Grid, Horizontal, VerticalScroll
 from textual.css.query import NoMatches
 from textual.widgets import Label, Static, TabbedContent
 
+from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceData, GovernanceDataProvider
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -184,6 +185,11 @@ class Witnesses(ScrollableTabPane):
 
 
 class Governance(OperationBaseScreen):
+    CSS_PATH = [
+        *OperationBaseScreen.CSS_PATH,
+        get_relative_css_path(__file__),
+    ]
+
     def create_left_panel(self) -> ComposeResult:
         with GovernanceDataProvider() as provider, TabbedContent():
             yield Proxy("Proxy")
