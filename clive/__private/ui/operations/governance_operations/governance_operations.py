@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Grid, Horizontal, VerticalScroll
 from textual.css.query import NoMatches
@@ -11,7 +12,7 @@ from clive.__private.ui.operations.governance_operations.governance_data import 
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
-from clive.__private.ui.widgets.witness_checkbox import WitnessCheckbox
+from clive.__private.ui.widgets.witness_checkbox import WitnessCheckbox, WitnessCheckBoxChanged
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -27,14 +28,39 @@ class Witness(Grid):
         super().__init__()
         self.__witness = witness
 
+        self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted)
+
     def compose(self) -> ComposeResult:
-        yield WitnessCheckbox(is_voted=self.__witness.voted)
+        yield self.__witness_checkbox
         yield Label(
             str(self.__witness.rank) if self.__witness.rank is not None else "Outside top 105", classes="witness-rank"
         )
         yield Label(self.__witness.name, classes="witness-name")
         yield Label(str(self.__witness.votes), classes="witness-votes")
         yield Label("details", classes="witness-details")
+
+    @on(WitnessCheckBoxChanged)
+    def move_witness_to_actions(self) -> None:
+        witnesses_actions = self.app.query_one(WitnessesActions)
+
+        if self.__witness_checkbox.checkbox_state:
+            witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
+            return
+        witnesses_actions.unmount_witness(name=self.__witness.name)
+
+
+class WitnessActionRow(Horizontal):
+    def __init__(self, name: str, vote: bool):
+        super().__init__(id=f"{name}-witness")
+        self.__witness_name = name
+        self.__vote = vote
+
+    def compose(self) -> ComposeResult:
+        if self.__vote:
+            yield Label("Vote", classes="action-vote")
+        else:
+            yield Label("Unvote", classes="action-unvote")
+        yield Label(self.__witness_name, classes="action-witness-name")
 
 
 class WitnessesActions(VerticalScroll):
@@ -51,6 +77,12 @@ class WitnessesActions(VerticalScroll):
         with Horizontal(id="name-and-action"):
             yield Static("Action", id="action-row")
             yield Static("Witness", id="witness-row")
+
+    def mount_witness(self, name: str, vote: bool) -> None:
+        self.mount(WitnessActionRow(name=name, vote=vote))
+
+    def unmount_witness(self, name: str) -> None:
+        self.query_one(f"#{name}-witness").remove()
 
 
 class WitnessesList(Container, CliveWidget):

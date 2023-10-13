@@ -113,3 +113,23 @@ Governance #witness-row {
 Governance #witnesses-actions-header {
     background: rgb(83, 158, 255);
 }
+
+Governance WitnessActionRow Static {
+    width: 50%;
+}
+
+Governance WitnessActionRow .action-vote{
+    background: green;
+}
+
+Governance WitnessActionRow .action-unvote {
+    background: red;
+}
+
+Governance WitnessActionRow {
+    height: 1;
+}
+
+Governance WitnessesActions #name-and-action {
+    height: 1;
+}
