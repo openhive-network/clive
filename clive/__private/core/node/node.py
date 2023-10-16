@@ -20,7 +20,15 @@ if TYPE_CHECKING:
     from clive.core.url import Url
 
 
-class ResponseNotReadyError(CliveError):
+class BatchRequestError(CliveError):
+    pass
+
+
+class NothingToSendError(BatchRequestError):
+    pass
+
+
+class ResponseNotReadyError(BatchRequestError):
     pass
 
 
@@ -103,7 +111,12 @@ class _BatchNode(BaseNode):
         return self
 
     async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+        if not self.__is_anything_to_send():
+            raise NothingToSendError
         await self.__evaluate()
+
+    def __is_anything_to_send(self) -> bool:
+        return bool(self.__batch)
 
 
 class Node(BaseNode):

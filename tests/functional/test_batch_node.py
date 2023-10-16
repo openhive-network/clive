@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from clive.__private.core.node.node import ResponseNotReadyError
+from clive.__private.core.node.node import NothingToSendError, ResponseNotReadyError
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
@@ -34,3 +34,9 @@ async def test_false_batch_node_error_response(init_node: tt.InitNode, world: Wo
     with pytest.raises(CommunicationError):  # noqa: PT012
         async with world.node.batch() as node:
             _ = await node.api.database_api.find_accounts(accounts=123)  # type: ignore
+
+
+async def test_batch_node_nothing_to_send(world: World) -> None:
+    with pytest.raises(NothingToSendError):
+        async with world.node.batch():
+            pass
