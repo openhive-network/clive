@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
@@ -43,18 +44,26 @@ if TYPE_CHECKING:
 DynamicGlobalPropertiesT = GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]
 
 
-class SuppressNotExistingApi:
-    def __init__(self, api: str) -> None:
-        self.__api_name = api
+class SuppressNotExistingApis:
+    _API_NOT_FOUND_REGEX: Final[str] = (
+        r"'Assert Exception:api_itr != data\._registered_apis\.end\(\): Could not find API (\w+_api)'"
+    )
+
+    def __init__(self, *api_names: str) -> None:
+        self.__api_names = api_names
 
     def __enter__(self) -> None:
         return None
 
-    def __exit__(self, _: type[Exception] | None, ex: Exception | None, __: TracebackType | None) -> bool:
-        return ex is None or (isinstance(ex, CommunicationError) and self.__get_formatted_error_message() in str(ex))
+    def __exit__(self, _: type[Exception] | None, error: Exception | None, __: TracebackType | None) -> bool:
+        if isinstance(error, CommunicationError):
+            apis_not_found = set(self.__get_apis_not_found(str(error)))
+            not_suppressed_apis = apis_not_found - set(self.__api_names)
+            return not bool(not_suppressed_apis)
+        return False
 
-    def __get_formatted_error_message(self) -> str:
-        return f"Assert Exception:api_itr != data._registered_apis.end(): Could not find API {self.__api_name}"
+    def __get_apis_not_found(self, message: str) -> list[str]:
+        return re.findall(self._API_NOT_FOUND_REGEX, message)
 
 
 @dataclass
@@ -183,7 +192,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         ), "invalid amount of accounts after database api call"
         assert len(harvested_data) == len(self.accounts), "not all accounts has been processed"
 
-        with SuppressNotExistingApi("rc_api"):
+        with SuppressNotExistingApis("rc_api"):
             assert len(rc_accounts_raw.rc_accounts) == len(
                 self.accounts
             ), "invalid amount of accounts after rc api call"
@@ -207,7 +216,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         return result
 
     def __get_account_last_history_entry(self, raw: UpdateNodeData._HarvestedData) -> datetime:
-        with SuppressNotExistingApi("account_history_api"):
+        with SuppressNotExistingApis("account_history_api"):
             assert raw.last_interaction_info_raw is not None
             return self.__normalize_datetime(raw.last_interaction_info_raw.history[0][1].timestamp)
         return datetime.fromtimestamp(0, timezone.utc)
@@ -274,7 +283,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         assert raw.core_raw is not None  # mypy check
         assert raw.reputation_raw is not None  # mypy check
 
-        with SuppressNotExistingApi("reputation_api"):
+        with SuppressNotExistingApis("reputation_api"):
             reputation = raw.reputation_raw.reputations
             assert len(reputation) == 1
             assert reputation[0].account == raw.core_raw.name, "reputation data malformed"
