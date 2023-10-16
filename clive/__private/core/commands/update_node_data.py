@@ -13,35 +13,41 @@ from clive.__private.core.iwax import (
     calculate_manabar_full_regeneration_time,
 )
 from clive.__private.stopwatch import Stopwatch
+from clive.__private.storage.accounts import Account
 from clive.exceptions import CommunicationError
 from clive.models import Asset
-from schemas.apis.database_api import (
-    FindAccounts,
-    GetDynamicGlobalProperties,
-    ListChangeRecoveryAccountRequests,
-    ListDeclineVotingRightsRequests,
-    ListOwnerHistories,
+from clive.models.aliased import (
+    DynamicGlobalProperties,
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from types import TracebackType
 
     from clive.__private.core.node.node import Node
     from clive.__private.storage import mock_database
-    from clive.__private.storage.accounts import Account
+    from clive.models.aliased import (
+        ChangeRecoveryAccountRequest,
+        DeclineVotingRightsRequest,
+        FindRcAccounts,
+        OwnerHistory,
+        RcAccount,
+        Reputation,
+        SchemasAccount,
+    )
     from schemas.apis.account_history_api import GetAccountHistory
-    from schemas.apis.database_api.fundaments_of_reponses import AccountItemFundament
-    from schemas.apis.rc_api import FindRcAccounts
-    from schemas.apis.rc_api.fundaments_of_responses import RcAccount
+    from schemas.apis.database_api import (
+        FindAccounts,
+        ListChangeRecoveryAccountRequests,
+        ListDeclineVotingRightsRequests,
+        ListOwnerHistories,
+    )
     from schemas.apis.reputation_api import GetAccountReputations
     from schemas.fields.compound import Manabar
 
-    AccountFundamentT = AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests]
-    CoreAccountsInfoT = dict[str, AccountFundamentT]
-    RcAccountsInfoT = dict[str, RcAccount[Asset.Vests]]
 
-
-DynamicGlobalPropertiesT = GetDynamicGlobalProperties[Asset.Hive, Asset.Hbd, Asset.Vests]
+def _get_utc_epoch() -> datetime:
+    return datetime.fromtimestamp(0, timezone.utc)
 
 
 class SuppressNotExistingApis:
@@ -67,27 +73,58 @@ class SuppressNotExistingApis:
 
 
 @dataclass
-class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
+class _AccountHarvestedDataRaw:
+    core: SchemasAccount | None = None
+    rc: RcAccount | None = None
+    reputations: GetAccountReputations | None = None
+    account_history: GetAccountHistory | None = None
+    decline_voting_rights: ListDeclineVotingRightsRequests | None = None
+    change_recovery_account_requests: ListChangeRecoveryAccountRequests | None = None
+    owner_history: ListOwnerHistories | None = None
+
+
+@dataclass
+class _AccountSanitizedData:
+    core: SchemasAccount
+    decline_voting_rights: list[DeclineVotingRightsRequest]
+    change_recovery_account_requests: list[ChangeRecoveryAccountRequest]
+    owner_history: list[OwnerHistory]
+    reputation: Reputation | None = None
+    """Could be missing if reputation_api is not available"""
+    account_history: GetAccountHistory | None = None
+    """Could be missing if account_history_api is not available"""
+    rc: RcAccount | None = None
+    """Could be missing if rc_api is not available"""
+
+
+@dataclass
+class _AccountProcessedData:
+    core: SchemasAccount
+    warnings: int = 0
+    reputation: int = 0
+    """Could be missing if reputation_api is not available"""
+    last_history_entry: datetime = field(default_factory=lambda: _get_utc_epoch())
+    """Could be missing if account_history_api is not available"""
+    rc: RcAccount | None = None
+    """Could be missing if rc_api is not available"""
+
+
+@dataclass
+class HarvestedDataRaw:
+    core_accounts: FindAccounts | None = None
+    rc_accounts: FindRcAccounts | None = None
+    account_harvested_data: dict[Account, _AccountHarvestedDataRaw] = field(
+        default_factory=lambda: defaultdict(_AccountHarvestedDataRaw)
+    )
+
+
+AccountSanitizedDataContainer = dict[Account, _AccountSanitizedData]
+
+
+@dataclass
+class UpdateNodeData(CommandWithResult[DynamicGlobalProperties]):
     node: Node
     accounts: list[Account] = field(default_factory=list)
-
-    @dataclass
-    class _AccountApiInfo:
-        core: AccountFundamentT
-        last_history_entry: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
-        rc: RcAccount[Asset.Vests] | None = None
-        warnings: int = 0
-        reputation: int = 0
-
-    @dataclass
-    class _HarvestedData:
-        core_raw: AccountFundamentT | None = None
-        rc_raw: RcAccount[Asset.Vests] | None = None
-        reputation_raw: GetAccountReputations | None = None
-        last_interaction_info_raw: GetAccountHistory | None = None
-        decline_voting_rights_raw: ListDeclineVotingRightsRequests | None = None
-        recovery_account_in_progress: ListChangeRecoveryAccountRequests | None = None
-        owner_key_change_in_progress: ListOwnerHistories | None = None
 
     async def _execute(self) -> None:
         self._result = await self.node.api.database_api.get_dynamic_global_properties()
@@ -95,18 +132,31 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             return
 
         with Stopwatch("harvesting"):
-            api_accounts = await self.__harvest_data_from_api()
+            harvested_data = await self.__harvest_data_from_api()
+
+        with Stopwatch("sanitizing"):
+            sanitized_data = await self.__sanitize_data(harvested_data)
 
         with Stopwatch("processing"):
-            self.__process_data(api_accounts)
+            await self.__process_data(sanitized_data)
 
-    def __process_data(self, api_accounts: dict[Account, _AccountApiInfo]) -> None:
+    async def __process_data(self, data: AccountSanitizedDataContainer) -> None:
         downvote_vote_ratio: Final[int] = 4
 
-        gdpo = self._result
-        assert gdpo is not None  # mypy check
+        gdpo = self.result
 
-        for account, info in api_accounts.items():
+        accounts_processed_data: dict[Account, _AccountProcessedData] = {}
+        for account in self.accounts:
+            account_data = data[account]
+            accounts_processed_data[account] = _AccountProcessedData(
+                core=account_data.core,
+                rc=account_data.rc,
+                last_history_entry=self.__get_account_last_history_entry(account_data.account_history),
+                warnings=self.__calculate_warnings(account_data),
+                reputation=self.__get_account_reputation(account_data.reputation),
+            )
+
+        for account, info in accounts_processed_data.items():
             account.data.reputation = info.reputation
             account.data.last_history_entry = info.last_history_entry
             account.data.last_account_update = info.core.last_account_update
@@ -139,29 +189,22 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
 
             account.data.last_refresh = self.__normalize_datetime(datetime.utcnow())
 
-    async def __harvest_data_from_api(self) -> dict[Account, _AccountApiInfo]:
+    async def __harvest_data_from_api(self) -> HarvestedDataRaw:
         non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
-
         account_names = [acc.name for acc in self.accounts if acc.name]
-        if not account_names:
-            return {}
-
-        core_accounts_raw: FindAccounts | None = None
-        rc_accounts_raw: FindRcAccounts[Asset.Vests] | None = None
-        harvested_data: defaultdict[str, UpdateNodeData._HarvestedData] = defaultdict(
-            lambda: UpdateNodeData._HarvestedData()
-        )
+        harvested_data: HarvestedDataRaw = HarvestedDataRaw()
 
         async with self.node.batch(delay_error_on_data_access=True) as node:
-            core_accounts_raw = await node.api.database_api.find_accounts(accounts=account_names)
-            rc_accounts_raw = await node.api.rc_api.find_rc_accounts(accounts=account_names)
+            harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
+            harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)
 
+            account_harvested_data = harvested_data.account_harvested_data
             for account in self.accounts:
-                harvested_data[account.name].reputation_raw = await node.api.reputation_api.get_account_reputations(
+                account_harvested_data[account].reputations = await node.api.reputation_api.get_account_reputations(
                     account_lower_bound=account.name, limit=1
                 )
 
-                harvested_data[account.name].last_interaction_info_raw = (
+                account_harvested_data[account].account_history = (
                     await node.api.account_history_api.get_account_history(
                         account=account.name,
                         limit=1,
@@ -170,130 +213,94 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
                     )
                 )
 
-                harvested_data[account.name].decline_voting_rights_raw = (
+                account_harvested_data[account].decline_voting_rights = (
                     await node.api.database_api.list_decline_voting_rights_requests(
                         start=account.name, limit=1, order="by_account"
                     )
                 )
-                harvested_data[account.name].recovery_account_in_progress = (
+                account_harvested_data[account].change_recovery_account_requests = (
                     await node.api.database_api.list_change_recovery_account_requests(
                         start=account.name, limit=1, order="by_account"
                     )
                 )
-                harvested_data[account.name].owner_key_change_in_progress = (
-                    await node.api.database_api.list_owner_histories(
-                        start=(account.name, datetime.fromtimestamp(0)), limit=1
-                    )
+                account_harvested_data[account].owner_history = await node.api.database_api.list_owner_histories(
+                    start=(account.name, _get_utc_epoch()), limit=1
                 )
 
-        assert core_accounts_raw is not None, "core accounts cannot be not"
-        assert len(core_accounts_raw.accounts) == len(
-            self.accounts
-        ), "invalid amount of accounts after database api call"
-        assert len(harvested_data) == len(self.accounts), "not all accounts has been processed"
+        return harvested_data
 
-        with SuppressNotExistingApis("rc_api"):
-            assert len(rc_accounts_raw.rc_accounts) == len(
-                self.accounts
-            ), "invalid amount of accounts after rc api call"
-            for rc_account in rc_accounts_raw.rc_accounts:
-                harvested_data[rc_account.account].rc_raw = rc_account
+    async def __sanitize_data(self, data: HarvestedDataRaw) -> AccountSanitizedDataContainer:
+        for core_account in self.__assert_core_accounts(data.core_accounts):
+            account = self.__get_account(core_account.name)
+            data.account_harvested_data[account].core = core_account
 
-        for core_account in core_accounts_raw.accounts:
-            harvested_data[core_account.name].core_raw = core_account
+        for rc_account in self.__assert_rc_accounts(data.rc_accounts):  # might be empty
+            account = self.__get_account(rc_account.account)
+            data.account_harvested_data[account].rc = rc_account
 
-        result: dict[Account, UpdateNodeData._AccountApiInfo] = {}
-        for account in self.accounts:
-            account_data_raw = harvested_data[account.name]
-            assert account_data_raw.core_raw is not None  # mypy check
-            result[account] = self._AccountApiInfo(
-                core=account_data_raw.core_raw,
-                rc=account_data_raw.rc_raw,
-                last_history_entry=self.__get_account_last_history_entry(account_data_raw),
-                warnings=self.__calculate_warnings(account_data_raw),
-                reputation=self.__get_account_reputation(account_data_raw),
+        sanitized: AccountSanitizedDataContainer = {}
+        for account, unsanitized in data.account_harvested_data.items():
+            sanitized[account] = _AccountSanitizedData(
+                core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
+                rc=unsanitized.rc,
+                reputation=self.__assert_reputation_or_none(unsanitized.reputations, account.name),
+                account_history=self.__assert_account_history_or_none(unsanitized.account_history),
+                decline_voting_rights=self.__assert_declive_voting_rights(unsanitized.decline_voting_rights),
+                change_recovery_account_requests=self.__assert_change_recovery_account_requests(
+                    unsanitized.change_recovery_account_requests
+                ),
+                owner_history=self.__assert_owner_history(unsanitized.owner_history),
             )
-        return result
+        return sanitized
 
-    def __get_account_last_history_entry(self, raw: UpdateNodeData._HarvestedData) -> datetime:
-        with SuppressNotExistingApis("account_history_api"):
-            assert raw.last_interaction_info_raw is not None
-            return self.__normalize_datetime(raw.last_interaction_info_raw.history[0][1].timestamp)
-        return datetime.fromtimestamp(0, timezone.utc)
+    def __calculate_warnings(self, raw: _AccountSanitizedData) -> int:
+        checks: list[Callable[[_AccountSanitizedData], bool]] = [
+            self.__check_for_recurrent_transfers,
+            self.__check_is_governance_is_expiring,
+            self.__check_is_recovery_account_not_warning_listed,
+            self.__check_is_declining_voting_rights_in_progress,
+            self.__check_is_changing_recovery_account_is_in_progress,
+            self.__check_is_owner_key_change_is_in_progress,
+        ]
+        return sum(check(raw) for check in checks)
 
-    def __calculate_warnings(self, raw: UpdateNodeData._HarvestedData) -> int:
-        return sum(
-            [
-                check(raw)
-                for check in [
-                    self.__check_for_recurrent_transfers,
-                    self.__check_is_governance_is_expiring,
-                    self.__check_is_recovery_account_not_warning_listed,
-                    self.__check_is_declining_voting_rights_in_progress,
-                    self.__check_is_changing_recovery_account_is_in_progress,
-                    self.__check_is_owner_key_change_is_in_progress,
-                ]
-            ]
-        )
-
-    def __check_is_recovery_account_not_warning_listed(self, raw: UpdateNodeData._HarvestedData) -> int:
+    def __check_is_recovery_account_not_warning_listed(self, data: _AccountSanitizedData) -> bool:
         warning_recovery_accounts: Final[set[str]] = {"steem"}
+        return data.core.recovery_account in warning_recovery_accounts
 
-        assert raw.core_raw is not None  # mypy check
+    def __check_is_declining_voting_rights_in_progress(self, data: _AccountSanitizedData) -> bool:
+        requests = data.decline_voting_rights
+        return bool(requests) and requests[0].account == data.core.name
 
-        return int(raw.core_raw.recovery_account in warning_recovery_accounts)
+    def __check_is_changing_recovery_account_is_in_progress(self, data: _AccountSanitizedData) -> bool:
+        requests = data.change_recovery_account_requests
+        return bool(requests) and requests[0].account_to_recover == data.core.name
 
-    def __check_is_declining_voting_rights_in_progress(self, raw: UpdateNodeData._HarvestedData) -> int:
-        assert raw.decline_voting_rights_raw is not None  # mypy check
-        assert raw.core_raw is not None  # mypy check
+    def __check_is_owner_key_change_is_in_progress(self, data: _AccountSanitizedData) -> bool:
+        history = data.owner_history
+        return bool(history) and history[0].account == data.core.name
 
-        requests = raw.decline_voting_rights_raw.requests
-        return int(bool(requests) and requests[0].account == raw.core_raw.name)
+    def __check_for_recurrent_transfers(self, data: _AccountSanitizedData) -> bool:
+        return data.core.open_recurrent_transfers > 0
 
-    def __check_is_changing_recovery_account_is_in_progress(self, raw: UpdateNodeData._HarvestedData) -> int:
-        assert raw.recovery_account_in_progress is not None  # mypy check
-        assert raw.core_raw is not None  # mypy check
-
-        requests = raw.recovery_account_in_progress.requests
-        return int(bool(requests) and requests[0].account_to_recover == raw.core_raw.name)
-
-    def __check_is_owner_key_change_is_in_progress(self, raw: UpdateNodeData._HarvestedData) -> int:
-        assert raw.owner_key_change_in_progress is not None  # mypy check
-        assert raw.core_raw is not None  # mypy check
-
-        owner_auths = raw.owner_key_change_in_progress.owner_auths
-        return int(bool(owner_auths) and owner_auths[0].account == raw.core_raw.name)
-
-    def __check_for_recurrent_transfers(self, raw: UpdateNodeData._HarvestedData) -> int:
-        assert raw.core_raw is not None  # mypy check
-
-        return int(raw.core_raw.open_recurrent_transfers > 0)
-
-    def __check_is_governance_is_expiring(self, raw: UpdateNodeData._HarvestedData) -> int:
+    def __check_is_governance_is_expiring(self, data: _AccountSanitizedData) -> bool:
         warning_period_in_days: Final[int] = 31
+        return data.core.governance_vote_expiration_ts - timedelta(
+            days=warning_period_in_days
+        ) > self.__normalize_datetime(datetime.utcnow())
 
-        assert raw.core_raw is not None  # mypy check
+    def __get_account_reputation(self, data: Reputation | None) -> int:
+        return 0 if data is None else int(data.reputation)
 
-        return int(
-            raw.core_raw.governance_vote_expiration_ts - timedelta(days=warning_period_in_days)
-            > self.__normalize_datetime(datetime.utcnow())
-        )
-
-    def __get_account_reputation(self, raw: UpdateNodeData._HarvestedData) -> int:
-        assert raw.core_raw is not None  # mypy check
-        assert raw.reputation_raw is not None  # mypy check
-
-        with SuppressNotExistingApis("reputation_api"):
-            reputation = raw.reputation_raw.reputations
-            assert len(reputation) == 1
-            assert reputation[0].account == raw.core_raw.name, "reputation data malformed"
-            return int(reputation[0].reputation)
-        return 0
+    def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
+        if data is None:
+            return _get_utc_epoch()
+        return self.__normalize_datetime(data.history[0][1].timestamp)
 
     def __calculate_hive_power(
         self,
-        gdpo: DynamicGlobalPropertiesT,
-        account: AccountItemFundament[Asset.Hive, Asset.Hbd, Asset.Vests],
+        gdpo: DynamicGlobalProperties,
+        account: SchemasAccount,
     ) -> int:
         account_vesting_shares = (
             int(account.vesting_shares.amount)
@@ -309,7 +316,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
         )
 
     def __update_manabar(
-        self, gdpo: DynamicGlobalPropertiesT, max_mana: int, manabar: Manabar, dest: mock_database.Manabar
+        self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: Manabar, dest: mock_database.Manabar
     ) -> None:
         power_from_api = int(manabar.current_mana)
         last_update = int(manabar.last_update_time)
@@ -345,12 +352,65 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             - gdpo_time
         )
 
-    def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: DynamicGlobalPropertiesT) -> Asset.Hive:
+    def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: DynamicGlobalProperties) -> Asset.Hive:
         if isinstance(amount, Asset.Vests):
             amount = int(amount.amount)
         return Asset.Hive(
             amount=int(amount * int(gdpo.total_vesting_fund_hive.amount) / int(gdpo.total_vesting_shares.amount))
         )
 
-    def __normalize_datetime(self, date: datetime) -> datetime:
+    @staticmethod
+    def __normalize_datetime(date: datetime) -> datetime:
         return date.replace(microsecond=0, tzinfo=timezone.utc)
+
+    def __get_account(self, name: str) -> Account:
+        return next(filter(lambda account: account.name == name, self.accounts))
+
+    def __assert_core_accounts(self, data: FindAccounts | None) -> list[SchemasAccount]:
+        assert data is not None, "Core account data is missing..."
+        assert len(data.accounts) == len(self.accounts), "Core accounts are missing some accounts..."
+        return data.accounts
+
+    def __assert_rc_accounts(self, data: FindRcAccounts | None) -> list[RcAccount]:
+        assert data is not None, "Rc account data is missing..."
+
+        with SuppressNotExistingApis("rc_api"):
+            assert len(data.rc_accounts) == len(self.accounts), "RC accounts are missing some accounts..."
+            return data.rc_accounts
+        return []
+
+    def __assert_reputation_or_none(self, data: GetAccountReputations | None, account_name: str) -> Reputation | None:
+        assert data is not None, "Reputation data is missing..."
+
+        with SuppressNotExistingApis("reputation_api"):
+            reputations = data.reputations
+            assert len(reputations) == 1, "Reputation data malformed. Expected only one entry."
+
+            reputation = reputations[0]
+            assert reputation.account == account_name, "Reputation data malformed. Account name mismatch."
+            return reputation
+        return None
+
+    def __assert_account_history_or_none(self, data: GetAccountHistory | None) -> GetAccountHistory | None:
+        assert data is not None, "Account history info is missing..."
+
+        with SuppressNotExistingApis("account_history_api"):
+            assert len(data.history) == 1, "Account history info malformed. Expected only one entry."
+            return data
+        return None
+
+    def __assert_declive_voting_rights(
+        self, decline_voting_rights: ListDeclineVotingRightsRequests | None
+    ) -> list[DeclineVotingRightsRequest]:
+        assert decline_voting_rights is not None, "Decline voting rights requests info is missing..."
+        return decline_voting_rights.requests
+
+    def __assert_change_recovery_account_requests(
+        self, change_recovery_account_requests: ListChangeRecoveryAccountRequests | None
+    ) -> list[ChangeRecoveryAccountRequest]:
+        assert change_recovery_account_requests is not None, "Change recovery account requests info is missing..."
+        return change_recovery_account_requests.requests
+
+    def __assert_owner_history(self, owner_key_change_in_progress: ListOwnerHistories | None) -> list[OwnerHistory]:
+        assert owner_key_change_in_progress is not None, "Owner history info is missing..."
+        return owner_key_change_in_progress.owner_auths

@@ -17,7 +17,7 @@ from clive.__private.core.commands.save_json import SaveToFileAsJson
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT, UpdateNodeData
+from clive.__private.core.commands.update_node_data import UpdateNodeData
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
@@ -37,6 +37,7 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Operation, Transaction
+    from clive.models.aliased import DynamicGlobalProperties
 
 
 WorldT = TypeVar("WorldT", bound="World")
@@ -156,7 +157,7 @@ class Commands(Generic[WorldT]):
 
     async def update_node_data(
         self, *, accounts: list[Account] | None = None
-    ) -> CommandWithResultWrapper[DynamicGlobalPropertiesT]:
+    ) -> CommandWithResultWrapper[DynamicGlobalProperties]:
         result = await self.__surround_with_exception_handlers(
             UpdateNodeData(accounts=accounts or [], node=self._world.node)
         )

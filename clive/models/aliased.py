@@ -1,8 +1,18 @@
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
-from schemas.apis.database_api.fundaments_of_reponses import SavingsWithdrawalsFundament
-from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26
+from schemas.apis.database_api import GetDynamicGlobalProperties
+from schemas.apis.database_api.fundaments_of_reponses import (
+    AccountItemFundament,
+    ListChangeRecoveryAccountRequestsFundament,
+    ListDeclineVotingRightsRequestsFundament,
+    OwnerHistoriesFundament,
+    SavingsWithdrawalsFundament,
+)
+from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
+from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
+from schemas.apis.reputation_api.fundaments_of_responses import GetAccountReputationsFundament
+from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
 from schemas.fields.basic import AccountName as SchemasAccountName
 from schemas.fields.hex import Signature as SchemasSignature
@@ -24,4 +34,14 @@ ApiOperationObject = Hf26ApiOperationObject
 ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 Signature = SchemasSignature
 AccountName = SchemasAccountName
+
+Reputation = GetAccountReputationsFundament
+OwnerHistory = OwnerHistoriesFundament
+FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
+SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
+RcAccount = SchemasRcAccount[AssetVestsHF26]
+DynamicGlobalProperties = GetDynamicGlobalProperties[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
+
+ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
+DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament

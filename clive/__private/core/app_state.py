@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.update_node_data import DynamicGlobalPropertiesT
     from clive.__private.core.world import World
+    from clive.models.aliased import DynamicGlobalProperties
 
 
 @dataclass
@@ -16,9 +16,9 @@ class AppState:
 
     world: World
     _is_active: bool = False
-    _dynamic_global_properties: DynamicGlobalPropertiesT | None = None
+    _dynamic_global_properties: DynamicGlobalProperties | None = None
 
-    async def get_dynamic_global_properties(self) -> DynamicGlobalPropertiesT:
+    async def get_dynamic_global_properties(self) -> DynamicGlobalProperties:
         if self._dynamic_global_properties is None:
             (await self.world.commands.update_node_data()).raise_if_error_occurred()
         assert self._dynamic_global_properties is not None
