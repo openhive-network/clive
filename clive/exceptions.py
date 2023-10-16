@@ -8,7 +8,7 @@ from clive.__private.logger import logger
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
 
-    CommunicationResponseT: TypeAlias = str | JsonT
+    CommunicationResponseT: TypeAlias = str | JsonT | list[JsonT]
 
 
 class CliveError(Exception):
@@ -38,19 +38,27 @@ class CommunicationError(CliveError):
         logger.error(message)
         super().__init__(message)
 
-    def get_response_error_message(self) -> str | None:
-        result = self.get_response_json()
+    def get_response_error_messages(self) -> list[str]:
+        result = self.get_response()
         if result is None:
-            return None
+            return []
 
-        message = result.get("error", {}).get("message", None)
-        return str(message) if message is not None else message
+        if isinstance(result, dict):
+            message = result.get("error", {}).get("message", None)
+            return [str(message)] if message is not None else []
 
-    def get_response_json(self) -> JsonT | None:
-        return self.response if isinstance(self.response, dict) else None
+        messages = []
+        for item in result:
+            message = item.get("error", {}).get("message", None)
+            if message is not None:
+                messages.append(str(message))
+        return messages
+
+    def get_response(self) -> JsonT | list[JsonT] | None:
+        return self.response if isinstance(self.response, dict | list) else None
 
     def _get_reply(self) -> str:
-        if (result := self.get_response_json()) is not None:
+        if (result := self.get_response()) is not None:
             return f"{result=}"
 
         if self.response is not None:

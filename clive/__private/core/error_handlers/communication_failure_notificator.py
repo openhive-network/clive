@@ -20,13 +20,15 @@ class CommunicationFailureNotificator(ErrorNotificator):
     def _determine_message(cls, exception: Exception) -> str:
         assert isinstance(exception, CommunicationError)
 
-        error_message = exception.get_response_error_message()
+        error_messages = exception.get_response_error_messages()
 
-        if not error_message:
+        if not error_messages:
             return str(exception)
 
+        replaced = []
         for searched, printed in cls.SEARCHED_AND_PRINTED_MESSAGES.items():
-            if searched in error_message:
-                return printed
+            for error_message in error_messages:
+                if searched in error_message:
+                    replaced.append((searched, printed))
 
-        return error_message
+        return str(replaced) if replaced else str(error_messages)
