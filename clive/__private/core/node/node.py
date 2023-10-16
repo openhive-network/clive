@@ -39,28 +39,30 @@ class BaseNode:
 
 
 class _DelayedResponseWrapper:
-    def __init__(self, url: str, request: str, expected_type: type[ExpectResultT]) -> None:
-        self.__dict__["_url"] = url
-        self.__dict__["_request"] = request
-        self.__dict__["_data"] = None
-        self.__dict__["_expected_type"] = expected_type
+    def __init__(self, url: Url, request: str, expected_type: type[ExpectResultT]) -> None:
+        super().__setattr__("_url", url)
+        super().__setattr__("_request", request)
+        super().__setattr__("_response", None)
+        super().__setattr__("_expected_type", expected_type)
 
     def __check_is_response_available(self) -> None:
         if self.__get_data() is None:
             raise ResponseNotReadyError
 
     def __get_data(self) -> Any:
-        _data = self.__dict__["_data"]
-        if _data is None:
+        response = super().__getattribute__("_response")
+        if response is None:
             return None
 
-        if isinstance(_data, JSONRPCResult):
-            return _data.result
+        if isinstance(response, JSONRPCResult):
+            return response.result
 
+        url = super().__getattribute__("_url")
+        request = super().__getattribute__("_request")
         raise CommunicationError(
-            url=self.__dict__["_url"],
-            request=self.__dict__["_request"],
-            response=_data,
+            url=url.as_string(),
+            request=request,
+            response=response,
         )
 
     def __setattr__(self, __name: str, __value: Any) -> None:
@@ -72,7 +74,8 @@ class _DelayedResponseWrapper:
         return getattr(self.__get_data(), __name)
 
     def _set_response(self, **kwargs: Any) -> None:
-        self.__dict__["_data"] = get_response_model(self.__dict__["_expected_type"], **kwargs)
+        expected_type = super().__getattribute__("_expected_type")
+        super().__setattr__("_response", get_response_model(expected_type, **kwargs))
 
 
 @dataclass(kw_only=True)
@@ -91,9 +94,7 @@ class _BatchNode(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         request.id_ = len(self.__batch)
         serialized_request = request.json(by_alias=True)
-        delayed_result = _DelayedResponseWrapper(
-            url=self.__url.as_string(), request=serialized_request, expected_type=expect_type
-        )
+        delayed_result = _DelayedResponseWrapper(url=self.__url, request=serialized_request, expected_type=expect_type)
         self.__batch.append(_BatchRequestResponseItem(request=serialized_request, delayed_result=delayed_result))
         return delayed_result  # type: ignore[return-value]
 
