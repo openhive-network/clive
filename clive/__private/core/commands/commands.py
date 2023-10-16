@@ -8,6 +8,7 @@ from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.import_key import ImportKey
@@ -17,7 +18,6 @@ from clive.__private.core.commands.save_json import SaveToFileAsJson
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.commands.update_node_data import UpdateNodeData
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
