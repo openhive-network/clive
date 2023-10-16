@@ -7,12 +7,11 @@ from datetime import datetime, timedelta, timezone
 from math import ceil
 from typing import TYPE_CHECKING, Final, cast
 
-from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
 )
-from clive.__private.stopwatch import Stopwatch
 from clive.__private.storage.accounts import Account
 from clive.exceptions import CommunicationError
 from clive.models import Asset
@@ -122,7 +121,7 @@ AccountSanitizedDataContainer = dict[Account, _AccountSanitizedData]
 
 
 @dataclass
-class UpdateNodeData(CommandWithResult[DynamicGlobalProperties]):
+class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedDataContainer, DynamicGlobalProperties]):
     node: Node
     accounts: list[Account] = field(default_factory=list)
 
@@ -131,16 +130,73 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalProperties]):
         if not self.accounts:
             return
 
-        with Stopwatch("harvesting"):
-            harvested_data = await self.__harvest_data_from_api()
+        await super()._execute()
 
-        with Stopwatch("sanitizing"):
-            sanitized_data = await self.__sanitize_data(harvested_data)
+    async def _harvest_data_from_api(self) -> HarvestedDataRaw:
+        non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
+        account_names = [acc.name for acc in self.accounts if acc.name]
+        harvested_data: HarvestedDataRaw = HarvestedDataRaw()
 
-        with Stopwatch("processing"):
-            await self.__process_data(sanitized_data)
+        async with self.node.batch(delay_error_on_data_access=True) as node:
+            harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
+            harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)
 
-    async def __process_data(self, data: AccountSanitizedDataContainer) -> None:
+            account_harvested_data = harvested_data.account_harvested_data
+            for account in self.accounts:
+                account_harvested_data[account].reputations = await node.api.reputation_api.get_account_reputations(
+                    account_lower_bound=account.name, limit=1
+                )
+
+                account_harvested_data[account].account_history = (
+                    await node.api.account_history_api.get_account_history(
+                        account=account.name,
+                        limit=1,
+                        operation_filter_low=non_virtual_operations_filter,
+                        include_reversible=True,
+                    )
+                )
+
+                account_harvested_data[account].decline_voting_rights = (
+                    await node.api.database_api.list_decline_voting_rights_requests(
+                        start=account.name, limit=1, order="by_account"
+                    )
+                )
+                account_harvested_data[account].change_recovery_account_requests = (
+                    await node.api.database_api.list_change_recovery_account_requests(
+                        start=account.name, limit=1, order="by_account"
+                    )
+                )
+                account_harvested_data[account].owner_history = await node.api.database_api.list_owner_histories(
+                    start=(account.name, _get_utc_epoch()), limit=1
+                )
+
+        return harvested_data
+
+    async def _sanitize_data(self, data: HarvestedDataRaw) -> AccountSanitizedDataContainer:
+        for core_account in self.__assert_core_accounts(data.core_accounts):
+            account = self.__get_account(core_account.name)
+            data.account_harvested_data[account].core = core_account
+
+        for rc_account in self.__assert_rc_accounts(data.rc_accounts):  # might be empty
+            account = self.__get_account(rc_account.account)
+            data.account_harvested_data[account].rc = rc_account
+
+        sanitized: AccountSanitizedDataContainer = {}
+        for account, unsanitized in data.account_harvested_data.items():
+            sanitized[account] = _AccountSanitizedData(
+                core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
+                rc=unsanitized.rc,
+                reputation=self.__assert_reputation_or_none(unsanitized.reputations, account.name),
+                account_history=self.__assert_account_history_or_none(unsanitized.account_history),
+                decline_voting_rights=self.__assert_declive_voting_rights(unsanitized.decline_voting_rights),
+                change_recovery_account_requests=self.__assert_change_recovery_account_requests(
+                    unsanitized.change_recovery_account_requests
+                ),
+                owner_history=self.__assert_owner_history(unsanitized.owner_history),
+            )
+        return sanitized
+
+    async def _process_data(self, data: AccountSanitizedDataContainer) -> DynamicGlobalProperties:
         downvote_vote_ratio: Final[int] = 4
 
         gdpo = self.result
@@ -188,70 +244,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalProperties]):
                 self.__update_manabar(gdpo, int(info.rc.max_rc), info.rc.rc_manabar, account.data.rc_manabar)
 
             account.data.last_refresh = self.__normalize_datetime(datetime.utcnow())
-
-    async def __harvest_data_from_api(self) -> HarvestedDataRaw:
-        non_virtual_operations_filter: Final[int] = 0x3FFFFFFFFFFFF
-        account_names = [acc.name for acc in self.accounts if acc.name]
-        harvested_data: HarvestedDataRaw = HarvestedDataRaw()
-
-        async with self.node.batch(delay_error_on_data_access=True) as node:
-            harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
-            harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)
-
-            account_harvested_data = harvested_data.account_harvested_data
-            for account in self.accounts:
-                account_harvested_data[account].reputations = await node.api.reputation_api.get_account_reputations(
-                    account_lower_bound=account.name, limit=1
-                )
-
-                account_harvested_data[account].account_history = (
-                    await node.api.account_history_api.get_account_history(
-                        account=account.name,
-                        limit=1,
-                        operation_filter_low=non_virtual_operations_filter,
-                        include_reversible=True,
-                    )
-                )
-
-                account_harvested_data[account].decline_voting_rights = (
-                    await node.api.database_api.list_decline_voting_rights_requests(
-                        start=account.name, limit=1, order="by_account"
-                    )
-                )
-                account_harvested_data[account].change_recovery_account_requests = (
-                    await node.api.database_api.list_change_recovery_account_requests(
-                        start=account.name, limit=1, order="by_account"
-                    )
-                )
-                account_harvested_data[account].owner_history = await node.api.database_api.list_owner_histories(
-                    start=(account.name, _get_utc_epoch()), limit=1
-                )
-
-        return harvested_data
-
-    async def __sanitize_data(self, data: HarvestedDataRaw) -> AccountSanitizedDataContainer:
-        for core_account in self.__assert_core_accounts(data.core_accounts):
-            account = self.__get_account(core_account.name)
-            data.account_harvested_data[account].core = core_account
-
-        for rc_account in self.__assert_rc_accounts(data.rc_accounts):  # might be empty
-            account = self.__get_account(rc_account.account)
-            data.account_harvested_data[account].rc = rc_account
-
-        sanitized: AccountSanitizedDataContainer = {}
-        for account, unsanitized in data.account_harvested_data.items():
-            sanitized[account] = _AccountSanitizedData(
-                core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
-                rc=unsanitized.rc,
-                reputation=self.__assert_reputation_or_none(unsanitized.reputations, account.name),
-                account_history=self.__assert_account_history_or_none(unsanitized.account_history),
-                decline_voting_rights=self.__assert_declive_voting_rights(unsanitized.decline_voting_rights),
-                change_recovery_account_requests=self.__assert_change_recovery_account_requests(
-                    unsanitized.change_recovery_account_requests
-                ),
-                owner_history=self.__assert_owner_history(unsanitized.owner_history),
-            )
-        return sanitized
+        return gdpo
 
     def __calculate_warnings(self, raw: _AccountSanitizedData) -> int:
         checks: list[Callable[[_AccountSanitizedData], bool]] = [
