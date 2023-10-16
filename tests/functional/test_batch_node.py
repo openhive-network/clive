@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 import pytest
 
@@ -33,7 +33,32 @@ async def test_batch_node_response_not_ready(init_node: tt.InitNode, world: Worl
 async def test_batch_node_error_response(init_node: tt.InitNode, world: World) -> None:  # noqa: ARG001
     with pytest.raises(CommunicationError, match="Invalid cast"):  # noqa: PT012
         async with world.node.batch() as node:
-            await node.api.database_api.find_accounts(accounts=123)  # type: ignore
+            await node.api.database_api.find_accounts(accounts=123)  # type: ignore[arg-type]
+
+
+async def test_batch_node_error_response_delayed(init_node: tt.InitNode, world: World) -> None:  # noqa: ARG001
+    async with world.node.batch(delay_error_on_data_access=True) as node:
+        response = await node.api.database_api.find_accounts(accounts=123)  # type: ignore[arg-type]
+
+    with pytest.raises(CommunicationError, match="Invalid cast"):
+        _ = response.accounts[0].name
+
+
+@pytest.mark.parametrize("order", ["first_good", "first_bad"])
+async def test_batch_node_mixed_request_delayed(
+    init_node: tt.InitNode, world: World, order: Literal["first_good", "first_bad"]  # noqa: ARG001
+) -> None:
+    async with world.node.batch(delay_error_on_data_access=True) as node:
+        if order == "first_good":
+            good_response = await node.api.database_api.get_dynamic_global_properties()
+            bad_response = await node.api.database_api.find_accounts(accounts=123)  # type: ignore[arg-type]
+        else:
+            bad_response = await node.api.database_api.find_accounts(accounts=123)  # type: ignore[arg-type]
+            good_response = await node.api.database_api.get_dynamic_global_properties()
+
+    assert good_response.head_block_number > 0
+    with pytest.raises(CommunicationError, match="Invalid cast"):
+        _ = bad_response.accounts[0].name
 
 
 async def test_batch_node_nothing_to_send(world: World) -> None:

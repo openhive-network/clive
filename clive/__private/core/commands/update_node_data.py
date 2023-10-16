@@ -143,7 +143,7 @@ class UpdateNodeData(CommandWithResult[DynamicGlobalPropertiesT]):
             lambda: UpdateNodeData._HarvestedData()
         )
 
-        async with self.node.batch() as node:
+        async with self.node.batch(delay_error_on_data_access=True) as node:
             core_accounts_raw = await node.api.database_api.find_accounts(accounts=account_names)
             rc_accounts_raw = await node.api.rc_api.find_rc_accounts(accounts=account_names)
 

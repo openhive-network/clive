@@ -43,9 +43,12 @@ class _DelayedResponseWrapper:
         super().__setattr__("_url", url)
         super().__setattr__("_request", request)
         super().__setattr__("_response", None)
+        super().__setattr__("_exception", None)
         super().__setattr__("_expected_type", expected_type)
 
     def __check_is_response_available(self) -> None:
+        if (exception := super().__getattribute__("_exception")) is not None:
+            raise exception
         if self.__get_data() is None:
             raise ResponseNotReadyError
 
@@ -77,6 +80,9 @@ class _DelayedResponseWrapper:
         expected_type = super().__getattribute__("_expected_type")
         super().__setattr__("_response", get_response_model(expected_type, **kwargs))
 
+    def _set_exception(self, exception: Exception) -> None:
+        super().__setattr__("_exception", exception)
+
 
 @dataclass(kw_only=True)
 class _BatchRequestResponseItem:
@@ -85,9 +91,11 @@ class _BatchRequestResponseItem:
 
 
 class _BatchNode(BaseNode):
-    def __init__(self, url: Url, communication: Communication) -> None:
+    def __init__(self, url: Url, communication: Communication, *, delay_error_on_data_access: bool = False) -> None:
         self.__url = url
         self.__communication = communication
+        self.__delay_error_on_data_access = delay_error_on_data_access
+
         self.__batch: list[_BatchRequestResponseItem] = []
         self.api = Apis(self)
 
@@ -100,13 +108,41 @@ class _BatchNode(BaseNode):
 
     async def __evaluate(self) -> None:
         query = "[" + ",".join([x.request for x in self.__batch]) + "]"
-        responses: list[dict[str, Any]] = await (
-            await self.__communication.arequest(url=self.__url.as_string(), data=query)
-        ).json()
-        assert len(responses) == len(self.__batch), "invalid amount of responses"
-        for response in responses:
-            request_id = int(response["id"])
-            self.__batch[request_id].delayed_result._set_response(**response)
+
+        try:
+            responses: list[dict[str, Any]] = await (
+                await self.__communication.arequest(url=self.__url.as_string(), data=query)
+            ).json()
+        except CommunicationError as error:
+            responses_from_error = error.get_response()
+
+            message = f"Invalid error response format: expected list, got {type(responses_from_error)}"
+            assert isinstance(responses_from_error, list), message
+            assert len(responses_from_error) == len(self.__batch), "Invalid amount of responses_from_error"
+
+            for response in responses_from_error:
+                request_id = int(response["id"])
+                if "error" in response:
+                    # creating a new instance so other responses won't be included in the error
+                    new_error = CommunicationError(
+                        url=error.url,
+                        request=self.__batch[request_id].request,
+                        response=response,
+                    )
+                    self.__get_batch_delayed_result(request_id)._set_exception(new_error)
+                else:
+                    self.__get_batch_delayed_result(request_id)._set_response(**response)
+
+            if not self.__delay_error_on_data_access:
+                raise
+        else:
+            assert len(responses) == len(self.__batch), "Invalid amount of responses"
+            for response in responses:
+                request_id = int(response["id"])
+                self.__get_batch_delayed_result(request_id)._set_response(**response)
+
+    def __get_batch_delayed_result(self, request_id: int) -> _DelayedResponseWrapper:
+        return self.__batch[request_id].delayed_result
 
     async def __aenter__(self) -> Self:
         return self
@@ -114,6 +150,7 @@ class _BatchNode(BaseNode):
     async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
         if not self.__is_anything_to_send():
             raise NothingToSendError
+
         await self.__evaluate()
 
     def __is_anything_to_send(self) -> bool:
@@ -127,7 +164,7 @@ class Node(BaseNode):
         self.api = Apis(self)
         self.__network_type = ""
 
-    def batch(self) -> _BatchNode:
+    def batch(self, *, delay_error_on_data_access: bool = False) -> _BatchNode:
         """
         In this mode all requests will be send as one request.
 
@@ -139,7 +176,7 @@ class Node(BaseNode):
             # dgpo.time # this will raise Error
         dgpo.time # this is legit call
         """
-        return _BatchNode(self.address, self.__communication)
+        return _BatchNode(self.address, self.__communication, delay_error_on_data_access=delay_error_on_data_access)
 
     @contextmanager
     def modified_connection_details(
