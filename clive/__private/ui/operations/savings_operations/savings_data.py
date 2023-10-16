@@ -1,24 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime
-from typing import TYPE_CHECKING
-
 from textual import work
 from textual.reactive import var
 
 from clive.__private.config import settings
+from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-
-if TYPE_CHECKING:
-    from clive.models.aliased import SavingsWithdrawals
-
-
-@dataclass
-class SavingsData:
-    pending_transfers: list[SavingsWithdrawals] | None = None
-    hbd_interest_rate: int = 1000
-    last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
 
 
 class SavingsDataProvider(CliveWidget):
@@ -40,22 +27,16 @@ class SavingsDataProvider(CliveWidget):
 
     @work(name="savings data update worker")
     async def update_savings_data(self) -> None:
-        working_account_name = self.app.world.profile_data.working_account.name
+        account_name = self.app.world.profile_data.working_account.name
+        wrapper = await self.app.world.commands.retrieve_savings_data(account_name=account_name)
 
-        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
-        response_db_api = await self.app.world.node.api.database_api.find_accounts(accounts=[working_account_name])
-        pending_transfers = await self.app.world.node.api.database_api.find_savings_withdrawals(
-            account=working_account_name
-        )
+        if wrapper.error_occurred:
+            self.notify(f"Failed to retrieve savings data: {wrapper.error}", severity="error")
+            return
 
-        new_savings_data = SavingsData(
-            hbd_interest_rate=gdpo.hbd_interest_rate,
-            last_interest_payment=response_db_api.accounts[0].savings_hbd_last_interest_payment,
-            pending_transfers=pending_transfers.withdrawals,
-        )
-
-        if self.content != new_savings_data:
-            self.content = new_savings_data
+        result = wrapper.result_or_raise
+        if self.content != result:
+            self.content = result
 
     def stop(self) -> None:
         self.interval.stop()

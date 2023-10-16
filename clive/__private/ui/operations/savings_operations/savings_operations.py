@@ -13,7 +13,7 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
-from clive.__private.ui.operations.savings_operations.savings_data import SavingsData, SavingsDataProvider
+from clive.__private.ui.operations.savings_operations.savings_data import SavingsDataProvider
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
+    from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
     from clive.models.aliased import SavingsWithdrawals
 
 

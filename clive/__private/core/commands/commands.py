@@ -8,6 +8,7 @@ from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
@@ -164,6 +165,11 @@ class Commands(Generic[WorldT]):
         if result.success:
             self._world.app_state._dynamic_global_properties = result.result_or_raise
         return result
+
+    async def retrieve_savings_data(self, *, account_name: str) -> CommandWithResultWrapper[SavingsData]:
+        return await self.__surround_with_exception_handlers(
+            SavingsDataRetrieval(node=self._world.node, account_name=account_name)
+        )
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[misc]
