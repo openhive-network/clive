@@ -40,6 +40,14 @@ class NoLastlyUsedProfileError(ProfileCouldNotBeLoadedError):
     """Raised when no lastly used profile exists."""
 
 
+class ProfileSaveError(ProfileDataError):
+    """Raised when a profile could not be saved."""
+
+
+class ProfileAlreadyExistsError(ProfileDataError):
+    """Raised when a profile already exists."""
+
+
 class Cart(list[Operation]):
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
@@ -69,6 +77,8 @@ class ProfileData(Context):
         else:
             self.backup_node_addresses = self.__default_node_address()
             self.__node_address = self.backup_node_addresses[0]
+
+        self.__first_time_save = True
 
     @property
     def working_account(self) -> WorkingAccount:
@@ -110,6 +120,13 @@ class ProfileData(Context):
         return Path(config.settings.data_path) / "data/profile"
 
     def save(self) -> None:
+        if self.__first_time_save and self.name in self.list_profiles():
+            raise ProfileAlreadyExistsError(
+                f"Profile `{self.name}` already exists. Please choose another name, different than"
+                f" {self.list_profiles()}"
+            )
+        self.__first_time_save = False
+
         clive = get_clive().app_instance()
 
         if clive.is_launched:

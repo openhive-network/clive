@@ -4,7 +4,8 @@ import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.cli_error import CLIError
+from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData
 
 
 @dataclass(kw_only=True)
@@ -32,4 +33,7 @@ class ProfileCreate(ExternalCLICommand):
     name: str
 
     async def run(self) -> None:
-        ProfileData(self.name).save()
+        try:
+            ProfileData(self.name).save()
+        except ProfileAlreadyExistsError as error:
+            raise CLIError(str(error)) from None
