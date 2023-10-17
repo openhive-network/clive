@@ -3,20 +3,14 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli_error import CLIError
-from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
+from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
+from clive.__private.core.profile_data import ProfileData
 
 
 @dataclass(kw_only=True)
-class ProfileShow(ExternalCLICommand):
-    profile: str
-
+class ProfileShow(ProfileBasedCommand):
     async def run(self) -> None:
-        try:
-            profile = ProfileData.load(self.profile, auto_create=False)
-        except ProfileDoesNotExistsError:
-            raise CLIError(f"Profile `{self.profile}` does not exists.") from None
-
+        profile = self._load_profile()
         typer.echo(f"Profile is: {profile.name}")
 
         if profile.is_working_account_set():
