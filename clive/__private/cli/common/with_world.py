@@ -1,12 +1,12 @@
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Concatenate, ParamSpec
+from typing import TYPE_CHECKING
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import CommonBaseModel
+from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFuncT, PreWrapFuncT
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -14,18 +14,12 @@ if TYPE_CHECKING:
     from clive.core.url import Url
 
 
-P = ParamSpec("P")
-
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], Awaitable[None]]
-PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
-
-
 class WithWorld(CommonBaseModel):
     profile_name: str = options.profile_name_option
     world: "World"
 
     @classmethod
-    def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[P]], PostWrapFuncT[P]]:  # type: ignore[override]
+    def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[DecoratorParams]], PostWrapFuncT[DecoratorParams]]:  # type: ignore[override]
         """
         Decorator to be used on commands that need a world.
 
@@ -38,7 +32,7 @@ class WithWorld(CommonBaseModel):
         use_beekeeper: Set this to False when there is no need to use a beekeeper.
         """
 
-        def outer(func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
+        def outer(func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
             common = cls.construct(world=None)  # type: ignore[arg-type]
 
             @merge_args(func)
@@ -46,8 +40,8 @@ class WithWorld(CommonBaseModel):
             def inner(
                 ctx: typer.Context,
                 profile: str = common.profile_name,
-                *args: P.args,
-                **kwargs: P.kwargs,
+                *args: DecoratorParams.args,
+                **kwargs: DecoratorParams.kwargs,
             ) -> None:
                 from clive.__private.core.world import TyperWorld
 
@@ -73,7 +67,7 @@ class WithWorld(CommonBaseModel):
         return outer
 
     @staticmethod
-    def __get_beekeeper_remote(kwargs: P.kwargs) -> "Url | None":
+    def __get_beekeeper_remote(kwargs: DecoratorParams.kwargs) -> "Url | None":
         from clive.core.url import Url
 
         beekeeper_remote: str | None = kwargs.get("beekeeper_remote", None)

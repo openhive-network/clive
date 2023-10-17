@@ -1,24 +1,17 @@
-from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
+from typing import TYPE_CHECKING, Any, Optional
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import CommonBaseModel
+from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFuncT, PreWrapFuncT
 from clive.__private.cli_error import CLIError
 from clive.__private.core._async import asyncio_run
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
-
-
-P = ParamSpec("P")
-
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], Awaitable[None]]
-PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class OperationCommon(CommonBaseModel):
@@ -37,7 +30,7 @@ class OperationCommon(CommonBaseModel):
     world: "World"
 
     @classmethod
-    def decorator(cls, func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
+    def decorator(cls, func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
         common = cls.construct(world=None)  # type: ignore[arg-type]
 
         @merge_args(func)
@@ -50,7 +43,7 @@ class OperationCommon(CommonBaseModel):
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
             broadcast: bool = common.broadcast,
             save_file: Optional[str] = common.save_file,  # noqa: ARG001
-            *args: P.args,
+            *args: DecoratorParams.args,
             **kwargs: Any,
         ) -> None:
             from clive.__private.core.world import TyperWorld

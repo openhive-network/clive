@@ -1,11 +1,16 @@
-from abc import ABC
-from collections.abc import Callable
-from typing import Any
+from abc import ABC, abstractmethod
+from collections.abc import Awaitable, Callable
+from typing import Concatenate, ParamSpec
 
 import typer
 
 from clive.core.url import Url
 from clive.models.base import CliveBaseModel
+
+DecoratorParams = ParamSpec("DecoratorParams")
+
+PreWrapFuncT = Callable[Concatenate[typer.Context, DecoratorParams], Awaitable[None]]
+PostWrapFuncT = Callable[Concatenate[typer.Context, DecoratorParams], None]
 
 
 class CommonBaseModel(CliveBaseModel, ABC):
@@ -13,7 +18,8 @@ class CommonBaseModel(CliveBaseModel, ABC):
         arbitrary_types_allowed: bool = True
 
     @classmethod
-    def decorator(cls, func: Callable[..., Any]) -> Any:
+    @abstractmethod
+    def decorator(cls, func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
         """Should be overridden in subclasses."""
 
     @staticmethod

@@ -1,22 +1,15 @@
-from collections.abc import Awaitable, Callable
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Concatenate, Optional, ParamSpec
+from typing import TYPE_CHECKING, Any, Optional
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import CommonBaseModel
+from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFuncT, PreWrapFuncT
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-
-
-P = ParamSpec("P")
-
-PreWrapFuncT = Callable[Concatenate[typer.Context, P], Awaitable[None]]
-PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithBeekeeper(CommonBaseModel):
@@ -24,7 +17,7 @@ class WithBeekeeper(CommonBaseModel):
     beekeeper: "Beekeeper"
 
     @classmethod
-    def decorator(cls, func: PreWrapFuncT[P]) -> PostWrapFuncT[P]:
+    def decorator(cls, func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
         common = cls.construct(beekeeper=None)  # type: ignore[arg-type]
 
         @merge_args(func)
