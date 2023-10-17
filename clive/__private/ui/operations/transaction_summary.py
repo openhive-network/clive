@@ -8,6 +8,7 @@ from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
 from clive.__private.core.commands.sign import TransactionAlreadySignedError
+from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.get_css import get_relative_css_path
@@ -51,6 +52,26 @@ class ActionsSpacer(Static):
 
 class KeyHint(Label):
     """Hint for the authority."""
+
+
+class AlreadySignedHint(Label):
+    """Hint about the transaction."""
+
+    DEFAULT_CSS = """
+    AlreadySignedHint {
+        margin: 1 0;
+    }
+    """
+
+    def __init__(self, transaction: Transaction | None = None):
+        message = (
+            "(This transaction is already signed - expiration"
+            f" {humanize.humanize_datetime(transaction.expiration)} UTC)"
+            if transaction is not None
+            else "No transaction was given"
+        )
+        super().__init__(message)
+        self.display = transaction.is_signed() if transaction is not None else False
 
 
 class TransactionHint(Label):
@@ -102,6 +123,7 @@ class TransactionSummary(BaseScreen):
                     if not self.__loaded_transaction or not self.__loaded_transaction.is_signed():
                         yield KeyHint("Sign with key:")
                         yield self.__select_key
+                    yield AlreadySignedHint(self.__loaded_transaction)
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
