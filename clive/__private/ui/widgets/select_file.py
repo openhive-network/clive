@@ -86,8 +86,11 @@ class SelectFile(BaseScreen):
         if not self.__is_valid():
             self.notify("Failed the validation process! Could not continue.", severity="error")
             return
-        self.app.post_message_to_everyone(self._create_saved_message())
+        self._post_saved_message()
         self.app.pop_screen()
+
+    def _post_saved_message(self) -> None:
+        self.app.post_message_to_everyone(self._create_saved_message())
 
     def _create_saved_message(self) -> Saved:
         return self.Saved(self.file_path)
