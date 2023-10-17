@@ -124,7 +124,6 @@ async def prepare_profile(node: tt.InitNode) -> None:
             PrivateKeyAliased(value=WORKING_ACCOUNT.private_key._value, alias=f"{WORKING_ACCOUNT.name}_key")
         )
         await world.commands.sync_data_with_beekeeper()
-        world.profile_data.save()
 
 
 def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
