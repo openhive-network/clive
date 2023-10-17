@@ -15,6 +15,9 @@ from clive.models import Operation
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
+    from types import TracebackType
+
+    from typing_extensions import Self
 
     from clive.__private.storage.accounts import Account, WorkingAccount
 
@@ -79,6 +82,12 @@ class ProfileData(Context):
             self.__node_address = self.backup_node_addresses[0]
 
         self.__first_time_save = True
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
+        self.save()
 
     @property
     def working_account(self) -> WorkingAccount:
@@ -204,6 +213,12 @@ class ProfileData(Context):
 
             stored_profile: ProfileData | None = db.get(name, None)
             return stored_profile if stored_profile else create_new_profile(name)
+
+    @classmethod
+    @contextmanager
+    def load_with_auto_save(cls, name: str = "", *, auto_create: bool = True) -> Iterator[ProfileData]:
+        with cls.load(name, auto_create=auto_create) as profile_data:
+            yield profile_data
 
     @classmethod
     def list_profiles(cls) -> list[str]:
