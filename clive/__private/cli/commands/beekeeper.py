@@ -8,6 +8,7 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
+from clive.__private.cli_error import CLIError
 from clive.__private.core.beekeeper import Beekeeper
 
 
@@ -25,11 +26,11 @@ class BeekeeperSpawn(ExternalCLICommand):
 
     async def run(self) -> None:
         if Beekeeper.is_already_running_locally():
-            typer.echo(
+            message = (
                 f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
                 f" {Beekeeper.get_pid_from_file()}"
             )
-            raise typer.Exit(errno.EEXIST)
+            raise CLIError(message, errno.EEXIST)
 
         typer.echo("Launching beekeeper...")
 

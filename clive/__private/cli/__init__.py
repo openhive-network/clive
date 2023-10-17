@@ -30,4 +30,3 @@ def main(
         from clive import __version__
 
         typer.echo(f"CLIVE Version: {__version__}")
-        raise typer.Exit

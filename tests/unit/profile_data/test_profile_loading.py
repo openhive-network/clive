@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
-import typer
 
+from clive.__private.cli_error import CLIError
 from clive.__private.core.profile_data import NoLastlyUsedProfileError
 from clive.__private.core.world import TyperWorld, World
 
@@ -69,7 +69,7 @@ def test_loading_non_existing_profile_with_auto_create_disabled() -> None:
     exception_message = f"Profile `{profile_name}` does not exist."
 
     # ACT & ASSERT
-    with pytest.raises(typer.BadParameter) as error:
+    with pytest.raises(CLIError) as error:
         TyperWorld(profile_name)
     assert exception_message in str(error.value)
 
