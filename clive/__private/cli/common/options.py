@@ -37,7 +37,7 @@ def get_default_or_make_required(value: Any) -> Any:
     return ... if value is None else value
 
 
-profile_option = typer.Option(
+profile_name_option = typer.Option(
     get_default_or_make_required(_get_default_profile_name()),
     help="The profile to use. (defaults to the last used profile)",
     show_default=bool(_get_default_profile_name()),

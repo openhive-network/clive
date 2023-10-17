@@ -21,7 +21,7 @@ PostWrapFuncT = Callable[Concatenate[typer.Context, P], None]
 
 
 class WithWorld(CommonBaseModel):
-    profile: str = options.profile_option
+    profile_name: str = options.profile_name_option
     world: "World"
 
     @classmethod
@@ -45,7 +45,7 @@ class WithWorld(CommonBaseModel):
             @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
             def inner(
                 ctx: typer.Context,
-                profile: str = common.profile,
+                profile: str = common.profile_name,
                 *args: P.args,
                 **kwargs: P.kwargs,
             ) -> None:

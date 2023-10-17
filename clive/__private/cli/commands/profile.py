@@ -21,10 +21,10 @@ class ProfileList(ExternalCLICommand):
 
 @dataclass(kw_only=True)
 class ProfileCreate(ExternalCLICommand):
-    name: str
+    profile_name: str
 
     async def run(self) -> None:
         try:
-            ProfileData(self.name).save()
+            ProfileData(self.profile_name).save()
         except ProfileAlreadyExistsError as error:
             raise CLIError(str(error)) from None

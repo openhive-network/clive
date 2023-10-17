@@ -28,7 +28,7 @@ class OperationCommon(CommonBaseModel):
     Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597.
     """
 
-    profile: str = options.profile_option
+    profile_name: str = options.profile_name_option
     password: str = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
     sign: str = typer.Option(..., help="Key alias to sign the transaction with.", show_default=False)
     beekeeper_remote: Optional[str] = options.beekeeper_remote_option
@@ -44,7 +44,7 @@ class OperationCommon(CommonBaseModel):
         @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
         def wrapper(
             ctx: typer.Context,
-            profile: str = common.profile,
+            profile_name: str = common.profile_name,
             password: str = common.password,
             sign: str = common.sign,  # noqa: ARG001
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
@@ -65,10 +65,10 @@ class OperationCommon(CommonBaseModel):
 
             async def impl() -> None:
                 async with TyperWorld(
-                    profile_name=profile,
+                    profile_name=profile_name,
                     beekeeper_remote_endpoint=beekeeper_remote_endpoint,
                 ) as world:
-                    cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
+                    cls._assert_correct_profile_is_loaded(world.profile_data.name, profile_name)
                     ctx.params.update(world=world)
                     try:
                         await world.commands.activate(password=password)

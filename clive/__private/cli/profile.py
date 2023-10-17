@@ -8,12 +8,12 @@ profile_ = typer.Typer(help="Manage your profile.")
 
 @profile_.command()
 def show(
-    profile: str = options.profile_option,
+    profile_name: str = options.profile_name_option,
 ) -> None:
     """Show profile information."""
     from clive.__private.cli.commands.profile import ProfileShow
 
-    asyncio_run(ProfileShow(profile=profile).run())
+    asyncio_run(ProfileShow(profile_name=profile_name).run())
 
 
 @profile_.command()
@@ -26,9 +26,9 @@ def list_all() -> None:
 
 @profile_.command()
 def create(
-    name: str = typer.Option(..., help="The name of the profile.", show_default=False),
+    profile_name: str = typer.Option(..., help="The name of the new profile.", show_default=False),
 ) -> None:
     """Create a new profile."""
     from clive.__private.cli.commands.profile import ProfileCreate
 
-    asyncio_run(ProfileCreate(name=name).run())
+    asyncio_run(ProfileCreate(profile_name=profile_name).run())
