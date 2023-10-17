@@ -1,3 +1,4 @@
+/*common parts of governance*/
 Governance Tab {
     width: 1fr;
 }
@@ -12,11 +13,12 @@ Governance Witnesses Static {
     text-align: center;
 }
 
-/* witnesses */
+/* WITNESSES */
 Governance Witnesses {
     layout: horizontal;
 }
 
+/*custom checkbox to vote for witnesses*/
 Governance WitnessCheckbox Checkbox {
     padding: 0;
     border: none;
@@ -42,14 +44,9 @@ Governance WitnessCheckbox:focus Label {
     text-style: bold reverse;
 }
 
+/*table to modify votes for the witnesses*/
 Governance WitnessesList {
     height: 30;
-}
-
-Governance WitnessesTable {
-    width: 55%;
-    height: auto;
-    margin-left: 9;
 }
 
 Governance WitnessesList Witness {
@@ -94,6 +91,13 @@ Governance #witnesses-headline {
     background: rgb(83, 158, 255);
 }
 
+Governance WitnessesTable {
+    width: 55%;
+    height: auto;
+    margin-left: 9;
+}
+
+/* a table with the actions to be performed after the creation of the operation */
 Governance WitnessesActions {
     width: 40%;
     margin-left: 1;
