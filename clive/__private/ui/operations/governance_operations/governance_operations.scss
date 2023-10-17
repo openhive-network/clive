@@ -51,7 +51,7 @@ Governance WitnessesList {
 
 Governance WitnessesList Witness {
     grid-size: 5 1;
-    grid-columns: 15% 16% 29% 20% 20%;
+    grid-columns: 17% 14% 29% 20% 20%;
 }
 
 Governance Witness .witness-name {
@@ -72,7 +72,7 @@ Governance Witness .witness-details {
 
 Governance WitnessesListHeader {
     grid-size: 5 1;
-    grid-columns: 15% 16% 29% 20% 20%;
+    grid-columns: 17% 14% 29% 20% 20%;
 }
 
 Governance WitnessesListHeader #rank-column {
@@ -92,9 +92,8 @@ Governance #witnesses-headline {
 }
 
 Governance WitnessesTable {
-    width: 55%;
+    width: 45%;
     height: 30;
-    margin-left: 9;
 }
 
 Governance WitnessesTable:focus {
@@ -144,4 +143,20 @@ Governance WitnessActionRow {
 
 Governance WitnessesActions #name-and-action {
     height: 1;
+}
+
+/* manual vote for witness */
+Governance WitnessManualVote {
+    width: 30%;
+    height: 9;
+}
+
+Governance CliveButton {
+    background: green;
+    width: 1fr;
+    margin-top: 1;
+}
+
+CliveButton:focus {
+    text-style: bold reverse;
 }

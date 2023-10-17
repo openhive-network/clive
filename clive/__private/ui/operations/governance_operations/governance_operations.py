@@ -12,8 +12,10 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceData, GovernanceDataProvider
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.inputs.witness_input import WitnessInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.__private.ui.widgets.witness_checkbox import WitnessCheckbox, WitnessCheckBoxChanged
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
@@ -57,6 +59,18 @@ class Witness(Grid):
             witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
             return
         witnesses_actions.unmount_witness(name=self.__witness.name)
+
+
+class WitnessManualVote(Vertical):
+    def __init__(self) -> None:
+        super().__init__()
+        self.__label, self.__input = WitnessInput().compose()
+
+    def compose(self) -> ComposeResult:
+        yield Static("Can't find a witness?")
+        yield Static("Type name and click vote!")
+        yield self.__input
+        yield CliveButton("Vote")
 
 
 class WitnessActionRow(Horizontal):
@@ -187,6 +201,7 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
     def compose(self) -> ComposeResult:
         yield WitnessesActions()
         yield WitnessesTable(self.__provider.content.witnesses)
+        yield WitnessManualVote()
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
