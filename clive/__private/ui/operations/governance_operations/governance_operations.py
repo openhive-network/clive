@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, Grid, Horizontal, VerticalScroll
+from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.widgets import Label, Static
 
@@ -76,7 +76,6 @@ class WitnessesActions(VerticalScroll):
     ----------
     __actions_to_perform (dict): A dictionary with the witness name as the key and the action to perform (vote/unvote, represented as a boolean value).
     """
-
     def __init__(self) -> None:
         super().__init__()
         self.__actions_to_perform: dict[str, bool] = {}
@@ -100,7 +99,7 @@ class WitnessesActions(VerticalScroll):
         return self.__actions_to_perform
 
 
-class WitnessesList(Container, CliveWidget):
+class WitnessesList(Vertical, CliveWidget):
     def __init__(self, witnesses: list[WitnessT] | None, first_witness_index: int) -> None:
         super().__init__()
         self.__witnesses = witnesses
@@ -124,7 +123,7 @@ class WitnessesListHeader(Grid):
         yield Static()
 
 
-class WitnessesTable(Container, CliveWidget):
+class WitnessesTable(Vertical, CliveWidget):
     can_focus = True
 
     def __init__(self, witnesses: list[WitnessT] | None):
@@ -181,8 +180,8 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
         self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        yield WitnessesTable(self.__provider.content.witnesses)
         yield WitnessesActions()
+        yield WitnessesTable(self.__provider.content.witnesses)
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)

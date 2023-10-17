@@ -46,7 +46,7 @@ Governance WitnessCheckbox:focus Label {
 
 /*table to modify votes for the witnesses*/
 Governance WitnessesList {
-    height: 30;
+    height: auto;
 }
 
 Governance WitnessesList Witness {
@@ -93,13 +93,21 @@ Governance #witnesses-headline {
 
 Governance WitnessesTable {
     width: 55%;
-    height: auto;
+    height: 30;
     margin-left: 9;
+}
+
+Governance WitnessesTable:focus {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+Governance WitnessesTable Input {
+    height: 2;
 }
 
 /* a table with the actions to be performed after the creation of the operation */
 Governance WitnessesActions {
-    width: 40%;
+    width: 25%;
     margin-left: 1;
     max-height: 30;
 }
