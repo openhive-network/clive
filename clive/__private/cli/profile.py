@@ -32,3 +32,16 @@ def create(
     from clive.__private.cli.commands.profile import ProfileCreate
 
     asyncio_run(ProfileCreate(profile_name=profile_name).run())
+
+
+@profile_.command()
+@WithProfile.decorator
+async def set_node(
+    ctx: typer.Context,
+    node_address: str = typer.Option(..., help="The address of the node to use.", show_default=False),
+) -> None:
+    """Set the node address for the profile."""
+    from clive.__private.cli.commands.profile import ProfileSetNode
+
+    common = WithProfile(**ctx.params)
+    await ProfileSetNode(profile_data=common.profile_data, node_address=node_address).run()

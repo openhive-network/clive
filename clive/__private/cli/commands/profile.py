@@ -3,9 +3,11 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
+from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
 from clive.__private.cli_error import CLIError
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData
+from clive.core.url import Url
 
 
 @dataclass(kw_only=True)
@@ -35,3 +37,12 @@ class ProfileCreate(ExternalCLICommand):
             ProfileData(self.profile_name).save()
         except ProfileAlreadyExistsError as error:
             raise CLIError(str(error)) from None
+
+
+@dataclass(kw_only=True)
+class ProfileSetNode(ProfileBasedCommand):
+    node_address: str
+
+    async def run(self) -> None:
+        url = Url.parse(self.node_address)
+        self.profile_data._node_address = url
