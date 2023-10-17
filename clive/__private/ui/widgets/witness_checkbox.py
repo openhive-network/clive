@@ -35,10 +35,12 @@ class WitnessCheckbox(CliveWidget, can_focus=True):
 
     BINDINGS = [Binding("enter", "press", "Press Button", show=False)]
 
-    def __init__(self, is_voted: bool = False) -> None:
+    def __init__(self, is_voted: bool = False, initial_state: bool = False) -> None:
         super().__init__()
         self.__is_voted = is_voted
-        self.__checkbox = CheckBoxWithoutFocus()
+        self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
+        if initial_state:
+            self.add_class("-voted" if not self.__is_voted else "-unvoted")
 
     def compose(self) -> ComposeResult:
         yield self.__checkbox
@@ -64,6 +66,10 @@ class WitnessCheckbox(CliveWidget, can_focus=True):
     @property
     def checkbox_state(self) -> bool:
         return self.__checkbox.value
+
+    @checkbox_state.setter
+    def checkbox_state(self, value: bool) -> None:
+        self.__checkbox.value = value
 
     @on(Checkbox.Changed)
     def checkbox_state_changed(self) -> None:

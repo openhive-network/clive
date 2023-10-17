@@ -33,7 +33,12 @@ class Witness(Grid):
         super().__init__()
         self.__witness = witness
 
-        self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted)
+        try:
+            self.app.query_one(f"#{witness.name}-witness")
+        except NoMatches:
+            self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted)
+        else:
+            self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted, initial_state=True)
 
     def compose(self) -> ComposeResult:
         yield self.__witness_checkbox
