@@ -10,9 +10,9 @@ list_ = typer.Typer(help="List various things.")
 @list_.command()
 def profiles() -> None:
     """List all stored profiles."""
-    from clive.__private.cli.commands.profile import ProfileList
+    from clive.__private.cli.commands.list import ListProfiles
 
-    asyncio_run(ProfileList().run())
+    asyncio_run(ListProfiles().run())
 
 
 @list_.command()
