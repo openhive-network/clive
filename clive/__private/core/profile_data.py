@@ -155,7 +155,7 @@ class ProfileData(Context):
 
         Raises:
         ------
-        ProfileCouldNotBeLoadedError: If the profile could not be loaded.
+        NoLastlyUsedProfileError: If name is empty but no lastly used profile exists.
         ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 

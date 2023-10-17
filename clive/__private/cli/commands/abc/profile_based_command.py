@@ -13,7 +13,10 @@ class ProfileBasedCommand(ExternalCLICommand, ABC):
     profile: str
 
     def _load_profile(self) -> ProfileData:
+        if not self.profile:
+            raise CLIError("No profile specified.")
+
         try:
             return ProfileData.load(self.profile, auto_create=False)
-        except ProfileDoesNotExistsError:
-            raise CLIError(f"Profile `{self.profile}` does not exists.") from None
+        except ProfileDoesNotExistsError as error:
+            raise CLIError(str(error)) from None
