@@ -49,5 +49,8 @@ class SelectFileToSaveTransaction(SelectFile):
             yield self.__binary_checkbox
             yield self.__signed_checkbox
 
+    def _post_saved_message(self) -> None:
+        self.app.post_message_to_screen("TransactionSummary", self._create_saved_message())
+
     def _create_saved_message(self) -> Saved:
         return self.Saved(file_path=self.file_path, binary=self.is_binary, signed=self.is_signed)

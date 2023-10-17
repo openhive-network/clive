@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
+from clive.__private.core.commands.sign import TransactionAlreadySignedError
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.get_css import get_relative_css_path
@@ -86,9 +87,10 @@ class TransactionSummary(BaseScreen):
         Binding("f10", "broadcast", "Broadcast"),
     ]
 
-    def __init__(self) -> None:
+    def __init__(self, *, loaded_transaction: Transaction | None = None) -> None:
         super().__init__()
 
+        self.__loaded_transaction = loaded_transaction
         self.__scrollable_part = ScrollablePart()
         self.__select_key = SelectKey()
 
@@ -97,12 +99,13 @@ class TransactionSummary(BaseScreen):
             with StaticPart():
                 yield BigTitle("transaction summary")
                 with ActionsContainer():
-                    yield KeyHint("Sign with key:")
-                    yield self.__select_key
+                    if not self.__loaded_transaction or not self.__loaded_transaction.is_signed():
+                        yield KeyHint("Sign with key:")
+                        yield self.__select_key
 
                 yield TransactionHint("This transaction will contain following operations in the presented order:")
             with self.__scrollable_part:
-                for idx, operation in enumerate(self.app.world.profile_data.cart):
+                for idx, operation in enumerate(self.__get_operations()):
                     yield OperationItem(
                         self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
                     )
@@ -115,12 +118,13 @@ class TransactionSummary(BaseScreen):
         should_be_binary = event.binary
         should_be_signed = event.signed
 
-        transaction: Transaction | None = await self.__build_transaction()
+        transaction = await self.__get_transaction()
 
         if should_be_signed:
-            transaction = await self.__try_to_sign_transaction(transaction)
-            if transaction is None:
+            tx = await self.__try_to_sign_transaction(transaction)
+            if tx is None:
                 return
+            transaction = tx
 
         assert transaction is not None, "Transaction should be built at this point!"
         await self.app.world.commands.save_to_file(transaction=transaction, path=file_path, binary=should_be_binary)
@@ -140,14 +144,19 @@ class TransactionSummary(BaseScreen):
 
     @CliveScreen.try_again_after_activation()
     async def __broadcast(self) -> None:
-        signed_transaction = await self.__try_to_sign_transaction()
-        if signed_transaction is None:
+        transaction = await self.__get_transaction()
+
+        if not transaction.is_signed():
+            tx = await self.__try_to_sign_transaction(transaction)
+            if tx is None:
+                return
+            transaction = tx
+
+        if not (await self.app.world.commands.broadcast(transaction=transaction)).success:
             return
 
-        if not (await self.app.world.commands.broadcast(transaction=signed_transaction)).success:
-            return
-
-        self.__clear_all()
+        if not self.__loaded_transaction:
+            self.__clear_all()
         self.action_dashboard()
         self.notify("Transaction broadcast successfully!")
 
@@ -158,31 +167,38 @@ class TransactionSummary(BaseScreen):
         self.app.world.profile_data.cart.clear()
         self.__scrollable_part.add_class("-hidden")
 
-    async def __sign_transaction(self, transaction: Transaction | None = None) -> Transaction:
-        transaction_to_sign = transaction or await self.__build_transaction()
-
+    async def __sign_transaction(self, transaction: Transaction) -> Transaction:
         try:
             value = self.__select_key.value
         except NoItemSelectedError as error:
-            raise TransactionCouldNotBeSignedError(transaction_to_sign, "No key was selected!") from error
-        else:
-            return (
-                await self.app.world.commands.sign(transaction=transaction_to_sign, sign_with=value)
-            ).result_or_raise
+            raise TransactionCouldNotBeSignedError(transaction, "No key was selected!") from error
+
+        try:
+            return (await self.app.world.commands.sign(transaction=transaction, sign_with=value)).result_or_raise
+        except TransactionAlreadySignedError as error:
+            raise TransactionCouldNotBeSignedError(transaction, "Transaction is already signed!") from error
 
     async def __build_transaction(self) -> Transaction:
         return (
             await self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)
         ).result_or_raise
 
-    async def __try_to_sign_transaction(self, transaction: Transaction | None = None) -> Transaction | None:
+    async def __try_to_sign_transaction(self, transaction: Transaction) -> Transaction | None:
         try:
             return await self.__sign_transaction(transaction)
         except TransactionCouldNotBeSignedError as error:
             self.notify(str(error), severity="error")
             return None
 
+    async def __get_transaction(self) -> Transaction:
+        return self.__loaded_transaction or await self.__build_transaction()
+
+    def __get_operations(self) -> list[Operation | Hf26OperationRepresentation]:
+        if self.__loaded_transaction:
+            return self.__loaded_transaction.operations
+        return list(self.app.world.profile_data.cart)
+
     @staticmethod
-    def __get_operation_representation_json(operation: Operation) -> str:
+    def __get_operation_representation_json(operation: Operation | Hf26OperationRepresentation) -> str:
         representation: Hf26OperationRepresentation = convert_to_representation(operation=operation)
         return representation.json(by_alias=True)
