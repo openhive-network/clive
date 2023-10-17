@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 class TransactionCouldNotBeSignedError(CliveError):
     def __init__(self, transaction: Transaction, reason: str = "") -> None:
         self.transaction = transaction
-        super().__init__(f"Transaction could not be signed: {transaction}, reason: {reason}")
+        super().__init__(f"Transaction could not be signed. Reason: {reason}")
 
 
 class StaticPart(Static):
