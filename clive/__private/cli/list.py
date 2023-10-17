@@ -2,8 +2,17 @@ import typer
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.with_world import WithWorld
+from clive.__private.core._async import asyncio_run
 
 list_ = typer.Typer(help="List various things.")
+
+
+@list_.command()
+def profiles() -> None:
+    """List all stored profiles."""
+    from clive.__private.cli.commands.profile import ProfileList
+
+    asyncio_run(ProfileList().run())
 
 
 @list_.command()
