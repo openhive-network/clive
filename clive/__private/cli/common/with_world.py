@@ -6,7 +6,7 @@ import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFuncT, PreWrapFuncT
+from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ class WithWorld(CommonBaseModel):
     world: "World"
 
     @classmethod
-    def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFuncT[DecoratorParams]], PostWrapFuncT[DecoratorParams]]:  # type: ignore[override]
+    def decorator(cls, *, use_beekeeper: bool = True) -> Callable[[PreWrapFunc[DecoratorParams]], PostWrapFunc[DecoratorParams]]:  # type: ignore[override]
         """
         Decorator to be used on commands that need a world.
 
@@ -32,7 +32,7 @@ class WithWorld(CommonBaseModel):
         use_beekeeper: Set this to False when there is no need to use a beekeeper.
         """
 
-        def outer(func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
+        def outer(func: PreWrapFunc[DecoratorParams]) -> PostWrapFunc[DecoratorParams]:
             common = cls.construct(world=None)  # type: ignore[arg-type]
 
             @merge_args(func)

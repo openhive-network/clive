@@ -5,7 +5,7 @@ import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFuncT, PreWrapFuncT
+from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -17,7 +17,7 @@ class WithBeekeeper(CommonBaseModel):
     beekeeper: "Beekeeper"
 
     @classmethod
-    def decorator(cls, func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
+    def decorator(cls, func: PreWrapFunc[DecoratorParams]) -> PostWrapFunc[DecoratorParams]:
         common = cls.construct(beekeeper=None)  # type: ignore[arg-type]
 
         @merge_args(func)

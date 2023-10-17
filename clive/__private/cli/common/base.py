@@ -9,8 +9,8 @@ from clive.models.base import CliveBaseModel
 
 DecoratorParams = ParamSpec("DecoratorParams")
 
-PreWrapFuncT = Callable[Concatenate[typer.Context, DecoratorParams], Awaitable[None]]
-PostWrapFuncT = Callable[Concatenate[typer.Context, DecoratorParams], None]
+PreWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], Awaitable[None]]
+PostWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], None]
 
 
 class CommonBaseModel(CliveBaseModel, ABC):
@@ -19,7 +19,7 @@ class CommonBaseModel(CliveBaseModel, ABC):
 
     @classmethod
     @abstractmethod
-    def decorator(cls, func: PreWrapFuncT[DecoratorParams]) -> PostWrapFuncT[DecoratorParams]:
+    def decorator(cls, func: PreWrapFunc[DecoratorParams]) -> PostWrapFunc[DecoratorParams]:
         """Should be overridden in subclasses."""
 
     @staticmethod
