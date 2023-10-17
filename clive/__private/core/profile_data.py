@@ -108,11 +108,15 @@ class ProfileData(Context):
         self._working_account = value
 
     @property
-    def _node_address(self) -> Url:
+    def node_address(self) -> Url:
         return self.__get_secret_node_address() or self.__node_address
 
-    @_node_address.setter
-    def _node_address(self, value: Url) -> None:
+    def _set_node_address(self, value: Url) -> None:
+        """
+        Set the node address.
+
+        It is marked as not intended for usage because you rather should use Node.set_address instead.
+        """
         self.__node_address = value
 
     def is_working_account_set(self) -> bool:

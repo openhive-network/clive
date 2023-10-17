@@ -198,10 +198,10 @@ class Node(BaseNode):
 
     @property
     def address(self) -> Url:
-        return self.__profile_data._node_address
+        return self.__profile_data.node_address
 
     async def set_address(self, address: Url) -> None:
-        self.__profile_data._node_address = address
+        self.__profile_data._set_node_address(address)
         await self.__sync_node_version()
 
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:

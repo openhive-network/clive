@@ -18,7 +18,7 @@ class ProfileShow(AccountsList):
 
     def _show_profile_info(self) -> None:
         profile = self.profile_data
-        typer.echo(f"Node address: {profile._node_address}")
+        typer.echo(f"Node address: {profile.node_address}")
         typer.echo(f"Backup node addresses: {[str(url) for url in profile.backup_node_addresses]}")
 
 
@@ -45,4 +45,4 @@ class ProfileSetNode(ProfileBasedCommand):
 
     async def run(self) -> None:
         url = Url.parse(self.node_address)
-        self.profile_data._node_address = url
+        self.profile_data._set_node_address(url)

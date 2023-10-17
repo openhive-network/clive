@@ -27,7 +27,7 @@ class ListKeys(ProfileBasedCommand):
 @dataclass(kw_only=True)
 class ListNode(ProfileBasedCommand):
     async def run(self) -> None:
-        typer.echo(self.profile_data._node_address)
+        typer.echo(self.profile_data.node_address)
 
 
 @dataclass(kw_only=True)
