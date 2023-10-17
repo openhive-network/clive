@@ -1,19 +1,19 @@
 import typer
 
-from clive.__private.cli.common import options
+from clive.__private.cli.common.with_profile import WithProfile
 from clive.__private.core._async import asyncio_run
 
 profile_ = typer.Typer(help="Manage your profile.")
 
 
 @profile_.command()
-def show(
-    profile_name: str = options.profile_name_option,
-) -> None:
+@WithProfile.decorator
+async def show(ctx: typer.Context) -> None:
     """Show profile information."""
     from clive.__private.cli.commands.profile import ProfileShow
 
-    asyncio_run(ProfileShow(profile_name=profile_name).run())
+    common = WithProfile(**ctx.params)
+    await ProfileShow(profile_data=common.profile_data).run()
 
 
 @profile_.command()
