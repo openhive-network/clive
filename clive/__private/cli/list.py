@@ -1,6 +1,7 @@
 import typer
 
 from clive.__private.cli.common import options
+from clive.__private.cli.common.with_profile import WithProfile
 from clive.__private.cli.common.with_world import WithWorld
 from clive.__private.core._async import asyncio_run
 
@@ -16,27 +17,23 @@ def profiles() -> None:
 
 
 @list_.command()
-@WithWorld.decorator(use_beekeeper=False)
-async def keys(
-    ctx: typer.Context,
-) -> None:
+@WithProfile.decorator
+async def keys(ctx: typer.Context) -> None:
     """List all Public keys stored in the wallet."""
     from clive.__private.cli.commands.list import ListKeys
 
-    common = WithWorld(**ctx.params)
-    await ListKeys(world=common.world).run()
+    common = WithProfile(**ctx.params)
+    await ListKeys(profile_data=common.profile_data).run()
 
 
 @list_.command()
-@WithWorld.decorator(use_beekeeper=False)
-async def node(
-    ctx: typer.Context,
-) -> None:
+@WithProfile.decorator
+async def node(ctx: typer.Context) -> None:
     """List address of the currently selected node."""
     from clive.__private.cli.commands.list import ListNode
 
-    common = WithWorld(**ctx.params)
-    await ListNode(world=common.world).run()
+    common = WithProfile(**ctx.params)
+    await ListNode(profile_data=common.profile_data).run()
 
 
 @list_.command()

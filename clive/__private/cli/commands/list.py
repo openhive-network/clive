@@ -4,6 +4,7 @@ import typer
 from rich.console import Console
 from rich.table import Table
 
+from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.commands.profile import ProfileList
 from clive.__private.cli_error import CLIError
@@ -12,21 +13,21 @@ from clive.models import Asset
 
 
 @dataclass(kw_only=True)
-class ListKeys(WorldBasedCommand):
+class ListKeys(ProfileBasedCommand):
     async def run(self) -> None:
-        profile_name = self.world.profile_data.name
+        profile_name = self.profile_data.name
 
-        if not self.world.profile_data.is_working_account_set():
+        if not self.profile_data.is_working_account_set():
             raise CLIError(f"Working account is not set for `{profile_name}` profile.")
 
-        public_keys = list(self.world.profile_data.working_account.keys)
+        public_keys = list(self.profile_data.working_account.keys)
         typer.echo(f"{profile_name}, your keys are:\n{public_keys}")
 
 
 @dataclass(kw_only=True)
-class ListNode(WorldBasedCommand):
+class ListNode(ProfileBasedCommand):
     async def run(self) -> None:
-        typer.echo(self.world.node.address)
+        typer.echo(self.profile_data._node_address)
 
 
 @dataclass(kw_only=True)
