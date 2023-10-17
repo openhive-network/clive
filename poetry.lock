@@ -1167,12 +1167,12 @@ files = [
 
 [[package]]
 name = "schemas"
-version = "0.0.0.post236.dev0+5f473da"
+version = "0.0.1.dev255+9d748a8"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "schemas-0.0.0.post236.dev0+5f473da-py3-none-any.whl", hash = "sha256:54fc8d28ec78f9f6cb4443866b54c8b38499337961482ffcb5c7c6a6a6e9e904"},
+    {file = "schemas-0.0.1.dev255+9d748a8-py3-none-any.whl", hash = "sha256:da74111f0707cffd709792bf4b181f746d12b95270d6bbb409a4b3c0372ac1e2"},
 ]
 
 [package.dependencies]
@@ -1233,11 +1233,11 @@ develop = true
 abstractcp = "0.9.9"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
-schemas = "0.0.0.post236.dev0+5f473da"
+schemas = "0.0.1.dev255+9d748a8"
 
 [package.source]
 type = "directory"
-url = "hive/tests/hive-local-tools/test-tools"
+url = "hive/tests/python/hive-local-tools/test-tools"
 
 [[package]]
 name = "textual"
@@ -1514,4 +1514,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "31db677de40d12193b097a1c499930eb388eb7acd929262a054519a4aa350b07"
+content-hash = "d40f140a75ab330f0985d574060f17e7b0b24d1d0e10e581d2c88973880e4be1"

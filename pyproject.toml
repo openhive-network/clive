@@ -41,7 +41,7 @@ inflection = "0.5.1"
 humanize = "4.6.0"
 
 wax = "0.0.1a5+f650c37"
-schemas = "0.0.0.post236.dev0+5f473da"
+schemas = "0.0.1.dev255+9d748a8"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -55,7 +55,7 @@ ruff = "0.0.277"
 types-pyyaml = "6.0.12.4"
 textual_dev = "1.0.1"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/hive-local-tools/test-tools", develop = true }
+test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
 
 
 [tool.poetry.scripts]
