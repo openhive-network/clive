@@ -42,6 +42,17 @@ class ScrollablePart(ScrollableContainer, can_focus=True):
     """Scrollable part of the screen."""
 
 
+class SubTitle(Label):
+    DEFAULT_CSS = """
+    SubTitle {
+        color: $text-muted;
+        text-style: bold;
+        content-align: center middle;
+        width: 1fr;
+    }
+    """
+
+
 class ActionsContainer(Horizontal):
     """Container for the all the actions - combobox."""
 
@@ -119,6 +130,7 @@ class TransactionSummary(BaseScreen):
         with ViewBag():
             with StaticPart():
                 yield BigTitle("transaction summary")
+                yield SubTitle("(Loaded from file)" if self.__loaded_transaction else "(Built from cart)")
                 with ActionsContainer():
                     if not self.__loaded_transaction or not self.__loaded_transaction.is_signed():
                         yield KeyHint("Sign with key:")
