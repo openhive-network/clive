@@ -1,11 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import contextlib
 import math
 import traceback
 from asyncio import CancelledError
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, TypeVar
+from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from textual import work
 from textual._context import active_message_pump
@@ -172,13 +173,32 @@ class Clive(App[int], ManualReactive):
     def is_screen_on_top(self, screen: str | type[Screen[Any]]) -> bool:
         return self.__screen_eq(self.screen, screen)
 
+    @overload
+    def push_screen(  # type: ignore[misc]
+        self,
+        screen: Screen[ScreenResultType] | str,
+        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
+        wait_for_dismiss: Literal[False] = False,
+    ) -> AwaitMount:
+        ...
+
+    @overload
     def push_screen(
         self,
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-    ) -> AwaitMount:
+        wait_for_dismiss: Literal[True] = True,
+    ) -> asyncio.Future[ScreenResultType]:
+        ...
+
+    def push_screen(
+        self,
+        screen: Screen[ScreenResultType] | str,
+        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
+        wait_for_dismiss: bool = False,
+    ) -> AwaitMount | asyncio.Future[ScreenResultType]:
         fun = super().push_screen
-        return self.__update_screen(lambda: fun(screen, callback))
+        return self.__update_screen(lambda: fun(screen=screen, callback=callback, wait_for_dismiss=wait_for_dismiss))  # type: ignore[no-any-return, call-overload]
 
     def push_screen_at(
         self,
