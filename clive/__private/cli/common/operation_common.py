@@ -22,7 +22,7 @@ class OperationCommon(CommonBaseModel):
     """
 
     profile_name: str = options.profile_name_option
-    password: str = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
+    password: str = options.password_option
     sign: str = typer.Option(..., help="Key alias to sign the transaction with.", show_default=False)
     beekeeper_remote: Optional[str] = options.beekeeper_remote_option
     broadcast: bool = typer.Option(True, help="Whether broadcast the transaction. (i.e. dry-run)")

@@ -43,6 +43,8 @@ profile_name_option = typer.Option(
     show_default=bool(_get_default_profile_name()),
 )
 
+password_option = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
+
 account_name_option = typer.Option(
     get_default_or_make_required(_get_default_working_account_name()),
     help="The account to use. (defaults to the working account of the last used profile)",
