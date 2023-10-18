@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private import config
 from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
+from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.storage.accounts import Account, WorkingAccount
+    from clive.__private.storage.accounts import Account
 
 
 class ProfileDataError(CliveError):
@@ -68,7 +69,7 @@ class ProfileData(Context):
         known_accounts: Iterable[Account] | None = None,
     ) -> None:
         self.name = name
-        self._working_account = working_account
+        self.__working_account = working_account
         self.watched_accounts = set(watched_accounts or [])
         self.known_accounts = set(known_accounts or [])
 
@@ -100,12 +101,16 @@ class ProfileData(Context):
         """
         if not self.is_working_account_set():
             raise NoWorkingAccountError
-        assert self._working_account is not None
-        return self._working_account
+        assert self.__working_account is not None
+        return self.__working_account
 
-    @working_account.setter
-    def working_account(self, value: WorkingAccount) -> None:
-        self._working_account = value
+    def set_working_account(self, value: str | WorkingAccount) -> None:
+        if isinstance(value, str):
+            value = WorkingAccount(value)
+        self.__working_account = value
+
+    def unset_working_account(self) -> None:
+        self.__working_account = None
 
     @property
     def node_address(self) -> Url:
@@ -120,7 +125,7 @@ class ProfileData(Context):
         self.__node_address = value
 
     def is_working_account_set(self) -> bool:
-        return self._working_account is not None
+        return self.__working_account is not None
 
     def get_tracked_accounts(self) -> set[Account]:
         accounts = self.watched_accounts.copy()
