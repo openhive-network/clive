@@ -44,6 +44,15 @@ class AccountsWorkingUnset(ProfileBasedCommand):
 
 
 @dataclass(kw_only=True)
+class AccountsWorkingShow(ProfileBasedCommand):
+    async def run(self) -> None:
+        if not self.profile_data.is_working_account_set():
+            raise CLIError("Working account is not set.", errno.ENOENT)
+
+        typer.echo(self.profile_data.working_account.name)
+
+
+@dataclass(kw_only=True)
 class AccountsWatchedAdd(ProfileBasedCommand):
     account_name: str
 
@@ -61,3 +70,10 @@ class AccountsWatchedRemove(ProfileBasedCommand):
         )
         if account is not None:
             self.profile_data.watched_accounts.discard(account)
+
+
+@dataclass(kw_only=True)
+class AccountsWatchedList(ProfileBasedCommand):
+    async def run(self) -> None:
+        account_names = [account.name for account in self.profile_data.watched_accounts]
+        typer.echo(str(account_names))

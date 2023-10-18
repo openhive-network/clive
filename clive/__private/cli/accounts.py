@@ -46,6 +46,18 @@ async def unset(
     await AccountsWorkingUnset(profile_data=common.profile_data).run()
 
 
+@working.command()
+@WithProfile.decorator
+async def show(
+    ctx: typer.Context,
+) -> None:
+    """Show the working account."""
+    from clive.__private.cli.commands.accounts import AccountsWorkingShow
+
+    common = WithProfile(**ctx.params)
+    await AccountsWorkingShow(profile_data=common.profile_data).run()
+
+
 @watched.command()
 @WithProfile.decorator
 async def add(
@@ -70,3 +82,15 @@ async def remove(
 
     common = WithProfile(**ctx.params)
     await AccountsWatchedRemove(profile_data=common.profile_data, account_name=account_name).run()
+
+
+@watched.command(name="list")
+@WithProfile.decorator
+async def list_watched_accounts(
+    ctx: typer.Context,
+) -> None:
+    """List all watched accounts in the profile."""
+    from clive.__private.cli.commands.accounts import AccountsWatchedList
+
+    common = WithProfile(**ctx.params)
+    await AccountsWatchedList(profile_data=common.profile_data).run()
