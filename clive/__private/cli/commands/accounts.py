@@ -31,3 +31,12 @@ class AccountsWorkingSet(ProfileBasedCommand):
             raise CLIError("Working account is already set.", errno.EEXIST)
 
         self.profile_data.set_working_account(self.account_name)
+
+
+@dataclass(kw_only=True)
+class AccountsWorkingUnset(ProfileBasedCommand):
+    async def run(self) -> None:
+        if not self.profile_data.is_working_account_set():
+            raise CLIError("Working account is not set.", errno.ENOENT)
+
+        self.profile_data.unset_working_account()

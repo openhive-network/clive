@@ -30,3 +30,15 @@ async def set_(
 
     common = WithProfile(**ctx.params)
     await AccountsWorkingSet(profile_data=common.profile_data, account_name=account_name).run()
+
+
+@working.command()
+@WithProfile.decorator
+async def unset(
+    ctx: typer.Context,
+) -> None:
+    """Unset the working account."""
+    from clive.__private.cli.commands.accounts import AccountsWorkingUnset
+
+    common = WithProfile(**ctx.params)
+    await AccountsWorkingUnset(profile_data=common.profile_data).run()
