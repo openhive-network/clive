@@ -6,7 +6,7 @@ from clive.__private.cli.common import options
 from clive.__private.cli.common.with_beekeeper import WithBeekeeper
 from clive.__private.core._async import asyncio_run
 
-beekeeper = typer.Typer(help="Beekeeper-related commands.")
+beekeeper = typer.Typer(name="beekeeper", help="Beekeeper-related commands.")
 
 
 @beekeeper.command()

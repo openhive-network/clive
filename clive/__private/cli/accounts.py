@@ -2,7 +2,7 @@ import typer
 
 from clive.__private.cli.common.with_profile import WithProfile
 
-accounts = typer.Typer(help="Manage your working/watched account(s).")
+accounts = typer.Typer(name="accounts", help="Manage your working/watched account(s).")
 
 
 @accounts.command(name="list")

@@ -17,11 +17,11 @@ Type "clive <command> --help" to read more about a specific subcommand.
 
 cli = typer.Typer(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
 
-cli.add_typer(profile_, name="profile")
-cli.add_typer(accounts, name="accounts")
-cli.add_typer(transfer, name="transfer")
-cli.add_typer(list_, name="list")
-cli.add_typer(beekeeper, name="beekeeper")
+cli.add_typer(profile_)
+cli.add_typer(accounts)
+cli.add_typer(transfer)
+cli.add_typer(list_)
+cli.add_typer(beekeeper)
 
 
 @cli.callback(invoke_without_command=True)

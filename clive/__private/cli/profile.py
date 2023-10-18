@@ -3,7 +3,7 @@ import typer
 from clive.__private.cli.common.with_profile import WithProfile
 from clive.__private.core._async import asyncio_run
 
-profile_ = typer.Typer(help="Manage your profile.")
+profile_ = typer.Typer(name="profile", help="Manage your profile.")
 
 
 @profile_.command()

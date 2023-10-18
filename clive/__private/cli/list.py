@@ -5,7 +5,7 @@ from clive.__private.cli.common.with_profile import WithProfile
 from clive.__private.cli.common.with_world import WithWorld
 from clive.__private.core._async import asyncio_run
 
-list_ = typer.Typer(help="List various things.")
+list_ = typer.Typer(name="list", help="List various things.")
 
 
 @list_.command()

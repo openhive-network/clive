@@ -9,6 +9,7 @@ Transfer some funds to another account.
 """
 
 transfer = typer.Typer(
+    name="transfer",
     help=HELP,
     epilog=(
         'Example: [yellow]clive transfer --password mypassword --sign mykeyalias --to clive --amount "1.5 HBD" --memo'
