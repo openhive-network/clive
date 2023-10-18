@@ -7,7 +7,7 @@ import typer
 from clive.__private.cli.accounts import accounts
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.list import list_
-from clive.__private.cli.profile import profile_
+from clive.__private.cli.profile import profile
 from clive.__private.cli.transfer import transfer
 
 HELP: Final[str] = """
@@ -17,7 +17,7 @@ Type "clive <command> --help" to read more about a specific subcommand.
 
 cli = typer.Typer(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
 
-cli.add_typer(profile_)
+cli.add_typer(profile)
 cli.add_typer(accounts)
 cli.add_typer(transfer)
 cli.add_typer(list_)
