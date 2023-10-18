@@ -3,7 +3,7 @@ from __future__ import annotations
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any
 
-from textual.widgets import Label, LoadingIndicator
+from textual.widgets import Label
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -43,9 +43,7 @@ class DynamicLabel(CliveWidget):
         super().__init__(id=id_, classes=classes)
 
         self.__label = Label("loading...", shrink=shrink)
-        self.__label.display = False
-
-        self.__loading_indicator = LoadingIndicator()
+        self.__label.loading = True
 
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
@@ -59,7 +57,6 @@ class DynamicLabel(CliveWidget):
         self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work)
 
     def compose(self) -> ComposeResult:
-        yield self.__loading_indicator
         yield self.__label
 
     async def attribute_changed(self, attribute: Any) -> None:
@@ -71,6 +68,4 @@ class DynamicLabel(CliveWidget):
         self.__loading_done()
 
     def __loading_done(self) -> None:
-        if self.__loading_indicator.display:
-            self.__loading_indicator.remove()  # Setting display to False causes CPU usage to go up like 20% (from 15% to 35% on 5600x)
-            self.__label.display = True
+        self.__label.loading = False
