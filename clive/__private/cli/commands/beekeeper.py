@@ -8,6 +8,7 @@ from pathlib import Path
 
 import typer
 
+from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli_error import CLIError
@@ -22,9 +23,7 @@ from clive.__private.core.keys import (
 
 
 @dataclass(kw_only=True)
-class BeekeeperInfo(ExternalCLICommand):
-    beekeeper: Beekeeper
-
+class BeekeeperInfo(BeekeeperBasedCommand):
     async def run(self) -> None:
         typer.echo((await self.beekeeper.api.get_info()).json(by_alias=True))
 
