@@ -11,7 +11,7 @@ import typer
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli_error import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.keys import (

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
-from clive.__private.cli_error import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.storage.accounts import Account
 
 

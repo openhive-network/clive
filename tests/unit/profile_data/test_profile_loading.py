@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from clive.__private.cli_error import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.profile_data import NoLastlyUsedProfileError
 from clive.__private.core.world import TyperWorld, World
 

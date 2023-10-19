@@ -7,10 +7,10 @@ import typer
 from clive.__private.cli.accounts import accounts
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.cli.list import list_
 from clive.__private.cli.profile import profile
 from clive.__private.cli.transfer import transfer
-from clive.__private.cli_error import CLIPrettyError
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n

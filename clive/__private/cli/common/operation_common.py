@@ -6,7 +6,7 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
-from clive.__private.cli_error import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core._async import asyncio_run
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError
 

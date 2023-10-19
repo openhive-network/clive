@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
-from clive.__private.cli_error import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData, ProfileDoesNotExistsError
 from clive.core.url import Url

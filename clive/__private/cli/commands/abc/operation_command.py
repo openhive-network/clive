@@ -6,7 +6,7 @@ import rich
 import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli_error import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Operation, Transaction
