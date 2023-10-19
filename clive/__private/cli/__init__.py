@@ -6,22 +6,29 @@ import typer
 
 from clive.__private.cli.accounts import accounts
 from clive.__private.cli.beekeeper import beekeeper
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.list import list_
 from clive.__private.cli.profile import profile
 from clive.__private.cli.transfer import transfer
+from clive.__private.cli_error import CLIError
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
 Type "clive <command> --help" to read more about a specific subcommand.
 """
 
-cli = typer.Typer(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
+cli = CliveTyper(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
 
 cli.add_typer(profile)
 cli.add_typer(accounts)
 cli.add_typer(transfer)
 cli.add_typer(list_)
 cli.add_typer(beekeeper)
+
+
+@cli.error_handler(Exception)
+def pretty_show_any_error(error: Exception) -> None:
+    raise CLIError(str(error), 1)
 
 
 @cli.callback(invoke_without_command=True)
