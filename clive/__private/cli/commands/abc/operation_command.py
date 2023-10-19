@@ -1,3 +1,4 @@
+import errno
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from pathlib import Path
@@ -26,7 +27,9 @@ class OperationCommand(WorldBasedCommand, ABC):
         try:
             key_to_sign = self.world.profile_data.working_account.keys.get(self.sign)
         except KeyNotFoundError:
-            raise CLIPrettyError(f"Key `{self.sign}` was not found in the working account keys.") from None
+            raise CLIPrettyError(
+                f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT
+            ) from None
 
         transaction = await perform_actions_on_transaction(
             content=self._create_operation(),

@@ -1,3 +1,4 @@
+import errno
 from functools import wraps
 from typing import TYPE_CHECKING
 
@@ -33,7 +34,7 @@ class WithProfile(CommonBaseModel):
             from clive.__private.core.profile_data import ProfileData
 
             if not profile_name:
-                raise CLIPrettyError("No profile specified.")
+                raise CLIPrettyError("No profile specified.", errno.EINVAL)
 
             try:
                 profile_data_manager = ProfileData.load_with_auto_save(profile_name, auto_create=False)
