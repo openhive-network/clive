@@ -37,7 +37,7 @@ class Witness(Grid):
         self.__witness = witness
 
         try:
-            self.app.query_one(f"#{witness.name}-witness")
+            self.app.query_one(f"#{''.join(witness.name.split('.'))}-witness")
         except NoMatches:
             self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted)
         else:
@@ -50,12 +50,14 @@ class Witness(Grid):
         )
         yield Label(self.__witness.name, classes="witness-name")
         yield Label(str(self.__witness.votes), classes="witness-votes")
-        yield Label("details", classes="witness-details", id=f"{self.__witness.name}-witness-details")
+        yield Label(
+            "details", classes="witness-details", id=f"{''.join(self.__witness.name.split('.'))}-witness-details"
+        )
 
     def on_mount(self) -> None:
         tooltip_text = f"""{f"created: {humanize_datetime(self.__witness.created)}"}   {f"missed blocks: {self.__witness.missed_blocks}"}
         """
-        self.query_one(f"#{self.__witness.name}-witness-details").tooltip = tooltip_text
+        self.query_one(f"#{''.join(self.__witness.name.split('.'))}-witness-details").tooltip = tooltip_text
 
     @on(WitnessCheckBoxChanged)
     def move_witness_to_actions(self) -> None:
@@ -81,7 +83,7 @@ class WitnessManualVote(Vertical):
 
 class WitnessActionRow(Horizontal):
     def __init__(self, name: str, vote: bool):
-        super().__init__(id=f"{name}-witness")
+        super().__init__(id=f"{''.join(name.split('.'))}-witness")
         self.__witness_name = name
         self.__vote = vote
 
@@ -101,6 +103,7 @@ class WitnessesActions(VerticalScroll):
     ----------
     __actions_to_perform (dict): A dictionary with the witness name as the key and the action to perform (vote/unvote, represented as a boolean value).
     """
+
     def __init__(self) -> None:
         super().__init__()
         self.__actions_to_perform: dict[str, bool] = {}
@@ -116,7 +119,7 @@ class WitnessesActions(VerticalScroll):
         self.__actions_to_perform[name] = vote
 
     def unmount_witness(self, name: str) -> None:
-        self.query_one(f"#{name}-witness").remove()
+        self.query_one(f"#{''.join(name.split('.'))}-witness").remove()
         self.__actions_to_perform.pop(name)
 
     @property
