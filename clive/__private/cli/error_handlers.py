@@ -1,9 +1,10 @@
 import errno
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileDoesNotExistsError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.activate import WalletDoesNotExistsError
+from clive.__private.core.profile_data import ProfileDoesNotExistsError
 from clive.exceptions import CommunicationError
 
 
@@ -23,3 +24,7 @@ def register_error_handlers(cli: CliveTyper) -> None:
     @cli.error_handler(WalletDoesNotExistsError)
     def handle_wallet_does_not_exists_error(_: WalletDoesNotExistsError) -> None:
         raise CLIPrettyError("Wallet does not exists.", errno.ENOENT) from None
+
+    @cli.error_handler(ProfileDoesNotExistsError)
+    def handle_profile_does_not_exists(error: ProfileDoesNotExistsError) -> None:
+        raise CLIProfileDoesNotExistsError(error.profile_name) from None

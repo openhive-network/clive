@@ -41,6 +41,7 @@ class ProfileCouldNotBeDeletedError(ProfileDataError):
 
 class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError, ProfileCouldNotBeDeletedError):
     def __init__(self, profile_name: str) -> None:
+        self.profile_name = profile_name
         super().__init__(f"Profile `{profile_name}` does not exist.")
 
 

@@ -6,13 +6,12 @@ from typing import TYPE_CHECKING, Any
 
 from textual.reactive import var
 
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
-from clive.__private.core.profile_data import ProfileData, ProfileDoesNotExistsError
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import ScreenNotFoundError
@@ -157,7 +156,4 @@ class TextualWorld(World, CliveWidget, ManualReactive):
 
 class TyperWorld(World):
     def _load_profile(self, profile_name: str) -> ProfileData:
-        try:
-            return ProfileData.load(profile_name, auto_create=False)
-        except ProfileDoesNotExistsError as error:
-            raise CLIPrettyError(str(error)) from None
+        return ProfileData.load(profile_name, auto_create=False)
