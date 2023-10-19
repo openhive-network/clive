@@ -11,7 +11,9 @@ from clive.exceptions import CommunicationError
 def register_error_handlers(cli: CliveTyper) -> None:
     @cli.error_handler(Exception)
     def pretty_show_any_error(error: Exception) -> None:
-        raise CLIPrettyError(str(error), 1)
+        error_message = str(error)
+        message = f"Unhandled exception {type(error).__name__}{f': {error_message}' if error_message else ''}"
+        raise CLIPrettyError(message, 1)
 
     @cli.error_handler(CommunicationError)
     def handle_communication_error(error: CommunicationError) -> None:
