@@ -46,7 +46,7 @@ class Witness(Grid):
     def compose(self) -> ComposeResult:
         yield self.__witness_checkbox
         yield Label(
-            str(self.__witness.rank) if self.__witness.rank is not None else "Outside top 105", classes="witness-rank"
+            str(self.__witness.rank) if self.__witness.rank is not None else "Outside top 150", classes="witness-rank"
         )
         yield Label(self.__witness.name, classes="witness-name")
         yield Label(str(self.__witness.votes), classes="witness-votes")
