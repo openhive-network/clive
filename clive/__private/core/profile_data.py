@@ -170,8 +170,11 @@ class ProfileData(Context):
                 raise ProfileDoesNotExistsError(name) from error
 
     @classmethod
-    def get_lastly_used_profile_name(cls) -> str | None:
+    def get_lastly_used_profile_name(cls, *, exclude_if_deleted: bool = True) -> str | None:
         """Get the name of the lastly used profile. If no profile was used yet, None is returned."""
+        if exclude_if_deleted and not cls.list_profiles():
+            return None
+
         with cls.__open_database() as db:
             profile_name: str | None = db.get(cls._LAST_USED_IDENTIFIER, None)
             if profile_name != cls.ONBOARDING_PROFILE_NAME:
