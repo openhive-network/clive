@@ -1,10 +1,9 @@
-import errno
 from dataclasses import dataclass
 
 import typer
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
+from clive.__private.cli.exceptions import CLIWorkingAccountIsAlreadySetError, CLIWorkingAccountIsNotSetError
 from clive.__private.storage.accounts import Account
 
 
@@ -29,7 +28,7 @@ class AccountsWorkingSet(ProfileBasedCommand):
 
     async def run(self) -> None:
         if self.profile_data.is_working_account_set():
-            raise CLIPrettyError("Working account is already set.", errno.EEXIST)
+            raise CLIWorkingAccountIsAlreadySetError(self.profile_data)
 
         self.profile_data.set_working_account(self.account_name)
 

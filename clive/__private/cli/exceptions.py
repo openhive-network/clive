@@ -34,3 +34,13 @@ class CLIWorkingAccountIsNotSetError(CLIPrettyError):
             "Please check the `clive accounts working set -h` command first."
         )
         super().__init__(message, errno.ENOENT)
+
+
+class CLIWorkingAccountIsAlreadySetError(CLIPrettyError):
+    def __init__(self, profile: ProfileData | None = None) -> None:
+        self.profile = profile
+        message = (
+            f"Working account is already set{f' for the `{profile.name}` profile' if profile else ''}.\n"
+            "If you want to change the working account - please check the `clive accounts working unset -h` command."
+        )
+        super().__init__(message, errno.EEXIST)
