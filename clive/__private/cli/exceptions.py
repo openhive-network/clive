@@ -44,3 +44,15 @@ class CLIWorkingAccountIsAlreadySetError(CLIPrettyError):
             "If you want to change the working account - please check the `clive accounts working unset -h` command."
         )
         super().__init__(message, errno.EEXIST)
+
+
+class CLIProfileDoesNotExistsError(CLIPrettyError):
+    def __init__(self, profile_name: str | None = None) -> None:
+        self.profile_name = profile_name
+        detail = f" `{profile_name}` " if profile_name else " "
+        message = (
+            f"Profile{detail}does not exist.\n"
+            "Please check the `clive list profiles` command first.\n"
+            "If you want to create a new profile - please check the `clive profile create -h` command."
+        )
+        super().__init__(message, errno.EEXIST)

@@ -6,7 +6,7 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileDoesNotExistsError
 from clive.__private.core._async import asyncio_run
 from clive.__private.core.profile_data import ProfileDoesNotExistsError
 
@@ -37,8 +37,8 @@ class WithProfile(CommonBaseModel):
 
             try:
                 profile_data_manager = ProfileData.load_with_auto_save(profile_name, auto_create=False)
-            except ProfileDoesNotExistsError as error:
-                raise CLIPrettyError(str(error)) from None
+            except ProfileDoesNotExistsError:
+                raise CLIProfileDoesNotExistsError(profile_name) from None
 
             with profile_data_manager as profile_data:
                 ctx.params.update(profile_data=profile_data)

@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileDoesNotExistsError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData, ProfileDoesNotExistsError
 from clive.core.url import Url
@@ -59,8 +59,8 @@ class ProfileDelete(ExternalCLICommand):
     async def run(self) -> None:
         try:
             ProfileData.delete_by_name(self.profile_name)
-        except ProfileDoesNotExistsError as error:
-            raise CLIPrettyError(str(error)) from None
+        except ProfileDoesNotExistsError:
+            raise CLIProfileDoesNotExistsError(self.profile_name) from None
 
 
 @dataclass(kw_only=True)
