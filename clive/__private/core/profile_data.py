@@ -54,7 +54,12 @@ class ProfileSaveError(ProfileDataError):
 
 
 class ProfileAlreadyExistsError(ProfileDataError):
-    """Raised when a profile already exists."""
+    def __init__(self, profile_name: str, existing_profiles: list[str] | None = None) -> None:
+        self.profile_name = profile_name
+        self.existing_profiles = existing_profiles
+        detail = f", different than {existing_profiles}." if existing_profiles else "."
+        self.message = f"Profile `{self.profile_name}` already exists. Please choose another name{detail}"
+        super().__init__(f"Profile `{profile_name}` already exists.")
 
 
 class ProfileInvalidNameError(ProfileDataError):
@@ -160,11 +165,9 @@ class ProfileData(Context):
         if self.__skip_save:
             return
 
-        if self.__first_time_save and self.name in self.list_profiles():
-            raise ProfileAlreadyExistsError(
-                f"Profile `{self.name}` already exists. Please choose another name, different than"
-                f" {self.list_profiles()}"
-            )
+        existing_profiles = self.list_profiles()
+        if self.__first_time_save and self.name in existing_profiles:
+            raise ProfileAlreadyExistsError(self.name, existing_profiles)
         self.__first_time_save = False
 
         clive = get_clive().app_instance()

@@ -6,9 +6,8 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData
+from clive.__private.core.profile_data import ProfileData
 from clive.core.url import Url
 from clive.exceptions import CommunicationError
 
@@ -40,10 +39,7 @@ class ProfileCreate(BeekeeperBasedCommand):
     async def run(self) -> None:
         profile = ProfileData(self.profile_name)
 
-        try:
-            profile.save()
-        except ProfileAlreadyExistsError as error:
-            raise CLIPrettyError(str(error)) from None
+        profile.save()
 
         try:
             await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()

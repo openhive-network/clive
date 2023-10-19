@@ -56,3 +56,16 @@ class CLIProfileDoesNotExistsError(CLIPrettyError):
             "If you want to create a new profile - please check the `clive profile create -h` command."
         )
         super().__init__(message, errno.EEXIST)
+
+
+class CLIProfileAlreadyExistsError(CLIPrettyError):
+    def __init__(self, profile_name: str | None = None, existing_profiles: list[str] | None = None) -> None:
+        self.profile_name = profile_name
+
+        profile_name_detail = f" `{profile_name}` " if profile_name else " "
+        existing_profiles_detail = f", different than {existing_profiles}." if existing_profiles else "."
+        message = (
+            f"Profile{profile_name_detail}already exists. Please choose another name{existing_profiles_detail}\n"
+            "If you want to create a new profile - please check the `clive profile create -h` command."
+        )
+        super().__init__(message, errno.EEXIST)
