@@ -8,6 +8,7 @@ from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
@@ -58,6 +59,16 @@ class Commands(Generic[WorldT]):
 
         self._world = world
         self.__exception_handlers = [AsyncClosedErrorHandler, *(exception_handlers or [])]
+
+    async def create_wallet(self, *, password: str | None) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            CreateWallet(
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
+                wallet=self._world.profile_data.name,
+                password=password,
+            )
+        )
 
     async def activate(
         self, *, password: str, time: timedelta | None = None, permanent: bool = False
