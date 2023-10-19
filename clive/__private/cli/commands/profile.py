@@ -18,6 +18,7 @@ class ProfileShow(AccountsList):
 
     def _show_profile_info(self) -> None:
         profile = self.profile_data
+        typer.echo(f"Profile name: {profile.name}")
         typer.echo(f"Node address: {profile.node_address}")
         typer.echo(f"Backup node addresses: {[str(url) for url in profile.backup_node_addresses]}")
 
