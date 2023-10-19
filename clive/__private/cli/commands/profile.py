@@ -47,9 +47,9 @@ class ProfileCreate(BeekeeperBasedCommand):
 
         try:
             await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()
-        except CommunicationError as error:
+        except CommunicationError:
             profile.delete()
-            raise CLIPrettyError(str(error)) from None
+            raise
 
 
 @dataclass(kw_only=True)
