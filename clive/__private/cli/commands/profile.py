@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICom
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
 from clive.__private.cli_error import CLIError
-from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData
+from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData, ProfileDoesNotExistsError
 from clive.core.url import Url
 
 
@@ -37,6 +37,17 @@ class ProfileCreate(ExternalCLICommand):
         try:
             ProfileData(self.profile_name).save()
         except ProfileAlreadyExistsError as error:
+            raise CLIError(str(error)) from None
+
+
+@dataclass(kw_only=True)
+class ProfileDelete(ExternalCLICommand):
+    profile_name: str
+
+    async def run(self) -> None:
+        try:
+            ProfileData.delete_by_name(self.profile_name)
+        except ProfileDoesNotExistsError as error:
             raise CLIError(str(error)) from None
 
 

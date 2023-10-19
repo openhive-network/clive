@@ -35,7 +35,11 @@ class ProfileCouldNotBeLoadedError(ProfileDataError):
     """Raised when a profile could not be loaded."""
 
 
-class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError):
+class ProfileCouldNotBeDeletedError(ProfileDataError):
+    """Raised when a profile could not be deleted."""
+
+
+class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError, ProfileCouldNotBeDeletedError):
     def __init__(self, profile_name: str) -> None:
         super().__init__(f"Profile `{profile_name}` does not exist.")
 
@@ -153,6 +157,17 @@ class ProfileData(Context):
         with self.__open_database() as db:
             db[self.name] = self
             db[self._LAST_USED_IDENTIFIER] = self.name
+
+    def delete(self) -> None:
+        self.delete_by_name(self.name)
+
+    @classmethod
+    def delete_by_name(cls, name: str) -> None:
+        with cls.__open_database() as db:
+            try:
+                del db[name]
+            except KeyError as error:
+                raise ProfileDoesNotExistsError(name) from error
 
     @classmethod
     def get_lastly_used_profile_name(cls) -> str | None:

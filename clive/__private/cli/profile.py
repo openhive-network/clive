@@ -35,6 +35,16 @@ def create(
 
 
 @profile.command()
+def delete(
+    profile_name: str = typer.Option(..., help="The name of the profile to delete.", show_default=False),
+) -> None:
+    """Delete a profile."""
+    from clive.__private.cli.commands.profile import ProfileDelete
+
+    asyncio_run(ProfileDelete(profile_name=profile_name).run())
+
+
+@profile.command()
 @WithProfile.decorator
 async def set_node(
     ctx: typer.Context,
