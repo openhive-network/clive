@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from datetime import datetime
 
 from textual import work
 from textual.reactive import var
@@ -11,9 +12,11 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 @dataclass(eq=False)
 class Witness:
     name: str
+    created: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
     voted: bool = False
     votes: int = 0
     rank: int | None = None
+    missed_blocks: int = 0
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Witness):
@@ -55,7 +58,13 @@ class GovernanceDataProvider(CliveWidget):
         )
 
         top_100_witnesses = [
-            Witness(witness.owner, rank=rank, votes=witness.votes)
+            Witness(
+                witness.owner,
+                created=witness.created,
+                rank=rank,
+                votes=witness.votes,
+                missed_blocks=witness.total_missed,
+            )
             for rank, witness in enumerate(list_witnesses_response.witnesses, start=1)
         ]
         voted_witnesses = [

@@ -8,6 +8,7 @@ from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.widgets import Label, Static
 
+from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceData, GovernanceDataProvider
@@ -49,7 +50,12 @@ class Witness(Grid):
         )
         yield Label(self.__witness.name, classes="witness-name")
         yield Label(str(self.__witness.votes), classes="witness-votes")
-        yield Label("details", classes="witness-details")
+        yield Label("details", classes="witness-details", id=f"{self.__witness.name}-witness-details")
+
+    def on_mount(self) -> None:
+        tooltip_text = f"""{f"created: {humanize_datetime(self.__witness.created)}"}   {f"missed blocks: {self.__witness.missed_blocks}"}
+        """
+        self.query_one(f"#{self.__witness.name}-witness-details").tooltip = tooltip_text
 
     @on(WitnessCheckBoxChanged)
     def move_witness_to_actions(self) -> None:
