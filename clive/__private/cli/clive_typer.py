@@ -35,7 +35,7 @@ class CliveTyper(typer.Typer):
         raise CLIError(str(error), 1)
 
     # `may_handle_some_error` will ignore the error, because of the `if` condition.
-    # Instead `handle_any_error` will handle it, and since it raises CLIError - it will be pretty printed.
+    # Instead `handle_any_error` will handle it, and since it raises CLIPrettyError - it will be pretty printed.
     """
 
     __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback]] = {}

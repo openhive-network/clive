@@ -6,7 +6,7 @@ import rich
 import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Operation, Transaction
@@ -26,7 +26,7 @@ class OperationCommand(WorldBasedCommand, ABC):
         try:
             key_to_sign = self.world.profile_data.working_account.keys.get(self.sign)
         except KeyNotFoundError:
-            raise CLIError(f"Key `{self.sign}` was not found in the working account keys.") from None
+            raise CLIPrettyError(f"Key `{self.sign}` was not found in the working account keys.") from None
 
         transaction = await perform_actions_on_transaction(
             content=self._create_operation(),

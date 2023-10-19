@@ -4,7 +4,7 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 from clive.__private.storage.accounts import Account
 
 
@@ -29,7 +29,7 @@ class AccountsWorkingSet(ProfileBasedCommand):
 
     async def run(self) -> None:
         if self.profile_data.is_working_account_set():
-            raise CLIError("Working account is already set.", errno.EEXIST)
+            raise CLIPrettyError("Working account is already set.", errno.EEXIST)
 
         self.profile_data.set_working_account(self.account_name)
 
@@ -38,7 +38,7 @@ class AccountsWorkingSet(ProfileBasedCommand):
 class AccountsWorkingUnset(ProfileBasedCommand):
     async def run(self) -> None:
         if not self.profile_data.is_working_account_set():
-            raise CLIError("Working account is not set.", errno.ENOENT)
+            raise CLIPrettyError("Working account is not set.", errno.ENOENT)
 
         self.profile_data.unset_working_account()
 
@@ -47,7 +47,7 @@ class AccountsWorkingUnset(ProfileBasedCommand):
 class AccountsWorkingShow(ProfileBasedCommand):
     async def run(self) -> None:
         if not self.profile_data.is_working_account_set():
-            raise CLIError("Working account is not set.", errno.ENOENT)
+            raise CLIPrettyError("Working account is not set.", errno.ENOENT)
 
         typer.echo(self.profile_data.working_account.name)
 

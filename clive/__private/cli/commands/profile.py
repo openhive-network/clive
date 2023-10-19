@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData, ProfileDoesNotExistsError
 from clive.core.url import Url
@@ -43,13 +43,13 @@ class ProfileCreate(BeekeeperBasedCommand):
         try:
             profile.save()
         except ProfileAlreadyExistsError as error:
-            raise CLIError(str(error)) from None
+            raise CLIPrettyError(str(error)) from None
 
         try:
             await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()
         except CommunicationError as error:
             profile.delete()
-            raise CLIError(str(error)) from None
+            raise CLIPrettyError(str(error)) from None
 
 
 @dataclass(kw_only=True)
@@ -60,7 +60,7 @@ class ProfileDelete(ExternalCLICommand):
         try:
             ProfileData.delete_by_name(self.profile_name)
         except ProfileDoesNotExistsError as error:
-            raise CLIError(str(error)) from None
+            raise CLIPrettyError(str(error)) from None
 
 
 @dataclass(kw_only=True)

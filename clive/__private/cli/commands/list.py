@@ -7,7 +7,7 @@ from rich.table import Table
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.commands.profile import ProfileList
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 from clive.__private.storage.accounts import Account
 from clive.models import Asset
 
@@ -18,7 +18,7 @@ class ListKeys(ProfileBasedCommand):
         profile_name = self.profile_data.name
 
         if not self.profile_data.is_working_account_set():
-            raise CLIError(f"Working account is not set for `{profile_name}` profile.")
+            raise CLIPrettyError(f"Working account is not set for `{profile_name}` profile.")
 
         public_keys = list(self.profile_data.working_account.keys)
         typer.echo(f"{profile_name}, your keys are:\n{public_keys}")

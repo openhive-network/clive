@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from textual.reactive import var
 
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
@@ -160,4 +160,4 @@ class TyperWorld(World):
         try:
             return ProfileData.load(profile_name, auto_create=False)
         except ProfileDoesNotExistsError as error:
-            raise CLIError(str(error)) from None
+            raise CLIPrettyError(str(error)) from None

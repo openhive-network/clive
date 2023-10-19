@@ -10,7 +10,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.list import list_
 from clive.__private.cli.profile import profile
 from clive.__private.cli.transfer import transfer
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 
 HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
@@ -28,7 +28,7 @@ cli.add_typer(beekeeper)
 
 @cli.error_handler(Exception)
 def pretty_show_any_error(error: Exception) -> None:
-    raise CLIError(str(error), 1)
+    raise CLIPrettyError(str(error), 1)
 
 
 @cli.callback(invoke_without_command=True)

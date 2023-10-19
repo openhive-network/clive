@@ -11,7 +11,7 @@ import typer
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli_error import CLIError
+from clive.__private.cli_error import CLIPrettyError
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.keys import (
@@ -38,7 +38,7 @@ class BeekeeperSpawn(ExternalCLICommand):
                 f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
                 f" {Beekeeper.get_pid_from_file()}"
             )
-            raise CLIError(message, errno.EEXIST)
+            raise CLIPrettyError(message, errno.EEXIST)
 
         typer.echo("Launching beekeeper...")
 
@@ -127,7 +127,7 @@ class BeekeeperImportKey(WorldBasedCommand):
             try:
                 private_key = PrivateKey(value=str(self.key_or_path))
             except PrivateKeyInvalidFormatError as error:
-                raise CLIError(str(error), errno.EINVAL) from None
+                raise CLIPrettyError(str(error), errno.EINVAL) from None
 
         alias = self.alias if self.alias else private_key.calculate_public_key().value
 
@@ -136,21 +136,21 @@ class BeekeeperImportKey(WorldBasedCommand):
     async def run(self) -> None:
         profile_data = self.world.profile_data
         if not profile_data.is_working_account_set():
-            raise CLIError("Working account is not set", errno.ENOENT)
+            raise CLIPrettyError("Working account is not set", errno.ENOENT)
 
         typer.echo("Importing key...")
 
         try:
             profile_data.working_account.keys.add_to_import(self.private_key_aliased)
         except KeyAliasAlreadyInUseError as error:
-            raise CLIError(str(error), errno.EEXIST) from None
+            raise CLIPrettyError(str(error), errno.EEXIST) from None
 
         try:
             await self.world.commands.activate(password=self.password)
         except ActivateInvalidPasswordError:
-            raise CLIError("Invalid password.") from None
+            raise CLIPrettyError("Invalid password.") from None
         except WalletDoesNotExistsError:
-            raise CLIError("Wallet does not exists.") from None
+            raise CLIPrettyError("Wallet does not exists.") from None
 
         await self.world.commands.sync_data_with_beekeeper()
 
