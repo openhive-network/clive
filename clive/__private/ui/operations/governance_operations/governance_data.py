@@ -6,6 +6,7 @@ from datetime import datetime
 from textual import work
 from textual.reactive import var
 
+from clive.__private.config import settings
 from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -28,6 +29,7 @@ class Witness:
 @dataclass
 class GovernanceData:
     witnesses: list[Witness] | None = None
+    witnesses_names: list[str] | None = None
 
 
 class GovernanceDataProvider(CliveWidget):
@@ -44,6 +46,7 @@ class GovernanceDataProvider(CliveWidget):
     def __init__(self) -> None:
         super().__init__()
         self._update_governance_data()
+        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self._update_governance_data)  # type: ignore[arg-type]
 
     @work(name="governance data update worker")
     async def _update_governance_data(self) -> None:
@@ -82,7 +85,11 @@ class GovernanceDataProvider(CliveWidget):
                 witness.voted = True
 
         top_150_witnesses.extend(voted_witnesses)
+        witnesses_names = [witness.name for witness in top_150_witnesses]
+
         sorted_witnesses = sorted(top_150_witnesses, key=lambda witness: (witness.voted, witness.rank))
 
-        new_governance_data = GovernanceData(sorted_witnesses)
-        self.content = new_governance_data
+        new_governance_data = GovernanceData(sorted_witnesses, witnesses_names)
+
+        if self.content.witnesses_names != witnesses_names:
+            self.content = new_governance_data
