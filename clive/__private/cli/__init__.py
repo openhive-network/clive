@@ -7,7 +7,7 @@ import typer
 from clive.__private.cli.accounts import accounts
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.error_handlers import register_error_handlers
 from clive.__private.cli.list import list_
 from clive.__private.cli.profile import profile
 from clive.__private.cli.transfer import transfer
@@ -26,9 +26,7 @@ cli.add_typer(list_)
 cli.add_typer(beekeeper)
 
 
-@cli.error_handler(Exception)
-def pretty_show_any_error(error: Exception) -> None:
-    raise CLIPrettyError(str(error), 1)
+register_error_handlers(cli)
 
 
 @cli.callback(invoke_without_command=True)
