@@ -169,9 +169,9 @@ class WitnessesTable(Vertical, CliveWidget):
         self.bind(Binding("right", "next_page", "next page"))
 
     def action_next_page(self) -> None:
-        last_possible_index = 90
+        last_possible_index = 135
         if self.__witness_index == last_possible_index:
-            self.notify("Just 105 witnesses are available, please type witness outside the list and vote beside")
+            self.notify("Just 150 witnesses are available, please type witness outside the list and vote beside")
             return
 
         self.query_one(WitnessesList).remove()

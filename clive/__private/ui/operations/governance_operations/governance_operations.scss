@@ -51,7 +51,7 @@ Governance WitnessesList {
 
 Governance WitnessesList Witness {
     grid-size: 5 1;
-    grid-columns: 17% 14% 29% 20% 20%;
+    grid-columns: 17% 14% 35% 20% 14%;
 }
 
 Governance Witness .witness-name {
@@ -72,7 +72,7 @@ Governance Witness .witness-details {
 
 Governance WitnessesListHeader {
     grid-size: 5 1;
-    grid-columns: 17% 14% 29% 20% 20%;
+    grid-columns: 17% 14% 35% 20% 14%;
 }
 
 Governance WitnessesListHeader #rank-column {
@@ -93,7 +93,7 @@ Governance #witnesses-headline {
 
 Governance WitnessesTable {
     width: 45%;
-    height: 30;
+    height: 31;
 }
 
 Governance WitnessesTable:focus {

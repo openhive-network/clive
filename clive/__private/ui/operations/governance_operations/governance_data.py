@@ -6,6 +6,7 @@ from datetime import datetime
 from textual import work
 from textual.reactive import var
 
+from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 
@@ -14,7 +15,7 @@ class Witness:
     name: str
     created: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
     voted: bool = False
-    votes: int = 0
+    votes: str = "0 HP"
     rank: int | None = None
     missed_blocks: int = 0
 
@@ -57,12 +58,14 @@ class GovernanceDataProvider(CliveWidget):
             start=(working_account_name, ""), limit=30, order="by_account_witness"
         )
 
+        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
+
         top_100_witnesses = [
             Witness(
                 witness.owner,
                 created=witness.created,
                 rank=rank,
-                votes=witness.votes,
+                votes=calculate_hp_from_votes(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares),
                 missed_blocks=witness.total_missed,
             )
             for rank, witness in enumerate(list_witnesses_response.witnesses, start=1)
