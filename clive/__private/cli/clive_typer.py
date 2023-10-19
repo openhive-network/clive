@@ -1,6 +1,6 @@
 import sys
 from collections.abc import Callable
-from typing import Any, ClassVar, NewType
+from typing import Any, ClassVar, NewType, TypeVar
 
 import typer
 from click import ClickException
@@ -8,8 +8,9 @@ from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
 from typer.models import DeveloperExceptionConfig
 
+ExceptionT = TypeVar("ExceptionT", bound=Exception)
 ExitCode = NewType("ExitCode", int)
-ErrorHandlingCallback = Callable[[Exception], ExitCode | None]
+ErrorHandlingCallback = Callable[[ExceptionT], ExitCode | None]
 
 
 class CliveTyper(typer.Typer):
@@ -38,11 +39,13 @@ class CliveTyper(typer.Typer):
     # Instead `handle_any_error` will handle it, and since it raises CLIPrettyError - it will be pretty printed.
     """
 
-    __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback]] = {}
+    __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback[Any]]] = {}
     """ClassVar since error handlers could be registered only for the main Typer instance, but not for sub-commands."""
 
-    def error_handler(self, error: type[Exception]) -> Callable[[ErrorHandlingCallback], ErrorHandlingCallback]:
-        def decorator(f: ErrorHandlingCallback) -> ErrorHandlingCallback:
+    def error_handler(
+        self, error: type[ExceptionT]
+    ) -> Callable[[ErrorHandlingCallback[ExceptionT]], ErrorHandlingCallback[ExceptionT]]:
+        def decorator(f: ErrorHandlingCallback[ExceptionT]) -> ErrorHandlingCallback[ExceptionT]:
             self.__clive_error_handlers__[error] = f
             return f
 
@@ -54,7 +57,7 @@ class CliveTyper(typer.Typer):
         except Exception as error:  # noqa: BLE001
             self.__handle_error(error)
 
-    def __handle_error(self, error: Exception) -> None:
+    def __handle_error(self, error: ExceptionT) -> None:
         handler = self.__get_error_handler(error)
 
         try:
@@ -83,7 +86,7 @@ class CliveTyper(typer.Typer):
             )
             raise error from None
 
-    def __get_error_handler(self, error: Exception) -> ErrorHandlingCallback:
+    def __get_error_handler(self, error: ExceptionT) -> ErrorHandlingCallback[ExceptionT]:
         for type_ in type(error).mro():
             if type_ in self.__clive_error_handlers__:
                 return self.__clive_error_handlers__.pop(type_)

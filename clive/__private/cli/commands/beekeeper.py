@@ -147,12 +147,9 @@ class BeekeeperImportKey(WorldBasedCommand):
 
         try:
             await self.world.commands.activate(password=self.password)
-        except ActivateInvalidPasswordError:
+        except (ActivateInvalidPasswordError, WalletDoesNotExistsError):
             profile_data.skip_saving()
-            raise CLIPrettyError("Invalid password.") from None
-        except WalletDoesNotExistsError:
-            profile_data.skip_saving()
-            raise CLIPrettyError("Wallet does not exists.") from None
+            raise
 
         await self.world.commands.sync_data_with_beekeeper()
 

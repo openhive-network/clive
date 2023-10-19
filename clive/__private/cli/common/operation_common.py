@@ -6,9 +6,7 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core._async import asyncio_run
-from clive.__private.core.commands.activate import ActivateInvalidPasswordError
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
@@ -63,10 +61,7 @@ class OperationCommon(CommonBaseModel):
                 ) as world:
                     cls._assert_correct_profile_is_loaded(world.profile_data.name, profile_name)
                     ctx.params.update(world=world)
-                    try:
-                        await world.commands.activate(password=password)
-                    except ActivateInvalidPasswordError:
-                        raise CLIPrettyError("Invalid password.") from None
+                    await world.commands.activate(password=password)
                     await func(ctx, *args, **kwargs)
 
             asyncio_run(impl())
