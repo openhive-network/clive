@@ -1,5 +1,6 @@
 import typer
 
+from clive.__private.cli.common import WithBeekeeper, options
 from clive.__private.cli.common.with_profile import WithProfile
 from clive.__private.core._async import asyncio_run
 
@@ -25,13 +26,17 @@ def list_all() -> None:
 
 
 @profile.command()
-def create(
+@WithBeekeeper.decorator
+async def create(
+    ctx: typer.Context,
     profile_name: str = typer.Option(..., help="The name of the new profile.", show_default=False),
+    password: str = options.password_option,
 ) -> None:
     """Create a new profile."""
     from clive.__private.cli.commands.profile import ProfileCreate
 
-    asyncio_run(ProfileCreate(profile_name=profile_name).run())
+    common = WithBeekeeper(**ctx.params)
+    await ProfileCreate(beekeeper=common.beekeeper, profile_name=profile_name, password=password).run()
 
 
 @profile.command()

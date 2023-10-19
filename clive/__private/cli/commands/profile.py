@@ -2,12 +2,15 @@ from dataclasses import dataclass
 
 import typer
 
+from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
 from clive.__private.cli_error import CLIError
+from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileData, ProfileDoesNotExistsError
 from clive.core.url import Url
+from clive.exceptions import CommunicationError
 
 
 @dataclass(kw_only=True)
@@ -30,13 +33,22 @@ class ProfileList(ExternalCLICommand):
 
 
 @dataclass(kw_only=True)
-class ProfileCreate(ExternalCLICommand):
+class ProfileCreate(BeekeeperBasedCommand):
     profile_name: str
+    password: str
 
     async def run(self) -> None:
+        profile = ProfileData(self.profile_name)
+
         try:
-            ProfileData(self.profile_name).save()
+            profile.save()
         except ProfileAlreadyExistsError as error:
+            raise CLIError(str(error)) from None
+
+        try:
+            await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()
+        except CommunicationError as error:
+            profile.delete()
             raise CLIError(str(error)) from None
 
 

@@ -12,11 +12,12 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class CreateWallet(CommandWithResult[str]):
-    app_state: AppState
+    app_state: AppState | None = None
     beekeeper: Beekeeper
     wallet: str
     password: str | None
 
     async def _execute(self) -> None:
         self._result = (await self.beekeeper.api.create(wallet_name=self.wallet, password=self.password)).password
-        self.app_state.activate()
+        if self.app_state:
+            self.app_state.activate()
