@@ -1,4 +1,3 @@
-import errno
 from functools import wraps
 from typing import TYPE_CHECKING
 
@@ -7,7 +6,6 @@ from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -31,9 +29,6 @@ class WithProfile(CommonBaseModel):
             **kwargs: DecoratorParams.kwargs,
         ) -> None:
             from clive.__private.core.profile_data import ProfileData
-
-            if not profile_name:
-                raise CLIPrettyError("No profile specified.", errno.EINVAL)
 
             profile_data_manager = ProfileData.load_with_auto_save(profile_name, auto_create=False)
 

@@ -57,6 +57,12 @@ class ProfileAlreadyExistsError(ProfileDataError):
     """Raised when a profile already exists."""
 
 
+class ProfileInvalidNameError(ProfileDataError):
+    def __init__(self, profile_name: str) -> None:
+        self.profile_name = profile_name
+        super().__init__(f"Profile name `{profile_name}` is forbidden.")
+
+
 class Cart(list[Operation]):
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
@@ -73,6 +79,8 @@ class ProfileData(Context):
         watched_accounts: Iterable[Account] | None = None,
         known_accounts: Iterable[Account] | None = None,
     ) -> None:
+        self.validate_profile_name(name)
+
         self.name = name
         self.__working_account = working_account
         self.watched_accounts = set(watched_accounts or [])
@@ -95,6 +103,11 @@ class ProfileData(Context):
 
     def __exit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
         self.save()
+
+    @staticmethod
+    def validate_profile_name(name: str) -> None:
+        if not name:
+            raise ProfileInvalidNameError(name)
 
     @property
     def working_account(self) -> WorkingAccount:
@@ -201,13 +214,13 @@ class ProfileData(Context):
             yield db
 
     @classmethod
-    def load(cls, name: str = "", *, auto_create: bool = True) -> ProfileData:
+    def load(cls, name: str | None = None, *, auto_create: bool = True) -> ProfileData:
         """
         Load profile data with the given name from the database.
 
         Args:
         ----
-        name: Name of the profile to load. If empty, the lastly used profile is loaded.
+        name: Name of the profile to load. If None, the lastly used profile is loaded.
         auto_create: If True, a new profile is created if the profile with the given name does not exist.
 
         Returns:
@@ -216,7 +229,7 @@ class ProfileData(Context):
 
         Raises:
         ------
-        NoLastlyUsedProfileError: If name is empty but no lastly used profile exists.
+        NoLastlyUsedProfileError: If name is None but no lastly used profile exists.
         ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
@@ -225,13 +238,13 @@ class ProfileData(Context):
             Assert that the profile with the given name could be loaded.
 
             Cases:
-            1. name="" and lastly_used_exists=True -> load lastly_used
-            2. name="" and lastly_used_exists=False -> raise error
+            1. name=None and lastly_used_exists=True -> load lastly_used
+            2. name=None and lastly_used_exists=False -> raise error
             3. name="some_name" and lastly_used_exists=True -> load "some_name"
             4. name="some_name" and lastly_used_exists=False -> load "some_name".
             """
             lastly_used_exists = cls.get_lastly_used_profile_name()
-            if not lastly_used_exists and not name:
+            if not lastly_used_exists and name is None:
                 raise NoLastlyUsedProfileError
 
         def create_new_profile(new_profile_name: str) -> ProfileData:
@@ -242,9 +255,8 @@ class ProfileData(Context):
         assert_profile_could_be_loaded()
 
         with cls.__open_database() as db:
-            if not name:
-                name = cls.get_lastly_used_profile_name()  # type: ignore[assignment]
-                assert name is not None, "We already checked that lastly used profile exists."
+            name = cls.get_lastly_used_profile_name() if name is None else name
+            assert name is not None, "We already checked that lastly used profile exists."
 
             stored_profile: ProfileData | None = db.get(name, None)
             return stored_profile if stored_profile else create_new_profile(name)

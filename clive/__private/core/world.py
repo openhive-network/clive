@@ -33,14 +33,14 @@ class World:
 
     Args:
     ----
-    profile_name: Name of the profile to load. If empty string is passed, the lastly used profile is loaded.
+    profile_name: Name of the profile to load. If None is passed, the lastly used profile is loaded.
     use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
     beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
     """
 
     def __init__(
         self,
-        profile_name: str = "",
+        profile_name: str | None = None,
         use_beekeeper: bool = True,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
@@ -102,7 +102,7 @@ class World:
         if self._beekeeper is not None:
             await self._beekeeper.close()
 
-    def _load_profile(self, profile_name: str) -> ProfileData:
+    def _load_profile(self, profile_name: str | None) -> ProfileData:
         return ProfileData.load(profile_name)
 
     def _setup_commands(self) -> Commands[World]:
@@ -155,5 +155,5 @@ class TextualWorld(World, CliveWidget, ManualReactive):
 
 
 class TyperWorld(World):
-    def _load_profile(self, profile_name: str) -> ProfileData:
+    def _load_profile(self, profile_name: str | None) -> ProfileData:
         return ProfileData.load(profile_name, auto_create=False)
