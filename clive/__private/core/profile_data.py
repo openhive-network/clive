@@ -87,6 +87,7 @@ class ProfileData(Context):
             self.__node_address = self.backup_node_addresses[0]
 
         self.__first_time_save = True
+        self.__skip_save = False
 
     def __enter__(self) -> Self:
         return self
@@ -142,6 +143,9 @@ class ProfileData(Context):
         return Path(config.settings.data_path) / "data/profile"
 
     def save(self) -> None:
+        if self.__skip_save:
+            return
+
         if self.__first_time_save and self.name in self.list_profiles():
             raise ProfileAlreadyExistsError(
                 f"Profile `{self.name}` already exists. Please choose another name, different than"
@@ -157,6 +161,9 @@ class ProfileData(Context):
         with self.__open_database() as db:
             db[self.name] = self
             db[self._LAST_USED_IDENTIFIER] = self.name
+
+    def skip_saving(self) -> None:
+        self.__skip_save = True
 
     def delete(self) -> None:
         self.delete_by_name(self.name)
