@@ -11,7 +11,7 @@ import typer
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.keys import (
@@ -136,7 +136,7 @@ class BeekeeperImportKey(WorldBasedCommand):
     async def run(self) -> None:
         profile_data = self.world.profile_data
         if not profile_data.is_working_account_set():
-            raise CLIPrettyError("Working account is not set", errno.ENOENT)
+            raise CLIWorkingAccountIsNotSetError(profile_data)
 
         typer.echo("Importing key...")
 
