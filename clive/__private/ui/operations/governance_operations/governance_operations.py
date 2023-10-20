@@ -3,10 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
+from textual._node_list import DuplicateIds
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
-from textual.widgets import Label, Static
+from textual.reactive import var
+from textual.widgets import Button, Label, Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
@@ -45,9 +47,7 @@ class Witness(Grid):
 
     def compose(self) -> ComposeResult:
         yield self.__witness_checkbox
-        yield Label(
-            str(self.__witness.rank) if self.__witness.rank is not None else "Outside top 150", classes="witness-rank"
-        )
+        yield Label(str(self.__witness.rank) if self.__witness.rank is not None else "?", classes="witness-rank")
         yield Label(self.__witness.name, classes="witness-name")
         yield Label(str(self.__witness.votes), classes="witness-votes")
         yield Label(
@@ -67,6 +67,10 @@ class Witness(Grid):
             witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
             return
         witnesses_actions.unmount_witness(name=self.__witness.name)
+        if self.__witness.custom:
+            witnesses_table = self.app.query_one(WitnessesTable)
+            witnesses_table.custom_witnesses_list.remove(self.__witness)
+            witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
 
 
 class WitnessManualVote(Vertical):
@@ -79,6 +83,17 @@ class WitnessManualVote(Vertical):
         yield Static("Type name and click vote!")
         yield self.__input
         yield CliveButton("Vote")
+
+    @on(Button.Pressed)
+    def add_witness_to_action_list(self) -> None:
+        try:
+            self.app.query_one(WitnessesActions).mount_witness(self.__input.value, vote=True)  # type: ignore[attr-defined]
+            witnesses_table = self.app.query_one(WitnessesTable)
+            witnesses_table.custom_witnesses_list.append(WitnessInformation(name=self.__input.value, custom=True))  # type: ignore[attr-defined]
+            witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
+
+        except DuplicateIds:
+            self.notify("Witness is already in actions !", severity="error")
 
 
 class WitnessActionRow(Horizontal):
@@ -128,16 +143,26 @@ class WitnessesActions(VerticalScroll):
 
 
 class WitnessesList(Vertical, CliveWidget):
-    def __init__(self, witnesses: list[WitnessInformation] | None, first_witness_index: int) -> None:
+    def __init__(
+        self,
+        witnesses: list[WitnessInformation] | None,
+        first_witness_index: int,
+        custom_witnesses: list[WitnessInformation] | None = None,
+    ) -> None:
         super().__init__()
-        self.__witnesses = witnesses
         self.__first_witness_index = first_witness_index
+        self.__witnesses_to_display = witnesses
+
+        if custom_witnesses is not None and self.__witnesses_to_display is not None:
+            for witness in custom_witnesses:
+                if witness not in self.__witnesses_to_display:
+                    self.__witnesses_to_display.insert(0, witness)
 
     def compose(self) -> ComposeResult:
-        if self.__witnesses is None:
+        if self.__witnesses_to_display is None:
             yield Static("Loading the list of witnesses")
         else:
-            for witness in self.__witnesses[self.__first_witness_index : self.__first_witness_index + 15]:
+            for witness in self.__witnesses_to_display[self.__first_witness_index : self.__first_witness_index + 15]:
                 yield Witness(witness)
                 yield Static()
 
@@ -153,16 +178,20 @@ class WitnessesListHeader(Grid):
 
 class WitnessesTable(Vertical, CliveWidget):
     can_focus = True
+    custom_witnesses_changed: bool = var(False)  # type: ignore[assignment]
+    """User also can put Witness by input - var to detect this"""
 
     def __init__(self, provider: GovernanceDataProvider):
         super().__init__()
         self.__provider = provider
         self.__witness_index = 0
 
+        self.custom_witnesses_list: list[WitnessInformation] = []
+
     def compose(self) -> ComposeResult:
         yield Static("Modify the votes for witnesses", id="witnesses-headline")
         yield WitnessesListHeader()
-        yield WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+        yield WitnessesList(self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list)
 
     def on_focus(self) -> None:
         self.bind(Binding("left", "previous_page", "previous page"))
@@ -176,7 +205,9 @@ class WitnessesTable(Vertical, CliveWidget):
 
         self.query_one(WitnessesList).remove()
         self.__witness_index += 15
-        next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+        next_witnesses_page = WitnessesList(
+            self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
+        )
         self.mount(next_witnesses_page)
         return
 
@@ -187,21 +218,25 @@ class WitnessesTable(Vertical, CliveWidget):
 
         self.query_one(WitnessesList).remove()
         self.__witness_index -= 15
-        next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+        next_witnesses_page = WitnessesList(
+            self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
+        )
         self.mount(next_witnesses_page)
         return
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
+        self.watch(self, "custom_witnesses_changed", callback=self.__sync_witnesses_list)
 
     def __sync_witnesses_list(self) -> None:
         try:
             witnesses_list_container = self.query_one(WitnessesList)
         except NoMatches:
             return
-
         witnesses_list_container.remove()
-        new_witnesses_list_container = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+        new_witnesses_list_container = WitnessesList(
+            self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
+        )
         self.mount(new_witnesses_list_container)
 
 

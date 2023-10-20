@@ -99,11 +99,6 @@ Governance WitnessesTable {
 Governance WitnessesTable:focus {
     background: rgba(0, 0, 0, 0.5);
 }
-
-Governance WitnessesTable Input {
-    height: 2;
-}
-
 /* a table with the actions to be performed after the creation of the operation */
 Governance WitnessesActions {
     width: 25%;
@@ -149,6 +144,7 @@ Governance WitnessesActions #name-and-action {
 Governance WitnessManualVote {
     width: 30%;
     height: 9;
+    margin-left: 1;
 }
 
 Governance CliveButton {

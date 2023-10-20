@@ -19,6 +19,7 @@ class Witness:
     votes: str = "0 HP"
     rank: int | None = None
     missed_blocks: int = 0
+    custom: bool = False
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Witness):
