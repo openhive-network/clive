@@ -50,6 +50,15 @@ class ProfileCreate(BeekeeperBasedCommand):
 
 
 @dataclass(kw_only=True)
+class ProfileSwitch(ExternalCLICommand):
+    profile_name: str
+
+    async def run(self) -> None:
+        profile = ProfileData.load(self.profile_name)
+        profile.save()
+
+
+@dataclass(kw_only=True)
 class ProfileDelete(ExternalCLICommand):
     profile_name: str
 

@@ -42,5 +42,6 @@ flowchart TD
     Profile --> ProfileListAll[list-all]
     Profile --> ProfileSetNode[set-node]
     Profile --> ProfileShow[show]
+    Profile --> ProfileSwitch[switch]
     Clive --> Transfer(transfer)
 ```

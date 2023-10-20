@@ -50,6 +50,16 @@ async def create(
 
 
 @profile.command()
+def switch(
+    profile_name: str = typer.Option(..., help="The name of the profile to switch to.", show_default=False),
+) -> None:
+    """Switch to a profile."""
+    from clive.__private.cli.commands.profile import ProfileSwitch
+
+    asyncio_run(ProfileSwitch(profile_name=profile_name).run())
+
+
+@profile.command()
 def delete(
     profile_name: str = typer.Option(..., help="The name of the profile to delete.", show_default=False),
 ) -> None:
