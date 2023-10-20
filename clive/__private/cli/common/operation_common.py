@@ -32,7 +32,7 @@ class OperationCommon(CommonBaseModel):
         common = cls.construct(world=None)  # type: ignore[arg-type]
 
         @merge_args(func)
-        @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
+        @wraps(func)
         def wrapper(
             ctx: typer.Context,
             profile_name: str = common.profile_name,

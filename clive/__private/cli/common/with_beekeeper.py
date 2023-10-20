@@ -21,7 +21,7 @@ class WithBeekeeper(CommonBaseModel):
         common = cls.construct(beekeeper=None)  # type: ignore[arg-type]
 
         @merge_args(func)
-        @wraps(func, assigned=["__module__", "__name__", "__doc__", "__anotations__"])
+        @wraps(func)
         def wrapper(
             ctx: typer.Context,
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
