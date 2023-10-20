@@ -11,7 +11,8 @@ from textual.widgets import Label, Static
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
-from clive.__private.ui.operations.governance_operations.governance_data import GovernanceData, GovernanceDataProvider
+from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
+from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessInformation
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
@@ -25,14 +26,13 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessT
     from clive.models import Operation
 
 
 class Witness(Grid):
     """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
-    def __init__(self, witness: WitnessT) -> None:
+    def __init__(self, witness: WitnessInformation) -> None:
         super().__init__()
         self.__witness = witness
 
@@ -128,7 +128,7 @@ class WitnessesActions(VerticalScroll):
 
 
 class WitnessesList(Vertical, CliveWidget):
-    def __init__(self, witnesses: list[WitnessT] | None, first_witness_index: int) -> None:
+    def __init__(self, witnesses: list[WitnessInformation] | None, first_witness_index: int) -> None:
         super().__init__()
         self.__witnesses = witnesses
         self.__first_witness_index = first_witness_index
@@ -154,15 +154,15 @@ class WitnessesListHeader(Grid):
 class WitnessesTable(Vertical, CliveWidget):
     can_focus = True
 
-    def __init__(self, witnesses: list[WitnessT] | None):
+    def __init__(self, provider: GovernanceDataProvider):
         super().__init__()
-        self.__witnesses = witnesses
+        self.__provider = provider
         self.__witness_index = 0
 
     def compose(self) -> ComposeResult:
         yield Static("Modify the votes for witnesses", id="witnesses-headline")
         yield WitnessesListHeader()
-        yield WitnessesList(self.__witnesses, self.__witness_index)
+        yield WitnessesList(self.__provider.content.witnesses, self.__witness_index)
 
     def on_focus(self) -> None:
         self.bind(Binding("left", "previous_page", "previous page"))
@@ -176,7 +176,7 @@ class WitnessesTable(Vertical, CliveWidget):
 
         self.query_one(WitnessesList).remove()
         self.__witness_index += 15
-        next_witnesses_page = WitnessesList(self.__witnesses, self.__witness_index)
+        next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
         self.mount(next_witnesses_page)
         return
 
@@ -187,9 +187,22 @@ class WitnessesTable(Vertical, CliveWidget):
 
         self.query_one(WitnessesList).remove()
         self.__witness_index -= 15
-        next_witnesses_page = WitnessesList(self.__witnesses, self.__witness_index)
+        next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
         self.mount(next_witnesses_page)
         return
+
+    def on_mount(self) -> None:
+        self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
+
+    def __sync_witnesses_list(self) -> None:
+        try:
+            witnesses_list_container = self.query_one(WitnessesList)
+        except NoMatches:
+            return
+
+        witnesses_list_container.remove()
+        new_witnesses_list_container = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+        self.mount(new_witnesses_list_container)
 
 
 class Proxy(ScrollableTabPane):
@@ -208,22 +221,9 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
         self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        yield WitnessesActions()
-        yield WitnessesTable(self.__provider.content.witnesses)
+        yield WitnessesTable(self.__provider)
         yield WitnessManualVote()
-
-    def on_mount(self) -> None:
-        self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
-
-    def __sync_witnesses_list(self, content: GovernanceData) -> None:
-        try:
-            witnesses_list_container = self.query_one(WitnessesTable)
-        except NoMatches:
-            return
-
-        witnesses_list_container.remove()
-        new_witnesses_table_container = WitnessesTable(content.witnesses)
-        self.mount(new_witnesses_table_container)
+        yield WitnessesActions()
 
     def _create_operation(self) -> list[Operation] | None:
         working_account_name = self.app.world.profile_data.working_account.name
