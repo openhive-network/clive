@@ -1,8 +1,14 @@
-from typing import Any
+from __future__ import annotations
+
+from copy import deepcopy
+from typing import TYPE_CHECKING, Any
 
 import typer
 
 from clive.__private.cli.completion import is_tab_completion_active
+
+if TYPE_CHECKING:
+    from typer.models import OptionInfo
 
 
 def _get_default_profile_name() -> str | None:
@@ -56,3 +62,20 @@ beekeeper_remote_option = typer.Option(
     help="Beekeeper remote endpoint. (starts locally if not provided)",
     show_default=bool(_get_default_beekeeper_remote()),
 )
+
+
+def modified_option(option: OptionInfo, **kwargs: Any) -> Any:
+    """
+    Create option based on another option, but with some attributes modified.
+
+    Args:
+    ----
+    option: The option to modify.
+    kwargs: The attributes to modify.
+    """
+    new_option = deepcopy(option)
+    for key, value in kwargs.items():
+        if not hasattr(new_option, key):
+            raise ValueError(f"Unknown option attribute: {key}\navailable attributes: {list(option.__dict__)}")
+        setattr(new_option, key, value)
+    return new_option

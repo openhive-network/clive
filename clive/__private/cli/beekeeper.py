@@ -50,7 +50,6 @@ async def import_key(
         show_default=False,
     ),
     password: str = options.password_option,
-    beekeeper_remote: Optional[str] = options.beekeeper_remote_option,  # noqa: ARG001 # used in WithWorld
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.beekeeper import BeekeeperImportKey
@@ -64,7 +63,6 @@ async def import_key(
 async def sync(
     ctx: typer.Context,
     password: str = options.password_option,
-    beekeeper_remote: Optional[str] = options.beekeeper_remote_option,  # noqa: ARG001 # used in WithWorld
 ) -> None:
     """Sync data with the Beekeeper."""
     from clive.__private.cli.commands.beekeeper import BeekeeperSync

@@ -1,12 +1,13 @@
 from collections.abc import Callable
 from functools import wraps
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
 from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
+from clive.__private.cli.common.options import modified_option
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -40,12 +41,15 @@ class WithWorld(CommonBaseModel):
             def inner(
                 ctx: typer.Context,
                 profile: str = common.profile_name,
+                beekeeper_remote: Optional[str] = modified_option(
+                    options.beekeeper_remote_option, hidden=not use_beekeeper
+                ),
                 *args: DecoratorParams.args,
                 **kwargs: DecoratorParams.kwargs,
             ) -> None:
                 from clive.__private.core.world import TyperWorld
 
-                beekeeper_remote_endpoint = cls.__get_beekeeper_remote(kwargs)
+                beekeeper_remote_endpoint = cls.__get_beekeeper_remote(beekeeper_remote)
 
                 cls._print_launching_beekeeper(beekeeper_remote_endpoint, use_beekeeper)
 
@@ -67,10 +71,9 @@ class WithWorld(CommonBaseModel):
         return outer
 
     @staticmethod
-    def __get_beekeeper_remote(kwargs: DecoratorParams.kwargs) -> "Url | None":
+    def __get_beekeeper_remote(beekeeper_remote: str | None) -> "Url | None":
         from clive.core.url import Url
 
-        beekeeper_remote: str | None = kwargs.get("beekeeper_remote", None)
         return Url.parse(beekeeper_remote) if beekeeper_remote else None
 
     @staticmethod
