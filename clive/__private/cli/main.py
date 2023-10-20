@@ -7,7 +7,7 @@ import typer
 from clive.__private.cli.accounts import accounts
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.error_handlers import register_error_handlers
+from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.list import list_
 from clive.__private.cli.profile import profile
 from clive.__private.cli.transfer import transfer
@@ -24,7 +24,10 @@ cli.add_typer(transfer)
 cli.add_typer(list_)
 cli.add_typer(beekeeper)
 
-register_error_handlers(cli)
+if not is_tab_completion_active():
+    from clive.__private.cli.error_handlers import register_error_handlers
+
+    register_error_handlers(cli)
 
 
 @cli.callback(invoke_without_command=True)
