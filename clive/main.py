@@ -5,8 +5,8 @@ import sys
 
 from pydantic import Extra
 
-from clive.__private.cli import cli
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.cli.main import cli
 from clive.__private.core._thread import thread_pool
 from clive.__private.run_cli import run_cli
 from clive.__private.run_tui import run_tui
