@@ -80,16 +80,19 @@ class ProfileData(Context):
     def __init__(
         self,
         name: str,
-        working_account: WorkingAccount | None = None,
+        working_account: str | WorkingAccount | None = None,
         watched_accounts: Iterable[Account] | None = None,
         known_accounts: Iterable[Account] | None = None,
     ) -> None:
         self.validate_profile_name(name)
 
         self.name = name
-        self.__working_account = working_account
+        self.__working_account: WorkingAccount | None = None
         self.watched_accounts = set(watched_accounts or [])
         self.known_accounts = set(known_accounts or [])
+
+        if working_account is not None:
+            self.set_working_account(working_account)
 
         self.cart = Cart()
 

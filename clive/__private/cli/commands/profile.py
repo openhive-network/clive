@@ -35,9 +35,10 @@ class ProfileList(ExternalCLICommand):
 class ProfileCreate(BeekeeperBasedCommand):
     profile_name: str
     password: str
+    working_account_name: str | None = None
 
     async def run(self) -> None:
-        profile = ProfileData(self.profile_name)
+        profile = ProfileData(self.profile_name, self.working_account_name)
 
         profile.save()
 
