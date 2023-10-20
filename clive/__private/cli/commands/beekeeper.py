@@ -154,3 +154,16 @@ class BeekeeperImportKey(WorldBasedCommand):
         await self.world.commands.sync_data_with_beekeeper()
 
         typer.echo("Key imported.")
+
+
+@dataclass(kw_only=True)
+class BeekeeperSync(WorldBasedCommand):
+    password: str
+
+    async def run(self) -> None:
+        typer.echo("Syncing data with beekeeper...")
+
+        await self.world.commands.activate(password=self.password)
+        await self.world.commands.sync_data_with_beekeeper()
+
+        typer.echo("Data synced.")

@@ -57,3 +57,17 @@ async def import_key(
 
     common = WithWorld(**ctx.params)
     await BeekeeperImportKey(world=common.world, password=password, key_or_path=key, alias=alias).run()
+
+
+@beekeeper.command()
+@WithWorld.decorator()
+async def sync(
+    ctx: typer.Context,
+    password: str = options.password_option,
+    beekeeper_remote: Optional[str] = options.beekeeper_remote_option,  # noqa: ARG001 # used in WithWorld
+) -> None:
+    """Sync data with the Beekeeper."""
+    from clive.__private.cli.commands.beekeeper import BeekeeperSync
+
+    common = WithWorld(**ctx.params)
+    await BeekeeperSync(world=common.world, password=password).run()

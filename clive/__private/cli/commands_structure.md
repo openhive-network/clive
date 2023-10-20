@@ -30,6 +30,7 @@ flowchart TD
     Beekeeper --> BeekeeperImportKey[import-key]
     Beekeeper --> BeekeeperInfo[info]
     Beekeeper --> BeekeeperSpawn[spawn]
+    Beekeeper --> BeekeeperSync[sync]
     Clive --> List(list)
     List --> ListBalances[balances]
     List --> ListKeys[keys]
