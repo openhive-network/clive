@@ -40,6 +40,7 @@ class NodeData:
     hive_savings: Asset.Hive = field(default_factory=default_hive)
     hive_unclaimed: Asset.Hive = field(default_factory=default_hive)
     hp_balance: int = 0
+    proxy: str = ""
     hp_unclaimed: Asset.Vests = field(default_factory=default_vests)
     last_refresh: datetime = field(default_factory=lambda: datetime.now())
     last_history_entry: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
