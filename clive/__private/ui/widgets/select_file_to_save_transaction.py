@@ -31,10 +31,10 @@ class SelectFileToSaveTransaction(SelectFile):
         binary: bool = False
         signed: bool = False
 
-    def __init__(self) -> None:
+    def __init__(self, *, already_signed: bool = False) -> None:
         super().__init__(file_must_exist=False)
         self.__binary_checkbox = Checkbox("Binary?")
-        self.__signed_checkbox = Checkbox("Signed?")
+        self.__signed_checkbox = Checkbox("Signed?", value=already_signed, disabled=already_signed)
 
     @property
     def is_binary(self) -> bool:
