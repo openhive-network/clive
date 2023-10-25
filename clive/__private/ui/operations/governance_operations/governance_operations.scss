@@ -3,6 +3,43 @@ Governance Tab {
     width: 1fr;
 }
 
+Governance Static {
+    text-align: center;
+    text-style: bold;
+}
+
+Governance Button:focus {
+    text-style: bold reverse;
+}
+
+/* Proxy */
+Governance Proxy .current-proxy-static {
+    width: 1fr;
+    height: 1;
+    background: $accent-lighten-1;
+}
+
+Governance Proxy AccountNameInput {
+    height: 3;
+    margin-top: 1;
+    margin-bottom: 1;
+}
+
+Governance Proxy #set-button-container {
+    align: center middle;
+    content-align: center middle;
+    height: 4;
+}
+
+Governance Proxy #set-proxy-button {
+    background: green;
+    color: white;
+}
+
+Governance Proxy #proxy-set-information {
+    background: $accent-lighten-2;
+}
+
 Governance Witnesses Label {
     text-style: bold;
     text-align: center;

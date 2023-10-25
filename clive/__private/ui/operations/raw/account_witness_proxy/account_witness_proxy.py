@@ -32,8 +32,10 @@ class AccountWitnessProxy(RawOperationBaseScreen):
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self) -> None:
+    def __init__(self, is_raw: bool = True, new_proxy: str | None = None) -> None:
         super().__init__()
+        self.__is_raw = is_raw
+        self.__new_proxy = new_proxy
 
         self.__proxy_input = AccountNameInput(label="proxy")
 
@@ -43,11 +45,20 @@ class AccountWitnessProxy(RawOperationBaseScreen):
             with ScrollableContainer(), Body():
                 yield InputLabel("account")
                 yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                yield PlaceTaker()
-                yield from self.__proxy_input.compose()
+                if self.__is_raw:
+                    yield from self.__proxy_input.compose()
+                else:
+                    yield from AccountNameInput(label="new proxy", value=self.__new_proxy, disabled=True).compose()
 
-    def _create_operation(self) -> AccountWitnessProxyOperation:
-        return AccountWitnessProxyOperation(
-            account=self.app.world.profile_data.name,
-            proxy=self.__proxy_input.value,
-        )
+    def _create_operation(self) -> AccountWitnessProxyOperation | None:
+        if self.__is_raw:
+            return AccountWitnessProxyOperation(
+                account=self.app.world.profile_data.name,
+                proxy=self.__proxy_input.value,
+            )
+        elif self.__new_proxy is not None:  # noqa: RET505
+            return AccountWitnessProxyOperation(
+                account=self.app.world.profile_data.name,
+                proxy=self.__new_proxy,
+            )
+        return None
