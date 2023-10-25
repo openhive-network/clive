@@ -19,6 +19,8 @@ class Witness:
     votes: str = "0 HP"
     rank: int | None = None
     missed_blocks: int = 0
+    last_block: int = 0
+    price_feed: str = "0 $"
     custom: bool = False
 
     def __eq__(self, other: object) -> bool:
@@ -55,7 +57,7 @@ class GovernanceDataProvider(CliveWidget):
         working_account_name = self.app.world.profile_data.working_account.name
 
         list_witnesses_response = await self.app.world.node.api.database_api.list_witnesses(
-            start=(0, ""), limit=150, order="by_vote_name"
+            start=(1000000000000000000, ""), limit=150, order="by_vote_name"
         )
 
         list_witnesses_votes_response = await self.app.world.node.api.database_api.list_witness_votes(
@@ -71,6 +73,8 @@ class GovernanceDataProvider(CliveWidget):
                 rank=rank,
                 votes=calculate_hp_from_votes(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares),
                 missed_blocks=witness.total_missed,
+                last_block=witness.last_confirmed_block_num,
+                price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
             )
             for rank, witness in enumerate(list_witnesses_response.witnesses, start=1)
         ]

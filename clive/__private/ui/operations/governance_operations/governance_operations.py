@@ -55,7 +55,11 @@ class Witness(Grid):
         )
 
     def on_mount(self) -> None:
-        tooltip_text = f"""{f"created: {humanize_datetime(self.__witness.created)}"}   {f"missed blocks: {self.__witness.missed_blocks}"}
+        tooltip_text = f"""
+        {f"created: {humanize_datetime(self.__witness.created)}"}
+        {f"missed blocks: {self.__witness.missed_blocks}"}
+        {f"last block: {self.__witness.last_block}"}
+        {f"price feed: {self.__witness.price_feed}"}
         """
         self.query_one(f"#{''.join(self.__witness.name.split('.'))}-witness-details").tooltip = tooltip_text
 
