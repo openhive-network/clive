@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.witness import Witnesses
 from textual import on
-from textual.containers import Container
+from textual.containers import Container, Horizontal
 from textual.widgets import Button, Static
 
 from clive.__private.ui.get_css import get_relative_css_path
@@ -40,11 +40,20 @@ class Proxy(ScrollableTabPane, CliveWidget):
                 "Notice: setting proxy will delete your witnesses votes and deactivate your proposal votes",
                 id="proxy-set-information",
             )
+        else:
+            yield Static(f"Current proxy: {self.__proxy}", classes="current-proxy-static")
+            yield self.__proxy_input
+            with Horizontal(id="modify-proxy-buttons"):
+                yield CliveButton("Change proxy", id_="change-proxy-button")
+                yield CliveButton("Remove proxy", id_="remove-proxy-button")
 
     @on(Button.Pressed)
-    def move_to_raw_screen(self) -> None:
-        if not self.__proxy:
+    def move_to_raw_screen(self, event: Button.Pressed) -> None:
+        if not self.__proxy or event.button.id == "change-proxy-button":
             self.app.push_screen(AccountWitnessProxy(is_raw=False, new_proxy=self.__proxy_input.value))
+            return
+
+        self.app.push_screen(AccountWitnessProxy(is_raw=False))
 
 
 class Proposals(ScrollableTabPane):

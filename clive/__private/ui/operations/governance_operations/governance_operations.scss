@@ -40,6 +40,22 @@ Governance Proxy #proxy-set-information {
     background: $accent-lighten-2;
 }
 
+Governance Proxy #modify-proxy-buttons {
+    align: center middle;
+    content-align: center middle;
+    height: 3;
+}
+
+Governance Proxy #change-proxy-button{
+    background: green;
+    margin-right: 3;
+}
+
+Governance Proxy #remove-proxy-button {
+    margin-left: 3;
+    background: red 70%;
+}
+
 Governance Witnesses Label {
     text-style: bold;
     text-align: center;

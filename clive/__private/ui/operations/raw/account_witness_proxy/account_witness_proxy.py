@@ -48,17 +48,22 @@ class AccountWitnessProxy(RawOperationBaseScreen):
                 if self.__is_raw:
                     yield from self.__proxy_input.compose()
                 else:
-                    yield from AccountNameInput(label="new proxy", value=self.__new_proxy, disabled=True).compose()
+                    yield from AccountNameInput(
+                        label="new proxy",
+                        value=self.__new_proxy if self.__new_proxy is not None else "Proxy will be removed",
+                        disabled=True,
+                    ).compose()
 
-    def _create_operation(self) -> AccountWitnessProxyOperation | None:
+    def _create_operation(self) -> AccountWitnessProxyOperation:
         if self.__is_raw:
             return AccountWitnessProxyOperation(
                 account=self.app.world.profile_data.name,
                 proxy=self.__proxy_input.value,
             )
-        elif self.__new_proxy is not None:  # noqa: RET505
+        if self.__new_proxy is not None:
             return AccountWitnessProxyOperation(
                 account=self.app.world.profile_data.name,
                 proxy=self.__new_proxy,
             )
-        return None
+
+        return AccountWitnessProxyOperation(account=self.app.world.profile_data.name, proxy="")
