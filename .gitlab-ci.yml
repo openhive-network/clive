@@ -30,7 +30,7 @@ variables:
 
 include:
   - project: 'hive/hive'
-    ref: fc899116bf691309cc618e51a9c2d8c6d5edb8cd #develop
+    ref: 2cf0c08ab30e2d28d464b214c7467bc62a00cf28
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
     ref: b5202fecccf40845099da351cbc0c38a6205339c
