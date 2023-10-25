@@ -132,7 +132,7 @@ class TransactionSummary(BaseScreen):
                 yield BigTitle("transaction summary")
                 yield SubTitle("(Loaded from file)" if self.__loaded_transaction else "(Built from cart)")
                 with ActionsContainer():
-                    if not self.__loaded_transaction or not self.__loaded_transaction.is_signed():
+                    if not self.__has_loaded_signed_transaction():
                         yield KeyHint("Sign with key:")
                         yield self.__select_key
                     yield AlreadySignedHint(self.__loaded_transaction)
@@ -150,7 +150,7 @@ class TransactionSummary(BaseScreen):
     async def save_to_file(self, event: SelectFileToSaveTransaction.Saved) -> None:
         file_path = event.file_path
         should_be_binary = event.binary
-        should_be_signed = event.signed
+        should_be_signed = event.signed and not self.__has_loaded_signed_transaction()
 
         transaction = await self.__get_transaction()
 
@@ -195,7 +195,10 @@ class TransactionSummary(BaseScreen):
         self.notify("Transaction broadcast successfully!")
 
     def action_save(self) -> None:
-        self.app.push_screen(SelectFileToSaveTransaction())
+        self.app.push_screen(SelectFileToSaveTransaction(already_signed=self.__has_loaded_signed_transaction()))
+
+    def __has_loaded_signed_transaction(self) -> bool:
+        return self.__loaded_transaction is not None and self.__loaded_transaction.is_signed()
 
     def __clear_all(self) -> None:
         self.app.world.profile_data.cart.clear()
