@@ -172,6 +172,7 @@ deploy_wheel_to_pypi:
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
 
   script:
+    - env
     - echo "WHEEL_BUILD_VERSION is ${WHEEL_BUILD_VERSION}"
     - $SCRIPTS_PATH/ci-helpers/build_instance.sh
       "${TAG_COMMIT}"
