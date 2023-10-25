@@ -32,7 +32,7 @@ class Proxy(ScrollableTabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         if not self.__proxy:
-            yield Static("Current proxy: not set", classes="current-proxy-static")
+            yield AccountNameInput(label="current proxy", value="Not set", disabled=True)
             yield self.__proxy_input
             with Container(id="set-button-container"):
                 yield CliveButton("Set proxy", id_="set-proxy-button")
@@ -41,7 +41,7 @@ class Proxy(ScrollableTabPane, CliveWidget):
                 id="proxy-set-information",
             )
         else:
-            yield Static(f"Current proxy: {self.__proxy}", classes="current-proxy-static")
+            yield AccountNameInput(label="current proxy", value=self.__proxy, disabled=True)
             yield self.__proxy_input
             with Horizontal(id="modify-proxy-buttons"):
                 yield CliveButton("Change proxy", id_="change-proxy-button")
