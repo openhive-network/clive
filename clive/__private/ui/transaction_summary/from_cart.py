@@ -7,7 +7,7 @@ from clive.__private.ui.transaction_summary.common import TransactionSummaryComm
 if TYPE_CHECKING:
     from rich.console import RenderableType
 
-    from clive.models import Operation, Transaction
+    from clive.models import Transaction
 
 
 class TransactionSummaryFromCart(TransactionSummaryCommon):
@@ -17,10 +17,7 @@ class TransactionSummaryFromCart(TransactionSummaryCommon):
     def _get_subtitle(self) -> RenderableType:
         return "(Built from cart)"
 
-    def _get_operations(self) -> list[Operation]:
-        return list(self.app.world.profile_data.cart)
-
-    async def _get_transaction(self) -> Transaction:
+    async def _initialize_transaction(self) -> Transaction:
         return await self.__build_transaction()
 
     async def __build_transaction(self) -> Transaction:

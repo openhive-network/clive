@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -94,19 +93,31 @@ class TransactionSummaryCommon(BaseScreen):
         Binding("f10", "broadcast", "Broadcast"),
     ]
 
-    def __init__(self) -> None:
+    def __init__(self, transaction: Transaction | None = None) -> None:
         super().__init__()
 
+        self._transaction = transaction
         self.__scrollable_part = ScrollablePart()
         self._select_key = SelectKey()
 
-    @abstractmethod
-    def _get_operations(self) -> list[Operation]:
-        """Should return list of operations to be displayed."""
+    @property
+    def transaction(self) -> Transaction:
+        assert self._transaction is not None, "Transaction should be initialized at this point!"
+        return self._transaction
 
-    @abstractmethod
-    async def _get_transaction(self) -> Transaction:
+    @property
+    def operations(self) -> list[Operation]:
+        return self.transaction.operations_models
+
+    async def on_mount(self) -> None:
+        if not self._transaction:
+            self._transaction = await self._initialize_transaction()
+
+        await self.__mount_operation_items()
+
+    async def _initialize_transaction(self) -> Transaction:
         """Should return transaction that will be used in further actions."""
+        raise NotImplementedError("Transaction not passed via constructor and _initialize_transaction not implemented!")
 
     def _get_subtitle(self) -> RenderableType:
         return ""
@@ -118,16 +129,21 @@ class TransactionSummaryCommon(BaseScreen):
             with ActionsContainer():
                 yield from self._content_after_subtitle()
             yield TransactionContentHint("This transaction will contain following operations in the presented order:")
-        with self.__scrollable_part:
-            for idx, operation in enumerate(self._get_operations()):
-                yield OperationItem(
-                    self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
-                )
+        yield self.__scrollable_part
         yield Static()
 
     def _content_after_subtitle(self) -> ComposeResult:
         yield KeyHint("Sign with key:")
         yield self._select_key
+
+    async def __mount_operation_items(self) -> None:
+        things_to_mount = []
+        for idx, operation in enumerate(self.operations):
+            operation_item = OperationItem(
+                self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
+            )
+            things_to_mount.append(operation_item)
+        await self.__scrollable_part.mount_all(things_to_mount)
 
     @CliveScreen.try_again_after_activation()
     @on(SelectFileToSaveTransaction.Saved)
@@ -136,7 +152,7 @@ class TransactionSummaryCommon(BaseScreen):
         save_as_binary = event.save_as_binary
         should_be_signed = event.should_be_signed
 
-        transaction = await self._get_transaction()
+        transaction = self.transaction
 
         if should_be_signed:
             tx = await self.__try_to_sign_transaction(transaction)
@@ -162,7 +178,7 @@ class TransactionSummaryCommon(BaseScreen):
 
     @CliveScreen.try_again_after_activation()
     async def __broadcast(self) -> None:
-        transaction = await self._get_transaction()
+        transaction = self.transaction
 
         if not transaction.is_signed():
             tx = await self.__try_to_sign_transaction(transaction)
