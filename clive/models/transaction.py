@@ -45,14 +45,7 @@ class Transaction(SchemasTransaction):
         return TransactionId(iwax.calculate_transaction_id(self))
 
     def with_hash(self) -> TransactionWithHash:
-        # TODO: There is an issue with __convert_to_h26(), the type of `operation` is not Operation but could be Any.
-        #  After resolving and making it to work with dict, it should be possible to **self.dict(by_alias=True)
-        #  like: return TransactionWithHash(**self.dict(by_alias=True) , transaction_id=iwax.calculate_transaction_id(self))
-
-        data = self.dict(by_alias=True)
-        data["operations"] = self.operations.copy()
-
-        return TransactionWithHash(**data, transaction_id=self.calculate_transaction_id())
+        return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
 
 
 class TransactionWithHash(Transaction):
