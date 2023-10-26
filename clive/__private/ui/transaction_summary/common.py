@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import CliveError, NoItemSelectedError
 from schemas.operations.representations import HF26Representation, convert_to_representation
 
@@ -113,21 +112,18 @@ class TransactionSummaryCommon(BaseScreen):
         return ""
 
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
-            with StaticPart():
-                yield BigTitle("transaction summary")
-                yield SubTitle(self._get_subtitle())
-                with ActionsContainer():
-                    yield from self._content_after_subtitle()
-                yield TransactionContentHint(
-                    "This transaction will contain following operations in the presented order:"
+        with StaticPart():
+            yield BigTitle("transaction summary")
+            yield SubTitle(self._get_subtitle())
+            with ActionsContainer():
+                yield from self._content_after_subtitle()
+            yield TransactionContentHint("This transaction will contain following operations in the presented order:")
+        with self.__scrollable_part:
+            for idx, operation in enumerate(self._get_operations()):
+                yield OperationItem(
+                    self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
                 )
-            with self.__scrollable_part:
-                for idx, operation in enumerate(self._get_operations()):
-                    yield OperationItem(
-                        self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
-                    )
-            yield Static()
+        yield Static()
 
     def _content_after_subtitle(self) -> ComposeResult:
         yield KeyHint("Sign with key:")
