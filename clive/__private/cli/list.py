@@ -44,3 +44,16 @@ async def balances(ctx: typer.Context, account_name: str = options.account_name_
 
     common = WithWorld(**ctx.params)
     await ListBalances(world=common.world, account_name=account_name).run()
+
+
+@list_.command()
+@WithWorld.decorator(use_beekeeper=False)
+async def transaction_status(
+    ctx: typer.Context,
+    transaction_id: str = typer.Option(..., help="Hash of transaction.", show_default=False),
+) -> None:
+    """Print status of transaction given as argument."""
+    from clive.__private.cli.commands.list import ListTransactionStatus
+
+    common = WithWorld(**ctx.params)
+    await ListTransactionStatus(world=common.world, transaction_id=transaction_id).run()

@@ -13,6 +13,7 @@ from clive.__private.core.commands.data_retrieval.savings_data import SavingsDat
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
+from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
@@ -184,6 +185,11 @@ class Commands(Generic[WorldT]):
     async def retrieve_savings_data(self, *, account_name: str) -> CommandWithResultWrapper[SavingsData]:
         return await self.__surround_with_exception_handlers(
             SavingsDataRetrieval(node=self._world.node, account_name=account_name)
+        )
+
+    async def find_transaction(self, *, transaction_id: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            FindTransaction(node=self._world.node, transaction_id=transaction_id)
         )
 
     @overload
