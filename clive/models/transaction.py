@@ -7,7 +7,7 @@ from pydantic import Field, validator
 
 from clive.models import Operation, Signature  # noqa: TCH001
 from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
-from schemas.fields.hex import TransactionId  # noqa: TCH001
+from schemas.fields.hex import TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.operations.representations import convert_to_representation
@@ -39,9 +39,12 @@ class Transaction(SchemasTransaction):
     def is_signed(self) -> bool:
         return bool(self.signatures)
 
-    def with_hash(self) -> TransactionWithHash:
+    def calculate_transaction_id(self) -> TransactionId:
         from clive.__private.core import iwax
 
+        return TransactionId(iwax.calculate_transaction_id(self))
+
+    def with_hash(self) -> TransactionWithHash:
         # TODO: There is an issue with __convert_to_h26(), the type of `operation` is not Operation but could be Any.
         #  After resolving and making it to work with dict, it should be possible to **self.dict(by_alias=True)
         #  like: return TransactionWithHash(**self.dict(by_alias=True) , transaction_id=iwax.calculate_transaction_id(self))
@@ -49,7 +52,7 @@ class Transaction(SchemasTransaction):
         data = self.dict(by_alias=True)
         data["operations"] = self.operations.copy()
 
-        return TransactionWithHash(**data, transaction_id=iwax.calculate_transaction_id(self))
+        return TransactionWithHash(**data, transaction_id=self.calculate_transaction_id())
 
 
 class TransactionWithHash(Transaction):

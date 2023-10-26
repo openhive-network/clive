@@ -153,8 +153,8 @@ class TransactionSummaryCommon(BaseScreen):
         expiration = humanize.humanize_datetime(self.transaction.expiration)
         things_to_mount = [
             Label(f"Ref block num: {self.transaction.ref_block_num}"),
-            Label(f"Ref block prefix: {self.transaction.ref_block_prefix}"),
             Label(f"Expiration: {expiration}"),
+            Label(f"Hash: {self.transaction.calculate_transaction_id()}"),
         ]
         await self.__transaction_metadata_container.mount_all(things_to_mount)
 
