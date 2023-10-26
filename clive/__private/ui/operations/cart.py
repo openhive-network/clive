@@ -12,8 +12,8 @@ from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.operations.transaction_summary import TransactionSummary
 from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -266,7 +266,7 @@ class Cart(BaseScreen):
                 cart_item.focus()
 
     def action_summary(self) -> None:
-        self.app.push_screen(TransactionSummary())
+        self.app.push_screen(TransactionSummaryFromCart())
 
     def action_clear_all(self) -> None:
         self.app.world.profile_data.cart.clear()

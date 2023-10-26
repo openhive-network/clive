@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -8,7 +9,6 @@ from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
 from clive.__private.core.commands.sign import TransactionAlreadySignedError
-from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.get_css import get_relative_css_path
@@ -23,6 +23,7 @@ from clive.exceptions import CliveError, NoItemSelectedError
 from schemas.operations.representations import HF26Representation, convert_to_representation
 
 if TYPE_CHECKING:
+    from rich.console import RenderableType
     from textual.app import ComposeResult
 
     from clive.models import Operation, Transaction
@@ -57,35 +58,7 @@ class ActionsContainer(Horizontal):
     """Container for the all the actions - combobox."""
 
 
-class ActionsSpacer(Static):
-    """Spacer for the actions container."""
-
-
-class KeyHint(Label):
-    """Hint for the authority."""
-
-
-class AlreadySignedHint(Label):
-    """Hint about the transaction."""
-
-    DEFAULT_CSS = """
-    AlreadySignedHint {
-        margin: 1 0;
-    }
-    """
-
-    def __init__(self, transaction: Transaction | None = None):
-        message = (
-            "(This transaction is already signed - expiration"
-            f" {humanize.humanize_datetime(transaction.expiration)} UTC)"
-            if transaction is not None
-            else "No transaction was given"
-        )
-        super().__init__(message)
-        self.display = transaction.is_signed() if transaction is not None else False
-
-
-class TransactionHint(Label):
+class TransactionContentHint(Label):
     """Hint about the transaction."""
 
 
@@ -109,9 +82,12 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
         )
 
 
-class TransactionSummary(BaseScreen):
-    CSS_PATH = [get_relative_css_path(__file__)]
+class KeyHint(Label):
+    """Hint for the authority."""
 
+
+class TransactionSummaryCommon(BaseScreen):
+    CSS_PATH = [get_relative_css_path(__file__, name="common")]
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f2", "save", "Save"),
@@ -119,40 +95,52 @@ class TransactionSummary(BaseScreen):
         Binding("f10", "broadcast", "Broadcast"),
     ]
 
-    def __init__(self, *, loaded_transaction: Transaction | None = None) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
-        self.__loaded_transaction = loaded_transaction
         self.__scrollable_part = ScrollablePart()
-        self.__select_key = SelectKey()
+        self._select_key = SelectKey()
+
+    @abstractmethod
+    def _get_operations(self) -> list[Operation]:
+        """Should return list of operations to be displayed."""
+
+    @abstractmethod
+    async def _get_transaction(self) -> Transaction:
+        """Should return transaction that will be used in further actions."""
+
+    def _get_subtitle(self) -> RenderableType:
+        return ""
 
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
             with StaticPart():
                 yield BigTitle("transaction summary")
-                yield SubTitle("(Loaded from file)" if self.__loaded_transaction else "(Built from cart)")
+                yield SubTitle(self._get_subtitle())
                 with ActionsContainer():
-                    if not self.__has_loaded_signed_transaction():
-                        yield KeyHint("Sign with key:")
-                        yield self.__select_key
-                    yield AlreadySignedHint(self.__loaded_transaction)
-
-                yield TransactionHint("This transaction will contain following operations in the presented order:")
+                    yield from self._content_after_subtitle()
+                yield TransactionContentHint(
+                    "This transaction will contain following operations in the presented order:"
+                )
             with self.__scrollable_part:
-                for idx, operation in enumerate(self.__get_operations()):
+                for idx, operation in enumerate(self._get_operations()):
                     yield OperationItem(
                         self.__get_operation_representation_json(operation), classes="-even" if idx % 2 == 0 else ""
                     )
             yield Static()
 
+    def _content_after_subtitle(self) -> ComposeResult:
+        yield KeyHint("Sign with key:")
+        yield self._select_key
+
     @CliveScreen.try_again_after_activation()
     @on(SelectFileToSaveTransaction.Saved)
     async def save_to_file(self, event: SelectFileToSaveTransaction.Saved) -> None:
         file_path = event.file_path
-        should_be_binary = event.binary
-        should_be_signed = event.signed and not self.__has_loaded_signed_transaction()
+        save_as_binary = event.save_as_binary
+        should_be_signed = event.should_be_signed
 
-        transaction = await self.__get_transaction()
+        transaction = await self._get_transaction()
 
         if should_be_signed:
             tx = await self.__try_to_sign_transaction(transaction)
@@ -161,10 +149,10 @@ class TransactionSummary(BaseScreen):
             transaction = tx
 
         assert transaction is not None, "Transaction should be built at this point!"
-        await self.app.world.commands.save_to_file(transaction=transaction, path=file_path, binary=should_be_binary)
+        await self.app.world.commands.save_to_file(transaction=transaction, path=file_path, binary=save_as_binary)
 
         self.notify(
-            f"Transaction ({'binary' if should_be_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
+            f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
             f" {'(signed)' if transaction.is_signed() else ''}"
         )
 
@@ -178,7 +166,7 @@ class TransactionSummary(BaseScreen):
 
     @CliveScreen.try_again_after_activation()
     async def __broadcast(self) -> None:
-        transaction = await self.__get_transaction()
+        transaction = await self._get_transaction()
 
         if not transaction.is_signed():
             tx = await self.__try_to_sign_transaction(transaction)
@@ -189,24 +177,19 @@ class TransactionSummary(BaseScreen):
         if not (await self.app.world.commands.broadcast(transaction=transaction)).success:
             return
 
-        if not self.__loaded_transaction:
-            self.__clear_all()
         self.action_dashboard()
         self.notify("Transaction broadcast successfully!")
+        self._actions_after_successful_broadcast()
+
+    def _actions_after_successful_broadcast(self) -> None:
+        """Actions that should be performed after the transaction is broadcasted."""
 
     def action_save(self) -> None:
-        self.app.push_screen(SelectFileToSaveTransaction(already_signed=self.__has_loaded_signed_transaction()))
-
-    def __has_loaded_signed_transaction(self) -> bool:
-        return self.__loaded_transaction is not None and self.__loaded_transaction.is_signed()
-
-    def __clear_all(self) -> None:
-        self.app.world.profile_data.cart.clear()
-        self.__scrollable_part.add_class("-hidden")
+        self.app.push_screen(SelectFileToSaveTransaction())
 
     async def __sign_transaction(self, transaction: Transaction) -> Transaction:
         try:
-            value = self.__select_key.value
+            value = self._select_key.value
         except NoItemSelectedError as error:
             raise TransactionCouldNotBeSignedError(transaction, "No key was selected!") from error
 
@@ -215,11 +198,6 @@ class TransactionSummary(BaseScreen):
         except TransactionAlreadySignedError as error:
             raise TransactionCouldNotBeSignedError(transaction, "Transaction is already signed!") from error
 
-    async def __build_transaction(self) -> Transaction:
-        return (
-            await self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)
-        ).result_or_raise
-
     async def __try_to_sign_transaction(self, transaction: Transaction) -> Transaction | None:
         try:
             return await self.__sign_transaction(transaction)
@@ -227,15 +205,7 @@ class TransactionSummary(BaseScreen):
             self.notify(str(error), severity="error")
             return None
 
-    async def __get_transaction(self) -> Transaction:
-        return self.__loaded_transaction or await self.__build_transaction()
-
-    def __get_operations(self) -> list[Operation | HF26Representation[Operation]]:
-        if self.__loaded_transaction:
-            return self.__loaded_transaction.operations
-        return list(self.app.world.profile_data.cart)
-
     @staticmethod
-    def __get_operation_representation_json(operation: Operation | HF26Representation[Operation]) -> str:
+    def __get_operation_representation_json(operation: Operation) -> str:
         representation: HF26Representation[Operation] = convert_to_representation(operation=operation)
         return representation.json(by_alias=True)

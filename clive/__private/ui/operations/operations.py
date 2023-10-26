@@ -12,7 +12,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.operations.operations_list import FINANCIAL_OPERATIONS, RAW_OPERATIONS
-from clive.__private.ui.operations.transaction_summary import TransactionSummary
+from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
@@ -102,7 +102,7 @@ class Operations(CartBasedScreen, CartBinding):
             self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
             return
 
-        await self.app.push_screen(TransactionSummary(loaded_transaction=transaction))
+        await self.app.push_screen(TransactionSummaryFromFile(transaction, file_path))
 
     def __create_raw_operations_tab(self, *, hide: bool = False) -> ComposeResult:
         if hide:

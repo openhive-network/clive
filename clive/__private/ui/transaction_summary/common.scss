@@ -1,42 +1,42 @@
-TransactionSummary ViewBag {
+ViewBag {
   overflow-y: hidden;
 }
 
-TransactionSummary StaticPart {
+StaticPart {
   height: auto;
 }
 
-TransactionSummary ScrollablePart {
+ScrollablePart {
   height: 1fr;
   padding-bottom: 1;
 }
 
-TransactionSummary ActionsContainer {
+ActionsContainer {
   height: 3;
   margin: 0 1;
 }
 
-TransactionSummary SelectKey {
+SelectKey {
   max-width: 25%;
 }
 
-TransactionSummary KeyHint {
+KeyHint {
   padding: 1;
   text-style: bold;
 }
 
-TransactionSummary TransactionHint {
+TransactionContentHint {
   background: $panel;
   padding: 1;
   margin: 1;
 }
 
-TransactionSummary OperationItem {
+OperationItem {
   margin: 0 1;
   padding: 1;
   background: $panel;
 }
 
-TransactionSummary OperationItem.-even {
+OperationItem.-even {
   background: $panel-lighten-1;
 }

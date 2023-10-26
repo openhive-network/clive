@@ -28,20 +28,21 @@ class SelectFileToSaveTransaction(SelectFile):
     class Saved(SelectFile.Saved):
         """Emitted when user saves the form."""
 
-        binary: bool = False
-        signed: bool = False
+        save_as_binary: bool = False
+        should_be_signed: bool = False
 
     def __init__(self, *, already_signed: bool = False) -> None:
         super().__init__(file_must_exist=False)
+        self.__already_signed = already_signed
         self.__binary_checkbox = Checkbox("Binary?")
         self.__signed_checkbox = Checkbox("Signed?", value=already_signed, disabled=already_signed)
 
     @property
-    def is_binary(self) -> bool:
+    def is_binary_checked(self) -> bool:
         return self.__binary_checkbox.value
 
     @property
-    def is_signed(self) -> bool:
+    def is_signed_checked(self) -> bool:
         return self.__signed_checkbox.value
 
     def additional_content_after_input(self) -> ComposeResult:
@@ -50,7 +51,14 @@ class SelectFileToSaveTransaction(SelectFile):
             yield self.__signed_checkbox
 
     def _post_saved_message(self) -> None:
-        self.app.post_message_to_screen("TransactionSummary", self._create_saved_message())
+        from clive.__private.ui.transaction_summary.common import TransactionSummaryCommon
+
+        self.app.post_message_to_screen(TransactionSummaryCommon, self._create_saved_message())
 
     def _create_saved_message(self) -> Saved:
-        return self.Saved(file_path=self.file_path, binary=self.is_binary, signed=self.is_signed)
+        return self.Saved(
+            file_path=self.file_path, save_as_binary=self.is_binary_checked, should_be_signed=self._should_be_signed()
+        )
+
+    def _should_be_signed(self) -> bool:
+        return not self.__already_signed and self.is_signed_checked

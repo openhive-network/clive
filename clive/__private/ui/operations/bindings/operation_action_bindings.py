@@ -10,7 +10,7 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.transaction_summary import TransactionSummary
+from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -53,7 +53,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     def action_finalize(self) -> None:
         if self.__add_to_cart():
-            self.app.switch_screen(TransactionSummary())
+            self.app.switch_screen(TransactionSummaryFromCart())
             self.app.push_screen_at(-1, Cart())
 
     def action_add_to_cart(self) -> None:
