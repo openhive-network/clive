@@ -100,4 +100,5 @@ class AccountUpdate2(RawOperationBaseScreen):
             owner=owner_authority,
             json_metadata=self.__json_metadata_input.value,
             posting_json_metadata=self.__posting_json_metadata.value,
+            extensions=[],
         )

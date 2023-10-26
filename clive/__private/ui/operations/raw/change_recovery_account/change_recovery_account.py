@@ -45,4 +45,5 @@ class ChangeRecoveryAccount(RawOperationBaseScreen):
         return ChangeRecoveryAccountOperation(
             account_to_recover=self.__account_to_recover_input.value,
             new_recovery_account=self.__new_recovery_account_input.value,
+            extensions=[],
         )

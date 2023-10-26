@@ -66,4 +66,5 @@ class RequestAccountRecovery(RawOperationBaseScreen):
             recovery_account=self.__recovery_account_input.value,
             account_to_recover=self.__account_to_recover_input.value,
             new_owner_authority=new_owner_authority,
+            extensions=[],
         )

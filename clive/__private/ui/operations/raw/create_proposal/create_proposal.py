@@ -68,4 +68,5 @@ class CreateProposal(RawOperationBaseScreen):
             daily_pay=Asset.hbd(daily_pay_value),
             subject=self.__subject_input.value,
             permlink=self.__permlink_input.value,
+            extensions=[],
         )

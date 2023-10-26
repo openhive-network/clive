@@ -18,7 +18,7 @@ from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
 from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import CliveError, NoItemSelectedError
-from schemas.operations.representations import Hf26OperationRepresentation, convert_to_representation
+from schemas.operations.representations import HF26Representation, convert_to_representation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -184,5 +184,5 @@ class TransactionSummary(BaseScreen):
 
     @staticmethod
     def __get_operation_representation_json(operation: Operation) -> str:
-        representation: Hf26OperationRepresentation = convert_to_representation(operation=operation)
+        representation: HF26Representation[Operation] = convert_to_representation(operation=operation)
         return representation.json(by_alias=True)

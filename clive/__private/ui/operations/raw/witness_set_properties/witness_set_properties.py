@@ -69,4 +69,8 @@ class WitnessSetProperties(RawOperationBaseScreen):
             "hbd_interest_rate": hbd_interest_rate,
         }
 
-        return WitnessSetPropertiesOperation(witness=self.__witness_input.value, props=props_field)
+        return WitnessSetPropertiesOperation(
+            witness=self.__witness_input.value,
+            props=props_field,
+            extensions=[],
+        )

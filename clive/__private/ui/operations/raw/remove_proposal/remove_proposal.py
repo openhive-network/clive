@@ -51,4 +51,8 @@ class RemoveProposal(RawOperationBaseScreen):
         split_ids = [x.strip(" ") for x in split_ids]
         proposal_ids_list: list[int] = [int(v) for v in split_ids]
 
-        return RemoveProposalOperation(proposal_owner=self.app.world.profile_data.name, proposal_ids=proposal_ids_list)
+        return RemoveProposalOperation(
+            proposal_owner=self.app.world.profile_data.name,
+            proposal_ids=proposal_ids_list,
+            extensions=[],
+        )

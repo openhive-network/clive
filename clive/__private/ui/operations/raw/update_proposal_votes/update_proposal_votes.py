@@ -55,4 +55,5 @@ class UpdateProposalVotes(RawOperationBaseScreen):
             voter=self.app.world.profile_data.working_account.name,
             proposal_ids=proposal_ids_list,
             approve=self.__approve_input.value,
+            extensions=[],
         )

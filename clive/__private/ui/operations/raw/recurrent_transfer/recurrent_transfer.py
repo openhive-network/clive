@@ -69,4 +69,5 @@ class RecurrentTransfer(RawOperationBaseScreen):
             memo=self.__memo_input.value,
             recurrence=recurrence,
             executions=executions,
+            extensions=[],
         )

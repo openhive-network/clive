@@ -103,4 +103,5 @@ class CreateClaimedAccount(RawOperationBaseScreen):
             posting=posting_authority,
             memo_key=self.__memo_key_input.value,
             json_metadata=self.__json_metadata_input.value,
+            extensions=[],
         )

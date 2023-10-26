@@ -45,4 +45,8 @@ class ClaimAccount(RawOperationBaseScreen):
         if not fee:
             return None
 
-        return ClaimAccountOperation(creator=self.__creator_input.value, fee=Asset.hive(fee))
+        return ClaimAccountOperation(
+            creator=self.__creator_input.value,
+            fee=Asset.hive(fee),
+            extensions=[],
+        )
