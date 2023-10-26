@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from textual.widgets import Label
 
-from clive.__private.core.formatters import humanize
 from clive.__private.ui.transaction_summary.common import KeyHint, TransactionSummaryCommon
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
 
@@ -18,20 +17,17 @@ if TYPE_CHECKING:
 
 
 class AlreadySignedHint(Label):
-    """Hint about the transaction."""
+    """Hint about the already signed transaction."""
 
     DEFAULT_CSS = """
     AlreadySignedHint {
         margin: 1 0;
+        color: $success;
     }
     """
 
     def __init__(self, transaction: Transaction):
-        message = (
-            "(This transaction is already signed - expiration"
-            f" {humanize.humanize_datetime(transaction.expiration)} UTC)"
-        )
-        super().__init__(message)
+        super().__init__("(This transaction is already signed)")
         self.display = transaction.is_signed()
 
 
@@ -46,7 +42,7 @@ class TransactionSummaryFromFile(TransactionSummaryCommon):
     def _get_subtitle(self) -> RenderableType:
         return f"(Loaded from [blue]{self.__file_path}[/])"
 
-    def _content_after_subtitle(self) -> ComposeResult:
+    def _actions_container_content(self) -> ComposeResult:
         if self.transaction.is_signed():
             yield AlreadySignedHint(self.transaction)
         else:

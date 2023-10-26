@@ -8,6 +8,7 @@ from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
 from clive.__private.core.commands.sign import TransactionAlreadySignedError
+from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.get_css import get_relative_css_path
@@ -56,6 +57,14 @@ class ActionsContainer(Horizontal):
     """Container for the all the actions - combobox."""
 
 
+class TransactionMetadataContainer(Horizontal):
+    """Container for the transaction metadata."""
+
+
+class ContainerTitle(Static):
+    """A title for the container."""
+
+
 class TransactionContentHint(Label):
     """Hint about the transaction."""
 
@@ -97,6 +106,7 @@ class TransactionSummaryCommon(BaseScreen):
         super().__init__()
 
         self._transaction = transaction
+        self.__transaction_metadata_container = TransactionMetadataContainer()
         self.__scrollable_part = ScrollablePart()
         self._select_key = SelectKey()
 
@@ -113,6 +123,7 @@ class TransactionSummaryCommon(BaseScreen):
         if not self._transaction:
             self._transaction = await self._initialize_transaction()
 
+        await self.__mount_transaction_metadata()
         await self.__mount_operation_items()
 
     async def _initialize_transaction(self) -> Transaction:
@@ -126,15 +137,26 @@ class TransactionSummaryCommon(BaseScreen):
         with StaticPart():
             yield BigTitle("transaction summary")
             yield SubTitle(self._get_subtitle())
+            yield ContainerTitle("TRANSACTION METADATA")
+            yield self.__transaction_metadata_container
             with ActionsContainer():
-                yield from self._content_after_subtitle()
+                yield from self._actions_container_content()
             yield TransactionContentHint("This transaction will contain following operations in the presented order:")
         yield self.__scrollable_part
         yield Static()
 
-    def _content_after_subtitle(self) -> ComposeResult:
+    def _actions_container_content(self) -> ComposeResult:
         yield KeyHint("Sign with key:")
         yield self._select_key
+
+    async def __mount_transaction_metadata(self) -> None:
+        expiration = humanize.humanize_datetime(self.transaction.expiration)
+        things_to_mount = [
+            Label(f"Ref block num: {self.transaction.ref_block_num}"),
+            Label(f"Ref block prefix: {self.transaction.ref_block_prefix}"),
+            Label(f"Expiration: {expiration}"),
+        ]
+        await self.__transaction_metadata_container.mount_all(things_to_mount)
 
     async def __mount_operation_items(self) -> None:
         things_to_mount = []

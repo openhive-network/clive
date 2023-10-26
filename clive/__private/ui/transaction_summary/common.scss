@@ -1,3 +1,5 @@
+$metadata-color: $primary-darken-1;
+
 StaticPart {
   height: auto;
 }
@@ -9,7 +11,7 @@ ScrollablePart {
 
 ActionsContainer {
   height: 3;
-  margin: 0 1;
+  margin: 1;
 }
 
 SelectKey {
@@ -17,14 +19,14 @@ SelectKey {
 }
 
 KeyHint {
-  padding: 1;
+  margin: 1;
   text-style: bold;
 }
 
 TransactionContentHint {
   background: $panel;
   padding: 1;
-  margin: 1;
+  margin: 0 1;
 }
 
 OperationItem {
@@ -35,4 +37,22 @@ OperationItem {
 
 OperationItem.-even {
   background: $panel-lighten-1;
+}
+
+TransactionMetadataContainer {
+  border: $metadata-color;
+  height: auto;
+  margin: 0 1; /* bug there, if margin is not set or set to 0, margin-right: 2 appears */
+}
+
+ContainerTitle {
+  color: $text;
+  text-style: bold;
+  padding-left: 2;
+  background: $metadata-color;
+  margin-top: 1;
+}
+
+TransactionMetadataContainer Label {
+  width: 1fr;
 }
