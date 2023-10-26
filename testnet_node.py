@@ -71,6 +71,7 @@ def prepare_node() -> tuple[tt.InitNode, tt.Wallet]:
     node.config.plugin.append("account_history_api")
     node.config.plugin.append("reputation_api")
     node.config.plugin.append("rc_api")
+    node.config.plugin.append("transaction_status_api")
     node.run()
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])

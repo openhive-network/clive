@@ -75,6 +75,18 @@ async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
 
 
 @pytest.fixture()
+async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
+    init_node = tt.InitNode()
+    init_node.config.plugin.append("transaction_status_api")
+    init_node.config.plugin.append("account_history_api")
+    init_node.config.plugin.append("account_history_rocksdb")
+    init_node.run()
+    await world.node.set_address(Url.parse(init_node.http_endpoint, protocol="http"))
+    yield init_node
+    init_node.close()
+
+
+@pytest.fixture()
 async def wallet(world: World, wallet_name: str, wallet_password: str) -> WalletInfo:
     await CreateWallet(
         app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet_name, password=wallet_password
