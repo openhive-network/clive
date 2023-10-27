@@ -11,7 +11,6 @@ from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Input, Select, Static, Switch
 
 from clive.__private.core.communication import Communication
-from clive.__private.ui.app_messages import NodeDataUpdated
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -139,7 +138,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
         else:
             address = Url.parse(self.app.query_one("#node-address-input", Input).value)
         await self.app.world.node.set_address(address)
-        self.app.post_message_to_everyone(NodeDataUpdated())
+        self.app.trigger_node_watchers()
         self.__selected_node.refresh()
 
     @on(Select.Changed)

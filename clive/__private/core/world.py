@@ -151,7 +151,7 @@ class TextualWorld(World, CliveWidget, ManualReactive):
             self.app.replace_screen("DashboardActive", "dashboard_inactive")
 
         self.notify("Switched to the INACTIVE mode.", severity="warning", timeout=5)
-        self.update_reactive("app_state")
+        self.app.trigger_app_state_watchers()
 
 
 class TyperWorld(World):

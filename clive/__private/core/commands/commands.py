@@ -282,11 +282,11 @@ class TextualCommands(Commands["TextualWorld"], CliveWidget):
         self, *, password: str, time: timedelta | None = None, permanent: bool = False
     ) -> CommandWrapper:
         wrapper = await super().activate(password=password, time=time, permanent=permanent)
-        self._world.update_reactive("app_state")
+        self.app.trigger_app_state_watchers()
         return wrapper
 
     async def deactivate(self) -> CommandWrapper:
         wrapper = await super().deactivate()
-        self._world.update_reactive("app_state")
+        self.app.trigger_app_state_watchers()
         self.app.switch_screen("dashboard_inactive")
         return wrapper

@@ -13,7 +13,6 @@ from clive.__private.config import settings
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
-from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm, SubTitle
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
@@ -167,7 +166,7 @@ class NewAuthority(NewAuthorityBase):
         self.context.working_account.keys.set_to_import([event.private_key])
 
         await self.app.world.commands.sync_data_with_beekeeper()
-        self.app.post_message_to_everyone(ProfileDataUpdated())
+        self.app.trigger_profile_data_watchers()
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
         self.notify("New authority was created.")

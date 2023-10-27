@@ -7,7 +7,7 @@ from asyncio import CancelledError
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from textual import on, work
+from textual import work
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.notifications import Notification, SeverityLevel
@@ -17,7 +17,6 @@ from clive.__private.config import settings
 from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
-from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.get_css import get_relative_css_path
@@ -39,7 +38,6 @@ if TYPE_CHECKING:
     from textual.widget import AwaitMount
 
     from clive.__private.storage.accounts import Account
-    from clive.__private.ui.app_messages import NodeDataUpdated
     from clive.__private.ui.types import NamespaceBindingsMapType
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -287,12 +285,14 @@ class Clive(App[int], ManualReactive):
             return screen.__class__.__name__ == other
         return isinstance(screen, other)
 
-    @on(ProfileDataUpdated)
-    def profile_data_updated(self) -> None:
+    def trigger_profile_data_watchers(self) -> None:
         self.world.update_reactive("profile_data")
 
-    def on_node_data_updated(self, _: NodeDataUpdated) -> None:
+    def trigger_node_watchers(self) -> None:
         self.world.update_reactive("node")
+
+    def trigger_app_state_watchers(self) -> None:
+        self.world.update_reactive("app_state")
 
     @staticmethod
     def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
@@ -339,8 +339,8 @@ class Clive(App[int], ManualReactive):
             if self.__amount_of_fails_during_update_node_data >= allowed_fails_of_update_node_data:
                 raise
         else:
-            self.world.update_reactive("profile_data")
-            self.world.update_reactive("app_state")
+            self.trigger_profile_data_watchers()
+            self.trigger_app_state_watchers()
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")

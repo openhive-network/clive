@@ -205,7 +205,7 @@ class CartItem(ColumnLayout, CliveWidget):
     def move_item(self, event: CartItem.Move) -> None:
         if event.to_idx == self.__idx:
             self.__idx = event.from_idx
-        self.app.world.update_reactive("profile_data")
+        self.app.trigger_profile_data_watchers()
 
 
 class CartHeader(ColumnLayout):
@@ -245,7 +245,7 @@ class Cart(BaseScreen):
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
         self.app.world.profile_data.cart.remove(event.widget.operation)
-        self.app.world.update_reactive("profile_data")
+        self.app.trigger_profile_data_watchers()
         await self.__scrollable_part.query(CartItem).remove()
         await self.__scrollable_part.mount(*self.__rebuild_items())
 
@@ -255,7 +255,7 @@ class Cart(BaseScreen):
         assert event.to_idx < len(self.app.world.profile_data.cart)
 
         self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
-        self.app.world.update_reactive("profile_data")
+        self.app.trigger_profile_data_watchers()
 
     @on(CartItem.Focus)
     def focus_item(self, event: CartItem.Focus) -> None:
@@ -268,5 +268,5 @@ class Cart(BaseScreen):
 
     def action_clear_all(self) -> None:
         self.app.world.profile_data.cart.clear()
-        self.app.world.update_reactive("profile_data")
+        self.app.trigger_profile_data_watchers()
         self.__scrollable_part.add_class("-hidden")

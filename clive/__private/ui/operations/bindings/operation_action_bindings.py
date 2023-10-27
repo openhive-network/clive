@@ -100,5 +100,5 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             return False
 
         self.app.world.profile_data.cart.append(operation)
-        self.app.world.update_reactive("profile_data")
+        self.app.trigger_profile_data_watchers()
         return True

@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.ui.app_messages import ProfileDataUpdated
 from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
 from clive.exceptions import AliasAlreadyInUseFormError
 
@@ -43,7 +42,7 @@ class EditAuthority(AuthorityForm):
 
         self.app.world.profile_data.working_account.keys.rename(old_alias, new_alias)
 
-        self.app.post_message_to_everyone(ProfileDataUpdated())
+        self.app.trigger_profile_data_watchers()
         self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
         self.app.pop_screen()
         self.notify(f"Authority `{self.authority.alias}` was edited.")

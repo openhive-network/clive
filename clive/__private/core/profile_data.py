@@ -176,7 +176,7 @@ class ProfileData(Context):
         clive = get_clive().app_instance()
 
         if clive.is_launched:
-            clive.world.update_reactive("profile_data")
+            clive.trigger_profile_data_watchers()
 
         with self.__open_database() as db:
             db[self.name] = self
