@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from textual import on
 from textual.binding import Binding
 
 from clive.__private.ui.activate.activate import Activate
@@ -19,7 +18,3 @@ class DashboardInactive(DashboardBase):
 
     def action_config(self) -> None:
         self.app.push_screen(ConfigInactive())
-
-    @on(Activate.Succeeded)
-    def activate_succeeded(self) -> None:
-        self.app.replace_screen("DashboardInactive", "dashboard_active")

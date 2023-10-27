@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.message import Message
 from textual.widgets import Checkbox, Static
 
 from clive.__private.ui.get_css import get_relative_css_path
@@ -36,9 +35,6 @@ class Activate(BaseScreen):
         Binding("escape", "cancel", "Back"),
         Binding("f2", "activate", "Ok"),
     ]
-
-    class Succeeded(Message):
-        """Emitted when application goes into the active state."""
 
     def __init__(self, *, activation_result_callback: ActivationResultCallbackOptionalT = None) -> None:
         super().__init__()
@@ -97,7 +93,6 @@ class Activate(BaseScreen):
         await self.__exit_success()
 
     async def __exit_success(self) -> None:
-        self.app.post_message_to_everyone(self.Succeeded())
         self.app.pop_screen()
         await self.__set_activation_result(True)
 
