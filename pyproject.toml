@@ -23,8 +23,8 @@ include = [
 ]
 source = [
     { name = "PyPI", priority = "primary" },
-    { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },  # wax
-    { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },  # schemas
+    { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
 ]
 
 
@@ -32,7 +32,7 @@ source = [
 python = "^3.10"
 dynaconf = "3.1.11"
 loguru = "0.6.0"
-textual = "0.40.0"
+textual = "0.41.0"
 aiohttp = "3.8.5"
 pydantic = "1.10.11"
 merge-args = "0.1.5"
