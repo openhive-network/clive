@@ -243,11 +243,11 @@ class Cart(BaseScreen):
             yield CartItem(idx)
 
     @on(CartItem.Delete)
-    async def remove_item(self, event: CartItem.Delete) -> None:
+    def remove_item(self, event: CartItem.Delete) -> None:
         self.app.world.profile_data.cart.remove(event.widget.operation)
         self.app.trigger_profile_data_watchers()
-        await self.__scrollable_part.query(CartItem).remove()
-        await self.__scrollable_part.mount(*self.__rebuild_items())
+        self.__scrollable_part.query(CartItem).remove()
+        self.__scrollable_part.mount(*self.__rebuild_items())
 
     @on(CartItem.Move)
     def move_item(self, event: CartItem.Move) -> None:
