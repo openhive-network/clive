@@ -16,11 +16,11 @@ class Witness:
     name: str
     created: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
     voted: bool = False
-    votes: str = "0 HP"
+    votes: str = "?"
     rank: int | None = None
     missed_blocks: int = 0
     last_block: int = 0
-    price_feed: str = "0 $"
+    price_feed: str = "?"
     custom: bool = False
 
     def __eq__(self, other: object) -> bool:
@@ -56,45 +56,44 @@ class GovernanceDataProvider(CliveWidget):
         """Method fill witnesses GovernanceData by a list of witnesses, which user voted for and witnesses from top 100."""
         working_account_name = self.app.world.profile_data.working_account.name
 
-        list_witnesses_response = await self.app.world.node.api.database_api.list_witnesses(
-            start=(1000000000000000000, ""), limit=200, order="by_vote_name"
-        )
-
         list_witnesses_votes_response = await self.app.world.node.api.database_api.list_witness_votes(
             start=(working_account_name, ""), limit=30, order="by_account_witness"
         )
 
-        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
-
-        top_150_witnesses = [
-            Witness(
-                witness.owner,
-                created=witness.created,
-                rank=rank,
-                votes=calculate_hp_from_votes(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares),
-                missed_blocks=witness.total_missed,
-                last_block=witness.last_confirmed_block_num,
-                price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
-            )
-            for rank, witness in enumerate(list_witnesses_response.witnesses, start=1)
-        ]
         voted_witnesses = [
             Witness(witness_vote.witness, voted=True)
             for witness_vote in list_witnesses_votes_response.votes
             if witness_vote.account == working_account_name
         ]
 
-        for witness in top_150_witnesses:
-            if witness in voted_witnesses:
+        list_witnesses_response = await self.app.world.node.api.database_api.list_witnesses(
+            start=(1000000000000000000, ""), limit=200, order="by_vote_name"
+        )
+
+        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
+
+        top_200_witnesses = [
+            Witness(
+                witness.owner,
+                created=witness.created,
+                rank=rank,
+                votes=calculate_hp_from_votes(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares),
+                missed_blocks=witness.total_missed,
+                voted=Witness(name=witness.owner) in voted_witnesses,
+                last_block=witness.last_confirmed_block_num,
+                price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
+            )
+            for rank, witness in enumerate(list_witnesses_response.witnesses, start=1)
+        ]
+
+        for witness in voted_witnesses:
+            if witness in top_200_witnesses:
                 voted_witnesses.remove(witness)
-                witness.voted = True
+            else:
+                top_200_witnesses.append(witness)
 
-        top_150_witnesses.extend(voted_witnesses)
-        witnesses_names = [witness.name for witness in top_150_witnesses]
-
-        sorted_witnesses = sorted(top_150_witnesses, key=lambda witness: (witness.voted, witness.rank))
-
-        new_governance_data = GovernanceData(sorted_witnesses, witnesses_names)
+        witnesses_names = [witness.name for witness in top_200_witnesses]
+        sorted_witnesses = sorted(top_200_witnesses, key=lambda witness: (not witness.voted, witness.rank))
 
         if self.content.witnesses_names != witnesses_names:
-            self.content = new_governance_data
+            self.content = GovernanceData(sorted_witnesses, witnesses_names)
