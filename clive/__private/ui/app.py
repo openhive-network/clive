@@ -141,7 +141,7 @@ class Clive(App[int], ManualReactive):
         self.__amount_of_fails_during_update_node_data = 0
         self.console.set_window_title("Clive")
 
-        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())  # type: ignore
+        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
