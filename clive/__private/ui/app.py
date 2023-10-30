@@ -190,6 +190,7 @@ class Clive(App[int], ManualReactive):
         """Push a screen at the given index in the stack."""
         screen_, _ = self.app._get_screen(screen)
         screen_._push_result_callback(self.screen if self._screen_stack else None, callback)
+        self._load_screen_css(screen_)
         self.app._screen_stack.insert(index, screen_)
 
     def pop_screen(self) -> Screen[Any]:
