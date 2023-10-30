@@ -152,16 +152,17 @@ class Clive(App[int], ManualReactive):
         else:
             self.push_screen(DashboardInactive())
 
-    def replace_screen(self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]) -> None:
+    def replace_screen(
+        self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]
+    ) -> AwaitMount:
         new_, _ = self._get_screen(new)
 
         if self.is_screen_on_top(old):
-            self.switch_screen(new_)
-            return
+            return self.switch_screen(new_)
 
         old_screen_index = self.__get_screen_index(old)
         self.app._screen_stack.pop(old_screen_index)
-        self.push_screen_at(old_screen_index, new_)
+        return self.push_screen_at(old_screen_index, new_)
 
     def __get_screen_index(self, screen: str | type[Screen[ScreenResultType]]) -> int:
         for index, screen_on_stack in enumerate(self.app._screen_stack):
@@ -186,12 +187,13 @@ class Clive(App[int], ManualReactive):
         index: int,
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-    ) -> None:
+    ) -> AwaitMount:
         """Push a screen at the given index in the stack."""
-        screen_, _ = self.app._get_screen(screen)
+        screen_, await_mount = self.app._get_screen(screen)
         screen_._push_result_callback(self.screen if self._screen_stack else None, callback)
         self._load_screen_css(screen_)
         self.app._screen_stack.insert(index, screen_)
+        return await_mount
 
     def pop_screen(self) -> Screen[Any]:
         fun = super().pop_screen
