@@ -114,9 +114,9 @@ class WitnessActionRow(Horizontal):
 
     def compose(self) -> ComposeResult:
         if self.__vote:
-            yield Label("Vote", classes="action-vote")
+            yield Label("Vote", classes="action-vote action-label")
         else:
-            yield Label("Unvote", classes="action-unvote")
+            yield Label("Unvote", classes="action-unvote action-label")
         yield Label(self.__witness_name, classes="action-witness-name")
 
 

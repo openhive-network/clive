@@ -6,6 +6,7 @@ Governance Tab {
 Governance Witnesses Label {
     text-style: bold;
     text-align: center;
+    width: 1fr;
 }
 
 Governance Witnesses Static {
@@ -55,7 +56,7 @@ Governance WitnessesList {
 
 Governance WitnessesList Witness {
     grid-size: 5 1;
-    grid-columns: 17% 14% 35% 20% 14%;
+    grid-columns: 20% 11% 35% 20% 14%;
 }
 
 Governance Witness .witness-name-even {
@@ -92,7 +93,7 @@ Governance Witness .witness-details-odd {
 
 Governance WitnessesListHeader {
     grid-size: 5 1;
-    grid-columns: 17% 14% 35% 20% 14%;
+    grid-columns: 20% 11% 35% 20% 14%;
 }
 
 Governance WitnessesListHeader #rank-column {
@@ -127,12 +128,12 @@ Governance WitnessesActions {
 }
 
 Governance #action-row {
-    width: 50%;
+    width: 32%;
     background: rgb(255, 186, 65);
 }
 
 Governance #witness-row {
-    width: 50%;
+    width: 68%;
     background: rgb(0, 83, 170);
 }
 
@@ -140,17 +141,22 @@ Governance #witnesses-actions-header {
     background: rgb(83, 158, 255);
 }
 
-Governance WitnessActionRow Static {
-    width: 50%;
+Governance WitnessActionRow .action-witness-name {
+    width: 68%;
 }
 
-Governance WitnessActionRow .action-vote{
+Governance WitnessActionRow .action-vote {
     background: green;
 }
 
 Governance WitnessActionRow .action-unvote {
     background: red;
 }
+
+Governance WitnessActionRow .action-label {
+    width: 32%;
+}
+
 
 Governance WitnessActionRow {
     height: 1;
