@@ -34,9 +34,10 @@ if TYPE_CHECKING:
 class Witness(Grid):
     """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
-    def __init__(self, witness: WitnessInformation) -> None:
+    def __init__(self, witness: WitnessInformation, evenness: str = "even") -> None:
         super().__init__()
         self.__witness = witness
+        self.__evenness = evenness
 
         try:
             self.app.query_one(f"#{''.join(witness.name.split('.'))}-witness")
@@ -47,11 +48,16 @@ class Witness(Grid):
 
     def compose(self) -> ComposeResult:
         yield self.__witness_checkbox
-        yield Label(str(self.__witness.rank) if self.__witness.rank is not None else "?", classes="witness-rank")
-        yield Label(self.__witness.name, classes="witness-name")
-        yield Label(str(self.__witness.votes), classes="witness-votes")
         yield Label(
-            "details", classes="witness-details", id=f"{''.join(self.__witness.name.split('.'))}-witness-details"
+            str(self.__witness.rank) if self.__witness.rank is not None else "?",
+            classes=f"witness-rank-{self.__evenness}",
+        )
+        yield Label(self.__witness.name, classes=f"witness-name-{self.__evenness}")
+        yield Label(str(self.__witness.votes), classes=f"witness-votes-{self.__evenness}")
+        yield Label(
+            "details",
+            classes=f"witness-details-{self.__evenness}",
+            id=f"{''.join(self.__witness.name.split('.'))}-witness-details",
         )
 
     def on_mount(self) -> None:
@@ -166,9 +172,13 @@ class WitnessesList(Vertical, CliveWidget):
         if self.__witnesses_to_display is None:
             yield Static("Loading the list of witnesses")
         else:
-            for witness in self.__witnesses_to_display[self.__first_witness_index : self.__first_witness_index + 15]:
-                yield Witness(witness)
-                yield Static()
+            for id_, witness in enumerate(
+                self.__witnesses_to_display[self.__first_witness_index : self.__first_witness_index + 25]
+            ):
+                if id_ % 2 == 0:
+                    yield Witness(witness)
+                else:
+                    yield Witness(witness, evenness="odd")
 
 
 class WitnessesListHeader(Grid):
@@ -202,13 +212,13 @@ class WitnessesTable(Vertical, CliveWidget):
         self.bind(Binding("right", "next_page", "next page"))
 
     def action_next_page(self) -> None:
-        last_possible_index = 135
+        last_possible_index = 175
         if self.__witness_index == last_possible_index:
-            self.notify("Just 150 witnesses are available, please type witness outside the list and vote beside")
+            self.notify("Just 200 witnesses are available, please type witness outside the list and vote beside")
             return
 
         self.query_one(WitnessesList).remove()
-        self.__witness_index += 15
+        self.__witness_index += 25
         next_witnesses_page = WitnessesList(
             self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
         )
@@ -221,7 +231,7 @@ class WitnessesTable(Vertical, CliveWidget):
             return
 
         self.query_one(WitnessesList).remove()
-        self.__witness_index -= 15
+        self.__witness_index -= 25
         next_witnesses_page = WitnessesList(
             self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
         )

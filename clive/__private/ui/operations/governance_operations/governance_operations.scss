@@ -50,7 +50,7 @@ Governance WitnessCheckbox:focus Label {
 
 /*table to modify votes for the witnesses*/
 Governance WitnessesList {
-    height: auto;
+    height: 25;
 }
 
 Governance WitnessesList Witness {
@@ -58,20 +58,36 @@ Governance WitnessesList Witness {
     grid-columns: 17% 14% 35% 20% 14%;
 }
 
-Governance Witness .witness-name {
+Governance Witness .witness-name-even {
     background: rgb(83, 158, 255);
 }
 
-Governance Witness .witness-rank {
+Governance Witness .witness-rank-even {
     background: rgb(1, 120, 212);
 }
 
-Governance Witness .witness-votes {
+Governance Witness .witness-votes-even {
     background: rgb(1, 120, 212);
 }
 
-Governance Witness .witness-details {
+Governance Witness .witness-details-even {
     background: rgb(0, 83, 170);
+}
+
+Governance Witness .witness-name-odd {
+    background: rgb(128, 128, 128);
+}
+
+Governance Witness .witness-rank-odd {
+    background: rgb(96, 96, 96);
+}
+
+Governance Witness .witness-votes-odd {
+    background: rgb(64, 64, 64);
+}
+
+Governance Witness .witness-details-odd {
+    background: rgb(96, 96, 96);
 }
 
 Governance WitnessesListHeader {
