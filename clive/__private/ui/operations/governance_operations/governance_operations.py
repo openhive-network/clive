@@ -52,13 +52,13 @@ class Witness(Grid):
             str(self.__witness.rank) if self.__witness.rank is not None else "?",
             classes=f"witness-rank-{self.__evenness}",
         )
-        yield Label(self.__witness.name, classes=f"witness-name-{self.__evenness}")
-        yield Label(str(self.__witness.votes), classes=f"witness-votes-{self.__evenness}")
         yield Label(
-            "details",
-            classes=f"witness-details-{self.__evenness}",
-            id=f"{''.join(self.__witness.name.split('.'))}-witness-details",
+            self.__witness.name,
+            classes=f"witness-name-{self.__evenness}",
+            id=f"{''.join(self.__witness.name.split('.'))}-witness-info",
         )
+        yield Label(str(self.__witness.votes), classes=f"witness-votes-{self.__evenness}")
+        yield Label("details", classes=f"witness-details-{self.__evenness}")
 
     def on_mount(self) -> None:
         tooltip_text = f"""
@@ -66,8 +66,9 @@ class Witness(Grid):
         {f"missed blocks: {self.__witness.missed_blocks}"}
         {f"last block: {self.__witness.last_block}"}
         {f"price feed: {self.__witness.price_feed}"}
+        {f"version: {self.__witness.version}"}
         """
-        self.query_one(f"#{''.join(self.__witness.name.split('.'))}-witness-details").tooltip = tooltip_text
+        self.query_one(f"#{''.join(self.__witness.name.split('.'))}-witness-info").tooltip = tooltip_text
 
     @on(WitnessCheckBoxChanged)
     def move_witness_to_actions(self) -> None:

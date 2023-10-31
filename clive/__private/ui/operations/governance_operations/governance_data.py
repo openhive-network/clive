@@ -21,6 +21,7 @@ class Witness:
     missed_blocks: int = 0
     last_block: int = 0
     price_feed: str = "?"
+    version: str = ""
     custom: bool = False
 
     def __eq__(self, other: object) -> bool:
@@ -82,6 +83,7 @@ class GovernanceDataProvider(CliveWidget):
                 voted=Witness(name=witness.owner) in voted_witnesses,
                 last_block=witness.last_confirmed_block_num,
                 price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
+                version=witness.running_version,
             )
             for rank, witness in enumerate(list_witnesses_response.witnesses, start=1)
         ]
