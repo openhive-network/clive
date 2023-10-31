@@ -191,12 +191,19 @@ class WitnessesList(Vertical, CliveWidget):
 
 
 class WitnessesListHeader(Grid):
+    def __init__(self) -> None:
+        super().__init__()
+        self.arrow_left = Static("←")
+        self.arrow_right = Static("→")
+
+        self.arrow_left.visible = False
+
     def compose(self) -> ComposeResult:
-        yield Static()
+        yield self.arrow_left
         yield Static("rank", id="rank-column")
         yield Static("witness", id="name-column")
         yield Static("votes", id="votes-column")
-        yield Static()
+        yield self.arrow_right
 
 
 class WitnessesTable(Vertical, CliveWidget):
@@ -209,11 +216,13 @@ class WitnessesTable(Vertical, CliveWidget):
         self.__provider = provider
         self.__witness_index = 0
 
+        self.__header = WitnessesListHeader()
+
         self.custom_witnesses_list: list[WitnessInformation] = []
 
     def compose(self) -> ComposeResult:
         yield Static("Modify the votes for witnesses", id="witnesses-headline")
-        yield WitnessesListHeader()
+        yield self.__header
         yield WitnessesList(self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list)
 
     def on_focus(self) -> None:
@@ -221,6 +230,7 @@ class WitnessesTable(Vertical, CliveWidget):
         self.bind(Binding("right", "next_page", "next page"))
 
     def action_next_page(self) -> None:
+        self.__header.arrow_left.visible = True
         last_possible_index = 175
         if self.__witness_index == last_possible_index:
             self.notify("Just 200 witnesses are available, please type witness outside the list and vote beside")
@@ -228,6 +238,9 @@ class WitnessesTable(Vertical, CliveWidget):
 
         self.query_one(WitnessesList).remove()
         self.__witness_index += 25
+        if self.__witness_index == last_possible_index:
+            self.__header.arrow_right.visible = False
+
         next_witnesses_page = WitnessesList(
             self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
         )
@@ -235,12 +248,16 @@ class WitnessesTable(Vertical, CliveWidget):
         return
 
     def action_previous_page(self) -> None:
+        self.__header.arrow_right.visible = True
+
         if self.__witness_index == 0:
             self.notify("Cannot switch to previous page")
             return
 
         self.query_one(WitnessesList).remove()
         self.__witness_index -= 25
+        if self.__witness_index == 0:
+            self.__header.arrow_left.visible = False
         next_witnesses_page = WitnessesList(
             self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
         )
