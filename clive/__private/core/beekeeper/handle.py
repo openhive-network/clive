@@ -50,6 +50,9 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 
+ExportedKeys = list[dict[str, str]]
+
+
 class Beekeeper:
     class ConnectionFileData(CliveBaseModel):
         type_: str = Field(alias="type")
@@ -358,7 +361,7 @@ class Beekeeper:
 
     async def export_keys_wallet(
         self, *, wallet_name: str, wallet_password: str, extract_to: Path | None = None
-    ) -> dict[str, str]:
+    ) -> ExportedKeys:
         with tempfile.TemporaryDirectory() as tmpdirname:
             shutil.copy(self.get_wallet_dir() / f"{wallet_name}.wallet", tmpdirname)
             bk = Beekeeper()
@@ -379,5 +382,5 @@ class Beekeeper:
             with wallet_path.open() as keys_file:
                 if extract_to:
                     shutil.copy(wallet_path, extract_to)
-                keys: dict[str, str] = json.load(keys_file)
+                keys: ExportedKeys = json.load(keys_file)
                 return keys
