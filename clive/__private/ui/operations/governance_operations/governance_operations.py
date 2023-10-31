@@ -35,19 +35,19 @@ class Witness(Grid):
     """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
     def __init__(self, witness: WitnessInformation, evenness: str = "even") -> None:
-        super().__init__()
+        super().__init__(id=f"{''.join(witness.name.split('.'))}-grid-container")
         self.__witness = witness
         self.__evenness = evenness
 
         try:
             self.app.query_one(f"#{''.join(witness.name.split('.'))}-witness")
         except NoMatches:
-            self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted)
+            self.witness_checkbox = WitnessCheckbox(is_voted=witness.voted)
         else:
-            self.__witness_checkbox = WitnessCheckbox(is_voted=witness.voted, initial_state=True)
+            self.witness_checkbox = WitnessCheckbox(is_voted=witness.voted, initial_state=True)
 
     def compose(self) -> ComposeResult:
-        yield self.__witness_checkbox
+        yield self.witness_checkbox
         yield Label(
             str(self.__witness.rank) if self.__witness.rank is not None else "?",
             classes=f"witness-rank-{self.__evenness}",
@@ -74,37 +74,39 @@ class Witness(Grid):
     def move_witness_to_actions(self) -> None:
         witnesses_actions = self.app.query_one(WitnessesActions)
 
-        if self.__witness_checkbox.checkbox_state:
+        if self.witness_checkbox.checkbox_state:
             witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
             return
         witnesses_actions.unmount_witness(name=self.__witness.name)
-        if self.__witness.custom:
-            witnesses_table = self.app.query_one(WitnessesTable)
-            witnesses_table.custom_witnesses_list.remove(self.__witness)
-            witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
 
 
 class WitnessManualVote(Vertical):
     def __init__(self) -> None:
         super().__init__()
-        self.__label, self.__input = WitnessInput().compose()
+        self.__witness_input = WitnessInput()
 
     def compose(self) -> ComposeResult:
-        yield Static("Can't find a witness?")
-        yield Static("Type name and click vote!")
-        yield self.__input
-        yield CliveButton("Vote")
+        yield Static("Can't find witness ? Type and search !")
+        yield self.__witness_input
+        with Horizontal(id="search-button"):
+            yield CliveButton("Search", id_="witness-search-button")
 
     @on(Button.Pressed)
-    def add_witness_to_action_list(self) -> None:
-        try:
-            self.app.query_one(WitnessesActions).mount_witness(self.__input.value, vote=True)  # type: ignore[attr-defined]
-            witnesses_table = self.app.query_one(WitnessesTable)
-            witnesses_table.custom_witnesses_list.append(WitnessInformation(name=self.__input.value, custom=True))  # type: ignore[attr-defined]
-            witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
+    def add_witness_to_action_list(self, event: Button.Pressed) -> None:
+        if event.button.id == "witness-search-button":
+            try:
+                witness = WitnessInformation(name=self.__witness_input.value)
+                witnesses_table = self.app.query_one(WitnessesTable)
 
-        except DuplicateIds:
-            self.notify("Witness is already in actions !", severity="error")
+                if witnesses_table.witnesses_list is not None and witness in witnesses_table.witnesses_list:
+                    self.app.query_one(f"#{''.join(witness.name.split('.'))}-grid-container").witness_checkbox.click()  # type: ignore[attr-defined]
+                    return
+
+                witnesses_table.custom_witnesses_list.append(witness)
+                witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
+
+            except DuplicateIds:
+                self.notify("Witness is already in actions !", severity="error")
 
 
 class WitnessActionRow(Horizontal):
@@ -254,6 +256,10 @@ class WitnessesTable(Vertical, CliveWidget):
         )
         self.mount(new_witnesses_list_container)
 
+    @property
+    def witnesses_list(self) -> list[WitnessInformation] | None:
+        return self.__provider.content.witnesses
+
 
 class Proxy(ScrollableTabPane):
     """TabPane with all content about proxy."""
@@ -271,8 +277,9 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
         self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        yield WitnessesTable(self.__provider)
-        yield WitnessManualVote()
+        with Vertical(id="witness-vote-actions"):
+            yield WitnessesTable(self.__provider)
+            yield WitnessManualVote()
         yield WitnessesActions()
 
     def _create_operation(self) -> list[Operation] | None:

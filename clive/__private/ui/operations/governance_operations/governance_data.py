@@ -22,7 +22,6 @@ class Witness:
     last_block: int = 0
     price_feed: str = "?"
     version: str = ""
-    custom: bool = False
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Witness):
