@@ -197,7 +197,11 @@ Governance #witness-vote-actions {
     height: 35;
 }
 
-Governance #search-button {
+Governance #clear-custom-witnesses-button {
+    background: rgb(33, 50, 180);
+}
+
+Governance #search-and-clear-buttons {
     height: 3;
     align: center top;
     margin-top: 1;

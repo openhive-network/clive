@@ -86,27 +86,33 @@ class WitnessManualVote(Vertical):
         self.__witness_input = WitnessInput()
 
     def compose(self) -> ComposeResult:
-        yield Static("Can't find witness ? Type and search !")
+        yield Static("Can't find a witness ? Type and search !")
         yield self.__witness_input
-        with Horizontal(id="search-button"):
+        with Horizontal(id="search-and-clear-buttons"):
             yield CliveButton("Search", id_="witness-search-button")
+            yield CliveButton("Clear", id_="clear-custom-witnesses-button")
 
     @on(Button.Pressed)
-    def add_witness_to_action_list(self, event: Button.Pressed) -> None:
+    def modify_actions_list(self, event: Button.Pressed) -> None:
+        witnesses_table = self.app.query_one(WitnessesTable)
+
         if event.button.id == "witness-search-button":
             try:
                 witness = WitnessInformation(name=self.__witness_input.value)
-                witnesses_table = self.app.query_one(WitnessesTable)
 
                 if witnesses_table.witnesses_list is not None and witness in witnesses_table.witnesses_list:
                     self.app.query_one(f"#{''.join(witness.name.split('.'))}-grid-container").witness_checkbox.click()  # type: ignore[attr-defined]
+                else:
+                    witnesses_table.custom_witnesses_list.append(witness)
+                    witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
                     return
-
-                witnesses_table.custom_witnesses_list.append(witness)
-                witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
 
             except DuplicateIds:
                 self.notify("Witness is already in actions !", severity="error")
+
+        if event.button.id == "clear-custom-witnesses-button":
+            witnesses_table.custom_witnesses_list.clear()
+            witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
 
 
 class WitnessActionRow(Horizontal):
@@ -164,7 +170,7 @@ class WitnessesList(Vertical, CliveWidget):
     ) -> None:
         super().__init__()
         self.__first_witness_index = first_witness_index
-        self.__witnesses_to_display = witnesses
+        self.__witnesses_to_display = witnesses.copy() if witnesses is not None else None
 
         if custom_witnesses is not None and self.__witnesses_to_display is not None:
             for witness in custom_witnesses:
@@ -247,10 +253,9 @@ class WitnessesTable(Vertical, CliveWidget):
 
     def __sync_witnesses_list(self) -> None:
         try:
-            witnesses_list_container = self.query_one(WitnessesList)
+            self.query_one(WitnessesList).remove()
         except NoMatches:
             return
-        witnesses_list_container.remove()
         new_witnesses_list_container = WitnessesList(
             self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
         )
