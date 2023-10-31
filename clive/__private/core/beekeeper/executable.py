@@ -117,7 +117,7 @@ class BeekeeperExecutable:
         )
         logger.info("Executing beekeeper:", command)
         try:
-            result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=1)
+            result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=4)
             return result.decode("utf-8").strip()
         except subprocess.CalledProcessError as e:
             if arguments and (arguments.help_ is True or arguments.version is True):
