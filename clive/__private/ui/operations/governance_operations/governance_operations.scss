@@ -51,13 +51,19 @@ Governance WitnessCheckbox:focus Label {
 }
 
 /*table to modify votes for the witnesses*/
-Governance WitnessesList {
-    height: 30;
+
+Governance WitnessesTabbedContent {
+    width: 1fr;
 }
 
-Governance WitnessesList Witness {
+Governance WitnessTabPane Witness {
     grid-size: 5 1;
     grid-columns: 20% 11% 35% 20% 14%;
+}
+
+Governance WitnessTabPane {
+    width: 1fr;
+    height: 25;
 }
 
 Governance Witness .witness-name-even {
@@ -115,17 +121,21 @@ Governance #witnesses-headline {
 
 Governance WitnessesTable {
     width: 75%;
-    height: 32;
+    height: 28;
 }
 
-Governance WitnessesTable:focus {
-    background: rgba(0, 0, 0, 0.5);
+Governance #witness-vote-actions {
+    width: 1fr;
+    height: 28;
 }
+
 /* a table with the actions to be performed after the creation of the operation */
+
 Governance WitnessesActions {
     width: 25%;
     margin-left: 1;
-    max-height: 32;
+    max-height: 30;
+    margin-top: 1;
 }
 
 Governance #action-row {
@@ -158,7 +168,6 @@ Governance WitnessActionRow .action-label {
     width: 32%;
 }
 
-
 Governance WitnessActionRow {
     height: 1;
 }
@@ -168,9 +177,10 @@ Governance WitnessesActions #name-and-action {
 }
 
 /* manual vote for witness */
+
 Governance WitnessManualVote {
     width: 1fr;
-    height: 9;
+    height: 5;
     margin-left: 1;
 }
 
@@ -190,11 +200,6 @@ CliveButton:focus {
 
 Governance WitnessInput {
     height: 3;
-}
-
-Governance #witness-vote-actions {
-    width: 1fr;
-    height: 32;
 }
 
 Governance #clear-custom-witnesses-button {

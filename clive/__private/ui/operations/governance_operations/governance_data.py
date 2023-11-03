@@ -67,12 +67,12 @@ class GovernanceDataProvider(CliveWidget):
         ]
 
         list_witnesses_response = await self.app.world.node.api.database_api.list_witnesses(
-            start=(1000000000000000000, ""), limit=210, order="by_vote_name"
+            start=(1000000000000000000, ""), limit=100, order="by_vote_name"
         )
 
         gdpo = await self.app.world.app_state.get_dynamic_global_properties()
 
-        top_200_witnesses = [
+        top_125_witnesses = [
             Witness(
                 witness.owner,
                 created=witness.created,
@@ -88,13 +88,13 @@ class GovernanceDataProvider(CliveWidget):
         ]
 
         for witness in voted_witnesses:
-            if witness in top_200_witnesses:
+            if witness in top_125_witnesses:
                 voted_witnesses.remove(witness)
             else:
-                top_200_witnesses.append(witness)
+                top_125_witnesses.append(witness)
 
-        witnesses_names = [witness.name for witness in top_200_witnesses]
-        sorted_witnesses = sorted(top_200_witnesses, key=lambda witness: (not witness.voted, witness.rank))
+        witnesses_names = [witness.name for witness in top_125_witnesses]
+        sorted_witnesses = sorted(top_125_witnesses, key=lambda witness: (not witness.voted, witness.rank))
 
         if self.content.witnesses_names != witnesses_names:
             self.content = GovernanceData(sorted_witnesses, witnesses_names)

@@ -4,11 +4,10 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual._node_list import DuplicateIds
-from textual.binding import Binding
-from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
+from textual.containers import Container, Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.reactive import var
-from textual.widgets import Button, Label, Static
+from textual.widgets import Button, Label, LoadingIndicator, Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
@@ -104,16 +103,14 @@ class WitnessManualVote(Horizontal):
                 if witnesses_table.witnesses_list is not None and witness in witnesses_table.witnesses_list:
                     self.app.query_one(f"#{''.join(witness.name.split('.'))}-grid-container").witness_checkbox.click()  # type: ignore[attr-defined]
                 else:
-                    witnesses_table.custom_witnesses_list.append(witness)
-                    witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
+                    witnesses_table.custom_witnesses.append(witness)
                     return
 
             except DuplicateIds:
                 self.notify("Witness is already in actions !", severity="error")
 
         if event.button.id == "clear-custom-witnesses-button":
-            witnesses_table.custom_witnesses_list.clear()
-            witnesses_table.custom_witnesses_changed = not witnesses_table.custom_witnesses_changed
+            witnesses_table.custom_witnesses.clear()
 
 
 class WitnessActionRow(Horizontal):
@@ -162,122 +159,78 @@ class WitnessesActions(VerticalScroll):
         return self.__actions_to_perform
 
 
-class WitnessesList(Vertical, CliveWidget):
-    def __init__(
-        self,
-        witnesses: list[WitnessInformation] | None,
-        first_witness_index: int,
-        custom_witnesses: list[WitnessInformation] | None = None,
-    ) -> None:
-        super().__init__()
-        self.__first_witness_index = first_witness_index
-        self.__witnesses_to_display = witnesses.copy() if witnesses is not None else None
-
-        if custom_witnesses is not None and self.__witnesses_to_display is not None:
-            for witness in custom_witnesses:
-                if witness not in self.__witnesses_to_display:
-                    self.__witnesses_to_display.insert(0, witness)
+class WitnessTabPane(ScrollableTabPane):
+    def __init__(self, title: TextType, page: int, witnesses: list[WitnessInformation]) -> None:
+        super().__init__(title=title)
+        self.__page = page
+        self.__witnesses_to_display = witnesses
 
     def compose(self) -> ComposeResult:
-        if self.__witnesses_to_display is None:
-            yield Static("Loading the list of witnesses")
-        else:
-            for id_, witness in enumerate(
-                self.__witnesses_to_display[self.__first_witness_index : self.__first_witness_index + 30]
-            ):
-                if id_ % 2 == 0:
-                    yield Witness(witness)
-                else:
-                    yield Witness(witness, evenness="odd")
+        yield WitnessesListHeader()
+        for evenness, witness in enumerate(self.__witnesses_to_display):
+            if evenness % 2 == 0:
+                yield Witness(witness)
+            else:
+                yield Witness(witness, evenness="odd")
 
 
 class WitnessesListHeader(Grid):
     def __init__(self) -> None:
         super().__init__()
-        self.arrow_left = Static("←")
-        self.arrow_right = Static("→")
-
-        self.arrow_left.visible = False
 
     def compose(self) -> ComposeResult:
-        yield self.arrow_left
+        yield Static()
         yield Static("rank", id="rank-column")
         yield Static("witness", id="name-column")
         yield Static("votes", id="votes-column")
-        yield self.arrow_right
+        yield Static()
+
+
+class WitnessesTabbedContent(Container):
+    def __init__(self, witnesses: list[WitnessInformation]):
+        super().__init__(id="witnesses-list")
+        self.__witnesses = witnesses
+
+    def compose(self) -> ComposeResult:
+        with CliveTabbedContent():
+            for page in range(5):
+                yield WitnessTabPane(
+                    title=f"{page + 1}",
+                    page=page,
+                    witnesses=self.__witnesses[page * 15 : page * 15 + 15],
+                )
 
 
 class WitnessesTable(Vertical, CliveWidget):
-    can_focus = True
-    custom_witnesses_changed: bool = var(False)  # type: ignore[assignment]
+    custom_witnesses: list[WitnessInformation] = var([])  # type: ignore[assignment]
     """User also can put Witness by input - var to detect this"""
 
     def __init__(self, provider: GovernanceDataProvider):
         super().__init__()
         self.__provider = provider
-        self.__witness_index = 0
-
-        self.__header = WitnessesListHeader()
-
-        self.custom_witnesses_list: list[WitnessInformation] = []
 
     def compose(self) -> ComposeResult:
-        yield Static("Modify the votes for witnesses", id="witnesses-headline")
-        yield self.__header
-        yield WitnessesList(self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list)
-
-    def on_focus(self) -> None:
-        self.bind(Binding("left", "previous_page", "previous page"))
-        self.bind(Binding("right", "next_page", "next page"))
-
-    def action_next_page(self) -> None:
-        self.__header.arrow_left.visible = True
-        last_possible_index = 180
-        if self.__witness_index == last_possible_index:
-            self.notify("Just 210 witnesses are available, please type witness outside the list and vote beside")
-            return
-
-        self.query_one(WitnessesList).remove()
-        self.__witness_index += 30
-        if self.__witness_index == last_possible_index:
-            self.__header.arrow_right.visible = False
-
-        next_witnesses_page = WitnessesList(
-            self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
-        )
-        self.mount(next_witnesses_page)
-        return
-
-    def action_previous_page(self) -> None:
-        self.__header.arrow_right.visible = True
-
-        if self.__witness_index == 0:
-            self.notify("Cannot switch to previous page")
-            return
-
-        self.query_one(WitnessesList).remove()
-        self.__witness_index -= 30
-        if self.__witness_index == 0:
-            self.__header.arrow_left.visible = False
-        next_witnesses_page = WitnessesList(
-            self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
-        )
-        self.mount(next_witnesses_page)
-        return
+        Static("Modify the votes for witnesses", id="witnesses-headline")
+        yield LoadingIndicator()
 
     def on_mount(self) -> None:
-        self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
-        self.watch(self, "custom_witnesses_changed", callback=self.__sync_witnesses_list)
+        self.app.watch(self.__provider, "content", self.__sync_witnesses_list)
+        self.app.watch(self, "custom_witnesses", self.__sync_witnesses_list)
 
     def __sync_witnesses_list(self) -> None:
-        try:
-            self.query_one(WitnessesList).remove()
-        except NoMatches:
-            return
-        new_witnesses_list_container = WitnessesList(
-            self.__provider.content.witnesses, self.__witness_index, self.custom_witnesses_list
-        )
-        self.mount(new_witnesses_list_container)
+        if witnesses := self.app.query_one(GovernanceDataProvider).content.witnesses:
+            self.query("*").remove()
+
+            if self.custom_witnesses is not None:
+                for witness in self.custom_witnesses:
+                    witnesses.insert(0, witness)
+
+            try:
+                self.app.query_one(WitnessesTabbedContent).remove()
+            except NoMatches:
+                pass
+            finally:
+                self.mount(WitnessesTabbedContent(witnesses))
 
     @property
     def witnesses_list(self) -> list[WitnessInformation] | None:
