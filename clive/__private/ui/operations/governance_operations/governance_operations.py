@@ -80,14 +80,15 @@ class Witness(Grid):
         witnesses_actions.unmount_witness(name=self.__witness.name)
 
 
-class WitnessManualVote(Vertical):
+class WitnessManualVote(Horizontal):
     def __init__(self) -> None:
         super().__init__()
         self.__witness_input = WitnessInput()
 
     def compose(self) -> ComposeResult:
-        yield Static("Can't find a witness ? Type and search !")
-        yield self.__witness_input
+        with Vertical(id="input-with-static-manual"):
+            yield Static("Can't find a witness ? Type and search !")
+            yield self.__witness_input
         with Horizontal(id="search-and-clear-buttons"):
             yield CliveButton("Search", id_="witness-search-button")
             yield CliveButton("Clear", id_="clear-custom-witnesses-button")
@@ -182,7 +183,7 @@ class WitnessesList(Vertical, CliveWidget):
             yield Static("Loading the list of witnesses")
         else:
             for id_, witness in enumerate(
-                self.__witnesses_to_display[self.__first_witness_index : self.__first_witness_index + 25]
+                self.__witnesses_to_display[self.__first_witness_index : self.__first_witness_index + 30]
             ):
                 if id_ % 2 == 0:
                     yield Witness(witness)
@@ -231,13 +232,13 @@ class WitnessesTable(Vertical, CliveWidget):
 
     def action_next_page(self) -> None:
         self.__header.arrow_left.visible = True
-        last_possible_index = 175
+        last_possible_index = 180
         if self.__witness_index == last_possible_index:
-            self.notify("Just 200 witnesses are available, please type witness outside the list and vote beside")
+            self.notify("Just 210 witnesses are available, please type witness outside the list and vote beside")
             return
 
         self.query_one(WitnessesList).remove()
-        self.__witness_index += 25
+        self.__witness_index += 30
         if self.__witness_index == last_possible_index:
             self.__header.arrow_right.visible = False
 
@@ -255,7 +256,7 @@ class WitnessesTable(Vertical, CliveWidget):
             return
 
         self.query_one(WitnessesList).remove()
-        self.__witness_index -= 25
+        self.__witness_index -= 30
         if self.__witness_index == 0:
             self.__header.arrow_left.visible = False
         next_witnesses_page = WitnessesList(
@@ -299,10 +300,10 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
         self.__provider = provider
 
     def compose(self) -> ComposeResult:
-        with Vertical(id="witness-vote-actions"):
+        with Horizontal(id="witness-vote-actions"):
             yield WitnessesTable(self.__provider)
-            yield WitnessManualVote()
-        yield WitnessesActions()
+            yield WitnessesActions()
+        yield WitnessManualVote()
 
     def _create_operation(self) -> list[Operation] | None:
         working_account_name = self.app.world.profile_data.working_account.name

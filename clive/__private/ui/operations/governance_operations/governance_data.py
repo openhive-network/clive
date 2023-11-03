@@ -67,7 +67,7 @@ class GovernanceDataProvider(CliveWidget):
         ]
 
         list_witnesses_response = await self.app.world.node.api.database_api.list_witnesses(
-            start=(1000000000000000000, ""), limit=200, order="by_vote_name"
+            start=(1000000000000000000, ""), limit=210, order="by_vote_name"
         )
 
         gdpo = await self.app.world.app_state.get_dynamic_global_properties()

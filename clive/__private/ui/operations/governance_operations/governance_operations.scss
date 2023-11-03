@@ -16,7 +16,7 @@ Governance Witnesses Static {
 
 /* WITNESSES */
 Governance Witnesses {
-    layout: horizontal;
+    layout: vertical;
 }
 
 Governance Tooltip {
@@ -52,7 +52,7 @@ Governance WitnessCheckbox:focus Label {
 
 /*table to modify votes for the witnesses*/
 Governance WitnessesList {
-    height: 25;
+    height: 30;
 }
 
 Governance WitnessesList Witness {
@@ -114,8 +114,8 @@ Governance #witnesses-headline {
 }
 
 Governance WitnessesTable {
-    width: 1fr;
-    height: 27;
+    width: 75%;
+    height: 32;
 }
 
 Governance WitnessesTable:focus {
@@ -125,7 +125,7 @@ Governance WitnessesTable:focus {
 Governance WitnessesActions {
     width: 25%;
     margin-left: 1;
-    max-height: 30;
+    max-height: 32;
 }
 
 Governance #action-row {
@@ -193,16 +193,21 @@ Governance WitnessInput {
 }
 
 Governance #witness-vote-actions {
-    width: 75%;
-    height: 35;
+    width: 1fr;
+    height: 32;
 }
 
 Governance #clear-custom-witnesses-button {
     background: rgb(33, 50, 180);
 }
 
+Governance #input-with-static-manual {
+    width: 65%;
+}
+
 Governance #search-and-clear-buttons {
     height: 3;
     align: center top;
     margin-top: 1;
+    width: 35%;
 }
