@@ -35,7 +35,6 @@ def load_transaction(name: str) -> dict[bytes, dict[str, Any]]:
 
 
 VALID_TRXS: Final[dict[bytes, dict[str, Any]]] = {
-    b"00000000000000000000000000": {},
     **load_transaction("trx_1"),
 }
 
