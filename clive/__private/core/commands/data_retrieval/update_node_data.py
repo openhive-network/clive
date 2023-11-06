@@ -110,6 +110,7 @@ class _AccountProcessedData:
 
 @dataclass
 class HarvestedDataRaw:
+    gdpo: DynamicGlobalProperties | None = None
     core_accounts: FindAccounts | None = None
     rc_accounts: FindRcAccounts | None = None
     account_harvested_data: dict[Account, _AccountHarvestedDataRaw] = field(
@@ -121,13 +122,22 @@ AccountSanitizedDataContainer = dict[Account, _AccountSanitizedData]
 
 
 @dataclass
-class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedDataContainer, DynamicGlobalProperties]):
+class SanitizedData:
+    gdpo: DynamicGlobalProperties
+    account_sanitized_data: AccountSanitizedDataContainer
+
+
+@dataclass
+class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, DynamicGlobalProperties]):
     node: Node
     accounts: list[Account] = field(default_factory=list)
 
     async def _execute(self) -> None:
-        self._result = await self.node.api.database_api.get_dynamic_global_properties()
         if not self.accounts:
+            # We only need to fetch GDPO if no accounts were provided - otherwise it will be fetched in the same (batch)
+            # query with other account-related data. Otherwise, if that would happen in a separate call we might get a
+            # stale GDPO (for previous block).
+            self._result = await self.node.api.database_api.get_dynamic_global_properties()
             return
 
         await super()._execute()
@@ -138,6 +148,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedData
         harvested_data: HarvestedDataRaw = HarvestedDataRaw()
 
         async with self.node.batch(delay_error_on_data_access=True) as node:
+            harvested_data.gdpo = await node.api.database_api.get_dynamic_global_properties()
             harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
             harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)
 
@@ -172,7 +183,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedData
 
         return harvested_data
 
-    async def _sanitize_data(self, data: HarvestedDataRaw) -> AccountSanitizedDataContainer:
+    async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         for core_account in self.__assert_core_accounts(data.core_accounts):
             account = self.__get_account(core_account.name)
             data.account_harvested_data[account].core = core_account
@@ -181,9 +192,9 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedData
             account = self.__get_account(rc_account.account)
             data.account_harvested_data[account].rc = rc_account
 
-        sanitized: AccountSanitizedDataContainer = {}
+        account_sanitized_data: AccountSanitizedDataContainer = {}
         for account, unsanitized in data.account_harvested_data.items():
-            sanitized[account] = _AccountSanitizedData(
+            account_sanitized_data[account] = _AccountSanitizedData(
                 core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
                 rc=unsanitized.rc,
                 reputation=self.__assert_reputation_or_none(unsanitized.reputations, account.name),
@@ -194,16 +205,16 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedData
                 ),
                 owner_history=self.__assert_owner_history(unsanitized.owner_history),
             )
-        return sanitized
+        return SanitizedData(gdpo=self.__assert_gpdo(data.gdpo), account_sanitized_data=account_sanitized_data)
 
-    async def _process_data(self, data: AccountSanitizedDataContainer) -> DynamicGlobalProperties:
+    async def _process_data(self, data: SanitizedData) -> DynamicGlobalProperties:
         downvote_vote_ratio: Final[int] = 4
 
-        gdpo = self.result
+        gdpo = data.gdpo
 
         accounts_processed_data: dict[Account, _AccountProcessedData] = {}
         for account in self.accounts:
-            account_data = data[account]
+            account_data = data.account_sanitized_data[account]
             accounts_processed_data[account] = _AccountProcessedData(
                 core=account_data.core,
                 rc=account_data.rc,
@@ -358,6 +369,10 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, AccountSanitizedData
 
     def __get_account(self, name: str) -> Account:
         return next(filter(lambda account: account.name == name, self.accounts))
+
+    def __assert_gpdo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
+        assert data is not None, "GDPO data is missing..."
+        return data
 
     def __assert_core_accounts(self, data: FindAccounts | None) -> list[SchemasAccount]:
         assert data is not None, "Core account data is missing..."
