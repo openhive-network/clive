@@ -1,14 +1,42 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from typing import Any, Final
 
 MAINNET_CHAIN_ID: Final[bytes] = b"beeab0de00000000000000000000000000000000000000000000000000000000"
 
 ENCODING = "utf-8"
 
-VALID_TRXS: Final[dict[str, str]] = {
-    "5704e861a5035f2bf456010e09737465656d6974323000000457e861a5031091d4f023a0ea59940769dad86c020000000000029db013797711c88cccca3692407f9ff9b9ce7221aaa2d797f1692be2215d0a5f276060533b97694f0b7cec59d89e0457732e6356b56103eead518a4ec4b10abe1f3328dd7fc9ffbcbbf838e4498b39ab22bc09327eccf4cf4e504b68b1eca2df336c8465ad38641639f114faeb4d357bea8dd3a9b898653c1eb259f75c5fc971fb0000117040ae389c5e52e5e8e0ac384f1c595ca98fcde7919b68ee7e8c73737aa0860100000000002320bcbe00000200e80300": '{"ref_block_num":1111,"ref_block_prefix":61170152,"expiration":"2016-03-24T18:01:03","operations":[{"type":"pow_operation","value":{"worker_account":"steemit20","block_id":"00000457e861a5031091d4f023a0ea59940769da","nonce":158936,"work":{"worker":"STM65wH1LZ7BfSHcK69SShnqCAH5xdoSZpGkUjmzHJ5GCuxEK9V5G","input":"276060533b97694f0b7cec59d89e0457732e6356b56103eead518a4ec4b10abe","signature":"1f3328dd7fc9ffbcbbf838e4498b39ab22bc09327eccf4cf4e504b68b1eca2df336c8465ad38641639f114faeb4d357bea8dd3a9b898653c1eb259f75c5fc971fb","work":"0000117040ae389c5e52e5e8e0ac384f1c595ca98fcde7919b68ee7e8c73737a"},"props":{"account_creation_fee":{"amount":"100000","precision":3,"nai":"@@000000021"},"maximum_block_size":131072,"hbd_interest_rate":1000}}}],"extensions":[],"signatures":[]}',
-    "000000000000000000000000": "{}",
+
+def load_transaction(name: str) -> dict[bytes, dict[str, Any]]:
+    """
+    Load a transaction from the data directory with the given name.
+
+    Args:
+    ----
+    =====
+    name (str): The name of the transaction to load (without the extension).
+
+    Returns:
+    -------
+    ========
+    A dictionary with the binary transaction as key and the JSON transaction as value.
+    """
+    data_directory = Path(__file__).parent / "data"
+
+    with (data_directory / f"{name}.json").open() as json_file:
+        json_content = json.load(json_file)
+
+    with (data_directory / f"{name}.bin").open("rb") as bin_file:
+        bin_content = bin_file.read().strip()
+
+    return {bin_content: json_content}
+
+
+VALID_TRXS: Final[dict[bytes, dict[str, Any]]] = {
+    b"000000000000000000000000": {},
+    **load_transaction("trx_1"),
 }
 
 VALID_OPERATIONS: Final[dict[str, str]] = {
