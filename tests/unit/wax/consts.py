@@ -36,6 +36,8 @@ def load_transaction(name: str) -> dict[bytes, dict[str, Any]]:
 
 VALID_TRXS: Final[dict[bytes, dict[str, Any]]] = {
     **load_transaction("trx_1"),
+    **load_transaction("trx_2_sig"),
+    **load_transaction("trx_3_multisig"),
 }
 
 VALID_OPERATIONS: Final[dict[str, str]] = {
