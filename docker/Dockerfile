@@ -12,7 +12,10 @@ FROM $BASE_IMAGE AS common
 SHELL ["/bin/bash", "-c"]
 
 ADD --chown=hived_admin:users ./docker/entrypoint.sh .
-ADD --chown=hived_admin:users . /clive
+
+ADD --chown=hived_admin:users ./pyproject.toml /clive/
+ADD --chown=hived_admin:users ./poetry.lock /clive/
+ADD --chown=hived_admin:users ./README.md /clive/
 
 WORKDIR /clive
 
@@ -65,6 +68,15 @@ ENV HIVED_PATH="/home/hived/bin/hived"
 ENV CLI_WALLET_PATH="/home/hived/bin/cli_wallet"
 ENV GET_DEV_KEY_PATH="/home/hived/bin/get_dev_key"
 ENV COMPRESS_BLOCK_LOG_PATH="/home/hived/bin/compress_block_log"
+
+# Get all the files required for embedded testnet
+ADD --chown=hived_admin:users ./testnet_node.py /clive
+
+ENV LOCAL_TOOLS_PATH="tests/clive-local-tools/"
+ADD --chown=hived_admin:users ${LOCAL_TOOLS_PATH} /clive/${LOCAL_TOOLS_PATH}
+
+ENV TEST_TOOLS_PATH="hive/tests/python/hive-local-tools/test-tools/"
+ADD --chown=hived_admin:users ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}
 
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.7.0
 ENV PATH="/home/hived_admin/.local/bin:$PATH"
