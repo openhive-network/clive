@@ -68,6 +68,12 @@ def serialize_transaction(transaction: Transaction) -> bytes:
     return result.result
 
 
+def deserialize_transaction(transaction: bytes) -> Transaction:
+    result = wax.deserialize_transaction(transaction)
+    __validate_wax_response(result)
+    return Transaction.parse_raw(result.result.decode())
+
+
 def calculate_public_key(wif: str) -> PublicKey:
     from clive.__private.core.keys import PublicKey
 
