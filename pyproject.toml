@@ -44,6 +44,11 @@ wax = "0.0.2a5.dev215+40f7d14"
 schemas = "0.0.1.dev255+9d748a8"
 
 
+[tool.poetry.group.embeddedtestnet.dependencies]
+test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
+pytest = "7.2.0"  # required by test-tools, otherwise they will fail
+
+
 [tool.poetry.group.dev.dependencies]
 black = "23.3.0"
 mypy = "1.4.1"

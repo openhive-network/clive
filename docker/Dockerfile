@@ -72,17 +72,14 @@ ENV COMPRESS_BLOCK_LOG_PATH="/home/hived/bin/compress_block_log"
 # Get all the files required for embedded testnet
 ADD --chown=hived_admin:users ./testnet_node.py /clive
 
-ENV LOCAL_TOOLS_PATH="tests/clive-local-tools/"
-ADD --chown=hived_admin:users ${LOCAL_TOOLS_PATH} /clive/${LOCAL_TOOLS_PATH}
-
 ENV TEST_TOOLS_PATH="hive/tests/python/hive-local-tools/test-tools/"
 ADD --chown=hived_admin:users ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}
 
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.7.0
 ENV PATH="/home/hived_admin/.local/bin:$PATH"
 
-# Run dev installation to supplement with development dependencies
-RUN poetry install --no-root
+# Run dev installation to supplement with embeddedtestnet dependencies
+RUN poetry install --only embeddedtestnet --no-root
 
 ENV TESTNET_MODE=1
 
