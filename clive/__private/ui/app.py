@@ -263,7 +263,7 @@ class Clive(App[int], ManualReactive):
         self.push_screen(TerminalScreen())
 
     def action_help(self) -> None:
-        self.push_screen(Help(self.screen))
+        self.push_screen(Help())
 
     def action_screenshot(self, filename: str | None = None, path: str = "./") -> None:
         self.bell()
