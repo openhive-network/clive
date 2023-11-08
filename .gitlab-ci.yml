@@ -165,7 +165,7 @@ deploy_wheel_to_pypi:
     - master
   variables:
     GIT_DEPTH: 0
-    BASE_IMAGE: ${CI_BASE_IMAGE}
+    BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
     BUILD_INSTANCE_ARGS: ""
 
     TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
@@ -206,7 +206,7 @@ build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
   <<: *clive_testnet_needs
   variables:
-    BASE_IMAGE: ${HIVED_IMAGE_NAME}
+    BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
 .prepare_clive_stable_image:

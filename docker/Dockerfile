@@ -19,17 +19,18 @@ ADD --chown=hived_admin:users ./README.md /clive/
 
 WORKDIR /clive
 
-ENV BEEKEEPER_PATH="/clive/beekeeper"
-COPY --from=beekeper_source --chown=hived_admin:users "/home/hived/bin/beekeeper" "${BEEKEEPER_PATH}"
+ENV BEEKEEPER_PATH_SOURCE="/home/hived/bin/beekeeper"
+ENV BEEKEEPER_PATH_DEST="/clive/beekeeper"
+COPY --from=beekeper_source --chown=hived_admin:users "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
 
 # crucial for proper display
 ENV COLORTERM=truecolor
 
 # libboost-all-dev is required for wax
-RUN sudo apt-get update && \
-    sudo apt-get install -y python3-venv libboost-all-dev && \
-    sudo apt-get clean && \
-    sudo rm -rf /var/lib/apt/lists/*
+RUN apt-get update && \
+    apt-get install -y python3-venv libboost-all-dev && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # create and use python virtualenv
 ENV PYTHON_VENV_PATH="/clive/venv"
@@ -58,16 +59,23 @@ ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
 FROM instance as embedded_testnet_instance
 
+ENV HIVED_BINARIES_DIR_SOURCE="/home/hived/bin"
+ENV HIVED_BINARIES_DIR_DEST=${HIVED_BINARIES_DIR_SOURCE}
+
+# Copy all the required executables from hived image
+COPY --from=beekeper_source --chown=hived_admin:users "${HIVED_BINARIES_DIR_SOURCE}" "${HIVED_BINARIES_DIR_DEST}"
+
 ARG CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 ENV CLIVE_SECRETS__DEFAULT_KEY=${CLIVE_SECRETS__DEFAULT_KEY}
 
 ARG CLIVE_SECRETS__NODE_ADDRESS="http://127.0.0.1:8090"
 ENV CLIVE_SECRETS__NODE_ADDRESS=${CLIVE_SECRETS__NODE_ADDRESS}
 
-ENV HIVED_PATH="/home/hived/bin/hived"
-ENV CLI_WALLET_PATH="/home/hived/bin/cli_wallet"
-ENV GET_DEV_KEY_PATH="/home/hived/bin/get_dev_key"
-ENV COMPRESS_BLOCK_LOG_PATH="/home/hived/bin/compress_block_log"
+# Paths to executables required for test-tools
+ENV HIVED_PATH="${HIVED_BINARIES_DIR_DEST}/hived"
+ENV CLI_WALLET_PATH="${HIVED_BINARIES_DIR_DEST}/cli_wallet"
+ENV GET_DEV_KEY_PATH="${HIVED_BINARIES_DIR_DEST}/get_dev_key"
+ENV COMPRESS_BLOCK_LOG_PATH="${HIVED_BINARIES_DIR_DEST}/compress_block_log"
 
 # Get all the files required for embedded testnet
 ADD --chown=hived_admin:users ./testnet_node.py /clive
