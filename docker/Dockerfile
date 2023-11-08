@@ -11,17 +11,17 @@ FROM $BASE_IMAGE AS common
 
 SHELL ["/bin/bash", "-c"]
 
-ADD --chown=hived_admin:users ./docker/entrypoint.sh .
+ADD ./docker/entrypoint.sh .
 
-ADD --chown=hived_admin:users ./pyproject.toml /clive/
-ADD --chown=hived_admin:users ./poetry.lock /clive/
-ADD --chown=hived_admin:users ./README.md /clive/
+ADD ./pyproject.toml /clive/
+ADD ./poetry.lock /clive/
+ADD ./README.md /clive/
 
 WORKDIR /clive
 
 ENV BEEKEEPER_PATH_SOURCE="/home/hived/bin/beekeeper"
 ENV BEEKEEPER_PATH_DEST="/clive/beekeeper"
-COPY --from=hived_image --chown=hived_admin:users "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
+COPY --from=hived_image "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
 
 # crucial for proper display
 ENV COLORTERM=truecolor
@@ -53,7 +53,7 @@ RUN pip install clive=="${CLIVE_VERSION}" \
 
 ENV TESTNET_MODE=0
 
-ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
 
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
@@ -63,7 +63,7 @@ ENV HIVED_BINARIES_DIR_SOURCE="/home/hived/bin"
 ENV HIVED_BINARIES_DIR_DEST=${HIVED_BINARIES_DIR_SOURCE}
 
 # Copy all the required executables from hived image
-COPY --from=hived_image --chown=hived_admin:users "${HIVED_BINARIES_DIR_SOURCE}" "${HIVED_BINARIES_DIR_DEST}"
+COPY --from=hived_image "${HIVED_BINARIES_DIR_SOURCE}" "${HIVED_BINARIES_DIR_DEST}"
 
 ARG CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 ENV CLIVE_SECRETS__DEFAULT_KEY=${CLIVE_SECRETS__DEFAULT_KEY}
@@ -78,10 +78,10 @@ ENV GET_DEV_KEY_PATH="${HIVED_BINARIES_DIR_DEST}/get_dev_key"
 ENV COMPRESS_BLOCK_LOG_PATH="${HIVED_BINARIES_DIR_DEST}/compress_block_log"
 
 # Get all the files required for embedded testnet
-ADD --chown=hived_admin:users ./testnet_node.py /clive
+ADD ./testnet_node.py /clive
 
 ENV TEST_TOOLS_PATH="hive/tests/python/hive-local-tools/test-tools/"
-ADD --chown=hived_admin:users ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}
+ADD ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}
 
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.7.0
 ENV PATH="/home/hived_admin/.local/bin:$PATH"
@@ -91,4 +91,4 @@ RUN poetry install --only embeddedtestnet --no-root
 
 ENV TESTNET_MODE=1
 
-ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
