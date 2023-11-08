@@ -14,7 +14,7 @@ SRCROOTDIR=""
 IMAGE_TAG_PREFIX=""
 IMAGE_PATH_SUFFIX=""
 
-BEEKEEPER_IMAGE=""
+HIVED_IMAGE=""
 BASE_IMAGE=""
 
 CLIVE_VERSION=""
@@ -26,7 +26,7 @@ print_help () {
     echo
     echo "Allows to build docker image containing clive installation"
     echo "OPTIONS:"
-    echo "  --beekeeper-source-image=image_name Allows to specify image name containing a prebuilt beekeper tool"
+    echo "  --hived-source-image=image_name     Allows to specify image name containing a prebuilt hived"
     echo "  --base-image=image_name             Allows to specify an image name being use as a base of the one to be built"
     echo "  --clive-version=version             Allows to specify a version of clive to be installed in the image"
     echo "  --embedded-testnet                  Allows to build a clive image having embedded a hived testnet inside (ready for immediate sanboxing run)"
@@ -39,8 +39,8 @@ EXPORT_PATH=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
-    --beekeeper-source-image=*)
-      BEEKEEPER_IMAGE="${1#*=}"
+    --hived-source-image=*)
+      HIVED_IMAGE="${1#*=}"
       ;;
     --base-image=*)
       BASE_IMAGE="${1#*=}"
@@ -84,7 +84,7 @@ TST_IMGTAG=${BUILD_IMAGE_TAG:?"Missing arg #1 to specify built image tag"}
 TST_SRCDIR=${SRCROOTDIR:?"Missing arg #2 to specify source directory"}
 TST_REGISTRY=${REGISTRY:?"Missing arg #3 to specify target container registry"}
 
-TST_BEEKEEPER_IMAGE=${BEEKEEPER_IMAGE:?"Missing --beekeeper-source-image to specify beekeeper binary source"}
+TST_HIVED_IMAGE=${HIVED_IMAGE:?"Missing --hived-source-image to specify source for binaries of hived"}
 TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"}
 TST_CLIVE_VERSION=${CLIVE_VERSION:?"Missing --clive-version option to specify clive version to be installed"}
 
@@ -104,7 +104,7 @@ CLIVE_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-${BUILD_IMAGE_TA
 docker build --target=${DOCKER_TARGET} \
   --build-arg CI_REGISTRY_IMAGE=$REGISTRY \
   --build-arg BASE_IMAGE=${BASE_IMAGE} \
-  --build-arg BEEKEEPER_IMAGE=${BEEKEEPER_IMAGE} \
+  --build-arg HIVED_IMAGE=${HIVED_IMAGE} \
   --build-arg CLIVE_VERSION=${CLIVE_VERSION} \
   -t ${CLIVE_IMAGE_NAME} \
   -f docker/Dockerfile .

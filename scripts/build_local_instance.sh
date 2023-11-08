@@ -16,7 +16,7 @@ IMAGE="registry.gitlab.syncad.com/hive/hive/testnet-base_instance:testnet-base_i
 CLIVE_VERSION="1.27.5.2"
 BUILD_TESTNET=1
 
-BEEKEEPER_SOURCE_IMAGE="${IMAGE}"
+HIVED_SOURCE_IMAGE="${IMAGE}"
 BASE_IMAGE="mwalbeck/python-poetry:1.7-3.10"
 
 BUILD_INSTANCE_PATH=$(realpath "${SCRIPTSDIR}/ci-helpers/")
@@ -26,7 +26,7 @@ BUILD_ARGS=(
   ${IMAGE_TAG}
   ${SRC_DIR}
   ${REGISTRY_URL}
-  --beekeeper-source-image=${BEEKEEPER_SOURCE_IMAGE}
+  --hived-source-image=${HIVED_SOURCE_IMAGE}
   --base-image=${BASE_IMAGE}
   --clive-version=${CLIVE_VERSION}
 )

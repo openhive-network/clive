@@ -1,10 +1,10 @@
-ARG BEEKEEPER_IMAGE
+ARG HIVED_IMAGE
 ARG BASE_IMAGE
 
 ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
 
-FROM $BEEKEEPER_IMAGE as beekeper_source
+FROM $HIVED_IMAGE as hived_image
 
 
 FROM $BASE_IMAGE AS common
@@ -21,7 +21,7 @@ WORKDIR /clive
 
 ENV BEEKEEPER_PATH_SOURCE="/home/hived/bin/beekeeper"
 ENV BEEKEEPER_PATH_DEST="/clive/beekeeper"
-COPY --from=beekeper_source --chown=hived_admin:users "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
+COPY --from=hived_image --chown=hived_admin:users "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
 
 # crucial for proper display
 ENV COLORTERM=truecolor
@@ -63,7 +63,7 @@ ENV HIVED_BINARIES_DIR_SOURCE="/home/hived/bin"
 ENV HIVED_BINARIES_DIR_DEST=${HIVED_BINARIES_DIR_SOURCE}
 
 # Copy all the required executables from hived image
-COPY --from=beekeper_source --chown=hived_admin:users "${HIVED_BINARIES_DIR_SOURCE}" "${HIVED_BINARIES_DIR_DEST}"
+COPY --from=hived_image --chown=hived_admin:users "${HIVED_BINARIES_DIR_SOURCE}" "${HIVED_BINARIES_DIR_DEST}"
 
 ARG CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 ENV CLIVE_SECRETS__DEFAULT_KEY=${CLIVE_SECRETS__DEFAULT_KEY}
