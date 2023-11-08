@@ -4,7 +4,7 @@ ARG BASE_IMAGE
 ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
 
-FROM $HIVED_IMAGE as hived_image
+FROM $HIVED_IMAGE AS hived_image
 
 
 FROM $BASE_IMAGE AS common
@@ -38,7 +38,7 @@ RUN python3 -m venv ${PYTHON_VENV_PATH}
 ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 
-FROM common as instance
+FROM common AS instance
 
 ARG CLIVE_VERSION
 
@@ -57,7 +57,7 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
-FROM instance as embedded_testnet_instance
+FROM instance AS embedded_testnet_instance
 
 ENV HIVED_BINARIES_DIR_SOURCE="/home/hived/bin"
 ENV HIVED_BINARIES_DIR_DEST=${HIVED_BINARIES_DIR_SOURCE}
