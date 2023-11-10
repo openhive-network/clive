@@ -1408,12 +1408,12 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.3)", "coverage-enable-subprocess
 
 [[package]]
 name = "wax"
-version = "0.0.2a5.dev201+5d06ff2"
+version = "0.0.2a5.dev215+40f7d14"
 description = ""
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "wax-0.0.2a5.dev201+5d06ff2-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:a311f5aa69526895158e34e67ed6f755be1f7b433adc5153e70f5fedc1ade5f4"},
+    {file = "wax-0.0.2a5.dev215+40f7d14-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:7446eefb428c80776e12f878ea076fd947ed394fefcf539fa4b660faedfdbacf"},
 ]
 
 [package.dependencies]
@@ -1543,4 +1543,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "788a6096c8e0e9b8c76991e636501af7146c3251be4773ec69656a3911c21d52"
+content-hash = "a7bbc64e55183ab75f07c71683f16b5f7e0caadca2df9cbebc30c032a7c84e1b"
