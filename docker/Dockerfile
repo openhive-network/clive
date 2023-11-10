@@ -22,13 +22,21 @@ COPY --from=beekeper_source --chown=hived_admin:users "/home/hived/bin/beekeeper
 # crucial for proper display
 ENV COLORTERM=truecolor
 
+# libboost-all-dev is required for wax
+RUN sudo apt-get update && \
+    sudo apt-get install -y python3-venv libboost-all-dev && \
+    sudo apt-get clean && \
+    sudo rm -rf /var/lib/apt/lists/*
+
+# create and use python virtualenv
+ENV PYTHON_VENV_PATH="/clive/venv"
+RUN python3 -m venv ${PYTHON_VENV_PATH}
+ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
+
 
 FROM common as instance
 
 ARG CLIVE_VERSION
-
-RUN poetry env use python3
-RUN source "$(poetry env info --path)/bin/activate"
 
 # Project IDS:
 # - 362 -> schemas
@@ -45,7 +53,7 @@ ENTRYPOINT ["/home/hived_admin/entrypoint.sh"]
 
 
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
-FROM common as embedded_testnet_instance
+FROM instance as embedded_testnet_instance
 
 ARG CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 ENV CLIVE_SECRETS__DEFAULT_KEY=${CLIVE_SECRETS__DEFAULT_KEY}
@@ -58,9 +66,11 @@ ENV CLI_WALLET_PATH="/home/hived/bin/cli_wallet"
 ENV GET_DEV_KEY_PATH="/home/hived/bin/get_dev_key"
 ENV COMPRESS_BLOCK_LOG_PATH="/home/hived/bin/compress_block_log"
 
+RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.7.0
+ENV PATH="/home/hived_admin/.local/bin:$PATH"
+
 # Run dev installation to supplement with development dependencies
-RUN poetry install
-RUN poetry dynamic-versioning  # Substitute versions because of https://github.com/mtkennerly/poetry-dynamic-versioning/issues/25#issuecomment-698193152, has to be done after installation otherwise pip will show "dirty" version
+RUN poetry install --no-root
 
 ENV TESTNET_MODE=1
 

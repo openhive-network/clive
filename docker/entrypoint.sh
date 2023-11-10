@@ -57,9 +57,6 @@ while [ $# -gt 0 ]; do
   shift
 done
 
-# Activate the virtual environment
-source $(poetry env info --path)/bin/activate
-
 if [ "${TESTNET_MODE}" = "0" ]; then
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
     echo "Launching clive in TUI mode on mainnet"
