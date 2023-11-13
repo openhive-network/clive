@@ -3,10 +3,8 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.accounts import AccountsList
 from clive.__private.core.profile_data import ProfileData
-from clive.core.url import Url
 
 
 @dataclass(kw_only=True)
@@ -26,12 +24,3 @@ class ProfileShow(AccountsList):
 class ProfileList(ExternalCLICommand):
     async def run(self) -> None:
         typer.echo(f"Stored profiles are: {ProfileData.list_profiles()}")
-
-
-@dataclass(kw_only=True)
-class ProfileSetNode(ProfileBasedCommand):
-    node_address: str
-
-    async def run(self) -> None:
-        url = Url.parse(self.node_address)
-        self.profile_data._set_node_address(url)

@@ -22,16 +22,3 @@ def list_all() -> None:
     from clive.__private.cli.commands.profile import ProfileList
 
     asyncio_run(ProfileList().run())
-
-
-@profile.command()
-@WithProfile.decorator
-async def set_node(
-    ctx: typer.Context,
-    node_address: str = typer.Option(..., help="The address of the node to use.", show_default=False),
-) -> None:
-    """Set the node address for the profile."""
-    from clive.__private.cli.commands.profile import ProfileSetNode
-
-    common = WithProfile(**ctx.params)
-    await ProfileSetNode(profile_data=common.profile_data, node_address=node_address).run()
