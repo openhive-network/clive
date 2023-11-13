@@ -21,6 +21,8 @@ flowchart LR
     subgraph Presentation[Commands related to the presentation of the data]
         Show(show) --> ShowProfiles[profiles]
 
+        Show --> ShowNode[node]
+
         Show --> ShowAccounts[accounts]
 
         Show --> ShowKeys[keys]
@@ -66,9 +68,6 @@ flowchart LR
     Beekeeper --> BeekeeperInfo[info]
     Beekeeper --> BeekeeperSpawn[spawn]
     Beekeeper --> BeekeeperSync[sync]
-    Clive --> List(list)
-    List --> ListBalances[balances]
-    List --> ListNode[node]
     Clive --> Profile(profile)
     Profile --> ProfileShow[show]
     Clive --> Transfer(transfer)
