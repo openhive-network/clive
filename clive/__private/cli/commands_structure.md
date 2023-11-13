@@ -17,6 +17,14 @@ additional command are contained in rectangles with rounded corners.
 flowchart LR
     Clive[clive] --> Configuration
     Clive --> Presentation
+    Clive --> BeekeeperRelated
+
+    subgraph BeekeeperRelated[Beekeeper related commands]
+        Beekeeper(beekeeper) --> BeekeeperSpawn[spawn]
+        Beekeeper --> BeekeeperClose[close]
+        Beekeeper --> BeekeeperInfo[info]
+        Beekeeper --> BeekeeperSync[sync]
+    end
 
     subgraph Presentation[Commands related to the presentation of the data]
         Show(show) --> ShowProfiles[profiles]
@@ -63,11 +71,6 @@ flowchart LR
         ConfigureNode --> SetNode[set]
     end
 
-    Clive --> Beekeeper(beekeeper)
-    Beekeeper --> BeekeeperClose[close]
-    Beekeeper --> BeekeeperInfo[info]
-    Beekeeper --> BeekeeperSpawn[spawn]
-    Beekeeper --> BeekeeperSync[sync]
     Clive --> Profile(profile)
     Profile --> ProfileShow[show]
     Clive --> Transfer(transfer)
