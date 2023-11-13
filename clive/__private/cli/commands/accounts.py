@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import typer
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
-from clive.__private.cli.exceptions import CLIWorkingAccountIsAlreadySetError, CLIWorkingAccountIsNotSetError
+from clive.__private.cli.exceptions import CLIWorkingAccountIsNotSetError
 
 
 @dataclass(kw_only=True)
@@ -19,26 +19,6 @@ class AccountsList(ProfileBasedCommand):
             typer.echo("Working account is not set.")
         typer.echo(f"Watched accounts: {[account.name for account in profile.watched_accounts]}")
         typer.echo(f"Known accounts: {[account.name for account in profile.known_accounts]}")
-
-
-@dataclass(kw_only=True)
-class AccountsWorkingSet(ProfileBasedCommand):
-    account_name: str
-
-    async def run(self) -> None:
-        if self.profile_data.is_working_account_set():
-            raise CLIWorkingAccountIsAlreadySetError(self.profile_data)
-
-        self.profile_data.set_working_account(self.account_name)
-
-
-@dataclass(kw_only=True)
-class AccountsWorkingUnset(ProfileBasedCommand):
-    async def run(self) -> None:
-        if not self.profile_data.is_working_account_set():
-            raise CLIWorkingAccountIsNotSetError(self.profile_data)
-
-        self.profile_data.unset_working_account()
 
 
 @dataclass(kw_only=True)
