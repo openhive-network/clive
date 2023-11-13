@@ -4,7 +4,6 @@ import typer
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.exceptions import CLIWorkingAccountIsAlreadySetError, CLIWorkingAccountIsNotSetError
-from clive.__private.storage.accounts import Account
 
 
 @dataclass(kw_only=True)
@@ -49,26 +48,6 @@ class AccountsWorkingShow(ProfileBasedCommand):
             raise CLIWorkingAccountIsNotSetError(self.profile_data)
 
         typer.echo(self.profile_data.working_account.name)
-
-
-@dataclass(kw_only=True)
-class AccountsWatchedAdd(ProfileBasedCommand):
-    account_name: str
-
-    async def run(self) -> None:
-        self.profile_data.watched_accounts.add(Account(self.account_name))
-
-
-@dataclass(kw_only=True)
-class AccountsWatchedRemove(ProfileBasedCommand):
-    account_name: str
-
-    async def run(self) -> None:
-        account = next(
-            (account for account in self.profile_data.watched_accounts if account.name == self.account_name), None
-        )
-        if account is not None:
-            self.profile_data.watched_accounts.discard(account)
 
 
 @dataclass(kw_only=True)
