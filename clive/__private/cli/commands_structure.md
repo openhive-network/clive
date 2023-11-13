@@ -61,12 +61,6 @@ flowchart LR
         ConfigureNode --> SetNode[set]
     end
 
-    Clive[clive] --> Accounts(accounts)
-    Accounts --> AccountsList[list]
-    Accounts --> AccountsWatched(watched)
-    Accounts --> AccountsWorking(working)
-    AccountsWatched --> AccountsWatchedList[list]
-    AccountsWorking --> AccountsWorkingShow[show]
     Clive --> Beekeeper(beekeeper)
     Beekeeper --> BeekeeperClose[close]
     Beekeeper --> BeekeeperInfo[info]
