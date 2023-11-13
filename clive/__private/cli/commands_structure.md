@@ -43,9 +43,7 @@ flowchart TD
     Accounts --> AccountsList[list]
     Accounts --> AccountsWatched(watched)
     Accounts --> AccountsWorking(working)
-    AccountsWatched --> AccountsWatchedAdd[add]
     AccountsWatched --> AccountsWatchedList[list]
-    AccountsWatched --> AccountsWatchedRemove[remove]
     AccountsWorking --> AccountsWorkingSet[set]
     AccountsWorking --> AccountsWorkingShow[show]
     AccountsWorking --> AccountsWorkingUnset[unset]
