@@ -33,7 +33,7 @@ flowchart TD
 
         Configure --> ConfigureKey(key)
         ConfigureKey --> AddKey[add]
-        ConfigureKey --> RemoveKey[remove]
+        ConfigureKey -->|"Not implemented yet"| RemoveKey[remove]
 
         Configure --> ConfigureNode(node)
         ConfigureNode --> SetNode[set]
@@ -47,7 +47,6 @@ flowchart TD
     AccountsWorking --> AccountsWorkingShow[show]
     Clive --> Beekeeper(beekeeper)
     Beekeeper --> BeekeeperClose[close]
-    Beekeeper --> BeekeeperImportKey[import-key]
     Beekeeper --> BeekeeperInfo[info]
     Beekeeper --> BeekeeperSpawn[spawn]
     Beekeeper --> BeekeeperSync[sync]
