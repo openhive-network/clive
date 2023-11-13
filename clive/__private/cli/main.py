@@ -4,7 +4,6 @@ from typing import Final, Optional
 
 import typer
 
-from clive.__private.cli.accounts import accounts
 from clive.__private.cli.beekeeper import beekeeper
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.completion import is_tab_completion_active
@@ -23,7 +22,6 @@ cli = CliveTyper(help=HELP, rich_markup_mode="rich", context_settings={"help_opt
 cli.add_typer(configure)
 cli.add_typer(show)
 cli.add_typer(profile)
-cli.add_typer(accounts)
 cli.add_typer(transfer)
 cli.add_typer(list_)
 cli.add_typer(beekeeper)
