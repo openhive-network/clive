@@ -1,23 +1,15 @@
 from dataclasses import dataclass
 
-import typer
 from rich.console import Console
 from rich.table import Table
 
-from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.storage.accounts import Account
 from clive.models import Asset
 
 
 @dataclass(kw_only=True)
-class ListNode(ProfileBasedCommand):
-    async def run(self) -> None:
-        typer.echo(self.profile_data.node_address)
-
-
-@dataclass(kw_only=True)
-class ListBalances(WorldBasedCommand):
+class ShowBalances(WorldBasedCommand):
     account_name: str
 
     async def run(self) -> None:
