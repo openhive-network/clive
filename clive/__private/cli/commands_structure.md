@@ -24,7 +24,6 @@ flowchart LR
         Beekeeper(beekeeper) --> BeekeeperSpawn[spawn]
         Beekeeper --> BeekeeperClose[close]
         Beekeeper --> BeekeeperInfo[info]
-        Beekeeper --> BeekeeperSync[sync]
     end
 
    subgraph Processing[Commands related to performing certain actions]

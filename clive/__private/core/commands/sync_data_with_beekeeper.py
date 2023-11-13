@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.import_key import ImportKey
-from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper
+    from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
     from clive.__private.core.profile_data import ProfileData
 
 
@@ -23,7 +23,6 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
             return
 
         await self.__import_pending_keys()
-        await self.__sync_missing_keys()
 
     async def __import_pending_keys(self) -> None:
         async def import_key(key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
@@ -35,13 +34,3 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
             ).execute_with_result()
 
         await self.profile_data.working_account.keys.import_pending_to_beekeeper(import_key)
-
-    async def __sync_missing_keys(self) -> None:
-        keys_in_clive = self.profile_data.working_account.keys
-        keys_in_beekeeper = (await self.beekeeper.api.get_public_keys()).keys
-
-        keys_missing_in_clive = [key.public_key for key in keys_in_beekeeper if key.public_key not in keys_in_clive]
-
-        self.profile_data.working_account.keys.add(
-            *[PublicKeyAliased(value=key, alias=key) for key in keys_missing_in_clive]
-        )
