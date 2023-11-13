@@ -14,10 +14,32 @@ In the diagram below, all commands that can be run are enclosed in rectangles, w
 additional command are contained in rectangles with rounded corners.
 
 ```mermaid
-flowchart TD
+flowchart LR
     Clive[clive] --> Configuration
+    Clive --> Presentation
 
-    subgraph Configuration
+    subgraph Presentation[Commands related to the presentation of the data]
+        Show(show) --> ShowProfiles[profiles]
+
+        Show --> ShowAccounts[accounts]
+
+        Show --> ShowKeys[keys]
+
+        Show --> ShowBalances[balances]
+
+        Show -->|"Not implemented yet"| ShowWitnesses[witnesses]
+        ShowWitnesses ~~~|"witnesses:<br>- show witnesses the account votes for<br>- possible to list also proxy votes"| ShowWitnesses
+
+        Show -->|"Not implemented yet"| ShowProposals[proposals]
+
+        Show -->|"Not implemented yet"| ShowPending(pending)
+        ShowPending --> ShowPendingTransferFromSavings[withdrawals]
+        ShowPending --> ShowPendingPowerUps[power-ups]
+        ShowPending --> ShowPendingPowerDowns[power-downs]
+        ShowPending --> ShowPendingRecurrentTransfers[transfers]
+    end
+
+    subgraph Configuration[Configuration related commands]
         Configure(configure) --> ConfigureProfile(profile)
         ConfigureProfile --> CreateProfile[add]
         ConfigureProfile --> DeleteProfile[remove]
