@@ -44,9 +44,7 @@ flowchart TD
     Accounts --> AccountsWatched(watched)
     Accounts --> AccountsWorking(working)
     AccountsWatched --> AccountsWatchedList[list]
-    AccountsWorking --> AccountsWorkingSet[set]
     AccountsWorking --> AccountsWorkingShow[show]
-    AccountsWorking --> AccountsWorkingUnset[unset]
     Clive --> Beekeeper(beekeeper)
     Beekeeper --> BeekeeperClose[close]
     Beekeeper --> BeekeeperImportKey[import-key]
