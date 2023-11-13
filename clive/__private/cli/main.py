@@ -9,7 +9,6 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.configure.main import configure
 from clive.__private.cli.process.main import process
-from clive.__private.cli.profile import profile
 from clive.__private.cli.show.main import show
 
 HELP: Final[str] = """
@@ -21,7 +20,6 @@ cli = CliveTyper(help=HELP, rich_markup_mode="rich", context_settings={"help_opt
 cli.add_typer(configure)
 cli.add_typer(show)
 cli.add_typer(process)
-cli.add_typer(profile)
 cli.add_typer(beekeeper)
 
 if not is_tab_completion_active():
