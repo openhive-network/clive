@@ -9,7 +9,6 @@ import typer
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBasedCommand
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
-from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.beekeeper import Beekeeper
 
@@ -99,16 +98,3 @@ class BeekeeperClose(ExternalCLICommand):
             if err.errno == errno.ESRCH:
                 return False
         return True
-
-
-@dataclass(kw_only=True)
-class BeekeeperSync(WorldBasedCommand):
-    password: str
-
-    async def run(self) -> None:
-        typer.echo("Syncing data with beekeeper...")
-
-        await self.world.commands.activate(password=self.password)
-        await self.world.commands.sync_data_with_beekeeper()
-
-        typer.echo("Data synced.")
