@@ -28,7 +28,26 @@ flowchart LR
     end
 
    subgraph Processing[Commands related to performing certain actions]
-        Process(process) --> Transfer[transfer]
+        Process(process) --> ProcessTransfer[transfer]
+        Process -->|"Not implemented yet"|ProcessDeposit[deposit]
+        Process -->|"Not implemented yet"|ProcessWithdrawal[withdrawal]
+        Process -->|"Not implemented yet"|ProcessCancelWithdrawal[cancel-withdrawal]
+        Process -->|"Not implemented yet"|ProcessPowerUp[power-up]
+        Process -->|"Not implemented yet"|ProcessPowerDown[power-down]
+        Process -->|"Not implemented yet"|ProcessUpdateAccount[update-account]
+        Process -->|"Not implemented yet"|ProcessChangeAuthority[change-authority]
+        Process -->|"Not implemented yet"|ProcessSetProxy[set-proxy]
+        Process -->|"Not implemented yet"|ProcessClaimToken[claim-token]
+
+        Process -->|"Not implemented yet"|ProcessVoteWitness(vote-witness)
+        ProcessVoteWitness --> ProcessVoteWitnessAdd[add]
+        ProcessVoteWitness --> ProcessVoteWitnessRemove[remove]
+
+        Process -->|"Not implemented yet"|ProcessVoteProposal(vote-proposal)
+        ProcessVoteProposal --> ProcessVoteProposalAdd[add]
+        ProcessVoteProposal --> ProcessVoteProposalRemove[remove]
+
+        Process -->|"Not implemented yet"|ProcessTransaction[transaction]
     end
 
     subgraph Presentation[Commands related to the presentation of the data]
