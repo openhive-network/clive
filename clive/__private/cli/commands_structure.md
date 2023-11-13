@@ -76,9 +76,7 @@ flowchart LR
     List --> ListBalances[balances]
     List --> ListKeys[keys]
     List --> ListNode[node]
-    List --> ListProfiles[profiles]
     Clive --> Profile(profile)
-    Profile --> ProfileListAll[list-all]
     Profile --> ProfileShow[show]
     Clive --> Transfer(transfer)
 ```

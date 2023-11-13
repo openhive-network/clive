@@ -6,7 +6,6 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.commands.profile import ProfileList
 from clive.__private.cli.exceptions import CLIWorkingAccountIsNotSetError
 from clive.__private.storage.accounts import Account
 from clive.models import Asset
@@ -54,11 +53,6 @@ class ListBalances(WorldBasedCommand):
 
         console = Console()
         console.print(table)
-
-
-@dataclass(kw_only=True)
-class ListProfiles(ProfileList):
-    pass
 
 
 @dataclass(kw_only=True)
