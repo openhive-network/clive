@@ -34,6 +34,8 @@ flowchart LR
     subgraph Presentation[Commands related to the presentation of the data]
         Show(show) --> ShowProfiles[profiles]
 
+        Show --> ShowProfile[profile]
+
         Show --> ShowNode[node]
 
         Show --> ShowAccounts[accounts]
@@ -77,7 +79,4 @@ flowchart LR
         Configure --> ConfigureNode(node)
         ConfigureNode --> SetNode[set]
     end
-
-    Clive --> Profile(profile)
-    Profile --> ProfileShow[show]
 ```

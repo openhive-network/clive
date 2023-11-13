@@ -15,6 +15,16 @@ def show_profiles() -> None:
     asyncio_run(ShowProfiles().run())
 
 
+@show.command(name="profile")
+@WithProfile.decorator
+async def show_profile(ctx: typer.Context) -> None:
+    """Show profile information."""
+    from clive.__private.cli.commands.show.show_profile import ShowProfile
+
+    common = WithProfile(**ctx.params)
+    await ShowProfile(profile_data=common.profile_data).run()
+
+
 @show.command(name="accounts")
 @WithProfile.decorator
 async def show_accounts(ctx: typer.Context) -> None:
