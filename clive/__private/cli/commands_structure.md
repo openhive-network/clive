@@ -15,6 +15,30 @@ additional command are contained in rectangles with rounded corners.
 
 ```mermaid
 flowchart TD
+    Clive[clive] --> Configuration
+
+    subgraph Configuration
+        Configure(configure) --> ConfigureProfile(profile)
+        ConfigureProfile --> CreateProfile[add]
+        ConfigureProfile --> DeleteProfile[remove]
+        ConfigureProfile --> SetDefaultProfile[set-default]
+
+        Configure --> ConfigureWatchedAccount(watched-account)
+        ConfigureWatchedAccount --> AddWatchedAccount[add]
+        ConfigureWatchedAccount --> RemoveWatchedAccount[remove]
+
+        Configure --> ConfigureWorkingAccount(working-account)
+        ConfigureWorkingAccount --> AddWorkingAccount[add]
+        ConfigureWorkingAccount --> RemoveWorkingAccount[remove]
+
+        Configure --> ConfigureKey(key)
+        ConfigureKey --> AddKey[add]
+        ConfigureKey --> RemoveKey[remove]
+
+        Configure --> ConfigureNode(node)
+        ConfigureNode --> SetNode[set]
+    end
+
     Clive[clive] --> Accounts(accounts)
     Accounts --> AccountsList[list]
     Accounts --> AccountsWatched(watched)
