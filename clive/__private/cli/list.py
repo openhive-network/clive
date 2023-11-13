@@ -9,16 +9,6 @@ list_ = typer.Typer(name="list", help="List various things.")
 
 @list_.command()
 @WithProfile.decorator
-async def keys(ctx: typer.Context) -> None:
-    """List all Public keys stored in the wallet."""
-    from clive.__private.cli.commands.list import ListKeys
-
-    common = WithProfile(**ctx.params)
-    await ListKeys(profile_data=common.profile_data).run()
-
-
-@list_.command()
-@WithProfile.decorator
 async def node(ctx: typer.Context) -> None:
     """List address of the currently selected node."""
     from clive.__private.cli.commands.list import ListNode

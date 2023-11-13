@@ -68,7 +68,6 @@ flowchart LR
     Beekeeper --> BeekeeperSync[sync]
     Clive --> List(list)
     List --> ListBalances[balances]
-    List --> ListKeys[keys]
     List --> ListNode[node]
     Clive --> Profile(profile)
     Profile --> ProfileShow[show]

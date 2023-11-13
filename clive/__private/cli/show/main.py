@@ -22,3 +22,13 @@ async def show_accounts(ctx: typer.Context) -> None:
 
     common = WithProfile(**ctx.params)
     await ShowAccounts(profile_data=common.profile_data).run()
+
+
+@show.command(name="keys")
+@WithProfile.decorator
+async def show_keys(ctx: typer.Context) -> None:
+    """Show all the public keys stored in Clive."""
+    from clive.__private.cli.commands.show.show_keys import ShowKeys
+
+    common = WithProfile(**ctx.params)
+    await ShowKeys(profile_data=common.profile_data).run()
