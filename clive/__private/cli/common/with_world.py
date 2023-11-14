@@ -40,7 +40,7 @@ class WithWorld(CommonBaseModel):
             @wraps(func)
             def inner(
                 ctx: typer.Context,
-                profile: str = common.profile_name,
+                profile_name: str = common.profile_name,
                 beekeeper_remote: Optional[str] = modified_option(
                     options.beekeeper_remote_option, hidden=not use_beekeeper
                 ),
@@ -54,11 +54,11 @@ class WithWorld(CommonBaseModel):
 
                 async def impl() -> None:
                     async with TyperWorld(
-                        profile_name=profile,
+                        profile_name=profile_name,
                         use_beekeeper=use_beekeeper,
                         beekeeper_remote_endpoint=beekeeper_remote_endpoint,
                     ) as world:
-                        cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
+                        cls._assert_correct_profile_is_loaded(world.profile_data.name, profile_name)
 
                         ctx.params.update(world=world)
                         return await func(ctx, **kwargs)
