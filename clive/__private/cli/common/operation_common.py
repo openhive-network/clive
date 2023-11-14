@@ -21,7 +21,7 @@ class OperationCommon(CommonBaseModel):
 
     profile_name: str = options.profile_name_option
     password: str = options.password_option
-    sign: str = typer.Option(..., help="Key alias to sign the transaction with.", show_default=False)
+    sign: Optional[str] = typer.Option(None, help="Key alias to sign the transaction with.", show_default=False)
     beekeeper_remote: Optional[str] = options.beekeeper_remote_option
     broadcast: bool = typer.Option(True, help="Whether broadcast the transaction. (i.e. dry-run)")
     save_file: Optional[str] = typer.Option(
@@ -41,7 +41,7 @@ class OperationCommon(CommonBaseModel):
             ctx: typer.Context,
             profile_name: str = common.profile_name,
             password: str = common.password,
-            sign: str = common.sign,  # noqa: ARG001
+            sign: Optional[str] = common.sign,  # noqa: ARG001
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
             broadcast: bool = common.broadcast,
             save_file: Optional[str] = common.save_file,  # noqa: ARG001
