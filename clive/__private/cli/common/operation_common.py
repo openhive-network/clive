@@ -41,7 +41,7 @@ class OperationCommon(CommonBaseModel):
         def wrapper(
             ctx: typer.Context,
             profile_name: str = common.profile_name,
-            password: Optional[str] = common.password,
+            password: Optional[str] = common.password,  # noqa: ARG001
             sign: Optional[str] = common.sign,  # noqa: ARG001
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
             broadcast: bool = common.broadcast,
@@ -67,10 +67,6 @@ class OperationCommon(CommonBaseModel):
                 ) as world:
                     cls._assert_correct_profile_is_loaded(world.profile_data.name, profile_name)
                     ctx.params.update(world=world)
-
-                    if password is not None:
-                        await world.commands.activate(password=password)
-
                     await func(ctx, **kwargs)
 
             asyncio_run(impl())
