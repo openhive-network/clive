@@ -67,7 +67,7 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
         command = SaveToFileAsBinary if should_save_as_binary(save_file_path) else SaveToFileAsJson
         await command(transaction=transaction, file_path=save_file_path).execute()
 
-    if transaction.is_signed() and broadcast:
+    if broadcast:
         await Broadcast(node=node, transaction=transaction).execute()
 
     return transaction
