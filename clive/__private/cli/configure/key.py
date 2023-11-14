@@ -2,13 +2,13 @@ from typing import Optional
 
 import typer
 
-from clive.__private.cli.common import WithWorld, options
+from clive.__private.cli.common import WorldCommonOptions, options
 
 key = typer.Typer(name="key", help="Manage your key(s).")
 
 
 @key.command(name="add")
-@WithWorld.decorator()
+@WorldCommonOptions.decorator()
 async def add_key(
     ctx: typer.Context,
     key_: str = typer.Option(
@@ -24,5 +24,5 @@ async def add_key(
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
 
-    common = WithWorld(**ctx.params)
+    common = WorldCommonOptions(**ctx.params)
     await AddKey(**common.dict(), password=password, key_or_path=key_, alias=alias).run()

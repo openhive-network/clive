@@ -1,6 +1,6 @@
 import typer
 
-from clive.__private.cli.common import WithWorld, options
+from clive.__private.cli.common import WorldCommonOptions, options
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 from clive.__private.core._async import asyncio_run
 
@@ -46,12 +46,12 @@ async def show_keys(ctx: typer.Context) -> None:
 
 
 @show.command(name="balances")
-@WithWorld.decorator(use_beekeeper=False)
+@WorldCommonOptions.decorator(use_beekeeper=False)
 async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:
     """Show balances of the selected account."""
     from clive.__private.cli.commands.show.show_balances import ShowBalances
 
-    common = WithWorld(**ctx.params)
+    common = WorldCommonOptions(**ctx.params)
     await ShowBalances(**common.dict(), account_name=account_name).run()
 
 

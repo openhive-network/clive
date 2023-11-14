@@ -11,7 +11,7 @@ from clive.__private.cli.common.options import modified_option
 from clive.__private.core._async import asyncio_run
 
 
-class WithWorld(CommonBaseModel):
+class WorldCommonOptions(CommonBaseModel):
     profile_name: str
     beekeeper_remote: Optional[str]
     use_beekeeper: bool

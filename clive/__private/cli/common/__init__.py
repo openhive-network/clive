@@ -2,13 +2,13 @@ from . import options
 from .beekeeper_common_options import BeekeeperCommonOptions
 from .operation_common import OperationCommon
 from .update_forwards import update_forwards
-from .with_world import WithWorld
+from .world_common_options import WorldCommonOptions
 
 __all__ = [
     "options",
     "OperationCommon",
     "BeekeeperCommonOptions",
-    "WithWorld",
+    "WorldCommonOptions",
 ]
 
 update_forwards()
