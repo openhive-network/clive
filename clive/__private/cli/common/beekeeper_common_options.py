@@ -9,7 +9,7 @@ from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, Po
 from clive.__private.core._async import asyncio_run
 
 
-class WithBeekeeper(CommonBaseModel):
+class BeekeeperCommonOptions(CommonBaseModel):
     beekeeper_remote: Optional[str]
 
     @classmethod

@@ -1,18 +1,18 @@
 import typer
 
-from clive.__private.cli.common.with_beekeeper import WithBeekeeper
+from clive.__private.cli.common.beekeeper_common_options import BeekeeperCommonOptions
 from clive.__private.core._async import asyncio_run
 
 beekeeper = typer.Typer(name="beekeeper", help="Beekeeper-related commands.")
 
 
 @beekeeper.command()
-@WithBeekeeper.decorator
+@BeekeeperCommonOptions.decorator
 async def info(ctx: typer.Context) -> None:
     """Show the beekeeper info."""
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 
-    common = WithBeekeeper(**ctx.params)
+    common = BeekeeperCommonOptions(**ctx.params)
     await BeekeeperInfo(**common.dict()).run()
 
 

@@ -2,14 +2,14 @@ from typing import Optional
 
 import typer
 
-from clive.__private.cli.common import WithBeekeeper, options
+from clive.__private.cli.common import BeekeeperCommonOptions, options
 from clive.__private.core._async import asyncio_run
 
 profile = typer.Typer(name="profile", help="Manage your Clive profile(s).")
 
 
 @profile.command(name="add")
-@WithBeekeeper.decorator
+@BeekeeperCommonOptions.decorator
 async def create_profile(
     ctx: typer.Context,
     profile_name: str = typer.Option(..., help="The name of the new profile.", show_default=False),
@@ -21,7 +21,7 @@ async def create_profile(
     """Create a new profile."""
     from clive.__private.cli.commands.configure.profile import CreateProfile
 
-    common = WithBeekeeper(**ctx.params)
+    common = BeekeeperCommonOptions(**ctx.params)
     await CreateProfile(
         **common.dict(),
         profile_name=profile_name,
