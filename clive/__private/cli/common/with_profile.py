@@ -32,6 +32,7 @@ class WithProfile(CommonBaseModel):
             profile_data_manager = ProfileData.load_with_auto_save(profile_name, auto_create=False)
 
             with profile_data_manager as profile_data:
+                cls._assert_correct_profile_is_loaded(profile_data.name, profile_name)
                 ctx.params.update(profile_data=profile_data)
                 asyncio_run(func(ctx, **kwargs))
 
