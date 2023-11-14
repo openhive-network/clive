@@ -1,12 +1,12 @@
 import typer
 
-from clive.__private.cli.common.operation_common import OperationCommon
+from clive.__private.cli.common import OperationCommonOptions
 
 process = typer.Typer(name="process", help="Process something (e.g. perform a transfer).")
 
 
 @process.command(name="transfer")
-@OperationCommon.decorator
+@OperationCommonOptions.decorator
 async def transfer(
     ctx: typer.Context,
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
@@ -16,5 +16,5 @@ async def transfer(
     """Transfer some funds to another account."""
     from clive.__private.cli.commands.process.transfer import Transfer
 
-    common = OperationCommon(**ctx.params)
+    common = OperationCommonOptions(**ctx.params)
     await Transfer.from_(to=to, amount=amount, memo=memo, **common.dict()).run()

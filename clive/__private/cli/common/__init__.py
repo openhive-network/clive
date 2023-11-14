@@ -1,11 +1,11 @@
 from . import options
 from .beekeeper_common_options import BeekeeperCommonOptions
-from .operation_common import OperationCommon
+from .operation_common_options import OperationCommonOptions
 from .world_common_options import WorldCommonOptions
 
 __all__ = [
     "options",
-    "OperationCommon",
+    "OperationCommonOptions",
     "BeekeeperCommonOptions",
     "WorldCommonOptions",
 ]

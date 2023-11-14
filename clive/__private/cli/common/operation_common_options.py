@@ -9,7 +9,7 @@ from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, Po
 from clive.__private.core._async import asyncio_run
 
 
-class OperationCommon(CommonBaseModel):
+class OperationCommonOptions(CommonBaseModel):
     profile_name: str
     password: Optional[str]
     sign: Optional[str]
