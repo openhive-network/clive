@@ -13,7 +13,7 @@ class CreateProfile(BeekeeperBasedCommand):
     password: str
     working_account_name: str | None = None
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         profile = ProfileData(self.profile_name, self.working_account_name)
 
         profile.save()

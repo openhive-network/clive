@@ -15,7 +15,7 @@ from clive.__private.core.beekeeper import Beekeeper
 
 @dataclass(kw_only=True)
 class BeekeeperInfo(BeekeeperBasedCommand):
-    async def run(self) -> None:
+    async def _run(self) -> None:
         typer.echo((await self.beekeeper.api.get_info()).json(by_alias=True))
 
 

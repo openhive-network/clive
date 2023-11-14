@@ -23,7 +23,7 @@ async def create_profile(
 
     common = WithBeekeeper(**ctx.params)
     await CreateProfile(
-        beekeeper=common.beekeeper,
+        **common.dict(),
         profile_name=profile_name,
         password=password,
         working_account_name=working_account_name,

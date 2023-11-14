@@ -13,7 +13,7 @@ async def info(ctx: typer.Context) -> None:
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 
     common = WithBeekeeper(**ctx.params)
-    await BeekeeperInfo(beekeeper=common.beekeeper).run()
+    await BeekeeperInfo(**common.dict()).run()
 
 
 @beekeeper.command()
