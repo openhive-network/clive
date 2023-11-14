@@ -8,7 +8,7 @@ from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, Po
 from clive.__private.core._async import asyncio_run
 
 
-class WithProfile(CommonBaseModel):
+class ProfileCommonOptions(CommonBaseModel):
     profile_name: str
 
     @classmethod
