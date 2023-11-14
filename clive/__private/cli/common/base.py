@@ -15,6 +15,12 @@ PostWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], None]
 
 
 class CommonBaseModel(CliveBaseModel, ABC):
+    """
+    Common options for some commands.
+
+    Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597.
+    """
+
     class Config:
         arbitrary_types_allowed: bool = True
 
