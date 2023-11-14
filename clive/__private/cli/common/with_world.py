@@ -44,7 +44,6 @@ class WithWorld(CommonBaseModel):
                 beekeeper_remote: Optional[str] = modified_option(
                     options.beekeeper_remote_option, hidden=not use_beekeeper
                 ),
-                *args: DecoratorParams.args,
                 **kwargs: DecoratorParams.kwargs,
             ) -> None:
                 from clive.__private.core.world import TyperWorld
@@ -62,7 +61,7 @@ class WithWorld(CommonBaseModel):
                         cls._assert_correct_profile_is_loaded(world.profile_data.name, profile)
 
                         ctx.params.update(world=world)
-                        return await func(ctx, *args, **kwargs)
+                        return await func(ctx, **kwargs)
 
                 asyncio_run(impl())
 

@@ -45,7 +45,6 @@ class OperationCommon(CommonBaseModel):
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
             broadcast: bool = common.broadcast,
             save_file: Optional[str] = common.save_file,  # noqa: ARG001
-            *args: DecoratorParams.args,
             **kwargs: Any,
         ) -> None:
             from clive.__private.core.world import TyperWorld
@@ -66,7 +65,7 @@ class OperationCommon(CommonBaseModel):
                     cls._assert_correct_profile_is_loaded(world.profile_data.name, profile_name)
                     ctx.params.update(world=world)
                     await world.commands.activate(password=password)
-                    await func(ctx, *args, **kwargs)
+                    await func(ctx, **kwargs)
 
             asyncio_run(impl())
 
