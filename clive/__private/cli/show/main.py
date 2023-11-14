@@ -22,7 +22,7 @@ async def show_profile(ctx: typer.Context) -> None:
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
     common = WithProfile(**ctx.params)
-    await ShowProfile(profile_data=common.profile_data).run()
+    await ShowProfile(**common.dict()).run()
 
 
 @show.command(name="accounts")
@@ -32,7 +32,7 @@ async def show_accounts(ctx: typer.Context) -> None:
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
     common = WithProfile(**ctx.params)
-    await ShowAccounts(profile_data=common.profile_data).run()
+    await ShowAccounts(**common.dict()).run()
 
 
 @show.command(name="keys")
@@ -42,7 +42,7 @@ async def show_keys(ctx: typer.Context) -> None:
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
     common = WithProfile(**ctx.params)
-    await ShowKeys(profile_data=common.profile_data).run()
+    await ShowKeys(**common.dict()).run()
 
 
 @show.command(name="balances")
@@ -62,7 +62,7 @@ async def show_node(ctx: typer.Context) -> None:
     from clive.__private.cli.commands.show.show_node import ShowNode
 
     common = WithProfile(**ctx.params)
-    await ShowNode(profile_data=common.profile_data).run()
+    await ShowNode(**common.dict()).run()
 
 
 @show.command(name="transaction-status")

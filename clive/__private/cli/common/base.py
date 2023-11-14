@@ -46,6 +46,10 @@ class CommonBaseModel(CliveBaseModel, ABC):
         obj: Self = construct()
         obj._validate_options()
 
+    @staticmethod
+    def update_forwards() -> None:
+        """All forwards references will be imported here."""
+
     def _validate_options(self) -> None:
         """Put all options validations here. See: `validate_options`."""
 

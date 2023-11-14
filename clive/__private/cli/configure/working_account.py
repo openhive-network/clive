@@ -15,7 +15,7 @@ async def add_working_account(
     from clive.__private.cli.commands.configure.working_account import AddWorkingAccount
 
     common = WithProfile(**ctx.params)
-    await AddWorkingAccount(profile_data=common.profile_data, account_name=account_name).run()
+    await AddWorkingAccount(**common.dict(), account_name=account_name).run()
 
 
 @working_account.command(name="remove")
@@ -27,4 +27,4 @@ async def remove_working_account(
     from clive.__private.cli.commands.configure.working_account import RemoveWorkingAccount
 
     common = WithProfile(**ctx.params)
-    await RemoveWorkingAccount(profile_data=common.profile_data).run()
+    await RemoveWorkingAccount(**common.dict()).run()

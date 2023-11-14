@@ -8,7 +8,7 @@ from clive.__private.cli.exceptions import CLIWorkingAccountIsAlreadySetError, C
 class AddWorkingAccount(ProfileBasedCommand):
     account_name: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         if self.profile_data.is_working_account_set():
             raise CLIWorkingAccountIsAlreadySetError(self.profile_data)
 
@@ -17,7 +17,7 @@ class AddWorkingAccount(ProfileBasedCommand):
 
 @dataclass(kw_only=True)
 class RemoveWorkingAccount(ProfileBasedCommand):
-    async def run(self) -> None:
+    async def _run(self) -> None:
         if not self.profile_data.is_working_account_set():
             raise CLIWorkingAccountIsNotSetError(self.profile_data)
 

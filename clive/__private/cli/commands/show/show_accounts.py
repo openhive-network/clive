@@ -7,7 +7,7 @@ from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedC
 
 @dataclass(kw_only=True)
 class ShowAccounts(ProfileBasedCommand):
-    async def run(self) -> None:
+    async def _run(self) -> None:
         self._show_accounts_info()
 
     def _show_accounts_info(self) -> None:

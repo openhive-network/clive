@@ -8,6 +8,6 @@ from clive.core.url import Url
 class SetNode(ProfileBasedCommand):
     node_address: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         url = Url.parse(self.node_address)
         self.profile_data._set_node_address(url)

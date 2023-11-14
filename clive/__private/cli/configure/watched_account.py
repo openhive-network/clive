@@ -15,7 +15,7 @@ async def add_watched_account(
     from clive.__private.cli.commands.configure.watched_account import AddWatchedAccount
 
     common = WithProfile(**ctx.params)
-    await AddWatchedAccount(profile_data=common.profile_data, account_name=account_name).run()
+    await AddWatchedAccount(**common.dict(), account_name=account_name).run()
 
 
 @watched_account.command(name="remove")
@@ -28,4 +28,4 @@ async def remove_watched_account(
     from clive.__private.cli.commands.configure.watched_account import RemoveWatchedAccount
 
     common = WithProfile(**ctx.params)
-    await RemoveWatchedAccount(profile_data=common.profile_data, account_name=account_name).run()
+    await RemoveWatchedAccount(**common.dict(), account_name=account_name).run()

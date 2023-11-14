@@ -8,7 +8,7 @@ from clive.__private.storage.accounts import Account
 class AddWatchedAccount(ProfileBasedCommand):
     account_name: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         self.profile_data.watched_accounts.add(Account(self.account_name))
 
 
@@ -16,7 +16,7 @@ class AddWatchedAccount(ProfileBasedCommand):
 class RemoveWatchedAccount(ProfileBasedCommand):
     account_name: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         account = next(
             (account for account in self.profile_data.watched_accounts if account.name == self.account_name), None
         )

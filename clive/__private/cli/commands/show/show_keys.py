@@ -8,7 +8,7 @@ from clive.__private.cli.exceptions import CLIWorkingAccountIsNotSetError
 
 @dataclass(kw_only=True)
 class ShowKeys(ProfileBasedCommand):
-    async def run(self) -> None:
+    async def _run(self) -> None:
         profile_name = self.profile_data.name
 
         if not self.profile_data.is_working_account_set():

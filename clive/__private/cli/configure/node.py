@@ -15,4 +15,4 @@ async def set_node(
     from clive.__private.cli.commands.configure.node import SetNode
 
     common = WithProfile(**ctx.params)
-    await SetNode(profile_data=common.profile_data, node_address=node_address).run()
+    await SetNode(**common.dict(), node_address=node_address).run()
