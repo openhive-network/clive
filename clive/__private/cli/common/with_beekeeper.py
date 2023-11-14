@@ -25,7 +25,6 @@ class WithBeekeeper(CommonBaseModel):
         def wrapper(
             ctx: typer.Context,
             beekeeper_remote: Optional[str] = common.beekeeper_remote,
-            *args: Any,
             **kwargs: Any,
         ) -> None:
             from clive.__private.core.beekeeper import Beekeeper
@@ -38,7 +37,7 @@ class WithBeekeeper(CommonBaseModel):
             async def impl() -> None:
                 async with Beekeeper(remote_endpoint=beekeeper_remote_endpoint) as beekeeper:
                     ctx.params.update(beekeeper=beekeeper)
-                    await func(ctx, *args, **kwargs)
+                    await func(ctx, **kwargs)
 
             asyncio_run(impl())
 

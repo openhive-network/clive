@@ -25,7 +25,6 @@ class WithProfile(CommonBaseModel):
         def wrapper(
             ctx: typer.Context,
             profile_name: str = common.profile_name,
-            *args: DecoratorParams.args,
             **kwargs: DecoratorParams.kwargs,
         ) -> None:
             from clive.__private.core.profile_data import ProfileData
@@ -34,7 +33,7 @@ class WithProfile(CommonBaseModel):
 
             with profile_data_manager as profile_data:
                 ctx.params.update(profile_data=profile_data)
-                asyncio_run(func(ctx, *args, **kwargs))
+                asyncio_run(func(ctx, **kwargs))
 
         return wrapper  # type: ignore[no-any-return]
 
