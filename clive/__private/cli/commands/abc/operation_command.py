@@ -38,6 +38,8 @@ class OperationCommand(WorldBasedCommand, ABC):
 
         self.__print_transaction(transaction.with_hash())
         typer.echo(f"Transaction was successfully {'broadcasted' if self.broadcast else 'created'}.")
+        if self.save_file is not None:
+            typer.echo(f"Transaction was saved to {self.save_file}")
 
     def __get_key_to_sign(self) -> PublicKey | None:
         if self.sign is None:
