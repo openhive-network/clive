@@ -26,6 +26,14 @@ class OperationCommand(WorldBasedCommand, ABC):
         """Create the operation."""
 
     async def run(self) -> None:
+        self.__validate_options()
+
+        if not self.broadcast:
+            typer.echo("[Performing dry run, because --broadcast is not set.]\n")
+
+        await super().run()
+
+    async def _run(self) -> None:
         if self.password is not None:
             await self.world.commands.activate(password=self.password)
 
@@ -55,6 +63,15 @@ class OperationCommand(WorldBasedCommand, ABC):
             raise CLIPrettyError(
                 f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT
             ) from None
+
+    def __validate_options(self) -> None:
+        if self.broadcast and self.sign is None:
+            raise CLIPrettyError(
+                "You must provide a key alias to sign the transaction with if you want to broadcast them."
+            )
+
+        if self.sign is not None and self.password is None:
+            raise CLIPrettyError("You must provide a password so wallet can be unlocked while signing a transaction.")
 
     @staticmethod
     def __print_transaction(transaction: Transaction) -> None:
