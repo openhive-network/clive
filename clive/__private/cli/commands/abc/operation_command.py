@@ -16,6 +16,7 @@ from clive.models import Operation, Transaction
 
 @dataclass(kw_only=True)
 class OperationCommand(WorldBasedCommand, ABC):
+    password: str | None
     sign: str | None
     save_file: str | None
     broadcast: bool
@@ -25,6 +26,9 @@ class OperationCommand(WorldBasedCommand, ABC):
         """Create the operation."""
 
     async def run(self) -> None:
+        if self.password is not None:
+            await self.world.commands.activate(password=self.password)
+
         transaction = await perform_actions_on_transaction(
             content=self._create_operation(),
             app_state=self.world.app_state,
