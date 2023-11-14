@@ -9,7 +9,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 class ShowTransactionStatus(WorldBasedCommand):
     transaction_id: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         status = await self.world.commands.find_transaction(transaction_id=self.transaction_id)
 
         typer.echo(status.result_or_raise)

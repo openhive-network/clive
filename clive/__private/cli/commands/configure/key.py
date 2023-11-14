@@ -39,7 +39,7 @@ class AddKey(WorldBasedCommand):
 
         return private_key.with_alias(alias)
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         profile_data = self.world.profile_data
         if not profile_data.is_working_account_set():
             raise CLIWorkingAccountIsNotSetError(profile_data)

@@ -12,7 +12,7 @@ from clive.models import Asset
 class ShowBalances(WorldBasedCommand):
     account_name: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         account = Account(name=self.account_name)
         data = account.data
 

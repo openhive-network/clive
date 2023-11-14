@@ -52,7 +52,7 @@ async def show_balances(ctx: typer.Context, account_name: str = options.account_
     from clive.__private.cli.commands.show.show_balances import ShowBalances
 
     common = WithWorld(**ctx.params)
-    await ShowBalances(world=common.world, account_name=account_name).run()
+    await ShowBalances(**common.dict(), account_name=account_name).run()
 
 
 @show.command(name="node")

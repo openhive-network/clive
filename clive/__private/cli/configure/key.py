@@ -25,4 +25,4 @@ async def add_key(
     from clive.__private.cli.commands.configure.key import AddKey
 
     common = WithWorld(**ctx.params)
-    await AddKey(world=common.world, password=password, key_or_path=key_, alias=alias).run()
+    await AddKey(**common.dict(), password=password, key_or_path=key_, alias=alias).run()
