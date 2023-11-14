@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
+from clive.__private.core.commands.save_json import SaveToFileAsJson
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.ensure_transaction import ensure_transaction
 
@@ -44,12 +45,17 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
     chain_id: The chain id to use for signing the transaction.
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
     save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
+        Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
     broadcast: Whether to broadcast the transaction.
 
     Returns:
     -------
     The transaction object.
     """
+
+    def should_save_as_binary(path: Path) -> bool:
+        return path.suffix in (".bin",)
+
     transaction = await ensure_transaction(content, node=node)
 
     if sign_key:
@@ -58,7 +64,8 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
         ).execute_with_result()
 
     if save_file_path:
-        await SaveToFileAsBinary(transaction=transaction, file_path=save_file_path).execute()
+        command = SaveToFileAsBinary if should_save_as_binary(save_file_path) else SaveToFileAsJson
+        await command(transaction=transaction, file_path=save_file_path).execute()
 
     if transaction.is_signed() and broadcast:
         await Broadcast(node=node, transaction=transaction).execute()
