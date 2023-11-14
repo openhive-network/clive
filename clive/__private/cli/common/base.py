@@ -30,6 +30,11 @@ class CommonBaseModel(CliveBaseModel, ABC):
         """Should be overridden in subclasses."""
 
     @classmethod
+    def _construct_for_validation(cls, data: dict[str, Any]) -> Self:
+        data = {k: v for k, v in data.items() if k in cls.__fields__}  # sanitize
+        return cls(**data)  # type: ignore[return-value]
+
+    @classmethod
     def validate_options(cls, data: dict[str, Any]) -> None:
         """
         Should perform all options validations.

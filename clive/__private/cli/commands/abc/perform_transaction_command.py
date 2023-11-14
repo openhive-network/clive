@@ -23,7 +23,7 @@ class PerformTransactionCommand(WorldBasedCommand, ABC):
     broadcast: bool
 
     @abstractmethod
-    def _get_content(self) -> TransactionConvertibleType:
+    async def _get_content(self) -> TransactionConvertibleType:
         """Should return the content to be converted to a transaction."""
 
     async def run(self) -> None:
@@ -31,7 +31,7 @@ class PerformTransactionCommand(WorldBasedCommand, ABC):
             await self.world.commands.activate(password=self.password)
 
         transaction = await perform_actions_on_transaction(
-            content=self._get_content(),
+            content=await self._get_content(),
             app_state=self.world.app_state,
             beekeeper=self.world.beekeeper,
             node=self.world.node,
@@ -42,7 +42,7 @@ class PerformTransactionCommand(WorldBasedCommand, ABC):
         )
 
         self.__print_transaction(transaction.with_hash())
-        typer.echo(f"Transaction was successfully {'broadcasted' if self.broadcast else 'created'}.")
+        typer.echo(f"Transaction was successfully {'broadcasted' if self.broadcast else 'prepared'}.")
         if self.save_file is not None:
             typer.echo(f"Transaction was saved to {self.save_file}")
 
@@ -60,5 +60,5 @@ class PerformTransactionCommand(WorldBasedCommand, ABC):
     @staticmethod
     def __print_transaction(transaction: Transaction) -> None:
         transaction_json = transaction.json(by_alias=True)
-        typer.echo("Created transaction:")
+        typer.echo("Prepared transaction:")
         rich.print_json(transaction_json)
