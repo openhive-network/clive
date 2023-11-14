@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from collections.abc import Awaitable, Callable
-from typing import Any, Concatenate, ParamSpec
+from typing import Concatenate, ParamSpec
 
 import typer
 
@@ -12,7 +12,7 @@ PreWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], Awaitable[No
 PostWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], None]
 
 
-class CommonBaseModel(CliveBaseModel, ABC):
+class CommonOptionsBase(CliveBaseModel, ABC):
     """
     Common options for some commands.
 

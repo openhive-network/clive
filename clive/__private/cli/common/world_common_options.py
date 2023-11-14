@@ -6,12 +6,12 @@ import typer
 from merge_args import merge_args  # type: ignore[import]
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.base import CommonBaseModel, DecoratorParams, PostWrapFunc, PreWrapFunc
+from clive.__private.cli.common.common_options_base import CommonOptionsBase, DecoratorParams, PostWrapFunc, PreWrapFunc
 from clive.__private.cli.common.options import modified_option
 from clive.__private.core._async import asyncio_run
 
 
-class WorldCommonOptions(CommonBaseModel):
+class WorldCommonOptions(CommonOptionsBase):
     profile_name: str
     beekeeper_remote: Optional[str]
     use_beekeeper: bool
