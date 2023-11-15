@@ -39,16 +39,7 @@ async def test_transaction_status_in_blockchain(
     await world.commands.broadcast(transaction=transaction)
     init_node_extra_apis.wait_number_of_blocks(1)
 
-    response = init_node_extra_apis.api.account_history.get_account_history(
-        account="null",
-        start=-1,
-        limit=1,
-        include_reversible=True,
-        operation_filter_low=0xFFFFFFFFFFFFFFFF,
-        operation_filter_high=0,
-    )
-    account_history_operation = response["history"][0]
-    transaction_id = account_history_operation[1]["trx_id"]
+    transaction_id = transaction.with_hash().transaction_id
 
     # ACT & ASSERT
     status = await world.commands.find_transaction(transaction_id=transaction_id)
