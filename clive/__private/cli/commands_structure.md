@@ -29,6 +29,8 @@ flowchart LR
 
         Show --> ShowBalances[balances]
 
+        Show --> ShowTransactionStatus[transaction-status]
+
         Show -->|"Not implemented yet"| ShowWitnesses[witnesses]
         ShowWitnesses ~~~|"witnesses:<br>- show witnesses the account votes for<br>- possible to list also proxy votes"| ShowWitnesses
 

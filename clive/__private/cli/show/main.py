@@ -53,3 +53,16 @@ async def show_node(ctx: typer.Context) -> None:
 
     common = WithProfile(**ctx.params)
     await ShowNode(profile_data=common.profile_data).run()
+
+
+@show.command(name="transaction-status")
+@WithProfile.decorator
+async def show_transaction_status(
+    ctx: typer.Context,
+    transaction_id: str = typer.Option(..., help="Hash of the transaction.", show_default=False),
+) -> None:
+    """Print status of a specific transaction."""
+    from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
+
+    common = WithProfile(**ctx.params)
+    await ShowTransactionStatus(**common.dict(), transaction_id=transaction_id).run()

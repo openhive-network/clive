@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 
 
 @dataclass(kw_only=True)
-class ListTransactionStatus(WorldBasedCommand):
+class ShowTransactionStatus(WorldBasedCommand):
     transaction_id: str
 
     async def run(self) -> None:
