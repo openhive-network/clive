@@ -42,6 +42,12 @@ class CliveTyper(typer.Typer):
     __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback[Any]]] = {}
     """ClassVar since error handlers could be registered only for the main Typer instance, but not for sub-commands."""
 
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        try:
+            return super().__call__(*args, **kwargs)
+        except Exception as error:  # noqa: BLE001
+            self.__handle_error(error)
+
     def error_handler(
         self, error: type[ExceptionT]
     ) -> Callable[[ErrorHandlingCallback[ExceptionT]], ErrorHandlingCallback[ExceptionT]]:
@@ -50,12 +56,6 @@ class CliveTyper(typer.Typer):
             return f
 
         return decorator
-
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
-        try:
-            return super().__call__(*args, **kwargs)
-        except Exception as error:  # noqa: BLE001
-            self.__handle_error(error)
 
     def __handle_error(self, error: ExceptionT) -> None:
         handler = self.__get_error_handler(error)
