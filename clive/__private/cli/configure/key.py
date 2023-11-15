@@ -2,9 +2,10 @@ from typing import Optional
 
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldCommonOptions, options
 
-key = typer.Typer(name="key", help="Manage your key(s).")
+key = CliveTyper(name="key", help="Manage your key(s).")
 
 
 @key.command(name="add")

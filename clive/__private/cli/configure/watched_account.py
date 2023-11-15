@@ -1,8 +1,9 @@
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 
-watched_account = typer.Typer(name="watched-account", help="Manage your watched account(s).")
+watched_account = CliveTyper(name="watched-account", help="Manage your watched account(s).")
 
 
 @watched_account.command(name="add")

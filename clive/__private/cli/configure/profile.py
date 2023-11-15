@@ -2,10 +2,11 @@ from typing import Optional
 
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import BeekeeperCommonOptions, options
 from clive.__private.core._async import asyncio_run
 
-profile = typer.Typer(name="profile", help="Manage your Clive profile(s).")
+profile = CliveTyper(name="profile", help="Manage your Clive profile(s).")
 
 
 @profile.command(name="add")

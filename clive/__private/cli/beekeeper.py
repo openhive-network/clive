@@ -1,9 +1,10 @@
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.beekeeper_common_options import BeekeeperCommonOptions
 from clive.__private.core._async import asyncio_run
 
-beekeeper = typer.Typer(name="beekeeper", help="Beekeeper-related commands.")
+beekeeper = CliveTyper(name="beekeeper", help="Beekeeper-related commands.")
 
 
 @beekeeper.command()

@@ -1,8 +1,9 @@
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 
-working_account = typer.Typer(name="working-account", help="Manage your working account.")
+working_account = CliveTyper(name="working-account", help="Manage your working account.")
 
 
 @working_account.command(name="add")

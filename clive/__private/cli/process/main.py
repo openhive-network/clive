@@ -1,8 +1,9 @@
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions
 
-process = typer.Typer(name="process", help="Process something (e.g. perform a transfer).")
+process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
 
 @process.command(name="transfer")

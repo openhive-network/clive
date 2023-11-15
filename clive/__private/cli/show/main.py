@@ -1,10 +1,11 @@
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldCommonOptions, options
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 from clive.__private.core._async import asyncio_run
 
-show = typer.Typer(name="show", help="Show various data.")
+show = CliveTyper(name="show", help="Show various data.")
 
 
 @show.command(name="profiles")

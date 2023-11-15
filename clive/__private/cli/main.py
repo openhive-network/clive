@@ -15,7 +15,7 @@ HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
 Type "clive <command> --help" to read more about a specific subcommand.
 """
-cli = CliveTyper(help=HELP, rich_markup_mode="rich", context_settings={"help_option_names": ["-h", "--help"]})
+cli = CliveTyper(help=HELP)
 
 cli.add_typer(configure)
 cli.add_typer(show)

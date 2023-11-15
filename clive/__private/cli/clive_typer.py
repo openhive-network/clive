@@ -1,12 +1,12 @@
 import sys
 from collections.abc import Callable
-from typing import Any, ClassVar, NewType, TypeVar
+from typing import Any, ClassVar, NewType, Optional, TypeVar
 
 import typer
 from click import ClickException
 from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
-from typer.models import DeveloperExceptionConfig
+from typer.models import Default, DeveloperExceptionConfig
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
 ExitCode = NewType("ExitCode", int)
@@ -41,6 +41,19 @@ class CliveTyper(typer.Typer):
 
     __clive_error_handlers__: ClassVar[dict[type[Exception], ErrorHandlingCallback[Any]]] = {}
     """ClassVar since error handlers could be registered only for the main Typer instance, but not for sub-commands."""
+
+    def __init__(
+        self,
+        *,
+        name: Optional[str] = Default(None),
+        help: Optional[str] = Default(None),  # noqa: A002
+    ) -> None:
+        super().__init__(
+            name=name,
+            help=help,
+            rich_markup_mode="rich",
+            context_settings={"help_option_names": ["-h", "--help"]},
+        )
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
         try:

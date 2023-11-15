@@ -1,8 +1,9 @@
 import typer
 
+from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 
-node = typer.Typer(name="node", help="Manage the node for the profile.")
+node = CliveTyper(name="node", help="Manage the node for the profile.")
 
 
 @node.command(name="set")
