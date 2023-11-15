@@ -12,7 +12,7 @@ from clive.core.url import Url
 class BeekeeperBasedCommand(ExternalCLICommand, ABC):
     """A command that requires beekeeper to be running."""
 
-    beekeeper_remote: str | Url | None
+    beekeeper_remote: str | Url | None = None
     """If None, beekeeper will be launched locally."""
 
     _beekeeper: Beekeeper | None = None

@@ -1,26 +1,10 @@
-from functools import wraps
-from typing import Any, Optional
-
-import typer
-from merge_args import merge_args  # type: ignore[import]
+from dataclasses import dataclass
+from typing import Optional
 
 from clive.__private.cli.common import options
-from clive.__private.cli.common.common_options_base import CommonOptionsBase, DecoratorParams, PostWrapFunc, PreWrapFunc
-from clive.__private.core._async import asyncio_run
+from clive.__private.cli.common.common_options_base import CommonOptionsBase
 
 
+@dataclass(kw_only=True)
 class BeekeeperCommonOptions(CommonOptionsBase):
-    beekeeper_remote: Optional[str]
-
-    @classmethod
-    def decorator(cls, func: PreWrapFunc[DecoratorParams]) -> PostWrapFunc[DecoratorParams]:
-        @merge_args(func)
-        @wraps(func)
-        def wrapper(
-            ctx: typer.Context,
-            beekeeper_remote: Optional[str] = options.beekeeper_remote_option,  # noqa: ARG001
-            **kwargs: Any,
-        ) -> None:
-            return asyncio_run(func(ctx, **kwargs))
-
-        return wrapper  # type: ignore[no-any-return]
+    beekeeper_remote: Optional[str] = options.beekeeper_remote_option

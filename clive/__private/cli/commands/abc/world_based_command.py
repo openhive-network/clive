@@ -13,7 +13,7 @@ class WorldBasedCommand(BeekeeperBasedCommand, ABC):
 
     profile_name: str
     use_beekeeper: bool = True
-    beekeeper_remote: str | Url | None
+    beekeeper_remote: str | Url | None = None
     """If None, beekeeper will be launched locally when also use_beekeeper is set."""
 
     _world: World | None = None

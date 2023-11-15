@@ -165,6 +165,7 @@ required-imports = ["from __future__ import annotations"]
     "I002", # TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
     "UP007", # TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
     "PLR0913", # too restrictive
+    "RUF009", # common pattern for common options
 ]
 "clive/__private/ui/**" = [
     "PLR0913", # too restrictive

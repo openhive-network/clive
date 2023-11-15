@@ -1,28 +1,40 @@
-from abc import ABC, abstractmethod
-from collections.abc import Awaitable, Callable
-from typing import Concatenate, ParamSpec
+from dataclasses import dataclass
+from typing import Any, ClassVar
 
-import typer
+from typing_extensions import Self
 
-from clive.models.base import CliveBaseModel
-
-DecoratorParams = ParamSpec("DecoratorParams")
-
-PreWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], Awaitable[None]]
-PostWrapFunc = Callable[Concatenate[typer.Context, DecoratorParams], None]
+from clive.exceptions import CliveError
 
 
-class CommonOptionsBase(CliveBaseModel, ABC):
+class CommonOptionInstanceNotAvailableError(CliveError):
+    def __init__(self, cls: type["CommonOptionsBase"]) -> None:
+        super().__init__(f"Common option instance of {cls.__name__} not available.")
+
+
+@dataclass
+class CommonOptionsBase:
     """
-    Common options for some commands.
+    A base class for sharing common options between commands.
 
-    Inspired by https://github.com/tiangolo/typer/issues/296#issuecomment-1381269597.
+    See: https://github.com/tiangolo/typer/issues/153
+    Inspired by: https://github.com/EuleMitKeule/typer-common-options
     """
 
-    class Config:
-        arbitrary_types_allowed: bool = True
+    instances: ClassVar[dict[type[Self], Self]] = {}
+
+    def __post_init__(self) -> None:
+        self.instances[self.__class__] = self  # type: ignore[assignment, index]
 
     @classmethod
-    @abstractmethod
-    def decorator(cls, func: PreWrapFunc[DecoratorParams]) -> PostWrapFunc[DecoratorParams]:
-        """Should be overridden in subclasses."""
+    def get_name(cls) -> str:
+        return cls.__name__
+
+    @classmethod
+    def get_instance(cls) -> Self:
+        if cls not in cls.instances:
+            raise CommonOptionInstanceNotAvailableError(cls)
+
+        return cls.instances[cls]  # type: ignore[return-value]
+
+    def as_dict(self) -> dict[str, Any]:
+        return self.__dict__

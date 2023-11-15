@@ -2,34 +2,32 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.beekeeper_common_options import BeekeeperCommonOptions
-from clive.__private.core._async import asyncio_run
 
 beekeeper = CliveTyper(name="beekeeper", help="Beekeeper-related commands.")
 
 
-@beekeeper.command()
-@BeekeeperCommonOptions.decorator
-async def info(ctx: typer.Context) -> None:
+@beekeeper.command(common_options=[BeekeeperCommonOptions])
+async def info(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show the beekeeper info."""
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 
-    common = BeekeeperCommonOptions(**ctx.params)
-    await BeekeeperInfo(**common.dict()).run()
+    common = BeekeeperCommonOptions.get_instance()
+    await BeekeeperInfo(**common.as_dict()).run()
 
 
 @beekeeper.command()
-def spawn(
+async def spawn(
     background: bool = typer.Option(True, help="Run in background."),
 ) -> None:
     """Spawn beekeeper process."""
     from clive.__private.cli.commands.beekeeper import BeekeeperSpawn
 
-    asyncio_run(BeekeeperSpawn(background=background).run())
+    await BeekeeperSpawn(background=background).run()
 
 
 @beekeeper.command()
-def close() -> None:
+async def close() -> None:
     """Close beekeeper process."""
     from clive.__private.cli.commands.beekeeper import BeekeeperClose
 
-    asyncio_run(BeekeeperClose().run())
+    await BeekeeperClose().run()

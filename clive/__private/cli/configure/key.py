@@ -8,10 +8,9 @@ from clive.__private.cli.common import WorldCommonOptions, options
 key = CliveTyper(name="key", help="Manage your key(s).")
 
 
-@key.command(name="add")
-@WorldCommonOptions.decorator()
+@key.command(name="add", common_options=[WorldCommonOptions])
 async def add_key(
-    ctx: typer.Context,
+    ctx: typer.Context,  # noqa: ARG001
     key_: str = typer.Option(
         ..., "--key", help="The key to import. This can be a path to a file or a key itself.", show_default=False
     ),
@@ -25,5 +24,5 @@ async def add_key(
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
 
-    common = WorldCommonOptions(**ctx.params)
-    await AddKey(**common.dict(), password=password, key_or_path=key_, alias=alias).run()
+    common = WorldCommonOptions.get_instance()
+    await AddKey(**common.as_dict(), password=password, key_or_path=key_, alias=alias).run()

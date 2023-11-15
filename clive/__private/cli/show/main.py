@@ -1,79 +1,73 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import WorldCommonOptions, options
+from clive.__private.cli.common import options
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
-from clive.__private.core._async import asyncio_run
+from clive.__private.cli.common.world_common_options import WorldWithoutBeekeeperCommonOptions
 
 show = CliveTyper(name="show", help="Show various data.")
 
 
-@show.command(name="profiles")
-def show_profiles() -> None:
+@show.command("profiles")
+async def show_profiles() -> None:
     """Show all stored profiles."""
     from clive.__private.cli.commands.show.show_profiles import ShowProfiles
 
-    asyncio_run(ShowProfiles().run())
+    await ShowProfiles().run()
 
 
-@show.command(name="profile")
-@ProfileCommonOptions.decorator
-async def show_profile(ctx: typer.Context) -> None:
+@show.command(name="profile", common_options=[ProfileCommonOptions])
+async def show_profile(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show profile information."""
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
-    common = ProfileCommonOptions(**ctx.params)
-    await ShowProfile(**common.dict()).run()
+    common = ProfileCommonOptions.get_instance()
+    await ShowProfile(**common.as_dict()).run()
 
 
-@show.command(name="accounts")
-@ProfileCommonOptions.decorator
-async def show_accounts(ctx: typer.Context) -> None:
+@show.command(name="accounts", common_options=[ProfileCommonOptions])
+async def show_accounts(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all accounts stored in the profile."""
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
-    common = ProfileCommonOptions(**ctx.params)
-    await ShowAccounts(**common.dict()).run()
+    common = ProfileCommonOptions.get_instance()
+    await ShowAccounts(**common.as_dict()).run()
 
 
-@show.command(name="keys")
-@ProfileCommonOptions.decorator
-async def show_keys(ctx: typer.Context) -> None:
+@show.command(name="keys", common_options=[ProfileCommonOptions])
+async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all the public keys stored in Clive."""
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
-    common = ProfileCommonOptions(**ctx.params)
-    await ShowKeys(**common.dict()).run()
+    common = ProfileCommonOptions.get_instance()
+    await ShowKeys(**common.as_dict()).run()
 
 
-@show.command(name="balances")
-@WorldCommonOptions.decorator(use_beekeeper=False)
-async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:
+@show.command(name="balances", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
     """Show balances of the selected account."""
     from clive.__private.cli.commands.show.show_balances import ShowBalances
 
-    common = WorldCommonOptions(**ctx.params)
-    await ShowBalances(**common.dict(), account_name=account_name).run()
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowBalances(**common.as_dict(), account_name=account_name).run()
 
 
-@show.command(name="node")
-@ProfileCommonOptions.decorator
-async def show_node(ctx: typer.Context) -> None:
+@show.command(name="node", common_options=[ProfileCommonOptions])
+async def show_node(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show address of the currently selected node."""
     from clive.__private.cli.commands.show.show_node import ShowNode
 
-    common = ProfileCommonOptions(**ctx.params)
-    await ShowNode(**common.dict()).run()
+    common = ProfileCommonOptions.get_instance()
+    await ShowNode(**common.as_dict()).run()
 
 
-@show.command(name="transaction-status")
-@WithProfile.decorator
+@show.command(name="transaction-status", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_transaction_status(
-    ctx: typer.Context,
+    ctx: typer.Context,  # noqa: ARG001
     transaction_id: str = typer.Option(..., help="Hash of the transaction.", show_default=False),
 ) -> None:
     """Print status of a specific transaction."""
     from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
 
-    common = WithProfile(**ctx.params)
-    await ShowTransactionStatus(**common.dict(), transaction_id=transaction_id).run()
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowTransactionStatus(**common.as_dict(), transaction_id=transaction_id).run()

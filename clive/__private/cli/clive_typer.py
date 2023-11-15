@@ -1,12 +1,19 @@
+import contextlib
 import sys
 from collections.abc import Callable
+from dataclasses import fields
+from functools import wraps
+from inspect import Parameter, isawaitable, signature
 from typing import Any, ClassVar, NewType, Optional, TypeVar
 
 import typer
 from click import ClickException
 from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
-from typer.models import Default, DeveloperExceptionConfig
+from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
+
+from clive.__private.cli.common.common_options_base import CommonOptionInstanceNotAvailableError, CommonOptionsBase
+from clive.__private.core._async import asyncio_run
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
 ExitCode = NewType("ExitCode", int)
@@ -15,7 +22,7 @@ ErrorHandlingCallback = Callable[[ExceptionT], ExitCode | None]
 
 class CliveTyper(typer.Typer):
     """
-    A modified version of Typer that allows for registering error handlers.
+    A modified version of Typer that allows for registering error handlers and has a different defaults set.
 
     Such a handlers could be only registered for the main Typer instance, but not for sub-commands. That's because
     Typer.__call__ is not called for each sub-commands, but only for the main Typer instance.
@@ -71,6 +78,60 @@ class CliveTyper(typer.Typer):
 
         return decorator
 
+    def __common_decorator(
+        self,
+        fun: Callable[..., Any],
+        common_options: list[type[CommonOptionsBase]] | None = None,
+        **kwargs: Any,
+    ) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        common_options = common_options or []
+
+        def decorator(f: CommandFunctionType) -> CommandFunctionType:
+            @wraps(f)
+            def wrapper(*args: Any, **_kwargs: Any) -> Any:
+                if len(args) > 0:
+                    raise RuntimeError("Positional arguments are not supported")
+
+                for common_option in common_options:
+                    _kwargs = self.__patch_wrapper_kwargs(common_option, **_kwargs)
+
+                result = f(*args, **_kwargs)
+
+                if isawaitable(result):
+                    asyncio_run(result)
+
+            for common_option in common_options:
+                self.__patch_command_sig(wrapper, common_option)
+
+            return fun(**kwargs)(wrapper)  # type: ignore[no-any-return]
+
+        return decorator
+
+    def command(  # type: ignore[override]
+        self,
+        name: Optional[str] = None,
+        common_options: list[type[CommonOptionsBase]] | None = None,
+        *,
+        help: Optional[str] = None,  # noqa: A002
+    ) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        return self.__common_decorator(super().command, name=name, common_options=common_options, help=help)
+
+    def callback(  # type: ignore[override]
+        self,
+        name: Optional[str] = Default(None),
+        common_options: list[type[CommonOptionsBase]] | None = None,
+        *,
+        help: Optional[str] = Default(None),  # noqa: A002
+        invoke_without_command: bool = Default(False),
+    ) -> Callable[[CommandFunctionType], CommandFunctionType]:
+        return self.__common_decorator(
+            super().callback,
+            name=name,
+            common_options=common_options,
+            help=help,
+            invoke_without_command=invoke_without_command,
+        )
+
     def __handle_error(self, error: ExceptionT) -> None:
         handler = self.__get_error_handler(error)
 
@@ -106,3 +167,52 @@ class CliveTyper(typer.Typer):
                 return self.__clive_error_handlers__.pop(type_)
 
         raise error  # reraise if no handler is available
+
+    @staticmethod
+    def __patch_wrapper_kwargs(common_option: type[CommonOptionsBase], **kwargs: Any) -> dict[str, Any]:
+        if (ctx := kwargs.get("ctx")) is None:
+            raise RuntimeError("Context should be provided")
+
+        common_opts_params: dict[str, Any] = {}
+
+        with contextlib.suppress(CommonOptionInstanceNotAvailableError):
+            common_opts_params.update(common_option.get_instance().as_dict())
+
+        for field in fields(common_option):
+            if field.metadata.get("ignore", False):
+                continue
+
+            value = kwargs.pop(field.name)
+
+            if value == field.default:
+                continue
+
+            common_opts_params[field.name] = value
+
+        common_option(**common_opts_params)
+        setattr(ctx, common_option.get_name(), common_opts_params)
+
+        return {"ctx": ctx, **kwargs}
+
+    @staticmethod
+    def __patch_command_sig(wrapper: Any, common_option: type[CommonOptionsBase]) -> None:
+        sig = signature(wrapper)
+        new_parameters = sig.parameters.copy()
+
+        common_option_fields = fields(common_option)
+
+        for field in common_option_fields:
+            if field.metadata.get("ignore", False):
+                continue
+            new_parameters[field.name] = Parameter(
+                name=field.name,
+                kind=Parameter.KEYWORD_ONLY,
+                default=field.default,
+                annotation=field.type,
+            )
+        for kwarg in sig.parameters.values():
+            if kwarg.kind == Parameter.KEYWORD_ONLY and kwarg.name != "ctx" and kwarg.name not in new_parameters:
+                new_parameters[kwarg.name] = kwarg.replace(default=kwarg.default)
+
+        new_sig = sig.replace(parameters=tuple(new_parameters.values()))
+        wrapper.__signature__ = new_sig
