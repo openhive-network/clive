@@ -53,6 +53,7 @@ class CliveTyper(typer.Typer):
             help=help,
             rich_markup_mode="rich",
             context_settings={"help_option_names": ["-h", "--help"]},
+            no_args_is_help=True,
         )
 
     def __call__(self, *args: Any, **kwargs: Any) -> Any:
