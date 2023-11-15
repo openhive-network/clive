@@ -19,7 +19,6 @@ class FastBroadcast(CommandInActive):
     operation: Operation
     beekeeper: Beekeeper
     sign_with: PublicKey
-    chain_id: str
 
     async def _execute(self) -> None:
         await perform_actions_on_transaction(
@@ -27,7 +26,6 @@ class FastBroadcast(CommandInActive):
             app_state=self.app_state,
             node=self.node,
             beekeeper=self.beekeeper,
-            chain_id=self.chain_id,
             sign_key=self.sign_with,
             save_file_path=None,
             broadcast=True,

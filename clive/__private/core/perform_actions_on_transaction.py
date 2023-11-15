@@ -27,7 +27,6 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
     app_state: AppStateProtocol,
     node: Node,
     beekeeper: Beekeeper,
-    chain_id: str,
     sign_key: PublicKey | None = None,
     save_file_path: Path | None = None,
     broadcast: bool = False,
@@ -42,7 +41,6 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
     app_state: The app state.
     node: The node which will be used for transaction broadcasting.
     beekeeper: The beekeeper to use to sign the transaction.
-    chain_id: The chain id to use for signing the transaction.
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
     save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
@@ -60,7 +58,11 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
 
     if sign_key:
         transaction = await Sign(
-            app_state=app_state, beekeeper=beekeeper, transaction=transaction, key=sign_key, chain_id=chain_id
+            app_state=app_state,
+            beekeeper=beekeeper,
+            transaction=transaction,
+            key=sign_key,
+            chain_id=await node.chain_id,
         ).execute_with_result()
 
     if save_file_path:

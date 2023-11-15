@@ -138,7 +138,6 @@ class Commands(Generic[WorldT]):
                 operation=operation,
                 beekeeper=self._world.beekeeper,
                 sign_with=sign_with,
-                chain_id=await self._world.node.chain_id,
             )
         )
 

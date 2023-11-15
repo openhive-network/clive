@@ -45,7 +45,6 @@ class OperationCommand(WorldBasedCommand, ABC):
             sign_key=self.__get_key_to_sign(),
             save_file_path=Path(self.save_file) if self.save_file is not None else None,
             broadcast=self.broadcast,
-            chain_id=(await self.world.node.chain_id),
         )
 
         self.__print_transaction(transaction.with_hash())
