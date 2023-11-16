@@ -69,3 +69,23 @@ class CLIProfileAlreadyExistsError(CLIPrettyError):
             "If you want to create a new profile - please check the `clive configure profile add -h` command."
         )
         super().__init__(message, errno.EEXIST)
+
+
+class CLISigningRequiresAPasswordError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "You must provide a password to sign the transaction with."
+        super().__init__(message, errno.EINVAL)
+
+
+class CLIBroadcastRequiresSignKeyAndPasswordError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = (
+            "You must provide a password and a key alias to sign the transaction with if you want to broadcast it."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class CLIBroadcastCannotBeUsedWithForceUnsignError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "You cannot broadcast a transaction and force-unsign it at the same time."
+        super().__init__(message, errno.EINVAL)

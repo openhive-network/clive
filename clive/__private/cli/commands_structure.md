@@ -27,6 +27,9 @@ flowchart LR
 
    subgraph Processing[Commands related to performing certain actions]
         Process(process) --> ProcessTransfer[transfer]
+        Process --> ProcessTransaction[transaction]
+
+
         Process -->|"Not implemented yet"|ProcessDeposit[deposit]
         Process -->|"Not implemented yet"|ProcessWithdrawal[withdrawal]
         Process -->|"Not implemented yet"|ProcessCancelWithdrawal[cancel-withdrawal]
@@ -44,8 +47,6 @@ flowchart LR
         Process -->|"Not implemented yet"|ProcessVoteProposal(vote-proposal)
         ProcessVoteProposal --> ProcessVoteProposalAdd[add]
         ProcessVoteProposal --> ProcessVoteProposalRemove[remove]
-
-        Process -->|"Not implemented yet"|ProcessTransaction[transaction]
     end
 
     subgraph Presentation[Commands related to the presentation of the data]
