@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Literal
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save_transaction import SaveTransaction
-from clive.__private.core.commands.sign import Sign
+from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.models import Transaction
@@ -36,6 +36,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     node: The node which will be used for transaction broadcasting.
     beekeeper: The beekeeper to use to sign the transaction.
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+    already_signed_mode: How to handle the situation when transaction is already signed.
     force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
     save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
@@ -51,6 +52,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     node: Node
     beekeeper: Beekeeper
     sign_key: PublicKey | None = None
+    already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
@@ -66,6 +68,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                 transaction=transaction,
                 key=self.sign_key,
                 chain_id=await self.node.chain_id,
+                already_signed_mode=self.already_signed_mode,
             ).execute_with_result()
 
         if self.force_unsign:

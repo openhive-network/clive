@@ -20,7 +20,7 @@ from clive.__private.core.commands.perform_actions_on_transaction import Perform
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.set_timeout import SetTimeout
-from clive.__private.core.commands.sign import Sign
+from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
@@ -106,6 +106,7 @@ class Commands(Generic[WorldT]):
         *,
         content: TransactionConvertibleType,
         sign_key: PublicKey | None = None,
+        already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
@@ -118,6 +119,7 @@ class Commands(Generic[WorldT]):
                 beekeeper=self._world.beekeeper,
                 content=content,
                 sign_key=sign_key,
+                already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
@@ -132,7 +134,13 @@ class Commands(Generic[WorldT]):
             BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
         )
 
-    async def sign(self, *, transaction: Transaction, sign_with: PublicKey) -> CommandWithResultWrapper[Transaction]:
+    async def sign(
+        self,
+        *,
+        transaction: Transaction,
+        sign_with: PublicKey,
+        already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
+    ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             Sign(
                 app_state=self._world.app_state,
@@ -140,6 +148,7 @@ class Commands(Generic[WorldT]):
                 transaction=transaction,
                 key=sign_with,
                 chain_id=await self._world.node.chain_id,
+                already_signed_mode=already_signed_mode,
             )
         )
 
