@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
@@ -18,8 +18,7 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
-from clive.__private.core.commands.save_binary import SaveToFileAsBinary
-from clive.__private.core.commands.save_json import SaveToFileAsJson
+from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
@@ -109,6 +108,7 @@ class Commands(Generic[WorldT]):
         sign_key: PublicKey | None = None,
         force_unsign: bool = False,
         save_file_path: Path | None = None,
+        force_save_format: Literal["json", "bin"] | None = None,
         broadcast: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
@@ -120,6 +120,7 @@ class Commands(Generic[WorldT]):
                 sign_key=sign_key,
                 force_unsign=force_unsign,
                 save_file_path=save_file_path,
+                force_save_format=force_save_format,
                 broadcast=broadcast,
             )
         )
@@ -149,11 +150,11 @@ class Commands(Generic[WorldT]):
             )
         )
 
-    async def save_to_file(self, *, transaction: Transaction, path: Path, binary: bool = False) -> CommandWrapper:
+    async def save_to_file(
+        self, *, transaction: Transaction, path: Path, force_format: Literal["json", "bin"] | None = None
+    ) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
-            SaveToFileAsBinary(transaction=transaction, file_path=path)
-            if binary
-            else SaveToFileAsJson(transaction=transaction, file_path=path)
+            SaveTransaction(transaction=transaction, file_path=path, force_format=force_format)
         )
 
     async def load_transaction_from_file(self, *, path: Path) -> CommandWithResultWrapper[Transaction]:

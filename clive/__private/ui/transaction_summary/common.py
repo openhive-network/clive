@@ -179,7 +179,9 @@ class TransactionSummaryCommon(BaseScreen):
             transaction = tx
 
         assert transaction is not None, "Transaction should be built at this point!"
-        await self.app.world.commands.save_to_file(transaction=transaction, path=file_path, binary=save_as_binary)
+        await self.app.world.commands.save_to_file(
+            transaction=transaction, path=file_path, force_format="bin" if save_as_binary else "json"
+        )
 
         self.notify(
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"

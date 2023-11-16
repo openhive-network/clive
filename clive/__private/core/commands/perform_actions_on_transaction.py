@@ -1,12 +1,11 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
-from clive.__private.core.commands.save_binary import SaveToFileAsBinary
-from clive.__private.core.commands.save_json import SaveToFileAsJson
+from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.ensure_transaction import ensure_transaction
@@ -54,6 +53,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     sign_key: PublicKey | None = None
     force_unsign: bool = False
     save_file_path: Path | None = None
+    force_save_format: Literal["json", "bin"] | None = None
     broadcast: bool = False
 
     async def _execute(self) -> None:
@@ -72,14 +72,11 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
             transaction = await UnSign(transaction=transaction).execute_with_result()
 
         if path := self.save_file_path:
-            command = SaveToFileAsBinary if self.__should_save_as_binary(path) else SaveToFileAsJson
-            await command(transaction=transaction, file_path=path).execute()
+            await SaveTransaction(
+                transaction=transaction, file_path=path, force_format=self.force_save_format
+            ).execute()
 
         if self.broadcast:
             await Broadcast(node=self.node, transaction=transaction).execute()
 
         self._result = transaction
-
-    @staticmethod
-    def __should_save_as_binary(path: Path) -> bool:
-        return path.suffix in (".bin",)
