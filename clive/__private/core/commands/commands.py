@@ -102,11 +102,12 @@ class Commands(Generic[WorldT]):
             SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds)
         )
 
-    async def perform_actions_on_transaction(
+    async def perform_actions_on_transaction(  # noqa: PLR0913
         self,
         *,
         content: TransactionConvertibleType,
         sign_key: PublicKey | None = None,
+        force_unsign: bool = False,
         save_file_path: Path | None = None,
         broadcast: bool = False,
     ) -> CommandWithResultWrapper[Transaction]:
@@ -117,6 +118,7 @@ class Commands(Generic[WorldT]):
                 beekeeper=self._world.beekeeper,
                 content=content,
                 sign_key=sign_key,
+                force_unsign=force_unsign,
                 save_file_path=save_file_path,
                 broadcast=broadcast,
             )

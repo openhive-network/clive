@@ -8,6 +8,7 @@ from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.save_json import SaveToFileAsJson
 from clive.__private.core.commands.sign import Sign
+from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.models import Transaction
 
@@ -36,6 +37,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     node: The node which will be used for transaction broadcasting.
     beekeeper: The beekeeper to use to sign the transaction.
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
+    force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
     save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
     broadcast: Whether to broadcast the transaction.
@@ -50,13 +52,14 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     node: Node
     beekeeper: Beekeeper
     sign_key: PublicKey | None = None
+    force_unsign: bool = False
     save_file_path: Path | None = None
     broadcast: bool = False
 
     async def _execute(self) -> None:
         transaction = await ensure_transaction(self.content, node=self.node)
 
-        if self.sign_key:
+        if self.sign_key and not self.force_unsign:
             transaction = await Sign(
                 app_state=self.app_state,
                 beekeeper=self.beekeeper,
@@ -64,6 +67,9 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                 key=self.sign_key,
                 chain_id=await self.node.chain_id,
             ).execute_with_result()
+
+        if self.force_unsign:
+            transaction = await UnSign(transaction=transaction).execute_with_result()
 
         if path := self.save_file_path:
             command = SaveToFileAsBinary if self.__should_save_as_binary(path) else SaveToFileAsJson
