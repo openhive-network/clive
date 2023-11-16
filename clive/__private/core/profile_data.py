@@ -260,10 +260,10 @@ class ProfileData(Context):
 
         assert_profile_could_be_loaded()
 
-        with cls.__open_database() as db:
-            name = cls.get_lastly_used_profile_name() if name is None else name
-            assert name is not None, "We already checked that lastly used profile exists."
+        name = cls.get_lastly_used_profile_name() if name is None else name
+        assert name is not None, "We already checked that lastly used profile exists."
 
+        with cls.__open_database() as db:
             stored_profile: ProfileData | None = db.get(name, None)
             return stored_profile if stored_profile else create_new_profile(name)
 
