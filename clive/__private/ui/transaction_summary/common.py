@@ -7,7 +7,6 @@ from textual.binding import Binding
 from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
-from clive.__private.core.commands.sign import TransactionAlreadySignedError
 from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -18,7 +17,7 @@ from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
-from clive.exceptions import CliveError, NoItemSelectedError
+from clive.exceptions import NoItemSelectedError
 from schemas.operations.representations import HF26Representation, convert_to_representation
 
 if TYPE_CHECKING:
@@ -26,12 +25,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models import Operation, Transaction
-
-
-class TransactionCouldNotBeSignedError(CliveError):
-    def __init__(self, transaction: Transaction, reason: str = "") -> None:
-        self.transaction = transaction
-        super().__init__(f"Transaction could not be signed. Reason: {reason}")
 
 
 class StaticPart(Static):
@@ -172,18 +165,19 @@ class TransactionSummaryCommon(BaseScreen):
 
         transaction = self.transaction
 
-        if should_be_signed and not transaction.is_signed():
-            tx = await self.__try_to_sign_transaction(transaction)
-            if tx is None:
-                return
-            transaction = tx
-        elif not should_be_signed:
-            transaction = await self.__unsign_transaction(transaction)
-
-        assert transaction is not None, "Transaction should be built at this point!"
-        await self.app.world.commands.save_to_file(
-            transaction=transaction, path=file_path, force_format="bin" if save_as_binary else "json"
-        )
+        try:
+            transaction = (
+                await self.app.world.commands.perform_actions_on_transaction(
+                    content=transaction,
+                    sign_key=self.__get_key_to_sign() if should_be_signed else None,
+                    force_unsign=not should_be_signed,
+                    save_file_path=file_path,
+                    force_save_format="bin" if save_as_binary else "json",
+                )
+            ).result_or_raise
+        except Exception as error:  # noqa: BLE001
+            self.notify(f"Transaction save failed. Reason: {error}", severity="error")
+            return
 
         self.notify(
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
@@ -202,13 +196,16 @@ class TransactionSummaryCommon(BaseScreen):
     async def __broadcast(self) -> None:
         transaction = self.transaction
 
-        if not transaction.is_signed():
-            tx = await self.__try_to_sign_transaction(transaction)
-            if tx is None:
-                return
-            transaction = tx
-
-        if not (await self.app.world.commands.broadcast(transaction=transaction)).success:
+        try:
+            (
+                await self.app.world.commands.perform_actions_on_transaction(
+                    content=transaction,
+                    sign_key=self.__get_key_to_sign() if not transaction.is_signed() else None,
+                    broadcast=True,
+                )
+            ).raise_if_error_occurred()
+        except Exception as error:  # noqa: BLE001
+            self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return
 
         self.action_dashboard()
@@ -221,26 +218,11 @@ class TransactionSummaryCommon(BaseScreen):
     def action_save(self) -> None:
         self.app.push_screen(SelectFileToSaveTransaction())
 
-    async def __sign_transaction(self, transaction: Transaction) -> Transaction:
+    def __get_key_to_sign(self) -> PublicKey:
         try:
-            value = self._select_key.value
+            return self._select_key.value
         except NoItemSelectedError as error:
-            raise TransactionCouldNotBeSignedError(transaction, "No key was selected!") from error
-
-        try:
-            return (await self.app.world.commands.sign(transaction=transaction, sign_with=value)).result_or_raise
-        except TransactionAlreadySignedError as error:
-            raise TransactionCouldNotBeSignedError(transaction, "Transaction is already signed!") from error
-
-    async def __try_to_sign_transaction(self, transaction: Transaction) -> Transaction | None:
-        try:
-            return await self.__sign_transaction(transaction)
-        except TransactionCouldNotBeSignedError as error:
-            self.notify(str(error), severity="error")
-            return None
-
-    async def __unsign_transaction(self, transaction: Transaction) -> Transaction:
-        return (await self.app.world.commands.unsign(transaction=transaction)).result_or_raise
+            raise NoItemSelectedError("No key was selected!") from error
 
     @staticmethod
     def __get_operation_representation_json(operation: Operation) -> str:
