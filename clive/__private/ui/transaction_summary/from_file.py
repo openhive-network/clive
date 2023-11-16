@@ -37,7 +37,7 @@ class TransactionSummaryFromFile(TransactionSummaryCommon):
         self.__file_path = file_path
 
     def action_save(self) -> None:
-        self.app.push_screen(SelectFileToSaveTransaction(already_signed=self.transaction.is_signed()))
+        self.app.push_screen(SelectFileToSaveTransaction())
 
     def _get_subtitle(self) -> RenderableType:
         return f"(Loaded from [blue]{self.__file_path}[/])"

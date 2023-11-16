@@ -172,11 +172,13 @@ class TransactionSummaryCommon(BaseScreen):
 
         transaction = self.transaction
 
-        if should_be_signed:
+        if should_be_signed and not transaction.is_signed():
             tx = await self.__try_to_sign_transaction(transaction)
             if tx is None:
                 return
             transaction = tx
+        elif not should_be_signed:
+            transaction = await self.__unsign_transaction(transaction)
 
         assert transaction is not None, "Transaction should be built at this point!"
         await self.app.world.commands.save_to_file(
@@ -236,6 +238,9 @@ class TransactionSummaryCommon(BaseScreen):
         except TransactionCouldNotBeSignedError as error:
             self.notify(str(error), severity="error")
             return None
+
+    async def __unsign_transaction(self, transaction: Transaction) -> Transaction:
+        return (await self.app.world.commands.unsign(transaction=transaction)).result_or_raise
 
     @staticmethod
     def __get_operation_representation_json(operation: Operation) -> str:
