@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_in_active import CommandInActive
-from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
+from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
@@ -21,7 +21,7 @@ class FastBroadcast(CommandInActive):
     sign_with: PublicKey
 
     async def _execute(self) -> None:
-        await perform_actions_on_transaction(
+        await PerformActionsOnTransaction(
             content=self.operation,
             app_state=self.app_state,
             node=self.node,
@@ -29,4 +29,4 @@ class FastBroadcast(CommandInActive):
             sign_key=self.sign_with,
             save_file_path=None,
             broadcast=True,
-        )
+        ).execute()

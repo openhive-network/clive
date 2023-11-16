@@ -10,7 +10,6 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.core.perform_actions_on_transaction import perform_actions_on_transaction
 from clive.models import Operation, Transaction
 
 
@@ -37,15 +36,14 @@ class OperationCommand(WorldBasedCommand, ABC):
         if self.password is not None:
             await self.world.commands.activate(password=self.password)
 
-        transaction = await perform_actions_on_transaction(
-            content=self._create_operation(),
-            app_state=self.world.app_state,
-            beekeeper=self.world.beekeeper,
-            node=self.world.node,
-            sign_key=self.__get_key_to_sign(),
-            save_file_path=Path(self.save_file) if self.save_file is not None else None,
-            broadcast=self.broadcast,
-        )
+        transaction = (
+            await self.world.commands.perform_actions_on_transaction(
+                content=self._create_operation(),
+                sign_key=self.__get_key_to_sign(),
+                save_file_path=Path(self.save_file) if self.save_file is not None else None,
+                broadcast=self.broadcast,
+            )
+        ).result_or_raise
 
         self.__print_transaction(transaction.with_hash())
         typer.echo(f"Transaction was successfully {'broadcasted' if self.broadcast else 'created'}.")

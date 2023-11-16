@@ -1,16 +1,18 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.save_json import SaveToFileAsJson
 from clive.__private.core.commands.sign import Sign
 from clive.__private.core.ensure_transaction import ensure_transaction
+from clive.models import Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.abc.command_in_active import AppStateProtocol
-    from clive.models import Transaction
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -21,16 +23,8 @@ if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
 
 
-async def perform_actions_on_transaction(  # noqa: PLR0913
-    content: TransactionConvertibleType,
-    *,
-    app_state: AppStateProtocol,
-    node: Node,
-    beekeeper: Beekeeper,
-    sign_key: PublicKey | None = None,
-    save_file_path: Path | None = None,
-    broadcast: bool = False,
-) -> Transaction:
+@dataclass(kw_only=True)
+class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     """
     Performs commands on a transaction object.
 
@@ -51,25 +45,35 @@ async def perform_actions_on_transaction(  # noqa: PLR0913
     The transaction object.
     """
 
-    def should_save_as_binary(path: Path) -> bool:
+    content: TransactionConvertibleType
+    app_state: AppStateProtocol
+    node: Node
+    beekeeper: Beekeeper
+    sign_key: PublicKey | None = None
+    save_file_path: Path | None = None
+    broadcast: bool = False
+
+    async def _execute(self) -> None:
+        transaction = await ensure_transaction(self.content, node=self.node)
+
+        if self.sign_key:
+            transaction = await Sign(
+                app_state=self.app_state,
+                beekeeper=self.beekeeper,
+                transaction=transaction,
+                key=self.sign_key,
+                chain_id=await self.node.chain_id,
+            ).execute_with_result()
+
+        if path := self.save_file_path:
+            command = SaveToFileAsBinary if self.__should_save_as_binary(path) else SaveToFileAsJson
+            await command(transaction=transaction, file_path=path).execute()
+
+        if self.broadcast:
+            await Broadcast(node=self.node, transaction=transaction).execute()
+
+        self._result = transaction
+
+    @staticmethod
+    def __should_save_as_binary(path: Path) -> bool:
         return path.suffix in (".bin",)
-
-    transaction = await ensure_transaction(content, node=node)
-
-    if sign_key:
-        transaction = await Sign(
-            app_state=app_state,
-            beekeeper=beekeeper,
-            transaction=transaction,
-            key=sign_key,
-            chain_id=await node.chain_id,
-        ).execute_with_result()
-
-    if save_file_path:
-        command = SaveToFileAsBinary if should_save_as_binary(save_file_path) else SaveToFileAsJson
-        await command(transaction=transaction, file_path=save_file_path).execute()
-
-    if broadcast:
-        await Broadcast(node=node, transaction=transaction).execute()
-
-    return transaction

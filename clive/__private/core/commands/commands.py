@@ -16,6 +16,7 @@ from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.load_transaction import LoadTransaction
+from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_binary import SaveToFileAsBinary
 from clive.__private.core.commands.save_json import SaveToFileAsJson
@@ -34,6 +35,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.commands.abc.command import Command
+    from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
         ErrorHandlerContextManager,
     )
@@ -97,6 +99,26 @@ class Commands(Generic[WorldT]):
     async def set_timeout(self, *, seconds: int) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds)
+        )
+
+    async def perform_actions_on_transaction(
+        self,
+        *,
+        content: TransactionConvertibleType,
+        sign_key: PublicKey | None = None,
+        save_file_path: Path | None = None,
+        broadcast: bool = False,
+    ) -> CommandWithResultWrapper[Transaction]:
+        return await self.__surround_with_exception_handlers(
+            PerformActionsOnTransaction(
+                app_state=self._world.app_state,
+                node=self._world.node,
+                beekeeper=self._world.beekeeper,
+                content=content,
+                sign_key=sign_key,
+                save_file_path=save_file_path,
+                broadcast=broadcast,
+            )
         )
 
     async def build_transaction(
