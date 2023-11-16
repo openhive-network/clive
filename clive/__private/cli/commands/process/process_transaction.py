@@ -55,7 +55,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         self.__validate_signed_transaction() if transaction.is_signed() else self.__validate_unsigned_transaction()
 
     def __validate_signed_transaction(self) -> None:
-        if self.sign:
+        if self.already_signed_mode == "error" and self.sign:
             raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
 
     def __validate_unsigned_transaction(self) -> None:

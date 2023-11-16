@@ -13,6 +13,7 @@ from clive.__private.cli.exceptions import (
     CLIPrettyError,
     CLISigningRequiresAPasswordError,
 )
+from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -23,6 +24,7 @@ from clive.models import Transaction
 class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     password: str | None = None
     sign: str | None = None
+    already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     save_file: str | Path | None = None
     broadcast: bool = False
@@ -48,6 +50,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
                 sign_key=self.__get_key_to_sign(),
+                already_signed_mode=self.already_signed_mode,
                 force_unsign=self.force_unsign,
                 save_file_path=self.save_file_path,
                 broadcast=self.broadcast,
