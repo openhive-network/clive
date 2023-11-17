@@ -206,7 +206,6 @@ build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
   <<: *clive_testnet_needs
   variables:
-    BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
 .prepare_clive_stable_image:
@@ -233,7 +232,6 @@ build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
   <<: *clive_testnet_needs
   variables:
-    BASE_IMAGE: ${HIVED_IMAGE_NAME}
     BUILD_INSTANCE_ARGS: "--embedded-testnet --image-path-suffix=-${CI_COMMIT_REF_NAME}"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
