@@ -160,12 +160,13 @@ deploy_wheel_to_pypi:
     - job: deploy_wheel_to_gitlab
       artifacts: true
   when: manual
-  except:
-    - develop
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "develop" && $CI_COMMIT_BRANCH != "msobczyk_change_docker_image_tags" && $CI_COMMIT_TAG == null
   variables:
     GIT_DEPTH: 0
     BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
+    BUILD_SUFFIX: ""
+    IMAGE_PATH_SUFFIX: ""
     BUILD_INSTANCE_ARGS: ""
 
     TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
@@ -180,6 +181,7 @@ deploy_wheel_to_pypi:
       --hived-source-image=${HIVED_IMAGE_NAME}
       --base-image=${BASE_IMAGE}
       --clive-version=${WHEEL_BUILD_VERSION}
+      --image-path-suffix=${IMAGE_PATH_SUFFIX}
       ${BUILD_INSTANCE_ARGS}
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - source docker_image_name.env
@@ -211,12 +213,15 @@ build_and_push_clive_testnet_image:
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
   when: on_success
-  except: [ ]
-  only:
-    - develop
-    - master
-  variables:
-    BUILD_INSTANCE_ARGS: "--image-path-suffix=-${CI_COMMIT_REF_NAME}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "msobczyk_change_docker_image_tags"
+      variables:
+        IMAGE_PATH_SUFFIX: "-${CI_COMMIT_BRANCH}"
+        BUILD_SUFFIX: "${CI_COMMIT_BRANCH}-"
+    - if: $CI_COMMIT_TAG != null
+      variables:
+        IMAGE_PATH_SUFFIX: "-tagged"
+        BUILD_SUFFIX: "${CI_COMMIT_TAG}-"
   after_script:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
     - export LATEST_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-latest"
@@ -232,6 +237,6 @@ build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
   <<: *clive_testnet_needs
   variables:
-    BUILD_INSTANCE_ARGS: "--embedded-testnet --image-path-suffix=-${CI_COMMIT_REF_NAME}"
-
+    BASE_IMAGE: ${HIVED_IMAGE_NAME}
+    BUILD_INSTANCE_ARGS: "--embedded-testnet"
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
