@@ -76,6 +76,11 @@ Governance WitnessesList Witness {
     grid-columns: 20% 11% 35% 20% 14%;
 }
 
+/* Could be done better, for not just so focus could be visible */
+Governance Witness:focus .witness-rank-even, Governance Witness:focus .witness-rank-odd {
+    background: rgba(0, 0, 0, 0.5);
+}
+
 Governance Witness .witness-name-even {
     background: rgb(83, 158, 255);
 }

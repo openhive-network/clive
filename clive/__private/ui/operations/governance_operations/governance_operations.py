@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -11,6 +10,7 @@ from textual.events import Click
 from textual.widgets import Label, LoadingIndicator, Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.logger import logger
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
@@ -25,8 +25,6 @@ from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.__private.ui.widgets.witness_checkbox import (
     WitnessCheckbox,
     WitnessCheckBoxChanged,
-    WitnessCheckboxFocused,
-    WitnessCheckboxUnFocused,
 )
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
@@ -66,8 +64,15 @@ class WitnessDetails(Vertical):
         yield Static(f"version: {self.__witness.version}")
 
 
-class Witness(Grid, CliveWidget):
+class Witness(Grid, CliveWidget, can_focus=True):
     """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
+
+    BINDINGS = [
+        Binding("f3", "show_details", "Details"),
+        Binding("pageup", "previous_page", "PgDn"),
+        Binding("pagedown", "next_page", "PgUp"),
+        Binding("enter", "toggle_checkbox", "", show=False),
+    ]
 
     def __init__(self, witness: WitnessInformation, evenness: str = "even") -> None:
         super().__init__(id=f"{''.join(witness.name.split('.'))}-grid-container")
@@ -121,26 +126,29 @@ class Witness(Grid, CliveWidget):
             return
         witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
 
-    @on(WitnessCheckboxFocused)
-    def bind_witness_details(self) -> None:
-        self.bind(Binding("f3", "show_details", "Details"))
-
-    @on(WitnessCheckboxUnFocused)
-    def unbind_witness_details(self) -> None:
-        with contextlib.suppress(NoMatches):
-            self.app.query_one(WitnessDetails).remove()
-
-        self.unbind("f3")
-
     @on(Click)
     def set_focus_to_checkbox(self) -> None:
         self.app.set_focus(self.witness_checkbox)
 
     def action_show_details(self) -> None:
+        logger.info("show details")
+
         try:
             self.app.query_one(WitnessDetails).remove()
         except NoMatches:
             self.app.query_one(WitnessesList).mount(WitnessDetails(self.__witness))
+
+    async def action_next_page(self) -> None:
+        logger.info("next page")
+        await self.app.query_one(WitnessesTable).next_page()
+
+    async def action_previous_page(self) -> None:
+        logger.info("previous page")
+        await self.app.query_one(WitnessesTable).previous_page()
+
+    def action_toggle_checkbox(self) -> None:
+        logger.info("toggle checkbox")
+        self.witness_checkbox.press()
 
     @property
     def is_witness_operation_in_cart(self) -> bool:
@@ -319,9 +327,7 @@ class WitnessesListHeader(Grid):
         yield self.arrow_down
 
 
-class WitnessesTable(Vertical, CliveWidget):
-    can_focus = True
-
+class WitnessesTable(Vertical, CliveWidget, can_focus=False):
     def __init__(self, provider: GovernanceDataProvider):
         super().__init__()
         self.__provider = provider
@@ -334,40 +340,40 @@ class WitnessesTable(Vertical, CliveWidget):
         yield self.__header
         yield WitnessesList(self.__provider.content.witnesses, self.__witness_index)
 
-    def on_focus(self) -> None:
-        self.bind(Binding("pageup", "previous_page", "PgUp"))
-        self.bind(Binding("pagedown", "next_page", "PgDn"))
-
-    def action_next_page(self) -> None:
+    async def next_page(self) -> None:
         self.__header.arrow_up.visible = True
         last_possible_index = 120
         if self.__witness_index == last_possible_index:
             self.notify("Just 150 witnesses are available, please type witness outside the list and vote beside")
             return
 
-        self.query_one(WitnessesList).remove()
-        self.__witness_index += 30
-        if self.__witness_index == last_possible_index:
-            self.__header.arrow_down.visible = False
+        with self.app.batch_update():
+            await self.query_one(WitnessesList).remove()
+            self.__witness_index += 30
+            if self.__witness_index == last_possible_index:
+                self.__header.arrow_down.visible = False
 
-        next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
-        self.mount(next_witnesses_page)
-        return
+            next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+            await self.mount(next_witnesses_page)
+            first_witness = self.app.query(Witness).first()
+            self.app.set_focus(first_witness)
 
-    def action_previous_page(self) -> None:
+    async def previous_page(self) -> None:
         self.__header.arrow_down.visible = True
 
         if self.__witness_index == 0:
             self.notify("Cannot go up, no witness above")
             return
 
-        self.query_one(WitnessesList).remove()
-        self.__witness_index -= 30
-        if self.__witness_index == 0:
-            self.__header.arrow_up.visible = False
-        next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
-        self.mount(next_witnesses_page)
-        return
+        with self.app.batch_update():
+            await self.query_one(WitnessesList).remove()
+            self.__witness_index -= 30
+            if self.__witness_index == 0:
+                self.__header.arrow_up.visible = False
+            next_witnesses_page = WitnessesList(self.__provider.content.witnesses, self.__witness_index)
+            await self.mount(next_witnesses_page)
+            first_witness = self.app.query(Witness).first()
+            self.app.set_focus(first_witness)
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)

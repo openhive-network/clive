@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.binding import Binding
 from textual.events import Blur, Focus
 from textual.message import Message
 from textual.widgets import Checkbox, Label
@@ -37,15 +36,13 @@ class WitnessCheckboxUnFocused(Message):
     pass
 
 
-class WitnessCheckbox(CliveWidget, can_focus=True):
+class WitnessCheckbox(CliveWidget, can_focus=False):
     DEFAULT_CSS = """
     Label {
         text-align: center;
         width: 1fr;
     }
     """
-
-    BINDINGS = [Binding("enter", "press", "Press Button", show=False)]
 
     def __init__(self, is_voted: bool = False, initial_state: bool = False) -> None:
         super().__init__()
@@ -63,12 +60,9 @@ class WitnessCheckbox(CliveWidget, can_focus=True):
             yield Label("Unvote")
 
     def on_click(self) -> None:
-        self.click()
+        self.press()
 
-    def action_press(self) -> None:
-        self.click()
-
-    def click(self) -> None:
+    def press(self) -> None:
         if self.__checkbox.value:
             self.__checkbox.value = False
             self.remove_class("-voted" if not self.__is_voted else "-unvoted")
