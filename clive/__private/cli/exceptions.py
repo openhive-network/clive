@@ -31,7 +31,7 @@ class CLIWorkingAccountIsNotSetError(CLIPrettyError):
         self.profile = profile
         message = (
             f"Working account is not set{f' for the `{profile.name}` profile' if profile else ''}.\n"
-            "Please check the `clive accounts working set -h` command first."
+            "Please check the `clive configure working-account add -h` command first."
         )
         super().__init__(message, errno.ENOENT)
 
@@ -41,7 +41,7 @@ class CLIWorkingAccountIsAlreadySetError(CLIPrettyError):
         self.profile = profile
         message = (
             f"Working account is already set{f' for the `{profile.name}` profile' if profile else ''}.\n"
-            "If you want to change the working account - please check the `clive accounts working unset -h` command."
+            "If you want to change the working account - please check the `clive configure working-account -h` command."
         )
         super().__init__(message, errno.EEXIST)
 
@@ -52,8 +52,8 @@ class CLIProfileDoesNotExistsError(CLIPrettyError):
         detail = f" `{profile_name}` " if profile_name else " "
         message = (
             f"Profile{detail}does not exist.\n"
-            "Please check the `clive list profiles` command first.\n"
-            "If you want to create a new profile - please check the `clive profile create -h` command."
+            "Please check the `clive show profiles` command first.\n"
+            "If you want to create a new profile - please check the `clive configure profile add -h` command."
         )
         super().__init__(message, errno.EEXIST)
 
@@ -66,6 +66,6 @@ class CLIProfileAlreadyExistsError(CLIPrettyError):
         existing_profiles_detail = f", different than {existing_profiles}." if existing_profiles else "."
         message = (
             f"Profile{profile_name_detail}already exists. Please choose another name{existing_profiles_detail}\n"
-            "If you want to create a new profile - please check the `clive profile create -h` command."
+            "If you want to create a new profile - please check the `clive configure profile add -h` command."
         )
         super().__init__(message, errno.EEXIST)
