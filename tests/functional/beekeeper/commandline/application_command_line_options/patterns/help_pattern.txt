@@ -20,20 +20,21 @@ Application Options:
   --notifications-endpoint arg
           list of addresses, that will receive notification about in-chain 
           events
+  --export-keys-wallet arg
+          Export explicitly private keys to a local file `wallet_name.keys`. 
+          Both [name, password] are required for every wallet. By default is 
+          empty.Two wallets example: --export-keys-wallet "["blue-wallet", 
+          "PW5JViFn5gd4rt6ohk7DQMgHzQN6Z9FuMRfKoE5Ysk25mkjy5AY1b"]" 
+          --export-keys-wallet "["green-wallet", 
+          "PW5KYF9Rt4ETnuP4uheHSCm9kLbCuunf6RqeKgQ8QRoxZmGeZUhhk"]" 
   --wallet-dir arg (=.)
           The path of the wallet files (absolute path or relative to 
           application data dir)
   --unlock-timeout arg (=900)
-          Timeout for unlocked wallet in seconds (default 900 (15 minutes)). 
-          Wallets will automatically lock after specified number of seconds of 
-          inactivity. Activity is defined as any wallet command e.g. 
-          list-wallets.
-  --export-keys-wallet-name arg
-          Export explicitly private keys to a local file `wallet_name.keys`. 
-          Both (name/password) are required. By default is empty.
-  --export-keys-wallet-password arg
-          Export explicitly private keys to a local file `wallet_name.keys`. 
-          Both (name/password) are required. By default is empty.
+          Timeout for unlocked wallet in seconds (default 900 (15 
+          minutes)).Wallets will be automatically locked after specified number
+          of seconds of inactivity.Activity is defined as any wallet command 
+          e.g. list-wallets.
   --backtrace arg (=yes)
           Whether to print backtrace on SIGSEGV
 
