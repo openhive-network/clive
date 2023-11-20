@@ -16,18 +16,37 @@ async def test_api_close_session() -> None:
     # ARRANGE
     beekeeper = Beekeeper()
     await beekeeper.launch()
+    first_token = beekeeper.token
+    notification_endpoint = beekeeper.notification_server_http_endpoint.as_string(with_protocol=False)
+    await beekeeper.api.create_session(notifications_endpoint=notification_endpoint, salt="test_api_close_session")
 
+    # ACT
+    await beekeeper.api.close_session(token=first_token)
+
+    # ASSERT
+    close_log_entry = (
+        f'"id":0,"jsonrpc":"2.0","method":"beekeeper_api.close_session","params":{{"token":"{first_token}"}}'
+    )
+
+    with pytest.raises(CommunicationError, match=f"A session attached to {first_token} doesn't exist"):
+        await beekeeper.api.list_wallets()
+    assert checkers.check_for_pattern_in_file(
+        Beekeeper().get_wallet_dir() / "stderr.log", close_log_entry
+    ), "Log should have information about closing session with specific token created during create_session call."
+
+
+async def test_if_beekeeper_closes_after_last_session_termination() -> None:
+    """Test test_api_close_session will test if beekeeper closes after closing last session."""
+    # ARRANGE
+    beekeeper = Beekeeper()
+    await beekeeper.launch()
     # ACT
     await beekeeper.api.close_session()
 
     # ASSERT
-    close_log_entry = (
-        f'"id":0,"jsonrpc":"2.0","method":"beekeeper_api.close_session","params":{{"token":"{beekeeper.token}"}}'
-    )
+    with pytest.raises(CommunicationError, match="no response available"):
+        await beekeeper.api.list_wallets()
 
-    assert checkers.check_for_pattern_in_file(
-        Beekeeper().get_wallet_dir() / "stderr.log", close_log_entry
-    ), "Log should have information about closing session with specific token created during create_session call."
     assert checkers.check_for_pattern_in_file(
         Beekeeper().get_wallet_dir() / "stderr.log", "exited cleanly"
     ), "Beekeeper should be closed after last session termination."
