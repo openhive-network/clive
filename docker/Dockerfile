@@ -26,12 +26,6 @@ COPY --from=hived_image "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
 # crucial for proper display
 ENV COLORTERM=truecolor
 
-# libboost-all-dev is required for wax
-RUN apt-get update && \
-    apt-get install -y python3-venv libboost-all-dev && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 # create and use python virtualenv
 ENV PYTHON_VENV_PATH="/clive/venv"
 RUN python3 -m venv ${PYTHON_VENV_PATH}
