@@ -67,7 +67,7 @@ class OperationCommand(WorldBasedCommand, ABC):
     def __validate_options(self) -> None:
         if self.broadcast and self.sign is None:
             raise CLIPrettyError(
-                "You must provide a key alias to sign the transaction with if you want to broadcast them."
+                "You must provide a key alias to sign the transaction with if you want to broadcast it."
             )
 
         if self.sign is not None and self.password is None:
