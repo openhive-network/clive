@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.core.world import World
-    from tests import WalletInfo
+    from clive_local_tools.types import WalletInfo
 
 
 async def test_fast_broadcast_smoke_test(

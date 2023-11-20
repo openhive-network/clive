@@ -10,7 +10,7 @@ from clive.__private.core.beekeeper.model import BeekeeperPublicKeyType, ImportK
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from tests import WalletInfo
+    from clive_local_tools.types import WalletInfo
 
 PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
     (
@@ -53,19 +53,19 @@ def assert_keys(given: AllowedListOfPublicKeysT, valid: AllowedListOfPublicKeysT
 
 
 @pytest.mark.parametrize("prv_pub", PRIVATE_AND_PUBLIC_KEYS)
-async def test_key_import(beekeeper: Beekeeper, prv_pub: tuple[str, str], wallet: WalletInfo) -> None:
+async def test_key_import(beekeeper: Beekeeper, prv_pub: tuple[str, str], wallet_no_keys: WalletInfo) -> None:
     # ARRANGE & ACT
-    pub_key = (await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=prv_pub[0])).public_key
+    pub_key = (await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=prv_pub[0])).public_key
 
     # ASSERT
     assert_keys([pub_key], [prv_pub[1]])
     assert_keys((await beekeeper.api.get_public_keys()).keys, [prv_pub[1]])
 
 
-async def test_import_multiple_keys(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
+async def test_import_multiple_keys(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
     # ARRANGE & ACT
     import_keys_result: list[ImportKey] = await asyncio.gather(
-        *[beekeeper.api.import_key(wallet_name=wallet.name, wif_key=prv) for prv, _ in PRIVATE_AND_PUBLIC_KEYS]
+        *[beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=prv) for prv, _ in PRIVATE_AND_PUBLIC_KEYS]
     )
     public_keys = [x.public_key for x in import_keys_result]
     received_public_keys = (await beekeeper.api.get_public_keys()).keys
@@ -74,12 +74,16 @@ async def test_import_multiple_keys(beekeeper: Beekeeper, wallet: WalletInfo) ->
     assert_keys(received_public_keys, public_keys)
 
 
-async def test_remove_key(beekeeper: Beekeeper, wallet: WalletInfo, key_pair: tuple[PublicKey, PrivateKey]) -> None:
+async def test_remove_key(
+    beekeeper: Beekeeper, wallet_no_keys: WalletInfo, key_pair: tuple[PublicKey, PrivateKey]
+) -> None:
     # ARRANGE
     public_key, private_key = key_pair
-    await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=private_key.value)
+    await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=private_key.value)
 
     # ACT & ASSERT
     assert_keys((await beekeeper.api.get_public_keys()).keys, [public_key.value])
-    await beekeeper.api.remove_key(wallet_name=wallet.name, password=wallet.password, public_key=public_key.value)
+    await beekeeper.api.remove_key(
+        wallet_name=wallet_no_keys.name, password=wallet_no_keys.password, public_key=public_key.value
+    )
     assert_keys((await beekeeper.api.get_public_keys()).keys, [])  # type: ignore[arg-type]  # https://stackoverflow.com/a/61281305
