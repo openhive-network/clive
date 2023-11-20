@@ -3,8 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.binding import Binding
-from textual.events import Blur, Focus
+from textual.events import Click
 from textual.message import Message
 from textual.widgets import Checkbox, Label
 
@@ -29,15 +28,7 @@ class WitnessCheckBoxChanged(Message):
     """
 
 
-class WitnessCheckboxFocused(Message):
-    pass
-
-
-class WitnessCheckboxUnFocused(Message):
-    pass
-
-
-class WitnessCheckbox(CliveWidget, can_focus=True):
+class WitnessCheckbox(CliveWidget, can_focus=False):
     DEFAULT_CSS = """
     Label {
         text-align: center;
@@ -45,12 +36,13 @@ class WitnessCheckbox(CliveWidget, can_focus=True):
     }
     """
 
-    BINDINGS = [Binding("enter", "press", "Press Button", show=False)]
-
-    def __init__(self, is_voted: bool = False, initial_state: bool = False) -> None:
-        super().__init__()
+    def __init__(
+        self, related_witness: CliveWidget, classes: str, is_voted: bool = False, initial_state: bool = False
+    ) -> None:
+        super().__init__(classes=classes)
         self.__is_voted = is_voted
         self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
+        self.__related_witness = related_witness
 
         if initial_state:
             self.add_class("-voted" if not self.__is_voted else "-unvoted")
@@ -63,12 +55,9 @@ class WitnessCheckbox(CliveWidget, can_focus=True):
             yield Label("Unvote")
 
     def on_click(self) -> None:
-        self.click()
+        self.press()
 
-    def action_press(self) -> None:
-        self.click()
-
-    def click(self) -> None:
+    def press(self) -> None:
         if self.__checkbox.value:
             self.__checkbox.value = False
             self.remove_class("-voted" if not self.__is_voted else "-unvoted")
@@ -84,10 +73,6 @@ class WitnessCheckbox(CliveWidget, can_focus=True):
     def checkbox_state_changed(self) -> None:
         self.post_message(WitnessCheckBoxChanged())
 
-    @on(Focus)
-    def witness_checkbox_focused(self) -> None:
-        self.post_message(WitnessCheckboxFocused())
-
-    @on(Blur)
-    def witness_checkbox_unfocused(self) -> None:
-        self.post_message(WitnessCheckboxUnFocused())
+    @on(Click)
+    def set_focus_to_related_witness(self) -> None:
+        self.app.set_focus(self.__related_witness)
