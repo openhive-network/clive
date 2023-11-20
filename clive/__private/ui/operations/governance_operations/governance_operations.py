@@ -12,7 +12,7 @@ from textual.widgets import Label, LoadingIndicator, Static
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.logger import logger
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
+from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessInformation
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
@@ -399,7 +399,7 @@ class Proposals(ScrollableTabPane):
     """TabPane with all content about proposals."""
 
 
-class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
+class Witnesses(ScrollableTabPane, OperationActionBindings):
     """TabPane with all content about witnesses."""
 
     def __init__(self, provider: GovernanceDataProvider, title: TextType) -> None:
@@ -412,7 +412,7 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
             yield WitnessesActions()
         yield WitnessManualSearch()
 
-    def _create_operation(self) -> list[Operation] | None:
+    def _create_operations(self) -> list[Operation] | None:
         actual_number_of_votes = self.app.query_one(WitnessesActions).actual_number_of_votes
 
         if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
