@@ -19,7 +19,12 @@ def check_log_json_rpc(log_json_rpc_path: Path) -> None:
 
 async def test_log_json_rpc(tmp_path: Path) -> None:
     """Test will check command line flag --log-json-rpc."""
+    # ARRANGE
     tempdir = tmp_path / "test_log_json_rpc"
     tempdir.mkdir()
+
+    # ACT
     await Beekeeper().launch(log_json_rpc=tempdir)
+
+    # ASSERT
     check_log_json_rpc(tempdir)

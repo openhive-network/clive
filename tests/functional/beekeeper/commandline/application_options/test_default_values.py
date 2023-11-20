@@ -19,5 +19,8 @@ def check_default_values_from_config(default_config: BeekeeperConfig) -> None:
 
 async def test_default_values() -> None:
     """Test will check default values of Beekeeper."""
+    # ARRANGE & ACT
     default_config = Beekeeper().generate_beekeepers_default_config()
+
+    # ASSERT
     check_default_values_from_config(default_config)

@@ -15,5 +15,8 @@ def check_help_output(generated_output: str) -> None:
 
 def test_help() -> None:
     """Test will check command line flag --help."""
+    # ARRANGE & ACT
     help_output = Beekeeper().help()
+
+    # ASSERT
     check_help_output(generated_output=help_output)

@@ -45,7 +45,10 @@ async def check_webserver_http_endpoint(*, nofification_endpoint: Url | None, we
 )
 async def test_webserver_http_endpoint(webserver_http_endpoint: Url) -> None:
     """Test will check command line flag --webserver_http_endpoint."""
+    # ARRANGE & ACT
     beekeeper = await Beekeeper().launch(webserver_http_endpoint=webserver_http_endpoint)
+
+    # ASSERT
     await check_webserver_http_endpoint(
         nofification_endpoint=beekeeper.notification_server_http_endpoint,
         webserver_http_endpoint=webserver_http_endpoint,

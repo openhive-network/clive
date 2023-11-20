@@ -14,5 +14,8 @@ def check_version_output(version_output: str) -> None:
 
 def test_version() -> None:
     """Test will check command line flag --version."""
+    # ARRANGE & ACT
     version_output = Beekeeper().version()
+
+    # ASSERT
     check_version_output(version_output)

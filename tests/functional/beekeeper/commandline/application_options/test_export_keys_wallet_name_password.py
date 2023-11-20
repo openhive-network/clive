@@ -45,6 +45,7 @@ def check_dumped_keys(wallet_path: Path, extracted_keys: ExportedKeys) -> None:
 
 async def test_export_keys(tmp_path: Path) -> None:
     """Test will check command line flag --export-keys-wallet-name --export-keys-wallet-password."""
+    # ARRANGE
     wallet_name = "test_export_keys"
     wallet_name_keys = f"{wallet_name}.keys"
 
@@ -60,18 +61,26 @@ async def test_export_keys(tmp_path: Path) -> None:
         for key in private_keys:
             await beekeeper.api.import_key(wif_key=key, wallet_name=wallet_name)
 
+        # ACT
         keys = await beekeeper.export_keys_wallet(
             wallet_name=wallet_name, wallet_password=create.password, extract_to=extract_path
         )
+
+        # ASSERT
         # Check extract_to path
         check_dumped_keys(extract_path / wallet_name_keys, keys)
         # Check default path of wallet_name.keys
         check_dumped_keys(Path.cwd() / wallet_name_keys, keys)
 
+    # ARRANGE
     bk = Beekeeper()
+
+    # ACT
     keys1 = await bk.export_keys_wallet(
         wallet_name=wallet_name, wallet_password=create.password, extract_to=extract_path
     )
+
+    # ASSERT
     check_dumped_keys(extract_path / wallet_name_keys, keys1)
     check_dumped_keys(Path.cwd() / wallet_name_keys, keys1)
     assert bk.is_running is False

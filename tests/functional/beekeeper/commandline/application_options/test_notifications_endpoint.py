@@ -25,4 +25,6 @@ async def test_notifications_endpoint(notifications_endpoint: Url) -> None:
     # 2 inside start function there is special if, that will check if we have explicitly pass
     #   notification-endpoint flag, and append to it already taken port. This way we will
     #   point beekeeper where to send notifications.
+
+    # ARRANGE & ACT & ASSERT
     await Beekeeper().launch(notifications_endpoint=notifications_endpoint)
