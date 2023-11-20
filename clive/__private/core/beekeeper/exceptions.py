@@ -53,6 +53,10 @@ class BeekeeperNonZeroExitCodeError(BeekeeperError):
     pass
 
 
+class BeekeeperNotificationServerNotSetError(BeekeeperError):
+    pass
+
+
 class BeekeeperResponseError(BeekeeperError, CommunicationError):
     def __init__(self, url: str, request: JSONRPCRequest, response: CommunicationResponseT | None = None) -> None:
         super().__init__(url, request.json(by_alias=True), response)

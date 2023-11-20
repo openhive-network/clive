@@ -21,6 +21,7 @@ from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.__private.core.beekeeper.exceptions import (
     BeekeeperNon200StatusCodeError,
     BeekeeperNotConfiguredError,
+    BeekeeperNotificationServerNotSetError,
     BeekeeperNotMatchingIdJsonRPCError,
     BeekeeperNotRunningError,
     BeekeeperResponseError,
@@ -161,7 +162,9 @@ class Beekeeper:
         return self.__executable.pid
 
     @property
-    def notification_server_http_endpoint(self) -> Url | None:
+    def notification_server_http_endpoint(self) -> Url:
+        if self.config.notifications_endpoint is None:
+            raise BeekeeperNotificationServerNotSetError
         return self.config.notifications_endpoint
 
     @contextmanager

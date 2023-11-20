@@ -12,10 +12,14 @@ if TYPE_CHECKING:
 FooT = TypeVar("FooT", bound=Callable[..., object])
 
 
+def is_token_already_passed(**kwargs: Any) -> bool:
+    return "token" in kwargs and kwargs["token"] is not None
+
+
 def api(foo: FooT) -> FooT:
     @wraps(foo)
     async def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
-        if foo.__name__ not in ["create_session"]:
+        if foo.__name__ not in ["create_session"] and not is_token_already_passed(**kwargs):
             kwargs["token"] = this._owner.token
         return (
             await this._owner._send(
@@ -111,5 +115,5 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def close_session(self) -> model.EmptyResponse:
+    async def close_session(self, *, token: None | str = None) -> model.EmptyResponse:
         raise NotImplementedError
