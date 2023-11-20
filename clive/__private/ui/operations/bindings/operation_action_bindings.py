@@ -81,7 +81,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         if not key or not operation:
             return
 
-        if not (await self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)).success:
+        if not (await self.app.world.commands.fast_broadcast(content=operation, sign_with=key)).success:
             return
 
         self.app.pop_screen_until("Operations")

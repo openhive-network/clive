@@ -8,16 +8,13 @@ from clive.__private.core.commands.sign import Sign
 from clive.__private.core.ensure_transaction import ensure_transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.abc.command_in_active import AppStateProtocol
-    from clive.models import Transaction
-
-if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.beekeeper import Beekeeper
-    from clive.__private.core.ensure_transaction import TransactionConvertibleType
+    from clive.__private.core.commands.abc.command_in_active import AppStateProtocol
     from clive.__private.core.keys import PublicKey
     from clive.__private.core.node.node import Node
+    from clive.models import Transaction, TransactionConvertibleType
 
 
 async def perform_actions_on_transaction(  # noqa: PLR0913

@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, validator
 
-from clive.models import Operation, Signature  # noqa: TCH001
+from clive.models import Signature  # noqa: TCH001
 from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
 from schemas.fields.hex import TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.operations.representations import convert_to_representation
 from schemas.transaction import Transaction as SchemasTransaction
+
+if TYPE_CHECKING:
+    from clive.models import Operation
 
 
 class Transaction(SchemasTransaction):

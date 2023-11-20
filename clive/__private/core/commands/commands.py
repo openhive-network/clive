@@ -40,9 +40,8 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
-    from clive.models import Operation, Transaction
+    from clive.models import Operation, Transaction, TransactionConvertibleType
     from clive.models.aliased import DynamicGlobalProperties, TransactionStatus
-
 
 WorldT = TypeVar("WorldT", bound="World")
 
@@ -130,12 +129,12 @@ class Commands(Generic[WorldT]):
     async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
 
-    async def fast_broadcast(self, *, operation: Operation, sign_with: PublicKey) -> CommandWrapper:
+    async def fast_broadcast(self, *, content: TransactionConvertibleType, sign_with: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             FastBroadcast(
                 app_state=self._world.app_state,
                 node=self._world.node,
-                operation=operation,
+                content=content,
                 beekeeper=self._world.beekeeper,
                 sign_with=sign_with,
                 chain_id=await self._world.node.chain_id,

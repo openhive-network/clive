@@ -2,15 +2,13 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import timedelta
-from typing import TYPE_CHECKING, Any, TypeAlias
+from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.commands.build_transaction import BuildTransaction
-from clive.models import Operation, OperationBaseClass, Transaction
+from clive.models import Operation, OperationBaseClass, Transaction, TransactionConvertibleType
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
-
-TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
 
 
 async def ensure_transaction(

@@ -10,20 +10,20 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys import PublicKey
     from clive.__private.core.node.node import Node
-    from clive.models import Operation
+    from clive.models import TransactionConvertibleType
 
 
 @dataclass(kw_only=True)
 class FastBroadcast(CommandInActive):
     node: Node
-    operation: Operation
+    content: TransactionConvertibleType
     beekeeper: Beekeeper
     sign_with: PublicKey
     chain_id: str
 
     async def _execute(self) -> None:
         await perform_actions_on_transaction(
-            content=self.operation,
+            content=self.content,
             app_state=self.app_state,
             node=self.node,
             beekeeper=self.beekeeper,
