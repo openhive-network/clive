@@ -16,7 +16,7 @@ from textual.widgets import Input, Label, Static
 
 from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
+from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.witness_checkbox import WitnessCheckbox
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
@@ -546,7 +546,7 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         ]
 
 
-class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
+class Witnesses(ScrollableTabPane, OperationActionBindings):
     """TabPane with all content about witnesses."""
 
     def __init__(self, title: TextType) -> None:
@@ -560,7 +560,7 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
             yield WitnessesActions()
         yield WitnessManualSearch()
 
-    def _create_operation(self) -> list[Operation] | None:
+    def _create_operations(self) -> list[Operation] | None:
         actual_number_of_votes = self.app.query_one(WitnessesActions).actual_number_of_votes
 
         if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:

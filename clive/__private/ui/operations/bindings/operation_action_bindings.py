@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from abc import abstractmethod
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
@@ -28,28 +27,40 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Binding("f10", "finalize", "Finalize transaction"),
     ]
 
-    @abstractmethod
     def _create_operation(self) -> Operation | None:
         """Should return a new operation based on the data from screen."""
+        return None
 
-    def create_operation(self) -> Operation | None:
-        """
-        Tries to create a new operation.
+    def _create_operations(self) -> list[Operation] | None:
+        """Should return a list of operations based on the data from screen."""
+        return None
 
-        Returns
-        -------
-            Operation if the operation is valid, None otherwise.
-        """
+    def _validate_and_notify(self, operations: list[Operation]) -> list[Operation] | None:
+        """Validates the given operations. If any of them is invalid, notifies the user and returns None."""
         try:
-            operation = self._create_operation()
-            if operation is None:
-                return None
-            iwax.validate_operation(operation)
-
-            return operation  # noqa: TRY300
+            for operation in operations:
+                iwax.validate_operation(operation)
         except (ValidationError, iwax.WaxOperationFailedError) as error:
             self.notify(f"Operation failed the validation process.\n{error}", severity="error")
             return None
+        return operations
+
+    def create_operation(self) -> Operation | None:
+        operation = self._create_operation()
+        if operation is None:
+            return None
+        result = self._validate_and_notify([operation])
+        return result[0] if result else None
+
+    def create_operations(self) -> list[Operation] | None:
+        if self._create_operation() is not None:
+            raise ValueError("This method should be used only when creating multiple operations.")
+
+        operations = self._create_operations()
+        if operations is None:
+            return None
+
+        return self._validate_and_notify(operations)
 
     def action_finalize(self) -> None:
         if self.__add_to_cart():
@@ -76,16 +87,26 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                 return None
 
         key = get_key()
-        operation = self.create_operation()
 
-        if not key or not operation:
+        operation = self.create_operation()
+        operations = [operation] if operation else self.create_operations()
+
+        if not key or not operations:
             return
 
-        if not (await self.app.world.commands.fast_broadcast(content=operation, sign_with=key)).success:
+        if not (await self.app.world.commands.fast_broadcast(content=operations, sign_with=key)).success:
             return
 
         self.app.pop_screen_until("Operations")
-        self.notify(f"Operation `{operation.__class__.__name__}` broadcast successfully.")
+
+        if len(operations) == 1:
+            message = f"Operation `{operations[0].__class__.__name__}` broadcast successfully."
+        else:
+            message = (
+                f"Operations `{[operation.__class__.__name__ for operation in operations]}` broadcast successfully."
+            )
+
+        self.notify(message)
 
     def __add_to_cart(self) -> bool:
         """
@@ -96,9 +117,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         True if the operation was added to the cart successfully, False otherwise.
         """
         operation = self.create_operation()
-        if not operation:
+        operations = [operation] if operation else self.create_operations()
+
+        if not operations:
             return False
 
-        self.app.world.profile_data.cart.append(operation)
+        self.app.world.profile_data.cart.extend(operations)
         self.app.trigger_profile_data_watchers()
         return True
