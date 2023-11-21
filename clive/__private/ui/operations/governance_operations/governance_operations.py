@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -118,12 +119,11 @@ class Witness(Grid, CliveWidget, can_focus=True):
 
     @on(WitnessCheckBoxChanged)
     async def move_witness_to_actions(self) -> None:
-        with self.app.batch_update():
-            witnesses_actions = self.app.query_one(WitnessesActions)
-            if self.witness_checkbox.checkbox_state:
-                await witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
-                return
-            await witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
+        witnesses_actions = self.app.query_one(WitnessesActions)
+        if self.witness_checkbox.checkbox_state:
+            await witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
+            return
+        await witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
 
     def action_show_details(self) -> None:
         try:
@@ -261,6 +261,11 @@ class WitnessesActions(VerticalScroll, CliveWidget):
                 await self.mount_witness(name=operation.witness, vote=operation.approve, pending=True)
 
     async def mount_witness(self, name: str, vote: bool, pending: bool = False) -> None:
+        # check if witness is already in the list, if so - return
+        with contextlib.suppress(NoMatches):
+            self.query_one(self.get_witness_action_row(name))
+            return
+
         await self.mount(WitnessActionRow(name=name, vote=vote, pending=pending))
 
         if vote:
@@ -275,7 +280,10 @@ class WitnessesActions(VerticalScroll, CliveWidget):
             self.__actions_to_perform[name] = vote
 
     async def unmount_witness(self, name: str, vote: bool) -> None:
-        await self.query_one(self.get_witness_action_row(name)).remove()
+        try:
+            await self.query_one(self.get_witness_action_row(name)).remove()
+        except NoMatches:
+            return
 
         if vote:
             self.__actions_votes -= 1
