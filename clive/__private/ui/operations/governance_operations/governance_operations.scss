@@ -37,33 +37,6 @@ Governance WitnessDetails Static {
     height: auto;
 }
 
-
-/*custom checkbox to vote for witnesses*/
-Governance WitnessCheckbox Checkbox {
-    padding: 0;
-    border: none;
-    background: transparent;
-    width: auto;
-}
-
-Governance WitnessCheckbox {
-    layout: horizontal;
-    height: auto;
-    width: auto;
-}
-
-Governance WitnessCheckbox.-voted {
-    color: green;
-}
-
-Governance WitnessCheckbox.-unvoted {
-    color: red;
-}
-
-Governance WitnessCheckbox:focus Label {
-    text-style: bold reverse;
-}
-
 /*table to modify votes for the witnesses*/
 Governance WitnessesList {
     height: auto;

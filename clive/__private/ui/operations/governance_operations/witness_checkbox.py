@@ -7,6 +7,7 @@ from textual.events import Click
 from textual.message import Message
 from textual.widgets import Checkbox, Label
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
@@ -29,12 +30,7 @@ class WitnessCheckBoxChanged(Message):
 
 
 class WitnessCheckbox(CliveWidget, can_focus=False):
-    DEFAULT_CSS = """
-    Label {
-        text-align: center;
-        width: 1fr;
-    }
-    """
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(
         self, related_witness: CliveWidget, classes: str, is_voted: bool = False, initial_state: bool = False
