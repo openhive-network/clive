@@ -1,0 +1,29 @@
+WitnessCheckbox Label {
+    text-align: center;
+    width: 1fr;
+}
+
+WitnessCheckbox CheckBoxWithoutFocus {
+    padding: 0;
+    border: none;
+    background: transparent;
+    width: auto;
+}
+
+ WitnessCheckbox {
+    layout: horizontal;
+    height: auto;
+    width: auto;
+}
+
+WitnessCheckbox .-voted {
+    color: green;
+}
+
+WitnessCheckbox .-unvoted {
+    color: red;
+}
+
+WitnessCheckbox:focus Label {
+    text-style: bold reverse;
+}
