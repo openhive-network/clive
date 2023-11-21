@@ -15,18 +15,7 @@ if TYPE_CHECKING:
     from clive.models import Asset
 
 
-@dataclass
-class Witness:
-    name: str
-    created: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
-    voted: bool = False
-    votes: str = "?"
-    rank: int | None = None
-    missed_blocks: int = 0
-    last_block: int = 0
-    price_feed: str = "?"
-    version: str = ""
-    url: str = ""
+
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
-from schemas.apis.database_api import GetDynamicGlobalProperties
+from schemas.apis.database_api import GetDynamicGlobalProperties, ListWitnessVotes, ListWitnesses
 from schemas.apis.database_api.fundaments_of_reponses import (
     AccountItemFundament,
     ListChangeRecoveryAccountRequestsFundament,
