@@ -314,11 +314,29 @@ class WitnessesList(Vertical, CliveWidget):
                     yield Witness(witness, evenness="odd")
 
 
+class ArrowUpWidget(Static):
+    def __init__(self) -> None:
+        super().__init__(renderable="↑")
+
+    @on(Click)
+    async def previous_page(self) -> None:
+        await self.app.query_one(WitnessesTable).previous_page()
+
+
+class ArrowDownWidget(Static):
+    def __init__(self) -> None:
+        super().__init__(renderable="↓")
+
+    @on(Click)
+    async def next_page(self) -> None:
+        await self.app.query_one(WitnessesTable).next_page()
+
+
 class WitnessesListHeader(Grid):
     def __init__(self) -> None:
         super().__init__()
-        self.arrow_up = Static("↑")
-        self.arrow_down = Static("↓")
+        self.arrow_up = ArrowUpWidget()
+        self.arrow_down = ArrowDownWidget()
 
         self.arrow_up.visible = False
 
