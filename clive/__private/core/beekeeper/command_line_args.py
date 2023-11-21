@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic import BaseModel, Field
@@ -8,13 +9,18 @@ from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.core.url import Url
 
 
+@dataclass
+class ExportKeysWalletParams:
+    wallet_name: str
+    wallet_password: str
+
+
 class BeekeeperCLIArguments(BaseModel):
     help_: bool = Field(alias="help", default=False)
     version: bool = False
     backtrace: str | None = BeekeeperDefaults.DEFAULT_BACKTRACE
     data_dir: Path = BeekeeperDefaults.DEFAULT_DATA_DIR
-    export_keys_wallet_name: str | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_NAME
-    export_keys_wallet_password: str | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_PASSWORD
+    export_keys_wallet: ExportKeysWalletParams | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET
     log_json_rpc: Path | None = BeekeeperDefaults.DEFAULT_LOG_JSON_RPC
     notifications_endpoint: Url | None = BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT
     unlock_timeout: int | None = BeekeeperDefaults.DEFAULT_UNLOCK_TIMEOUT
@@ -25,7 +31,7 @@ class BeekeeperCLIArguments(BaseModel):
     def __convert_member_name_to_cli_value(self, member_name: str) -> str:
         return member_name.replace("_", "-")
 
-    def __convert_member_value_to_string(self, member_value: int | str | Path | Url) -> str:
+    def __convert_member_value_to_string(self, member_value: int | str | Path | Url | ExportKeysWalletParams) -> str:
         if isinstance(member_value, bool):
             return ""
         if isinstance(member_value, str):
@@ -36,6 +42,8 @@ class BeekeeperCLIArguments(BaseModel):
             return member_value.as_posix()
         if isinstance(member_value, Url):
             return member_value.as_string(with_protocol=False)
+        if isinstance(member_value, ExportKeysWalletParams):
+            return f'["{member_value.wallet_name}","{member_value.wallet_password}"]'
         raise TypeError("Invalid type")
 
     def __prepare_arguments(self, pattern: str) -> list[str]:

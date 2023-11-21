@@ -15,7 +15,10 @@ from pydantic import Field, validator
 from clive.__private.config import settings
 from clive.__private.core._async import event_wait
 from clive.__private.core.beekeeper.api import BeekeeperApi
-from clive.__private.core.beekeeper.command_line_args import BeekeeperCLIArguments
+from clive.__private.core.beekeeper.command_line_args import (
+    BeekeeperCLIArguments,
+    ExportKeysWalletParams,
+)
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.__private.core.beekeeper.exceptions import (
@@ -369,17 +372,10 @@ class Beekeeper:
             shutil.copy(self.get_wallet_dir() / f"{wallet_name}.wallet", tmpdirname)
             bk = Beekeeper()
             arguments = BeekeeperCLIArguments(
-                # We need to pass here notification flag because bk will parse it during exporting wallet
-                # and if it empty, it will end with error. This notification server endpoint does not
-                # need to point to running server, it just need to be passed.
-                notifications_endpoint=Url(proto="http", host="127.0.0.1", port=0),
-                export_keys_wallet_name=wallet_name,
-                export_keys_wallet_password=wallet_password,
+                export_keys_wallet=ExportKeysWalletParams(wallet_name, wallet_password),
                 data_dir=tmpdirname,
             )
-            bk.__executable.run_and_get_output(
-                allow_empty_notification_server=True, allow_timeout=True, arguments=arguments
-            )
+            bk.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
             """Check if keys has been saved in dumped {wallet_name}.keys file."""
             wallet_path = Path.cwd() / f"{wallet_name}.keys"
             with wallet_path.open() as keys_file:
