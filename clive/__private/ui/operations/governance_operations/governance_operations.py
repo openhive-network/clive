@@ -14,6 +14,10 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessInformation
+from clive.__private.ui.operations.governance_operations.witness_checkbox import (
+    WitnessCheckbox,
+    WitnessCheckBoxChanged,
+)
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
@@ -21,10 +25,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.witness_pattern_input import WitnessPatternInput
 from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
-from clive.__private.ui.widgets.witness_checkbox import (
-    WitnessCheckbox,
-    WitnessCheckBoxChanged,
-)
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
