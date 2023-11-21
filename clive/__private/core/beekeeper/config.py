@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import UnionType
-from typing import get_args
+from typing import TYPE_CHECKING, get_args
 
 from pydantic import Field
 
@@ -11,6 +11,9 @@ from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.base import CliveBaseModel
+
+if TYPE_CHECKING:
+    from clive.__private.core.beekeeper.command_line_args import ExportKeysWalletParams
 
 AllowedTypesT = str | list[str] | bool | int | Url | Path
 
@@ -39,8 +42,7 @@ class BeekeeperConfig(CliveBaseModel):
     notifications_endpoint: Url | None = BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT
     backtrace: str = BeekeeperDefaults.DEFAULT_BACKTRACE
     plugin: list[str] = Field(default_factory=lambda: ["json_rpc", "webserver"])
-    export_keys_wallet_name: str | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_NAME
-    export_keys_wallet_password: str | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_PASSWORD
+    export_keys_wallet: ExportKeysWalletParams | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET
 
     class Config:
         arbitrary_types_allowed = True

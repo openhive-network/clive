@@ -108,8 +108,9 @@ class BeekeeperExecutable:
     def run_and_get_output(
         self,
         *,
-        allow_empty_notification_server: bool = False,
         allow_timeout: bool = False,
+        allow_empty_notification_server: bool = False,
+        timeout: float = 3.0,
         arguments: BeekeeperCLIArguments | None = None,
     ) -> str:
         command = self.pre_run_preparation(
@@ -117,11 +118,11 @@ class BeekeeperExecutable:
         )
         logger.info("Executing beekeeper:", command)
         try:
-            result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=1)
+            result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=timeout)
             return result.decode("utf-8").strip()
         except subprocess.CalledProcessError as e:
-            if arguments and (arguments.help_ is True or arguments.version is True):
-                # I dont know why, but help and version have returncode != 0
+            # I dont know why, but export_keys_wallet have returncode != 0
+            if arguments and (arguments.export_keys_wallet is not None):
                 output: str = e.output.decode("utf-8")
                 return output.strip()
             raise

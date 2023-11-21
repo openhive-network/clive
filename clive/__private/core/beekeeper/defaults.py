@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING, ClassVar
 from pydantic import BaseModel
 
 if TYPE_CHECKING:
+    from clive.__private.core.beekeeper.command_line_args import ExportKeysWalletParams
     from clive.core.url import Url
 
 
 class BeekeeperDefaults(BaseModel):
     DEFAULT_BACKTRACE: ClassVar[str] = "yes"
     DEFAULT_DATA_DIR: ClassVar[Path] = Path.home() / ".beekeeper"
-    DEFAULT_EXPORT_KEYS_WALLET_NAME: ClassVar[str | None] = None
-    DEFAULT_EXPORT_KEYS_WALLET_PASSWORD: ClassVar[str | None] = None
+    DEFAULT_EXPORT_KEYS_WALLET: ClassVar[ExportKeysWalletParams | None] = None
     DEFAULT_LOG_JSON_RPC: ClassVar[Path | None] = None
     DEFAULT_NOTIFICATIONS_ENDPOINT: ClassVar[Url | None] = None
     DEFAULT_UNLOCK_TIMEOUT: ClassVar[int] = 900

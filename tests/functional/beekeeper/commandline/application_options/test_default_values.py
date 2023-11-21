@@ -13,8 +13,7 @@ def check_default_values_from_config(default_config: BeekeeperConfig) -> None:
     assert default_config.webserver_thread_pool_size == BeekeeperDefaults.DEFAULT_WEBSERVER_THREAD_POOL_SIZE
     assert default_config.notifications_endpoint == BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT
     assert default_config.backtrace == BeekeeperDefaults.DEFAULT_BACKTRACE
-    assert default_config.export_keys_wallet_name == BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_NAME
-    assert default_config.export_keys_wallet_password == BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET_PASSWORD
+    assert default_config.export_keys_wallet == BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET
 
 
 async def test_default_values() -> None:
