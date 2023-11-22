@@ -111,11 +111,17 @@ build_wheel:
     when: always
     expire_in: 7 days
 
+testing_beekeeper:
+  extends: .testing
+  script:
+    - echo -e "${TXT_BLUE}Launching beekeeper tests...${TXT_CLEAR}"
+    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/beekeeper
+
 testing_clive:
   extends: .testing
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
-    - python3 -m pytest -k "not test_autocompletion_time" -n auto --durations 0 --junitxml=report.xml tests/
+    - python3 -m pytest --ignore "tests/functional/beekeeper" -k "not test_autocompletion_time" -n auto --durations 0 --junitxml=report.xml tests/
 
 testing_clive_import_times_during_autocompletion:
   extends: .testing
