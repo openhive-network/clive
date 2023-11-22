@@ -161,15 +161,14 @@ deploy_wheel_to_pypi:
       artifacts: true
   when: manual
   rules:
-    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "develop" && $CI_COMMIT_BRANCH != "msobczyk_change_docker_image_tags" && $CI_COMMIT_TAG == null
+    - if: $CI_COMMIT_BRANCH != "master" && $CI_COMMIT_BRANCH != "develop" && $CI_COMMIT_BRANCH != "msobczyk_change_docker_image_tags" && $CI_COMMIT_BRANCH != "msobczyk_change_docker_image_tags2" && $CI_COMMIT_TAG == null
   variables:
     GIT_DEPTH: 0
     BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
-    BUILD_SUFFIX: ""
-    IMAGE_PATH_SUFFIX: ""
+    IMAGE_PATH_SUFFIX: "instance"
     BUILD_INSTANCE_ARGS: ""
 
-    TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
+    TAG_COMMIT: "instance-${CI_COMMIT_SHORT_SHA}"
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
 
   script:
@@ -214,21 +213,14 @@ build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
   when: on_success
   rules:
-    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "msobczyk_change_docker_image_tags"
+    - if: $CI_COMMIT_BRANCH == "develop" || $CI_COMMIT_BRANCH == "msobczyk_change_docker_image_tags"
       variables:
-        IMAGE_PATH_SUFFIX: "-${CI_COMMIT_BRANCH}"
-        BUILD_SUFFIX: "${CI_COMMIT_BRANCH}-"
-    - if: $CI_COMMIT_TAG != null
+        IMAGE_PATH_SUFFIX: "stable"
+        TAG_COMMIT: "stable-${CI_COMMIT_SHORT_SHA}"
+    - if: $CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "msobczyk_change_docker_image_tags2" || $CI_COMMIT_TAG != null
       variables:
-        IMAGE_PATH_SUFFIX: "-tagged"
-        BUILD_SUFFIX: "${CI_COMMIT_TAG}-"
-  after_script:
-    - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
-    - export LATEST_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-latest"
-    - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${LATEST_IMAGE_TAG}${TXT_CLEAR}"
-    - docker tag ${CLIVE_IMAGE_NAME} ${LATEST_IMAGE_TAG}
-    - docker push ${LATEST_IMAGE_TAG}
-    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${LATEST_IMAGE_TAG}${TXT_CLEAR}"
+        IMAGE_PATH_SUFFIX: "tagged"
+        TAG_COMMIT: "$(git describe)"
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
