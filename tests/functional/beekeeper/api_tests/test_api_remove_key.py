@@ -66,7 +66,7 @@ async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallet
     bk_pub_keys_before = [pub_key.public_key for pub_key in bk_keys_before]
 
     # Check if key exist
-    assert bk_pub_keys_before.index(key_to_remove.pub_key.value), "Check if target key exists."
+    assert key_to_remove.pub_key.value in bk_pub_keys_before, "Check if target key exists."
 
     # ACT
     await beekeeper.api.remove_key(
