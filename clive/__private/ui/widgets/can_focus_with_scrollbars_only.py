@@ -1,16 +1,24 @@
 from __future__ import annotations
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 
-class CanFocusWithScrollbarsOnly(CliveWidget, can_focus=False):
-    """A Widget that can be focused only when scrollbar is active."""
+class CanFocusWithScrollbarsOnly(CliveWidget, AbstractClassMessagePump):
+    """
+    A Widget that can be focused only when scrollbar is active.
 
-    def on_resize(self) -> None:
+    Inherit from this class to make a widget focusable only when any scrollbar is active.
+    """
+
+    def on_mount(self) -> None:
+        self.__enable_focus_only_when_scrollbar_is_active()
+
+    def watch_show_vertical_scrollbar(self) -> None:
+        self.__enable_focus_only_when_scrollbar_is_active()
+
+    def watch_show_horizontal_scrollbar(self) -> None:
         self.__enable_focus_only_when_scrollbar_is_active()
 
     def __enable_focus_only_when_scrollbar_is_active(self) -> None:
-        if any(self.scrollbars_enabled):
-            self.can_focus = True
-        else:
-            self.can_focus = False
+        self.can_focus = any(self.scrollbars_enabled)
