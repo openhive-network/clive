@@ -21,22 +21,19 @@ class CheckBoxWithoutFocus(Checkbox):
         """Changing the value of a checkbox is managed by WitnessCheckbox."""
 
 
-class WitnessCheckBoxChanged(Message):
-    """
-    Message send when checkbox in WitnessCheckbox changed.
-
-    The widget that is used cannot detect Checkbox.Changed, so it is required to use this message in the  on decorator.
-    """
-
-
 class WitnessCheckbox(CliveWidget, can_focus=False):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, related_witness: CliveWidget, is_voted: bool = False, initial_state: bool = False) -> None:
+    class Changed(Message):
+        """Message send when checkbox in WitnessCheckbox changed."""
+
+    class Clicked(Message):
+        """Message send when WitnessCheckbox is clicked."""
+
+    def __init__(self, is_voted: bool = False, initial_state: bool = False) -> None:
         super().__init__()
         self.__is_voted = is_voted
         self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
-        self.__related_witness = related_witness
 
         if initial_state:
             self.add_class("-voted" if not self.__is_voted else "-unvoted")
@@ -47,9 +44,6 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
             yield Label("Vote")
         else:
             yield Label("Unvote")
-
-    def on_click(self) -> None:
-        self.press()
 
     def press(self) -> None:
         if self.__checkbox.value:
@@ -65,8 +59,9 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
 
     @on(Checkbox.Changed)
     def checkbox_state_changed(self) -> None:
-        self.post_message(WitnessCheckBoxChanged())
+        self.post_message(self.Changed())
 
     @on(Click)
-    def set_focus_to_related_witness(self) -> None:
-        self.app.set_focus(self.__related_witness)
+    def clicked(self) -> None:
+        self.press()
+        self.post_message(self.Clicked())

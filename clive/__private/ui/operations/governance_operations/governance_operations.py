@@ -8,6 +8,7 @@ from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.events import Click
+from textual.message import Message
 from textual.widgets import Input, Label, LoadingIndicator, Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -15,10 +16,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessInformation
-from clive.__private.ui.operations.governance_operations.witness_checkbox import (
-    WitnessCheckbox,
-    WitnessCheckBoxChanged,
-)
+from clive.__private.ui.operations.governance_operations.witness_checkbox import WitnessCheckbox
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
@@ -45,13 +43,15 @@ def convert_witness_name_to_widget_id(witness_name: str) -> str:
 
 
 class DetailsLabel(Label):
-    def __init__(self, related_witness: Witness, classes: str):
+    class Clicked(Message):
+        """Message send when DetailsLabel is clicked."""
+
+    def __init__(self, *, classes: str | None = None):
         super().__init__(renderable="details", classes=classes)
-        self.__related_witness = related_witness
 
     @on(Click)
-    def show_witness_details(self) -> None:
-        self.__related_witness.action_show_details()
+    def clicked(self) -> None:
+        self.post_message(self.Clicked())
 
 
 class WitnessDetails(Vertical):
@@ -87,7 +87,6 @@ class Witness(Grid, CliveWidget, can_focus=True):
         self.disabled = self.is_witness_operation_in_cart
 
         self.witness_checkbox = WitnessCheckbox(
-            related_witness=self,
             is_voted=witness.voted,
             initial_state=self.is_witness_operation_in_cart or self.is_already_in_witness_actions_container,
         )
@@ -104,7 +103,7 @@ class Witness(Grid, CliveWidget, can_focus=True):
             id=f"{convert_witness_name_to_widget_id(self.__witness.name)}-witness-info",
         )
         yield Label(str(self.__witness.votes), classes=f"witness-votes-{self.__evenness}")
-        yield DetailsLabel(related_witness=self, classes=f"witness-details-{self.__evenness}")
+        yield DetailsLabel(classes=f"witness-details-{self.__evenness}")
 
     def on_mount(self) -> None:
         tooltip_text = f"""
@@ -116,13 +115,21 @@ class Witness(Grid, CliveWidget, can_focus=True):
         """
         self.query_one(f"#{convert_witness_name_to_widget_id(self.__witness.name)}-witness-info").tooltip = tooltip_text
 
-    @on(WitnessCheckBoxChanged)
+    @on(WitnessCheckbox.Changed)
     async def move_witness_to_actions(self) -> None:
         witnesses_actions = self.app.query_one(WitnessesActions)
         if self.witness_checkbox.checkbox_state:
             await witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
             return
         await witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
+
+    @on(WitnessCheckbox.Clicked)
+    def focus_myself(self) -> None:
+        self.focus()
+
+    @on(DetailsLabel.Clicked)
+    def show_details(self) -> None:
+        self.action_show_details()
 
     def action_show_details(self) -> None:
         try:
