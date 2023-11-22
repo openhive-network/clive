@@ -12,13 +12,15 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from typing_extensions import Self
 
 
 class CheckBoxWithoutFocus(Checkbox):
     can_focus = False
 
-    def toggle(self) -> None:  # type: ignore[override]
-        """Changing the value of a checkbox is managed by WitnessCheckbox."""
+    def toggle(self) -> Self:
+        """Do nothing. Changing the value of a checkbox is managed by WitnessCheckbox."""
+        return self
 
 
 class WitnessCheckbox(CliveWidget, can_focus=False):
