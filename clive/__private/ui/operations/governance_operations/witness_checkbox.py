@@ -42,12 +42,9 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
 
     def compose(self) -> ComposeResult:
         yield self.__checkbox
-        if not self.__is_voted:
-            yield Label("Vote")
-        else:
-            yield Label("Unvote")
+        yield Label("Vote" if not self.__is_voted else "Unvote")
 
-    def press(self) -> None:
+    def toggle(self) -> None:
         if self.__checkbox.value:
             self.__checkbox.value = False
             self.remove_class("-voted" if not self.__is_voted else "-unvoted")
@@ -56,7 +53,7 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
         self.add_class("-voted" if not self.__is_voted else "-unvoted")
 
     @property
-    def checkbox_state(self) -> bool:
+    def value(self) -> bool:
         return self.__checkbox.value
 
     @on(Checkbox.Changed)
@@ -65,5 +62,5 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
 
     @on(Click)
     def clicked(self) -> None:
-        self.press()
+        self.toggle()
         self.post_message(self.Clicked())

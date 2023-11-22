@@ -118,7 +118,7 @@ class Witness(Grid, CliveWidget, can_focus=True):
     @on(WitnessCheckbox.Changed)
     async def move_witness_to_actions(self) -> None:
         witnesses_actions = self.app.query_one(WitnessesActions)
-        if self.witness_checkbox.checkbox_state:
+        if self.witness_checkbox.value:
             await witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
             return
         await witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
@@ -144,7 +144,7 @@ class Witness(Grid, CliveWidget, can_focus=True):
         await self.app.query_one(WitnessesTable).previous_page()
 
     def action_toggle_checkbox(self) -> None:
-        self.witness_checkbox.press()
+        self.witness_checkbox.toggle()
 
     @property
     def is_witness_operation_in_cart(self) -> bool:
