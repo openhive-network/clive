@@ -88,7 +88,6 @@ class Witness(Grid, CliveWidget, can_focus=True):
 
         self.witness_checkbox = WitnessCheckbox(
             related_witness=self,
-            classes="witness-checkbox",
             is_voted=witness.voted,
             initial_state=self.is_witness_operation_in_cart or self.is_already_in_witness_actions_container,
         )

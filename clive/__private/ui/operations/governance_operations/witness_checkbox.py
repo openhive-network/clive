@@ -32,10 +32,8 @@ class WitnessCheckBoxChanged(Message):
 class WitnessCheckbox(CliveWidget, can_focus=False):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(
-        self, related_witness: CliveWidget, classes: str, is_voted: bool = False, initial_state: bool = False
-    ) -> None:
-        super().__init__(classes=classes)
+    def __init__(self, related_witness: CliveWidget, is_voted: bool = False, initial_state: bool = False) -> None:
+        super().__init__()
         self.__is_voted = is_voted
         self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
         self.__related_witness = related_witness
