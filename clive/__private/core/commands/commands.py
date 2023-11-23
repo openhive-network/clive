@@ -9,6 +9,7 @@ from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.data_retrieval.governance_data import GovernanceData, GovernanceDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
@@ -226,6 +227,24 @@ class Commands(Generic[WorldT]):
     async def retrieve_savings_data(self, *, account_name: str) -> CommandWithResultWrapper[SavingsData]:
         return await self.__surround_with_exception_handlers(
             SavingsDataRetrieval(node=self._world.node, account_name=account_name)
+        )
+
+    async def retrieve_governance_data(
+        self,
+        *,
+        account_name: str,
+        limit: int = 150,
+        mode: Literal["search_by_name", "search_top"] = "search_top",
+        witness_name_pattern: str | None = None,
+    ) -> CommandWithResultWrapper[GovernanceData]:
+        return await self.__surround_with_exception_handlers(
+            GovernanceDataRetrieval(
+                node=self._world.node,
+                account_name=account_name,
+                limit=limit,
+                mode=mode,
+                witness_name_pattern=witness_name_pattern,
+            )
         )
 
     async def find_transaction(self, *, transaction_id: str) -> CommandWithResultWrapper[TransactionStatus]:

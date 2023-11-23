@@ -15,7 +15,6 @@ from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
-from clive.__private.ui.operations.governance_operations.governance_data import Witness as WitnessInformation
 from clive.__private.ui.operations.governance_operations.witness_checkbox import WitnessCheckbox
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -32,6 +31,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
+    from clive.__private.core.commands.data_retrieval.governance_data import WitnessData
     from clive.models import Operation
 
 MAX_NUMBER_OF_WITNESSES_VOTES: Final[int] = 30
@@ -55,7 +55,7 @@ class DetailsLabel(Label):
 
 
 class WitnessDetails(Vertical):
-    def __init__(self, witness: WitnessInformation):
+    def __init__(self, witness: WitnessData):
         super().__init__()
         self.__witness = witness
 
@@ -79,7 +79,7 @@ class Witness(Grid, CliveWidget, can_focus=True):
         Binding("enter", "toggle_checkbox", "", show=False),
     ]
 
-    def __init__(self, witness: WitnessInformation, evenness: str = "even") -> None:
+    def __init__(self, witness: WitnessData, evenness: str = "even") -> None:
         super().__init__()
         self.__witness = witness
         self.__evenness = evenness
@@ -203,18 +203,14 @@ class WitnessManualSearch(Horizontal):
         if value_from_pattern_input is None and value_from_limit_input is None:
             return
 
-        provider.order_by_name = True
-        provider.witness_pattern_to_search = value_from_pattern_input  # type:ignore[assignment]
-        provider.limit = value_from_limit_input
-        provider.pause_refreshing_data()
+        provider.set_mode_witnesses_by_name(pattern=value_from_pattern_input, limit=value_from_limit_input)
         return
 
     @on(CliveButton.Pressed, "#clear-custom-witnesses-button")
     def clear_searched_witnesses(self) -> None:
         provider = self.app.query_one(GovernanceDataProvider)
 
-        provider.order_by_name = False
-        provider.resume_refreshing_data()
+        provider.set_mode_top_witnesses()
         self.__witness_input.input.value = ""
         self.__limit_just_input.value = ""
 
@@ -312,7 +308,7 @@ class WitnessesActions(VerticalScroll, CliveWidget):
 class WitnessesList(Vertical, CliveWidget):
     def __init__(
         self,
-        witnesses: list[WitnessInformation] | None,
+        witnesses: list[WitnessData] | None,
     ) -> None:
         super().__init__()
         self.__witnesses_to_display = witnesses if witnesses is not None else None
@@ -425,7 +421,7 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         self.mount(new_witnesses_list_container)
 
     @property
-    def witnesses_list(self) -> dict[str, WitnessInformation] | None:
+    def witnesses_list(self) -> dict[str, WitnessData] | None:
         return self.__provider.content.witnesses
 
     @property
