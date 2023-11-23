@@ -55,8 +55,8 @@ class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError, ProfileCouldNotBeD
         super().__init__(f"Profile `{profile_name}` does not exist.")
 
 
-class NoLastlyUsedProfileError(ProfileCouldNotBeLoadedError):
-    """Raised when no lastly used profile exists."""
+class NoDefaultProfileToLoadError(ProfileCouldNotBeLoadedError):
+    """Raised when default profile is not set."""
 
 
 class ProfileSaveError(ProfileDataError):
@@ -85,7 +85,7 @@ class Cart(list[Operation]):
 
 class ProfileData(Context):
     ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
-    _LAST_USED_IDENTIFIER: Final[str] = "!last_used"
+    _DEFAULT_PROFILE_IDENTIFIER: Final[str] = "!default_profile"
 
     def __init__(
         self,
@@ -212,7 +212,18 @@ class ProfileData(Context):
 
         with self.__open_database() as db:
             db[self.name] = self
-            db[self._LAST_USED_IDENTIFIER] = self.name
+
+        # set the profile as default if that's not already set (first profile is set always as default)
+        if not self.is_default_profile_set():
+            self.set_default_profile(self.name)
+
+    @classmethod
+    def set_default_profile(cls, name: str) -> None:
+        if name not in cls.list_profiles():
+            raise ProfileDoesNotExistsError(name)
+
+        with cls.__open_database() as db:
+            db[cls._DEFAULT_PROFILE_IDENTIFIER] = name
 
     def skip_saving(self) -> None:
         self.__skip_save = True
@@ -229,16 +240,20 @@ class ProfileData(Context):
                 raise ProfileDoesNotExistsError(name) from error
 
     @classmethod
-    def get_lastly_used_profile_name(cls, *, exclude_if_deleted: bool = True) -> str | None:
-        """Get the name of the lastly used profile. If no profile was used yet, None is returned."""
+    def get_default_profile_name(cls, *, exclude_if_deleted: bool = True) -> str | None:
+        """Get the name of default profile set. If no profile was used yet, None is returned."""
         if exclude_if_deleted and not cls.list_profiles():
             return None
 
         with cls.__open_database() as db:
-            profile_name: str | None = db.get(cls._LAST_USED_IDENTIFIER, None)
+            profile_name: str | None = db.get(cls._DEFAULT_PROFILE_IDENTIFIER, None)
             if profile_name != cls.ONBOARDING_PROFILE_NAME:
                 return profile_name
             return None
+
+    @classmethod
+    def is_default_profile_set(cls) -> bool:
+        return cls.get_default_profile_name() is not None
 
     @classmethod
     @contextmanager
@@ -258,7 +273,7 @@ class ProfileData(Context):
 
         Args:
         ----
-        name: Name of the profile to load. If None, the lastly used profile is loaded.
+        name: Name of the profile to load. If None, the default profile is loaded.
         auto_create: If True, a new profile is created if the profile with the given name does not exist.
 
         Returns:
@@ -267,7 +282,7 @@ class ProfileData(Context):
 
         Raises:
         ------
-        NoLastlyUsedProfileError: If name is None but no lastly used profile exists.
+        NoDefaultProfileToLoadError: If name is None but no default profile is set.
         ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
@@ -276,14 +291,13 @@ class ProfileData(Context):
             Assert that the profile with the given name could be loaded.
 
             Cases:
-            1. name=None and lastly_used_exists=True -> load lastly_used
-            2. name=None and lastly_used_exists=False -> raise error
-            3. name="some_name" and lastly_used_exists=True -> load "some_name"
-            4. name="some_name" and lastly_used_exists=False -> load "some_name".
+            1. if name=None and is_default_profile_set=True -> load default profile
+            2. if name=None and is_default_profile_set=False -> raise error
+            3. if name="some_name" and is_default_profile_set=True -> load "some_name"
+            4. if name="some_name" and is_default_profile_set=False -> load "some_name".
             """
-            lastly_used_exists = cls.get_lastly_used_profile_name()
-            if not lastly_used_exists and name is None:
-                raise NoLastlyUsedProfileError
+            if not cls.is_default_profile_set() and name is None:
+                raise NoDefaultProfileToLoadError
 
         def create_new_profile(new_profile_name: str) -> ProfileData:
             if not auto_create:
@@ -292,8 +306,8 @@ class ProfileData(Context):
 
         assert_profile_could_be_loaded()
 
-        name = cls.get_lastly_used_profile_name() if name is None else name
-        assert name is not None, "We already checked that lastly used profile exists."
+        name = cls.get_default_profile_name() if name is None else name
+        assert name is not None, "We already checked that default used profile exists."
 
         with cls.__open_database() as db:
             stored_profile: ProfileData | None = db.get(name, None)
@@ -308,7 +322,7 @@ class ProfileData(Context):
     @classmethod
     def list_profiles(cls) -> list[str]:
         with cls.__open_database() as db:
-            return list(db.keys() - {cls._LAST_USED_IDENTIFIER})
+            return list(db.keys() - {cls._DEFAULT_PROFILE_IDENTIFIER})
 
     @staticmethod
     def __default_chain_id() -> str | None:

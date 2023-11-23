@@ -15,7 +15,7 @@ def _get_default_profile_name() -> str | None:
     if not is_tab_completion_active():
         from clive.__private.core.profile_data import ProfileData
 
-        return ProfileData.get_lastly_used_profile_name()
+        return ProfileData.get_default_profile_name()
     return None
 
 
@@ -62,7 +62,7 @@ def modified_option(option: OptionInfo, **kwargs: Any) -> Any:
 
 profile_name_option = typer.Option(
     get_default_or_make_required(_get_default_profile_name()),
-    help="The profile to use. (defaults to the last used profile)",
+    help="The profile to use.",
     show_default=bool(_get_default_profile_name()),
 )
 
@@ -72,7 +72,7 @@ password_optional_option = modified_option(password_option, default=None)
 
 account_name_option = typer.Option(
     get_default_or_make_required(_get_default_working_account_name()),
-    help="The account to use. (defaults to the working account of the last used profile)",
+    help="The account to use. (defaults to the working account of the default profile)",
     show_default=bool(_get_default_working_account_name()),
 )
 

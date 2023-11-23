@@ -33,7 +33,7 @@ class World:
 
     Args:
     ----
-    profile_name: Name of the profile to load. If None is passed, the lastly used profile is loaded.
+    profile_name: Name of the profile to load. If None is passed, the default profile is loaded.
     use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
     beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
     """
@@ -136,7 +136,7 @@ class TextualWorld(World, CliveWidget, ManualReactive):
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
-        super().__init__(ProfileData.get_lastly_used_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
+        super().__init__(ProfileData.get_default_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
         self.profile_data = self._profile_data
         self.app_state = self._app_state
         self.node = self._node
