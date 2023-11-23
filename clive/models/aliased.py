@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
+from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
 from schemas.apis.database_api import GetDynamicGlobalProperties, ListWitnesses, ListWitnessVotes
 from schemas.apis.database_api.fundaments_of_reponses import (
     AccountItemFundament,
@@ -37,6 +38,7 @@ ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 Signature = SchemasSignature
 AccountName = SchemasAccountName
 
+FindWitnesses = SchemasFindWitnesses
 WitnessVotes = ListWitnessVotes
 WitnessesList = ListWitnesses
 Reputation = GetAccountReputationsFundament

@@ -7,7 +7,7 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
-from textual.events import Click
+from textual.events import Click, Enter
 from textual.message import Message
 from textual.widgets import Input, Label, LoadingIndicator, Static
 
@@ -69,6 +69,41 @@ class WitnessDetails(Vertical):
         yield Static(f"version: {self.__witness.version}")
 
 
+class WitnessNameLabel(Label, CliveWidget):
+    """Created because textual is not responding `on(Enter)` in Witness Grid."""
+
+    def __init__(self, witness_name: str, classes: str) -> None:
+        super().__init__(
+            renderable=witness_name,
+            id=f"{convert_witness_name_to_widget_id(witness_name)}-witness-info",
+            classes=classes,
+        )
+        self.__witness_name = witness_name
+
+    @on(Enter)
+    async def __update_tooltip_text(self) -> None:
+        wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
+
+        if wrapper.error_occurred:
+            new_tooltip_text = f"Unable to retrieve witness information:\n{wrapper.error}"
+        else:
+            witness = wrapper.result_or_raise
+            created = humanize_datetime(witness.created)
+            missed_blocks = witness.total_missed
+            last_block = witness.last_confirmed_block_num
+            price_feed = int(witness.hbd_exchange_rate.base.amount) / 10**3
+            version = witness.running_version
+            new_tooltip_text = f"""\
+        created: {created}
+        missed blocks: {missed_blocks}
+        last block: {last_block}
+        price feed: {price_feed} $
+        version: {version}\
+    """
+
+        self.tooltip = new_tooltip_text
+
+
 class Witness(Grid, CliveWidget, can_focus=True):
     """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
@@ -97,25 +132,13 @@ class Witness(Grid, CliveWidget, can_focus=True):
             str(self.__witness.rank) if self.__witness.rank is not None else f">{MAX_NUMBER_OF_WITNESSES_IN_TABLE}",
             classes=f"witness-rank-{self.__evenness}",
         )
-        yield Label(
+        yield WitnessNameLabel(
             self.__witness.name,
             classes=f"witness-name-{self.__evenness}",
-            id=f"{convert_witness_name_to_widget_id(self.__witness.name)}-witness-info",
         )
         yield Label(str(self.__witness.votes), classes=f"witness-votes-{self.__evenness}")
         yield DetailsLabel(classes=f"witness-details-{self.__evenness}")
 
-    def on_mount(self) -> None:
-        tooltip_text = f"""
-        {f"created: {humanize_datetime(self.__witness.created)}"}
-        {f"missed blocks: {self.__witness.missed_blocks}"}
-        {f"last block: {self.__witness.last_block}"}
-        {f"price feed: {self.__witness.price_feed}"}
-        {f"version: {self.__witness.version}"}
-        """
-        self.query_one(f"#{convert_witness_name_to_widget_id(self.__witness.name)}-witness-info").tooltip = tooltip_text
-
-    @on(WitnessCheckbox.Changed)
     async def move_witness_to_actions(self) -> None:
         witnesses_actions = self.app.query_one(WitnessesActions)
         if self.witness_checkbox.value:

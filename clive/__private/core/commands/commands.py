@@ -15,6 +15,7 @@ from clive.__private.core.commands.data_retrieval.update_node_data import Update
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_transaction import FindTransaction
+from clive.__private.core.commands.find_witness import FindWitness
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
@@ -44,8 +45,7 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Operation, Transaction
-    from clive.models.aliased import DynamicGlobalProperties, TransactionStatus
-
+    from clive.models.aliased import DynamicGlobalProperties, TransactionStatus, Witness
 
 WorldT = TypeVar("WorldT", bound="World")
 
@@ -250,6 +250,11 @@ class Commands(Generic[WorldT]):
     async def find_transaction(self, *, transaction_id: str) -> CommandWithResultWrapper[TransactionStatus]:
         return await self.__surround_with_exception_handlers(
             FindTransaction(node=self._world.node, transaction_id=transaction_id)
+        )
+
+    async def find_witness(self, *, witness_name: str) -> CommandWithResultWrapper[Witness]:
+        return await self.__surround_with_exception_handlers(
+            FindWitness(node=self._world.node, witness_name=witness_name)
         )
 
     @overload
