@@ -395,6 +395,11 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         yield WitnessesList(self.witnesses_chunk)
 
     async def next_page(self) -> None:
+        # It is used to prevent the user from switching to an empty page - at least one witness must be on the page.
+        if len(self.__provider.content.witness_names) <= self.__witness_index + 1:
+            self.notify("No witnesses on the next page")
+            return
+
         self.__header.arrow_up.visible = True
         last_possible_index = 120
         if self.__witness_index >= last_possible_index:
