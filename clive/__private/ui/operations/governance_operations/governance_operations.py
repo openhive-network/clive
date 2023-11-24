@@ -36,6 +36,7 @@ if TYPE_CHECKING:
 
 MAX_NUMBER_OF_WITNESSES_VOTES: Final[int] = 30
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
+MAX_WITNESSES_ON_PAGE: Final[int] = 30
 
 
 def convert_witness_name_to_widget_id(witness_name: str) -> str:
@@ -395,68 +396,67 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         yield WitnessesList(self.witnesses_chunk)
 
     async def next_page(self) -> None:
-        # It is used to prevent the user from switching to an empty page - at least one witness must be on the page.
-        if len(self.__provider.content.witness_names) <= self.__witness_index + 1:
-            self.notify("No witnesses on the next page")
+        # It is used to prevent the user from switching to an empty page by key binding
+        if self.amount_of_fetched_witnesses - MAX_WITNESSES_ON_PAGE <= self.__witness_index + 1:
+            self.notify("No witnesses on the next page", severity="warning")
             return
+
+        self.__witness_index += MAX_WITNESSES_ON_PAGE
 
         self.__header.arrow_up.visible = True
-        last_possible_index = 120
-        if self.__witness_index >= last_possible_index:
-            self.notify(
-                f"Just {MAX_NUMBER_OF_WITNESSES_IN_TABLE} witnesses are available, please type witness outside the list"
-                " and search below"
-            )
-            return
+
+        if self.amount_of_fetched_witnesses - MAX_WITNESSES_ON_PAGE <= self.__witness_index:
+            self.__header.arrow_down.visible = False
 
         with self.app.batch_update():
-            await self.query_one(WitnessesList).remove()
-            self.__witness_index += 30
-            if self.__witness_index >= last_possible_index:
-                self.__header.arrow_down.visible = False
-
-            next_witnesses_page = WitnessesList(self.witnesses_chunk)
-            await self.mount(next_witnesses_page)
+            await self.__sync_witnesses_list()
             first_witness = self.app.query(Witness).first()
             self.app.set_focus(first_witness)
 
     async def previous_page(self) -> None:
-        self.__header.arrow_down.visible = True
-
+        # It is used to prevent the user going to a page with a negative index by key binding
         if self.__witness_index <= 0:
-            self.notify("Cannot go up, no witness above")
+            self.notify("No witnesses on the previous page", severity="warning")
             return
 
+        self.__header.arrow_down.visible = True
+
+        self.__witness_index -= 30
+
+        if self.__witness_index <= 0:
+            self.__header.arrow_up.visible = False
+
         with self.app.batch_update():
-            await self.query_one(WitnessesList).remove()
-            self.__witness_index -= 30
-            if self.__witness_index <= 0:
-                self.__header.arrow_up.visible = False
-            next_witnesses_page = WitnessesList(self.witnesses_chunk)
-            await self.mount(next_witnesses_page)
+            await self.__sync_witnesses_list()
             first_witness = self.app.query(Witness).first()
             self.app.set_focus(first_witness)
 
     def on_mount(self) -> None:
         self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
 
-    def __sync_witnesses_list(self) -> None:
+    async def __sync_witnesses_list(self) -> None:
         try:
-            self.query_one(WitnessesList).remove()
+            await self.query_one(WitnessesList).remove()
         except NoMatches:
             return
         new_witnesses_list_container = WitnessesList(self.witnesses_chunk)
-        self.mount(new_witnesses_list_container)
+        await self.mount(new_witnesses_list_container)
 
     @property
     def witnesses_list(self) -> dict[str, WitnessData] | None:
         return self.__provider.content.witnesses
 
     @property
+    def amount_of_fetched_witnesses(self) -> int:
+        return len(self.__provider.content.witnesses)
+
+    @property
     def witnesses_chunk(self) -> list[WitnessData] | None:
         if self.__provider.content.witnesses is None:
             return None
-        return list(self.__provider.content.witnesses.values())[self.__witness_index : self.__witness_index + 30]
+        return list(self.__provider.content.witnesses.values())[
+            self.__witness_index : self.__witness_index + MAX_WITNESSES_ON_PAGE
+        ]
 
 
 class Proxy(ScrollableTabPane):
@@ -484,7 +484,9 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
         actual_number_of_votes = self.app.query_one(WitnessesActions).actual_number_of_votes
 
         if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
-            self.notify("The number of voted witnesses may not exceed 30 !", severity="error")
+            self.notify(
+                f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}!", severity="error"
+            )
             return None
 
         working_account_name = self.app.world.profile_data.working_account.name
