@@ -7,8 +7,9 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
-from textual.events import Click, Enter
+from textual.events import Click, Enter, ScreenResume
 from textual.message import Message
+from textual.screen import ModalScreen
 from textual.widgets import Input, Label, LoadingIndicator, Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -56,19 +57,51 @@ class DetailsLabel(Label):
         self.post_message(self.Clicked())
 
 
-class WitnessDetails(Vertical):
-    def __init__(self, witness: WitnessData):
+class WitnessDetailsWidget(Static):
+    BORDER_TITLE = "WITNESS DETAILS"
+
+
+class DetailsScreen(ModalScreen[None], CliveWidget):
+    BINDINGS = [Binding("q", "request_quit", "Close")]
+
+    def __init__(self, witness_name: str) -> None:
         super().__init__()
-        self.__witness = witness
+        self.__witness_name = witness_name
 
     def compose(self) -> ComposeResult:
-        yield Static(f"witness: {self.__witness.name}")
-        yield Static(f"url: {self.__witness.url}")
-        yield Static(f"created: {humanize_datetime(self.__witness.created)}")
-        yield Static(f"missed blocks: {self.__witness.missed_blocks}")
-        yield Static(f"last block: {self.__witness.last_block}")
-        yield Static(f"price feed: {self.__witness.price_feed}")
-        yield Static(f"version: {self.__witness.version}")
+        yield LoadingIndicator()
+
+    @on(ScreenResume)
+    async def refresh_witness_data(self) -> None:
+        wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
+        await self.query("*").remove()
+
+        if wrapper.error_occurred:
+            new_witness_data = f"Unable to retrieve witness information:\n{wrapper.error}"
+        else:
+            witness = wrapper.result_or_raise
+            url = witness.url
+            created = humanize_datetime(witness.created)
+            missed_blocks = witness.total_missed
+            last_block = witness.last_confirmed_block_num
+            price_feed = int(witness.hbd_exchange_rate.base.amount) / 10**3
+            version = witness.running_version
+            new_witness_data = f"""\
+                url: {url}
+                created: {created}
+                missed blocks: {missed_blocks}
+                last block: {last_block}
+                price feed: {price_feed} $
+                version: {version}\
+            """
+        await self.mount(WitnessDetailsWidget(new_witness_data))
+
+    def action_request_quit(self) -> None:
+        self.app.pop_screen()
+
+    @on(Click)
+    def close_screen_by_click(self) -> None:
+        self.app.pop_screen()
 
 
 class WitnessNameLabel(Label, CliveWidget):
@@ -157,14 +190,8 @@ class Witness(Grid, CliveWidget, can_focus=True):
         await self.move_witness_to_actions()
 
     @on(DetailsLabel.Clicked)
-    def show_details(self) -> None:
-        self.action_show_details()
-
-    def action_show_details(self) -> None:
-        try:
-            self.app.query_one(WitnessDetails).remove()
-        except NoMatches:
-            self.app.query_one(WitnessesList).mount(WitnessDetails(self.__witness))
+    async def action_show_details(self) -> None:
+        await self.app.push_screen(DetailsScreen(witness_name=self.__witness.name))
 
     async def action_next_page(self) -> None:
         await self.app.query_one(WitnessesTable).next_page()
