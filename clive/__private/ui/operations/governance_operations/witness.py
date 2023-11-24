@@ -1,18 +1,19 @@
 from __future__ import annotations
 
 import contextlib
+from datetime import datetime
 from typing import TYPE_CHECKING
 
-from textual import on
+from textual import on, work
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.events import Click, Enter
-from textual.events import Click, Enter, ScreenResume
 from textual.message import Message
 from textual.screen import ModalScreen
 from textual.widgets import Input, Label, LoadingIndicator, Static
 
+from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings import MultiplyOperationsActionsBindings
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
@@ -67,13 +68,14 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
         self.__witness_name = witness_name
 
     def on_mount(self) -> None:
-        self.run_worker(self.refresh_witness_data())
+        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.refresh_witness_data())
 
     def compose(self) -> ComposeResult:
         widget = WitnessDetailsWidget()
         widget.loading = True
         yield widget
 
+    @work(name="governance update modal details")
     async def refresh_witness_data(self) -> None:
         wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
         await self.query("*").remove()
@@ -89,6 +91,7 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
             price_feed = int(witness.hbd_exchange_rate.base.amount) / 10**3
             version = witness.running_version
             new_witness_data = f"""\
+            === Time of the query: {humanize_datetime(datetime.now().replace(microsecond=0))} ===
                 url: {url}
                 created: {created}
                 missed blocks: {missed_blocks}
