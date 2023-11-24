@@ -130,7 +130,7 @@ class Communication:
             url, data=data, max_attempts=max_attempts, timeout_secs=timeout_secs, pool_time_secs=pool_time_secs
         )
 
-    async def __request(  # noqa: PLR0913
+    async def __request(  # noqa: PLR0913, C901
         self,
         url: str,
         *,
@@ -161,6 +161,13 @@ class Communication:
             attempt += 1
             await asyncio.sleep(_pool_time_secs)
 
+        def handle_timeout_error(context: str, error_: asyncio.TimeoutError) -> None:
+            nonlocal timeouts_count, _max_attempts
+            timeouts_count += 1
+            logger.warning(f"Timeout error when {context}, request to {url=} took over {_timeout_secs} seconds.")
+            if timeouts_count >= _max_attempts:
+                raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, timeouts_count) from error_
+
         while attempt < _max_attempts:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=_timeout_secs)) as session:
                 try:
@@ -174,10 +181,7 @@ class Communication:
                     await next_try(error)
                     continue
                 except asyncio.TimeoutError as error:
-                    timeouts_count += 1
-                    logger.warning(f"Timeout error, request to {url=} took over {_timeout_secs} seconds.")
-                    if timeouts_count >= _max_attempts:  # there were only timeouts
-                        raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, timeouts_count) from error
+                    handle_timeout_error("performing request", error)
                     continue
                 except Exception as error:  # noqa: BLE001
                     logger.error(f"Unexpected error occurred: {error} from {url=}, request={data_serialized}")
@@ -188,8 +192,16 @@ class Communication:
                     try:
                         result = await response.json()
                     except (aiohttp.ContentTypeError, JSONDecodeError) as error:
-                        result = await response.text()
-                        await next_try(error)
+                        try:
+                            result = await response.text()
+                        except asyncio.TimeoutError as timeout_error:
+                            handle_timeout_error("reading text response", timeout_error)
+                            continue
+                        else:
+                            await next_try(error)
+                            continue
+                    except asyncio.TimeoutError as error:
+                        handle_timeout_error("reading json response", error)
                         continue
 
                     with contextlib.suppress(ErrorInResponseJsonError):
