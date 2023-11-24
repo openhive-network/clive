@@ -31,9 +31,9 @@ Tabs:focus Tab.-active {
 
 
 .-valid-text {
-  color: green;
+  color: $success;
 }
 
 .-invalid-text {
-  color: red;
+  color: $error-lighten-1;
 }
