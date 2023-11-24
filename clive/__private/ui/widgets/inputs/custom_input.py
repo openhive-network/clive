@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 from textual.widgets import Input
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 
@@ -13,7 +14,6 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from rich.console import RenderableType
-    from rich.highlighter import Highlighter
     from textual.app import ComposeResult
     from textual.suggester import Suggester
     from textual.validation import Validator
@@ -55,7 +55,7 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
         tooltip: RenderableType | None = None,
         disabled: bool = False,
         password: bool = False,
-        highlighter: Highlighter | None = None,
+        highlighter: CliveHighlighter | None = None,
         suggester: Suggester | None = None,
         validators: Validator | Iterable[Validator] | None = None,
         id_: str | None = None,
@@ -114,5 +114,10 @@ class CustomInput(CliveWidget, Generic[ValueT], AbstractClassMessagePump):
 
     def __create_input(self) -> Input:
         input_ = self._create_input()
+
+        highlighter = input_.highlighter
+        if isinstance(highlighter, CliveHighlighter):
+            highlighter.parent = input_
+
         input_.tooltip = self._tooltip
         return input_

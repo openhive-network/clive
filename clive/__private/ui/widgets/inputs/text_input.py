@@ -6,7 +6,8 @@ from clive.__private.ui.widgets.inputs.custom_input import CustomInput
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
-    from rich.highlighter import Highlighter
+
+    from clive.__private.ui.widgets.clive_highlighter import CliveHighlighter
 
 
 class TextInput(CustomInput[str]):
@@ -18,7 +19,7 @@ class TextInput(CustomInput[str]):
         placeholder: str = "",
         tooltip: RenderableType | None = None,
         disabled: bool = False,
-        highlighter: Highlighter | None = None,
+        highlighter: CliveHighlighter | None = None,
         password: bool = False,
         id_: str | None = None,
         classes: str | None = None,
