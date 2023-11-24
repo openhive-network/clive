@@ -63,6 +63,11 @@ class AccountWitnessProxy(RawOperationBaseScreen):
                         disabled=True,
                     ).compose()
 
+    def action_add_to_cart(self) -> None:
+        super().action_add_to_cart()
+        if not self.__is_raw:
+            self.app.pop_screen()
+
     def _create_operation(self) -> AccountWitnessProxyOperation | None:
         if self.proxy_to_be_set is None:
             return None
