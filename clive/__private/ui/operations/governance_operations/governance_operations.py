@@ -17,6 +17,7 @@ from clive.__private.ui.operations.bindings.multiply_operation_actions_bindings 
 from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.witness_checkbox import WitnessCheckbox
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -261,7 +262,7 @@ class WitnessActionRow(Horizontal):
         yield Label(self.__witness_name, classes="action-witness-name")
 
 
-class WitnessesActions(VerticalScroll, CliveWidget):
+class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     """
     Contains a table of operations to be performed after confirmation.
 
