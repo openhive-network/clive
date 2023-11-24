@@ -34,7 +34,8 @@ class GovernanceDataProvider(CliveWidget):
 
     @work(name="governance data update worker")
     async def update_governance_data(self) -> None:
-        account_name = self.app.world.profile_data.working_account.name
+        proxy = self.app.world.profile_data.working_account.data.proxy
+        account_name = proxy if proxy else self.app.world.profile_data.working_account.name
 
         wrapper = await self.app.world.commands.retrieve_governance_data(
             account_name=account_name,

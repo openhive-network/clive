@@ -159,12 +159,14 @@ class Witness(Grid, CliveWidget, can_focus=True):
         self.__witness = witness
         self.__evenness = evenness
 
-        self.disabled = self.is_witness_operation_in_cart
-
         self.witness_checkbox = WitnessCheckbox(
             is_voted=witness.voted,
             initial_state=self.is_witness_operation_in_cart or self.is_already_in_witness_actions_container,
+            disabled=bool(self.app.world.profile_data.working_account.data.proxy) or self.is_witness_operation_in_cart,
         )
+
+    def on_mount(self) -> None:
+        self.watch(self.witness_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
 
     def compose(self) -> ComposeResult:
         yield self.witness_checkbox
@@ -185,6 +187,12 @@ class Witness(Grid, CliveWidget, can_focus=True):
             await witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
             return
         await witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
+
+    def dimm_on_disabled_checkbox(self, value: bool) -> None:
+        if value:
+            self.add_class("dimmed")
+            return
+        self.remove_class("dimmed")
 
     @on(WitnessCheckbox.Clicked)
     def focus_myself(self) -> None:

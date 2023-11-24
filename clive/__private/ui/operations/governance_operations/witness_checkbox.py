@@ -32,8 +32,8 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
     class Clicked(Message):
         """Message send when WitnessCheckbox is clicked."""
 
-    def __init__(self, is_voted: bool = False, initial_state: bool = False) -> None:
-        super().__init__()
+    def __init__(self, is_voted: bool = False, initial_state: bool = False, disabled: bool = False) -> None:
+        super().__init__(disabled=disabled)
         self.__is_voted = is_voted
         self.__checkbox = CheckBoxWithoutFocus(value=initial_state)
 
@@ -45,10 +45,14 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
         yield Label("Vote" if not self.__is_voted else "Unvote")
 
     def toggle(self) -> None:
+        if self.disabled:
+            return
+
         if self.__checkbox.value:
             self.__checkbox.value = False
             self.remove_class("-voted" if not self.__is_voted else "-unvoted")
             return
+
         self.__checkbox.value = True
         self.add_class("-voted" if not self.__is_voted else "-unvoted")
 
@@ -62,5 +66,6 @@ class WitnessCheckbox(CliveWidget, can_focus=False):
 
     @on(Click)
     def clicked(self) -> None:
-        self.toggle()
-        self.post_message(self.Clicked())
+        if not self.disabled:
+            self.toggle()
+            self.post_message(self.Clicked())

@@ -10,6 +10,10 @@ WitnessCheckbox CheckBoxWithoutFocus {
     width: auto;
 }
 
+WitnessCheckbox:disabled {
+    background: rgba(0, 0, 0, 0.3);
+}
+
  WitnessCheckbox {
     layout: horizontal;
     height: auto;
