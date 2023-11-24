@@ -7,7 +7,7 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
-from textual.events import Click, Enter, ScreenResume
+from textual.events import Click, Enter
 from textual.message import Message
 from textual.screen import ModalScreen
 from textual.widgets import Input, Label, LoadingIndicator, Static
@@ -65,10 +65,14 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
         super().__init__()
         self.__witness_name = witness_name
 
-    def compose(self) -> ComposeResult:
-        yield LoadingIndicator()
+    def on_mount(self) -> None:
+        self.run_worker(self.refresh_witness_data())
 
-    @on(ScreenResume)
+    def compose(self) -> ComposeResult:
+        widget = WitnessDetailsWidget()
+        widget.loading = True
+        yield widget
+
     async def refresh_witness_data(self) -> None:
         wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
         await self.query("*").remove()
