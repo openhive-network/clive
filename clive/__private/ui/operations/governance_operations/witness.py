@@ -61,7 +61,7 @@ class WitnessDetailsWidget(Static):
 
 
 class DetailsScreen(ModalScreen[None], CliveWidget):
-    BINDINGS = [Binding("q", "request_quit", "Close"), Binding("escape", "request_quit", "Close")]
+    BINDINGS = [Binding("escape,f3", "request_quit", "Close")]
 
     def __init__(self, witness_name: str) -> None:
         super().__init__()
