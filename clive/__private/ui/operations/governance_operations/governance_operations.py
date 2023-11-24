@@ -198,6 +198,8 @@ class Witness(Grid, CliveWidget, can_focus=True):
 class WitnessManualSearch(Horizontal):
     def __init__(self) -> None:
         super().__init__()
+        self.__provider = self.app.query_one(GovernanceDataProvider)
+
         self.__witness_input = WitnessPatternInput(id_="witness-pattern-input")
         self.__limit_input = IntegerInput(label="limit", id_="limit-input", placeholder="default - 150")
 
@@ -220,7 +222,6 @@ class WitnessManualSearch(Horizontal):
 
     @on(CliveButton.Pressed, "#witness-search-button")
     def search_witnesses(self) -> None:
-        provider = self.app.query_one(GovernanceDataProvider)
         value_from_pattern_input = self.__witness_input.value
 
         try:
@@ -231,16 +232,13 @@ class WitnessManualSearch(Horizontal):
         if value_from_pattern_input is None and value_from_limit_input is None:
             return
 
-        provider.set_mode_witnesses_by_name(pattern=value_from_pattern_input, limit=value_from_limit_input)
-        return
+        self.__provider.set_mode_witnesses_by_name(pattern=value_from_pattern_input, limit=value_from_limit_input)
 
     @on(CliveButton.Pressed, "#clear-custom-witnesses-button")
     def clear_searched_witnesses(self) -> None:
-        provider = self.app.query_one(GovernanceDataProvider)
-
-        provider.set_mode_top_witnesses()
-        self.__witness_input.input.value = ""
-        self.__limit_just_input.value = ""
+        self.__provider.set_mode_top_witnesses()
+        self.__witness_input.input.clear()
+        self.__limit_just_input.clear()
 
 
 class WitnessActionRow(Horizontal):
@@ -387,9 +385,9 @@ class WitnessesListHeader(Grid):
 
 
 class WitnessesTable(Vertical, CliveWidget, can_focus=False):
-    def __init__(self, provider: GovernanceDataProvider):
+    def __init__(self) -> None:
         super().__init__()
-        self.__provider = provider
+        self.__provider = self.app.query_one(GovernanceDataProvider)
         self.__witness_index = 0
 
         self.__header = WitnessesListHeader()
@@ -474,13 +472,12 @@ class Proposals(ScrollableTabPane):
 class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
     """TabPane with all content about witnesses."""
 
-    def __init__(self, provider: GovernanceDataProvider, title: TextType) -> None:
+    def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
-        self.__provider = provider
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="witness-vote-actions"):
-            yield WitnessesTable(self.__provider)
+            yield WitnessesTable()
             yield WitnessesActions()
         yield WitnessManualSearch()
 
@@ -509,7 +506,7 @@ class Governance(OperationBaseScreen):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        with GovernanceDataProvider() as provider, CliveTabbedContent():
+        with GovernanceDataProvider(), CliveTabbedContent():
             yield Proxy("Proxy")
-            yield Witnesses(provider, "Witnesses")
+            yield Witnesses("Witnesses")
             yield Proposals("Proposals")
