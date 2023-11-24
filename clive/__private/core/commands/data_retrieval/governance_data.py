@@ -62,28 +62,31 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
     witness_name_pattern: str | None = None
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        async with self.node.batch() as node:
-            if self.mode == "search_top":
+        # This is due to receiving large json and counting aiohttp await response.json().
+        # In future, the total timeout should be changed to modify the read timeout only.
+        with self.node.modified_connection_details(timeout_secs=6):
+            async with self.node.batch() as node:
+                if self.mode == "search_top":
+                    return HarvestedDataRaw(
+                        await node.api.database_api.get_dynamic_global_properties(),
+                        await node.api.database_api.list_witness_votes(
+                            start=(self.account_name, ""), limit=30, order="by_account_witness"
+                        ),
+                        await node.api.database_api.list_witnesses(
+                            start=(1000000000000000000, ""), limit=self.limit, order="by_vote_name"
+                        ),
+                    )
                 return HarvestedDataRaw(
                     await node.api.database_api.get_dynamic_global_properties(),
                     await node.api.database_api.list_witness_votes(
                         start=(self.account_name, ""), limit=30, order="by_account_witness"
                     ),
                     await node.api.database_api.list_witnesses(
-                        start=(1000000000000000000, ""), limit=self.limit, order="by_vote_name"
+                        start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
+                        limit=self.limit,
+                        order="by_name",
                     ),
                 )
-            return HarvestedDataRaw(
-                await node.api.database_api.get_dynamic_global_properties(),
-                await node.api.database_api.list_witness_votes(
-                    start=(self.account_name, ""), limit=30, order="by_account_witness"
-                ),
-                await node.api.database_api.list_witnesses(
-                    start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
-                    limit=self.limit,
-                    order="by_name",
-                ),
-            )
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(

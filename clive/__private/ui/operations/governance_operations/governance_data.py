@@ -36,15 +36,12 @@ class GovernanceDataProvider(CliveWidget):
     async def update_governance_data(self) -> None:
         account_name = self.app.world.profile_data.working_account.name
 
-        # This is due to receiving large json and counting aiohttp await response.json().
-        # In future, the total timeout should be changed to modify the read timeout only.
-        with self.app.world.modified_connection_details(timeout_secs=5):
-            wrapper = await self.app.world.commands.retrieve_governance_data(
-                account_name=account_name,
-                limit=self.__limit,
-                mode=self.__mode,
-                witness_name_pattern=self.__witness_name_pattern,
-            )
+        wrapper = await self.app.world.commands.retrieve_governance_data(
+            account_name=account_name,
+            limit=self.__limit,
+            mode=self.__mode,
+            witness_name_pattern=self.__witness_name_pattern,
+        )
 
         if wrapper.error_occurred:
             self.notify(f"Failed to retrieve savings data: {wrapper.error}", severity="error")
