@@ -31,7 +31,7 @@ class Proxy(ScrollableTabPane, CliveWidget):
         self.__current_proxy = self.app.world.profile_data.working_account.data.proxy
 
     @property
-    def new_proxy(self) -> str:
+    def new_proxy(self) -> str | None:
         return self.__proxy_input.value
 
     def compose(self) -> ComposeResult:
@@ -56,7 +56,10 @@ class Proxy(ScrollableTabPane, CliveWidget):
             yield CliveButton("Remove proxy", id_="remove-proxy-button")
 
     @on(Button.Pressed, "#set-proxy-button")
-    def set_proxy(self) -> None:
+    def set_new_proxy(self) -> None:
+        if not self.new_proxy:
+            return
+
         self.app.push_screen(AccountWitnessProxy(is_raw=False, new_proxy=self.new_proxy))
 
     @on(Button.Pressed, "#remove-proxy-button")

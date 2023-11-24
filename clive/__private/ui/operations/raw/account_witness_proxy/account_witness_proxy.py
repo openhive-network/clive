@@ -40,7 +40,7 @@ class AccountWitnessProxy(RawOperationBaseScreen):
         self.__proxy_input = AccountNameInput(label="proxy")
 
     @property
-    def proxy_to_be_set(self) -> str:
+    def proxy_to_be_set(self) -> str | None:
         if self.__is_raw:
             return self.__proxy_input.value
 
@@ -63,5 +63,7 @@ class AccountWitnessProxy(RawOperationBaseScreen):
                         disabled=True,
                     ).compose()
 
-    def _create_operation(self) -> AccountWitnessProxyOperation:
+    def _create_operation(self) -> AccountWitnessProxyOperation | None:
+        if self.proxy_to_be_set is None:
+            return None
         return AccountWitnessProxyOperation(account=self.app.world.profile_data.name, proxy=self.proxy_to_be_set)

@@ -6,7 +6,7 @@ from textual.containers import ScrollableContainer
 from textual.widgets import Checkbox
 
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.storage.accounts import Account, InvalidAccountNameError
+from clive.__private.storage.accounts import Account
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -41,11 +41,11 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
                 yield Checkbox("Working account?", value=True)
 
     async def apply_and_validate(self) -> None:
-        account_name = self.__account_name_input.value
-        try:
-            Account.validate(account_name)
-        except InvalidAccountNameError as error:
-            raise FormValidationError(str(error), given_value=account_name) from error
+        with self.app.suppressed_notifications():
+            account_name = self.__account_name_input.value
+
+        if not account_name:
+            raise FormValidationError("Invalid account name")
 
         if self.__is_working_account():
             self.context.set_working_account(account_name)

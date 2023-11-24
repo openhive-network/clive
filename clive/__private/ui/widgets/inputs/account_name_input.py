@@ -39,3 +39,13 @@ class AccountNameInput(TextInput):
             id_=id_,
             classes=classes,
         )
+
+    @property
+    def value(self) -> str | None:  # type: ignore[override]
+        value = self._input.value
+        highlighter: AccountNameHighlighter = self._highlighter  # type: ignore[assignment]
+
+        if not highlighter.is_valid_value(value):
+            self.notify("Invalid account name", severity="error")
+            return None
+        return value
