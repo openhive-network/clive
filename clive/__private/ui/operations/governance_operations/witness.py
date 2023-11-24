@@ -316,7 +316,7 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
             yield Static("Action", id="action-row")
             yield Static("Witness", id="witness-row")
 
-    async def on_mount(self) -> None:
+    async def on_mount(self) -> None:  # type: ignore[override]
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, AccountWitnessVoteOperation):
                 await self.mount_witness(name=operation.witness, vote=operation.approve, pending=True)
