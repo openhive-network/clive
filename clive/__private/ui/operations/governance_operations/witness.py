@@ -8,6 +8,7 @@ from textual.binding import Binding
 from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.events import Click, Enter
+from textual.events import Click, Enter, ScreenResume
 from textual.message import Message
 from textual.screen import ModalScreen
 from textual.widgets import Input, Label, LoadingIndicator, Static
@@ -59,7 +60,7 @@ class WitnessDetailsWidget(Static):
 
 
 class DetailsScreen(ModalScreen[None], CliveWidget):
-    BINDINGS = [Binding("q", "request_quit", "Close")]
+    BINDINGS = [Binding("q", "request_quit", "Close"), Binding("escape", "request_quit", "Close")]
 
     def __init__(self, witness_name: str) -> None:
         super().__init__()
@@ -232,7 +233,7 @@ class WitnessManualSearch(Horizontal):
         self.__witness_input = WitnessPatternInput(id_="witness-pattern-input")
         self.__limit_input = IntegerInput(label="limit", id_="limit-input", placeholder="default - 150")
 
-        self.__limit_just_input: Input = Input()
+        self.__limit_just_input: Input
         self.__limit_just_label, self.__limit_just_input = self.__limit_input.compose()  # type: ignore[assignment]
         self.__witness_just_label, self.__witness_just_input = self.__witness_input.compose()
 
