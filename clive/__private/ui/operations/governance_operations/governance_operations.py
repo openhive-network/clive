@@ -151,6 +151,10 @@ class Witness(Grid, CliveWidget, can_focus=True):
     def focus_myself(self) -> None:
         self.focus()
 
+    @on(WitnessCheckbox.Changed)
+    async def modify_action_status(self) -> None:
+        await self.move_witness_to_actions()
+
     @on(DetailsLabel.Clicked)
     def show_details(self) -> None:
         self.action_show_details()
