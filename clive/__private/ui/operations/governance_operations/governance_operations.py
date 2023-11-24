@@ -28,31 +28,39 @@ class Proxy(ScrollableTabPane, CliveWidget):
     def __init__(self, title: TextType):
         super().__init__(title=title)
         self.__proxy_input = AccountNameInput()
-        self.__proxy = self.app.world.profile_data.working_account.data.proxy
+        self.__current_proxy = self.app.world.profile_data.working_account.data.proxy
+
+    @property
+    def new_proxy(self) -> str:
+        return self.__proxy_input.value
 
     def compose(self) -> ComposeResult:
-        if not self.__proxy:
-            yield AccountNameInput(label="current proxy", value="Not set", disabled=True)
-            yield self.__proxy_input
-            with Container(id="set-button-container"):
-                yield CliveButton("Set proxy", id_="set-proxy-button")
-            yield Static(
-                "Notice: setting proxy will delete your witnesses votes and deactivate your proposal votes",
-                id="proxy-set-information",
-            )
-        else:
-            yield AccountNameInput(label="current proxy", value=self.__proxy, disabled=True)
-            yield self.__proxy_input
-            with Horizontal(id="modify-proxy-buttons"):
-                yield CliveButton("Change proxy", id_="change-proxy-button")
-                yield CliveButton("Remove proxy", id_="remove-proxy-button")
+        content = self.__compose_proxy_set if self.__current_proxy else self.__compose_proxy_not_set
+        yield from content()
 
-    @on(Button.Pressed)
-    def move_to_raw_screen(self, event: Button.Pressed) -> None:
-        if not self.__proxy or event.button.id == "change-proxy-button":
-            self.app.push_screen(AccountWitnessProxy(is_raw=False, new_proxy=self.__proxy_input.value))
-            return
+    def __compose_proxy_not_set(self) -> ComposeResult:
+        yield AccountNameInput(label="current proxy", value="Not set", disabled=True)
+        yield self.__proxy_input
+        with Container(id="set-button-container"):
+            yield CliveButton("Set proxy", id_="set-proxy-button")
+        yield Static(
+            "Notice: setting proxy will delete your witnesses votes and deactivate your proposal votes",
+            id="proxy-set-information",
+        )
 
+    def __compose_proxy_set(self) -> ComposeResult:
+        yield AccountNameInput(label="current proxy", value=self.__current_proxy, disabled=True)
+        yield self.__proxy_input
+        with Horizontal(id="modify-proxy-buttons"):
+            yield CliveButton("Change proxy", id_="set-proxy-button")
+            yield CliveButton("Remove proxy", id_="remove-proxy-button")
+
+    @on(Button.Pressed, "#set-proxy-button")
+    def set_proxy(self) -> None:
+        self.app.push_screen(AccountWitnessProxy(is_raw=False, new_proxy=self.new_proxy))
+
+    @on(Button.Pressed, "#remove-proxy-button")
+    def remove_proxy(self) -> None:
         self.app.push_screen(AccountWitnessProxy(is_raw=False))
 
 

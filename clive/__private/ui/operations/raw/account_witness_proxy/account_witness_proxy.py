@@ -39,6 +39,15 @@ class AccountWitnessProxy(RawOperationBaseScreen):
 
         self.__proxy_input = AccountNameInput(label="proxy")
 
+    @property
+    def proxy_to_be_set(self) -> str:
+        if self.__is_raw:
+            return self.__proxy_input.value
+
+        if self.__new_proxy is None:
+            return ""
+        return self.__new_proxy
+
     def create_left_panel(self) -> ComposeResult:
         with ViewBag():
             yield BigTitle("Account witness proxy")
@@ -55,15 +64,4 @@ class AccountWitnessProxy(RawOperationBaseScreen):
                     ).compose()
 
     def _create_operation(self) -> AccountWitnessProxyOperation:
-        if self.__is_raw:
-            return AccountWitnessProxyOperation(
-                account=self.app.world.profile_data.name,
-                proxy=self.__proxy_input.value,
-            )
-        if self.__new_proxy is not None:
-            return AccountWitnessProxyOperation(
-                account=self.app.world.profile_data.name,
-                proxy=self.__new_proxy,
-            )
-
-        return AccountWitnessProxyOperation(account=self.app.world.profile_data.name, proxy="")
+        return AccountWitnessProxyOperation(account=self.app.world.profile_data.name, proxy=self.proxy_to_be_set)
