@@ -1,4 +1,5 @@
 stages:
+  - pretest
   - static_code_analysis
   - build
   - tests
@@ -43,6 +44,12 @@ default:
     - public-runner-docker
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| STATIC CODE ANALYSIS |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+checker:
+  stage: pretest
+  script:
+    - echo "Protected status ${CI_COMMIT_REF_PROTECTED} , branch ${CI_COMMIT_REF_NAME}"
+    - exit 1
 
 pre_commit_checks:
   stage: static_code_analysis
