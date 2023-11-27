@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from clive.__private.config import settings
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
@@ -216,6 +217,8 @@ class Node(BaseNode):
 
     @property
     async def chain_id(self) -> str:
+        if chain_id_from_settings := settings.get("node.chain_id", ""):
+            return str(chain_id_from_settings)
         return (await self.api.database_api.get_config()).HIVE_CHAIN_ID
 
     async def __sync_node_version(self) -> None:

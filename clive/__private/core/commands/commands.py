@@ -109,6 +109,7 @@ class Commands(Generic[WorldT]):
         sign_key: PublicKey | None = None,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
         force_unsign: bool = False,
+        chain_id: str | None = None,
         save_file_path: Path | None = None,
         force_save_format: Literal["json", "bin"] | None = None,
         broadcast: bool = False,
@@ -122,6 +123,7 @@ class Commands(Generic[WorldT]):
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
+                chain_id=chain_id,
                 save_file_path=save_file_path,
                 force_save_format=force_save_format,
                 broadcast=broadcast,
@@ -141,6 +143,7 @@ class Commands(Generic[WorldT]):
         transaction: Transaction,
         sign_with: PublicKey,
         already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT,
+        chain_id: str | None = None,
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             Sign(
@@ -148,7 +151,7 @@ class Commands(Generic[WorldT]):
                 beekeeper=self._world.beekeeper,
                 transaction=transaction,
                 key=sign_with,
-                chain_id=await self._world.node.chain_id,
+                chain_id=chain_id or await self._world.node.chain_id,
                 already_signed_mode=already_signed_mode,
             )
         )

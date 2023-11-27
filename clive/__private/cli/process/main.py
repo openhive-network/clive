@@ -44,6 +44,14 @@ async def process_transaction(
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
         ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
     ),
+    chain_id: str = typer.Option(
+        None,
+        help=(
+            "The chain ID to use when signing the transaction. (if not provided, the one from settings.toml and then"
+            " from node get_config api will be used as fallback)"
+        ),
+        show_default=False,
+    ),
 ) -> None:
     """Process a transaction from file."""
     from clive.__private.cli.commands.process.process_transaction import ProcessTransaction
@@ -53,5 +61,9 @@ async def process_transaction(
 
     common = OperationCommonOptions.get_instance()
     await ProcessTransaction.from_(
-        **common.as_dict(), from_file=from_file, force_unsign=force_unsign, already_signed_mode=already_signed_mode
+        **common.as_dict(),
+        from_file=from_file,
+        force_unsign=force_unsign,
+        already_signed_mode=already_signed_mode,
+        chain_id=chain_id,
     ).run()

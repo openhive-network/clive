@@ -38,6 +38,8 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
     already_signed_mode: How to handle the situation when transaction is already signed.
     force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
+    chain_id: The chain ID to use when signing the transaction. If not provided, the one from settings.toml config and
+        then from the node get_config api will be used as fallback.
     save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
     broadcast: Whether to broadcast the transaction.
@@ -54,6 +56,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     sign_key: PublicKey | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
+    chain_id: str | None = None
     save_file_path: Path | None = None
     force_save_format: Literal["json", "bin"] | None = None
     broadcast: bool = False
@@ -67,7 +70,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                 beekeeper=self.beekeeper,
                 transaction=transaction,
                 key=self.sign_key,
-                chain_id=await self.node.chain_id,
+                chain_id=self.chain_id or await self.node.chain_id,
                 already_signed_mode=self.already_signed_mode,
             ).execute_with_result()
 
