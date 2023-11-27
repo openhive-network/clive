@@ -10,9 +10,13 @@ from clive.__private.core.commands.abc.command_data_retrieval import (
 from clive.__private.core.formatters.humanize import humanize_hive_power
 
 if TYPE_CHECKING:
+    from typing import Final
+
     from clive.__private.core.node import Node
     from clive.models import Asset
     from clive.models.aliased import DynamicGlobalProperties, Witness, WitnessesList, WitnessVotes
+
+MAX_POSSIBLE_NUMBER_OF_VOTES: Final[int] = 2**63 - 1
 
 
 @dataclass
@@ -33,14 +37,17 @@ class WitnessData:
 class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
     list_witnesses_votes: WitnessVotes | None = None
-    list_150_witnesses: WitnessesList | None = None
+    top_150_witnesses: WitnessesList | None = None
+    witnesses_searched_by_name: WitnessesList | None = None
 
 
 @dataclass
 class SanitizedData:
     gdpo: DynamicGlobalProperties
-    witnesses_votes: dict[str, WitnessData]
-    searched_150_witnesses: list[Witness]
+    witnesses_votes: dict[str, str]
+    top_150_witnesses: list[Witness]
+    witnesses_searched_by_name: list[Witness] | None
+    """Could be None, as there is no need to download it when the order is by votes."""
 
 
 @dataclass
@@ -66,33 +73,36 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         # In future, the total timeout should be changed to modify the read timeout only.
         with self.node.modified_connection_details(timeout_secs=6):
             async with self.node.batch() as node:
-                if self.mode == "search_top":
-                    return HarvestedDataRaw(
-                        await node.api.database_api.get_dynamic_global_properties(),
-                        await node.api.database_api.list_witness_votes(
-                            start=(self.account_name, ""), limit=30, order="by_account_witness"
-                        ),
-                        await node.api.database_api.list_witnesses(
-                            start=(1000000000000000000, ""), limit=self.limit, order="by_vote_name"
-                        ),
-                    )
-                return HarvestedDataRaw(
-                    await node.api.database_api.get_dynamic_global_properties(),
-                    await node.api.database_api.list_witness_votes(
-                        start=(self.account_name, ""), limit=30, order="by_account_witness"
-                    ),
-                    await node.api.database_api.list_witnesses(
+                gdpo = await node.api.database_api.get_dynamic_global_properties()
+
+                witness_votes = await node.api.database_api.list_witness_votes(
+                    start=(self.account_name, ""), limit=30, order="by_account_witness"
+                )
+
+                top_witnesses = await node.api.database_api.list_witnesses(
+                    start=(MAX_POSSIBLE_NUMBER_OF_VOTES, ""), limit=self.limit, order="by_vote_name"
+                )
+
+                witnesses_by_name: WitnessesList | None = None
+
+                if self.mode == "search_by_name":
+                    witnesses_by_name = await node.api.database_api.list_witnesses(
                         start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
                         limit=self.limit,
                         order="by_name",
-                    ),
-                )
+                    )
+
+                return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
+        in_search_by_name_mode = self.mode == "search_by_name"
         return SanitizedData(
             gdpo=self.__assert_gdpo(data.gdpo),
             witnesses_votes=self.__assert_witnesses_votes(data.list_witnesses_votes),
-            searched_150_witnesses=self.__assert_list_150_witnesses(data.list_150_witnesses),
+            top_150_witnesses=self.__assert_list_witnesses(data.top_150_witnesses),
+            witnesses_searched_by_name=(
+                self.__assert_list_witnesses(data.witnesses_searched_by_name) if in_search_by_name_mode else None
+            ),
         )
 
     async def _process_data(self, data: SanitizedData) -> GovernanceData:
@@ -101,36 +111,65 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
 
         If the witness voted for by the account is not in the `list_witnesses` response - remove the last witness in searched_witnesses and
         add the witness the account voted for to it.
+        If the user wants to order by_name, the function returns a list of searched witnesses by_name with the information
+        retrieved about ranks from the top_150_witnesses response.
         The witnesses that are returned are sorted first by the `voted` parameter and then by rank.
         """
-        searched_witnesses = {
+        top_150_witnesses = {
             witness.owner: WitnessData(
                 witness.owner,
                 created=witness.created,
-                rank=rank if self.mode == "search_top" else None,
+                rank=rank,
                 votes=humanize_hive_power(
                     self.calculate_hp_from_votes(
                         witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
                     )
                 ),
                 missed_blocks=witness.total_missed,
-                voted=witness.owner in data.witnesses_votes,
+                voted=witness.owner in data.witnesses_votes.values(),
                 last_block=witness.last_confirmed_block_num,
                 price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
                 version=witness.running_version,
                 url=witness.url,
             )
-            for rank, witness in enumerate(data.searched_150_witnesses, start=1)
+            for rank, witness in enumerate(data.top_150_witnesses, start=1)
         }
 
+        searched_witnesses = top_150_witnesses
         for witness in data.witnesses_votes.items():
             if witness[0] not in searched_witnesses.keys():
-                searched_witnesses[witness[0]] = witness[1]  # type: ignore[index]
+                searched_witnesses[witness[0]] = WitnessData(name=witness[1], voted=True)  # type: ignore[index]
                 searched_witnesses.popitem()
 
         sorted_witnesses = dict(
             sorted(searched_witnesses.items(), key=lambda witness: (not witness[1].voted, witness[1].rank))
         )
+
+        if self.mode == "search_by_name" and data.witnesses_searched_by_name is not None:
+            searched_witnesses_by_name = {
+                witness.owner: (
+                    WitnessData(
+                        witness.owner,
+                        created=witness.created,
+                        rank=None,
+                        votes=humanize_hive_power(
+                            self.calculate_hp_from_votes(
+                                witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
+                            )
+                        ),
+                        missed_blocks=witness.total_missed,
+                        voted=witness.owner in data.witnesses_votes,
+                        last_block=witness.last_confirmed_block_num,
+                        price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
+                        version=witness.running_version,
+                        url=witness.url,
+                    )
+                    if witness.owner not in top_150_witnesses.keys()
+                    else top_150_witnesses[witness.owner]
+                )
+                for witness in data.witnesses_searched_by_name
+            }
+            sorted_witnesses = searched_witnesses_by_name  # they are already sorted by_name
 
         return GovernanceData(witnesses=sorted_witnesses, number_of_votes=len(data.witnesses_votes))  # type: ignore[arg-type]
 
@@ -138,16 +177,16 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def __assert_witnesses_votes(self, data: WitnessVotes | None) -> dict[str, WitnessData]:
+    def __assert_witnesses_votes(self, data: WitnessVotes | None) -> dict[str, str]:
         assert data is not None, "ListWitnessVotes data is missing"
 
         return {
-            witness_vote.witness: WitnessData(name=witness_vote.witness, voted=True)
+            witness_vote.witness: witness_vote.witness
             for witness_vote in data.votes
             if witness_vote.account == self.account_name
         }
 
-    def __assert_list_150_witnesses(self, data: WitnessesList | None) -> list[Witness]:
+    def __assert_list_witnesses(self, data: WitnessesList | None) -> list[Witness]:
         assert data is not None, "ListWitnesses data is missing"
         return data.witnesses
 

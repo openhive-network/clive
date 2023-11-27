@@ -53,11 +53,6 @@ class GovernanceDataProvider(CliveWidget):
 
         result = wrapper.result_or_raise
         if result.number_of_votes != self.content.number_of_votes or result.witness_names != self.content.witness_names:
-            if self.__mode == "search_by_name" and self.content.witnesses is not None and result.witnesses is not None:
-                for witness in self.content.witnesses.items():
-                    if witness[0] in result.witnesses:
-                        result.witnesses[witness[0]].rank = witness[1].rank
-
             self.content = result
 
     def stop_refreshing_data(self) -> None:
