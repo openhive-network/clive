@@ -1,4 +1,23 @@
 /*common parts of governance*/
+$governance-green-color: $success-darken-3;
+$governance-red-color: $error;
+
+/* colors to create table columns */
+$table-column-1-odd: $accent;
+$table-column-2-odd: $accent-lighten-1;
+$table-column-3-odd: $accent-lighten-2;
+$table-column-4-odd: $accent-darken-2;
+
+$table-column-1-even: $primary-background;
+$table-column-2-even: $primary-background-lighten-1;
+$table-column-3-even: $primary-background-lighten-2;
+$table-column-4-even: $primary-background-lighten-3;
+
+$table-header-contrast-column: $warning-darken-2;
+$table-header-column: $primary-darken-2;
+
+$table-info-headline: $accent-lighten-1;
+
 Governance Tab {
   width: 1fr;
 }
@@ -31,8 +50,7 @@ Governance Proxy #set-button-container {
 }
 
 Governance Proxy #set-proxy-button {
-  background: green;
-  color: white;
+  background: $governance-green-color;
 }
 
 Governance Proxy #proxy-set-information {
@@ -44,14 +62,14 @@ Governance Proxy #modify-proxy-buttons {
   height: 3;
 }
 
-Governance Proxy #change-proxy-button {
-  margin-right: 3;
-  background: green;
+Governance Proxy #change-proxy-button{
+    background: $governance-green-color;
+    margin-right: 3;
 }
 
 Governance Proxy #remove-proxy-button {
   margin-left: 3;
-  background: red 70%;
+  background: $governance-red-color;
 }
 
 /* WITNESSES */
@@ -122,35 +140,35 @@ Governance Witness.dimmed {
 }
 
 Governance Witness .witness-name-even {
-  background: rgb(83, 158, 255);
+  background: $table-column-1-even;
 }
 
 Governance Witness .witness-rank-even {
-  background: rgb(1, 120, 212);
+  background: $table-column-2-even;
 }
 
 Governance Witness .witness-votes-even {
-  background: rgb(1, 120, 212);
+  background: $table-column-3-even;
 }
 
 Governance Witness .witness-details-even {
-  background: rgb(0, 83, 170);
+  background: $table-column-4-even;
 }
 
 Governance Witness .witness-name-odd {
-  background: rgb(128, 128, 128);
+  background: $table-column-1-odd;
 }
 
 Governance Witness .witness-rank-odd {
-  background: rgb(96, 96, 96);
+  background: $table-column-2-odd;
 }
 
 Governance Witness .witness-votes-odd {
-  background: rgb(64, 64, 64);
+  background: $table-column-3-odd;
 }
 
 Governance Witness .witness-details-odd {
-  background: rgb(96, 96, 96);
+  background: $table-column-4-odd;
 }
 
 Governance WitnessesListHeader {
@@ -160,19 +178,19 @@ Governance WitnessesListHeader {
 }
 
 Governance WitnessesListHeader #rank-column {
-  background: rgb(254, 166, 43);
+  background: $table-header-contrast-column;
 }
 
 Governance WitnessesListHeader #name-column {
-  background: rgb(0, 83, 170);
+  background: $table-header-column;
 }
 
 Governance WitnessesListHeader #votes-column {
-  background: rgb(0, 83, 170);
+  background: $table-header-column;
 }
 
 Governance #witnesses-headline {
-  background: rgb(83, 158, 255);
+  background: $table-info-headline;
 }
 
 Governance WitnessesTable {
@@ -193,17 +211,17 @@ Governance WitnessesActions {
 }
 
 Governance #action-row {
-  background: rgb(255, 186, 65);
+  background: $table-header-contrast-column;
   width: 32%;
 }
 
 Governance #witness-row {
-  background: rgb(0, 83, 170);
+  background: $table-header-column;
   width: 68%;
 }
 
 Governance #witnesses-actions-header {
-  background: rgb(83, 158, 255);
+  background: $table-info-headline;
 }
 
 Governance WitnessActionRow .action-witness-name {
@@ -211,15 +229,15 @@ Governance WitnessActionRow .action-witness-name {
 }
 
 Governance WitnessActionRow .action-vote {
-  background: green;
+  background: $governance-green-color;
 }
 
 Governance WitnessActionRow .action-unvote {
-  background: red;
+  background: $governance-red-color;
 }
 
 Governance WitnessActionRow .action-pending {
-  background: grey;
+  background: $panel-lighten-3;
 }
 
 Governance WitnessActionRow .action-label {
@@ -248,7 +266,7 @@ Governance CliveButton {
 }
 
 Governance #witness-search-button {
-  background: green;
+  background: $governance-green-color;
 }
 
 CliveButton:focus {
@@ -262,11 +280,11 @@ Governance #witness-vote-actions {
 }
 
 Governance #clear-custom-witnesses-button {
-  background: rgb(33, 50, 180);
+  background: $accent-darken-3;
 }
 
 Governance #inputs-with-static-manual {
-  width: 65%;
+    width: 65%;
 }
 
 Governance #search-and-clear-buttons {

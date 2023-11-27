@@ -21,11 +21,11 @@ WitnessCheckbox {
 }
 
 WitnessCheckbox.-voted {
-  color: green;
+  color: $success-darken-3;
 }
 
 WitnessCheckbox.-unvoted {
-  color: red;
+  color: $error;
 }
 
 WitnessCheckbox:focus Label {
