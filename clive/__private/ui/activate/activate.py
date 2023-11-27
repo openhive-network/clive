@@ -79,6 +79,7 @@ class Activate(BaseScreen):
             raw_active_mode_time = self.__get_active_mode_time()
             if raw_active_mode_time is None:
                 self.notify("The active mode time must be a number and >= 1", severity="error")
+                await self.__exit_cancel()
                 return
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)
@@ -88,6 +89,7 @@ class Activate(BaseScreen):
                 password=self.__password_input.value, time=active_mode_time, permanent=permanent_active
             )
         ).success:
+            await self.__exit_cancel()
             return
 
         await self.__exit_success()
