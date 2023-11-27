@@ -62,9 +62,9 @@ Governance Proxy #modify-proxy-buttons {
   height: 3;
 }
 
-Governance Proxy #change-proxy-button{
-    background: $governance-green-color;
-    margin-right: 3;
+Governance Proxy #change-proxy-button {
+  margin-right: 3;
+  background: $governance-green-color;
 }
 
 Governance Proxy #remove-proxy-button {
@@ -91,7 +91,7 @@ DetailsScreen {
 
 DetailsScreen Static {
   border: $primary-lighten-3;
-  width: 60%;
+  width: 0.6fr;
   text-align: left;
 }
 
@@ -126,7 +126,7 @@ Governance WitnessesList {
 
 Governance WitnessesList Witness {
   grid-size: 5;
-  grid-columns: 20% 11% 35% 20% 14%;
+  grid-columns: 2fr 1fr 3fr 2fr 2fr;
   height: 1;
 }
 
@@ -173,7 +173,7 @@ Governance Witness .witness-details-odd {
 
 Governance WitnessesListHeader {
   grid-size: 5;
-  grid-columns: 20% 11% 35% 20% 14%;
+  grid-columns: 2fr 1fr 3fr 2fr 2fr;
   height: auto;
 }
 
@@ -194,7 +194,7 @@ Governance #witnesses-headline {
 }
 
 Governance WitnessesTable {
-  width: 75%;
+  width: 7fr;
   height: auto;
   max-height: 32;
 }
@@ -206,18 +206,18 @@ Governance WitnessesTable:focus {
 
 Governance WitnessesActions {
   margin-left: 1;
-  width: 25%;
+  width: 3fr;
   max-height: 31;
 }
 
 Governance #action-row {
   background: $table-header-contrast-column;
-  width: 32%;
+  width: 2fr;
 }
 
 Governance #witness-row {
   background: $table-header-column;
-  width: 68%;
+  width: 4fr;
 }
 
 Governance #witnesses-actions-header {
@@ -225,7 +225,7 @@ Governance #witnesses-actions-header {
 }
 
 Governance WitnessActionRow .action-witness-name {
-  width: 68%;
+  width: 4fr;
 }
 
 Governance WitnessActionRow .action-vote {
@@ -241,7 +241,7 @@ Governance WitnessActionRow .action-pending {
 }
 
 Governance WitnessActionRow .action-label {
-  width: 32%;
+  width: 2fr;
 }
 
 Governance WitnessActionRow {
@@ -262,7 +262,7 @@ Governance WitnessManualSearch {
 Governance CliveButton {
   margin-right: 1;
   margin-left: 1;
-  width: 40%;
+  width: 1fr;
 }
 
 Governance #witness-search-button {
@@ -284,13 +284,13 @@ Governance #clear-custom-witnesses-button {
 }
 
 Governance #inputs-with-static-manual {
-    width: 65%;
+  width: 1fr;
 }
 
 Governance #search-and-clear-buttons {
   align: center top;
   margin-top: 1;
-  width: 35%;
+  width: 1fr;
   height: auto;
 }
 
@@ -299,11 +299,11 @@ Governance WitnessManualSearch Vertical {
 }
 
 Governance #witness-pattern-input-with-label {
-  width: 70%;
+  width: 6fr;
 }
 
 Governance #witness-input-limit-with-label {
-  width: 30%;
+  width: 4fr;
 }
 
 Governance WitnessManualSearch Label {
