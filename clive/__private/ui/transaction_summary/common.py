@@ -165,7 +165,7 @@ class TransactionSummaryCommon(BaseScreen):
         save_as_binary = event.save_as_binary
         should_be_signed = event.should_be_signed
 
-        transaction = self.transaction
+        transaction = self.transaction.copy()
 
         try:
             transaction = (
