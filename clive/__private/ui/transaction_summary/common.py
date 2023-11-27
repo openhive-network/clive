@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Label, Select, Static
 
+from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
 from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -176,6 +177,9 @@ class TransactionSummaryCommon(BaseScreen):
                     force_save_format="bin" if save_as_binary else "json",
                 )
             ).result_or_raise
+        except CommandRequiresActiveModeError:
+            self.notify("Active mode is required for this action.", severity="warning")
+            raise  # reraise so try_again_after_activation decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
@@ -205,6 +209,9 @@ class TransactionSummaryCommon(BaseScreen):
                     broadcast=True,
                 )
             ).raise_if_error_occurred()
+        except CommandRequiresActiveModeError:
+            self.notify("Active mode is required for this action.", severity="warning")
+            raise  # reraise so try_again_after_activation decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return
