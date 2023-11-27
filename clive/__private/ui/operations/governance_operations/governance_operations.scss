@@ -27,7 +27,6 @@ Governance Proxy AccountNameInput {
 
 Governance Proxy #set-button-container {
   align: center middle;
-  content-align: center middle;
   height: 4;
 }
 
@@ -42,7 +41,6 @@ Governance Proxy #proxy-set-information {
 
 Governance Proxy #modify-proxy-buttons {
   align: center middle;
-  content-align: center middle;
   height: 3;
 }
 
@@ -55,6 +53,8 @@ Governance Proxy #remove-proxy-button {
   margin-left: 3;
   background: red 70%;
 }
+
+/* WITNESSES */
 
 Governance Witnesses Label {
   text-style: bold;
@@ -185,6 +185,7 @@ Governance WitnessesTable:focus {
   background: rgba(0, 0, 0, 0.5);
 }
 /* a table with the actions to be performed after the creation of the operation */
+
 Governance WitnessesActions {
   margin-left: 1;
   width: 25%;
