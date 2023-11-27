@@ -36,6 +36,9 @@ class AssetAmountInvalidFormatError(CliveError):
 class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
     """Holds factory for asset."""
 
+    class Config:
+        frozen = True
+
     asset_cls: type[AssetT]
     asset_factory: AssetFactory[AssetT]
 
