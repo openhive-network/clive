@@ -106,8 +106,10 @@ class KeyManager:
 
     def rename(self, old_alias: str, new_alias: str) -> None:
         """Rename a key alias."""
-        for key in self.__keys:
+        self.__assert_no_alias_conflict(new_alias, "public")
+
+        for i, key in enumerate(self.__keys):
             if key.alias == old_alias:
-                key.alias = new_alias
+                self.__keys[i] = key.with_alias(new_alias)
                 return
         raise KeyNotFoundError(f"Key with alias '{old_alias}' not found.")

@@ -22,7 +22,7 @@ class PrivateKeyInvalidFormatError(PrivateKeyError):
         super().__init__(self.message)
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class Key(ABC):
     value: str
 
@@ -50,7 +50,7 @@ class Key(ABC):
             return PrivateKey
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class KeyAliased(Key, ABC):
     alias: str
 
@@ -64,7 +64,7 @@ class KeyAliased(Key, ABC):
         """Should return a new instance of the key without the alias."""
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class PublicKey(Key):
     value: str
 
@@ -81,7 +81,7 @@ class PublicKey(Key):
         return PublicKeyAliased(alias=alias, value=self.value)
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class PublicKeyAliased(KeyAliased, PublicKey):
     def __eq__(self, other: Any) -> bool:
         return super().__eq__(other)
@@ -90,7 +90,7 @@ class PublicKeyAliased(KeyAliased, PublicKey):
         return PublicKey(value=self.value)
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class PrivateKey(Key):
     """
     A container for a private key.
@@ -169,7 +169,7 @@ class PrivateKey(Key):
         return PrivateKeyAliased(alias=alias, value=self.value, file_path=self.file_path)
 
 
-@dataclass(kw_only=True)
+@dataclass(kw_only=True, frozen=True)
 class PrivateKeyAliased(KeyAliased, PrivateKey):
     def __eq__(self, other: Any) -> bool:
         return super().__eq__(other)
