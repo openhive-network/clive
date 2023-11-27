@@ -68,7 +68,7 @@ class SafeSelect(CliveWidget, Generic[SelectType]):
         self.__value: SelectType | NoSelection = value
 
         if len(self._options) >= self.MIN_AMOUNT_OF_ITEMS:
-            self._content = Select(options, prompt=prompt, allow_blank=False, value=self.__value)
+            self._content = Select(options, prompt=prompt, value=self.__value)
         elif options:
             self._content = SingleSelect(option=self._options[0])
 
