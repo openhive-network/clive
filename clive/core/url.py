@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 from clive.exceptions import NodeAddressError
 
 
-@dataclass
+@dataclass(frozen=True)
 class Url:
     proto: str
     host: str
