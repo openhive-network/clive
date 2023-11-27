@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final, Generic
 
 from textual.widgets import Select, Static
-from textual.widgets._select import SelectOption, SelectType
+from textual.widgets._select import NoSelection, SelectOption, SelectType
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import NoItemSelectedError
@@ -25,7 +25,7 @@ class EmptySelect(Static):
 
     def __init__(self, empty_message: str = DEFAULT_MESSAGE) -> None:
         super().__init__(empty_message)
-        self.value = None
+        self.value = Select.BLANK
 
 
 class SingleSelect(Static, Generic[SelectType]):
@@ -34,6 +34,10 @@ class SingleSelect(Static, Generic[SelectType]):
     def __init__(self, option: SelectOption[SelectType]) -> None:
         super().__init__(option[0])
         self.value = option[1]
+
+    @staticmethod
+    def is_blank() -> bool:
+        return False
 
 
 class SafeSelect(CliveWidget, Generic[SelectType]):
@@ -51,7 +55,7 @@ class SafeSelect(CliveWidget, Generic[SelectType]):
         options: Iterable[SelectOption[SelectType]],
         *,
         prompt: str = "Select",
-        value: SelectType | None = None,
+        value: SelectType | NoSelection = Select.BLANK,
         empty_string: str = EmptySelect.DEFAULT_MESSAGE,
         id_: str | None = None,
         classes: str | None = None,
@@ -61,7 +65,7 @@ class SafeSelect(CliveWidget, Generic[SelectType]):
 
         self._options = list(options)
         self._content: Select[SelectType] | SingleSelect[SelectType] | EmptySelect = EmptySelect(empty_string)
-        self.__value: SelectType | None = value
+        self.__value: SelectType | NoSelection = value
 
         if len(self._options) >= self.MIN_AMOUNT_OF_ITEMS:
             self._content = Select(options, prompt=prompt, allow_blank=False, value=self.__value)
@@ -74,7 +78,7 @@ class SafeSelect(CliveWidget, Generic[SelectType]):
     @property
     def value(self) -> SelectType:
         value = self._content.value
-        if value is None:
+        if isinstance(value, NoSelection):
             raise NoItemSelectedError(f"No item is selected yet from {self}.")
         return value
 

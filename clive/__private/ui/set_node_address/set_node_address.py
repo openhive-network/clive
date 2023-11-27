@@ -9,6 +9,7 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Input, Select, Static, Switch
+from textual.widgets._select import NoSelection
 
 from clive.__private.core.communication import Communication
 from clive.__private.ui.get_css import get_relative_css_path
@@ -133,8 +134,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
     async def _valid_and_save_address(self) -> None:
         if self._in_nodes_list_mode():
-            address = self.query_one(Select).value
-            assert address is not None
+            address = self.query_one(NodeSelector).value
+            assert not isinstance(address, NoSelection), "No node was selected."
         else:
             address = Url.parse(self.app.query_one("#node-address-input", Input).value)
         await self.app.world.node.set_address(address)

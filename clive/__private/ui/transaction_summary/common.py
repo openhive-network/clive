@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal, ScrollableContainer
-from textual.widgets import Label, Static
+from textual.widgets import Label, Select, Static
 
 from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
@@ -23,6 +23,7 @@ from schemas.operations.representations import HF26Representation, convert_to_re
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.app import ComposeResult
+    from textual.widgets._select import NoSelection
 
     from clive.models import Operation, Transaction
 
@@ -69,9 +70,9 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
 
     def __init__(self) -> None:
         try:
-            first_value = self.app.world.profile_data.working_account.keys.first
+            first_value: PublicKey | NoSelection = self.app.world.profile_data.working_account.keys.first
         except KeyNotFoundError:
-            first_value = None
+            first_value = Select.BLANK
 
         super().__init__(
             [(key.alias, key) for key in self.app.world.profile_data.working_account.keys],
