@@ -119,8 +119,7 @@ Governance WitnessDetails Static {
 
 /*table to modify votes for the witnesses*/
 Governance WitnessesList {
-  height: auto;
-  max-height: 30;
+    height: auto;
 }
 
 Governance WitnessesList Witness {
@@ -193,9 +192,8 @@ Governance #witnesses-headline {
 }
 
 Governance WitnessesTable {
-  width: 7fr;
-  height: auto;
-  max-height: 32;
+    width: 7fr;
+    height: auto;
 }
 
 Governance WitnessesTable:focus {
@@ -206,7 +204,6 @@ Governance WitnessesTable:focus {
 Governance WitnessesActions {
   margin-left: 1;
   width: 3fr;
-  max-height: 31;
 }
 
 Governance #action-row {
@@ -244,11 +241,11 @@ Governance WitnessActionRow .action-label {
 }
 
 Governance WitnessActionRow {
-  height: 1;
+  height: auto;
 }
 
 Governance WitnessesActions #name-and-action {
-  height: 1;
+  height: auto;
 }
 
 /* manual search witness */
