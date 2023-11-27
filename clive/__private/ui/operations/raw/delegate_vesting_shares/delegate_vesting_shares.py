@@ -50,7 +50,7 @@ class DelegateVestingShares(RawOperationBaseScreen):
             return None
 
         return DelegateVestingSharesOperation(
-            delegator=self.app.world.profile_data.name,
+            delegator=self.app.world.profile_data.working_account.name,
             delegatee=self.__delegatee_input.value,
             vesting_shares=Asset.vests(vesting_shares),
         )

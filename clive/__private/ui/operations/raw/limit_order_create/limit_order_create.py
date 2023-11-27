@@ -63,7 +63,7 @@ class LimitOrderCreate(RawOperationBaseScreen):
             return None
 
         return LimitOrderCreateOperation(
-            owner=self.app.world.profile_data.name,
+            owner=self.app.world.profile_data.working_account.name,
             orderid=self.__order_id_input.value,
             amount_to_sell=asset_to_sell,
             min_to_receive=asset_min_receive,

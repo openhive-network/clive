@@ -60,7 +60,7 @@ class ClaimRewardBalance(RawOperationBaseScreen):
             return None
 
         return ClaimRewardBalanceOperation(
-            account=self.app.world.profile_data.name,
+            account=self.app.world.profile_data.working_account.name,
             reward_hive=Asset.hive(reward_hive),
             reward_hbd=Asset.hbd(reward_hbd),
             reward_vests=Asset.vests(reward_vests),

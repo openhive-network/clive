@@ -80,7 +80,7 @@ class EscrowTransfer(RawOperationBaseScreen):
             return None
 
         return EscrowTransferOperation(
-            from_=self.app.world.profile_data.name,
+            from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
             agent=self.__agent_input.value,
             escrow_id=self.__escrow_id_input.value,

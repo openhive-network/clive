@@ -74,7 +74,7 @@ class CommentOptions(RawOperationBaseScreen):
             return None
 
         return CommentOptionsOperation(
-            author=self.app.world.profile_data.name,
+            author=self.app.world.profile_data.working_account.name,
             permlink=self.__permlink_input.value,
             max_accepted_payout=Asset.hbd(max_accepted_payout),
             percent_hbd=percent_hbd,

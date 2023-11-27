@@ -104,7 +104,7 @@ class AccountCreate(RawOperationBaseScreen):
         )
 
         return AccountCreateOperation(
-            creator=self.app.world.profile_data.name,
+            creator=self.app.world.profile_data.working_account.name,
             fee=Asset.hive(fee),
             new_account_name=self.__new_account_name_input.value,
             owner=owner_authority,

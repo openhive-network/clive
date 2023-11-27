@@ -74,7 +74,7 @@ class EscrowRelease(RawOperationBaseScreen):
             return None
 
         return EscrowReleaseOperation(
-            from_=self.app.world.profile_data.name,
+            from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
             agent=self.__agent_input.value,
             escrow_id=escrow_id,

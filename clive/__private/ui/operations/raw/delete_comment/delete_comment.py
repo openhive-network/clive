@@ -42,6 +42,6 @@ class DeleteComment(RawOperationBaseScreen):
 
     def _create_operation(self) -> DeleteCommentOperation:
         return DeleteCommentOperation(
-            author=self.app.world.profile_data.name,
+            author=self.app.world.profile_data.working_account.name,
             permlink=self.__permlink_input.value,
         )

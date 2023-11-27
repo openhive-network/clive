@@ -57,7 +57,7 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
             return None
 
         return SetWithdrawVestingRouteOperation(
-            from_account=self.app.world.profile_data.name,
+            from_account=self.app.world.profile_data.working_account.name,
             to_account=self.__to_account_input.value,
             auto_vest=self.__auto_vest_input.value,
             percent=percent,

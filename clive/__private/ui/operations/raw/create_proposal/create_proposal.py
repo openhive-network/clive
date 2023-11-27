@@ -61,7 +61,7 @@ class CreateProposal(RawOperationBaseScreen):
             return None
 
         return CreateProposalOperation(
-            creator=self.app.world.profile_data.name,
+            creator=self.app.world.profile_data.working_account.name,
             receiver=self.__receiver_input.value,
             start_date=self.__start_date_input.value,
             end_date=self.__end_date_input.value,

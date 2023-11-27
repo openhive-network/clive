@@ -71,4 +71,6 @@ class AccountWitnessProxy(RawOperationBaseScreen):
     def _create_operation(self) -> AccountWitnessProxyOperation | None:
         if self.proxy_to_be_set is None:
             return None
-        return AccountWitnessProxyOperation(account=self.app.world.profile_data.name, proxy=self.proxy_to_be_set)
+        return AccountWitnessProxyOperation(
+            account=self.app.world.profile_data.working_account.name, proxy=self.proxy_to_be_set
+        )

@@ -59,7 +59,7 @@ class EscrowDispute(RawOperationBaseScreen):
             return None
 
         return EscrowDisputeOperation(
-            from_=self.app.world.profile_data.name,
+            from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
             agent=self.__agent_input.value,
             escrow_id=escrow_id,

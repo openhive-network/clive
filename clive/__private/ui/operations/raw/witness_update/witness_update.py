@@ -80,7 +80,7 @@ class WitnessUpdate(RawOperationBaseScreen):
         }
 
         return WitnessUpdateOperation(
-            owner=self.app.world.profile_data.name,
+            owner=self.app.world.profile_data.working_account.name,
             url=self.__url_input.value,
             block_signing_key=self.__block_signing_key_input.value,
             props=props_field,

@@ -96,7 +96,7 @@ class CreateClaimedAccount(RawOperationBaseScreen):
         )
 
         return CreateClaimedAccountOperation(
-            creator=self.app.world.profile_data.name,
+            creator=self.app.world.profile_data.working_account.name,
             new_account_name=self.__new_account_name_input.value,
             owner=owner_authority,
             active=active_authority,

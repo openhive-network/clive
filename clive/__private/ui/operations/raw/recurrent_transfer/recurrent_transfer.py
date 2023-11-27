@@ -63,7 +63,7 @@ class RecurrentTransfer(RawOperationBaseScreen):
             return None
 
         return RecurrentTransferOperation(
-            from_=self.app.world.profile_data.name,
+            from_=self.app.world.profile_data.working_account.name,
             to=self.__to_input.value,
             amount=amount,
             memo=self.__memo_input.value,
