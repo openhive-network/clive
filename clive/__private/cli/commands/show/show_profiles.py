@@ -8,5 +8,5 @@ from clive.__private.core.profile_data import ProfileData
 
 @dataclass(kw_only=True)
 class ShowProfiles(ExternalCLICommand):
-    async def run(self) -> None:
+    async def _run(self) -> None:
         typer.echo(f"Stored profiles are: {ProfileData.list_profiles()}")

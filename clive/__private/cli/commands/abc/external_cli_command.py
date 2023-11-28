@@ -1,6 +1,6 @@
 import inspect
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any
 
 from typing_extensions import Self
@@ -8,9 +8,28 @@ from typing_extensions import Self
 
 @dataclass(kw_only=True)
 class ExternalCLICommand(ABC):
+    _skip_validation: bool = field(default=False, init=False)
+
     @abstractmethod
+    async def _run(self) -> None:
+        """The actual implementation of the command."""
+
     async def run(self) -> None:
-        """Run the command."""
+        if not self._skip_validation:
+            await self.validate()
+        await self._run()
+
+    async def validate(self) -> None:
+        """
+        Validate the command.
+
+        If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
+
+        Raises
+        ------
+        CLIPrettyError: If the command is invalid.
+        """
+        return
 
     @classmethod
     def from_(cls, **kwargs: Any) -> Self:

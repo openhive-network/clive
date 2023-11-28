@@ -42,11 +42,13 @@ class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, AB
 
     @property
     def beekeeper(self) -> Beekeeper:
-        return self.context_manager_instance
+        return self._context_manager_instance
 
     async def _create_context_manager_instance(self) -> Beekeeper:
         return Beekeeper(remote_endpoint=self.beekeeper_remote_url)
 
     async def run(self) -> None:
+        await self.validate()
+        self._skip_validation = True  # Skip validating again in the super().run()
         self._print_launching_beekeeper()
         await super().run()

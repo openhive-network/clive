@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Any, Generic, TypeVar
 
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
@@ -11,12 +11,10 @@ AsyncContextManagerType = TypeVar("AsyncContextManagerType", bound=Any)
 class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand, ABC):
     """A command that might(!) require some preparation before running."""
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.__context_manager_instance: AsyncContextManagerType | None = None
+    __context_manager_instance: AsyncContextManagerType | None = field(default=None, init=False)
 
     @property
-    def context_manager_instance(self) -> AsyncContextManagerType:
+    def _context_manager_instance(self) -> AsyncContextManagerType:
         assert self.__context_manager_instance is not None, "Context manager should be set before running the command."
         return self.__context_manager_instance
 
@@ -33,6 +31,9 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
         return True
 
     async def run(self) -> None:
+        if not self._skip_validation:
+            await self.validate()
+
         if await self._should_run_in_context_manager():
             await self._run_in_context_manager()
         else:
@@ -41,5 +42,5 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
     async def _run_in_context_manager(self) -> None:
         self.__context_manager_instance = await self._create_context_manager_instance()
 
-        async with self.context_manager_instance:
+        async with self._context_manager_instance:
             await self._run()

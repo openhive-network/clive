@@ -23,7 +23,7 @@ class BeekeeperInfo(BeekeeperBasedCommand):
 class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         if Beekeeper.is_already_running_locally():
             message = (
                 f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
@@ -49,7 +49,7 @@ class BeekeeperSpawn(ExternalCLICommand):
 
 @dataclass(kw_only=True)
 class BeekeeperClose(ExternalCLICommand):
-    async def run(self) -> None:
+    async def _run(self) -> None:
         pid = Beekeeper.get_pid_from_file()
         typer.echo(f"Closing beekeeper with pid {pid}...")
 

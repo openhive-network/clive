@@ -29,7 +29,7 @@ class CreateProfile(BeekeeperBasedCommand):
 class DeleteProfile(ExternalCLICommand):
     profile_name: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         ProfileData.delete_by_name(self.profile_name)
 
 
@@ -37,5 +37,5 @@ class DeleteProfile(ExternalCLICommand):
 class SetDefaultProfile(ExternalCLICommand):
     profile_name: str
 
-    async def run(self) -> None:
+    async def _run(self) -> None:
         ProfileData.set_default_profile(self.profile_name)

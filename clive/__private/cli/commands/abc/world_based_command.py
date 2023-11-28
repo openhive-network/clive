@@ -16,7 +16,7 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
 
     @property
     def world(self) -> World:
-        return self.context_manager_instance
+        return self._context_manager_instance
 
     @property
     def beekeeper(self) -> Beekeeper:
@@ -30,6 +30,9 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
         )
 
     async def run(self) -> None:
+        await self.validate()
+        self._skip_validation = True  # Skip validating again in the super().run()
+
         if self.use_beekeeper:
             self._print_launching_beekeeper()
 

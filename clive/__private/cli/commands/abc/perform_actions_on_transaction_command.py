@@ -38,8 +38,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         """Get the transaction content to be processed."""
 
     async def _run(self) -> None:
-        await self._validate_options()
-
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
 
@@ -75,9 +73,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             raise CLIPrettyError(
                 f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT
             ) from None
-
-    async def _validate_options(self) -> None:
-        """If you want to validate options before taking any action, override this method."""
 
     def _validate_if_sign_and_password_are_used_together(self) -> None:
         if self.sign is not None and self.password is None:

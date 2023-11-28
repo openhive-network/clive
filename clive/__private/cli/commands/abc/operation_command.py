@@ -21,6 +21,6 @@ class OperationCommand(PerformActionsOnTransactionCommand, ABC):
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         return self._create_operation()
 
-    async def _validate_options(self) -> None:
+    async def validate(self) -> None:
         self._validate_if_sign_and_password_are_used_together()
         self._validate_if_broadcast_is_used_with_sign_and_password()

@@ -32,7 +32,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
     def _get_transaction_created_message(self) -> str:
         return "loaded"
 
-    async def _validate_options(self) -> None:
+    async def validate(self) -> None:
         """
         Validate given options before taking any action.
 
