@@ -1,22 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pytest
 
-from clive.__private.core.profile_data import NoLastlyUsedProfileError, ProfileDoesNotExistsError
+from clive.__private.core.profile_data import NoLastlyUsedProfileError, ProfileData, ProfileDoesNotExistsError
 from clive.__private.core.world import TyperWorld, World
-
-if TYPE_CHECKING:
-    from collections.abc import AsyncIterator
-
-
-@pytest.fixture()
-async def world_cleanup() -> AsyncIterator[list[World]]:
-    worlds_to_close: list[World] = []
-    yield worlds_to_close
-    for world in worlds_to_close:
-        await world.close()
 
 
 def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
@@ -24,35 +11,37 @@ def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
     assert world.profile_data.name == wallet_name
 
 
-async def test_if_lastly_used_profile_is_loaded(world_cleanup: list[World]) -> None:
+async def test_if_lastly_used_profile_is_loaded() -> None:
     # ARRANGE
     expected_profile_name = "first"
-    world = World(expected_profile_name)
-    world.profile_data.save()  # this one should be lastly used
-    await world.close()  # close world so beekeeper can be closed
+
+    async with World(expected_profile_name, use_beekeeper=False):
+        pass  # save should be called on exit
 
     # ACT
-    world = World()
-    world_cleanup.append(world)
+    async with World(use_beekeeper=False) as world:
+        loaded_profile_name = world.profile_data.name
 
     # ASSERT
-    assert world.profile_data.list_profiles() == [expected_profile_name]
+    assert loaded_profile_name == expected_profile_name
+    assert ProfileData.list_profiles() == [expected_profile_name]
 
 
-async def test_if_correct_profile_is_loaded_when_something_is_stored(world_cleanup: list[World]) -> None:
+async def test_if_correct_profile_is_loaded_when_something_is_stored() -> None:
     # ARRANGE
     expected_profile_name = "first"
     additional_profile_name = "second"
-    world = World(additional_profile_name)
-    world.profile_data.save()  # lastly used is other than we're loading
-    await world.close()  # close world so beekeeper can be closed
+
+    async with World(additional_profile_name, use_beekeeper=False):
+        pass  # save should be called on exit
 
     # ACT
-    world = World(expected_profile_name)
-    world_cleanup.append(world)
+    async with World(expected_profile_name, use_beekeeper=False) as world:
+        loaded_profile_name = world.profile_data.name
 
     # ASSERT
-    assert world.profile_data.name == expected_profile_name
+    assert loaded_profile_name == expected_profile_name
+    assert ProfileData.list_profiles() == [expected_profile_name, additional_profile_name]
 
 
 @pytest.mark.parametrize("world_cls", [World, TyperWorld])
@@ -73,16 +62,17 @@ def test_loading_non_existing_profile_with_auto_create_disabled() -> None:
     assert exception_message in str(error.value)
 
 
-async def test_loading_existing_profile_with_auto_create_disabled(world_cleanup: list[World]) -> None:
+async def test_loading_existing_profile_with_auto_create_disabled() -> None:
     # ARRANGE
     profile_name = "existing_profile"
-    world = World(profile_name)
-    world.profile_data.save()
-    await world.close()
+
+    async with World(profile_name, use_beekeeper=False):
+        pass  # save should be called on exit
 
     # ACT
-    world = TyperWorld(profile_name)
-    world_cleanup.append(world)
+    async with World(profile_name, use_beekeeper=False) as world:
+        loaded_profile_name = world.profile_data.name
 
     # ASSERT
-    assert world.profile_data.name == profile_name
+    assert loaded_profile_name == profile_name
+    assert ProfileData.list_profiles() == [profile_name]
