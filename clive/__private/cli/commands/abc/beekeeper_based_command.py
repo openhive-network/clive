@@ -50,5 +50,6 @@ class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, AB
     async def run(self) -> None:
         await self.validate()
         self._skip_validation = True  # Skip validating again in the super().run()
+        await self._configure()
         self._print_launching_beekeeper()
         await super().run()

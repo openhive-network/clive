@@ -17,11 +17,12 @@ class ExternalCLICommand(ABC):
     async def run(self) -> None:
         if not self._skip_validation:
             await self.validate()
+        await self._configure()
         await self._run()
 
     async def validate(self) -> None:
         """
-        Validate the command.
+        Validate the command before running.
 
         If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
 
@@ -29,6 +30,10 @@ class ExternalCLICommand(ABC):
         ------
         CLIPrettyError: If the command is invalid.
         """
+        return
+
+    async def _configure(self) -> None:
+        """Configure the command before running."""
         return
 
     @classmethod
