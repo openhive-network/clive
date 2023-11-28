@@ -38,5 +38,4 @@ class SetDefaultProfile(ExternalCLICommand):
     profile_name: str
 
     async def run(self) -> None:
-        profile = ProfileData.load(self.profile_name)
-        profile.save()
+        ProfileData.set_default_profile(self.profile_name)
