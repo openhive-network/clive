@@ -3,24 +3,20 @@ from dataclasses import dataclass
 
 import typer
 
-from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
+from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.core.beekeeper import Beekeeper
 from clive.core.url import Url
 
 
 @dataclass(kw_only=True)
-class BeekeeperBasedCommand(ExternalCLICommand, ABC):
-    """A command that requires beekeeper to be running."""
-
+class BeekeeperCommon(ABC):
     beekeeper_remote: str | Url | None = None
     """If None, beekeeper will be launched locally."""
 
-    _beekeeper: Beekeeper | None = None
-
     @property
+    @abstractmethod
     def beekeeper(self) -> Beekeeper:
-        assert self._beekeeper is not None, "Beekeeper should be set before running the command."
-        return self._beekeeper
+        ...
 
     @property
     def beekeeper_remote_url(self) -> Url | None:
@@ -30,17 +26,6 @@ class BeekeeperBasedCommand(ExternalCLICommand, ABC):
             return self.beekeeper_remote
         return Url.parse(self.beekeeper_remote)
 
-    @abstractmethod
-    async def _run(self) -> None:
-        """The actual implementation of the command."""
-
-    async def run(self) -> None:
-        self._print_launching_beekeeper()
-
-        async with Beekeeper(remote_endpoint=self.beekeeper_remote_url) as beekeeper:
-            self._beekeeper = beekeeper
-            await self._run()
-
     def _print_launching_beekeeper(self) -> None:
         message = (
             "Launching beekeeper..."
@@ -49,3 +34,19 @@ class BeekeeperBasedCommand(ExternalCLICommand, ABC):
         )
 
         typer.echo(message)
+
+
+@dataclass(kw_only=True)
+class BeekeeperBasedCommand(ContextualCLICommand[Beekeeper], BeekeeperCommon, ABC):
+    """A command that requires beekeeper to be running."""
+
+    @property
+    def beekeeper(self) -> Beekeeper:
+        return self.context_manager_instance
+
+    async def _create_context_manager_instance(self) -> Beekeeper:
+        return Beekeeper(remote_endpoint=self.beekeeper_remote_url)
+
+    async def run(self) -> None:
+        self._print_launching_beekeeper()
+        await super().run()
