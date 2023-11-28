@@ -26,3 +26,20 @@ async def add_key(
 
     common = WorldCommonOptions.get_instance()
     await AddKey(**common.as_dict(), password=password, key_or_path=key_, alias=alias).run()
+
+
+@key.command(name="remove", common_options=[WorldCommonOptions])
+async def remove_key(
+    ctx: typer.Context,  # noqa: ARG001
+    alias: str = typer.Option(..., help="The key alias to remove.", show_default=False),
+    from_beekeeper: bool = typer.Option(
+        False,
+        help="Remove the key from the Beekeeper as well.",
+    ),
+    password: Optional[str] = options.password_optional_option,
+) -> None:
+    """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
+    from clive.__private.cli.commands.configure.key import RemoveKey
+
+    common = WorldCommonOptions.get_instance()
+    await RemoveKey(**common.as_dict(), alias=alias, from_beekeeper=from_beekeeper, password=password).run()

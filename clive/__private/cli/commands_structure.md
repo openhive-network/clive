@@ -92,7 +92,7 @@ flowchart LR
 
         Configure --> ConfigureKey(key)
         ConfigureKey --> AddKey[add]
-        ConfigureKey -->|"Not implemented yet"| RemoveKey[remove]
+        ConfigureKey --> RemoveKey[remove]
 
         Configure --> ConfigureNode(node)
         ConfigureNode --> SetNode[set]
