@@ -19,7 +19,7 @@ class ProfileBasedCommand(ExternalCLICommand, ABC):
 
     async def run(self) -> None:
         profile_data_manager = ProfileData.load_with_auto_save(self.profile_name, auto_create=False)
-        with profile_data_manager as profile_data:
+        async with profile_data_manager as profile_data:
             self._profile_data = profile_data
             await self._run()
 

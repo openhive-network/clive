@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shelve
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
@@ -18,7 +18,7 @@ from clive.models import Operation
 from clive.models.aliased import ChainIdSchema
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Iterator
+    from collections.abc import AsyncIterator, Iterable, Iterator
     from types import TracebackType
 
     from typing_extensions import Self
@@ -118,10 +118,10 @@ class ProfileData(Context):
         self.__first_time_save = True
         self.__skip_save = False
 
-    def __enter__(self) -> Self:
+    async def __aenter__(self) -> Self:
         return self
 
-    def __exit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
         self.save()
 
     @staticmethod
@@ -315,9 +315,9 @@ class ProfileData(Context):
             return stored_profile if stored_profile else create_new_profile(_name)
 
     @classmethod
-    @contextmanager
-    def load_with_auto_save(cls, name: str = "", *, auto_create: bool = True) -> Iterator[ProfileData]:
-        with cls.load(name, auto_create=auto_create) as profile_data:
+    @asynccontextmanager
+    async def load_with_auto_save(cls, name: str = "", *, auto_create: bool = True) -> AsyncIterator[ProfileData]:
+        async with cls.load(name, auto_create=auto_create) as profile_data:
             yield profile_data
 
     @classmethod
