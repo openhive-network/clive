@@ -34,6 +34,9 @@ class SavingsData:
     pending_transfers: list[SavingsWithdrawals] | None = None
     last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
 
+    def create_request_id(self) -> int:
+        return 0
+
 
 @dataclass(kw_only=True)
 class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, SavingsData]):

@@ -28,11 +28,11 @@ flowchart LR
    subgraph Processing[Commands related to performing certain actions]
         Process(process) --> ProcessTransfer[transfer]
         Process --> ProcessTransaction[transaction]
+        Process --> ProcessDeposit[deposit]
+        Process --> ProcessWithdrawal[withdrawal]
+        Process --> ProcessCancelWithdrawal[cancel-withdrawal]
 
 
-        Process -->|"Not implemented yet"|ProcessDeposit[deposit]
-        Process -->|"Not implemented yet"|ProcessWithdrawal[withdrawal]
-        Process -->|"Not implemented yet"|ProcessCancelWithdrawal[cancel-withdrawal]
         Process -->|"Not implemented yet"|ProcessPowerUp[power-up]
         Process -->|"Not implemented yet"|ProcessPowerDown[power-down]
         Process -->|"Not implemented yet"|ProcessUpdateAccount[update-account]
@@ -69,11 +69,11 @@ flowchart LR
 
         Show -->|"Not implemented yet"| ShowProposals[proposals]
 
-        Show -->|"Not implemented yet"| ShowPending(pending)
+        Show --> ShowPending(pending)
         ShowPending --> ShowPendingTransferFromSavings[withdrawals]
-        ShowPending --> ShowPendingPowerUps[power-ups]
-        ShowPending --> ShowPendingPowerDowns[power-downs]
-        ShowPending --> ShowPendingRecurrentTransfers[transfers]
+        ShowPending -->|"Not implemented yet"| ShowPendingPowerUps[power-ups]
+        ShowPending -->|"Not implemented yet"| ShowPendingPowerDowns[power-downs]
+        ShowPending -->|"Not implemented yet"| ShowPendingRecurrentTransfers[transfers]
     end
 
     subgraph Configuration[Configuration related commands]
