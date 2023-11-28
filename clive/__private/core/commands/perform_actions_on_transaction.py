@@ -52,7 +52,8 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     content: TransactionConvertibleType
     app_state: AppStateProtocol
     node: Node
-    beekeeper: Beekeeper
+    beekeeper: Beekeeper | None = None
+    """Required if transaction needs to be signed - when sign_key is provided."""
     sign_key: PublicKey | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
@@ -65,6 +66,8 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
         transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
         if self.sign_key and not self.force_unsign:
+            assert self.beekeeper is not None, "beekeeper is required when sign_key is provided"
+
             transaction = await Sign(
                 app_state=self.app_state,
                 beekeeper=self.beekeeper,

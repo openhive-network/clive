@@ -121,7 +121,7 @@ class Commands(Generic[WorldT]):
             PerformActionsOnTransaction(
                 app_state=self._world.app_state,
                 node=self._world.node,
-                beekeeper=self._world.beekeeper,
+                beekeeper=self._world.beekeeper if sign_key else None,
                 content=content,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,

@@ -30,6 +30,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     broadcast: bool = False
 
     @property
+    def password_ensure(self) -> str:
+        assert self.password is not None, "Password is required at this point."
+        return self.password
+
+    @property
     def save_file_path(self) -> Path | None:
         return Path(self.save_file) if self.save_file is not None else None
 
@@ -37,12 +42,15 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
 
+    async def _configure(self) -> None:
+        self.use_beekeeper = self.__is_beekeeper_required()
+
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
 
-        if self.password is not None:
-            await self.world.commands.activate(password=self.password)
+        if self.__is_beekeeper_required():
+            await self.world.commands.activate(password=self.password_ensure)
 
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
@@ -94,3 +102,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
+
+    def __is_beekeeper_required(self) -> bool:
+        return bool(self.sign) and bool(self.password)
