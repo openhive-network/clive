@@ -17,6 +17,7 @@ from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
+from clive_local_tools.constants import TESTNET_CHAIN_ID
 from clive_local_tools.testnet_block_log import (
     get_alternate_chain_spec_path,
     get_block_log,
@@ -71,7 +72,7 @@ def prepare_node() -> tt.RawNode:
 async def prepare_profile(node: tt.RawNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
     settings["secrets.node_address"] = node.http_endpoint.as_string()
-    settings["node.chain_id"] = "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e"
+    settings["node.chain_id"] = TESTNET_CHAIN_ID
 
     ProfileData(
         WORKING_ACCOUNT.name,

@@ -123,7 +123,10 @@ testing_clive:
   extends: .testing
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
-    - python3 -m pytest --ignore "tests/functional/beekeeper" --ignore "tests/tui" -k "not test_autocompletion_time" -n auto --durations 0 --junitxml=report.xml tests/
+    - python3 -m pytest
+      --ignore "tests/functional/beekeeper" --ignore "tests/tui" --ignore "tests/functional/cli"
+      -k "not test_autocompletion_time"
+      -n auto --durations 0 --junitxml=report.xml tests/
 
 testing_clive_import_times_during_autocompletion:
   extends: .testing
@@ -136,6 +139,12 @@ testing_tui:
   script:
     - echo -e "${TXT_BLUE}Launching tui tests...${TXT_CLEAR}"
     - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/tui
+
+testing_cli:
+  extends: .testing
+  script:
+    - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
+    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/cli
 
 testing_password_private_key_logging:
   stage: tests
