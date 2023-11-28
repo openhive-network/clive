@@ -4,6 +4,7 @@ from pathlib import Path
 
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
 from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.models import Transaction
 
 
@@ -24,7 +25,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         return self._loaded_transaction
 
     async def __load_transaction(self) -> Transaction:
-        return (await self.world.commands.load_transaction_from_file(path=self.from_file_path)).result_or_raise
+        return await LoadTransaction(file_path=self.from_file_path).execute_with_result()
 
     async def _get_transaction_content(self) -> Transaction:
         return await self.__loaded_transaction
