@@ -2,11 +2,12 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
 )
+from clive.exceptions import RequestIdError
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
@@ -33,6 +34,20 @@ class SavingsData:
     hbd_interest_rate: int = 1000
     pending_transfers: list[SavingsWithdrawals] | None = None
     last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
+
+    def create_request_id(self) -> int:
+        max_number_of_request_ids: Final[int] = 100
+
+        if not self.pending_transfers:
+            return 0
+
+        if len(self.pending_transfers) >= max_number_of_request_ids:
+            raise RequestIdError("Maximum quantity of request ids is 100")
+
+        sorted_transfers = sorted(self.pending_transfers, key=lambda x: x.request_id)
+        last_occupied_id = sorted_transfers[-1].request_id
+
+        return last_occupied_id + 1
 
 
 @dataclass(kw_only=True)

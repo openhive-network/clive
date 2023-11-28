@@ -11,7 +11,7 @@ class Transfer(OperationCommand):
     amount: str
     memo: str
 
-    def _create_operation(self) -> TransferOperation:
+    async def _create_operation(self) -> TransferOperation:
         return TransferOperation(
             from_=self.world.profile_data.working_account.name,
             to=self.to,

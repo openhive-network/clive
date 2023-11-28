@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer, Vertical
@@ -228,23 +228,13 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
     def __create_request_id(self) -> int:
         provider = self.app.query_one(SavingsDataProvider)
-        pending_transfers = provider.content.pending_transfers
-        max_number_of_request_ids: Final[int] = 100
+        savings_data = provider.content
 
         for cart_transfer in self.app.world.profile_data.cart:
             if isinstance(cart_transfer, TransferFromSavingsOperation):
-                pending_transfers.append(cart_transfer)  # type: ignore[union-attr, arg-type]
+                savings_data.pending_transfers.append(cart_transfer)  # type: ignore[union-attr, arg-type]
 
-        if not pending_transfers:
-            return 0
-
-        if len(pending_transfers) >= max_number_of_request_ids:
-            raise RequestIdError("Maximum quantity of request ids is 100")
-
-        sorted_transfers = sorted(pending_transfers, key=lambda x: x.request_id)
-        last_occupied_id = sorted_transfers[-1].request_id
-
-        return last_occupied_id + 1
+        return savings_data.create_request_id()
 
 
 class Savings(OperationBaseScreen, CartBinding):

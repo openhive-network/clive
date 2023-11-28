@@ -15,11 +15,11 @@ class OperationCommand(PerformActionsOnTransactionCommand, ABC):
     broadcast: bool
 
     @abstractmethod
-    def _create_operation(self) -> Operation:
+    async def _create_operation(self) -> Operation:
         """Get the operation to be processed."""
 
     async def _get_transaction_content(self) -> TransactionConvertibleType:
-        return self._create_operation()
+        return await self._create_operation()
 
     async def validate(self) -> None:
         self._validate_if_sign_and_password_are_used_together()
