@@ -136,7 +136,12 @@ class TextualWorld(World, CliveWidget, ManualReactive):
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
-        super().__init__(ProfileData.get_default_profile_name() or ProfileData.ONBOARDING_PROFILE_NAME)
+        profile_name = (
+            ProfileData.get_default_profile_name()
+            if ProfileData.is_default_profile_set()
+            else ProfileData.ONBOARDING_PROFILE_NAME
+        )
+        super().__init__(profile_name)
         self.profile_data = self._profile_data
         self.app_state = self._app_state
         self.node = self._node

@@ -240,20 +240,31 @@ class ProfileData(Context):
                 raise ProfileDoesNotExistsError(name) from error
 
     @classmethod
-    def get_default_profile_name(cls, *, exclude_if_deleted: bool = True) -> str | None:
-        """Get the name of default profile set. If no profile was used yet, None is returned."""
+    def get_default_profile_name(cls, *, exclude_if_deleted: bool = True) -> str:
+        """
+        Get the name of default profile set.
+
+        Raises
+        ------
+        NoDefaultProfileToLoadError: If no default profile is set.
+        """
         if exclude_if_deleted and not cls.list_profiles():
-            return None
+            raise NoDefaultProfileToLoadError
 
         with cls.__open_database() as db:
             profile_name: str | None = db.get(cls._DEFAULT_PROFILE_IDENTIFIER, None)
-            if profile_name != cls.ONBOARDING_PROFILE_NAME:
-                return profile_name
-            return None
+
+        if profile_name is not None and profile_name != cls.ONBOARDING_PROFILE_NAME:
+            return profile_name
+        raise NoDefaultProfileToLoadError
 
     @classmethod
     def is_default_profile_set(cls) -> bool:
-        return cls.get_default_profile_name() is not None
+        try:
+            cls.get_default_profile_name()
+        except NoDefaultProfileToLoadError:
+            return False
+        return True
 
     @classmethod
     @contextmanager
@@ -271,6 +282,12 @@ class ProfileData(Context):
         """
         Load profile data with the given name from the database.
 
+        Cases:
+        1. if name=None and is_default_profile_set=True -> load default profile
+        2. if name=None and is_default_profile_set=False -> raise error
+        3. if name="some_name" and is_default_profile_set=True -> load "some_name"
+        4. if name="some_name" and is_default_profile_set=False -> load "some_name".
+
         Args:
         ----
         name: Name of the profile to load. If None, the default profile is loaded.
@@ -286,32 +303,16 @@ class ProfileData(Context):
         ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
-        def assert_profile_could_be_loaded() -> None:
-            """
-            Assert that the profile with the given name could be loaded.
-
-            Cases:
-            1. if name=None and is_default_profile_set=True -> load default profile
-            2. if name=None and is_default_profile_set=False -> raise error
-            3. if name="some_name" and is_default_profile_set=True -> load "some_name"
-            4. if name="some_name" and is_default_profile_set=False -> load "some_name".
-            """
-            if not cls.is_default_profile_set() and name is None:
-                raise NoDefaultProfileToLoadError
-
         def create_new_profile(new_profile_name: str) -> ProfileData:
             if not auto_create:
                 raise ProfileDoesNotExistsError(new_profile_name)
             return cls(new_profile_name)
 
-        assert_profile_could_be_loaded()
-
-        name = cls.get_default_profile_name() if name is None else name
-        assert name is not None, "We already checked that default used profile exists."
+        _name = name or cls.get_default_profile_name()
 
         with cls.__open_database() as db:
-            stored_profile: ProfileData | None = db.get(name, None)
-            return stored_profile if stored_profile else create_new_profile(name)
+            stored_profile: ProfileData | None = db.get(_name, None)
+            return stored_profile if stored_profile else create_new_profile(_name)
 
     @classmethod
     @contextmanager

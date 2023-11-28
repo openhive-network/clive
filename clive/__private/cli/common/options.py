@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
@@ -13,9 +14,10 @@ if TYPE_CHECKING:
 
 def _get_default_profile_name() -> str | None:
     if not is_tab_completion_active():
-        from clive.__private.core.profile_data import ProfileData
+        from clive.__private.core.profile_data import NoDefaultProfileToLoadError, ProfileData
 
-        return ProfileData.get_default_profile_name()
+        with contextlib.suppress(NoDefaultProfileToLoadError):
+            return ProfileData.get_default_profile_name()
     return None
 
 
@@ -23,10 +25,8 @@ def _get_default_working_account_name() -> str | None:
     if not is_tab_completion_active():
         from clive.__private.core.profile_data import ProfileData, ProfileDataError
 
-        try:
+        with contextlib.suppress(ProfileDataError):
             return ProfileData.load(auto_create=False).working_account.name
-        except ProfileDataError:
-            return None
     return None
 
 
