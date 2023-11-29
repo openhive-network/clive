@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import contextlib
+from dataclasses import dataclass
 from datetime import datetime
 from typing import TYPE_CHECKING
 
@@ -11,7 +12,7 @@ from textual.css.query import NoMatches
 from textual.events import Click, Enter
 from textual.message import Message
 from textual.screen import ModalScreen
-from textual.widgets import Input, Label, LoadingIndicator, Static
+from textual.widgets import Input, Label, Static
 
 from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -237,9 +238,18 @@ class Witness(Grid, CliveWidget, can_focus=True):
 
 
 class WitnessManualSearch(Horizontal):
+    @dataclass
+    class Search(Message):
+        """Emitted when the search button is pressed."""
+
+        pattern: str
+        limit: int
+
+    class Clear(Message):
+        """Emitted when the search input is cleared."""
+
     def __init__(self) -> None:
         super().__init__()
-        self.__provider = self.app.query_one(GovernanceDataProvider)
 
         self.__witness_input = WitnessPatternInput(id_="witness-pattern-input")
         self.__limit_input = IntegerInput(label="limit", id_="limit-input", placeholder="default - 150")
@@ -263,23 +273,23 @@ class WitnessManualSearch(Horizontal):
 
     @on(CliveButton.Pressed, "#witness-search-button")
     def search_witnesses(self) -> None:
-        value_from_pattern_input = self.__witness_input.value
+        pattern = self.__witness_input.value
 
         try:
-            value_from_limit_input = int(self.__limit_just_input.value)
+            limit = int(self.__limit_just_input.value)
         except ValueError:
-            value_from_limit_input = MAX_NUMBER_OF_WITNESSES_IN_TABLE
+            limit = MAX_NUMBER_OF_WITNESSES_IN_TABLE
 
-        if value_from_pattern_input is None and value_from_limit_input is None:
+        if pattern is None or limit is None:
             return
 
-        self.__provider.set_mode_witnesses_by_name(pattern=value_from_pattern_input, limit=value_from_limit_input)
+        self.post_message(self.Search(pattern, limit))
 
     @on(CliveButton.Pressed, "#clear-custom-witnesses-button")
     def clear_searched_witnesses(self) -> None:
-        self.__provider.set_mode_top_witnesses()
         self.__witness_input.input.clear()
         self.__limit_just_input.clear()
+        self.post_message(self.Clear())
 
 
 class WitnessActionRow(Horizontal):
@@ -381,19 +391,20 @@ class WitnessesList(Vertical, CliveWidget):
         self.__witnesses_to_display = witnesses if witnesses is not None else None
 
     def compose(self) -> ComposeResult:
-        if self.__witnesses_to_display is None:
-            yield LoadingIndicator()
-        else:
-            for id_, witness in enumerate(self.__witnesses_to_display):
-                if id_ % 2 == 0:
-                    yield Witness(witness)
-                else:
-                    yield Witness(witness, evenness="odd")
+        if not self.__witnesses_to_display:
+            self.loading = True
+            return
+
+        for id_, witness in enumerate(self.__witnesses_to_display):
+            if id_ % 2 == 0:
+                yield Witness(witness)
+            else:
+                yield Witness(witness, evenness="odd")
 
 
 class ArrowUpWidget(Static):
     def __init__(self) -> None:
-        super().__init__(renderable="↑")
+        super().__init__(renderable="↑ PgUp")
 
     @on(Click)
     async def previous_page(self) -> None:
@@ -402,7 +413,7 @@ class ArrowUpWidget(Static):
 
 class ArrowDownWidget(Static):
     def __init__(self) -> None:
-        super().__init__(renderable="↓")
+        super().__init__(renderable="↓ PgDn")
 
     @on(Click)
     async def next_page(self) -> None:
@@ -432,13 +443,44 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         self.__witness_index = 0
 
         self.__header = WitnessesListHeader()
+        self.__is_loading = True
 
     def compose(self) -> ComposeResult:
         yield Static("Modify the votes for witnesses", id="witnesses-headline")
         yield self.__header
         yield WitnessesList(self.witnesses_chunk)
 
+    async def __set_loading(self) -> None:
+        self.__is_loading = True
+        with contextlib.suppress(NoMatches):
+            witness_list = self.query_one(WitnessesList)
+            await witness_list.query("*").remove()
+            await witness_list.mount(Label("Loading..."))
+
+    def __set_loaded(self) -> None:
+        self.__is_loading = False
+
+    async def search_witnesses(self, pattern: str, limit: int) -> None:
+        await self.__provider.set_mode_witnesses_by_name(pattern=pattern, limit=limit).wait()
+        await self.reset_page()
+
+    async def clear_searched_witnesses(self) -> None:
+        await self.__provider.set_mode_top_witnesses().wait()
+        await self.reset_page()
+
+    async def reset_page(self) -> None:
+        """During reset we cannot call __sync_witness_list because we have to wait for the provider to update the data."""
+        self.__witness_index = 0
+        self.__header.arrow_up.visible = False
+        self.__header.arrow_down.visible = True
+
+        if not self.__is_loading:
+            await self.__sync_witnesses_list()
+
     async def next_page(self) -> None:
+        if self.__is_loading:
+            return
+
         # It is used to prevent the user from switching to an empty page by key binding
         if self.amount_of_fetched_witnesses - MAX_WITNESSES_ON_PAGE <= self.__witness_index + 1:
             self.notify("No witnesses on the next page", severity="warning")
@@ -451,12 +493,12 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         if self.amount_of_fetched_witnesses - MAX_WITNESSES_ON_PAGE <= self.__witness_index:
             self.__header.arrow_down.visible = False
 
-        with self.app.batch_update():
-            await self.__sync_witnesses_list()
-            first_witness = self.app.query(Witness).first()
-            self.app.set_focus(first_witness)
+        await self.__sync_witnesses_list(focus_first_witness=True)
 
     async def previous_page(self) -> None:
+        if self.__is_loading:
+            return
+
         # It is used to prevent the user going to a page with a negative index by key binding
         if self.__witness_index <= 0:
             self.notify("No witnesses on the previous page", severity="warning")
@@ -469,25 +511,25 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         if self.__witness_index <= 0:
             self.__header.arrow_up.visible = False
 
-        with self.app.batch_update():
-            await self.__sync_witnesses_list()
-            first_witness = self.app.query(Witness).first()
-            self.app.set_focus(first_witness)
+        await self.__sync_witnesses_list(focus_first_witness=True)
 
     def on_mount(self) -> None:
-        self.watch(self.__provider, "content", callback=self.__sync_witnesses_list)
+        self.watch(self.__provider, "content", callback=lambda: self.__sync_witnesses_list())
 
-    async def __sync_witnesses_list(self) -> None:
-        try:
-            await self.query_one(WitnessesList).remove()
-        except NoMatches:
-            return
-        new_witnesses_list_container = WitnessesList(self.witnesses_chunk)
-        await self.mount(new_witnesses_list_container)
+    async def __sync_witnesses_list(self, focus_first_witness: bool = False) -> None:
+        await self.__set_loading()
 
-    @property
-    def witnesses_list(self) -> dict[str, WitnessData] | None:
-        return self.__provider.content.witnesses
+        new_witnesses_list = WitnessesList(self.witnesses_chunk)
+
+        with self.app.batch_update():
+            await self.query(WitnessesList).remove()
+            await self.mount(new_witnesses_list)
+
+        if focus_first_witness:
+            first_witness = self.query(Witness).first()
+            first_witness.focus()
+
+        self.__set_loaded()
 
     @property
     def amount_of_fetched_witnesses(self) -> int:
@@ -509,8 +551,10 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
         super().__init__(title=title)
 
     def compose(self) -> ComposeResult:
+        self.__witness_table = WitnessesTable()
+
         with Horizontal(id="witness-vote-actions"):
-            yield WitnessesTable()
+            yield self.__witness_table
             yield WitnessesActions()
         yield WitnessManualSearch()
 
@@ -530,3 +574,11 @@ class Witnesses(ScrollableTabPane, MultiplyOperationsActionsBindings):
             AccountWitnessVoteOperation(account=working_account_name, witness=witness, approve=approve)
             for witness, approve in operations_to_perform.items()
         ]
+
+    @on(WitnessManualSearch.Search)
+    async def search_witnesses(self, message: WitnessManualSearch.Search) -> None:
+        await self.__witness_table.search_witnesses(pattern=message.pattern, limit=message.limit)
+
+    @on(WitnessManualSearch.Clear)
+    async def clear_searched_witnesses(self, _: WitnessManualSearch.Clear) -> None:
+        await self.__witness_table.clear_searched_witnesses()
