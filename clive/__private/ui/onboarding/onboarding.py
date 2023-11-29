@@ -6,7 +6,7 @@ from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
-from clive.__private.ui.manage_authorities import NewAuthorityForm
+from clive.__private.ui.manage_key_aliases import NewAuthorityForm
 from clive.__private.ui.set_account.set_account import SetAccount
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen

@@ -13,7 +13,7 @@ from clive.__private.config import settings
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
-from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm, SubTitle
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import AuthorityForm, SubTitle
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.select_file import SelectFile

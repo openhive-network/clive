@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import AuthorityForm
 from clive.exceptions import AliasAlreadyInUseFormError
 
 if TYPE_CHECKING:

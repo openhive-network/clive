@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 
 from clive.__private.ui.config.config_base import ConfigBase
-from clive.__private.ui.manage_authorities import ManageAuthorities
+from clive.__private.ui.manage_key_aliases import ManageAuthorities
 from clive.__private.ui.widgets.clive_button import CliveButton
 
 if TYPE_CHECKING:

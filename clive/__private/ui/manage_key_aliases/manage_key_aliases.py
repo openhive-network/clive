@@ -10,9 +10,9 @@ from textual.widgets import Static
 
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.manage_authorities.edit_authority import EditAuthority
-from clive.__private.ui.manage_authorities.new_authority import NewAuthority
-from clive.__private.ui.manage_authorities.widgets.authority_form import AuthorityForm
+from clive.__private.ui.manage_key_aliases.edit_key_alias import EditAuthority
+from clive.__private.ui.manage_key_aliases.new_key_alias import NewAuthority
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import AuthorityForm
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
