@@ -74,7 +74,6 @@ class Authority(ColumnLayout, CliveWidget):
             if not result:
                 return
 
-            await self.app.world.commands.remove_key(password=result, key_to_remove=self.__authority)
             self.app.world.profile_data.working_account.keys.remove(self.__authority)
 
             self.notify(f"Authority `{self.__authority.alias}` was removed.")
