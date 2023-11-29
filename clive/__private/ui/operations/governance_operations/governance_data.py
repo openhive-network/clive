@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 
 from textual import work
 from textual.reactive import var
@@ -8,6 +8,9 @@ from textual.reactive import var
 from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.governance_data import GovernanceData
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+
+if TYPE_CHECKING:
+    from textual.worker import Worker
 
 
 class GovernanceDataProvider(CliveWidget):
@@ -60,16 +63,16 @@ class GovernanceDataProvider(CliveWidget):
     def stop_refreshing_data(self) -> None:
         self.interval.stop()
 
-    def set_mode_witnesses_by_name(self, pattern: str | None = None, limit: int = 150) -> None:
+    def set_mode_witnesses_by_name(self, pattern: str | None = None, limit: int = 150) -> Worker[None]:
         self.__mode = "search_by_name"
         self.__witness_name_pattern = pattern
         self.__limit = limit
 
-        self.update_governance_data()
+        return self.update_governance_data()
 
-    def set_mode_top_witnesses(self) -> None:
+    def set_mode_top_witnesses(self) -> Worker[None]:
         self.__mode = "search_top"
         self.__witness_name_pattern = None
         self.__limit = 150
 
-        self.update_governance_data()
+        return self.update_governance_data()
