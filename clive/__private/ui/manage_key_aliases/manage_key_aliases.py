@@ -59,7 +59,7 @@ class KeyAlias(ColumnLayout, CliveWidget):
     def compose(self) -> ComposeResult:
         yield StaticColumn(str(self.__index + 1), id="key_alias_row_number", classes=even)
         yield StaticColumn(self.__public_key.alias, id="key_alias_name", classes=odd)
-        yield StaticColumn(self.__public_key.__class__.__name__, id="key_alias_type", classes=even)
+        yield StaticColumn(self.__public_key.value, id="key_alias_public_key", classes=even)
         yield CliveButton("Edit", id_="edit_key_alias_button", classes=odd)
         yield CliveButton("Remove", id_="remove_key_alias_button", classes=even)
 
@@ -90,7 +90,7 @@ class KeyAliasesHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
         yield StaticColumn("No.", id="key_alias_row_number", classes=even)
         yield StaticColumn("Alias", id="key_alias_name", classes=odd)
-        yield StaticColumn("Key alias type", id="key_alias_type", classes=even)
+        yield StaticColumn("Public key", id="key_alias_public_key", classes=even)
         yield StaticColumn("Actions", id="actions", classes=odd)
 
 
