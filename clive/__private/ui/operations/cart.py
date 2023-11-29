@@ -211,8 +211,8 @@ class CartItem(ColumnLayout, CliveWidget):
 class CartHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
         yield StaticColumn("No.", id="operation_position_in_trx", classes="cell cell-middle")
-        yield StaticColumn("Operation Type", id="operation_type", classes="cell cell-variant cell-middle")
-        yield StaticColumn("Operation Details", id="operation_details", classes="cell cell-middle")
+        yield StaticColumn("Operation type", id="operation_type", classes="cell cell-variant cell-middle")
+        yield StaticColumn("Operation details", id="operation_details", classes="cell cell-middle")
         yield StaticColumn("Actions", id="actions", classes="cell cell-variant cell-middle")
 
 
