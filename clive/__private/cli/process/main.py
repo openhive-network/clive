@@ -4,10 +4,8 @@ from enum import Enum
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationCommonOptions
 from clive.__private.cli.completion import is_tab_completion_active
-from clive.__private.core.get_default_from_model import get_default_from_model
-from schemas.operations import TransferFromSavingsOperation
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
@@ -68,69 +66,4 @@ async def process_transaction(
         force_unsign=force_unsign,
         already_signed_mode=already_signed_mode,
         chain_id=chain_id,
-    ).run()
-
-
-@process.command(name="deposit", common_options=[OperationCommonOptions])
-async def process_deposit(
-    ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
-    to_account: str = options.to_account_name_option,
-    amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
-    memo: str = typer.Option("", help="The memo to attach to the transfer."),
-) -> None:
-    """Immediately deposit funds to savings account."""
-    from clive.__private.cli.commands.process.process_deposit import ProcessDeposit
-
-    common = OperationCommonOptions.get_instance()
-    await ProcessDeposit.from_(
-        **common.as_dict(),
-        from_account=from_account,
-        to_account=to_account,
-        amount=amount,
-        memo=memo,
-    ).run()
-
-
-@process.command(name="withdrawal", common_options=[OperationCommonOptions])
-async def process_withdrawal(
-    ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
-    request_id: str = typer.Option(
-        get_default_from_model(TransferFromSavingsOperation, "request_id", int),
-        help="Id of previously initiated withdrawal.",
-        show_default=False,
-    ),
-    to_account: str = options.to_account_name_option,
-    amount: str = typer.Option(..., help="The amount to transfer. (e.g. 2.500 HIVE)", show_default=False),
-    memo: str = typer.Option("", help="The memo to attach to the transfer."),
-) -> None:
-    """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
-    from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal
-
-    common = OperationCommonOptions.get_instance()
-    await ProcessWithdrawal.from_(
-        **common.as_dict(),
-        from_account=from_account,
-        request_id=request_id,
-        to_account=to_account,
-        amount=amount,
-        memo=memo,
-    ).run()
-
-
-@process.command(name="cancel-withdrawal", common_options=[OperationCommonOptions])
-async def process_cancel_withdrawal(
-    ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
-    request_id: str = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
-) -> None:
-    """Cancel previously initiated withdrawal from savings account."""
-    from clive.__private.cli.commands.process.process_cancel_withdrawal import ProcessCancelWithdrawal
-
-    common = OperationCommonOptions.get_instance()
-    await ProcessCancelWithdrawal.from_(
-        **common.as_dict(),
-        from_account=from_account,
-        request_id=request_id,
     ).run()

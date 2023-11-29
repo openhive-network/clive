@@ -4,11 +4,8 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import options
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 from clive.__private.cli.common.world_common_options import WorldWithoutBeekeeperCommonOptions
-from clive.__private.cli.show.pending import pending
 
 show = CliveTyper(name="show", help="Show various data.")
-
-show.add_typer(pending)
 
 
 @show.command("profiles")

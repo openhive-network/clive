@@ -81,19 +81,3 @@ beekeeper_remote_option = typer.Option(
     help="Beekeeper remote endpoint. (starts locally if not provided)",
     show_default=bool(_get_default_beekeeper_remote()),
 )
-
-from_account_name_option = typer.Option(
-    get_default_or_make_required(_get_default_working_account_name()),
-    "--from",
-    "-f",
-    help='The account to use as "from" argument. (defaults to the working account of the last used profile)',
-    show_default=bool(_get_default_working_account_name()),
-)
-
-to_account_name_option = typer.Option(
-    get_default_or_make_required(_get_default_working_account_name()),
-    "--to",
-    "-t",
-    help='The account to use as "to" argument. (defaults to the working account of the last used profile)',
-    show_default=bool(_get_default_working_account_name()),
-)
