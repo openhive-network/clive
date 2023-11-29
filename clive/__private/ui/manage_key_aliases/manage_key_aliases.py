@@ -89,7 +89,7 @@ class KeyAlias(ColumnLayout, CliveWidget):
 class KeyAliasesHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
         yield StaticColumn("No.", id="key_alias_row_number", classes=even)
-        yield StaticColumn("Key alias name", id="key_alias_name", classes=odd)
+        yield StaticColumn("Alias", id="key_alias_name", classes=odd)
         yield StaticColumn("Key alias type", id="key_alias_type", classes=even)
         yield StaticColumn("Actions", id="actions", classes=odd)
 
