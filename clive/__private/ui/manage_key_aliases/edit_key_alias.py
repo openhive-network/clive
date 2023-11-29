@@ -59,7 +59,7 @@ class EditKeyAlias(KeyAliasForm):
             raise AliasAlreadyInUseFormError(self._key_alias_raw)
 
     def _title(self) -> str:
-        return "edit key alias"
+        return "edit alias"
 
     def _default_key_alias_name(self) -> str:
         return self.public_key.alias
