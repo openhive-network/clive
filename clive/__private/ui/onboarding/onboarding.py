@@ -6,7 +6,7 @@ from textual.binding import Binding
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
-from clive.__private.ui.manage_key_aliases import NewAuthorityForm
+from clive.__private.ui.manage_key_aliases import NewKeyAliasForm
 from clive.__private.ui.set_account.set_account import SetAccount
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -37,7 +37,7 @@ class Onboarding(Form[ProfileData]):
         yield CreateProfileForm
         yield SetNodeAddressForm
         yield SetAccount
-        yield NewAuthorityForm
+        yield NewKeyAliasForm
 
     def create_welcome_screen(self) -> ScreenBuilder[ProfileData]:
         return lambda owner: OnboardingWelcomeScreen(
@@ -55,8 +55,8 @@ In any moment you can press the `[blue]F1[/]` button to see the help page.""",
     def _skip_during_push_screen(self) -> list[ScreenBuilder[ProfileData]]:
         screens_to_skip: list[ScreenBuilder[ProfileData]] = []
 
-        # skip NewAuthorityForm if there is no working account set
+        # skip NewKeyAliasForm if there is no working account set
         if not self.context.is_working_account_set():
-            screens_to_skip.append(NewAuthorityForm)
+            screens_to_skip.append(NewKeyAliasForm)
 
         return screens_to_skip

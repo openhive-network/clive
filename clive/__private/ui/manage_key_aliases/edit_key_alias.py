@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import AuthorityForm
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.exceptions import AliasAlreadyInUseFormError
 
 if TYPE_CHECKING:
@@ -12,14 +12,14 @@ if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
 
 
-class EditAuthority(AuthorityForm):
+class EditKeyAlias(KeyAliasForm):
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f10", "save", "Save"),
     ]
 
-    def __init__(self, authority: PublicKeyAliased) -> None:
-        self.authority = authority
+    def __init__(self, public_key: PublicKeyAliased) -> None:
+        self.public_key = public_key
         super().__init__()
 
     @property
@@ -30,7 +30,7 @@ class EditAuthority(AuthorityForm):
         self._save()
 
     def _save(self) -> None:
-        old_alias = self.authority.alias
+        old_alias = self.public_key.alias
         new_alias = self._key_alias_raw
 
         if old_alias == new_alias:
@@ -43,9 +43,9 @@ class EditAuthority(AuthorityForm):
         self.app.world.profile_data.working_account.keys.rename(old_alias, new_alias)
 
         self.app.trigger_profile_data_watchers()
-        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
+        self.app.post_message_to_screen("ManageKeyAliases", self.Changed())
         self.app.pop_screen()
-        self.notify(f"Authority `{self.authority.alias}` was edited.")
+        self.notify(f"Key alias `{self.public_key.alias}` was edited.")
 
     def _validate(self) -> None:
         """
@@ -59,10 +59,10 @@ class EditAuthority(AuthorityForm):
             raise AliasAlreadyInUseFormError(self._key_alias_raw)
 
     def _title(self) -> str:
-        return "edit authority"
+        return "edit key alias"
 
-    def _default_authority_name(self) -> str:
-        return self.authority.alias
+    def _default_key_alias_name(self) -> str:
+        return self.public_key.alias
 
     def _default_public_key(self) -> str:
-        return self.authority.value
+        return self.public_key.value

@@ -1,4 +1,4 @@
-ManageAuthorities ColumnLayout {
+ManageKeyAliases ColumnLayout {
   layout: grid;
   grid-size: 10 1;
   grid-gutter: 1;
@@ -7,70 +7,70 @@ ManageAuthorities ColumnLayout {
   height: 3;
 }
 
-ManageAuthorities .OddColumn {
+ManageKeyAliases .OddColumn {
   background: $primary-background-darken-1;
   content-align: center middle;
   height: 3;
   width: 100%;
 }
 
-ManageAuthorities .EvenColumn {
+ManageKeyAliases .EvenColumn {
   background: $primary-background-darken-2;
   content-align: center middle;
   height: 3;
   width: 100%;
 }
 
-ManageAuthorities AuthorityHeader {
+ManageKeyAliases KeyAliasesHeader {
   margin: 0 1;
 }
 
-ManageAuthorities ScrollablePart {
+ManageKeyAliases ScrollablePart {
   height: 1fr;
 }
 
-ManageAuthorities Authority {
+ManageKeyAliases KeyAlias {
   margin: 1;
 }
 
-Authority #remove_authority_button {
+KeyAlias #remove_key_alias_button {
   content-align: center middle;
   column-span: 1;
   width: 100%;
   background: $error;
 }
-Authority #remove_authority_button:focus {
+KeyAlias #remove_key_alias_button:focus {
   background: $error-darken-1;
 }
 
-Authority #edit_authority_button {
+KeyAlias #edit_key_alias_button {
   content-align: center middle;
   column-span: 1;
   width: 100%;
   background: $primary;
 }
 
-Authority #edit_authority_button:focus {
+KeyAlias #edit_key_alias_button:focus {
   background: $primary-darken-1;
 }
 
-ManageAuthorities #authority_row_number {
+ManageKeyAliases #key_alias_row_number {
   column-span: 1;
 }
 
-ManageAuthorities #authority_name {
+ManageKeyAliases #key_alias_name {
   column-span: 4;
 }
 
-ManageAuthorities #authority_type {
+ManageKeyAliases #key_alias_type {
   column-span: 3;
 }
 
-ManageAuthorities #actions {
+ManageKeyAliases #actions {
   column-span: 2;
 }
 
-AuthorityTitle #authorities_title_label {
+KeyAliasTitle #key_aliases_title_label {
   content-align: center middle;
   column-span: 8;
   height: 3;

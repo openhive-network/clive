@@ -10,9 +10,9 @@ from textual.widgets import Static
 
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.manage_key_aliases.edit_key_alias import EditAuthority
-from clive.__private.ui.manage_key_aliases.new_key_alias import NewAuthority
-from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import AuthorityForm
+from clive.__private.ui.manage_key_aliases.edit_key_alias import EditKeyAlias
+from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAlias
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -47,59 +47,59 @@ odd = "OddColumn"
 even = "EvenColumn"
 
 
-class Authority(ColumnLayout, CliveWidget):
-    class AuthoritiesChanged(Message):
-        """Emitted when authorities have been changed."""
+class KeyAlias(ColumnLayout, CliveWidget):
+    class Changed(Message):
+        """Emitted when key alias have been changed."""
 
-    def __init__(self, index: int, authority: PublicKeyAliased) -> None:
+    def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
         self.__index = index
-        self.__authority = authority
+        self.__public_key = public_key
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        yield StaticColumn(str(self.__index + 1), id="authority_row_number", classes=even)
-        yield StaticColumn(self.__authority.alias, id="authority_name", classes=odd)
-        yield StaticColumn(self.__authority.__class__.__name__, id="authority_type", classes=even)
-        yield CliveButton("Edit", id_="edit_authority_button", classes=odd)
-        yield CliveButton("Remove", id_="remove_authority_button", classes=even)
+        yield StaticColumn(str(self.__index + 1), id="key_alias_row_number", classes=even)
+        yield StaticColumn(self.__public_key.alias, id="key_alias_name", classes=odd)
+        yield StaticColumn(self.__public_key.__class__.__name__, id="key_alias_type", classes=even)
+        yield CliveButton("Edit", id_="edit_key_alias_button", classes=odd)
+        yield CliveButton("Remove", id_="remove_key_alias_button", classes=even)
 
-    @on(CliveButton.Pressed, "#edit_authority_button")
-    def push_edit_authority_screen(self) -> None:
-        self.app.push_screen(EditAuthority(self.__authority))
+    @on(CliveButton.Pressed, "#edit_key_alias_button")
+    def push_edit_key_alias_screen(self) -> None:
+        self.app.push_screen(EditKeyAlias(self.__public_key))
 
-    @on(CliveButton.Pressed, "#remove_authority_button")
-    async def remove_authority(self) -> None:
+    @on(CliveButton.Pressed, "#remove_key_alias_button")
+    async def remove_key_alias(self) -> None:
         @CliveScreen.try_again_after_activation(app=self.app)
         async def __on_confirmation_result(result: str) -> None:
             if not result:
                 return
 
-            self.app.world.profile_data.working_account.keys.remove(self.__authority)
+            self.app.world.profile_data.working_account.keys.remove(self.__public_key)
 
-            self.notify(f"Authority `{self.__authority.alias}` was removed.")
-            self.app.post_message_to_screen(ManageAuthorities, self.AuthoritiesChanged())
+            self.notify(f"Key alias `{self.__public_key.alias}` was removed.")
+            self.app.post_message_to_screen(ManageKeyAliases, self.Changed())
 
         self.app.push_screen(
             ConfirmWithPassword(
-                result_callback=__on_confirmation_result, action_name=f"Remove a `{self.__authority.alias}` key."
+                result_callback=__on_confirmation_result, action_name=f"Remove a `{self.__public_key.alias}` key alias."
             )
         )
 
 
-class AuthorityHeader(ColumnLayout):
+class KeyAliasesHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="authority_row_number", classes=even)
-        yield StaticColumn("Authority Name", id="authority_name", classes=odd)
-        yield StaticColumn("Authority Type", id="authority_type", classes=even)
+        yield StaticColumn("No.", id="key_alias_row_number", classes=even)
+        yield StaticColumn("Key alias name", id="key_alias_name", classes=odd)
+        yield StaticColumn("Key alias type", id="key_alias_type", classes=even)
         yield StaticColumn("Actions", id="actions", classes=odd)
 
 
-class ManageAuthorities(BaseScreen):
+class ManageKeyAliases(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
-        Binding("f2", "new_authority", "New authority"),
+        Binding("f2", "new_key_alias", "New alias"),
     ]
 
     def __init__(self) -> None:
@@ -108,19 +108,19 @@ class ManageAuthorities(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with ViewBag():
-            yield BigTitle("authorities")
-            yield AuthorityHeader()
+            yield BigTitle("key aliases")
+            yield KeyAliasesHeader()
             with self.__scrollable_part:
                 for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-                    yield Authority(idx, key)
+                    yield KeyAlias(idx, key)
 
-    def action_new_authority(self) -> None:
-        self.app.push_screen(NewAuthority())
+    def action_new_key_alias(self) -> None:
+        self.app.push_screen(NewKeyAlias())
 
-    @on(Authority.AuthoritiesChanged)
-    @on(AuthorityForm.AuthoritiesChanged)
-    def rebuild_authorities(self) -> None:
-        self.query(Authority).remove()
+    @on(KeyAlias.Changed)
+    @on(KeyAliasForm.Changed)
+    def rebuild_key_aliases(self) -> None:
+        self.query(KeyAlias).remove()
 
         for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-            self.__scrollable_part.mount(Authority(idx, key))
+            self.__scrollable_part.mount(KeyAlias(idx, key))

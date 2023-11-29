@@ -81,7 +81,7 @@ class OperationItem(Static):
 
 
 class SelectKey(SafeSelect[PublicKey], CliveWidget):
-    """Combobox for selecting the authority key."""
+    """Combobox for selecting the public key."""
 
     def __init__(self) -> None:
         try:
@@ -97,7 +97,7 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
 
 
 class KeyHint(Label):
-    """Hint for the authority."""
+    """Hint for the key."""
 
 
 class TransactionSummaryCommon(BaseScreen):

@@ -13,7 +13,7 @@ from clive.__private.config import settings
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
-from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import AuthorityForm, SubTitle
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm, SubTitle
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.select_file import SelectFile
@@ -31,7 +31,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class NewAuthorityBase(AuthorityForm, ABC):
+class NewKeyAliasBase(KeyAliasForm, ABC):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]
@@ -73,10 +73,10 @@ class NewAuthorityBase(AuthorityForm, ABC):
         self.app.push_screen(SelectFile(placeholder="e.g. /home/me/my-active-key.wif"))
 
     @on(SelectFile.Saved)
-    def load_authority_from_file(self, event: SelectFile.Saved) -> None:
+    def load_private_key_from_file(self, event: SelectFile.Saved) -> None:
         self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
-        self.notify(f"Authority loaded from `{event.file_path}`")
+        self.notify(f"Private key loaded from `{event.file_path}`")
 
     @on(Input.Changed, "#key_input")
     def recalculate_public_key(self) -> None:
@@ -106,13 +106,13 @@ class NewAuthorityBase(AuthorityForm, ABC):
         PrivateKeyAlreadyInUseError: if private key is already in use.
         """
         try:
-            self.__check_if_authority_already_exists(self._private_key)
+            self.__check_if_private_key_already_exists(self._private_key)
         except PrivateKeyInvalidFormatError as error:
             raise FormValidationError(str(error), given_value=error.value) from error
 
-    def __check_if_authority_already_exists(self, private_key: PrivateKeyAliased) -> None:
+    def __check_if_private_key_already_exists(self, private_key: PrivateKeyAliased) -> None:
         """
-        Check if authority is already stored.
+        Check if private key is already stored.
 
         Raises
         ------
@@ -146,11 +146,11 @@ class NewAuthorityBase(AuthorityForm, ABC):
     def _default_key(self) -> str:
         return typing.cast(str, settings.get("secrets.default_key", ""))
 
-    def _default_authority_name(self) -> str:
+    def _default_key_alias_name(self) -> str:
         return f"{self.context.working_account.name}@active"
 
 
-class NewAuthority(NewAuthorityBase):
+class NewKeyAlias(NewKeyAliasBase):
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f10", "save", "Save"),
@@ -161,31 +161,31 @@ class NewAuthority(NewAuthorityBase):
         return self.app.world.profile_data
 
     @CliveScreen.try_again_after_activation()
-    @on(NewAuthorityBase.Saved)
-    async def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
+    @on(NewKeyAliasBase.Saved)
+    async def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])
 
         await self.app.world.commands.sync_data_with_beekeeper()
         self.app.trigger_profile_data_watchers()
-        self.app.post_message_to_screen("ManageAuthorities", self.AuthoritiesChanged())
+        self.app.post_message_to_screen("ManageKeyAliases", self.Changed())
         self.app.pop_screen()
-        self.notify("New authority was created.")
+        self.notify("New key alias was created.")
 
     def action_save(self) -> None:
         self._save()
 
 
-class NewAuthorityForm(NewAuthorityBase, FormScreen[ProfileData]):
+class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
-    @on(NewAuthorityBase.Saved)
-    def new_authority_base_saved(self, event: NewAuthorityBase.Saved) -> None:
+    @on(NewKeyAliasBase.Saved)
+    def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
         self.context.working_account.keys.set_to_import([event.private_key])
-        logger.debug("New authority is waiting to be imported...")
+        logger.debug("New private key is waiting to be imported...")
 
     async def apply_and_validate(self) -> None:
-        if self._is_key_provided:  # NewAuthorityForm step is optional, so we can skip it when no key is provided
+        if self._is_key_provided:  # NewKeyAliasForm step is optional, so we can skip it when no key is provided
             self._save(reraise_exception=True)
 
     def _subtitle(self) -> str:

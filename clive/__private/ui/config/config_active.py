@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 
 from clive.__private.ui.config.config_base import ConfigBase
-from clive.__private.ui.manage_key_aliases import ManageAuthorities
+from clive.__private.ui.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.widgets.clive_button import CliveButton
 
 if TYPE_CHECKING:
@@ -16,14 +16,14 @@ if TYPE_CHECKING:
 
 class ConfigActive(ConfigBase):
     def additional_buttons(self) -> Iterable[Button]:
-        yield CliveButton("Manage authorities", id_="manage-authorities")
+        yield CliveButton("Manage key aliases", id_="manage-key-aliases")
 
-    @on(CliveButton.Pressed, "#manage-authorities")
-    def push_manage_authorities_screen(self) -> None:
+    @on(CliveButton.Pressed, "#manage-key-aliases")
+    def push_manage_key_aliases_screen(self) -> None:
         if not self.__has_working_account():
-            self.notify("Cannot manage authorities without working account", severity="error")
+            self.notify("Cannot manage key aliases without working account", severity="error")
             return
-        self.app.push_screen(ManageAuthorities())
+        self.app.push_screen(ManageKeyAliases())
 
     def __has_working_account(self) -> bool:
         return self.app.world.profile_data.is_working_account_set()

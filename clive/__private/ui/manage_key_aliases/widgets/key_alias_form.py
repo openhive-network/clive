@@ -31,17 +31,17 @@ class SubTitle(Static):
     pass
 
 
-class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
+class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    class AuthoritiesChanged(Message):
-        """Emitted when authorities have been changed."""
+    class Changed(Message):
+        """Emitted when key alias have been changed."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self._key_alias_input = Input(self._default_authority_name(), placeholder="e.g. My active key")
+        self._key_alias_input = Input(self._default_key_alias_name(), placeholder="e.g. My active key")
         self._public_key_input = Input(
             self._default_public_key(), placeholder="Public key will be calculated here", disabled=True
         )
@@ -93,7 +93,7 @@ class AuthorityForm(BaseScreen, Contextual[ProfileData], ABC):
     def _title(self) -> str:
         return ""
 
-    def _default_authority_name(self) -> str:
+    def _default_key_alias_name(self) -> str:
         return ""
 
     def _default_public_key(self) -> str:
