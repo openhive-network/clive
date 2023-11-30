@@ -33,7 +33,7 @@ async def test_api_close_import_key_to_closed_wallet(beekeeper: Beekeeper, walle
     # ACT & ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet not found: {wallet_key_to_import.name}"):
         await beekeeper.api.import_key(
-            wif_key=wallet_key_to_import.keys.pairs[0].wif_key.value, wallet_name=wallet_key_to_import.name
+            wif_key=wallet_key_to_import.keys.pairs[0].private_key.value, wallet_name=wallet_key_to_import.name
         )
 
 
@@ -41,7 +41,7 @@ async def test_api_close_double_close(beekeeper: Beekeeper, wallet_key_to_import
     """Test test_api_close_double_close will test possibility of double closing wallet."""
     # ARRANGE
     await beekeeper.api.import_key(
-        wif_key=wallet_key_to_import.keys.pairs[0].wif_key.value, wallet_name=wallet_key_to_import.name
+        wif_key=wallet_key_to_import.keys.pairs[0].private_key.value, wallet_name=wallet_key_to_import.name
     )
 
     # ACT

@@ -16,7 +16,7 @@ class Keys:
     @dataclass
     class KeysPair:
         pub_key: PublicKeyAliased
-        wif_key: PrivateKeyAliased
+        private_key: PrivateKeyAliased
 
     def __init__(self, count: int = 0) -> None:
         self.pairs: list[Keys.KeysPair] = []
@@ -29,11 +29,11 @@ class Keys:
             pub_keys.sort()
         return pub_keys
 
-    def get_wif_keys(self, *, sort: bool = True) -> list[str]:
-        wif_keys = [pair.wif_key.value for pair in self.pairs]
+    def get_private_keys(self, *, sort: bool = True) -> list[str]:
+        private_keys = [pair.private_key.value for pair in self.pairs]
         if sort:
-            wif_keys.sort()
-        return wif_keys
+            private_keys.sort()
+        return private_keys
 
     def generate_key_pair(self, *, alias: str | None = None) -> KeysPair:
         alias = f"key-{len(self.pairs)}" if alias is None else alias

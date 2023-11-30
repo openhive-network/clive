@@ -19,7 +19,7 @@ async def test_api_remove_key(
     """Test test_api_remove_key will test beekeeper_api_remove_key.."""
     # ARRANGE
     for pair in Keys(5).pairs:
-        await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=pair.wif_key.value)
+        await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=pair.private_key.value)
 
         # ACT
         await beekeeper.api.remove_key(

@@ -127,7 +127,7 @@ def setup_wallets(world: World) -> WalletsGeneratorT:
                     await ImportKey(
                         app_state=world.app_state,
                         wallet=wallet.name,
-                        key_to_import=pairs.wif_key,
+                        key_to_import=pairs.private_key,
                         beekeeper=world.beekeeper,
                     ).execute()
         return wallets

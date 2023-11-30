@@ -22,7 +22,7 @@ async def test_api_get_public_keys(beekeeper: Beekeeper, setup_wallets: WalletsG
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=5)
     wallet = wallets[0]
     for pair in wallet.keys.pairs:
-        await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.wif_key.value)
+        await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.private_key.value)
 
     # ACT
     response = (await beekeeper.api.get_public_keys()).keys

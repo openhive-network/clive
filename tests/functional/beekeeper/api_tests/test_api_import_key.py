@@ -21,7 +21,7 @@ async def test_api_import_key(beekeeper: Beekeeper, setup_wallets: WalletsGenera
     for pair in wallet.keys.pairs:
         assert (
             pair.pub_key
-            == (await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.wif_key.value)).public_key
+            == (await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.private_key.value)).public_key
         ), "Public key of imported wif should match."
 
 
@@ -33,7 +33,7 @@ async def test_api_import_key_to_locked(beekeeper: Beekeeper, wallet_key_to_impo
     # ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet is locked: {wallet_key_to_import.name}"):
         await beekeeper.api.import_key(
-            wallet_name=wallet_key_to_import.name, wif_key=wallet_key_to_import.keys.pairs[0].wif_key.value
+            wallet_name=wallet_key_to_import.name, wif_key=wallet_key_to_import.keys.pairs[0].private_key.value
         )
 
 
@@ -45,5 +45,5 @@ async def test_api_import_key_to_closed(beekeeper: Beekeeper, wallet_key_to_impo
     # ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet not found: {wallet_key_to_import.name}"):
         await beekeeper.api.import_key(
-            wallet_name=wallet_key_to_import.name, wif_key=wallet_key_to_import.keys.pairs[0].wif_key.value
+            wallet_name=wallet_key_to_import.name, wif_key=wallet_key_to_import.keys.pairs[0].private_key.value
         )
