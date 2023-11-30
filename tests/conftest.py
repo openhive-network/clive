@@ -41,6 +41,10 @@ def run_prepare_before_launch() -> None:
 
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
+
+    # set chain id to the testnet one
+    settings.set("node.chain_id", "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e")
+
     prepare_before_launch()
 
 
