@@ -39,6 +39,10 @@ def run_prepare_before_launch() -> None:
     if beekeeper_directory.exists():
         shutil.rmtree(beekeeper_directory)
 
+    profile_data_directory = working_directory / "data"
+    if profile_data_directory.exists():
+        shutil.rmtree(profile_data_directory)
+
     settings.data_path = working_directory
     settings.log_path = working_directory / "logs"
 
