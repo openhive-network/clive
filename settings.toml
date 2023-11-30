@@ -11,4 +11,8 @@ PATH = "./beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper ex
 REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 
 [default.node]
+# chain_id that will be set as default for all the profiles.
+# If not given, still could be set by the CLI or will be retrieved from the node api when required.
+# If given, will be used as default for all the profiles, but could be overwritten with CLI commands.
+CHAIN_ID = "beeab0de00000000000000000000000000000000000000000000000000000000"
 REFRESH_RATE = 1.5 # how often information about accounts are fetched from node

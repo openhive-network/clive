@@ -9,6 +9,7 @@ from clive.__private import config
 from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.validate_schema_field import is_schema_field_valid
+from clive.__private.logger import logger
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.core.url import Url
@@ -103,7 +104,7 @@ class ProfileData(Context):
         if working_account is not None:
             self.set_working_account(working_account)
 
-        self.__chain_id: str | None = None
+        self.__chain_id = self.__default_chain_id()
 
         self.cart = Cart()
 
@@ -308,6 +309,12 @@ class ProfileData(Context):
     def list_profiles(cls) -> list[str]:
         with cls.__open_database() as db:
             return list(db.keys() - {cls._LAST_USED_IDENTIFIER})
+
+    @staticmethod
+    def __default_chain_id() -> str | None:
+        chain_id = settings.get("node.chain_id", "") or None
+        logger.info(f"Setting default chain_id to: {chain_id}")
+        return chain_id
 
     @staticmethod
     def __default_node_address() -> list[Url]:
