@@ -49,6 +49,21 @@ class WalletInfo:
     name: str
     keys: Keys = field(default_factory=Keys)
 
+    @property
+    def public_key(self) -> PublicKeyAliased:
+        """Return the first key in the wallet."""
+        return self.key_pair.pub_key
+
+    @property
+    def private_key(self) -> PrivateKeyAliased:
+        """Return the first key in the wallet."""
+        return self.key_pair.private_key
+
+    @property
+    def key_pair(self) -> Keys.KeysPair:
+        """Return the first key pair in the wallet."""
+        return self.keys.pairs[0]
+
 
 Wallets = list[WalletInfo]
 

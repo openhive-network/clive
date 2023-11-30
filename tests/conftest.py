@@ -16,6 +16,7 @@ from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.world import World
 from clive.core.url import Url
+from clive_local_tools.constants import TESTNET_CHAIN_ID
 from clive_local_tools.types import Keys, WalletInfo, Wallets, WalletsGeneratorT
 
 if TYPE_CHECKING:
@@ -47,7 +48,7 @@ def run_prepare_before_launch() -> None:
     settings.log_path = working_directory / "logs"
 
     # set chain id to the testnet one
-    settings.set("node.chain_id", "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e")
+    settings.set("node.chain_id", TESTNET_CHAIN_ID)
 
     prepare_before_launch()
 
