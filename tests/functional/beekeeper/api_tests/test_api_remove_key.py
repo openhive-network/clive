@@ -23,7 +23,7 @@ async def test_api_remove_key(
 
         # ACT
         await beekeeper.api.remove_key(
-            wallet_name=wallet_no_keys.name, password=wallet_no_keys.password, public_key=pair.pub_key.value
+            wallet_name=wallet_no_keys.name, password=wallet_no_keys.password, public_key=pair.public_key.value
         )
 
     # ASSERT
@@ -38,7 +38,7 @@ async def test_api_remove_key_from_locked(beekeeper: Beekeeper, wallet: WalletIn
     # ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet is locked: {wallet.name}"):
         await beekeeper.api.remove_key(
-            wallet_name=wallet.name, password=wallet.password, public_key=wallet.keys.pairs[0].pub_key.value
+            wallet_name=wallet.name, password=wallet.password, public_key=wallet.keys.pairs[0].public_key.value
         )
 
 
@@ -50,7 +50,7 @@ async def test_api_remove_key_from_closed(beekeeper: Beekeeper, wallet: WalletIn
     # ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet not found: {wallet.name}"):
         await beekeeper.api.remove_key(
-            wallet_name=wallet.name, password=wallet.password, public_key=wallet.keys.pairs[0].pub_key.value
+            wallet_name=wallet.name, password=wallet.password, public_key=wallet.keys.pairs[0].public_key.value
         )
 
 
@@ -66,11 +66,11 @@ async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallet
     bk_pub_keys_before = [pub_key.public_key for pub_key in bk_keys_before]
 
     # Check if key exist
-    assert key_to_remove.pub_key.value in bk_pub_keys_before, "Check if target key exists."
+    assert key_to_remove.public_key.value in bk_pub_keys_before, "Check if target key exists."
 
     # ACT
     await beekeeper.api.remove_key(
-        wallet_name=wallet.name, password=wallet.password, public_key=key_to_remove.pub_key.value
+        wallet_name=wallet.name, password=wallet.password, public_key=key_to_remove.public_key.value
     )
 
     # ASSERT
@@ -78,8 +78,8 @@ async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallet
     bk_pub_keys_after = [pub_key.public_key for pub_key in bk_keys_after]
 
     # Check if key was removed
-    assert key_to_remove.pub_key not in bk_keys_after, "Recently removed key shouldn't not be listed."
+    assert key_to_remove.public_key not in bk_keys_after, "Recently removed key shouldn't not be listed."
     # Check if other keys still exists
     bk_pub_keys_before_copy = bk_pub_keys_before.copy()
-    bk_pub_keys_before_copy.remove(key_to_remove.pub_key.value)
+    bk_pub_keys_before_copy.remove(key_to_remove.public_key.value)
     assert bk_pub_keys_before_copy == bk_pub_keys_after, "Check if beekeeper removes only target key."

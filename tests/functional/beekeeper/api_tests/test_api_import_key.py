@@ -21,7 +21,7 @@ async def test_api_import_key(beekeeper: Beekeeper, setup_wallets: WalletsGenera
     # ACT & ASSERT
     for pair in wallet.keys.pairs:
         assert (
-            pair.pub_key
+            pair.public_key
             == (await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.private_key.value)).public_key
         ), "Public key of imported wif should match."
 

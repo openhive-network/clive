@@ -9,7 +9,7 @@ from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
 class Keys:
     @dataclass
     class KeysPair:
-        pub_key: PublicKeyAliased
+        public_key: PublicKeyAliased
         private_key: PrivateKeyAliased
 
     def __init__(self, count: int = 0) -> None:
@@ -18,7 +18,7 @@ class Keys:
             self.pairs.append(self.generate_key_pair())
 
     def get_public_keys(self, *, sort: bool = True) -> list[str]:
-        pub_keys = [pair.pub_key.value for pair in self.pairs]
+        pub_keys = [pair.public_key.value for pair in self.pairs]
         if sort:
             pub_keys.sort()
         return pub_keys
@@ -46,7 +46,7 @@ class WalletInfo:
     @property
     def public_key(self) -> PublicKeyAliased:
         """Return the first key in the wallet."""
-        return self.key_pair.pub_key
+        return self.key_pair.public_key
 
     @property
     def private_key(self) -> PrivateKeyAliased:
