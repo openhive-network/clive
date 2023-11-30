@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Horizontal, ScrollableContainer
+from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Select, Static
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
@@ -29,7 +29,7 @@ if TYPE_CHECKING:
     from clive.models import Operation, Transaction
 
 
-class StaticPart(Static):
+class StaticPart(Container):
     """Static part of the screen."""
 
 

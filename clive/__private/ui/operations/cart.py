@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import ScrollableContainer
+from textual.containers import Container, ScrollableContainer
 from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static
@@ -61,7 +61,7 @@ class ButtonDelete(CliveButton):
         super().__init__("Remove", id_="delete-button")
 
 
-class StaticPart(Static):
+class StaticPart(Container):
     """Container for the static part of the screen - title, global buttons and table header."""
 
 
