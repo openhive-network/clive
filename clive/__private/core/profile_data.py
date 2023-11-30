@@ -8,11 +8,13 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private import config
 from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
+from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models import Operation
+from clive.models.aliased import ChainIdSchema
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
@@ -25,6 +27,13 @@ if TYPE_CHECKING:
 
 class ProfileDataError(CliveError):
     """An error related to profile data."""
+
+
+class InvalidChainIdError(ProfileDataError):
+    """Raised when an invalid chain id is set."""
+
+    def __init__(self) -> None:
+        super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
 
 
 class NoWorkingAccountError(ProfileDataError):
@@ -94,6 +103,8 @@ class ProfileData(Context):
         if working_account is not None:
             self.set_working_account(working_account)
 
+        self.__chain_id: str | None = None
+
         self.cart = Cart()
 
         if address := self.__get_secret_node_address():
@@ -156,6 +167,20 @@ class ProfileData(Context):
         It is marked as not intended for usage because you rather should use Node.set_address instead.
         """
         self.__node_address = value
+
+    @property
+    def chain_id(self) -> str | None:
+        return self.__chain_id
+
+    def set_chain_id(self, value: str) -> None:
+        if not is_schema_field_valid(ChainIdSchema, value):
+            raise InvalidChainIdError
+
+        self.__chain_id = value
+
+    def unset_chain_id(self) -> None:
+        """When no chain_id is set, it should be fetched from the node api."""
+        self.__chain_id = None
 
     def is_working_account_set(self) -> bool:
         return self.__working_account is not None

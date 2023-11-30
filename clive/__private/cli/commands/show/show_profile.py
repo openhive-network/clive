@@ -16,3 +16,4 @@ class ShowProfile(ShowAccounts):
         typer.echo(f"Profile name: {profile.name}")
         typer.echo(f"Node address: {profile.node_address}")
         typer.echo(f"Backup node addresses: {[str(url) for url in profile.backup_node_addresses]}")
+        typer.echo(f"Chain ID: {profile.chain_id}")

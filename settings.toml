@@ -11,5 +11,4 @@ PATH = "./beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper ex
 REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 
 [default.node]
-CHAIN_ID = "" # chain id used for signing, if empty automatically gathered from node
 REFRESH_RATE = 1.5 # how often information about accounts are fetched from node
