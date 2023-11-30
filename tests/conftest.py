@@ -17,13 +17,14 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.world import World
 from clive.core.url import Url
 from clive_local_tools.constants import TESTNET_CHAIN_ID
-from clive_local_tools.types import Keys, WalletInfo, Wallets, WalletsGeneratorT
+from clive_local_tools.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
+    from clive_local_tools.types import Wallets, WalletsGeneratorT
 
 
 @pytest.fixture(autouse=True, scope="session")

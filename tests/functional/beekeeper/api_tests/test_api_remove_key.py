@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING
 import pytest
 
 from clive.exceptions import CommunicationError
-from clive_local_tools.types import Keys
+from clive_local_tools.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import WalletInfo, WalletsGeneratorT
+    from clive_local_tools.types import WalletsGeneratorT
 
 
 async def test_api_remove_key(

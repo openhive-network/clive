@@ -8,7 +8,8 @@ from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import WalletInfo, WalletsGeneratorT
+    from clive_local_tools.models import WalletInfo
+    from clive_local_tools.types import WalletsGeneratorT
 
 
 async def test_api_import_key(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:

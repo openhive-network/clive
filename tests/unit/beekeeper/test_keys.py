@@ -10,7 +10,7 @@ from clive.__private.core.beekeeper.model import BeekeeperPublicKeyType, ImportK
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from clive_local_tools.types import WalletInfo
+    from clive_local_tools.models import WalletInfo
 
 PRIVATE_AND_PUBLIC_KEYS: Final[list[tuple[str, str]]] = [
     (

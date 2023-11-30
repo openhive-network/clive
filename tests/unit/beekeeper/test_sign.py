@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from typing import Final
 
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import WalletInfo
+    from clive_local_tools.models import WalletInfo
 
 
 async def test_sign_digest(beekeeper: Beekeeper, wallet: WalletInfo) -> None:

@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive import World
-    from clive_local_tools.types import WalletInfo
+    from clive_local_tools.models import WalletInfo
 
 DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 

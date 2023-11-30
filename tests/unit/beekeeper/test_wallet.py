@@ -11,7 +11,7 @@ from clive.exceptions import CommunicationError
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.beekeeper.model import ListWallets
-    from clive_local_tools.types import WalletInfo
+    from clive_local_tools.models import WalletInfo
 
 
 def check_wallets(given: ListWallets, valid: list[str], *, unlocked: bool = True) -> None:

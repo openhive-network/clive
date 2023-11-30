@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive_local_tools.types import WalletInfo
+from clive_local_tools.models import WalletInfo
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper

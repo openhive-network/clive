@@ -8,7 +8,7 @@ from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import WalletInfo
+    from clive_local_tools.models import WalletInfo
 
 PRIVATE_KEY: Final[str] = "5HwHC7y2WtCL18J9QMqX7awDe1GDsUTg7cfw734m2qFkdMQK92q"
 PUBLIC_KEY: Final[str] = "6jACfK3P5xYFJQvavCwz5M8KR5EW3TcmSesArj9LJVGAq85qor"
