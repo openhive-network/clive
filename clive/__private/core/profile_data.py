@@ -97,11 +97,11 @@ class ProfileData(Context):
         self.cart = Cart()
 
         if address := self.__get_secret_node_address():
-            self.backup_node_addresses = [address]
+            self.__backup_node_addresses = [address]
             self.__node_address = address
         else:
-            self.backup_node_addresses = self.__default_node_address()
-            self.__node_address = self.backup_node_addresses[0]
+            self.__backup_node_addresses = self.__default_node_address()
+            self.__node_address = self.__backup_node_addresses[0]
 
         self.__first_time_save = True
         self.__skip_save = False
@@ -142,6 +142,12 @@ class ProfileData(Context):
     @property
     def node_address(self) -> Url:
         return self.__get_secret_node_address() or self.__node_address
+
+    @property
+    def backup_node_addresses(self) -> list[Url]:
+        if secret_node_address := self.__get_secret_node_address():
+            return [secret_node_address]
+        return self.__backup_node_addresses
 
     def _set_node_address(self, value: Url) -> None:
         """
