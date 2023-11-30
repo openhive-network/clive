@@ -26,9 +26,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
-    chain_id: str | None = None
-    """The chain ID to use when signing the transaction. If not provided, the one from settings.toml config and
-    then from the node get_config api will be used as fallback."""
     save_file: str | Path | None = None
     broadcast: bool = False
 
@@ -55,7 +52,6 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
                 sign_key=self.__get_key_to_sign(),
                 already_signed_mode=self.already_signed_mode,
                 force_unsign=self.force_unsign,
-                chain_id=self.chain_id,
                 save_file_path=self.save_file_path,
                 broadcast=self.broadcast,
             )

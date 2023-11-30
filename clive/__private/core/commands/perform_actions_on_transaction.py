@@ -38,7 +38,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
     already_signed_mode: How to handle the situation when transaction is already signed.
     force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
-    chain_id: The chain ID to use when signing the transaction. If not provided, the one from settings.toml config and
+    chain_id: The chain ID to use when signing the transaction. If not provided, the one from the profile and
         then from the node get_config api will be used as fallback.
     save_file_path: The path to save the transaction to. If not provided, the transaction will not be saved.
         Format is determined by the file extension. (e.g. `.json` for JSON, `.bin` for binary, if none of these - JSON)
