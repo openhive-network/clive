@@ -131,15 +131,15 @@ def general_asset(asset_num: int, amount: int) -> WaxJsonAsset:
 
 
 def hive(amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.hive(amount=amount))
+    return WaxJsonAsset.from_wax_result(wax.hive(amount))
 
 
 def hbd(amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.hbd(amount=amount))
+    return WaxJsonAsset.from_wax_result(wax.hbd(amount))
 
 
 def vests(amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.vests(amount=amount))
+    return WaxJsonAsset.from_wax_result(wax.vests(amount))
 
 
 def get_tapos_data(block_id: str) -> wax.python_ref_block_data:  # type: ignore[name-defined]
