@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import datetime
 import json
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import wax
@@ -11,12 +12,29 @@ from clive.models import Transaction
 from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
+    from typing_extensions import Self
+
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.models import Operation
 
 
 class WaxOperationFailedError(CliveError):
     pass
+
+
+@dataclass
+class WaxJsonAsset:
+    amount: str
+    precision: int
+    nai: str
+
+    @classmethod
+    def from_wax_result(cls, result: wax.python_json_asset) -> Self:
+        return cls(
+            amount=result.amount.decode(),
+            precision=result.precision,
+            nai=result.nai.decode(),
+        )
 
 
 def __validate_wax_response(response: wax.python_result) -> None:
@@ -108,17 +126,17 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
     return int(result.result.decode())
 
 
-def general_asset(asset_num: int, amount: int) -> wax.python_json_asset:
-    return wax.general_asset(asset_num=asset_num, amount=amount)
+def general_asset(asset_num: int, amount: int) -> WaxJsonAsset:
+    return WaxJsonAsset.from_wax_result(wax.general_asset(asset_num=asset_num, amount=amount))
 
 
-def hive(amount: int) -> wax.python_json_asset:
-    return wax.hive(amount=amount)
+def hive(amount: int) -> WaxJsonAsset:
+    return WaxJsonAsset.from_wax_result(wax.hive(amount=amount))
 
 
-def hbd(amount: int) -> wax.python_json_asset:
-    return wax.hbd(amount=amount)
+def hbd(amount: int) -> WaxJsonAsset:
+    return WaxJsonAsset.from_wax_result(wax.hbd(amount=amount))
 
 
-def vests(amount: int) -> wax.python_json_asset:
-    return wax.vests(amount=amount)
+def vests(amount: int) -> WaxJsonAsset:
+    return WaxJsonAsset.from_wax_result(wax.vests(amount=amount))
