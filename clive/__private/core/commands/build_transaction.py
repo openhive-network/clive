@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
+from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.models import Transaction
 
@@ -23,33 +24,18 @@ class BuildTransaction(CommandWithResult[Transaction]):
 
         # get dynamic global properties
         gdpo = await self.node.api.database_api.get_dynamic_global_properties()
+        block_id = gdpo.head_block_id
 
         # set header
-        block_id = gdpo.head_block_id
-        block_id_hash = self.__convert_block_id_to_ripmed160_hash_table(block_id)
-        self._result.ref_block_num = self.__swap_u32(block_id_hash[0])  # type: ignore[assignment]
-        self._result.ref_block_prefix = block_id_hash[1]  # type: ignore[assignment]
+        tapos_data = iwax.get_tapos_data(block_id)
+        ref_block_num = tapos_data.ref_block_num
+        ref_block_prefix = tapos_data.ref_block_prefix
+
+        assert ref_block_num != 0, "ref_block_num should be different than 0"
+        assert ref_block_prefix != 0, "ref_block_prefix should be different than 0"
+
+        self._result.ref_block_num = ref_block_num
+        self._result.ref_block_prefix = ref_block_prefix
 
         # set expiration
         self._result.expiration = gdpo.time + self.expiration
-
-    @classmethod
-    def __swap_u32(cls, x: int) -> int:
-        # source: https://stackoverflow.com/a/35906430/11738218
-        return int.from_bytes(x.to_bytes(4, byteorder="little"), byteorder="big", signed=False)
-
-    @classmethod
-    def __convert_block_id_to_ripmed160_hash_table(cls, block_id: str) -> tuple[int, int, int, int, int]:
-        return tuple(  # type: ignore[return-value]
-            [
-                int.from_bytes(bytes.fromhex(chunk), byteorder="little", signed=False)
-                for chunk in cls.__split_block_id(block_id)
-            ]
-        )
-
-    @classmethod
-    def __split_block_id(cls, block_id: str) -> tuple[str, str, str, str, str]:
-        amount_of_uint32t_chunks: Final[int] = 5
-        length_of_block_id: Final[int] = len(block_id)
-        chars_per_chunk: Final[int] = int(length_of_block_id / amount_of_uint32t_chunks)
-        return tuple([block_id[i : i + chars_per_chunk] for i in range(0, length_of_block_id, chars_per_chunk)])  # type: ignore[return-value]
