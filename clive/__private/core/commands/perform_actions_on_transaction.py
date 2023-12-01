@@ -5,10 +5,10 @@ from typing import TYPE_CHECKING, Literal
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.commands.broadcast import Broadcast
+from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.unsign import UnSign
-from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.models import Transaction
 
 if TYPE_CHECKING:
@@ -62,7 +62,9 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     broadcast: bool = False
 
     async def _execute(self) -> None:
-        transaction = await ensure_transaction(self.content, node=self.node)
+        transaction = await BuildTransaction(
+            content=self.content, update_metadata=True, node=self.node
+        ).execute_with_result()
 
         if self.sign_key and not self.force_unsign:
             transaction = await Sign(

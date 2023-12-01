@@ -22,7 +22,9 @@ class TransactionSummaryFromCart(TransactionSummaryCommon):
 
     async def __build_transaction(self) -> Transaction:
         return (
-            await self.app.world.commands.build_transaction(operations=self.app.world.profile_data.cart)
+            await self.app.world.commands.build_transaction(
+                content=self.app.world.profile_data.cart, update_metadata=True
+            )
         ).result_or_raise
 
     def _actions_after_successful_broadcast(self) -> None:

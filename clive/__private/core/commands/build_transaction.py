@@ -1,43 +1,31 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.update_transaction_metadata import UpdateTransactionMetadata
+from clive.__private.core.ensure_transaction import TransactionConvertibleType, ensure_transaction
 from clive.models import Transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
-    from clive.models import Operation
+    from clive.__private.core.node import Node
 
 
 @dataclass(kw_only=True)
 class BuildTransaction(CommandWithResult[Transaction]):
-    operations: list[Operation]
-    node: Node
-    expiration: timedelta = timedelta(minutes=30)
+    DEFAULT_UPDATE_METADATA: ClassVar[bool] = False
+
+    content: TransactionConvertibleType
+    update_metadata: bool = DEFAULT_UPDATE_METADATA
+    node: Node | None = None
+    """Required only if update_metadata is True."""
 
     async def _execute(self) -> None:
-        transaction = Transaction(operations=self.operations)
+        transaction = ensure_transaction(self.content)
 
-        # get dynamic global properties
-        gdpo = await self.node.api.database_api.get_dynamic_global_properties()
-        block_id = gdpo.head_block_id
-
-        # set header
-        tapos_data = iwax.get_tapos_data(block_id)
-        ref_block_num = tapos_data.ref_block_num
-        ref_block_prefix = tapos_data.ref_block_prefix
-
-        assert ref_block_num != 0, "ref_block_num should be different than 0"
-        assert ref_block_prefix != 0, "ref_block_prefix should be different than 0"
-
-        transaction.ref_block_num = ref_block_num
-        transaction.ref_block_prefix = ref_block_prefix
-
-        # set expiration
-        transaction.expiration = gdpo.time + self.expiration
+        if self.update_metadata:
+            assert self.node is not None, "node is required when update_metadata is True"
+            await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
 
         self._result = transaction

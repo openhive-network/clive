@@ -28,7 +28,9 @@ async def test_transaction_status_in_blockchain(
     ).result_or_raise
 
     operation = TransferOperation(from_="initminer", to="null", amount=Asset.hive(2), memo="for testing")
-    transaction_without_signature = (await world.commands.build_transaction(operations=[operation])).result_or_raise
+    transaction_without_signature = (
+        await world.commands.build_transaction(content=operation, update_metadata=True)
+    ).result_or_raise
     transaction = (
         await world.commands.sign(
             transaction=transaction_without_signature,

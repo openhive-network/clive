@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
@@ -25,6 +24,9 @@ from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.commands.unsign import UnSign
+from clive.__private.core.commands.update_transaction_metadata import (
+    UpdateTransactionMetadata,
+)
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
@@ -34,6 +36,7 @@ from clive.__private.core.error_handlers.general_error_notificator import Genera
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from pathlib import Path
 
     from clive.__private.core.commands.abc.command import Command
@@ -131,10 +134,28 @@ class Commands(Generic[WorldT]):
         )
 
     async def build_transaction(
-        self, *, operations: list[Operation], expiration: timedelta = timedelta(minutes=30)
+        self, *, content: TransactionConvertibleType, update_metadata: bool = BuildTransaction.DEFAULT_UPDATE_METADATA
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
-            BuildTransaction(operations=operations, node=self._world.node, expiration=expiration)
+            BuildTransaction(
+                content=content,
+                update_metadata=update_metadata,
+                node=self._world.node if update_metadata else None,
+            )
+        )
+
+    async def update_transaction_metadata(
+        self,
+        *,
+        transaction: Transaction,
+        expiration: timedelta = UpdateTransactionMetadata.DEFAULT_GDPO_TIME_RELATIVE_EXPIRATION,
+    ) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            UpdateTransactionMetadata(
+                transaction=transaction,
+                node=self._world.node,
+                expiration=expiration,
+            )
         )
 
     async def sign(
