@@ -140,3 +140,7 @@ def hbd(amount: int) -> WaxJsonAsset:
 
 def vests(amount: int) -> WaxJsonAsset:
     return WaxJsonAsset.from_wax_result(wax.vests(amount=amount))
+
+
+def get_tapos_data(block_id: str) -> wax.python_ref_block_data:  # type: ignore[name-defined]
+    return wax.get_tapos_data(block_id.encode())
