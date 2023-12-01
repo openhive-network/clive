@@ -145,7 +145,7 @@ class TransactionSummaryCommon(BaseScreen):
         things_to_mount = [
             Label(f"Ref block num: {self.transaction.ref_block_num}"),
             Label(f"Expiration: {expiration}"),
-            Label(f"Hash: {self.transaction.calculate_transaction_id()}"),
+            Label(f"Transaction ID: {self.transaction.calculate_transaction_id()}"),
         ]
         await self.__transaction_metadata_container.mount_all(things_to_mount)
 
