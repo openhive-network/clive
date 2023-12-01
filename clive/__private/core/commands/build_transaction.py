@@ -20,7 +20,7 @@ class BuildTransaction(CommandWithResult[Transaction]):
     expiration: timedelta = timedelta(minutes=30)
 
     async def _execute(self) -> None:
-        self._result = Transaction(operations=self.operations)
+        transaction = Transaction(operations=self.operations)
 
         # get dynamic global properties
         gdpo = await self.node.api.database_api.get_dynamic_global_properties()
@@ -34,8 +34,10 @@ class BuildTransaction(CommandWithResult[Transaction]):
         assert ref_block_num != 0, "ref_block_num should be different than 0"
         assert ref_block_prefix != 0, "ref_block_prefix should be different than 0"
 
-        self._result.ref_block_num = ref_block_num
-        self._result.ref_block_prefix = ref_block_prefix
+        transaction.ref_block_num = ref_block_num
+        transaction.ref_block_prefix = ref_block_prefix
 
         # set expiration
-        self._result.expiration = gdpo.time + self.expiration
+        transaction.expiration = gdpo.time + self.expiration
+
+        self._result = transaction
