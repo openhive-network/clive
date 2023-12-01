@@ -51,3 +51,11 @@ TransactionMetadataContainer {
 TransactionMetadataContainer Label {
   width: 1fr;
 }
+
+TaposHolder {
+  height: auto;
+}
+
+TaposHolder #ref-block-num, TaposHolder #ref-block-prefix {
+  margin-left: 1;
+}

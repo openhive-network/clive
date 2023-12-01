@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, ScrollableContainer
+from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Label, Select, Static
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
@@ -56,6 +56,20 @@ class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
     BORDER_TITLE = "TRANSACTION METADATA"
+
+
+class TaposHolder(Vertical):
+    """Container for the TaPoS metadata."""
+
+    def __init__(self, ref_block_num: int, ref_block_prefix: int) -> None:
+        super().__init__()
+        self.__ref_block_num = ref_block_num
+        self.__ref_block_prefix = ref_block_prefix
+
+    def compose(self) -> ComposeResult:
+        yield Label("TaPoS:")
+        yield Label(f"Ref block num: {self.__ref_block_num}", id="ref-block-num")
+        yield Label(f"Ref block prefix: {self.__ref_block_prefix}", id="ref-block-prefix")
 
 
 class TransactionContentHint(Label):
@@ -143,7 +157,7 @@ class TransactionSummaryCommon(BaseScreen):
     async def __mount_transaction_metadata(self) -> None:
         expiration = humanize.humanize_datetime(self.transaction.expiration)
         things_to_mount = [
-            Label(f"Ref block num: {self.transaction.ref_block_num}"),
+            TaposHolder(self.transaction.ref_block_num, self.transaction.ref_block_prefix),
             Label(f"Expiration: {expiration}"),
             Label(f"Transaction ID: {self.transaction.calculate_transaction_id()}"),
         ]
