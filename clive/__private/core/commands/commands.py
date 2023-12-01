@@ -197,7 +197,9 @@ class Commands(Generic[WorldT]):
     async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
 
-    async def fast_broadcast(self, *, content: TransactionConvertibleType, sign_with: PublicKey) -> CommandWrapper:
+    async def fast_broadcast(
+        self, *, content: TransactionConvertibleType, sign_with: PublicKey
+    ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             FastBroadcast(
                 app_state=self._world.app_state,
