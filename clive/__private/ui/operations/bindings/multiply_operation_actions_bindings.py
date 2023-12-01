@@ -84,7 +84,7 @@ class MultiplyOperationsActionsBindings(CliveWidget, AbstractClassMessagePump):
             return
 
         for operation in operations:
-            if not (await self.app.world.commands.fast_broadcast(operation=operation, sign_with=key)).success:
+            if not (await self.app.world.commands.fast_broadcast(content=operation, sign_with=key)).success:
                 return
 
         self.app.pop_screen_until("Operations")

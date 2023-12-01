@@ -25,6 +25,6 @@ async def test_fast_broadcast_smoke_test(
 
     # ACT & ASSERT
     await world.commands.fast_broadcast(
-        operation=TransferOperation(from_="initminer", to="null", amount=Asset.hive(1), memo=""),
+        content=TransferOperation(from_="initminer", to="null", amount=Asset.hive(1), memo=""),
         sign_with=pubkey,
     )
