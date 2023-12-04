@@ -14,18 +14,18 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class BuildTransaction(CommandWithResult[Transaction]):
-    DEFAULT_UPDATE_METADATA: ClassVar[bool] = False
+    DEFAULT_FORCE_UPDATE_METADATA: ClassVar[bool] = False
 
     content: TransactionConvertibleType
-    update_metadata: bool = DEFAULT_UPDATE_METADATA
+    force_update_metadata: bool = DEFAULT_FORCE_UPDATE_METADATA
     node: Node | None = None
-    """Required only if update_metadata is True."""
+    """Required only if force_update_metadata is True or transaction tapos is not set."""
 
     async def _execute(self) -> None:
         transaction = ensure_transaction(self.content)
 
-        if self.update_metadata:
-            assert self.node is not None, "node is required when update_metadata is True"
+        if not transaction.is_tapos_set() or self.force_update_metadata:
+            assert self.node is not None, "node is required so that transaction metadata can be updated"
             await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
 
         self._result = transaction

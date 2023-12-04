@@ -134,13 +134,16 @@ class Commands(Generic[WorldT]):
         )
 
     async def build_transaction(
-        self, *, content: TransactionConvertibleType, update_metadata: bool = BuildTransaction.DEFAULT_UPDATE_METADATA
+        self,
+        *,
+        content: TransactionConvertibleType,
+        force_update_metadata: bool = BuildTransaction.DEFAULT_FORCE_UPDATE_METADATA,
     ) -> CommandWithResultWrapper[Transaction]:
         return await self.__surround_with_exception_handlers(
             BuildTransaction(
                 content=content,
-                update_metadata=update_metadata,
-                node=self._world.node if update_metadata else None,
+                force_update_metadata=force_update_metadata,
+                node=self._world.node,
             )
         )
 

@@ -62,9 +62,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     broadcast: bool = False
 
     async def _execute(self) -> None:
-        transaction = await BuildTransaction(
-            content=self.content, update_metadata=True, node=self.node
-        ).execute_with_result()
+        transaction = await BuildTransaction(content=self.content, node=self.node).execute_with_result()
 
         if self.sign_key and not self.force_unsign:
             transaction = await Sign(
