@@ -105,6 +105,7 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
 async def prepare_profile(node: tt.InitNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
     settings["secrets.node_address"] = f"http://{node.http_endpoint}"
+    settings["node.chain_id"] = "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e"
 
     ProfileData(
         WORKING_ACCOUNT.name,
