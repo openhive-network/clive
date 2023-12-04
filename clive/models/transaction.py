@@ -39,6 +39,9 @@ class Transaction(SchemasTransaction):
     def is_signed(self) -> bool:
         return bool(self.signatures)
 
+    def is_tapos_set(self) -> bool:
+        return bool(self.ref_block_num) and bool(self.ref_block_prefix)
+
     def calculate_transaction_id(self) -> TransactionId:
         from clive.__private.core import iwax
 
