@@ -31,8 +31,8 @@ class UpdateTransactionMetadata(Command):
         ref_block_num = tapos_data.ref_block_num
         ref_block_prefix = tapos_data.ref_block_prefix
 
-        assert ref_block_num != 0, "ref_block_num should be different than 0"
-        assert ref_block_prefix != 0, "ref_block_prefix should be different than 0"
+        assert ref_block_num >= 0, f"ref_block_num value `{ref_block_num}` is invalid`"
+        assert ref_block_prefix > 0, f"ref_block_prefix value `{ref_block_prefix}` is invalid`"
 
         self.transaction.ref_block_num = ref_block_num
         self.transaction.ref_block_prefix = ref_block_prefix

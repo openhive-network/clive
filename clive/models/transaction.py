@@ -16,8 +16,8 @@ from schemas.transaction import Transaction as SchemasTransaction
 
 class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationType] = Field(default_factory=list)
-    ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(0))
-    ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(0))
+    ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(-1))
+    ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(-1))
     expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
     extensions: list[Any] = Field(default_factory=list)
     signatures: list[Signature] = Field(default_factory=list)
@@ -40,7 +40,7 @@ class Transaction(SchemasTransaction):
         return bool(self.signatures)
 
     def is_tapos_set(self) -> bool:
-        return bool(self.ref_block_num) and bool(self.ref_block_prefix)
+        return self.ref_block_num >= 0 and self.ref_block_prefix > 0
 
     def calculate_transaction_id(self) -> TransactionId:
         from clive.__private.core import iwax
