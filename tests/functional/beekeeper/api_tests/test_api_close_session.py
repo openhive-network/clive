@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 from typing import Final
 
 import pytest
@@ -37,11 +38,22 @@ async def test_api_close_session() -> None:
 
 async def test_if_beekeeper_closes_after_last_session_termination() -> None:
     """Test test_api_close_session will test if beekeeper closes after closing last session."""
+
     # ARRANGE
+    async def wait_for_beekeeper_to_close() -> None:
+        while beekeeper.is_already_running_locally():
+            await asyncio.sleep(0.1)
+
     beekeeper = Beekeeper()
     await beekeeper.launch()
+
     # ACT
     await beekeeper.api.close_session()
+
+    try:
+        await asyncio.wait_for(wait_for_beekeeper_to_close(), timeout=1)
+    except asyncio.TimeoutError:
+        pytest.fail("Beekeeper was not closed after last session termination in the expected time.")
 
     # ASSERT
     with pytest.raises(CommunicationError, match="no response available"):
