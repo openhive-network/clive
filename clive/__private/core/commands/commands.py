@@ -8,7 +8,12 @@ from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.commands.data_retrieval.governance_data import GovernanceData, GovernanceDataRetrieval
+from clive.__private.core.commands.data_retrieval.governance_data import (
+    DEFAULT_LIMIT,
+    DEFAULT_MODE,
+    GovernanceData,
+    GovernanceDataRetrieval,
+)
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
@@ -262,8 +267,8 @@ class Commands(Generic[WorldT]):
         self,
         *,
         account_name: str,
-        limit: int = 150,
-        mode: Literal["search_by_name", "search_top"] = "search_top",
+        limit: int = DEFAULT_LIMIT,
+        mode: Literal["search_by_name", "search_top"] = DEFAULT_MODE,
         witness_name_pattern: str | None = None,
     ) -> CommandWithResultWrapper[GovernanceData]:
         return await self.__surround_with_exception_handlers(

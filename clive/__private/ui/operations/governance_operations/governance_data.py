@@ -6,7 +6,7 @@ from textual import work
 from textual.reactive import var
 
 from clive.__private.config import settings
-from clive.__private.core.commands.data_retrieval.governance_data import GovernanceData
+from clive.__private.core.commands.data_retrieval.governance_data import DEFAULT_LIMIT, DEFAULT_MODE, GovernanceData
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
@@ -31,8 +31,8 @@ class GovernanceDataProvider(CliveWidget):
         self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update_governance_data)
 
         self.__witness_pattern: str = ""
-        self.__limit: int = 150
-        self.__mode: Literal["search_by_name", "search_top"] = "search_top"
+        self.__limit: int = DEFAULT_LIMIT
+        self.__mode: Literal["search_by_name", "search_top"] = DEFAULT_MODE
         self.__witness_name_pattern: str | None = None
 
     @work(name="governance data update worker")
@@ -58,7 +58,7 @@ class GovernanceDataProvider(CliveWidget):
     def stop_refreshing_data(self) -> None:
         self.interval.stop()
 
-    def set_mode_witnesses_by_name(self, pattern: str | None = None, limit: int = 150) -> Worker[None]:
+    def set_mode_witnesses_by_name(self, pattern: str | None = None, limit: int = DEFAULT_LIMIT) -> Worker[None]:
         self.__mode = "search_by_name"
         self.__witness_name_pattern = pattern
         self.__limit = limit
@@ -66,8 +66,8 @@ class GovernanceDataProvider(CliveWidget):
         return self.update_governance_data()
 
     def set_mode_top_witnesses(self) -> Worker[None]:
-        self.__mode = "search_top"
+        self.__mode = DEFAULT_MODE
         self.__witness_name_pattern = None
-        self.__limit = 150
+        self.__limit = DEFAULT_LIMIT
 
         return self.update_governance_data()

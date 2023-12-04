@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from clive.models.aliased import DynamicGlobalProperties, Witness, WitnessesList, WitnessVotes
 
 MAX_POSSIBLE_NUMBER_OF_VOTES: Final[int] = 2**63 - 1
+DEFAULT_LIMIT: Final[int] = 150
+DEFAULT_MODE: Final[Literal["search_top"]] = "search_top"
 
 
 @dataclass
@@ -64,8 +66,8 @@ class GovernanceData:
 class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, GovernanceData]):
     node: Node
     account_name: str
-    limit: int = 150
-    mode: Literal["search_by_name", "search_top"] = "search_top"
+    limit: int = DEFAULT_LIMIT
+    mode: Literal["search_by_name", "search_top"] = DEFAULT_MODE
     witness_name_pattern: str | None = None
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
