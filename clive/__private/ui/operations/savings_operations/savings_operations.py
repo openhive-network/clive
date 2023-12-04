@@ -7,13 +7,13 @@ from textual.containers import Container, Grid, Horizontal, ScrollableContainer,
 from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding, OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
-from clive.__private.ui.operations.savings_operations.savings_data import SavingsDataProvider
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton

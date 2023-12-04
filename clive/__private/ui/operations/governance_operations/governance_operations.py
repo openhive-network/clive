@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from textual.widgets import TabPane
 
+from clive.__private.ui.data_providers.governance_data_provider import GovernanceDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.operations.governance_operations.governance_data import GovernanceDataProvider
 from clive.__private.ui.operations.governance_operations.proxy import Proxy
 from clive.__private.ui.operations.governance_operations.witness import Witnesses
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen

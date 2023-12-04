@@ -8,9 +8,9 @@ from textual.containers import Grid, ScrollableContainer
 from textual.css.query import NoMatches
 from textual.widgets import Input, Static
 
+from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
-from clive.__private.ui.operations.savings_operations.savings_data import SavingsDataProvider
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.id_input import IdInput
