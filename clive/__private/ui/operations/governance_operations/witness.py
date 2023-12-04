@@ -369,6 +369,8 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         else:
             self.__actions_votes += 1
 
+        self.__actions_to_perform.pop(name)
+
     @staticmethod
     def get_witness_action_row(name: str) -> str:
         return f"#{convert_witness_name_to_widget_id(name)}-witness-action-row"
