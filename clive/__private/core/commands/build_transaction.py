@@ -27,5 +27,8 @@ class BuildTransaction(CommandWithResult[Transaction]):
         if self.update_metadata:
             assert self.node is not None, "node is required when update_metadata is True"
             await UpdateTransactionMetadata(transaction=transaction, node=self.node).execute()
+        else:
+            assert transaction.ref_block_num != 0, "ref_block_num should be set (different than 0)"
+            assert transaction.ref_block_prefix != 0, "ref_block_prefix should be set (different than 0)"
 
         self._result = transaction
