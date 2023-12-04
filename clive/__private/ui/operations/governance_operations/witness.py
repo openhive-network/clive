@@ -16,8 +16,8 @@ from textual.widgets import Input, Label, Static, TabPane
 
 from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.data_providers.governance_data_provider import GovernanceDataProvider
+from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.witness_checkbox import WitnessCheckbox
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton

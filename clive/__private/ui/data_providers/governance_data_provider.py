@@ -5,15 +5,14 @@ from typing import TYPE_CHECKING
 from textual import work
 from textual.reactive import var
 
-from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.governance_data import GovernanceData, GovernanceDataRetrieval
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.data_providers.abc.data_provider import BaseDataProvider
 
 if TYPE_CHECKING:
     from textual.worker import Worker
 
 
-class GovernanceDataProvider(CliveWidget):
+class GovernanceDataProvider(BaseDataProvider):
     """
     A class for retrieving information about governance stored in a GovernanceData dataclass.
 
@@ -27,16 +26,13 @@ class GovernanceDataProvider(CliveWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        self.update_governance_data()
-        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update_governance_data)
-
         self.__witness_pattern: str = ""
         self.__search_by_name_limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
         self.__mode: GovernanceDataRetrieval.Modes = GovernanceDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern: str | None = None
 
     @work(name="governance data update worker")
-    async def update_governance_data(self) -> None:
+    async def update_provider_data(self) -> None:
         proxy = self.app.world.profile_data.working_account.data.proxy
         account_name = proxy if proxy else self.app.world.profile_data.working_account.name
 
@@ -55,9 +51,6 @@ class GovernanceDataProvider(CliveWidget):
         if result.number_of_votes != self.content.number_of_votes or result.witness_names != self.content.witness_names:
             self.content = result
 
-    def stop_refreshing_data(self) -> None:
-        self.interval.stop()
-
     def set_mode_witnesses_by_name(
         self, pattern: str | None = None, limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
     ) -> Worker[None]:
@@ -65,11 +58,11 @@ class GovernanceDataProvider(CliveWidget):
         self.__witness_name_pattern = pattern
         self.__search_by_name_limit = limit
 
-        return self.update_governance_data()
+        return self.update_provider_data()
 
     def set_mode_top_witnesses(self) -> Worker[None]:
         self.__mode = GovernanceDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern = None
         self.__search_by_name_limit = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
 
-        return self.update_governance_data()
+        return self.update_provider_data()
