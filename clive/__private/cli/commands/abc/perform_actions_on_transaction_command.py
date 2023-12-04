@@ -49,6 +49,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
                 content=await self._get_transaction_content(),
+                update_metadata=True,
                 sign_key=self.__get_key_to_sign(),
                 already_signed_mode=self.already_signed_mode,
                 force_unsign=self.force_unsign,

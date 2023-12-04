@@ -35,6 +35,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     app_state: The app state.
     node: The node which will be used for transaction broadcasting.
     beekeeper: The beekeeper to use to sign the transaction.
+    update_metadata: Whether to update the metadata of the transaction.
     sign_key: The private key to sign the transaction with. If not provided, the transaction will not be signed.
     already_signed_mode: How to handle the situation when transaction is already signed.
     force_unsign: Whether to remove the signature from the transaction. Even when sign_key is provided.
@@ -53,6 +54,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     app_state: AppStateProtocol
     node: Node
     beekeeper: Beekeeper
+    update_metadata: bool = BuildTransaction.DEFAULT_UPDATE_METADATA
     sign_key: PublicKey | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
@@ -63,7 +65,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
 
     async def _execute(self) -> None:
         transaction = await BuildTransaction(
-            content=self.content, update_metadata=True, node=self.node
+            content=self.content, update_metadata=self.update_metadata, node=self.node
         ).execute_with_result()
 
         if self.sign_key and not self.force_unsign:

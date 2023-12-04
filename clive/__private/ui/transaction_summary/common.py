@@ -185,6 +185,7 @@ class TransactionSummaryCommon(BaseScreen):
             transaction = (
                 await self.app.world.commands.perform_actions_on_transaction(
                     content=transaction,
+                    update_metadata=False,  # we don't want to update metadata as the transaction should be already ready
                     sign_key=self.__get_key_to_sign() if should_be_signed else None,
                     force_unsign=not should_be_signed,
                     save_file_path=file_path,
@@ -219,6 +220,7 @@ class TransactionSummaryCommon(BaseScreen):
             (
                 await self.app.world.commands.perform_actions_on_transaction(
                     content=transaction,
+                    update_metadata=False,  # we don't want to update metadata as the transaction should be already ready
                     sign_key=self.__get_key_to_sign() if not transaction.is_signed() else None,
                     broadcast=True,
                 )

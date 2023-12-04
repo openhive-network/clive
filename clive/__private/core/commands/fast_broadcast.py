@@ -28,6 +28,7 @@ class FastBroadcast(CommandInActive, CommandWithResult[Transaction]):
             app_state=self.app_state,
             node=self.node,
             beekeeper=self.beekeeper,
+            update_metadata=True,
             sign_key=self.sign_with,
             save_file_path=None,
             broadcast=True,
