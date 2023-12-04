@@ -117,8 +117,9 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         retrieved about ranks from the top_150_witnesses response.
         The witnesses that are returned are sorted first by the `voted` parameter and then by rank.
         """
-        top_150_witnesses = {
-            witness.owner: WitnessData(
+
+        def create_witness_data(witness: Witness, rank: int | None = None) -> WitnessData:
+            return WitnessData(
                 witness.owner,
                 created=witness.created,
                 rank=rank,
@@ -134,6 +135,9 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 version=witness.running_version,
                 url=witness.url,
             )
+
+        top_150_witnesses = {
+            witness.owner: create_witness_data(witness, rank)
             for rank, witness in enumerate(data.top_150_witnesses, start=1)
         }
 
@@ -150,22 +154,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         if self.mode == "search_by_name" and data.witnesses_searched_by_name is not None:
             searched_witnesses_by_name = {
                 witness.owner: (
-                    WitnessData(
-                        witness.owner,
-                        created=witness.created,
-                        rank=None,
-                        votes=humanize_hive_power(
-                            self.calculate_hp_from_votes(
-                                witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
-                            )
-                        ),
-                        missed_blocks=witness.total_missed,
-                        voted=witness.owner in data.witnesses_votes,
-                        last_block=witness.last_confirmed_block_num,
-                        price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
-                        version=witness.running_version,
-                        url=witness.url,
-                    )
+                    create_witness_data(witness)
                     if witness.owner not in top_150_witnesses.keys()
                     else top_150_witnesses[witness.owner]
                 )
