@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, Literal
@@ -136,35 +137,46 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 url=witness.url,
             )
 
-        top_150_witnesses = {
+        top_150_witnesses: dict[str, WitnessData] = {
             witness.owner: create_witness_data(witness, rank)
             for rank, witness in enumerate(data.top_150_witnesses, start=1)
         }
 
-        searched_witnesses = top_150_witnesses
-        for witness_name in data.witnesses_votes:
-            if witness_name not in searched_witnesses.keys():
-                searched_witnesses[witness_name] = WitnessData(name=witness_name, voted=True)  # type: ignore[index]
-                searched_witnesses.popitem()
+        # Include witnesses that account voted for but are not included in the top
+        voted_but_not_in_top_witnesses: dict[str, WitnessData] = {
+            witness_name: WitnessData(witness_name, voted=True)
+            for witness_name in data.witnesses_votes
+            if witness_name not in top_150_witnesses
+        }
 
-        sorted_witnesses = dict(
-            sorted(searched_witnesses.items(), key=lambda witness: (not witness[1].voted, witness[1].rank))
+        for _ in voted_but_not_in_top_witnesses:
+            top_150_witnesses.popitem()
+
+        top_150_witnesses.update(voted_but_not_in_top_witnesses)
+
+        # Sort the witnesses based on voted status and rank
+        sorted_witnesses = OrderedDict(
+            sorted(top_150_witnesses.items(), key=lambda witness: (not witness[1].voted, witness[1].rank))
         )
 
-        if self.mode == "search_by_name" and data.witnesses_searched_by_name is not None:
-            searched_witnesses_by_name = {
-                witness.owner: (
-                    create_witness_data(witness)
-                    if witness.owner not in top_150_witnesses.keys()
-                    else top_150_witnesses[witness.owner]
-                )
-                for witness in data.witnesses_searched_by_name
-            }
+        if self.mode == "search_by_name":
+            assert data.witnesses_searched_by_name is not None, "Witnesses searched by name are missing"
+
+            searched_witnesses_by_name: OrderedDict[str, WitnessData] = OrderedDict(
+                {
+                    witness.owner: (
+                        create_witness_data(witness)
+                        if witness.owner not in top_150_witnesses.keys()
+                        else top_150_witnesses[witness.owner]
+                    )
+                    for witness in data.witnesses_searched_by_name
+                }
+            )
             sorted_witnesses = searched_witnesses_by_name  # they are already sorted by_name
 
         assert len(sorted_witnesses) == self.limit
 
-        return GovernanceData(witnesses=sorted_witnesses, number_of_votes=len(data.witnesses_votes))  # type: ignore[arg-type]
+        return GovernanceData(witnesses=sorted_witnesses, number_of_votes=len(data.witnesses_votes))
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
         assert data is not None, "DynamicGlobalProperties data is missing"
