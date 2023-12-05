@@ -26,8 +26,8 @@ class WitnessData:
     missed_blocks: int = 0
     last_block: int = 0
     price_feed: str = "?"
-    version: str = ""
-    url: str = ""
+    version: str = "?"
+    url: str = "?"
 
 
 @dataclass
