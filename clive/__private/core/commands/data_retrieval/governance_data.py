@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
@@ -59,14 +59,16 @@ class GovernanceData:
 
 @dataclass(kw_only=True)
 class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, GovernanceData]):
+    Modes: ClassVar[TypeAlias] = Literal["search_by_name", "search_top"]
+
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     DEFAULT_LIMIT: ClassVar[int] = 150
-    DEFAULT_MODE: ClassVar[Literal["search_top"]] = "search_top"
+    DEFAULT_MODE: ClassVar[Modes] = "search_top"
 
     node: Node
     account_name: str
     limit: int = DEFAULT_LIMIT
-    mode: Literal["search_by_name", "search_top"] = DEFAULT_MODE
+    mode: Modes = DEFAULT_MODE
     witness_name_pattern: str | None = None
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:

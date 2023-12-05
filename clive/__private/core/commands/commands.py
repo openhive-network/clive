@@ -266,7 +266,7 @@ class Commands(Generic[WorldT]):
         *,
         account_name: str,
         limit: int = GovernanceDataRetrieval.DEFAULT_LIMIT,
-        mode: Literal["search_by_name", "search_top"] = GovernanceDataRetrieval.DEFAULT_MODE,
+        mode: GovernanceDataRetrieval.Modes = GovernanceDataRetrieval.DEFAULT_MODE,
         witness_name_pattern: str | None = None,
     ) -> CommandWithResultWrapper[GovernanceData]:
         return await self.__surround_with_exception_handlers(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING
 
 from textual import work
 from textual.reactive import var
@@ -32,7 +32,7 @@ class GovernanceDataProvider(CliveWidget):
 
         self.__witness_pattern: str = ""
         self.__limit = GovernanceDataRetrieval.DEFAULT_LIMIT
-        self.__mode: Literal["search_by_name", "search_top"] = GovernanceDataRetrieval.DEFAULT_MODE
+        self.__mode: GovernanceDataRetrieval.Modes = GovernanceDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern: str | None = None
 
     @work(name="governance data update worker")
