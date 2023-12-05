@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import TYPE_CHECKING
 
 from textual import work
 from textual.reactive import var
@@ -8,6 +9,9 @@ from textual.reactive import var
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.config import settings
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+
+if TYPE_CHECKING:
+    from textual.worker import Worker
 
 
 class DataProvider(CliveWidget, AbstractClassMessagePump):
@@ -38,3 +42,16 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
 
     def stop(self) -> None:
         self.interval.stop()
+
+    def pause(self) -> None:
+        self.interval.pause()
+
+    def resume(self) -> None:
+        self.interval.resume()
+
+    def restart(self) -> Worker[None]:
+        worker = self.update()
+        self.interval.reset()
+        self.interval.resume()
+
+        return worker
