@@ -31,7 +31,7 @@ class GovernanceDataProvider(CliveWidget):
         self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update_governance_data)
 
         self.__witness_pattern: str = ""
-        self.__limit = GovernanceDataRetrieval.DEFAULT_LIMIT
+        self.__search_by_name_limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
         self.__mode: GovernanceDataRetrieval.Modes = GovernanceDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern: str | None = None
 
@@ -42,9 +42,9 @@ class GovernanceDataProvider(CliveWidget):
 
         wrapper = await self.app.world.commands.retrieve_governance_data(
             account_name=account_name,
-            limit=self.__limit,
             mode=self.__mode,
             witness_name_pattern=self.__witness_name_pattern,
+            search_by_name_limit=self.__search_by_name_limit,
         )
 
         if wrapper.error_occurred:
@@ -59,17 +59,17 @@ class GovernanceDataProvider(CliveWidget):
         self.interval.stop()
 
     def set_mode_witnesses_by_name(
-        self, pattern: str | None = None, limit: int = GovernanceDataRetrieval.DEFAULT_LIMIT
+        self, pattern: str | None = None, limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
     ) -> Worker[None]:
         self.__mode = "search_by_name"
         self.__witness_name_pattern = pattern
-        self.__limit = limit
+        self.__search_by_name_limit = limit
 
         return self.update_governance_data()
 
     def set_mode_top_witnesses(self) -> Worker[None]:
         self.__mode = GovernanceDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern = None
-        self.__limit = GovernanceDataRetrieval.DEFAULT_LIMIT
+        self.__search_by_name_limit = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
 
         return self.update_governance_data()
