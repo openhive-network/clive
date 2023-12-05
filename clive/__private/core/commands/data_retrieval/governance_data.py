@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import OrderedDict
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
@@ -11,15 +11,9 @@ from clive.__private.core.commands.abc.command_data_retrieval import (
 from clive.__private.core.formatters.humanize import humanize_hive_power
 
 if TYPE_CHECKING:
-    from typing import Final
-
     from clive.__private.core.node import Node
     from clive.models import Asset
     from clive.models.aliased import DynamicGlobalProperties, Witness, WitnessesList, WitnessVotes
-
-MAX_POSSIBLE_NUMBER_OF_VOTES: Final[int] = 2**63 - 1
-DEFAULT_LIMIT: Final[int] = 150
-DEFAULT_MODE: Final[Literal["search_top"]] = "search_top"
 
 
 @dataclass
@@ -65,6 +59,10 @@ class GovernanceData:
 
 @dataclass(kw_only=True)
 class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, GovernanceData]):
+    MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
+    DEFAULT_LIMIT: ClassVar[int] = 150
+    DEFAULT_MODE: ClassVar[Literal["search_top"]] = "search_top"
+
     node: Node
     account_name: str
     limit: int = DEFAULT_LIMIT
@@ -83,7 +81,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 )
 
                 top_witnesses = await node.api.database_api.list_witnesses(
-                    start=(MAX_POSSIBLE_NUMBER_OF_VOTES, ""), limit=self.limit, order="by_vote_name"
+                    start=(self.MAX_POSSIBLE_NUMBER_OF_VOTES, ""), limit=self.limit, order="by_vote_name"
                 )
 
                 witnesses_by_name: WitnessesList | None = None
