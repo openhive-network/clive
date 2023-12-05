@@ -328,7 +328,6 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         super().__init__()
         self.__actions_to_perform: dict[str, bool] = {}
 
-        self.__provider = self.app.query_one(GovernanceDataProvider)
         self.__actions_votes = 0
 
     def compose(self) -> ComposeResult:
@@ -379,12 +378,16 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         return f"#{convert_witness_name_to_widget_id(name)}-witness-action-row"
 
     @property
+    def provider(self) -> GovernanceDataProvider:
+        return self.app.query_one(GovernanceDataProvider)
+
+    @property
     def actions_to_perform(self) -> dict[str, bool]:
         return self.__actions_to_perform
 
     @property
     def actual_number_of_votes(self) -> int:
-        return self.__provider.content.number_of_votes + self.__actions_votes
+        return self.provider.content.number_of_votes + self.__actions_votes
 
 
 class WitnessesList(Vertical, CliveWidget):
@@ -444,7 +447,6 @@ class WitnessesListHeader(Grid):
 class WitnessesTable(Vertical, CliveWidget, can_focus=False):
     def __init__(self) -> None:
         super().__init__()
-        self.__provider = self.app.query_one(GovernanceDataProvider)
         self.__witness_index = 0
 
         self.__header = WitnessesListHeader()
@@ -466,11 +468,11 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         self.__is_loading = False
 
     async def search_witnesses(self, pattern: str, limit: int) -> None:
-        await self.__provider.set_mode_witnesses_by_name(pattern=pattern, limit=limit).wait()
+        await self.provider.set_mode_witnesses_by_name(pattern=pattern, limit=limit).wait()
         await self.reset_page()
 
     async def clear_searched_witnesses(self) -> None:
-        await self.__provider.set_mode_top_witnesses().wait()
+        await self.provider.set_mode_top_witnesses().wait()
         await self.reset_page()
 
     async def reset_page(self) -> None:
@@ -519,7 +521,7 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         await self.__sync_witnesses_list(focus_first_witness=True)
 
     def on_mount(self) -> None:
-        self.watch(self.__provider, "content", callback=lambda: self.__sync_witnesses_list())
+        self.watch(self.provider, "content", callback=lambda: self.__sync_witnesses_list())
 
     async def __sync_witnesses_list(self, focus_first_witness: bool = False) -> None:
         await self.__set_loading()
@@ -537,14 +539,18 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         self.__set_loaded()
 
     @property
+    def provider(self) -> GovernanceDataProvider:
+        return self.app.query_one(GovernanceDataProvider)
+
+    @property
     def amount_of_fetched_witnesses(self) -> int:
-        return len(self.__provider.content.witnesses)
+        return len(self.provider.content.witnesses)
 
     @property
     def witnesses_chunk(self) -> list[WitnessData] | None:
-        if self.__provider.content.witnesses is None:
+        if self.provider.content.witnesses is None:
             return None
-        return list(self.__provider.content.witnesses.values())[
+        return list(self.provider.content.witnesses.values())[
             self.__witness_index : self.__witness_index + MAX_WITNESSES_ON_PAGE
         ]
 
