@@ -62,6 +62,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
     Modes: ClassVar[TypeAlias] = Literal["search_by_name", "search_top"]
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
+    MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR: ClassVar[int] = 30
     DEFAULT_LIMIT: ClassVar[int] = 150
     DEFAULT_MODE: ClassVar[Modes] = "search_top"
 
@@ -79,7 +80,9 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 gdpo = await node.api.database_api.get_dynamic_global_properties()
 
                 witness_votes = await node.api.database_api.list_witness_votes(
-                    start=(self.account_name, ""), limit=30, order="by_account_witness"
+                    start=(self.account_name, ""),
+                    limit=self.MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR,
+                    order="by_account_witness",
                 )
 
                 top_witnesses = await node.api.database_api.list_witnesses(
