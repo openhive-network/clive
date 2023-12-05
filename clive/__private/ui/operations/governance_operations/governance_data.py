@@ -61,7 +61,7 @@ class GovernanceDataProvider(CliveWidget):
     def set_mode_witnesses_by_name(
         self, pattern: str | None = None, limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
     ) -> Worker[None]:
-        self.__mode = "search_by_name"
+        self.__mode = "search_by_pattern"
         self.__witness_name_pattern = pattern
         self.__search_by_name_limit = limit
 

@@ -275,7 +275,7 @@ class Commands(Generic[WorldT]):
                 account_name=account_name,
                 mode=mode,
                 witness_name_pattern=witness_name_pattern,
-                search_by_name_limit=search_by_name_limit,
+                search_by_pattern_limit=search_by_name_limit,
             )
         )
 

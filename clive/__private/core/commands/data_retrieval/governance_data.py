@@ -59,7 +59,21 @@ class GovernanceData:
 
 @dataclass(kw_only=True)
 class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, GovernanceData]):
-    Modes: ClassVar[TypeAlias] = Literal["search_by_name", "search_top"]
+    Modes: ClassVar[TypeAlias] = Literal["search_by_pattern", "search_top_with_unvoted_first"]
+    """
+    Available modes for retrieving governance data.
+
+    search_by_pattern:
+    ------------------
+    Retrieves witnesses by name pattern. The list is sorted the same way as it comes from list_witnesses (sort by_name) call.
+    Amount of witnesses is limited to the search_by_name_limit.
+
+    search_top_with_unvoted_first:
+    ------------------------------
+    Retrieves top witnesses with the ones voted for by the account.
+    The list is sorted by the unvoted status and then by rank.
+    Amount of witnesses is limited to the TOP_WITNESSES_HARD_LIMIT.
+    """
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR: ClassVar[int] = 30
@@ -73,9 +87,9 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
     account_name: str
     mode: Modes = DEFAULT_MODE
     witness_name_pattern: str | None = None
-    """Required only if mode is set to search_by_name."""
-    search_by_name_limit: int = DEFAULT_SEARCH_BY_NAME_LIMIT
-    """Doesn't matter if mode is different than search_by_name."""
+    """Required only if mode is set to search_by_pattern."""
+    search_by_pattern_limit: int = DEFAULT_SEARCH_BY_NAME_LIMIT
+    """Doesn't matter if mode is different than search_by_pattern."""
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
         # This is due to receiving large json and counting aiohttp await response.json().
@@ -98,17 +112,17 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
 
                 witnesses_by_name: WitnessesList | None = None
 
-                if self.mode == "search_by_name":
+                if self.mode == "search_by_pattern":
                     witnesses_by_name = await node.api.database_api.list_witnesses(
                         start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
-                        limit=self.search_by_name_limit,
+                        limit=self.search_by_pattern_limit,
                         order="by_name",
                     )
 
                 return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
-        in_search_by_name_mode = self.mode == "search_by_name"
+        in_search_by_name_mode = self.mode == "search_by_pattern"
         return SanitizedData(
             gdpo=self.__assert_gdpo(data.gdpo),
             witnesses_votes=self.__assert_witnesses_votes(data.list_witnesses_votes),
@@ -121,7 +135,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
     async def _process_data(self, data: SanitizedData) -> GovernanceData:
         if self.mode == "search_top":
             witnesses = self.__get_top_witnesses_with_unvoted_first(data)
-        elif self.mode == "search_by_name":
+        elif self.mode == "search_by_pattern":
             witnesses = self.__get_witnesses_by_pattern(data)
         else:
             raise NotImplementedError(f"Unknown mode: {self.mode}")
@@ -137,12 +151,6 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         )
 
     def __get_top_witnesses_with_unvoted_first(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
-        """
-        Get the list of top witnesses with the ones voted for by the account.
-
-        The list is sorted by the unvoted status and then by rank.
-        Amount of witnesses is limited to the TOP_WITNESSES_HARD_LIMIT.
-        """
         top_witnesses = self.__get_top_witnesses(data)
 
         # Include witnesses that account voted for but are not included in the top
@@ -165,12 +173,6 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         )
 
     def __get_witnesses_by_pattern(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
-        """
-        Get the list of witnesses searched by name pattern.
-
-        The list is sorted the same way as it comes from list_witnesses (sort by_name) call.
-        Amount of witnesses is limited to the search_by_name_limit.
-        """
         assert data.witnesses_searched_by_name is not None, "Witnesses searched by name are missing"
 
         # Get the processed list of top witnesses because it is needed to get the rank of the searched witnesses
@@ -184,7 +186,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 witness_data = self.__create_witness_data(witness, data)
             witnesses[witness.owner] = witness_data
 
-        assert len(witnesses) == self.search_by_name_limit
+        assert len(witnesses) == self.search_by_pattern_limit
         return witnesses
 
     def __create_witness_data(self, witness: Witness, data: SanitizedData, *, rank: int | None = None) -> WitnessData:
