@@ -119,38 +119,31 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         )
 
     async def _process_data(self, data: SanitizedData) -> GovernanceData:
+        if self.mode == "search_top":
+            witnesses = self.__get_top_witnesses_with_unvoted_first(data)
+        elif self.mode == "search_by_name":
+            witnesses = self.__get_witnesses_by_pattern(data)
+        else:
+            raise NotImplementedError(f"Unknown mode: {self.mode}")
+
+        return GovernanceData(witnesses=witnesses, number_of_votes=len(data.witnesses_votes))
+
+    def __get_top_witnesses(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
+        return OrderedDict(
+            {
+                witness.owner: self.__create_witness_data(witness, data, rank=rank)
+                for rank, witness in enumerate(data.top_witnesses, start=1)
+            }
+        )
+
+    def __get_top_witnesses_with_unvoted_first(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
         """
-        The function first checks if a witness from the api `list_witnesses` is in witnesses_votes - if so, set the voted parameter to True.
+        Get the list of top witnesses with the ones voted for by the account.
 
-        If the witness voted for by the account is not in the `list_witnesses` response - remove the last witness in searched_witnesses and
-        add the witness the account voted for to it.
-        If the user wants to order by_name, the function returns a list of searched witnesses by_name with the information
-        retrieved about ranks from the top_150_witnesses response.
-        The witnesses that are returned are sorted first by the `voted` parameter and then by rank.
+        The list is sorted by the unvoted status and then by rank.
+        Amount of witnesses is limited to the TOP_WITNESSES_HARD_LIMIT.
         """
-
-        def create_witness_data(witness: Witness, rank: int | None = None) -> WitnessData:
-            return WitnessData(
-                witness.owner,
-                created=witness.created,
-                rank=rank,
-                votes=humanize_hive_power(
-                    self.calculate_hp_from_votes(
-                        witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
-                    )
-                ),
-                missed_blocks=witness.total_missed,
-                voted=witness.owner in data.witnesses_votes,
-                last_block=witness.last_confirmed_block_num,
-                price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
-                version=witness.running_version,
-                url=witness.url,
-            )
-
-        top_witnesses: dict[str, WitnessData] = {
-            witness.owner: create_witness_data(witness, rank)
-            for rank, witness in enumerate(data.top_witnesses, start=1)
-        }
+        top_witnesses = self.__get_top_witnesses(data)
 
         # Include witnesses that account voted for but are not included in the top
         voted_but_not_in_top_witnesses: dict[str, WitnessData] = {
@@ -162,33 +155,55 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         for _ in voted_but_not_in_top_witnesses:
             top_witnesses.popitem()
 
-        top_witnesses.update(voted_but_not_in_top_witnesses)
+        top_witnesses_with_all_voted_for = voted_but_not_in_top_witnesses | top_witnesses
 
-        # Sort the witnesses based on voted status and rank
-        sorted_witnesses = OrderedDict(
-            sorted(top_witnesses.items(), key=lambda witness: (not witness[1].voted, witness[1].rank))
+        # Sort the witnesses based on unvoted status and rank
+        return OrderedDict(
+            sorted(
+                top_witnesses_with_all_voted_for.items(), key=lambda witness: (not witness[1].voted, witness[1].rank)
+            )
         )
 
-        if self.mode == "search_by_name":
-            assert data.witnesses_searched_by_name is not None, "Witnesses searched by name are missing"
+    def __get_witnesses_by_pattern(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
+        """
+        Get the list of witnesses searched by name pattern.
 
-            searched_witnesses_by_name: OrderedDict[str, WitnessData] = OrderedDict(
-                {
-                    witness.owner: (
-                        create_witness_data(witness)
-                        if witness.owner not in top_witnesses
-                        else top_witnesses[witness.owner]
-                    )
-                    for witness in data.witnesses_searched_by_name
-                }
-            )
-            sorted_witnesses = searched_witnesses_by_name  # they are already sorted by_name
+        The list is sorted the same way as it comes from list_witnesses (sort by_name) call.
+        Amount of witnesses is limited to the search_by_name_limit.
+        """
+        assert data.witnesses_searched_by_name is not None, "Witnesses searched by name are missing"
 
-            assert len(sorted_witnesses) == self.search_by_name_limit
-        else:
-            assert len(sorted_witnesses) <= self.TOP_WITNESSES_HARD_LIMIT
+        # Get the processed list of top witnesses because it is needed to get the rank of the searched witnesses
+        top_witnesses = self.__get_top_witnesses(data)
 
-        return GovernanceData(witnesses=sorted_witnesses, number_of_votes=len(data.witnesses_votes))
+        witnesses: OrderedDict[str, WitnessData] = OrderedDict()
+        for witness in data.witnesses_searched_by_name:
+            if witness.owner in top_witnesses:
+                witness_data = top_witnesses[witness.owner]
+            else:
+                witness_data = self.__create_witness_data(witness, data)
+            witnesses[witness.owner] = witness_data
+
+        assert len(witnesses) == self.search_by_name_limit
+        return witnesses
+
+    def __create_witness_data(self, witness: Witness, data: SanitizedData, *, rank: int | None = None) -> WitnessData:
+        return WitnessData(
+            witness.owner,
+            created=witness.created,
+            rank=rank,
+            votes=humanize_hive_power(
+                self.calculate_hp_from_votes(
+                    witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
+                )
+            ),
+            missed_blocks=witness.total_missed,
+            voted=witness.owner in data.witnesses_votes,
+            last_block=witness.last_confirmed_block_num,
+            price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
+            version=witness.running_version,
+            url=witness.url,
+        )
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
         assert data is not None, "DynamicGlobalProperties data is missing"
