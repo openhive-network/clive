@@ -322,8 +322,9 @@ class ProfileData(Context):
 
     @classmethod
     def list_profiles(cls) -> list[str]:
+        """Get a list of all profiles sorted alphabetically."""
         with cls.__open_database() as db:
-            return list(db.keys() - {cls._DEFAULT_PROFILE_IDENTIFIER})
+            return sorted(db.keys() - {cls._DEFAULT_PROFILE_IDENTIFIER})
 
     @staticmethod
     def __default_chain_id() -> str | None:
