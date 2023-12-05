@@ -46,7 +46,7 @@ class HarvestedDataRaw:
 @dataclass
 class SanitizedData:
     gdpo: DynamicGlobalProperties
-    witnesses_votes: dict[str, str]
+    witnesses_votes: list[str]
     top_150_witnesses: list[Witness]
     witnesses_searched_by_name: list[Witness] | None
     """Could be None, as there is no need to download it when the order is by votes."""
@@ -129,7 +129,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                     )
                 ),
                 missed_blocks=witness.total_missed,
-                voted=witness.owner in data.witnesses_votes.values(),
+                voted=witness.owner in data.witnesses_votes,
                 last_block=witness.last_confirmed_block_num,
                 price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
                 version=witness.running_version,
@@ -142,9 +142,9 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         }
 
         searched_witnesses = top_150_witnesses
-        for witness in data.witnesses_votes.items():
-            if witness[0] not in searched_witnesses.keys():
-                searched_witnesses[witness[0]] = WitnessData(name=witness[1], voted=True)  # type: ignore[index]
+        for witness_name in data.witnesses_votes:
+            if witness_name not in searched_witnesses.keys():
+                searched_witnesses[witness_name] = WitnessData(name=witness_name, voted=True)  # type: ignore[index]
                 searched_witnesses.popitem()
 
         sorted_witnesses = dict(
@@ -162,20 +162,17 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
             }
             sorted_witnesses = searched_witnesses_by_name  # they are already sorted by_name
 
+        assert len(sorted_witnesses) == self.limit
+
         return GovernanceData(witnesses=sorted_witnesses, number_of_votes=len(data.witnesses_votes))  # type: ignore[arg-type]
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def __assert_witnesses_votes(self, data: WitnessVotes | None) -> dict[str, str]:
+    def __assert_witnesses_votes(self, data: WitnessVotes | None) -> list[str]:
         assert data is not None, "ListWitnessVotes data is missing"
-
-        return {
-            witness_vote.witness: witness_vote.witness
-            for witness_vote in data.votes
-            if witness_vote.account == self.account_name
-        }
+        return [witness_vote.witness for witness_vote in data.votes if witness_vote.account == self.account_name]
 
     def __assert_list_witnesses(self, data: WitnessesList | None) -> list[Witness]:
         assert data is not None, "ListWitnesses data is missing"
