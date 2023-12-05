@@ -34,7 +34,7 @@ class WitnessData:
 class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
     list_witnesses_votes: WitnessVotes | None = None
-    top_150_witnesses: WitnessesList | None = None
+    top_witnesses: WitnessesList | None = None
     witnesses_searched_by_name: WitnessesList | None = None
 
 
@@ -42,7 +42,7 @@ class HarvestedDataRaw:
 class SanitizedData:
     gdpo: DynamicGlobalProperties
     witnesses_votes: list[str]
-    top_150_witnesses: list[Witness]
+    top_witnesses: list[Witness]
     witnesses_searched_by_name: list[Witness] | None
     """Could be None, as there is no need to download it when the order is by votes."""
 
@@ -63,14 +63,19 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR: ClassVar[int] = 30
-    DEFAULT_LIMIT: ClassVar[int] = 150
+
+    TOP_WITNESSES_HARD_LIMIT: ClassVar[int] = 150
+
+    DEFAULT_SEARCH_BY_NAME_LIMIT: ClassVar[int] = 50
     DEFAULT_MODE: ClassVar[Modes] = "search_top"
 
     node: Node
     account_name: str
-    limit: int = DEFAULT_LIMIT
     mode: Modes = DEFAULT_MODE
     witness_name_pattern: str | None = None
+    """Required only if mode is set to search_by_name."""
+    search_by_name_limit: int = DEFAULT_SEARCH_BY_NAME_LIMIT
+    """Doesn't matter if mode is different than search_by_name."""
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
         # This is due to receiving large json and counting aiohttp await response.json().
@@ -86,7 +91,9 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 )
 
                 top_witnesses = await node.api.database_api.list_witnesses(
-                    start=(self.MAX_POSSIBLE_NUMBER_OF_VOTES, ""), limit=self.limit, order="by_vote_name"
+                    start=(self.MAX_POSSIBLE_NUMBER_OF_VOTES, ""),
+                    limit=self.TOP_WITNESSES_HARD_LIMIT,
+                    order="by_vote_name",
                 )
 
                 witnesses_by_name: WitnessesList | None = None
@@ -94,7 +101,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 if self.mode == "search_by_name":
                     witnesses_by_name = await node.api.database_api.list_witnesses(
                         start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
-                        limit=self.limit,
+                        limit=self.search_by_name_limit,
                         order="by_name",
                     )
 
@@ -105,7 +112,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         return SanitizedData(
             gdpo=self.__assert_gdpo(data.gdpo),
             witnesses_votes=self.__assert_witnesses_votes(data.list_witnesses_votes),
-            top_150_witnesses=self.__assert_list_witnesses(data.top_150_witnesses),
+            top_witnesses=self.__assert_list_witnesses(data.top_witnesses),
             witnesses_searched_by_name=(
                 self.__assert_list_witnesses(data.witnesses_searched_by_name) if in_search_by_name_mode else None
             ),
@@ -140,26 +147,26 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 url=witness.url,
             )
 
-        top_150_witnesses: dict[str, WitnessData] = {
+        top_witnesses: dict[str, WitnessData] = {
             witness.owner: create_witness_data(witness, rank)
-            for rank, witness in enumerate(data.top_150_witnesses, start=1)
+            for rank, witness in enumerate(data.top_witnesses, start=1)
         }
 
         # Include witnesses that account voted for but are not included in the top
         voted_but_not_in_top_witnesses: dict[str, WitnessData] = {
             witness_name: WitnessData(witness_name, voted=True)
             for witness_name in data.witnesses_votes
-            if witness_name not in top_150_witnesses
+            if witness_name not in top_witnesses
         }
 
         for _ in voted_but_not_in_top_witnesses:
-            top_150_witnesses.popitem()
+            top_witnesses.popitem()
 
-        top_150_witnesses.update(voted_but_not_in_top_witnesses)
+        top_witnesses.update(voted_but_not_in_top_witnesses)
 
         # Sort the witnesses based on voted status and rank
         sorted_witnesses = OrderedDict(
-            sorted(top_150_witnesses.items(), key=lambda witness: (not witness[1].voted, witness[1].rank))
+            sorted(top_witnesses.items(), key=lambda witness: (not witness[1].voted, witness[1].rank))
         )
 
         if self.mode == "search_by_name":
@@ -169,15 +176,17 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
                 {
                     witness.owner: (
                         create_witness_data(witness)
-                        if witness.owner not in top_150_witnesses.keys()
-                        else top_150_witnesses[witness.owner]
+                        if witness.owner not in top_witnesses
+                        else top_witnesses[witness.owner]
                     )
                     for witness in data.witnesses_searched_by_name
                 }
             )
             sorted_witnesses = searched_witnesses_by_name  # they are already sorted by_name
 
-        assert len(sorted_witnesses) == self.limit
+            assert len(sorted_witnesses) == self.search_by_name_limit
+        else:
+            assert len(sorted_witnesses) <= self.TOP_WITNESSES_HARD_LIMIT
 
         return GovernanceData(witnesses=sorted_witnesses, number_of_votes=len(data.witnesses_votes))
 

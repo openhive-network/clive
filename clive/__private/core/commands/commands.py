@@ -265,17 +265,17 @@ class Commands(Generic[WorldT]):
         self,
         *,
         account_name: str,
-        limit: int = GovernanceDataRetrieval.DEFAULT_LIMIT,
         mode: GovernanceDataRetrieval.Modes = GovernanceDataRetrieval.DEFAULT_MODE,
         witness_name_pattern: str | None = None,
+        search_by_name_limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT,
     ) -> CommandWithResultWrapper[GovernanceData]:
         return await self.__surround_with_exception_handlers(
             GovernanceDataRetrieval(
                 node=self._world.node,
                 account_name=account_name,
-                limit=limit,
                 mode=mode,
                 witness_name_pattern=witness_name_pattern,
+                search_by_name_limit=search_by_name_limit,
             )
         )
 
