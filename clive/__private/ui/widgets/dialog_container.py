@@ -6,7 +6,7 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.big_title import BigTitle
 
 
-class DialogContainer(ScrollableContainer):
+class DialogContainer(ScrollableContainer, can_focus=False):
     """A container for dialog-like looking widgets. Content stored inside this container will be centered."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
