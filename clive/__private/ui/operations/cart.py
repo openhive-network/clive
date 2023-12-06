@@ -64,7 +64,7 @@ class StaticPart(Container):
     """Container for the static part of the screen - title, global buttons and table header."""
 
 
-class ScrollablePart(ScrollableContainer):
+class ScrollablePart(ScrollableContainer, can_focus=False):
     """Container used for holding operation items."""
 
 
