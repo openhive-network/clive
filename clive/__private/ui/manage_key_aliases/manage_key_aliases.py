@@ -38,7 +38,7 @@ class ColumnLayout(Static):
     """Holds column order."""
 
 
-class ScrollablePart(ScrollableContainer):
+class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 
