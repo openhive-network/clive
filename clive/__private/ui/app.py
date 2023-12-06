@@ -54,6 +54,8 @@ class Clive(App[int], ManualReactive):
 
     CSS_PATH = [get_relative_css_path(__file__, name="global")]
 
+    AUTO_FOCUS = "*"
+
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("ctrl+x", "push_screen('quit')", "Quit"),

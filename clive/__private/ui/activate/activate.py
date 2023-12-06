@@ -46,9 +46,6 @@ class Activate(BaseScreen):
             label="Active mode time (minutes)", value=60, placeholder="Time in minutes", id_="active-mode-input"
         )
 
-    def on_mount(self) -> None:
-        self.__password_input.focus()
-
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield from self.__name_input.compose()

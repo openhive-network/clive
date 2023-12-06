@@ -50,9 +50,6 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
             yield from self.__repeat_password_input.compose()
             yield from self._additional_content()
 
-    def on_mount(self) -> None:
-        self.query(Input).first().focus()
-
     def _additional_content(self) -> ComposeResult:
         """Additional content to be added to the form."""
         return []
