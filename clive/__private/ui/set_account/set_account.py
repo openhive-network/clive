@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class ScrollablePart(ScrollableContainer):
+class ScrollablePart(ScrollableContainer, can_focus=False):
     """All the content of the screen, excluding the title."""
 
 
