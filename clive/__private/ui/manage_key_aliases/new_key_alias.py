@@ -47,7 +47,9 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self.__key_input = Input(self._default_key(), placeholder="You can paste your key here", id="key_input")
+        self.__key_input = Input(
+            self._default_key(), placeholder="You can paste your key here", password=True, id="key_input"
+        )
         self.__key_file_path: Path | None = None
 
     @property
