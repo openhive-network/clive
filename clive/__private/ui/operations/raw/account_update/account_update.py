@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.memo_key_input import MemoKeyInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountUpdateOperation
 
 if TYPE_CHECKING:
@@ -55,27 +54,26 @@ class AccountUpdate(RawOperationBaseScreen):
         self.__key_auths_posting_input = KeyAuthsInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Account update")
-            with ScrollableContainer(), Body():
-                yield from self.__account_input.compose()
-                yield from self.__memo_key_input.compose()
-                yield from self.__json_metadata_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("owner authority")
-                yield from self.__weight_threshold_owner_input.compose()
-                yield from self.__account_auths_owner_input.compose()
-                yield from self.__key_auths_owner_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("active authority")
-                yield from self.__weight_threshold_active_input.compose()
-                yield from self.__account_auths_active_input.compose()
-                yield from self.__key_auths_active_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("posting authority")
-                yield from self.__weight_threshold_posting_input.compose()
-                yield from self.__account_auths_posting_input.compose()
-                yield from self.__key_auths_posting_input.compose()
+        yield BigTitle("Account update")
+        with ScrollableContainer(), Body():
+            yield from self.__account_input.compose()
+            yield from self.__memo_key_input.compose()
+            yield from self.__json_metadata_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("owner authority")
+            yield from self.__weight_threshold_owner_input.compose()
+            yield from self.__account_auths_owner_input.compose()
+            yield from self.__key_auths_owner_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("active authority")
+            yield from self.__weight_threshold_active_input.compose()
+            yield from self.__account_auths_active_input.compose()
+            yield from self.__key_auths_active_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("posting authority")
+            yield from self.__weight_threshold_posting_input.compose()
+            yield from self.__account_auths_posting_input.compose()
+            yield from self.__key_auths_posting_input.compose()
 
     def _create_operation(self) -> AccountUpdateOperation:
         owner_authority = self._create_authority_field(

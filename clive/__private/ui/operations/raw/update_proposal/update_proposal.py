@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import UpdateProposalOperation
 
@@ -41,15 +40,14 @@ class UpdateProposal(RawOperationBaseScreen):
         self.__extensions_input = TextInput(label="extensions", placeholder="e.g.: []")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Update proposal")
-            with ScrollableContainer(), Body():
-                yield from self.__proposal_id_input.compose()
-                yield from self.__creator_input.compose()
-                yield from self.__daily_pay_input.compose()
-                yield from self.__subject_input.compose()
-                yield from self.__permlink_input.compose()
-                yield from self.__extensions_input.compose()
+        yield BigTitle("Update proposal")
+        with ScrollableContainer(), Body():
+            yield from self.__proposal_id_input.compose()
+            yield from self.__creator_input.compose()
+            yield from self.__daily_pay_input.compose()
+            yield from self.__subject_input.compose()
+            yield from self.__permlink_input.compose()
+            yield from self.__extensions_input.compose()
 
     def _create_operation(self) -> UpdateProposalOperation | None:
         daily_pay_value = self.__daily_pay_input.value

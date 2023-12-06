@@ -9,7 +9,6 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import ChangeRecoveryAccountOperation
 
 if TYPE_CHECKING:
@@ -35,11 +34,10 @@ class ChangeRecoveryAccount(RawOperationBaseScreen):
         )
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Change recovery account")
-            with ScrollableContainer(), Body():
-                yield from self.__account_to_recover_input.compose()
-                yield from self.__new_recovery_account_input.compose()
+        yield BigTitle("Change recovery account")
+        with ScrollableContainer(), Body():
+            yield from self.__account_to_recover_input.compose()
+            yield from self.__new_recovery_account_input.compose()
 
     def _create_operation(self) -> ChangeRecoveryAccountOperation:
         return ChangeRecoveryAccountOperation(

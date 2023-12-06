@@ -19,7 +19,6 @@ from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
 )
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import EscrowTransferOperation
 
@@ -57,20 +56,19 @@ class EscrowTransfer(RawOperationBaseScreen):
         self.__json_meta_input = JsonDataInput(label="json meta")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Escrow transfer")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield from self.__to_input.compose()
-                yield from self.__agent_input.compose()
-                yield from self.__escrow_id_input.compose()
-                yield from self.__hbd_amount_input.compose()
-                yield from self.__hive_amount_input.compose()
-                yield from self.__ratification_deadline_input.compose()
-                yield from self.__escrow_expiration_input.compose()
-                yield from self.__json_meta_input.compose()
-                yield from self.__fee_input.compose()
+        yield BigTitle("Escrow transfer")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield from self.__to_input.compose()
+            yield from self.__agent_input.compose()
+            yield from self.__escrow_id_input.compose()
+            yield from self.__hbd_amount_input.compose()
+            yield from self.__hive_amount_input.compose()
+            yield from self.__ratification_deadline_input.compose()
+            yield from self.__escrow_expiration_input.compose()
+            yield from self.__json_meta_input.compose()
+            yield from self.__fee_input.compose()
 
     def _create_operation(self) -> EscrowTransferOperation | None:
         fee = self.__fee_input.value

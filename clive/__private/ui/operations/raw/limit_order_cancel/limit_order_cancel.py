@@ -11,7 +11,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCancelOperation
 
 if TYPE_CHECKING:
@@ -36,12 +35,11 @@ class LimitOrderCancel(RawOperationBaseScreen):
         self.__order_id_input = IdInput(label="order id", value=default_order_id)
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Limit order cancel")
-            with ScrollableContainer(), Body():
-                yield InputLabel("owner")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield from self.__order_id_input.compose()
+        yield BigTitle("Limit order cancel")
+        with ScrollableContainer(), Body():
+            yield InputLabel("owner")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
+            yield from self.__order_id_input.compose()
 
     def _create_operation(self) -> LimitOrderCancelOperation:
         return LimitOrderCancelOperation(

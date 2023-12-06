@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.inputs.account_auths_input import AccountAuthsIn
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecoverAccountOperation
 
 if TYPE_CHECKING:
@@ -45,20 +44,19 @@ class RecoverAccount(RawOperationBaseScreen):
         self.__key_auths_recent_input = KeyAuthsInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Recover account")
-            with ScrollableContainer(), Body():
-                yield from self.__account_to_recover_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("New owner authority")
-                yield from self.__weight_threshold_new_input.compose()
-                yield from self.__account_auths_new_input.compose()
-                yield from self.__key_auths_new_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("Recent owner authority")
-                yield from self.__weight_threshold_recent_input.compose()
-                yield from self.__account_auths_recent_input.compose()
-                yield from self.__key_auths_recent_input.compose()
+        yield BigTitle("Recover account")
+        with ScrollableContainer(), Body():
+            yield from self.__account_to_recover_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("New owner authority")
+            yield from self.__weight_threshold_new_input.compose()
+            yield from self.__account_auths_new_input.compose()
+            yield from self.__key_auths_new_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("Recent owner authority")
+            yield from self.__weight_threshold_recent_input.compose()
+            yield from self.__account_auths_recent_input.compose()
+            yield from self.__key_auths_recent_input.compose()
 
     def _create_operation(self) -> RecoverAccountOperation:
         new_owner_authority = self._create_authority_field(

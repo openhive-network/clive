@@ -16,7 +16,6 @@ from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ID_PLACEHOLDER,
 )
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import VoteOperation
 
 if TYPE_CHECKING:
@@ -43,14 +42,13 @@ class Vote(RawOperationBaseScreen):
         self.__weight_input = IntegerInput(label="weight", value=default_weight, placeholder=ID_PLACEHOLDER)
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Vote")
-            with ScrollableContainer(), Body():
-                yield InputLabel("voter")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="voter-label")
-                yield from self.__author_input.compose()
-                yield from self.__permlink_input.compose()
-                yield from self.__weight_input.compose()
+        yield BigTitle("Vote")
+        with ScrollableContainer(), Body():
+            yield InputLabel("voter")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="voter-label")
+            yield from self.__author_input.compose()
+            yield from self.__permlink_input.compose()
+            yield from self.__weight_input.compose()
 
     def _create_operation(self) -> VoteOperation | None:
         weight = self.__weight_input.value

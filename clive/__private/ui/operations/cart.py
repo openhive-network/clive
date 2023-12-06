@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
-from clive.__private.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -230,13 +229,12 @@ class Cart(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
-            with StaticPart():
-                yield BigTitle("operations cart")
-                yield CartHeader()
+        with StaticPart():
+            yield BigTitle("operations cart")
+            yield CartHeader()
 
-            with self.__scrollable_part:
-                yield from self.__rebuild_items()
+        with self.__scrollable_part:
+            yield from self.__rebuild_items()
 
     def __rebuild_items(self) -> ComposeResult:
         for idx in range(len(self.app.world.profile_data.cart)):

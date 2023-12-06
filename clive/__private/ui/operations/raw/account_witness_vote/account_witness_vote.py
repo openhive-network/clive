@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.witness_input import WitnessInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
@@ -38,13 +37,12 @@ class AccountWitnessVote(RawOperationBaseScreen):
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Account witness vote")
-            with ScrollableContainer(), Body():
-                yield InputLabel("account")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                yield from self.__witness_input.compose()
-                yield self.__approve_input
+        yield BigTitle("Account witness vote")
+        with ScrollableContainer(), Body():
+            yield InputLabel("account")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
+            yield from self.__witness_input.compose()
+            yield self.__approve_input
 
     def _create_operation(self) -> AccountWitnessVoteOperation:
         return AccountWitnessVoteOperation(

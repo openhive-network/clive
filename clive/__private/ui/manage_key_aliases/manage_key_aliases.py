@@ -19,7 +19,6 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
-from clive.__private.ui.widgets.view_bag import ViewBag
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -107,12 +106,11 @@ class ManageKeyAliases(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("key aliases")
-            yield KeyAliasesHeader()
-            with self.__scrollable_part:
-                for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-                    yield KeyAlias(idx, key)
+        yield BigTitle("key aliases")
+        yield KeyAliasesHeader()
+        with self.__scrollable_part:
+            for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
+                yield KeyAlias(idx, key)
 
     def action_new_key_alias(self) -> None:
         self.app.push_screen(NewKeyAlias())

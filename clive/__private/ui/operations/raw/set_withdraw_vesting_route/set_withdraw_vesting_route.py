@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.placeholders_constants import PERCENT_PLACEHOLDER
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import SetWithdrawVestingRouteOperation
 
 if TYPE_CHECKING:
@@ -42,14 +41,13 @@ class SetWithdrawVestingRoute(RawOperationBaseScreen):
         self.__auto_vest_input = Checkbox("auto vest", value=default_auto_vest)
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Set withdraw vesting route")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield from self.__to_account_input.compose()
-                yield from self.__percent_input.compose()
-                yield self.__auto_vest_input
+        yield BigTitle("Set withdraw vesting route")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield from self.__to_account_input.compose()
+            yield from self.__percent_input.compose()
+            yield self.__auto_vest_input
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation | None:
         percent = self.__percent_input.value

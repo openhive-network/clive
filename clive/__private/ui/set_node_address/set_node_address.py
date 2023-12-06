@@ -18,7 +18,6 @@ from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
 from schemas.jsonrpc import JSONRPCRequest
@@ -122,15 +121,14 @@ class SetNodeAddressBase(BaseScreen, ABC):
         self.__manual_node = ManualNode(classes="-hidden")
 
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("set node address")
-            with ScrollablePart():
-                yield self.__selected_node
-                yield Static()
-                yield ModeSwitchContainer(disabled=True)
-                yield Static()
-                yield self.__nodes_list
-                yield self.__manual_node
+        yield BigTitle("set node address")
+        with ScrollablePart():
+            yield self.__selected_node
+            yield Static()
+            yield ModeSwitchContainer(disabled=True)
+            yield Static()
+            yield self.__nodes_list
+            yield self.__manual_node
 
     async def _valid_and_save_address(self) -> None:
         if self._in_nodes_list_mode():

@@ -15,7 +15,6 @@ from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
 )
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import EscrowDisputeOperation
 
 if TYPE_CHECKING:
@@ -43,15 +42,14 @@ class EscrowDispute(RawOperationBaseScreen):
         self.__escrow_id_input = IdInput(label="escrow id", value=default_escrow_id)
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Escrow dispute")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="from-label")
-                yield from self.__to_input.compose()
-                yield from self.__agent_input.compose()
-                yield from self.__who_input.compose()
-                yield from self.__escrow_id_input.compose()
+        yield BigTitle("Escrow dispute")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(str(self.app.world.profile_data.working_account.name), id_="from-label")
+            yield from self.__to_input.compose()
+            yield from self.__agent_input.compose()
+            yield from self.__who_input.compose()
+            yield from self.__escrow_id_input.compose()
 
     def _create_operation(self) -> EscrowDisputeOperation | None:
         escrow_id = self.__escrow_id_input.value

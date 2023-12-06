@@ -9,7 +9,6 @@ from clive.__private.ui.operations.raw_operation_base_screen import RawOperation
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomOperation
 
 if TYPE_CHECKING:
@@ -34,12 +33,11 @@ class Custom(RawOperationBaseScreen):
         self.__data_input = TextInput(label="data", placeholder="Custom data input")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Custom")
-            with ScrollableContainer(), Body():
-                yield from self.__required_auths_input.compose()
-                yield from self.__id_input.compose()
-                yield from self.__data_input.compose()
+        yield BigTitle("Custom")
+        with ScrollableContainer(), Body():
+            yield from self.__required_auths_input.compose()
+            yield from self.__id_input.compose()
+            yield from self.__data_input.compose()
 
     def _create_operation(self) -> CustomOperation:
         required_auths_in_list = self.__required_auths_input.value.split(",")

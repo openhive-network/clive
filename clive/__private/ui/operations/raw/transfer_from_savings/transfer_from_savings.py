@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInpu
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import TransferFromSavingsOperation
 
 if TYPE_CHECKING:
@@ -42,15 +41,14 @@ class TransferFromSavings(RawOperationBaseScreen):
         self.__memo_input = MemoInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Transfer from savings")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield from self.__to_input.compose()
-                yield from self.__request_id_input.compose()
-                yield from self.__amount_input.compose()
-                yield from self.__memo_input.compose()
+        yield BigTitle("Transfer from savings")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield from self.__to_input.compose()
+            yield from self.__request_id_input.compose()
+            yield from self.__amount_input.compose()
+            yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferFromSavingsOperation | None:
         amount = self.__amount_input.value

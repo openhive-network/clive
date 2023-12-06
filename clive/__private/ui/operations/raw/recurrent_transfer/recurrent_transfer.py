@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInpu
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RecurrentTransferOperation
 
 if TYPE_CHECKING:
@@ -44,16 +43,15 @@ class RecurrentTransfer(RawOperationBaseScreen):
         self.__executions_input = IntegerInput(label="executions", value=default_executions, placeholder="e.g.: 3")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Recurrent transfer")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield from self.__to_input.compose()
-                yield from self.__amount_input.compose()
-                yield from self.__memo_input.compose()
-                yield from self.__recurrence_input.compose()
-                yield from self.__executions_input.compose()
+        yield BigTitle("Recurrent transfer")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield from self.__to_input.compose()
+            yield from self.__amount_input.compose()
+            yield from self.__memo_input.compose()
+            yield from self.__recurrence_input.compose()
+            yield from self.__executions_input.compose()
 
     def _create_operation(self) -> RecurrentTransferOperation | None:
         amount = self.__amount_input.value

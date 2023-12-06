@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import CreateProposalOperation
 
@@ -43,17 +42,16 @@ class CreateProposal(RawOperationBaseScreen):
         self.__permlink_input = PermlinkInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Create proposal")
-            with ScrollableContainer(), Body():
-                yield InputLabel("creator")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
-                yield from self.__receiver_input.compose()
-                yield from self.__start_date_input.compose()
-                yield from self.__end_date_input.compose()
-                yield from self.__daily_pay_input.compose()
-                yield from self.__subject_input.compose()
-                yield from self.__permlink_input.compose()
+        yield BigTitle("Create proposal")
+        with ScrollableContainer(), Body():
+            yield InputLabel("creator")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
+            yield from self.__receiver_input.compose()
+            yield from self.__start_date_input.compose()
+            yield from self.__end_date_input.compose()
+            yield from self.__daily_pay_input.compose()
+            yield from self.__subject_input.compose()
+            yield from self.__permlink_input.compose()
 
     def _create_operation(self) -> CreateProposalOperation | None:
         daily_pay_value = self.__daily_pay_input.value

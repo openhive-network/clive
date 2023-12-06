@@ -10,7 +10,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
 
@@ -35,11 +34,10 @@ class WithdrawVesting(RawOperationBaseScreen):
         self.__vesting_shares_input = NumericInput(label="vesting shares")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Withdraw vesting")
-            with ScrollableContainer(), Body():
-                yield from self.__account_input.compose()
-                yield from self.__vesting_shares_input.compose()
+        yield BigTitle("Withdraw vesting")
+        with ScrollableContainer(), Body():
+            yield from self.__account_input.compose()
+            yield from self.__vesting_shares_input.compose()
 
     def _create_operation(self) -> WithdrawVestingOperation | None:
         vesting_shares = self.__vesting_shares_input.value

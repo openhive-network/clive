@@ -11,7 +11,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import AccountWitnessProxyOperation
 
 if TYPE_CHECKING:
@@ -49,19 +48,18 @@ class AccountWitnessProxy(RawOperationBaseScreen):
         return self.__new_proxy
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Account witness proxy")
-            with ScrollableContainer(), Body():
-                yield InputLabel("account")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                if self.__is_raw:
-                    yield from self.__proxy_input.compose()
-                else:
-                    yield from AccountNameInput(
-                        label="new proxy",
-                        value=self.__new_proxy if self.__new_proxy is not None else "Proxy will be removed",
-                        disabled=True,
-                    ).compose()
+        yield BigTitle("Account witness proxy")
+        with ScrollableContainer(), Body():
+            yield InputLabel("account")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
+            if self.__is_raw:
+                yield from self.__proxy_input.compose()
+            else:
+                yield from AccountNameInput(
+                    label="new proxy",
+                    value=self.__new_proxy if self.__new_proxy is not None else "Proxy will be removed",
+                    disabled=True,
+                ).compose()
 
     def action_add_to_cart(self) -> None:
         super().action_add_to_cart()

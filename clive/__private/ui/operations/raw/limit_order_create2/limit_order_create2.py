@@ -15,7 +15,6 @@ from clive.__private.ui.widgets.inputs.date_input import DateInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import LimitOrderCreate2Operation
 
@@ -47,20 +46,19 @@ class LimitOrderCreate2(RawOperationBaseScreen):
         self.__quote_input = NumericInput(label="quote hive")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Limit order create two")
-            with ScrollableContainer(), Body():
-                yield InputLabel("owner")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield from self.__order_id_input.compose()
-                yield self.__fill_or_kill_input
-                yield Static()
-                yield from self.__expiration_input.compose()
-                yield from self.__amount_to_sell_input.compose()
-                yield BigTitle("Exchange rate")
-                yield Static()
-                yield from self.__base_input.compose()
-                yield from self.__quote_input.compose()
+        yield BigTitle("Limit order create two")
+        with ScrollableContainer(), Body():
+            yield InputLabel("owner")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
+            yield from self.__order_id_input.compose()
+            yield self.__fill_or_kill_input
+            yield Static()
+            yield from self.__expiration_input.compose()
+            yield from self.__amount_to_sell_input.compose()
+            yield BigTitle("Exchange rate")
+            yield Static()
+            yield from self.__base_input.compose()
+            yield from self.__quote_input.compose()
 
     def _create_operation(self) -> LimitOrderCreate2Operation | None:
         base = self.__base_input.value

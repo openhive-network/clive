@@ -16,7 +16,6 @@ from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInpu
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.known_account import KnownAccount
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation
@@ -47,20 +46,19 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
         self.__amount_input = AssetAmountInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Transfer to account")
-            with ScrollableContainer(), Body():
-                to_label, to_input = self.__to_input.compose()
+        yield BigTitle("Transfer to account")
+        with ScrollableContainer(), Body():
+            to_label, to_input = self.__to_input.compose()
 
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield Static()
-                yield to_label
-                yield to_input
-                yield KnownAccount(to_input)  # type: ignore[arg-type]
-                yield from self.__amount_input.compose()
-                yield Static()
-                yield from self.__memo_input.compose()
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield Static()
+            yield to_label
+            yield to_input
+            yield KnownAccount(to_input)  # type: ignore[arg-type]
+            yield from self.__amount_input.compose()
+            yield Static()
+            yield from self.__memo_input.compose()
 
     def _create_operation(self) -> TransferOperation | None:
         amount = self.__amount_input.value

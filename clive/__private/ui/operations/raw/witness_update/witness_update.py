@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import KEY_PLACEHOLDER
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import WitnessUpdateOperation
 
@@ -51,19 +50,18 @@ class WitnessUpdate(RawOperationBaseScreen):
         self.__fee_input = FeeInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Witness update")
-            with ScrollableContainer(), Body():
-                yield InputLabel("owner")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield from self.__url_input.compose()
-                yield from self.__block_signing_key_input.compose()
-                yield from self.__fee_input.compose()
-                yield BigTitle("Props")
-                yield PlaceTaker()
-                yield from self.__account_creation_fee_input.compose()
-                yield from self.__maximum_block_size_input.compose()
-                yield from self.__hbd_interest_rate_input.compose()
+        yield BigTitle("Witness update")
+        with ScrollableContainer(), Body():
+            yield InputLabel("owner")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
+            yield from self.__url_input.compose()
+            yield from self.__block_signing_key_input.compose()
+            yield from self.__fee_input.compose()
+            yield BigTitle("Props")
+            yield PlaceTaker()
+            yield from self.__account_creation_fee_input.compose()
+            yield from self.__maximum_block_size_input.compose()
+            yield from self.__hbd_interest_rate_input.compose()
 
     def _create_operation(self) -> WitnessUpdateOperation | None:
         fee = self.__fee_input.value

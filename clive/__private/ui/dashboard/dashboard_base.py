@@ -21,7 +21,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -148,13 +147,12 @@ class DashboardBase(BaseScreen):
     ]
 
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
-            with Body() as body:
-                if self.__has_working_account():
-                    yield WorkingAccountContainer()
-                if self.__has_watched_accounts():
-                    yield WatchedAccountContainer()
-            yield CommandLine(focus_on_cancel=body)
+        with Body() as body:
+            if self.__has_working_account():
+                yield WorkingAccountContainer()
+            if self.__has_watched_accounts():
+                yield WatchedAccountContainer()
+        yield CommandLine(focus_on_cancel=body)
 
     def action_operations(self) -> None:
         if not self.__has_working_account():

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Final
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet

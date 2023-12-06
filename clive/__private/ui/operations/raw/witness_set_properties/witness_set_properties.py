@@ -11,7 +11,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.fee_input import FeeInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.witness_input import WitnessInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import WitnessSetPropertiesOperation
 
@@ -46,15 +45,14 @@ class WitnessSetProperties(RawOperationBaseScreen):
         )
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Witness set properties")
-            with ScrollableContainer(), Body():
-                yield from self.__witness_input.compose()
-                yield BigTitle("Props")
-                yield PlaceTaker()
-                yield from self.__account_creation_fee_input.compose()
-                yield from self.__maximum_block_size_input.compose()
-                yield from self.__hbd_interest_rate_input.compose()
+        yield BigTitle("Witness set properties")
+        with ScrollableContainer(), Body():
+            yield from self.__witness_input.compose()
+            yield BigTitle("Props")
+            yield PlaceTaker()
+            yield from self.__account_creation_fee_input.compose()
+            yield from self.__maximum_block_size_input.compose()
+            yield from self.__hbd_interest_rate_input.compose()
 
     def _create_operation(self) -> WitnessSetPropertiesOperation | None:
         account_creation_fee = self.__account_creation_fee_input.value

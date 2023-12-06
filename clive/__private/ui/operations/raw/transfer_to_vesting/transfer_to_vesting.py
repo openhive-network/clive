@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import TransferToVestingOperation
 
@@ -41,14 +40,13 @@ class TransferToVesting(RawOperationBaseScreen):
         self.__amount_input = NumericInput("amount hive")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Transfer to vesting")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield PlaceTaker()
-                yield from self.__to_input.compose()
-                yield from self.__amount_input.compose()
+        yield BigTitle("Transfer to vesting")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield PlaceTaker()
+            yield from self.__to_input.compose()
+            yield from self.__amount_input.compose()
 
     def _create_operation(self) -> TransferToVestingOperation | None:
         amount = self.__amount_input.value

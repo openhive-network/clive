@@ -10,7 +10,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CustomJsonOperation
 
 if TYPE_CHECKING:
@@ -38,13 +37,12 @@ class CustomJson(RawOperationBaseScreen):
         self.__json_input = JsonDataInput(label="json")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Custom json")
-            with ScrollableContainer(), Body():
-                yield from self.__required_auths_input.compose()
-                yield from self.__required_posting_auths_input.compose()
-                yield from self.__id_input.compose()
-                yield from self.__json_input.compose()
+        yield BigTitle("Custom json")
+        with ScrollableContainer(), Body():
+            yield from self.__required_auths_input.compose()
+            yield from self.__required_posting_auths_input.compose()
+            yield from self.__id_input.compose()
+            yield from self.__json_input.compose()
 
     def _create_operation(self) -> CustomJsonOperation | None:
         required_auths_in_list = self.__required_auths_input.value.split(",")

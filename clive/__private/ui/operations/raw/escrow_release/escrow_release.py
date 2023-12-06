@@ -16,7 +16,6 @@ from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
 from clive.__private.ui.widgets.placeholders_constants import (
     ACCOUNT_NAME2_PLACEHOLDER,
 )
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import EscrowReleaseOperation
 
@@ -52,18 +51,17 @@ class EscrowRelease(RawOperationBaseScreen):
         )
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Escrow release")
-            with ScrollableContainer(), Body():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-                yield from self.__to_input.compose()
-                yield from self.__agent_input.compose()
-                yield from self.__who_input.compose()
-                yield from self.__receiver_input.compose()
-                yield from self.__escrow_id_input.compose()
-                yield from self.__hbd_amount_input.compose()
-                yield from self.__hive_amount_input.compose()
+        yield BigTitle("Escrow release")
+        with ScrollableContainer(), Body():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield from self.__to_input.compose()
+            yield from self.__agent_input.compose()
+            yield from self.__who_input.compose()
+            yield from self.__receiver_input.compose()
+            yield from self.__escrow_id_input.compose()
+            yield from self.__hbd_amount_input.compose()
+            yield from self.__hive_amount_input.compose()
 
     def _create_operation(self) -> EscrowReleaseOperation | None:
         hbd_amount = self.__hbd_amount_input.value

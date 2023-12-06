@@ -11,7 +11,6 @@ from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import DelegateVestingSharesOperation
 
@@ -36,13 +35,12 @@ class DelegateVestingShares(RawOperationBaseScreen):
         self.__vesting_shares_input = NumericInput(label="vesting shares")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Delegate vesting shares")
-            with ScrollableContainer(), Body():
-                yield InputLabel("delegator")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="delegator-label")
-                yield from self.__delegatee_input.compose()
-                yield from self.__vesting_shares_input.compose()
+        yield BigTitle("Delegate vesting shares")
+        with ScrollableContainer(), Body():
+            yield InputLabel("delegator")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="delegator-label")
+            yield from self.__delegatee_input.compose()
+            yield from self.__vesting_shares_input.compose()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
         vesting_shares = self.__vesting_shares_input.value

@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInpu
 from clive.__private.ui.widgets.inputs.date_input import DateInput
 from clive.__private.ui.widgets.inputs.id_input import IdInput
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import LimitOrderCreateOperation
 
 if TYPE_CHECKING:
@@ -44,16 +43,15 @@ class LimitOrderCreate(RawOperationBaseScreen):
         self.__expiration_input = DateInput(label="expiration")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Limit order create")
-            with ScrollableContainer(), Body():
-                yield InputLabel("owner")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
-                yield from self.__order_id_input.compose()
-                yield from self.__expiration_input.compose()
-                yield from self.__amount_to_sell_input.compose()
-                yield from self.__min_to_receive_input.compose()
-                yield self.__fill_or_kill_input
+        yield BigTitle("Limit order create")
+        with ScrollableContainer(), Body():
+            yield InputLabel("owner")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="owner-label")
+            yield from self.__order_id_input.compose()
+            yield from self.__expiration_input.compose()
+            yield from self.__amount_to_sell_input.compose()
+            yield from self.__min_to_receive_input.compose()
+            yield self.__fill_or_kill_input
 
     def _create_operation(self) -> LimitOrderCreateOperation | None:
         asset_to_sell = self.__amount_to_sell_input.value

@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import (
     PERCENT_PLACEHOLDER,
 )
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import CommentOptionsOperation
 
@@ -53,17 +52,16 @@ class CommentOptions(RawOperationBaseScreen):
         self.__extensions_input = TextInput(label="extensions", placeholder="e.g: []")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Comment options")
-            with ScrollableContainer(), Body():
-                yield InputLabel("author")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
-                yield from self.__permlink_input.compose()
-                yield from self.__max_accepted_payout_input.compose()
-                yield from self.__percent_hbd_input.compose()
-                yield from self.__extensions_input.compose()
-                yield self.__allow_votes_input
-                yield self.__allow_curation_rewards_input
+        yield BigTitle("Comment options")
+        with ScrollableContainer(), Body():
+            yield InputLabel("author")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
+            yield from self.__permlink_input.compose()
+            yield from self.__max_accepted_payout_input.compose()
+            yield from self.__percent_hbd_input.compose()
+            yield from self.__extensions_input.compose()
+            yield self.__allow_votes_input
+            yield self.__allow_curation_rewards_input
 
     def _create_operation(self) -> CommentOptionsOperation | None:
         max_accepted_payout = self.__max_accepted_payout_input.value

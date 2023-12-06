@@ -12,7 +12,6 @@ from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
@@ -51,15 +50,14 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
         return self._key_alias_input.value
 
     def create_main_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle(self._title())
-            yield from self._content_after_big_title()
-            with ScrollablePart(), Body():
-                yield Static("Key alias:", classes="label")
-                yield self._key_alias_input
-                yield from self._content_after_alias_input()
-                yield Static("Public key:", classes="label")
-                yield self._public_key_input
+        yield BigTitle(self._title())
+        yield from self._content_after_big_title()
+        with ScrollablePart(), Body():
+            yield Static("Key alias:", classes="label")
+            yield self._key_alias_input
+            yield from self._content_after_alias_input()
+            yield Static("Public key:", classes="label")
+            yield self._public_key_input
 
     def _content_after_big_title(self) -> ComposeResult:
         return []

@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import CommentOperation
 
 if TYPE_CHECKING:
@@ -41,16 +40,15 @@ class Comment(RawOperationBaseScreen):
         self.__json_metadata_input = JsonDataInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Comment")
-            with ScrollableContainer(), Body():
-                yield from self.__author_input.compose()
-                yield from self.__permlink_input.compose()
-                yield from self.__title_input.compose()
-                yield from self.__body_input.compose()
-                yield from self.__parent_author_input.compose()
-                yield from self.__parent_permlink_input.compose()
-                yield from self.__json_metadata_input.compose()
+        yield BigTitle("Comment")
+        with ScrollableContainer(), Body():
+            yield from self.__author_input.compose()
+            yield from self.__permlink_input.compose()
+            yield from self.__title_input.compose()
+            yield from self.__body_input.compose()
+            yield from self.__parent_author_input.compose()
+            yield from self.__parent_permlink_input.compose()
+            yield from self.__json_metadata_input.compose()
 
     def _create_operation(self) -> CommentOperation:
         return CommentOperation(

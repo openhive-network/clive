@@ -13,7 +13,6 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
 from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import RequestAccountRecoveryOperation
 
 if TYPE_CHECKING:
@@ -46,16 +45,15 @@ class RequestAccountRecovery(RawOperationBaseScreen):
         self.__key_auths_input = KeyAuthsInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Request account recovery")
-            with ScrollableContainer(), Body():
-                yield from self.__recovery_account_input.compose()
-                yield from self.__account_to_recover_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("New owner authority")
-                yield from self.__weight_threshold_input.compose()
-                yield from self.__account_auths_input.compose()
-                yield from self.__key_auths_input.compose()
+        yield BigTitle("Request account recovery")
+        with ScrollableContainer(), Body():
+            yield from self.__recovery_account_input.compose()
+            yield from self.__account_to_recover_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("New owner authority")
+            yield from self.__weight_threshold_input.compose()
+            yield from self.__account_auths_input.compose()
+            yield from self.__key_auths_input.compose()
 
     def _create_operation(self) -> RequestAccountRecoveryOperation:
         new_owner_authority = self._create_authority_field(

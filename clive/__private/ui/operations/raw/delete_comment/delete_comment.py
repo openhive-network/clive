@@ -10,7 +10,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.permlink_input import PermlinkInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import DeleteCommentOperation
 
 if TYPE_CHECKING:
@@ -33,12 +32,11 @@ class DeleteComment(RawOperationBaseScreen):
         self.__permlink_input = PermlinkInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Delete comment")
-            with ScrollableContainer(), Body():
-                yield InputLabel("author")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
-                yield from self.__permlink_input.compose()
+        yield BigTitle("Delete comment")
+        with ScrollableContainer(), Body():
+            yield InputLabel("author")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="author-label")
+            yield from self.__permlink_input.compose()
 
     def _create_operation(self) -> DeleteCommentOperation:
         return DeleteCommentOperation(

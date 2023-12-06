@@ -11,7 +11,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.numeric_input import NumericInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import ClaimRewardBalanceOperation
 
@@ -41,15 +40,14 @@ class ClaimRewardBalance(RawOperationBaseScreen):
         self.__reward_vests_input = NumericInput(label="reward vests")
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Claim reward balance")
-            with ScrollableContainer(), Body():
-                yield InputLabel("account")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                yield PlaceTaker()
-                yield from self.__reward_hive_input.compose()
-                yield from self.__reward_hbd_input.compose()
-                yield from self.__reward_vests_input.compose()
+        yield BigTitle("Claim reward balance")
+        with ScrollableContainer(), Body():
+            yield InputLabel("account")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
+            yield PlaceTaker()
+            yield from self.__reward_hive_input.compose()
+            yield from self.__reward_hbd_input.compose()
+            yield from self.__reward_vests_input.compose()
 
     def _create_operation(self) -> ClaimRewardBalanceOperation | None:
         reward_hive = self.__reward_hive_input.value

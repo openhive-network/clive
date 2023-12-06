@@ -17,7 +17,6 @@ from clive.__private.ui.widgets.inputs.json_data_input import JsonDataInput
 from clive.__private.ui.widgets.inputs.key_auths_input import KeyAuthsInput
 from clive.__private.ui.widgets.inputs.memo_key_input import MemoKeyInput
 from clive.__private.ui.widgets.inputs.weight_threshold_input import WeightThresholdInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from clive.models import Asset
 from schemas.operations import AccountCreateOperation
 
@@ -61,30 +60,29 @@ class AccountCreate(RawOperationBaseScreen):
         self.__json_metadata_input = JsonDataInput()
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Account create")
-            with ScrollableContainer(), Body():
-                yield InputLabel("creator")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
-                yield from self.__new_account_name_input.compose()
-                yield from self.__fee_input.compose()
-                yield from self.__memo_key_input.compose()
-                yield from self.__json_metadata_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("owner authority")
-                yield from self.__weight_threshold_owner_input.compose()
-                yield from self.__account_auths_owner_input.compose()
-                yield from self.__key_auths_owner_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("active authority")
-                yield from self.__weight_threshold_active_input.compose()
-                yield from self.__account_auths_active_input.compose()
-                yield from self.__key_auths_active_input.compose()
-                yield PlaceTaker()
-                yield BigTitle("posting authority")
-                yield from self.__weight_threshold_posting_input.compose()
-                yield from self.__account_auths_posting_input.compose()
-                yield from self.__key_auths_posting_input.compose()
+        yield BigTitle("Account create")
+        with ScrollableContainer(), Body():
+            yield InputLabel("creator")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="creator-label")
+            yield from self.__new_account_name_input.compose()
+            yield from self.__fee_input.compose()
+            yield from self.__memo_key_input.compose()
+            yield from self.__json_metadata_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("owner authority")
+            yield from self.__weight_threshold_owner_input.compose()
+            yield from self.__account_auths_owner_input.compose()
+            yield from self.__key_auths_owner_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("active authority")
+            yield from self.__weight_threshold_active_input.compose()
+            yield from self.__account_auths_active_input.compose()
+            yield from self.__key_auths_active_input.compose()
+            yield PlaceTaker()
+            yield BigTitle("posting authority")
+            yield from self.__weight_threshold_posting_input.compose()
+            yield from self.__account_auths_posting_input.compose()
+            yield from self.__key_auths_posting_input.compose()
 
     def _create_operation(self) -> AccountCreateOperation | None:
         fee = self.__fee_input.value

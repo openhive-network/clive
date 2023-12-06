@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.inputs.input_label import InputLabel
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.view_bag import ViewBag
 from schemas.operations import UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
@@ -38,13 +37,12 @@ class UpdateProposalVotes(RawOperationBaseScreen):
         self.__approve_input = Checkbox("approve", value=default_approve)
 
     def create_left_panel(self) -> ComposeResult:
-        with ViewBag():
-            yield BigTitle("Update proposal votes")
-            with ScrollableContainer(), Body():
-                yield InputLabel("voter")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="voter-label")
-                yield from self.__proposal_ids.compose()
-                yield self.__approve_input
+        yield BigTitle("Update proposal votes")
+        with ScrollableContainer(), Body():
+            yield InputLabel("voter")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="voter-label")
+            yield from self.__proposal_ids.compose()
+            yield self.__approve_input
 
     def _create_operation(self) -> UpdateProposalVotesOperation:
         split_ids: list[str] = self.__proposal_ids.value.split(",")
