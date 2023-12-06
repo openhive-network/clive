@@ -30,7 +30,7 @@ class DirectoryTreeHint(Label):
     """Hint for DirectoryTree widget."""
 
 
-class Body(VerticalScroll):
+class Body(VerticalScroll, can_focus=False):
     """Container for widgets."""
 
 
