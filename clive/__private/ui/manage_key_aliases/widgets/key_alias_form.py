@@ -22,7 +22,7 @@ class Body(Grid):
     """Container for body."""
 
 
-class ScrollablePart(ScrollableContainer):
+class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 
