@@ -16,6 +16,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.core.url import Url
@@ -31,7 +32,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class ScrollablePart(ScrollableContainer):
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     """All the content of the screen, excluding the title."""
 
 
