@@ -27,6 +27,10 @@ if TYPE_CHECKING:
 LiquidAssetCallableT = Callable[[AssetAmount], Asset.LiquidT]
 
 
+class ScrollablePart(ScrollableContainer, can_focus=False):
+    """All the scrollable content of the screen."""
+
+
 class Body(Grid):
     """All the content of the screen, excluding the title."""
 
@@ -47,7 +51,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Transfer to account")
-        with ScrollableContainer(), Body():
+        with ScrollablePart(), Body():
             to_label, to_input = self.__to_input.compose()
 
             yield InputLabel("from")
