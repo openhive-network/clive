@@ -14,11 +14,11 @@ SetNodeAddressBase ModeSwitchContainer {
 }
 
 SetNodeAddressBase ModeSwitchContainer Static {
-  text-align: left;
   padding: 1 2;
+  text-align: left;
 }
 
 SetNodeAddressBase ManualNode Button {
-  background: $primary;
   margin-top: 1;
+  background: $primary;
 }

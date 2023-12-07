@@ -3,8 +3,8 @@ Savings Tab {
 }
 
 Savings SavingsInterestInfo {
-  height: auto;
   border: $secondary-darken-2;
+  height: auto;
 }
 
 Savings SavingsInterestInfo Horizontal,
@@ -23,8 +23,8 @@ Savings SavingsBalances {
 
 Savings SavingsBalances DynamicLabel {
   align: center middle;
-  width: 100%;
   text-style: bold;
+  width: 100%;
 }
 
 Savings SavingsBalances Static {
@@ -33,10 +33,10 @@ Savings SavingsBalances Static {
 }
 
 Savings SavingsBalances #savings-title {
-  column-span: 2;
-  text-align: center;
-  background: $accent-lighten-1;
   text-style: bold;
+  column-span: 2;
+  background: $accent-lighten-1;
+  text-align: center;
 }
 
 Savings SavingsBalances #savings-token-hbd {
@@ -62,9 +62,9 @@ Savings .transfer-savings-balances {
 /* interest-rate */
 
 SavingsInterestInfo #interest-rate DynamicLabel {
-  width: 1fr;
   text-style: bold;
   align: center middle;
+  width: 1fr;
 }
 
 SavingsInterestInfo .interest-rate-date {
@@ -82,16 +82,16 @@ SavingsInterestInfo .interest-rate-value-percent {
 /* pending-transfers */
 
 Savings PendingHeader {
+  margin-top: 1;
   width: 1fr;
   height: 1;
-  margin-top: 1;
 }
 
 Savings PendingHeader Label {
-  text-align: center;
-  height: 1fr;
-  width: 1fr;
   text-style: bold;
+  width: 1fr;
+  height: 1fr;
+  text-align: center;
 }
 
 Savings .EvenColumn {
@@ -107,21 +107,21 @@ Savings PendingTransfers {
 }
 
 Savings PendingTransfers LoadingIndicator {
-  height: 1;
   margin-top: 2;
+  height: 1;
 }
 
 Savings PendingTransfer Label {
-  width: 1fr;
   content-align: center middle;
-  height: 1fr;
   text-style: bold;
+  width: 1fr;
+  height: 1fr;
 }
 
 Savings PendingTransfer {
-  height: 3;
-  margin-bottom: 1;
   layout: horizontal;
+  margin-bottom: 1;
+  height: 3;
 }
 
 Savings CliveButton {
@@ -129,40 +129,40 @@ Savings CliveButton {
 }
 
 Savings .number-of-transfers {
-  text-align: center;
   text-style: bold;
-  width: 100%;
   background: $accent-lighten-1;
+  width: 100%;
+  text-align: center;
 }
 
 /* transfer from and to savings*/
 
 Savings #savings-transfer-header {
+  text-style: bold;
   margin-bottom: 1;
   text-align: center;
-  text-style: bold;
 }
 
 Savings Body {
   grid-size: 2;
   grid-columns: 17 1fr;
   grid-rows: 4 4 4 4;
-  height: 11;
   margin: 1 0 4 0;
+  height: 11;
 }
 
 Savings #operation-type-choose {
-  height: 3;
   align: center middle;
-  margin-bottom: 1;
   layout: horizontal;
+  margin-bottom: 1;
   width: 1fr;
+  height: 3;
 }
 
 Savings #transfer-time-reminder {
+  content-align: center top;
+  text-style: bold;
+  background: $accent-lighten-1;
   width: 1fr;
   height: 1;
-  content-align: center top;
-  background: $accent-lighten-1;
-  text-style: bold;
 }

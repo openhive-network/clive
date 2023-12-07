@@ -5,13 +5,13 @@ StaticPart {
 }
 
 ScrollablePart {
-  height: 1fr;
   padding-bottom: 1;
+  height: 1fr;
 }
 
 ActionsContainer {
-  height: 3;
   margin: 1;
+  height: 3;
 }
 
 SelectKey {
@@ -19,20 +19,20 @@ SelectKey {
 }
 
 KeyHint {
-  margin: 1;
   text-style: bold;
+  margin: 1;
 }
 
 TransactionContentHint {
+  margin: 0 1;
   background: $panel;
   padding: 1;
-  margin: 0 1;
 }
 
 OperationItem {
   margin: 0 1;
-  padding: 1;
   background: $panel;
+  padding: 1;
 }
 
 OperationItem.-even {
@@ -40,12 +40,12 @@ OperationItem.-even {
 }
 
 TransactionMetadataContainer {
-  border: $metadata-color;
   border-title-background: $metadata-color;
   border-title-color: $text;
   border-title-style: bold;
-  height: auto;
   margin: 0 1; /* bug there, if margin is not set or set to 0, margin-right: 2 appears */
+  border: $metadata-color;
+  height: auto;
 }
 
 TransactionMetadataContainer Label {

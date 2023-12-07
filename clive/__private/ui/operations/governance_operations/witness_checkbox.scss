@@ -1,12 +1,12 @@
 WitnessCheckbox Label {
-  text-align: center;
   width: 1fr;
+  text-align: center;
 }
 
 WitnessCheckbox CheckBoxWithoutFocus {
-  padding: 0;
   border: none;
   background: transparent;
+  padding: 0;
   width: auto;
 }
 
@@ -16,8 +16,8 @@ WitnessCheckbox:disabled {
 
 WitnessCheckbox {
   layout: horizontal;
-  height: auto;
   width: auto;
+  height: auto;
 }
 
 WitnessCheckbox.-voted {

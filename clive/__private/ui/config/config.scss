@@ -3,6 +3,6 @@ ConfigBase DialogContainer #hint {
 }
 
 ConfigBase DialogContainer > Button {
-  width: 1fr;
   background: $primary;
+  width: 1fr;
 }

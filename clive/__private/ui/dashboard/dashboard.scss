@@ -8,20 +8,20 @@ DashboardBase WatchedAccountContainer {
 }
 
 DashboardBase WorkingAccountContainer {
-  border: $working-color;
   border-title-background: $working-color;
+  border: $working-color;
 }
 
 DashboardBase WatchedAccountContainer {
-  border: $watched-color;
   border-title-background: $watched-color;
+  border: $watched-color;
 }
 
 /* AccountRow */
 
 DashboardBase AccountRow {
-  height: 6;
   box-sizing: content-box;
+  height: 6;
 }
 
 DashboardBase AccountRow.watched {
@@ -45,10 +45,10 @@ DashboardBase AccountInfo {
 /* BalanceStats */
 
 DashboardBase BalanceStats {
-  height: 2;
-  margin-left: 2;
   layout: grid;
   grid-size: 3 1;
+  margin-left: 2;
+  height: 2;
 }
 
 DashboardBase BalanceStats .even-manabar {
@@ -76,13 +76,13 @@ DashboardBase ManabarRepresentation .percentage {
 }
 
 DashboardBase ManabarRepresentation .time {
-  background: $panel-lighten-2;
   column-span: 6;
+  background: $panel-lighten-2;
 }
 
 DashboardBase ManabarRepresentation .hivepower-value {
-  background: $panel-lighten-1;
   column-span: 4;
+  background: $panel-lighten-1;
 }
 
 /* ActivityStats */
@@ -103,8 +103,8 @@ DashboardBase ActivityStats DynamicLabel {
 }
 
 DashboardBase ActivityStats .title {
-  color: $text;
   background: $accent-lighten-3;
+  color: $text;
 }
 
 DashboardBase ActivityStats .title-variant {
@@ -121,8 +121,8 @@ DashboardBase ActivityStats .token-variant {
 }
 
 DashboardBase ActivityStats .amount {
-  width: 1fr;
   background: $panel-lighten-1;
+  width: 1fr;
 }
 
 DashboardBase ActivityStats .amount-variant {

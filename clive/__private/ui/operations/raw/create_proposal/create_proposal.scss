@@ -2,9 +2,9 @@ CreateProposal Body {
   grid-size: 2;
   grid-columns: 18 1fr;
   grid-rows: 3 4 4 4 4 4;
-  height: 27;
   margin: 0 4;
   background: $panel;
+  height: 27;
 }
 
 CreateProposal #creator-label {

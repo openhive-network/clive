@@ -1,10 +1,10 @@
 WelcomeFormScreen WelcomeTitle {
   content-align: center middle;
-  text-align: center;
   margin: 1;
+  text-align: center;
 }
 
 WelcomeFormScreen DialogContainer Button {
-  width: 100%;
   background: $primary-background-darken-2;
+  width: 100%;
 }

@@ -3,30 +3,30 @@ CartBasedScreen LeftContainer {
 }
 
 CartBasedScreen RightContainer {
-  width: 30;
   background: $panel;
+  width: 30;
 }
 
 CartBasedScreen CartOverview Resources {
   grid-size: 2;
   grid-rows: 1;
-  height: auto;
   border: $primary;
+  height: auto;
 }
 
 CartBasedScreen CartOverview CartItemsAmount {
-  padding: 1;
-  color: $text;
-  background: $secondary-lighten-1;
   align: center middle;
   text-style: bold;
+  background: $secondary-lighten-1;
+  padding: 1;
   width: 1fr;
+  color: $text;
 }
 
 CartBasedScreen CartOverview CartInfoContainer {
   border: $secondary;
-  overflow: hidden;
   height: 1fr;
+  overflow: hidden;
 }
 
 CartBasedScreen CartOverview CartItemsContainer {

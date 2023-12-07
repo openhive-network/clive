@@ -2,9 +2,9 @@ CommentOptions Body {
   grid-size: 2;
   grid-columns: 27 1fr;
   grid-rows: 3 4 4 4 4 4;
-  height: 27;
   margin: 0 4;
   background: $panel;
+  height: 27;
 }
 
 CommentOptions #author-label {

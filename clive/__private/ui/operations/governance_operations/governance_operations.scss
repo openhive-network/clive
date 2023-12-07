@@ -4,8 +4,8 @@ Governance Tab {
 }
 
 Governance CliveTabbedContent Static {
-  text-align: center;
   text-style: bold;
+  text-align: center;
 }
 
 Governance Button:focus {
@@ -14,15 +14,15 @@ Governance Button:focus {
 
 /* Proxy */
 Governance Proxy .current-proxy-static {
+  background: $accent-lighten-1;
   width: 1fr;
   height: 1;
-  background: $accent-lighten-1;
 }
 
 Governance Proxy AccountNameInput {
-  height: 3;
   margin-top: 1;
   margin-bottom: 1;
+  height: 3;
 }
 
 Governance Proxy #set-button-container {
@@ -47,8 +47,8 @@ Governance Proxy #modify-proxy-buttons {
 }
 
 Governance Proxy #change-proxy-button {
-  background: green;
   margin-right: 3;
+  background: green;
 }
 
 Governance Proxy #remove-proxy-button {
@@ -58,8 +58,8 @@ Governance Proxy #remove-proxy-button {
 
 Governance Witnesses Label {
   text-style: bold;
-  text-align: center;
   width: 1fr;
+  text-align: center;
 }
 
 Governance Witnesses Static {
@@ -72,28 +72,28 @@ DetailsScreen {
 }
 
 DetailsScreen Static {
-  text-align: left;
-  width: 60%;
   border: $primary-lighten-3;
+  width: 60%;
+  text-align: left;
 }
 
 /* WITNESSES */
 Governance Witnesses {
   layout: vertical;
-  height: auto;
   padding: 0 0 0 1;
+  height: auto;
 }
 
 Governance Tooltip {
-  text-align: left;
   padding-right: 4;
+  text-align: left;
 }
 
 Governance WitnessDetails {
-  text-align: center;
-  height: auto;
-  width: 1fr;
   border: blue;
+  width: 1fr;
+  height: auto;
+  text-align: center;
 }
 
 Governance WitnessDetails Static {
@@ -107,9 +107,9 @@ Governance WitnessesList {
 }
 
 Governance WitnessesList Witness {
-  height: 1;
   grid-size: 5;
   grid-columns: 20% 11% 35% 20% 14%;
+  height: 1;
 }
 
 /* Could be done better, for not just so focus could be visible */
@@ -155,8 +155,8 @@ Governance Witness .witness-details-odd {
 
 Governance WitnessesListHeader {
   grid-size: 5;
-  height: auto;
   grid-columns: 20% 11% 35% 20% 14%;
+  height: auto;
 }
 
 Governance WitnessesListHeader #rank-column {
@@ -186,19 +186,19 @@ Governance WitnessesTable:focus {
 }
 /* a table with the actions to be performed after the creation of the operation */
 Governance WitnessesActions {
-  width: 25%;
   margin-left: 1;
+  width: 25%;
   max-height: 31;
 }
 
 Governance #action-row {
-  width: 32%;
   background: rgb(255, 186, 65);
+  width: 32%;
 }
 
 Governance #witness-row {
-  width: 68%;
   background: rgb(0, 83, 170);
+  width: 68%;
 }
 
 Governance #witnesses-actions-header {
@@ -235,15 +235,15 @@ Governance WitnessesActions #name-and-action {
 
 /* manual search witness */
 Governance WitnessManualSearch {
+  margin-left: 1;
   width: 1fr;
   height: 5;
-  margin-left: 1;
 }
 
 Governance CliveButton {
-  width: 40%;
   margin-right: 1;
   margin-left: 1;
+  width: 40%;
 }
 
 Governance #witness-search-button {
@@ -269,10 +269,10 @@ Governance #inputs-with-static-manual {
 }
 
 Governance #search-and-clear-buttons {
-  height: auto;
   align: center top;
   margin-top: 1;
   width: 35%;
+  height: auto;
 }
 
 Governance WitnessManualSearch Vertical {

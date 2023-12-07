@@ -1,7 +1,7 @@
 Operations OperationButton {
-  width: 1fr;
-  background: $primary;
   margin: 1 2 0 2;
+  background: $primary;
+  width: 1fr;
 }
 
 Operations Tab {
@@ -9,6 +9,6 @@ Operations Tab {
 }
 
 Operations #hint {
-  text-align: center;
   text-style: bold;
+  text-align: center;
 }

@@ -2,9 +2,9 @@ LimitOrderCreate Body {
   grid-size: 2;
   grid-columns: 21 1fr;
   grid-rows: 3 4 4 4 4;
-  height: 24;
   margin: 0 4;
   background: $panel;
+  height: 24;
 }
 
 LimitOrderCreate #owner-label {

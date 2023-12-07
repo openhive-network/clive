@@ -2,10 +2,10 @@ TransferFromSavings Body {
   grid-size: 2;
   grid-columns: 15 1fr;
   grid-rows: 3 4 4 4;
-  height: auto;
   margin: 0 4;
-  padding-bottom: 2;
   background: $panel;
+  padding-bottom: 2;
+  height: auto;
 }
 
 TransferFromSavings #from-label {

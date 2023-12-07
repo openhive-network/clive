@@ -2,9 +2,9 @@ UpdateProposalVotes Body {
   grid-size: 2;
   grid-columns: 19 1fr;
   grid-rows: 4 5 5;
-  height: 13;
   margin: 0 4;
   background: $panel;
+  height: 13;
 }
 
 UpdateProposalVotes #voter-label {

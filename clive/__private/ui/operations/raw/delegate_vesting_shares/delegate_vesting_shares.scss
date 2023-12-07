@@ -2,9 +2,9 @@ DelegateVestingShares Body {
   grid-size: 2;
   grid-columns: 19 1fr;
   grid-rows: 3 4 4;
-  height: 12;
   margin: 0 4;
   background: $panel;
+  height: 12;
 }
 
 DelegateVestingShares #delegator-label {

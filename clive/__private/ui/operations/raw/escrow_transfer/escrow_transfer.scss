@@ -2,9 +2,9 @@ EscrowTransfer Body {
   grid-size: 2;
   grid-columns: 26 1fr;
   grid-rows: 3 4 4 4 4 4 4 4 4;
-  height: 40;
   margin: 2 4;
   background: $panel;
+  height: 40;
 }
 
 EscrowTransfer #from-label {

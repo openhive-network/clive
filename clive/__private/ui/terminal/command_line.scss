@@ -1,7 +1,7 @@
 CommandLinePrompt {
   dock: left;
-  width: auto;
   margin-left: 1;
+  width: auto;
 }
 
 CommandLine {
@@ -12,8 +12,8 @@ CommandLine {
 CommandLineInput {
   margin-left: 1;
   border: none !important;
-  padding: 0;
   background: $panel;
+  padding: 0;
 }
 
 CommandLinePrompt.--active {

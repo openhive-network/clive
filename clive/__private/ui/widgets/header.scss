@@ -1,6 +1,6 @@
 Header {
-  border-bottom: inner $error;
   box-sizing: content-box;
+  border-bottom: inner $error;
 }
 
 Header.-active {
@@ -8,15 +8,15 @@ Header.-active {
 }
 
 Header #icon {
-  background: $foreground-darken-1 5%;
   content-align: center middle;
+  background: $foreground-darken-1 5%;
   width: auto;
 }
 
 Header HeaderTitle {
   background: $foreground -5%;
-  height: 1;
   width: 1fr;
+  height: 1;
 }
 
 Header DynamicPropertiesClock {
@@ -32,8 +32,8 @@ Header TitledLabel {
 }
 
 Header #node-type-label {
-  margin-left: 1;
   margin-right: 1;
+  margin-left: 1;
   color: green;
 }
 
@@ -59,6 +59,6 @@ Header.-active #mode-label #value {
 }
 
 Header AlarmsSummary {
-  width: 1fr;
   align: center middle;
+  width: 1fr;
 }

@@ -2,9 +2,9 @@ DeleteComment Body {
   grid-size: 2;
   grid-columns: 13 1fr;
   grid-rows: 5;
-  height: 10;
   margin: 0 4;
   background: $panel;
+  height: 10;
 }
 
 DeleteComment #author-label {
