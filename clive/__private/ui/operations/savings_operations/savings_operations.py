@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Container, Grid, Horizontal, ScrollableContainer
-from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static
+from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.get_css import get_relative_css_path
@@ -23,7 +23,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.exceptions import RequestIdError
 from clive.models import Asset
 from schemas.operations import (
@@ -152,13 +151,13 @@ class PendingTransfers(ScrollableContainer, can_focus=False):
         self.mount_all(things_to_mount)
 
 
-class SavingsInfo(ScrollableTabPane, CliveWidget):
+class SavingsInfo(TabPane, CliveWidget):
     def compose(self) -> ComposeResult:
         yield SavingsInterestInfo()
         yield PendingTransfers()
 
 
-class SavingsTransfers(ScrollableTabPane, OperationActionBindings):
+class SavingsTransfers(TabPane, OperationActionBindings):
     def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
 

@@ -5,7 +5,8 @@ from typing import TYPE_CHECKING
 import inflection
 from textual import on
 from textual.binding import Binding
-from textual.widgets import Static
+from textual.containers import VerticalScroll
+from textual.widgets import TabPane
 
 from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
@@ -15,7 +16,6 @@ from clive.__private.ui.operations.operations_list import MAJOR_OPERATIONS, RAW_
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
-from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.dev import is_in_dev_mode
 
@@ -49,6 +49,10 @@ class OperationButton(CliveButton):
         return inflection.humanize(inflection.underscore(class_name))
 
 
+class ScrollablePart(VerticalScroll, can_focus=False):
+    pass
+
+
 class Operations(CartBasedScreen, CartBinding):
     CSS_PATH = [
         *CartBasedScreen.CSS_PATH,
@@ -63,16 +67,16 @@ class Operations(CartBasedScreen, CartBinding):
 
     def create_left_panel(self) -> ComposeResult:
         with CliveTabbedContent(initial="financial"):
-            with ScrollableTabPane("Financial", id="financial"):
+            with TabPane("Financial", id="financial"), ScrollablePart():
                 yield OperationButton(MAJOR_OPERATIONS[0], label="Transfer")
                 yield OperationButton(MAJOR_OPERATIONS[1], label="Saving")
                 yield OperationButton(None, label="Hive power management")
                 yield OperationButton(None, label="Convert")
-            with ScrollableTabPane("Social"):
+            with TabPane("Social"), ScrollablePart():
                 yield OperationButton(None, label="Social operations")
-            with ScrollableTabPane("Governance"):
+            with TabPane("Governance"), ScrollablePart():
                 yield OperationButton(MAJOR_OPERATIONS[2], label="Governance operations")
-            with ScrollableTabPane("Account management"):
+            with TabPane("Account management"), ScrollablePart():
                 yield OperationButton(None, label="Account management operations")
             yield from self.__create_raw_operations_tab(hide=not is_in_dev_mode())
 
@@ -108,7 +112,6 @@ class Operations(CartBasedScreen, CartBinding):
         if hide:
             return []
 
-        with ScrollableTabPane("Raw"):
-            yield Static("select one of the following operation:", id="hint")
+        with TabPane("Raw"), ScrollablePart():
             for operation in RAW_OPERATIONS:
                 yield OperationButton(operation)

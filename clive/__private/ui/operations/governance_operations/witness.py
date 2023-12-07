@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 
 from textual import on, work
 from textual.binding import Binding
-from textual.containers import Grid, Horizontal, Vertical, VerticalScroll
+from textual.containers import Grid, Horizontal, ScrollableContainer, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.events import Click, Enter
 from textual.message import Message
 from textual.screen import ModalScreen
-from textual.widgets import Input, Label, Static
+from textual.widgets import Input, Label, Static, TabPane
 
 from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -24,7 +24,6 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.witness_pattern_input import WitnessPatternInput
-from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
@@ -43,6 +42,10 @@ MAX_WITNESSES_ON_PAGE: Final[int] = 30
 
 def convert_witness_name_to_widget_id(witness_name: str) -> str:
     return witness_name.replace(".", "")
+
+
+class ScrollablePart(ScrollableContainer, can_focus=False):
+    pass
 
 
 class DetailsLabel(Label):
@@ -546,7 +549,7 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         ]
 
 
-class Witnesses(ScrollableTabPane, OperationActionBindings):
+class Witnesses(TabPane, OperationActionBindings):
     """TabPane with all content about witnesses."""
 
     def __init__(self, title: TextType) -> None:

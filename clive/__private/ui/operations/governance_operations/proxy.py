@@ -3,21 +3,24 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Container, Horizontal
-from textual.widgets import Button, Static
+from textual.containers import Container, Horizontal, ScrollableContainer
+from textual.widgets import Button, Static, TabPane
 
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.scrollable_tab_pane import ScrollableTabPane
 
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
 
-class Proxy(ScrollableTabPane, CliveWidget):
+class ScrollablePart(ScrollableContainer, can_focus=False):
+    pass
+
+
+class Proxy(TabPane, CliveWidget):
     """TabPane with all content about proxy."""
 
     def __init__(self, title: TextType):
@@ -31,7 +34,8 @@ class Proxy(ScrollableTabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         content = self.__compose_proxy_set if self.__current_proxy else self.__compose_proxy_not_set
-        yield from content()
+        with ScrollablePart():
+            yield from content()
 
     def __compose_proxy_not_set(self) -> ComposeResult:
         yield AccountNameInput(label="current proxy", value="Not set", disabled=True)
