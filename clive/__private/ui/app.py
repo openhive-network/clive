@@ -28,6 +28,7 @@ from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.shared.help import Help
 from clive.__private.ui.terminal.command_line import CommandLinePrompt
 from clive.__private.ui.terminal.terminal_screen import TerminalScreen
+from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -96,6 +97,7 @@ class Clive(App[int], ManualReactive):
     ) -> None:
         title = title if title else severity.capitalize()
         timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
+        logger.debug(f"Sending TUI notification:\n{message}")
         return super().notify(message, title=title, severity=severity, timeout=timeout)
 
     @contextmanager
@@ -150,6 +152,7 @@ class Clive(App[int], ManualReactive):
             self.push_screen(Onboarding())
         else:
             self.push_screen(DashboardInactive())
+            self.push_screen(TransactionSummaryFromCart())
 
     def replace_screen(
         self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]

@@ -331,21 +331,26 @@ class Commands(Generic[WorldT]):
 
     @overload
     def __create_command_wrapper(  # type: ignore[misc]
-        self, command: CommandWithResult[CommandResultT], error: Exception | None = None
+        self, command: CommandWithResult[CommandResultT], error: Exception | None = None, handled: bool = False
     ) -> CommandWithResultWrapper[CommandResultT]:
         ...
 
     @overload
-    def __create_command_wrapper(self, command: Command, error: Exception | None = None) -> CommandWrapper:
+    def __create_command_wrapper(
+        self, command: Command, error: Exception | None = None, handled: bool = False
+    ) -> CommandWrapper:
         ...
 
     def __create_command_wrapper(
-        self, command: Command | CommandWithResult[CommandResultT], error: Exception | None = None
+        self,
+        command: Command | CommandWithResult[CommandResultT],
+        error: Exception | None = None,
+        handled: bool = False,
     ) -> CommandWrapper | CommandWithResultWrapper[CommandResultT]:
         if isinstance(command, CommandWithResult):
             result = command.result if error is None else ResultNotAvailable(exception=error)
-            return CommandWithResultWrapper(command=command, result=result, error=error)
-        return CommandWrapper(command=command, error=error)
+            return CommandWithResultWrapper(command=command, result=result, error=error, handled=handled)
+        return CommandWrapper(command=command, error=error, handled=handled)
 
 
 class TextualCommands(Commands["TextualWorld"], CliveWidget):

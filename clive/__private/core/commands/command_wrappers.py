@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class ErrorHolder:
     error: BaseException | None = None
+    handled: bool = False
 
     @property
     def error_occurred(self) -> bool:

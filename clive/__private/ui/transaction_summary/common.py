@@ -168,20 +168,20 @@ class TransactionSummaryCommon(BaseScreen):
         transaction = self.transaction.copy()
 
         try:
-            transaction = (
-                await self.app.world.commands.perform_actions_on_transaction(
-                    content=transaction,
-                    sign_key=self.__get_key_to_sign() if should_be_signed else None,
-                    force_unsign=not should_be_signed,
-                    save_file_path=file_path,
-                    force_save_format="bin" if save_as_binary else "json",
-                )
-            ).result_or_raise
+            wrapper = await self.app.world.commands.perform_actions_on_transaction(
+                content=transaction,
+                sign_key=self.__get_key_to_sign() if should_be_signed else None,
+                force_unsign=not should_be_signed,
+                save_file_path=file_path,
+                force_save_format="bin" if save_as_binary else "json",
+            )
+            transaction = wrapper.result_or_raise
         except CommandRequiresActiveModeError:
             self.notify("Active mode is required for this action.", severity="warning")
             raise  # reraise so try_again_after_activation decorator can handle it
         except Exception as error:  # noqa: BLE001
-            self.notify(f"Transaction save failed. Reason: {error}", severity="error")
+            if not wrapper.notified:
+                self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
 
         self.notify(
@@ -208,7 +208,7 @@ class TransactionSummaryCommon(BaseScreen):
                     sign_key=self.__get_key_to_sign() if not transaction.is_signed() else None,
                     broadcast=True,
                 )
-            ).raise_if_error_occurred()
+            )
         except CommandRequiresActiveModeError:
             self.notify("Active mode is required for this action.", severity="warning")
             raise  # reraise so try_again_after_activation decorator can handle it
