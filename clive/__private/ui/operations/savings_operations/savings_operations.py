@@ -126,7 +126,7 @@ class PendingHeader(Horizontal):
         yield Label()
 
 
-class PendingTransfers(ScrollableContainer):
+class PendingTransfers(ScrollableContainer, can_focus=False):
     def compose(self) -> ComposeResult:
         yield LoadingIndicator()
 
