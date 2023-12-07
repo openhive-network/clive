@@ -3,32 +3,36 @@ Savings Tab{
 }
 
 Savings SavingsInterestInfo {
-    height: 5;
+    height: auto;
     border: $secondary-darken-2;
+}
+
+Savings SavingsInterestInfo Horizontal, Savings SavingsInterestInfo Container {
+    height: auto;
 }
 
 /* savings-balances */
 Savings SavingsBalances {
   layout: grid;
-  grid-size: 10 3;
-  width: 50%;
+  grid-size: 2 3;
+  grid-rows: 1;
+  width: 1fr;
+  height: auto;
 }
 
 Savings SavingsBalances DynamicLabel {
     align: center middle;
     width: 100%;
-    column-span: 5;
     text-style: bold;
 }
 
 Savings SavingsBalances Static {
-    column-span: 5;
     text-style: bold;
     text-align: center;
 }
 
 Savings SavingsBalances #savings-title {
-    column-span: 10;
+    column-span: 2;
     text-align: center;
     background: $accent-lighten-1;
     text-style: bold;
@@ -51,14 +55,14 @@ Savings SavingsBalances .savings-value-hbd {
     background: $accent-lighten-3;
 }
 
-/* interest-rate */
-
-SavingsInterestInfo #interest-rate {
-    width: 50%;
+Savings .transfer-savings-balances {
+    border: $secondary-darken-2;
 }
 
+/* interest-rate */
+
 SavingsInterestInfo #interest-rate DynamicLabel {
-    width: 100%;
+    width: 1fr;
     text-style: bold;
     align: center middle;
 
@@ -81,24 +85,26 @@ SavingsInterestInfo .interest-rate-value-percent {
 Savings PendingHeader {
     width: 1fr;
     height: 1;
-    margin-top: 2;
+    margin-top: 1;
 }
 
 Savings PendingHeader Label{
     text-align: center;
-    height: 1;
+    height: 1fr;
     width: 1fr;
     text-style: bold;
 }
 
 Savings  .EvenColumn {
     background: $primary-background-darken-2;
-    width: 1fr;
 }
 
 Savings .OddColumn {
     background: $primary-background-darken-1;
-    width: 1fr;
+}
+
+Savings PendingTransfers {
+    margin-bottom: 3;
 }
 
 Savings PendingTransfers LoadingIndicator {
@@ -109,7 +115,7 @@ Savings PendingTransfers LoadingIndicator {
 Savings PendingTransfer Label{
     width: 1fr;
     content-align: center middle;
-    height: 3;
+    height: 1fr;
     text-style: bold;
 }
 
@@ -131,11 +137,6 @@ Savings .number-of-transfers {
 }
 
 /* transfer from and to savings*/
-Savings  .transfer-savings-balances {
-    width: 100%;
-    grid-size: 10 3;
-    height: 4;
-}
 
 Savings #savings-transfer-header {
     margin-bottom: 1;
@@ -147,7 +148,8 @@ Savings Body {
   grid-size: 2;
   grid-columns: 17 1fr;
   grid-rows: 4 4 4 4;
-  height: 16;
+  height: 11;
+  margin: 1 0 4 0;
 }
 
 Savings #operation-type-choose {
@@ -164,10 +166,4 @@ Savings #transfer-time-reminder {
     content-align: center top;
     background: $accent-lighten-1;
     text-style: bold;
-    margin-top: 1;
-    column-span: 2;
-}
-
-Savings PendingTransfers {
-    height: auto;
 }

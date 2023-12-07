@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.containers import Container, Grid, Horizontal, ScrollableContainer
+from textual.containers import Container, Grid, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -41,6 +41,10 @@ if TYPE_CHECKING:
 
 odd = "OddColumn"
 even = "EvenColumn"
+
+
+class ScrollablePart(ScrollableContainer, can_focus=False):
+    pass
 
 
 class Body(Grid):
@@ -125,7 +129,7 @@ class PendingHeader(Horizontal):
         yield Label()
 
 
-class PendingTransfers(ScrollableContainer, can_focus=False):
+class PendingTransfers(Vertical):
     def compose(self) -> ComposeResult:
         yield LoadingIndicator()
 
@@ -144,9 +148,9 @@ class PendingTransfers(ScrollableContainer, can_focus=False):
         things_to_mount = [
             Static(f"Number of transfers from savings now: {len(pending_transfers)}", classes="number-of-transfers"),
             PendingHeader(),
-            *[PendingTransfer(transfer) for transfer in pending_transfers],
-            Static(),
-            Static(),
+            ScrollablePart(
+                *[PendingTransfer(transfer) for transfer in pending_transfers],
+            ),
         ]
         self.mount_all(things_to_mount)
 
@@ -180,12 +184,11 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             yield self.__from_button
 
         yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
-        with Body():
+        yield self.__transfer_time_reminder
+        with ScrollablePart(), Body():
             yield from self.__to_account_input.compose()
             yield from self.__amount_input.compose()
             yield from self.__memo_input.compose()
-            yield self.__transfer_time_reminder
-        yield Static()
 
     @on(RadioSet.Changed)
     def visibility_of_transfer_time_reminder(self, event: RadioSet.Changed) -> None:
