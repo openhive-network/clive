@@ -1,7 +1,8 @@
 $working-color: $secondary-darken-2;
 $watched-color: $primary-darken-1;
 
-DashboardBase WorkingAccountContainer, DashboardBase WatchedAccountContainer {
+DashboardBase WorkingAccountContainer,
+DashboardBase WatchedAccountContainer {
   border-title-color: $text;
   border-title-style: bold;
 }
@@ -22,7 +23,6 @@ DashboardBase AccountRow {
   height: 6;
   box-sizing: content-box;
 }
-
 
 DashboardBase AccountRow.watched {
   border-bottom: $primary-lighten-1;
@@ -50,7 +50,6 @@ DashboardBase BalanceStats {
   layout: grid;
   grid-size: 3 1;
 }
-
 
 DashboardBase BalanceStats .even-manabar {
   background: $primary-lighten-1;
