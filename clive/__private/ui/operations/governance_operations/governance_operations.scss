@@ -98,7 +98,8 @@ DetailsScreen Static {
 /* WITNESSES */
 Governance Witnesses {
   layout: vertical;
-  padding: 0 0 0 1;height: auto;
+  padding: 0 0 0 1;
+  height: auto;
 }
 
 Governance Tooltip {
@@ -119,13 +120,13 @@ Governance WitnessDetails Static {
 
 /*table to modify votes for the witnesses*/
 Governance WitnessesList {
-    height: auto;
+  height: auto;
 }
 
 Governance WitnessesList Witness {
   grid-size: 5;
   grid-columns: 2fr 1fr 3fr 2fr 2fr;
-  height: 1;
+  height: auto;
 }
 
 /* Could be done better, for not just so focus could be visible */
@@ -192,8 +193,8 @@ Governance #witnesses-headline {
 }
 
 Governance WitnessesTable {
-    width: 7fr;
-    height: auto;
+  width: 7fr;
+  height: auto;
 }
 
 Governance WitnessesTable:focus {
