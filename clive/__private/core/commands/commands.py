@@ -12,6 +12,7 @@ from clive.__private.core.commands.data_retrieval.governance_data import (
     GovernanceData,
     GovernanceDataRetrieval,
 )
+from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.deactivate import Deactivate
@@ -276,6 +277,24 @@ class Commands(Generic[WorldT]):
                 mode=mode,
                 witness_name_pattern=witness_name_pattern,
                 search_by_pattern_limit=search_by_name_limit,
+            )
+        )
+
+    async def retrieve_proposals_data(
+        self,
+        *,
+        account_name: str,
+        mode: ProposalsDataRetrieval.Modes = ProposalsDataRetrieval.DEFAULT_MODE,
+        order_direction: ProposalsDataRetrieval.OrderDirections = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION,
+        status: ProposalsDataRetrieval.ProposalStatus = ProposalsDataRetrieval.DEFAULT_STATUS,
+    ) -> CommandWithResultWrapper[ProposalsData]:
+        return await self.__surround_with_exception_handlers(
+            ProposalsDataRetrieval(
+                node=self._world.node,
+                account_name=account_name,
+                mode=mode,
+                order_direction=order_direction,
+                status=status,
             )
         )
 

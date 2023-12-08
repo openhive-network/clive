@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
 from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
-from schemas.apis.database_api import GetDynamicGlobalProperties, ListWitnesses, ListWitnessVotes
+from schemas.apis.database_api import (
+    GetDynamicGlobalProperties,
+    ListProposals,
+    ListProposalVotes,
+    ListWitnesses,
+    ListWitnessVotes,
+)
 from schemas.apis.database_api.fundaments_of_reponses import (
     AccountItemFundament,
     ListChangeRecoveryAccountRequestsFundament,
@@ -18,6 +24,7 @@ from schemas.apis.transaction_status_api import FindTransaction as SchemasFindTr
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
 from schemas.fields.basic import AccountName as SchemasAccountName
+from schemas.fields.compound import Proposal
 from schemas.fields.hex import Sha256
 from schemas.fields.hex import Signature as SchemasSignature
 from schemas.operation import Operation as SchemasBaseOperationType
@@ -39,6 +46,9 @@ ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 Signature = SchemasSignature
 AccountName = SchemasAccountName
 
+ProposalSchema = Proposal[AssetHbdHF26]
+ProposalsList = ListProposals
+ProposalVotes = ListProposalVotes
 FindWitnesses = SchemasFindWitnesses
 WitnessVotes = ListWitnessVotes
 WitnessesList = ListWitnesses
