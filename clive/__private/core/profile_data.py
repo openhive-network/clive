@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import shelve
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
@@ -73,9 +74,12 @@ class ProfileAlreadyExistsError(ProfileDataError):
 
 
 class ProfileInvalidNameError(ProfileDataError):
-    def __init__(self, profile_name: str) -> None:
+    def __init__(self, profile_name: str, reason: str | None = None) -> None:
         self.profile_name = profile_name
-        super().__init__(f"Profile name `{profile_name}` is forbidden.")
+        reason = reason
+        message = f"Profile name `{profile_name}` is invalid."
+        message += f" Reason: {reason}" if reason else ""
+        super().__init__(message)
 
 
 class Cart(list[Operation]):
@@ -126,8 +130,18 @@ class ProfileData(Context):
 
     @staticmethod
     def validate_profile_name(name: str) -> None:
-        if not name:
-            raise ProfileInvalidNameError(name)
+        min_length = 3
+        max_length = 22
+        allowed_special_characters = "-._"  # TODO: Add "@" when beekeeper supports it.
+
+        rules = f"""
+- Must be between {min_length} and {max_length} characters long.
+- Can consist only of alphanum and `{allowed_special_characters}`.
+- Any special character must be surrounded by alphanum characters.\
+"""
+        expression = rf"^(?=.{{{min_length},{max_length}}}$)([a-zA-Z0-9]+[{allowed_special_characters}]?[a-zA-Z0-9]+)*$"
+        if not re.match(expression, name):
+            raise ProfileInvalidNameError(name, reason=rules)
 
     @property
     def working_account(self) -> WorkingAccount:

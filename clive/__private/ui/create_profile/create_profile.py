@@ -11,7 +11,7 @@ from textual.widgets import Static
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile_data import ProfileData, ProfileInvalidNameError
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -62,8 +62,10 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         password = self.__password_input.value
         repeated_password = self.__repeat_password_input.value
 
-        if len(profile_name) < minimum_input_length:
-            raise InputTooShortError(expected_length=minimum_input_length, given_value=profile_name)
+        try:
+            ProfileData.validate_profile_name(profile_name)
+        except ProfileInvalidNameError as error:
+            raise FormValidationError(str(error), given_value=profile_name) from None
 
         if len(password) < minimum_input_length:
             raise InputTooShortError(expected_length=minimum_input_length, given_value=profile_name)
