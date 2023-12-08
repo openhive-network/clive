@@ -23,7 +23,7 @@ class CheckBoxWithoutFocus(Checkbox):
         return self
 
 
-class WitnessCheckbox(CliveWidget, can_focus=False):
+class GovernanceCheckbox(CliveWidget, can_focus=False):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     class Changed(Message):

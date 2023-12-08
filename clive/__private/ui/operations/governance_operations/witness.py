@@ -18,7 +18,7 @@ from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.governance_data_provider import GovernanceDataProvider
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.operations.governance_operations.witness_checkbox import WitnessCheckbox
+from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -163,7 +163,7 @@ class Witness(Grid, CliveWidget, can_focus=True):
         self.__witness = witness
         self.__evenness = evenness
 
-        self.witness_checkbox = WitnessCheckbox(
+        self.witness_checkbox = GovernanceCheckbox(
             is_voted=witness.voted,
             initial_state=self.is_witness_operation_in_cart or self.is_already_in_witness_actions_container,
             disabled=bool(self.app.world.profile_data.working_account.data.proxy) or self.is_witness_operation_in_cart,
@@ -198,11 +198,11 @@ class Witness(Grid, CliveWidget, can_focus=True):
             return
         self.remove_class("dimmed")
 
-    @on(WitnessCheckbox.Clicked)
+    @on(GovernanceCheckbox.Clicked)
     def focus_myself(self) -> None:
         self.focus()
 
-    @on(WitnessCheckbox.Changed)
+    @on(GovernanceCheckbox.Changed)
     async def modify_action_status(self) -> None:
         await self.move_witness_to_actions()
 
