@@ -558,7 +558,7 @@ class Witnesses(TabPane, OperationActionBindings):
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
 
-        with Horizontal(id="witness-vote-actions"):
+        with ScrollablePart(), Horizontal(id="witness-vote-actions"):
             yield self.__witness_table
             yield WitnessesActions()
         yield WitnessManualSearch()
