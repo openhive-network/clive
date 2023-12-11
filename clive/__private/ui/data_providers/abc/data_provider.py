@@ -26,10 +26,9 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
     content: object = var(None, init=False)
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
-    def __init__(self) -> None:
+    def __init__(self, paused: bool = True) -> None:
         super().__init__()
-        self.update()
-        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update)
+        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update, pause=paused)
 
     @abstractmethod
     @work
