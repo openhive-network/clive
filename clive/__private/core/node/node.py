@@ -107,6 +107,7 @@ class _BatchNode(BaseNode):
         return delayed_result  # type: ignore[return-value]
 
     async def __evaluate(self) -> None:
+        num_of_requests = len(self.__batch)
         query = "[" + ",".join([x.request for x in self.__batch]) + "]"
 
         try:
@@ -116,10 +117,20 @@ class _BatchNode(BaseNode):
         except CommunicationError as error:
             responses_from_error = error.get_response()
 
+            # There is no response available, set this exception on all delayed results.
+            if responses_from_error is None:
+                for request_id in range(num_of_requests):
+                    self.__get_batch_delayed_result(request_id)._set_exception(error)
+
+                if not self.__delay_error_on_data_access:
+                    raise
+                return
+
             message = f"Invalid error response format: expected list, got {type(responses_from_error)}"
             assert isinstance(responses_from_error, list), message
             assert len(responses_from_error) == len(self.__batch), "Invalid amount of responses_from_error"
 
+            # Some of the responses might be errors, some might be good - set them on delayed results.
             for response in responses_from_error:
                 request_id = int(response["id"])
                 if "error" in response:
