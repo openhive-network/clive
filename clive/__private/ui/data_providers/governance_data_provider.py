@@ -13,12 +13,7 @@ if TYPE_CHECKING:
 
 
 class GovernanceDataProvider(DataProvider):
-    """
-    A class for retrieving information about governance stored in a GovernanceData dataclass.
-
-    To access the data after initializing the class, use the 'content' property.
-    Management of governance data refreshing could be handled by a context manager, but also can be by provider methods.
-    """
+    """A class for retrieving information about governance stored in a GovernanceData dataclass."""
 
     content: GovernanceData = var(GovernanceData(), init=False)  # type: ignore[assignment]
     """It is used to check whether governance data has been refreshed and to store governance data."""

@@ -8,13 +8,7 @@ from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 
 
 class SavingsDataProvider(DataProvider):
-    """
-    A class for retrieving information about savings stored in a SavingsData dataclass.
-
-    To access the data after initializing the class, use the 'content' property.
-    Management of savings data refreshing should be handled by a context manager,
-    but it can also be manually stopped using the 'stop' method.
-    """
+    """A class for retrieving information about savings stored in a SavingsData dataclass."""
 
     content: SavingsData = var(SavingsData(), init=False)  # type: ignore[assignment]
     """It is used to check whether savings data has been refreshed and to store savings data."""
