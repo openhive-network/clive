@@ -190,6 +190,21 @@ class Beekeeper:
         finally:
             self.__token = previous_token
 
+    @asynccontextmanager
+    async def with_new_session(self) -> AsyncIterator[None]:
+        previous_token = self.__token
+        try:
+            self.__token = (
+                await self.api.create_session(
+                    notifications_endpoint=self.__notification_server.http_endpoint.as_string(with_protocol=False),
+                    salt=str(id(self)),
+                )
+            ).token
+            yield
+        finally:
+            await self.api.close_session()
+            self.__token = previous_token
+
     @staticmethod
     def get_pid_from_file() -> int:
         return BeekeeperExecutable.get_pid_from_file()
