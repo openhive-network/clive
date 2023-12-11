@@ -6,19 +6,18 @@ from textual import work
 from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.governance_data import GovernanceData, GovernanceDataRetrieval
-from clive.__private.ui.data_providers.abc.data_provider import BaseDataProvider
+from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 
 if TYPE_CHECKING:
     from textual.worker import Worker
 
 
-class GovernanceDataProvider(BaseDataProvider):
+class GovernanceDataProvider(DataProvider):
     """
     A class for retrieving information about governance stored in a GovernanceData dataclass.
 
     To access the data after initializing the class, use the 'content' property.
-    Management of governance data refreshing should be handled by a context manager, but also can be by stop_refreshing_data
-    method.
+    Management of governance data refreshing could be handled by a context manager, but also can be by provider methods.
     """
 
     content: GovernanceData = var(GovernanceData(), init=False)  # type: ignore[assignment]
@@ -32,7 +31,7 @@ class GovernanceDataProvider(BaseDataProvider):
         self.__witness_name_pattern: str | None = None
 
     @work(name="governance data update worker")
-    async def update_provider_data(self) -> None:
+    async def update(self) -> None:
         proxy = self.app.world.profile_data.working_account.data.proxy
         account_name = proxy if proxy else self.app.world.profile_data.working_account.name
 
@@ -58,11 +57,11 @@ class GovernanceDataProvider(BaseDataProvider):
         self.__witness_name_pattern = pattern
         self.__search_by_name_limit = limit
 
-        return self.update_provider_data()
+        return self.update()
 
     def set_mode_top_witnesses(self) -> Worker[None]:
         self.__mode = GovernanceDataRetrieval.DEFAULT_MODE
         self.__witness_name_pattern = None
         self.__search_by_name_limit = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
 
-        return self.update_provider_data()
+        return self.update()

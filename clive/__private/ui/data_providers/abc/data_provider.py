@@ -9,16 +9,20 @@ from clive.__private.config import settings
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 
-class BaseDataProvider(CliveWidget, AbstractClassMessagePump):
+class DataProvider(CliveWidget, AbstractClassMessagePump):
     def __init__(self) -> None:
         super().__init__()
-        self.update_provider_data()
-        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update_provider_data)
+        self.update()
+        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update)
 
     @abstractmethod
     @work
-    async def update_provider_data(self) -> None:
-        """The name of the worker can be included by overriding the work decorator, for example: @work("my work")."""
+    async def update(self) -> None:
+        """
+        Define the logic to update the provider data.
 
-    def stop_refreshing_data(self) -> None:
+        The name of the worker can be included by overriding the work decorator, e.g.: @work("my work").
+        """
+
+    def stop(self) -> None:
         self.interval.stop()

@@ -4,10 +4,10 @@ from textual import work
 from textual.reactive import var
 
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-from clive.__private.ui.data_providers.abc.data_provider import BaseDataProvider
+from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 
 
-class SavingsDataProvider(BaseDataProvider):
+class SavingsDataProvider(DataProvider):
     """
     A class for retrieving information about savings stored in a SavingsData dataclass.
 
@@ -20,7 +20,7 @@ class SavingsDataProvider(BaseDataProvider):
     """It is used to check whether savings data has been refreshed and to store savings data."""
 
     @work(name="savings data update worker")
-    async def update_provider_data(self) -> None:
+    async def update(self) -> None:
         account_name = self.app.world.profile_data.working_account.name
         wrapper = await self.app.world.commands.retrieve_savings_data(account_name=account_name)
 
