@@ -18,6 +18,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
+from clive.__private.ui.widgets.inputs.profile_name_input import ProfileNameInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.exceptions import FormValidationError, InputTooShortError, RepeatedPasswordIsDifferentError
 
@@ -33,7 +34,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.__profile_name_input = TextInput(label="profile name", placeholder="e.g: Master", id_="profile_name_input")
+        self.__profile_name_input = ProfileNameInput(id_="profile_name_input")
         self.__password_input = TextInput(label="password", placeholder="Password", password=True, id_="password_input")
         self.__repeat_password_input = TextInput(
             label="repeat password",
@@ -58,7 +59,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         """Selects all input fields and validates them, if something is invalid throws an exception."""
         minimum_input_length: Final[int] = 3
 
-        profile_name = self.__profile_name_input.value
+        profile_name = self.__profile_name_input.raw_value
         password = self.__password_input.value
         repeated_password = self.__repeat_password_input.value
 
