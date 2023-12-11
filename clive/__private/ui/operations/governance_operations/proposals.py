@@ -18,6 +18,9 @@ from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
+from clive.__private.ui.operations.governance_operations.governance_widgets.governance_selector import (
+    GovernanceSelector,
+)
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -386,7 +389,7 @@ class ProposalsTable(Vertical, CliveWidget, can_focus=False):
 class ProposalsOrderChange(Vertical):
     AVAILABLE_MODES: Final[list[str]] = [
         "total_votes",
-        "my_votes_first",
+        "Total votes, mine first",
         "start_date",
         "end_date",
         "creator",
@@ -404,18 +407,12 @@ class ProposalsOrderChange(Vertical):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__order_by_choose = Select(
-            ((mode, mode) for mode in self.AVAILABLE_MODES),
-            prompt="Order by",
-        )
-        self.__order_direction_choose = Select(
-            ((order_direction, order_direction) for order_direction in self.ORDER_DIRECTIONS),
+        self.__order_by_choose = GovernanceSelector(self.AVAILABLE_MODES, prompt="Order by")
+        self.__order_direction_choose = GovernanceSelector(
+            self.ORDER_DIRECTIONS,
             prompt="Order direction",
         )
-        self.__proposal_status_choose = Select(
-            ((status, status) for status in self.AVAILABLE_STATUS),
-            prompt="Status",
-        )
+        self.__proposal_status_choose = GovernanceSelector(self.AVAILABLE_STATUS, prompt="Status")
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="selectors-labels"):
@@ -431,8 +428,12 @@ class ProposalsOrderChange(Vertical):
     def search_witnesses(self) -> None:
         order_by = (
             "search_by" + str(self.__order_by_choose.value)
-            if not isinstance(self.__order_by_choose.value, NoSelection)
-            else ProposalsDataRetrieval.DEFAULT_MODE
+            if str(self.__order_by_choose.value) != "Total votes, mine first"
+            else (
+                "my_votes_first"
+                if not isinstance(self.__order_by_choose.value, NoSelection)
+                else ProposalsDataRetrieval.DEFAULT_MODE
+            )
         )
         order_direction = (
             str(self.__order_direction_choose.value)
