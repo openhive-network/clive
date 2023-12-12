@@ -1,19 +1,16 @@
 from __future__ import annotations
 
-import asyncio
 import shutil
 from random import randint
 from typing import TYPE_CHECKING
 
 import pytest
 
-import test_tools as tt
-from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
+from clive.__private.core.commands.deactivate import Deactivate
 
 from clive.__private.config import settings
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.core.world import World
 from clive.__private.core.world import TextualWorld
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.storage.accounts import Account as WatchedAccount
@@ -51,40 +48,37 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
             hbds=tt.Asset.Tbd(random_amount()).as_nai(),
         )
 
-async def prepare_profile(node: tt.InitNode) -> None:
-    tt.logger.info("Configuring ProfileData for clive")
-    settings.set("secrets.node_address", f"http://{node.http_endpoint}")
-    settings.set("node.chain_id", TESTNET_CHAIN_ID)
 
+def prepare_profile() -> None:
     ProfileData(
         WORKING_ACCOUNT.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
         watched_accounts=[WatchedAccount(acc.name) for acc in WATCHED_ACCOUNTS],
     ).save()
 
-    async with World(WORKING_ACCOUNT.name) as world:
-        password = await CreateWallet(
-            app_state=world.app_state,
-            beekeeper=world.beekeeper,
-            wallet=WORKING_ACCOUNT.name,
-            password=WORKING_ACCOUNT.name,
-        ).execute_with_result()
 
-        tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
-        world.profile_data.working_account.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key._value, alias=f"{WORKING_ACCOUNT.name}_key")
-        )
-        await world.commands.sync_data_with_beekeeper()
+async def prepare_wallet(world: TextualWorld) -> None:
+    password = await CreateWallet(
+        app_state=world.app_state,
+        beekeeper=world.beekeeper,
+        wallet=WORKING_ACCOUNT.name,
+        password=WORKING_ACCOUNT.name,
+    ).execute_with_result()
 
-@pytest.fixture(scope='package')
-def event_loop():
-    policy = asyncio.get_event_loop_policy()
-    loop = policy.new_event_loop()
-    yield loop
-    loop.close()
+    tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
+    world.profile_data.working_account.keys.add_to_import(
+        PrivateKeyAliased(value=WORKING_ACCOUNT.private_key._value, alias=f"{WORKING_ACCOUNT.name}_key")
+    )
+    await world.commands.sync_data_with_beekeeper()
+    await Deactivate(
+        app_state=world.app_state,
+        beekeeper=world.beekeeper,
+        wallet=world.profile_data.name,
+    ).execute()
 
-@pytest.fixture(scope='package')
-async def prepared_node() -> AsyncIterator[tt.InitNode]:
+
+@pytest.fixture()
+async def prepared_env() -> AsyncIterator[tuple[tt.InitNode, Clive]]:
     node = tt.InitNode()
     node.config.plugin.append("account_history_rocksdb")
     node.config.plugin.append("account_history_api")
@@ -98,17 +92,18 @@ async def prepared_node() -> AsyncIterator[tt.InitNode]:
     create_working_account(wallet)
     create_watched_accounts(wallet)
 
-    shutil.rmtree(settings.data_path, ignore_errors=True)
+    settings.set("secrets.node_address", f"http://{node.http_endpoint}")
+    settings.set("node.chain_id", TESTNET_CHAIN_ID)
 
-    await prepare_profile(node)
+    prepare_profile()
 
-    world = TextualWorld()
-    await world.setup()
-    await world.node.set_address(Url.parse(node.http_endpoint, protocol="http"))
-    Clive.world = world
+    app = Clive.app_instance()
 
-    yield node
+    async with TextualWorld() as world:
+        Clive.world = world
+        await prepare_wallet(world)
+        await world.node.set_address(Url.parse(node.http_endpoint, protocol="http"))
 
-    node.close()
-    wallet.close()
-    await world.close()
+        yield node, app
+
+    app._Clive__cleanup()

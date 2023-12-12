@@ -401,3 +401,5 @@ class Clive(App[int], ManualReactive):
     def __cleanup(self) -> None:
         logger.debug("Cleaning up...")
         self.__class__.is_launched = False
+        self.__class__.world = None
+        self.__class__.__app_instance = None

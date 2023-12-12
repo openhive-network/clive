@@ -56,7 +56,7 @@ testdata = [
 
 @pytest.mark.parametrize('activated, asset_token, memo, operation_processing', testdata)
 async def test_transfer(
-    prepared_node: tt.InitNode,
+    prepared_env: tuple[tt.InitNode, Clive],
     request: FixtureRequest,
     activated: bool,
     asset_token: AssetToken,
@@ -70,8 +70,8 @@ async def test_transfer(
     USER1 = WATCHED_ACCOUNTS[0].name
     AMOUNT = '1.03'
 
-    node = prepared_node
-    app = Clive.app_instance()
+    node = prepared_env[0]
+    app = prepared_env[1]
 
     async with app.run_test() as pilot:
         print("Enter 'async with app.run_test() as pilot' ...")
