@@ -8,13 +8,13 @@ from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet
-from clive.__private.core.commands.data_retrieval.governance_data import (
-    GovernanceData,
-    GovernanceDataRetrieval,
-)
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
+from clive.__private.core.commands.data_retrieval.witnesses_data import (
+    WitnessesData,
+    WitnessesDataRetrieval,
+)
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_transaction import FindTransaction
@@ -262,16 +262,16 @@ class Commands(Generic[WorldT]):
             SavingsDataRetrieval(node=self._world.node, account_name=account_name)
         )
 
-    async def retrieve_governance_data(
+    async def retrieve_witnesses_data(
         self,
         *,
         account_name: str,
-        mode: GovernanceDataRetrieval.Modes = GovernanceDataRetrieval.DEFAULT_MODE,
+        mode: WitnessesDataRetrieval.Modes = WitnessesDataRetrieval.DEFAULT_MODE,
         witness_name_pattern: str | None = None,
-        search_by_name_limit: int = GovernanceDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT,
-    ) -> CommandWithResultWrapper[GovernanceData]:
+        search_by_name_limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT,
+    ) -> CommandWithResultWrapper[WitnessesData]:
         return await self.__surround_with_exception_handlers(
-            GovernanceDataRetrieval(
+            WitnessesDataRetrieval(
                 node=self._world.node,
                 account_name=account_name,
                 mode=mode,

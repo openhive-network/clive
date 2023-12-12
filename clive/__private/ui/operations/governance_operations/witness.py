@@ -16,7 +16,7 @@ from textual.widgets import Input, Label, Static, TabPane
 
 from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.ui.data_providers.governance_data_provider import GovernanceDataProvider
+from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
@@ -32,7 +32,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.core.commands.data_retrieval.governance_data import WitnessData
+    from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
     from clive.models import Operation
 
 MAX_NUMBER_OF_WITNESSES_VOTES: Final[int] = 30
@@ -378,8 +378,8 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         return f"#{convert_witness_name_to_widget_id(name)}-witness-action-row"
 
     @property
-    def provider(self) -> GovernanceDataProvider:
-        return self.app.query_one(GovernanceDataProvider)
+    def provider(self) -> WitnessesDataProvider:
+        return self.app.query_one(WitnessesDataProvider)
 
     @property
     def actions_to_perform(self) -> dict[str, bool]:
@@ -539,8 +539,8 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         self.__set_loaded()
 
     @property
-    def provider(self) -> GovernanceDataProvider:
-        return self.app.query_one(GovernanceDataProvider)
+    def provider(self) -> WitnessesDataProvider:
+        return self.app.query_one(WitnessesDataProvider)
 
     @property
     def amount_of_fetched_witnesses(self) -> int:

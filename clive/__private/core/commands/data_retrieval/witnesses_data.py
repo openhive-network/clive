@@ -48,7 +48,7 @@ class SanitizedData:
 
 
 @dataclass
-class GovernanceData:
+class WitnessesData:
     witnesses: dict[str, WitnessData] = field(default_factory=dict)
     number_of_votes: int = 0
 
@@ -58,10 +58,10 @@ class GovernanceData:
 
 
 @dataclass(kw_only=True)
-class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, GovernanceData]):
+class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, WitnessesData]):
     Modes: ClassVar[TypeAlias] = Literal["search_by_pattern", "search_top_with_unvoted_first"]
     """
-    Available modes for retrieving governance data.
+    Available modes for retrieving witnesses data.
 
     search_by_pattern:
     ------------------
@@ -132,7 +132,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
             ),
         )
 
-    async def _process_data(self, data: SanitizedData) -> GovernanceData:
+    async def _process_data(self, data: SanitizedData) -> WitnessesData:
         if self.mode == "search_top":
             witnesses = self.__get_top_witnesses_with_unvoted_first(data)
         elif self.mode == "search_by_pattern":
@@ -140,7 +140,7 @@ class GovernanceDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDa
         else:
             raise NotImplementedError(f"Unknown mode: {self.mode}")
 
-        return GovernanceData(witnesses=witnesses, number_of_votes=len(data.witnesses_votes))
+        return WitnessesData(witnesses=witnesses, number_of_votes=len(data.witnesses_votes))
 
     def __get_top_witnesses(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
         return OrderedDict(
