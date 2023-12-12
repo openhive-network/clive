@@ -4,6 +4,7 @@ import datetime
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
+from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_hive_power
 from clive.models import Asset
@@ -178,7 +179,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             receiver=proposal.receiver,
             daily_pay=Asset.pretty_amount(proposal.daily_pay),
             votes=humanize_hive_power(
-                self.calculate_hp_from_votes(
+                calculate_hp_from_votes(
                     proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
                 )
             ),
@@ -229,11 +230,3 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
     def __get_today_datetime(self) -> datetime.datetime:
         return datetime.datetime.today().replace(tzinfo=None)
-
-    def calculate_hp_from_votes(
-        self, votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests
-    ) -> int:
-        total_vesting_fund = int(total_vesting_fund_hive.amount) / 10**total_vesting_fund_hive.precision
-        total_shares = int(total_vesting_shares.amount) / 10**total_vesting_shares.precision
-
-        return (total_vesting_fund * (votes / total_shares)) // 1000000  # type: ignore[no-any-return]

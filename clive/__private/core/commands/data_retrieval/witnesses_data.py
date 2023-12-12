@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
+from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
 )
@@ -12,7 +13,6 @@ from clive.__private.core.formatters.humanize import humanize_hive_power
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
-    from clive.models import Asset
     from clive.models.aliased import DynamicGlobalProperties, Witness, WitnessesList, WitnessVotes
 
 
@@ -195,7 +195,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             created=witness.created,
             rank=rank,
             votes=humanize_hive_power(
-                self.calculate_hp_from_votes(
+                calculate_hp_from_votes(
                     witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
                 )
             ),
@@ -218,11 +218,3 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     def __assert_list_witnesses(self, data: WitnessesList | None) -> list[Witness]:
         assert data is not None, "ListWitnesses data is missing"
         return data.witnesses
-
-    def calculate_hp_from_votes(
-        self, votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests
-    ) -> int:
-        total_vesting_fund = int(total_vesting_fund_hive.amount) / 10**total_vesting_fund_hive.precision
-        total_shares = int(total_vesting_shares.amount) / 10**total_vesting_shares.precision
-
-        return (total_vesting_fund * (votes / total_shares)) // 1000000  # type: ignore[no-any-return]
