@@ -102,6 +102,8 @@ build_wheel:
   variables:
     CLIVE_BEEKEEPER__PATH: $BEEKEEPER_BINARY
     HIVED_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/hived"
+    CLI_WALLET_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/cli_wallet"
+    GET_DEV_KEY_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/testnet/get_dev_key"
     PATH_TO_REPORT: "$CI_PROJECT_DIR/report.xml"
   artifacts:
     reports:
