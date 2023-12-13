@@ -34,7 +34,7 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     return humanize.naturaltime(value)
 
 
-def humanize_datetime(value: datetime) -> str:
+def humanize_datetime(value: datetime, *, with_time: bool = True) -> str:
     """
     Return pretty formatted datetime.
 
@@ -45,7 +45,9 @@ def humanize_datetime(value: datetime) -> str:
     value = value.replace(tzinfo=None)
     if _is_null_date(value):
         return "never"
-    return value.isoformat()
+
+    format_ = "%Y-%m-%dT%H:%M:%S" if with_time else "%Y-%m-%d"
+    return value.strftime(format_)
 
 
 def humanize_class_name(cls: str | type[Any]) -> str:

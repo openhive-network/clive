@@ -100,11 +100,13 @@ class ProposalInformation(Vertical):
             yield EllipsedStatic(self.__proposal.title, classes=f"proposal-row-{self.__evenness} proposal-title")
         with Horizontal(classes="row-proposal-information"):
             yield Label(self.__get_receiver_info(), classes=f"proposal-row-{self.__evenness} proposal-accounts")
-            if self.__proposal.status == "active":
-                yield Label(
-                    f"Ends: {humanize_datetime(self.__proposal.end_date)[:10]}",
-                    classes=f"proposal-row-{self.__evenness} proposal-date",
-                )
+            yield Label(
+                (
+                    f"{humanize_datetime(self.__proposal.start_date, with_time=False)} -"
+                    f" {humanize_datetime(self.__proposal.end_date, with_time=False)}"
+                ),
+                classes=f"proposal-row-{self.__evenness} proposal-date",
+            )
 
     def __get_receiver_info(self) -> str:
         message = f"by {self.__proposal.creator}"
