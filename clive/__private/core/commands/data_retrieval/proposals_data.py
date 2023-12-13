@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
@@ -10,6 +9,8 @@ from clive.__private.core.formatters.humanize import humanize_hive_power
 from clive.models import Asset
 
 if TYPE_CHECKING:
+    import datetime
+
     from clive.__private.core.node import Node
     from clive.__private.core.node.api.database_api import DatabaseApi
     from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, ProposalsList, ProposalVotes
@@ -169,6 +170,3 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         return [
             proposal_vote.proposal for proposal_vote in data.proposal_votes if proposal_vote.voter == self.account_name
         ]
-
-    def __get_today_datetime(self) -> datetime.datetime:
-        return datetime.datetime.today().replace(tzinfo=None)
