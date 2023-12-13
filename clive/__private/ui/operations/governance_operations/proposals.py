@@ -446,7 +446,7 @@ class ProposalsOrderChange(Vertical):
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="selectors-labels"):
-            yield Label("Search by")
+            yield Label("Order by")
             yield Label("Order direction")
             yield Label("Status")
         with Horizontal(id="order-list-selectors"):
