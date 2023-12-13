@@ -98,15 +98,18 @@ class ProposalInformation(Vertical):
         with Horizontal(classes="row-proposal-information"):
             yield EllipsedStatic(self.__proposal.title, classes=f"proposal-row-{self.__evenness} proposal-title")
         with Horizontal(classes="row-proposal-information"):
-            yield Label(
-                f"by {self.__proposal.creator} for {self.__proposal.receiver}",
-                classes=f"proposal-row-{self.__evenness} proposal-accounts",
-            )
+            yield Label(self.__get_receiver_info(), classes=f"proposal-row-{self.__evenness} proposal-accounts")
             if self.__proposal.status == "active":
                 yield Label(
                     f"Ends: {humanize_datetime(self.__proposal.end_date)[:10]}",
                     classes=f"proposal-row-{self.__evenness} proposal-date",
                 )
+
+    def __get_receiver_info(self) -> str:
+        message = f"by {self.__proposal.creator}"
+        if self.__proposal.creator != self.__proposal.receiver:
+            message += f" for {self.__proposal.receiver}"
+        return message
 
 
 class Proposal(Horizontal, CliveWidget, can_focus=True):
