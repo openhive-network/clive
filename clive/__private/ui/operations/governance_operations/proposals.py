@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from clive.models import Operation
 
 MAX_PROPOSALS_ON_PAGE: Final[int] = 10
+MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION: Final[int] = 5
 
 
 class ProposalsOrderSelect(Select[ProposalsDataRetrieval.Orders]):
@@ -482,13 +483,23 @@ class Proposals(TabPane, OperationActionBindings):
         )
 
     def _create_operations(self) -> list[Operation] | None:
-        working_account_name = self.app.world.profile_data.working_account.name
         operations_to_perform = self.app.query_one(ProposalsActions).actions_to_perform
-
-        operations_to_return: list[Operation] = []
-
         proposals_to_vote = [proposal_id for proposal_id, approve in operations_to_perform.items() if approve]
         proposals_to_unvote = [proposal_id for proposal_id, approve in operations_to_perform.items() if not approve]
+
+        if max(len(proposals_to_vote), len(proposals_to_unvote)) > MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION:
+            self.notify(
+                (
+                    "The number of proposals to (un)vote for in single operation is restricted to"
+                    f" {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION}"
+                ),
+                severity="error",
+            )
+            return None
+
+        working_account_name = self.app.world.profile_data.working_account.name
+
+        operations_to_return: list[Operation] = []
 
         if not proposals_to_vote and not proposals_to_unvote:
             return None
