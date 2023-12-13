@@ -34,19 +34,19 @@ if TYPE_CHECKING:
 MAX_PROPOSALS_ON_PAGE: Final[int] = 10
 
 
-class ProposalsModeSelect(Select[ProposalsDataRetrieval.Modes]):
-    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Modes]]] = [
-        ("Total votes, mine first", "my_votes_first"),
-        ("Total votes", "search_by_total_votes"),
-        ("Start date", "search_by_start_date"),
-        ("End date", "search_by_end_date"),
-        ("Creator", "search_by_creator"),
+class ProposalsOrderSelect(Select[ProposalsDataRetrieval.Orders]):
+    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Orders]]] = [
+        ("Total votes, mine first", "by_total_votes_with_voted_first"),
+        ("Total votes", "by_total_votes"),
+        ("Start date", "by_start_date"),
+        ("End date", "by_end_date"),
+        ("Creator", "by_creator"),
     ]
 
     def __init__(self) -> None:
         super().__init__(
             options=self.SELECTABLES,
-            value=ProposalsDataRetrieval.DEFAULT_MODE,
+            value=ProposalsDataRetrieval.DEFAULT_ORDER,
             allow_blank=False,
         )
 
@@ -64,9 +64,9 @@ class ProposalsOrderDirectionSelect(Select[ProposalsDataRetrieval.OrderDirection
         )
 
 
-class ProposalsStatusSelect(Select[ProposalsDataRetrieval.ProposalStatus]):
-    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.ProposalStatus]]] = [
-        (value.capitalize(), value) for value in ProposalsDataRetrieval.ProposalStatus.__args__
+class ProposalsStatusSelect(Select[ProposalsDataRetrieval.Statuses]):
+    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Statuses]]] = [
+        (value.capitalize(), value) for value in ProposalsDataRetrieval.Statuses.__args__
     ]
 
     def __init__(self) -> None:
@@ -391,8 +391,8 @@ class ProposalsTable(Vertical, CliveWidget, can_focus=False):
     def on_mount(self) -> None:
         self.watch(self.provider, "content", callback=lambda: self.__sync_proposals_list())
 
-    async def change_order(self, mode: str, order_direction: str, status: str) -> None:
-        await self.provider.change_order(mode=mode, order_direction=order_direction, status=status).wait()
+    async def change_order(self, order: str, order_direction: str, status: str) -> None:
+        await self.provider.change_order(order=order, order_direction=order_direction, status=status).wait()
         await self.reset_page()
 
     async def __sync_proposals_list(self, focus_first_proposal: bool = False) -> None:
@@ -430,15 +430,15 @@ class ProposalsOrderChange(Vertical):
     class Search(Message):
         """Emitted when any selector changed."""
 
-        order_by: ProposalsDataRetrieval.Modes
+        order_by: ProposalsDataRetrieval.Orders
         order_direction: ProposalsDataRetrieval.OrderDirections
-        status: ProposalsDataRetrieval.ProposalStatus
+        status: ProposalsDataRetrieval.Statuses
 
     def __init__(self) -> None:
         super().__init__()
-        self.__order_by_choose = ProposalsModeSelect()
-        self.__order_direction_choose = ProposalsOrderDirectionSelect()
-        self.__proposal_status_choose = ProposalsStatusSelect()
+        self.__order_by_select = ProposalsOrderSelect()
+        self.__order_direction_select = ProposalsOrderDirectionSelect()
+        self.__proposal_status_select = ProposalsStatusSelect()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="selectors-labels"):
@@ -446,15 +446,15 @@ class ProposalsOrderChange(Vertical):
             yield Label("Order direction")
             yield Label("Status")
         with Horizontal(id="order-list-selectors"):
-            yield self.__order_by_choose
-            yield self.__order_direction_choose
-            yield self.__proposal_status_choose
+            yield self.__order_by_select
+            yield self.__order_direction_select
+            yield self.__proposal_status_select
 
     @on(Select.Changed)
     def search_witnesses(self) -> None:
-        order_by = self.__order_by_choose.value
-        order_direction = self.__order_direction_choose.value
-        status = self.__proposal_status_choose.value
+        order_by = self.__order_by_select.value
+        order_direction = self.__order_direction_select.value
+        status = self.__proposal_status_select.value
         self.post_message(self.Search(order_by, order_direction, status))
 
 
@@ -475,7 +475,7 @@ class Proposals(TabPane, OperationActionBindings):
     @on(ProposalsOrderChange.Search)
     async def change_order(self, message: ProposalsOrderChange.Search) -> None:
         await self.__proposals_table.change_order(
-            mode=message.order_by, order_direction=message.order_direction, status=message.status
+            order=message.order_by, order_direction=message.order_direction, status=message.status
         )
 
     def _create_operations(self) -> list[Operation] | None:

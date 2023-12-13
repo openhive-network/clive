@@ -284,15 +284,15 @@ class Commands(Generic[WorldT]):
         self,
         *,
         account_name: str,
-        mode: ProposalsDataRetrieval.Modes = ProposalsDataRetrieval.DEFAULT_MODE,
+        order: ProposalsDataRetrieval.Orders = ProposalsDataRetrieval.DEFAULT_ORDER,
         order_direction: ProposalsDataRetrieval.OrderDirections = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION,
-        status: ProposalsDataRetrieval.ProposalStatus = ProposalsDataRetrieval.DEFAULT_STATUS,
+        status: ProposalsDataRetrieval.Statuses = ProposalsDataRetrieval.DEFAULT_STATUS,
     ) -> CommandWithResultWrapper[ProposalsData]:
         return await self.__surround_with_exception_handlers(
             ProposalsDataRetrieval(
                 node=self._world.node,
                 account_name=account_name,
-                mode=mode,
+                order=order,
                 order_direction=order_direction,
                 status=status,
             )

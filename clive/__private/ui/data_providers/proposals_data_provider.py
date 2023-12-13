@@ -17,7 +17,7 @@ class ProposalsDataProvider(DataProvider):
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__(paused=paused, init_update=init_update)
-        self.__mode = ProposalsDataRetrieval.DEFAULT_MODE
+        self.__order = ProposalsDataRetrieval.DEFAULT_ORDER
         self.__order_direction = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
         self.__status = ProposalsDataRetrieval.DEFAULT_STATUS
 
@@ -27,7 +27,7 @@ class ProposalsDataProvider(DataProvider):
         account_name = proxy if proxy else self.app.world.profile_data.working_account.name
 
         wrapper = await self.app.world.commands.retrieve_proposals_data(
-            account_name=account_name, mode=self.__mode, order_direction=self.__order_direction, status=self.__status
+            account_name=account_name, order=self.__order, order_direction=self.__order_direction, status=self.__status
         )
 
         if wrapper.error_occurred:
@@ -38,8 +38,8 @@ class ProposalsDataProvider(DataProvider):
         if result.proposals != self.content.proposals:
             self.content = result
 
-    def change_order(self, mode: str, order_direction: str, status: str) -> Worker[None]:
-        self.__mode = mode
+    def change_order(self, order: str, order_direction: str, status: str) -> Worker[None]:
+        self.__order = order
         self.__order_direction = order_direction
         self.__status = status
 

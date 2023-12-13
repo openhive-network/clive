@@ -51,53 +51,23 @@ class ProposalsData:
 
 @dataclass(kw_only=True)
 class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, ProposalsData]):
-    Modes: ClassVar[TypeAlias] = Literal[
-        "my_votes_first", "search_by_total_votes", "search_by_start_date", "search_by_end_date", "search_by_creator"
+    Orders: ClassVar[TypeAlias] = Literal[
+        "by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"
     ]
-    """
-    Amount of proposals is limited to the MAX_SEARCHED_PROPOSALS_HARD_LIMIT.
-
-    Available modes for retrieving proposals data.
-
-    my_votes_first:
-    ------------------
-    Retrieves top proposals with the ones voted for by the account.
-    The list is sorted by the unvoted status and then by votes.
-
-    search_by_total_votes:
-    ------------------
-    Retrieves top proposals.
-    The list is sorted by votes.
-
-    search_by_start_date:
-    ------------------------------
-    Retrieves proposals sorted by start date.
-    The list is sorted just by start date, ascending or descending which user choose by order_direction.
-
-    search_by_end_date:
-    ------------------------------
-    Retrieves proposals sorted by ebd date.
-    The list is sorted just by end date, ascending or descending which user choose by order_direction.
-
-    search_by_creator:
-    ------------------------------
-    Retrieves proposals sorted by creator.
-    The list is sorted just by creator, ascending or descending which user choose by order_direction.
-    """
     OrderDirections: ClassVar[TypeAlias] = Literal["ascending", "descending"]
-    ProposalStatus: ClassVar[TypeAlias] = Literal["all", "active", "inactive", "votable", "expired", "inactive"]
+    Statuses: ClassVar[TypeAlias] = Literal["all", "active", "inactive", "votable", "expired", "inactive"]
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
-    DEFAULT_STATUS: ClassVar[ProposalStatus] = "active"
-    DEFAULT_MODE: ClassVar[Modes] = "my_votes_first"
+    DEFAULT_STATUS: ClassVar[Statuses] = "active"
+    DEFAULT_ORDER: ClassVar[Orders] = "by_total_votes_with_voted_first"
     DEFAULT_ORDER_DIRECTION: ClassVar[OrderDirections] = "descending"
 
     node: Node
     account_name: str
-    mode: Modes = DEFAULT_MODE
+    order: Orders = DEFAULT_ORDER
     order_direction: OrderDirections = DEFAULT_ORDER_DIRECTION
-    status: ProposalStatus = DEFAULT_STATUS
+    status: Statuses = DEFAULT_STATUS
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
         with self.node.modified_connection_details(timeout_secs=6):
@@ -112,16 +82,12 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 )
 
                 order: DatabaseApi.SORT_TYPES
-                if self.mode == "my_votes_first" or self.mode == "search_by_total_votes":
+                if self.order == "by_total_votes_with_voted_first":
                     order = "by_total_votes"
-                elif self.mode == "search_by_start_date":
-                    order = "by_start_date"
-                elif self.mode == "search_by_end_date":
-                    order = "by_end_date"
-                elif self.mode == "search_by_creator":
-                    order = "by_creator"
+                elif self.order in self.Orders.__args__:
+                    order = self.order
                 else:
-                    raise ValueError(f"Unknown mode: {self.mode}")
+                    raise ValueError(f"Unknown order: {self.order}")
 
                 searched_proposals = await node.api.database_api.list_proposals(
                     start=[],  # type: ignore[arg-type] # TODO: API interface should allow an empty list
@@ -140,7 +106,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         )
 
     async def _process_data(self, data: SanitizedData) -> ProposalsData:
-        if self.mode == "my_votes_first":
+        if self.order == "by_total_votes_with_voted_first":
             return ProposalsData(self.__get_top_proposals_with_voted_first(data))
         return ProposalsData(
             proposals=self.__get_prepared_proposals(data.list_proposals, data),
