@@ -72,7 +72,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self.app.pop_screen()
 
     async def action_fast_broadcast(self) -> None:
-        if not self.create_operation():  # For faster validation feedback to the user
+        if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
             return
 
         await self.__fast_broadcast()
