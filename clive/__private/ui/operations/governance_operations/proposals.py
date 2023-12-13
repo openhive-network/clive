@@ -11,16 +11,12 @@ from textual.css.query import NoMatches
 from textual.events import Click
 from textual.message import Message
 from textual.widgets import Label, Select, Static, TabPane
-from textual.widgets._select import NoSelection
 
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
-from clive.__private.ui.operations.governance_operations.governance_widgets.governance_selector import (
-    GovernanceSelector,
-)
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -36,6 +32,49 @@ if TYPE_CHECKING:
     from clive.models import Operation
 
 MAX_PROPOSALS_ON_PAGE: Final[int] = 10
+
+
+class ProposalsModeSelect(Select[ProposalsDataRetrieval.Modes]):
+    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Modes]]] = [
+        ("Total votes, mine first", "my_votes_first"),
+        ("Total votes", "search_by_total_votes"),
+        ("Start date", "search_by_start_date"),
+        ("End date", "search_by_end_date"),
+        ("Creator", "search_by_creator"),
+    ]
+
+    def __init__(self) -> None:
+        super().__init__(
+            options=self.SELECTABLES,
+            value=ProposalsDataRetrieval.DEFAULT_MODE,
+            allow_blank=False,
+        )
+
+
+class ProposalsOrderDirectionSelect(Select[ProposalsDataRetrieval.OrderDirections]):
+    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.OrderDirections]]] = [
+        (value.capitalize(), value) for value in ProposalsDataRetrieval.OrderDirections.__args__
+    ]
+
+    def __init__(self) -> None:
+        super().__init__(
+            options=self.SELECTABLES,
+            value=ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION,
+            allow_blank=False,
+        )
+
+
+class ProposalsStatusSelect(Select[ProposalsDataRetrieval.ProposalStatus]):
+    SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.ProposalStatus]]] = [
+        (value.capitalize(), value) for value in ProposalsDataRetrieval.ProposalStatus.__args__
+    ]
+
+    def __init__(self) -> None:
+        super().__init__(
+            options=self.SELECTABLES,
+            value=ProposalsDataRetrieval.DEFAULT_STATUS,
+            allow_blank=False,
+        )
 
 
 class ScrollablePart(ScrollableContainer, can_focus=False):
@@ -387,16 +426,6 @@ class ProposalsTable(Vertical, CliveWidget, can_focus=False):
 
 
 class ProposalsOrderChange(Vertical):
-    AVAILABLE_MODES: Final[list[str]] = [
-        "total_votes",
-        "Total votes, mine first",
-        "start_date",
-        "end_date",
-        "creator",
-    ]
-    AVAILABLE_STATUS: Final[list[str]] = ["active", "votable", "inactive", "all", "expired", "inactive"]
-    ORDER_DIRECTIONS: Final[list[str]] = ["descending", "ascending"]
-
     @dataclass
     class Search(Message):
         """Emitted when any selector changed."""
@@ -407,12 +436,9 @@ class ProposalsOrderChange(Vertical):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__order_by_choose = GovernanceSelector(self.AVAILABLE_MODES, prompt="Order by")
-        self.__order_direction_choose = GovernanceSelector(
-            self.ORDER_DIRECTIONS,
-            prompt="Order direction",
-        )
-        self.__proposal_status_choose = GovernanceSelector(self.AVAILABLE_STATUS, prompt="Status")
+        self.__order_by_choose = ProposalsModeSelect()
+        self.__order_direction_choose = ProposalsOrderDirectionSelect()
+        self.__proposal_status_choose = ProposalsStatusSelect()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="selectors-labels"):
@@ -426,26 +452,9 @@ class ProposalsOrderChange(Vertical):
 
     @on(Select.Changed)
     def search_witnesses(self) -> None:
-        order_by = (
-            "search_by" + str(self.__order_by_choose.value)
-            if str(self.__order_by_choose.value) != "Total votes, mine first"
-            else (
-                "my_votes_first"
-                if not isinstance(self.__order_by_choose.value, NoSelection)
-                else ProposalsDataRetrieval.DEFAULT_MODE
-            )
-        )
-        order_direction = (
-            str(self.__order_direction_choose.value)
-            if not isinstance(self.__order_direction_choose.value, NoSelection)
-            else ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
-        )
-        status = (
-            str(self.__proposal_status_choose.value)
-            if not isinstance(self.__proposal_status_choose.value, NoSelection)
-            else ProposalsDataRetrieval.DEFAULT_STATUS
-        )
-
+        order_by = self.__order_by_choose.value
+        order_direction = self.__order_direction_choose.value
+        status = self.__proposal_status_choose.value
         self.post_message(self.Search(order_by, order_direction, status))
 
 

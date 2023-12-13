@@ -11,6 +11,7 @@ from clive.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
+    from clive.__private.core.node.api.database_api import DatabaseApi
     from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, ProposalsList, ProposalVotes
 
 
@@ -89,7 +90,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
     DEFAULT_STATUS: ClassVar[ProposalStatus] = "active"
-    DEFAULT_MODE: ClassVar[Modes] = "search_by_total_votes"
+    DEFAULT_MODE: ClassVar[Modes] = "my_votes_first"
     DEFAULT_ORDER_DIRECTION: ClassVar[OrderDirections] = "descending"
 
     node: Node
@@ -110,47 +111,22 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                     status=self.status,
                 )
 
+                order: DatabaseApi.SORT_TYPES
                 if self.mode == "my_votes_first" or self.mode == "search_by_total_votes":
-                    searched_proposals = await node.api.database_api.list_proposals(
-                        start=[self.MAX_POSSIBLE_NUMBER_OF_VOTES] if self.order_direction == "descending" else [0],
-                        limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
-                        order="by_total_votes",
-                        order_direction=self.order_direction,
-                        status=self.status,
-                    )
-                    return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
+                    order = "by_total_votes"
+                elif self.mode == "search_by_start_date":
+                    order = "by_start_date"
+                elif self.mode == "search_by_end_date":
+                    order = "by_end_date"
+                elif self.mode == "search_by_creator":
+                    order = "by_creator"
+                else:
+                    raise ValueError(f"Unknown mode: {self.mode}")
 
-                if self.mode == "search_by_start_date":
-                    searched_proposals = await node.api.database_api.list_proposals(
-                        start=(
-                            [self.__get_today_datetime() - datetime.timedelta(2500)]
-                            if self.order_direction == "ascending"
-                            else [self.__get_today_datetime()]
-                        ),
-                        limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
-                        order="by_start_date",
-                        order_direction=self.order_direction,
-                        status=self.status,
-                    )
-                    return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
-
-                if self.mode == "search_by_end_date":
-                    searched_proposals = await node.api.database_api.list_proposals(
-                        start=(
-                            [self.__get_today_datetime() - datetime.timedelta(2500)]
-                            if self.order_direction == "ascending"
-                            else [self.__get_today_datetime() + datetime.timedelta(2500)]
-                        ),
-                        limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
-                        order="by_end_date",
-                        order_direction=self.order_direction,
-                        status=self.status,
-                    )
-                    return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
                 searched_proposals = await node.api.database_api.list_proposals(
-                    start=["z"] if self.order_direction == "descending" else ["a"],
+                    start=[],  # type: ignore[arg-type] # TODO: API interface should allow an empty list
                     limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
-                    order="by_creator",
+                    order=order,
                     order_direction=self.order_direction,
                     status=self.status,
                 )
