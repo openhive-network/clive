@@ -3,9 +3,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+import typer
 from rich.console import Console
 from rich.table import Table
-from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -21,15 +21,14 @@ class ShowPendingWithdrawals(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        console = Console()
         wrapper = await self.world.commands.retrieve_savings_data(account_name=self.account_name)
         result: SavingsData = wrapper.result_or_raise
 
         if not result.pending_transfers:
-            text = Text(f"Account has {self.account_name} no pending withdrawals")
-            console.print(text)
+            typer.echo(f"Account has {self.account_name} no pending withdrawals")
             return
 
+        console = Console()
         table = Table(title=f"Pending withdrawals of `{self.account_name}` account")
 
         table.add_column("To", justify="left", style="cyan", no_wrap=True)
