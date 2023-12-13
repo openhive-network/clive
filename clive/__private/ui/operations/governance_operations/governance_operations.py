@@ -29,7 +29,7 @@ class Governance(OperationBaseScreen):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        with WitnessesDataProvider(), ProposalsDataProvider(), CliveTabbedContent():
+        with WitnessesDataProvider(paused=True), ProposalsDataProvider(paused=True), CliveTabbedContent():
             yield Proxy("Proxy")
             yield Witnesses(WITNESSES_TAB_LABEL)
             yield Proposals(PROPOSALS_TAB_NAME)

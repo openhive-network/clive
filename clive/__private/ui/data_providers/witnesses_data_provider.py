@@ -18,8 +18,9 @@ class WitnessesDataProvider(DataProvider):
     content: WitnessesData = var(WitnessesData(), init=False)  # type: ignore[assignment]
     """It is used to check whether witnesses data has been refreshed and to store witnesses data."""
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
+        super().__init__(paused=paused, init_update=init_update)
+
         self.__witness_pattern: str = ""
         self.__search_by_name_limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT
         self.__mode: WitnessesDataRetrieval.Modes = WitnessesDataRetrieval.DEFAULT_MODE

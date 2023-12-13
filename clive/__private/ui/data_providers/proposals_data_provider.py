@@ -15,8 +15,8 @@ if TYPE_CHECKING:
 class ProposalsDataProvider(DataProvider):
     content: ProposalsData = var(ProposalsData(), init=False)  # type: ignore[assignment]
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
+        super().__init__(paused=paused, init_update=init_update)
         self.__mode = ProposalsDataRetrieval.DEFAULT_MODE
         self.__order_direction = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
         self.__status = ProposalsDataRetrieval.DEFAULT_STATUS
