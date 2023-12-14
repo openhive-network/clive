@@ -95,6 +95,9 @@ class Beekeeper:
         self.__next_time_unlock = perf_counter()
 
     async def __aenter__(self) -> Self:
+        # So that we can run async with await Beekeeper().launch(args=)
+        if self.is_running:
+            return self
         return await self.launch()
 
     async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:

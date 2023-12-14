@@ -27,4 +27,5 @@ async def test_notifications_endpoint(notifications_endpoint: Url) -> None:
     #   point beekeeper where to send notifications.
 
     # ARRANGE & ACT & ASSERT
-    await Beekeeper().launch(notifications_endpoint=notifications_endpoint)
+    async with await Beekeeper().launch(notifications_endpoint=notifications_endpoint):
+        pass

@@ -24,7 +24,6 @@ async def test_log_json_rpc(tmp_path: Path) -> None:
     tempdir.mkdir()
 
     # ACT
-    await Beekeeper().launch(log_json_rpc=tempdir)
-
-    # ASSERT
-    check_log_json_rpc(tempdir)
+    async with await Beekeeper().launch(log_json_rpc=tempdir):
+        # ASSERT
+        check_log_json_rpc(tempdir)

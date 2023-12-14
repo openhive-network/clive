@@ -22,18 +22,16 @@ async def test_wallet_dir(tmp_path: Path, wallet_name: str) -> None:
     # ARRANGE
     tempdir = tmp_path / "test_log_json_rpc"
     tempdir.mkdir()
-    beekeeper = await Beekeeper().launch(wallet_dir=tempdir)
-
-    # ACT
-    await check_wallets_size(beekeeper, 0)
-    await beekeeper.api.create(wallet_name=wallet_name)
-    await check_wallets_size(beekeeper, 1)
-    await beekeeper.close()
+    async with await Beekeeper().launch(wallet_dir=tempdir) as beekeeper:
+        # ACT
+        await check_wallets_size(beekeeper, 0)
+        await beekeeper.api.create(wallet_name=wallet_name)
+        await check_wallets_size(beekeeper, 1)
 
     # Start and check if created wallet exists.
-    beekeeper2 = await Beekeeper().launch(wallet_dir=tempdir)
-    await check_wallets_size(beekeeper2, 0)
+    async with await Beekeeper().launch(wallet_dir=tempdir) as beekeeper:
+        await check_wallets_size(beekeeper, 0)
 
-    # ASSERT
-    await beekeeper2.api.open(wallet_name=wallet_name)
-    await check_wallets_size(beekeeper2, 1)
+        # ASSERT
+        await beekeeper.api.open(wallet_name=wallet_name)
+        await check_wallets_size(beekeeper, 1)

@@ -18,12 +18,12 @@ async def check_wallet_lock(beekeeper: Beekeeper, required_status: bool) -> None
 async def test_unlock_time(unlock_timeout: int) -> None:
     """Test will check command line flag --unlock-time."""
     # ARRANGE
-    beekeeper = await Beekeeper().launch(unlock_timeout=unlock_timeout)
-    await beekeeper.api.create(wallet_name="wallet_name")
-    await check_wallet_lock(beekeeper, True)
+    async with await Beekeeper().launch(unlock_timeout=unlock_timeout) as beekeeper:
+        await beekeeper.api.create(wallet_name="wallet_name")
+        await check_wallet_lock(beekeeper, True)
 
-    # ACT
-    await asyncio.sleep(int(unlock_timeout))
+        # ACT
+        await asyncio.sleep(int(unlock_timeout))
 
-    # ASSERT
-    await check_wallet_lock(beekeeper, False)
+        # ASSERT
+        await check_wallet_lock(beekeeper, False)

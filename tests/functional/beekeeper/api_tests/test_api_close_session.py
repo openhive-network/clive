@@ -12,25 +12,21 @@ from clive_local_tools import checkers
 WRONG_TOKEN: Final[str] = "104fc637d5c32c271bdfdc366af5bfc8f977e2462b01877454cfd1643196bcf1"
 
 
-async def test_api_close_session() -> None:
+async def test_api_close_session(beekeeper: Beekeeper) -> None:
     """Test test_api_close_session will test beekeeper_api.close_session api call."""
     # ARRANGE
-    beekeeper = Beekeeper()
-    await beekeeper.launch()
-    first_token = beekeeper.token
     notification_endpoint = beekeeper.notification_server_http_endpoint.as_string(with_protocol=False)
-    await beekeeper.api.create_session(notifications_endpoint=notification_endpoint, salt="test_api_close_session")
-
+    new_session = (
+        await beekeeper.api.create_session(notifications_endpoint=notification_endpoint, salt="test_api_close_session")
+    ).token
     # ACT
-    await beekeeper.api.close_session(token=first_token)
-
+    await beekeeper.api.close_session(token=new_session)
     # ASSERT
     close_log_entry = (
-        f'"id":0,"jsonrpc":"2.0","method":"beekeeper_api.close_session","params":{{"token":"{first_token}"}}'
+        f'"id":0,"jsonrpc":"2.0","method":"beekeeper_api.close_session","params":{{"token":"{new_session}"}}'
     )
-
-    with pytest.raises(CommunicationError, match=f"A session attached to {first_token} doesn't exist"):
-        await beekeeper.api.list_wallets()
+    with pytest.raises(CommunicationError, match=f"A session attached to {new_session} doesn't exist"):
+        await beekeeper.api.close_session(token=new_session)
     assert checkers.check_for_pattern_in_file(
         Beekeeper().get_wallet_dir() / "stderr.log", close_log_entry
     ), "Log should have information about closing session with specific token created during create_session call."
@@ -38,14 +34,12 @@ async def test_api_close_session() -> None:
 
 async def test_if_beekeeper_closes_after_last_session_termination() -> None:
     """Test test_api_close_session will test if beekeeper closes after closing last session."""
-
     # ARRANGE
+    beekeeper = await Beekeeper().launch()
+
     async def wait_for_beekeeper_to_close() -> None:
         while beekeeper.is_already_running_locally():
             await asyncio.sleep(0.1)
-
-    beekeeper = Beekeeper()
-    await beekeeper.launch()
 
     # ACT
     await beekeeper.api.close_session()
