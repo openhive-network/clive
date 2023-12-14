@@ -7,7 +7,6 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.savings import savings
-from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
@@ -28,8 +27,11 @@ async def transfer(
 
 
 if is_tab_completion_active():
-    AlreadySignedModeEnum = AlreadySignedMode
+    AlreadySignedModeEnum = str
+    ALREADY_SIGNED_MODE_DEFAULT = ""  # doesn't matter, won't be shown anyway
 else:
+    from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
+
     # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
     AlreadySignedModeEnum = Enum(  # type: ignore[misc, no-redef]
         "AlreadySignedModeEnum", {option: option for option in typing.get_args(AlreadySignedMode)}
