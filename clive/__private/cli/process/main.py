@@ -4,7 +4,7 @@ from enum import Enum
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
+from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.savings import savings
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
@@ -17,7 +17,6 @@ process.add_typer(savings)
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])
 async def transfer(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
 ) -> None:
     """Transfer some funds to another account."""
@@ -25,7 +24,7 @@ async def transfer(
 
     operation_common = OperationCommonOptions.get_instance()
     transfer_common = TransferCommonOptions.get_instance()
-    await Transfer(**operation_common.as_dict(), **transfer_common.as_dict(), from_account=from_account, to=to).run()
+    await Transfer(**operation_common.as_dict(), **transfer_common.as_dict(), to=to).run()
 
 
 if is_tab_completion_active():

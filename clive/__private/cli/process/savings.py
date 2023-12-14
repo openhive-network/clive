@@ -11,7 +11,6 @@ savings = CliveTyper(name="savings", help="Manage your savings.")
 @savings.command(name="deposit", common_options=[OperationCommonOptions, TransferCommonOptions])
 async def process_deposit(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
     to_account: str = options.to_account_name_option,
 ) -> None:
     """Immediately deposit funds to savings account."""
@@ -22,7 +21,6 @@ async def process_deposit(
     await ProcessDeposit(
         **operation_common.as_dict(),
         **transfer_common.as_dict(),
-        from_account=from_account,
         to_account=to_account,
     ).run()
 
@@ -30,7 +28,6 @@ async def process_deposit(
 @savings.command(name="withdrawal", common_options=[OperationCommonOptions, TransferCommonOptions])
 async def process_withdrawal(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
     request_id: Optional[int] = typer.Option(
         None,
         help="Id of new withdrawal. (if not given, will be automatically calculated)",
@@ -46,7 +43,6 @@ async def process_withdrawal(
     await ProcessWithdrawal(
         **operation_common.as_dict(),
         **transfer_common.as_dict(),
-        from_account=from_account,
         request_id=request_id,
         to_account=to_account,
     ).run()
@@ -55,7 +51,6 @@ async def process_withdrawal(
 @savings.command(name="withdrawal-cancel", common_options=[OperationCommonOptions])
 async def process_withdrawal_cancel(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
     request_id: str = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
 ) -> None:
     """Cancel previously initiated withdrawal from savings account."""
@@ -64,6 +59,5 @@ async def process_withdrawal_cancel(
     operation_common = OperationCommonOptions.get_instance()
     await ProcessWithdrawalCancel(
         **operation_common.as_dict(),
-        from_account=from_account,
         request_id=request_id,
     ).run()
