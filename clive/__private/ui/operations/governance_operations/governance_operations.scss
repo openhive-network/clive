@@ -87,11 +87,14 @@ Governance Witnesses Static {
 
 DetailsScreen {
   align: center middle;
+  height: auto;
 }
 
 DetailsScreen Static {
   border: $primary-lighten-3;
   width: 0.6fr;
+  height: auto;
+  min-height: 3;
   text-align: left;
 }
 
