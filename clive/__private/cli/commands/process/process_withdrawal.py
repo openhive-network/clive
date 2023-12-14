@@ -21,6 +21,13 @@ class ProcessWithdrawal(OperationCommand):
     memo: str
 
     async def _create_operation(self) -> TransferFromSavingsOperation:
+        if self.request_id is None:
+            wrapper = await self.world.commands.retrieve_savings_data(
+                account_name=self.world.profile_data.working_account.name
+            )
+            savings_data: SavingsData = wrapper.result_or_raise
+            self.request_id = savings_data.create_request_id()
+
         return TransferFromSavingsOperation(
             from_=self.from_account,
             request_id=self.request_id,
@@ -28,14 +35,3 @@ class ProcessWithdrawal(OperationCommand):
             amount=Asset.from_legacy(self.amount.upper()),
             memo=self.memo,
         )
-
-    async def _get_transaction_content(self) -> TransactionConvertibleType:
-        if self.request_id is None:
-            wrapper = await self.world.commands.retrieve_savings_data(
-                account_name=self.world.profile_data.working_account.name
-            )
-            wrapper.raise_if_error_occurred()
-            savings_data: SavingsData = wrapper.result_or_raise
-            self.request_id = savings_data.create_request_id()
-
-        return await self._create_operation()
