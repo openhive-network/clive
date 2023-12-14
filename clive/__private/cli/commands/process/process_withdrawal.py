@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.models import Asset
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class ProcessWithdrawal(OperationCommand):
     from_account: str
-    request_id: int | None
+    request_id: Optional[int]
     to_account: str
     amount: str
     memo: str

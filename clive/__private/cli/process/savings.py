@@ -51,7 +51,7 @@ async def process_withdrawal(
 @savings.command(name="withdrawal-cancel", common_options=[OperationCommonOptions])
 async def process_withdrawal_cancel(
     ctx: typer.Context,  # noqa: ARG001
-    request_id: str = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
+    request_id: Optional[int] = typer.Option(..., help="Id of previously initiated withdrawal.", show_default=False),
 ) -> None:
     """Cancel previously initiated withdrawal from savings account."""
     from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel
