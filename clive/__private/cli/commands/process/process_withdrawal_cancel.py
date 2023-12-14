@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Optional
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from schemas.operations import CancelTransferFromSavingsOperation
@@ -8,7 +7,7 @@ from schemas.operations import CancelTransferFromSavingsOperation
 @dataclass(kw_only=True)
 class ProcessWithdrawalCancel(OperationCommand):
     from_account: str
-    request_id: Optional[int]
+    request_id: int
 
     async def _create_operation(self) -> CancelTransferFromSavingsOperation:
         return CancelTransferFromSavingsOperation(
