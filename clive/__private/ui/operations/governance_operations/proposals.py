@@ -14,6 +14,7 @@ from textual.widgets import Label, Select, Static, TabPane
 
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.logger import logger
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
@@ -284,10 +285,6 @@ class ProposalsList(Vertical, CliveWidget):
             self.loading = True
             return
 
-        if len(self.__proposals_to_display) == 0:
-            yield Static("No proposals according to specific filters!")
-            return
-
         for id_, proposal in enumerate(self.__proposals_to_display):
             if id_ % 2 == 0:
                 yield Proposal(proposal)
@@ -342,9 +339,9 @@ class ProposalsTable(Vertical, CliveWidget, can_focus=False):
     async def __set_loading(self) -> None:
         self.__is_loading = True
         with contextlib.suppress(NoMatches):
-            witness_list = self.query_one(ProposalsList)
-            await witness_list.query("*").remove()
-            await witness_list.mount(Label("Loading..."))
+            proposals_list = self.query_one(ProposalsList)
+            await proposals_list.query("*").remove()
+            await proposals_list.mount(Label("Loading..."))
 
     def __set_loaded(self) -> None:
         self.__is_loading = False
@@ -403,6 +400,14 @@ class ProposalsTable(Vertical, CliveWidget, can_focus=False):
 
     async def __sync_proposals_list(self, focus_first_proposal: bool = False) -> None:
         await self.__set_loading()
+        logger.info(f"executed only once when governance screen is loaded :(: {self.provider}: {self.provider.fetched_first_time}")
+        provider = self.provider
+        if self.provider.fetched_first_time and len(provider.content.proposals) == 0:
+            proposals_list = self.query_one(ProposalsList)
+            await proposals_list.query("*").remove()
+            await proposals_list.mount(Static("No proposals according to specific filters!"))
+            self.__set_loaded()
+            return
 
         new_proposals_list = ProposalsList(self.proposals_chunk)
 

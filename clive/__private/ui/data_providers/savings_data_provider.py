@@ -14,7 +14,7 @@ class SavingsDataProvider(DataProvider):
     """It is used to check whether savings data has been refreshed and to store savings data."""
 
     @work(name="savings data update worker")
-    async def update(self) -> None:
+    async def _update(self) -> None:
         account_name = self.app.world.profile_data.working_account.name
         wrapper = await self.app.world.commands.retrieve_savings_data(account_name=account_name)
 

@@ -22,7 +22,7 @@ class ProposalsDataProvider(DataProvider):
         self.__status = ProposalsDataRetrieval.DEFAULT_STATUS
 
     @work(name="proposals data update worker")
-    async def update(self) -> None:
+    async def _update(self) -> None:
         proxy = self.app.world.profile_data.working_account.data.proxy
         account_name = proxy if proxy else self.app.world.profile_data.working_account.name
 

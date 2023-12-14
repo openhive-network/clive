@@ -26,6 +26,9 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
     content: object = var(None, init=False)
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
+    fetched_first_time: bool = var(False)
+    """Set to True when the data is fetched for the first time."""
+
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__()
 
@@ -36,12 +39,17 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
 
     @abstractmethod
     @work
-    async def update(self) -> None:
+    async def _update(self) -> None:
         """
         Define the logic to update the provider data.
 
         The name of the worker can be included by overriding the work decorator, e.g.: @work("my work").
         """
+
+    async def update(self) -> Worker[None]:
+        worker = self._update()
+        self.fetched_first_time = True
+        return worker
 
     def stop(self) -> None:
         self.interval.stop()
