@@ -5,6 +5,7 @@ Savings Tab {
 Savings SavingsInterestInfo {
   border: $secondary-darken-2;
   height: auto;
+  max-height: 5;
 }
 
 Savings SavingsInterestInfo Horizontal,
@@ -65,6 +66,7 @@ SavingsInterestInfo #interest-rate DynamicLabel {
   text-style: bold;
   align: center middle;
   width: 1fr;
+  height: 1fr;
 }
 
 SavingsInterestInfo .interest-rate-date {
