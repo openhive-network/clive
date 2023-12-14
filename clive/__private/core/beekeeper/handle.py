@@ -39,6 +39,7 @@ from clive.__private.core.beekeeper.notifications import (
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
+from clive.dev import is_in_dev_mode
 from clive.models.base import CliveBaseModel
 from schemas.jsonrpc import (
     ExpectResultT,
@@ -210,7 +211,8 @@ class Beekeeper:
         result = await response.json()
         response_model = get_response_model(result_model, **result)
 
-        logger.info(f"Got beekeeper response: {response_model}")
+        if is_in_dev_mode():
+            logger.debug(f"Got beekeeper response: {response_model}")
 
         if response_model.id_ != request.id_:
             raise BeekeeperNotMatchingIdJsonRPCError(request.id_, response_model.id_)
