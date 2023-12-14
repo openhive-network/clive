@@ -58,5 +58,5 @@ async def process_transaction(
         **common.as_dict(),
         from_file=from_file,
         force_unsign=force_unsign,
-        already_signed_mode=already_signed_mode,
+        already_signed_mode=already_signed_mode,  # type: ignore [arg-type]
     ).run()

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.models import Asset
@@ -9,13 +9,12 @@ from schemas.operations import TransferFromSavingsOperation
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.__private.core.ensure_transaction import TransactionConvertibleType
 
 
 @dataclass(kw_only=True)
 class ProcessWithdrawal(OperationCommand):
     from_account: str
-    request_id: Optional[int]
+    request_id: int | None
     to_account: str
     amount: str
     memo: str
