@@ -14,6 +14,8 @@ def test_autocompletion_time() -> None:
     result = subprocess.run(command, shell=True, capture_output=True, text=True)
 
     # ASSERT
+    assert result.returncode == 0
+
     output = result.stderr.strip()
 
     import_time = float(output.splitlines()[-1].replace(",", "."))
