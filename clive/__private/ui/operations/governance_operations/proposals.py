@@ -284,10 +284,6 @@ class ProposalsList(Vertical, CliveWidget):
             self.loading = True
             return
 
-        if len(self.__proposals_to_display) == 0:
-            yield Static("No proposals according to specific filters!")
-            return
-
         for id_, proposal in enumerate(self.__proposals_to_display):
             if id_ % 2 == 0:
                 yield Proposal(proposal)
