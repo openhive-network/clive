@@ -129,15 +129,26 @@ testing_clive_import_times_during_autocompletion:
     - echo -e "${TXT_BLUE}Launching clive test for autocompletion time...${TXT_CLEAR}"
     - python3 -m pytest -k "test_autocompletion_time" --durations 0 --junitxml=report.xml tests/
 
+testing_password_private_key_logging:
+  stage: tests
+  needs:
+    - job: testing_beekeeper
+      artifacts: true
+    - job: testing_clive
+      artifacts: true
+    - job: testing_clive_import_times_during_autocompletion
+      artifacts: true
+  script:
+    - cd "${CI_PROJECT_DIR}/tests"
+    - (bash "${CI_PROJECT_DIR}/scripts/check_is_private_key_nor_password_is_not_logged.bash" && echo $?) || (echo $? && false)
+
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| DEPLOY |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 .deploy_wheel_needs : &deploy_wheel_needs
     needs:
-    - job: pre_commit_checks
-    - job: testing_clive
-    - job: testing_clive_import_times_during_autocompletion
+    - job: testing_password_private_key_logging
     - job: build_wheel
       artifacts: true
 
