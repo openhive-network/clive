@@ -60,7 +60,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
-    DEFAULT_STATUS: ClassVar[Statuses] = "active"
+    DEFAULT_STATUS: ClassVar[Statuses] = "votable"
     DEFAULT_ORDER: ClassVar[Orders] = "by_total_votes_with_voted_first"
     DEFAULT_ORDER_DIRECTION: ClassVar[OrderDirections] = "descending"
 
