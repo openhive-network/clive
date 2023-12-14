@@ -20,6 +20,7 @@ CartBasedScreen CartOverview CartItemsAmount {
   background: $secondary-lighten-1;
   padding: 1;
   width: 1fr;
+  height: 1fr;
   color: $text;
 }
 
@@ -31,7 +32,7 @@ CartBasedScreen CartOverview CartInfoContainer {
 
 CartBasedScreen CartOverview CartItemsContainer {
   padding: 1;
-  height: 1fr;
+  height: 8fr;
 }
 
 CartBasedScreen CartInfoContainer:focus-within {
