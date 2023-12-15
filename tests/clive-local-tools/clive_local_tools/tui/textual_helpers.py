@@ -28,17 +28,33 @@ async def press_and_wait_for_screen(
     expected_screen: type[Screen[Any]],
     *,
     key_description: str | None = None,
+    timeout: float = 3.0,
 ) -> None:
     """Press some binding and ensure screen changed after some action."""
     await press_binding(pilot, key, key_description)
-    await wait_for_screen(pilot, expected_screen)
+    await wait_for_screen(pilot, expected_screen, timeout=timeout)
 
 
-async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]], *, timeout: float = 3.0) -> None:
+async def press_and_wait_for_screen_focused(
+    pilot: ClivePilot,
+    key: str,
+    expected_screen: type[Screen[Any]],
+    *,
+    key_description: str | None = None,
+    timeout: float = 3.0,
+) -> None:
+    """Press some binding and ensure screen changed after some action."""
+    await press_binding(pilot, key, key_description)
+    await wait_for_screen(pilot, expected_screen, focused=True, timeout=timeout)
+
+
+async def wait_for_screen(
+    pilot: ClivePilot, expected_screen: type[Screen[Any]], *, focused: bool = False, timeout: float = 3.0
+) -> None:
     """Wait for the expected screen to be active."""
 
     async def wait_for_screen_change() -> None:
-        while not isinstance(app.screen, expected_screen):
+        while not isinstance(app.focused if focused is True else app.screen, expected_screen):
             await pilot.pause(0.1)
 
     app = pilot.app
@@ -46,6 +62,6 @@ async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]],
     try:
         await asyncio.wait_for(wait_for_screen_change(), timeout=timeout)
     except asyncio.TimeoutError:
-        raise AssertionError(
-            f"Screen didn't changed to '{expected_screen}' in {timeout=}. Current one is: {app.screen}"
-        ) from None
+        actual_screen = "Focused" if focused is True else "Current"
+        actual_screen += f" one is: {app.focused if focused is True else app.screen}"
+        raise AssertionError(f"Screen didn't changed to '{expected_screen}' in {timeout=}. " + actual_screen) from None

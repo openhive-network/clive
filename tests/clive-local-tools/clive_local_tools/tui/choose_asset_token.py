@@ -8,9 +8,7 @@ from clive.models.asset import AssetFactoryHolder
 from .checkers import assert_is_focused
 
 if TYPE_CHECKING:
-    from clive_local_tools.tui.types import ClivePilot
-
-    from .types import LiquidAssetToken
+    from .types import ClivePilot, LiquidAssetToken
 
 
 async def choose_asset_token(pilot: ClivePilot, asset_token: LiquidAssetToken) -> None:

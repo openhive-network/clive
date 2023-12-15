@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 async def activate_body(pilot: ClivePilot, password: str, *, expected_screen: type[Screen[Any]] | None = None) -> None:
     """Do activate when Activate is current screen."""
     activate_binding_desc = "Ok"
-
     assert_is_screen_active(pilot, Activate)
     await write_text(pilot, password)
     if expected_screen:

@@ -3,10 +3,13 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    import test_tools as tt
     from textual.screen import Screen
     from textual.widget import Widget
 
     from clive_local_tools.tui.types import CliveApp, ClivePilot
+    from schemas.operations import AnyOperation
+    from schemas.operations.representations import HF26Representation
 
 
 def assert_is_screen_active(pilot: ClivePilot, expected_screen: type[Screen[Any]]) -> None:
@@ -37,3 +40,25 @@ def assert_is_key_binding_active(app: CliveApp, key: str, description: str | Non
             f"Current ones are: {binding_description_map}"
         )
         assert stored_description == description, message
+
+
+def assert_operations_placed_in_blockchain(
+    node: tt.RawNode, transaction_id: str, *expected_operations: AnyOperation
+) -> None:
+    transaction = node.api.account_history.get_transaction(
+        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
+    )
+    operations_to_check = list(expected_operations)
+    for operation_representation in transaction.operations:
+        _operation_representation: HF26Representation[AnyOperation] = operation_representation
+        operation = _operation_representation.value
+        if operation in operations_to_check:
+            operations_to_check.remove(operation)
+
+    message = (
+        "Operations missing in blockchain.\n"
+        f"Operations: {operations_to_check}\n"
+        "were not found in the transaction:\n"
+        f"{transaction}."
+    )
+    assert not operations_to_check, message
