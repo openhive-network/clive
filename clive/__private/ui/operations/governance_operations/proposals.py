@@ -481,45 +481,46 @@ class Proposals(TabPane, OperationActionBindings):
         )
 
     def _create_operations(self) -> list[Operation] | None:
-        operations_to_perform = self.app.query_one(ProposalsActions).actions_to_perform
-        proposals_to_vote = [proposal_id for proposal_id, approve in operations_to_perform.items() if approve]
-        proposals_to_unvote = [proposal_id for proposal_id, approve in operations_to_perform.items() if not approve]
-
-        if max(len(proposals_to_vote), len(proposals_to_unvote)) > MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION:
-            self.notify(
-                (
-                    "The number of proposals to (un)vote for in single operation is restricted to"
-                    f" {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION}"
-                ),
-                severity="error",
-            )
-            return None
-
         working_account_name = self.app.world.profile_data.working_account.name
+
+        proposals_to_unvote = self.__split_proposals(approve=False)
+        proposals_to_vote = self.__split_proposals(approve=True)
+
+        if not proposals_to_unvote and not proposals_to_vote:
+            return None
 
         operations_to_return: list[Operation] = []
 
-        if not proposals_to_vote and not proposals_to_unvote:
-            return None
-
         if proposals_to_vote:
-            proposals_to_vote.sort()
-            vote_operation = UpdateProposalVotesOperation(
-                voter=working_account_name,
-                proposal_ids=proposals_to_vote,
-                approve=True,
-                extensions=[],
-            )
-            operations_to_return.append(vote_operation)
+            for proposals in proposals_to_vote:
+                vote_operation = UpdateProposalVotesOperation(
+                    voter=working_account_name,
+                    proposal_ids=proposals,
+                    approve=True,
+                    extensions=[],
+                )
+                operations_to_return.append(vote_operation)
 
         if proposals_to_unvote:
-            proposals_to_unvote.sort()
-            unvote_operation = UpdateProposalVotesOperation(
-                voter=working_account_name,
-                proposal_ids=proposals_to_unvote,
-                approve=False,
-                extensions=[],
-            )
-            operations_to_return.append(unvote_operation)
+            for proposals in proposals_to_unvote:
+                unvote_operation = UpdateProposalVotesOperation(
+                    voter=working_account_name,
+                    proposal_ids=proposals,
+                    approve=False,
+                    extensions=[],
+                )
+                operations_to_return.append(unvote_operation)
 
         return operations_to_return
+
+    def __split_proposals(self, approve: bool = True) -> list[list[int]]:
+        operations_to_perform = self.app.query_one(ProposalsActions).actions_to_perform
+        if approve:
+            proposals_ids_to_return = [proposal_id for proposal_id, approve in operations_to_perform.items() if approve]
+        else:
+            proposals_ids_to_return = [
+                proposal_id for proposal_id, approve in operations_to_perform.items() if not approve
+            ]
+
+        proposals_ids_to_return.sort()
+        return [proposals_ids_to_return[i : i + 5] for i in range(0, len(proposals_ids_to_return), 5)]
