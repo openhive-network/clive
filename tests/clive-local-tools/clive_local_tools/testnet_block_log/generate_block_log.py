@@ -124,6 +124,7 @@ def prepare_savings(wallet: tt.Wallet) -> None:
         tt.Asset.Tbd(123).as_nai(),
         "Supplying HBD savings",
     )
+    # Number of transfer_from_savings for WORKING_ACCOUNT should be equal to clive_local_tools.testnet_block_log.constants.WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT
     wallet.api.transfer_from_savings(
         WORKING_ACCOUNT.name,
         0,

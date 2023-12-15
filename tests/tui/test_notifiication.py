@@ -10,10 +10,12 @@ if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot
 
 
-async def test_patched_notification_timeout(prepared_tui_on_dashboard: tuple[tt.RawNode, ClivePilot]) -> None:
+async def test_patched_notification_timeout(
+    prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+) -> None:
     # ARRANGE
     notification_message = "test notification"
-    _, pilot = prepared_tui_on_dashboard
+    _, _, pilot = prepared_tui_on_dashboard_inactive
 
     # ACT
     pilot.app.notify(notification_message)
