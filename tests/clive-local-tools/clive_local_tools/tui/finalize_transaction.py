@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from textual.pilot import Pilot
 
 
-async def finalize_transaction(pilot: Pilot[int], activated: bool, password: str) -> None:
+async def finalize_transaction(pilot: Pilot[int], activated: bool, password: str | None = None) -> None:
     """Finalize transaction with optional activation if 'activated' == False."""
     log_current_view(pilot.app)
     assert is_key_binding_active(pilot.app, "f10", "Finalize transaction") or is_key_binding_active(
@@ -27,6 +27,7 @@ async def finalize_transaction(pilot: Pilot[int], activated: bool, password: str
     assert is_key_binding_active(pilot.app, "f10", "Broadcast"), "There are no expected binding for F10 key!"
     await pilot.press("f10")
     if not activated:
+        assert password is not None, "'password' should be passed when 'activated' is False!"
         await activate_body(pilot, password)
     assert isinstance(pilot.app.screen, DashboardActive), (
         "'finalize_transaction' expects 'DashboardActive' to be the screen after finish! "

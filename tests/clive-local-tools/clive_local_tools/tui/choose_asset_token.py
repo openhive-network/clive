@@ -1,17 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, get_args
 
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
 from clive.models.asset import AssetFactoryHolder
 
+from .types import ASSET_TOKEN
+
 if TYPE_CHECKING:
     from textual.pilot import Pilot
 
-    from .types import ASSET_TOKEN
 
-
-async def choose_asset_token(pilot: Pilot[int], asset_token: ASSET_TOKEN) -> None:
+async def choose_asset_token(pilot: Pilot[int], asset_token: str) -> None:
+    assert asset_token in get_args(ASSET_TOKEN), f"Invalid asset_token: {asset_token}"
     assert isinstance(
         pilot.app.focused, CurrencySelectorLiquid
     ), f"'choose_asset_token' requires focus on 'CurrencySelectorLiquid'! Current focus set on: {pilot.app.focused}."

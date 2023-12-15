@@ -50,3 +50,11 @@ def assert_operations_placed_in_blockchain(
         f"{transaction}."
     )
     assert not operations_to_check, message
+
+
+def get_profile_name(app: App[int]) -> str:
+    try:
+        widget = app.query_one("#profile-label", TitledLabel)
+    except NoMatches as error:
+        raise AssertionError("Profile couldn't be found. It is not available in the onboarding process.") from error
+    return str(widget.value).strip()

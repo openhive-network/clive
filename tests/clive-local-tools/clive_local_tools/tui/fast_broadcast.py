@@ -12,12 +12,13 @@ if TYPE_CHECKING:
     from textual.pilot import Pilot
 
 
-async def fast_broadcast(pilot: Pilot[int], activated: bool, password: str) -> None:
+async def fast_broadcast(pilot: Pilot[int], activated: bool, password: str | None = None) -> None:
     """Fast broadcast with optional activation if 'activated' == False."""
     log_current_view(pilot.app)
     assert is_key_binding_active(pilot.app, "f5", "Fast broadcast"), "There are no expected binding for F5 key!"
     await pilot.press("f5")
     if not activated:
+        assert password is not None, "'password' should be passed when 'activated' is False!"
         await activate_body(pilot, password)
     assert isinstance(
         pilot.app.screen, Operations
