@@ -26,10 +26,25 @@ if TYPE_CHECKING:
 def create_working_account(wallet: tt.Wallet) -> None:
     wallet.create_account(
         WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(100).as_nai(),
-        vests=tt.Asset.Test(100).as_nai(),
-        hbds=tt.Asset.Tbd(100).as_nai(),
+        hives=tt.Asset.Test(1000).as_nai(),
+        vests=tt.Asset.Test(1000).as_nai(),
+        hbds=tt.Asset.Tbd(1000).as_nai(),
     )
+    # Supplying savings:
+    wallet.api.transfer_to_savings(
+        WORKING_ACCOUNT.name,
+        WORKING_ACCOUNT.name,
+        tt.Asset.Test(100).as_nai(),
+        "Supplying HIVE savings",
+    )
+    wallet.api.transfer_to_savings(
+        WORKING_ACCOUNT.name,
+        WORKING_ACCOUNT.name,
+        tt.Asset.Tbd(100).as_nai(),
+        "Supplying HBD savings",
+    )
+    account = wallet.api.get_account(WORKING_ACCOUNT.name)
+    tt.logger.debug(f"account: {account}")
 
 
 def create_watched_accounts(wallet: tt.Wallet) -> None:

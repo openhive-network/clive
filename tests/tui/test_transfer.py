@@ -40,28 +40,23 @@ async def create_transfer(
     await write_text(pilot, beneficient)
     await pilot.press("tab", "tab")
     await write_text(pilot, amount)
+    await pilot.press("tab")
     await choose_asset_token(pilot, asset_token)
     if memo:
+        await pilot.press("tab")
         await write_text(pilot, memo)
 
 
 testdata = [
-    (True, "HIVE", "memo1", "FAST_BROADCAST"),
-    (True, "HIVE", None, "FINALIZE_TRANSACTION"),
-    (True, "HIVE", "memo2", "ADD_TO_CART"),
-    (True, "HBD", "memo3", "FAST_BROADCAST"),
-    (True, "HBD", None, "FINALIZE_TRANSACTION"),
-    (True, "HBD", "memo4", "ADD_TO_CART"),
-    (False, "HIVE", "memo1", "FAST_BROADCAST"),
-    (False, "HIVE", None, "FINALIZE_TRANSACTION"),
-    (False, "HIVE", "memo2", "ADD_TO_CART"),
-    (False, "HBD", "memo3", "FAST_BROADCAST"),
-    (False, "HBD", None, "FINALIZE_TRANSACTION"),
-    (False, "HBD", "memo4", "ADD_TO_CART"),
+    ("memo1", "FAST_BROADCAST"),
+    (None, "FINALIZE_TRANSACTION"),
+    ("memo2", "ADD_TO_CART"),
 ]
 
 
-@pytest.mark.parametrize(("activated", "asset_token", "memo", "operation_processing"), testdata)
+@pytest.mark.parametrize("activated", ["True", "False"])
+@pytest.mark.parametrize("asset_token", ["HIVE", "HBD"])
+@pytest.mark.parametrize(("memo", "operation_processing"), testdata)
 async def test_transfers(  # noqa: PLR0913
     prepared_env: tuple[tt.InitNode, Clive],
     request: FixtureRequest,
@@ -79,10 +74,9 @@ async def test_transfers(  # noqa: PLR0913
     3. The user makes a transfer in HBD/HIVE, adds to the cart and then broadcasts it.
     """
     tt.logger.debug(f"Enter '{request.node.name}' ...")
+    node, app = prepared_env
 
-    node = prepared_env[0]
-    app = prepared_env[1]
-
+    # ARRANGE
     async with app.run_test() as pilot:
         current_view(app, True)
         assert get_mode(app) == "inactive", "Expected 'inactive' mode!"
@@ -94,6 +88,7 @@ async def test_transfers(  # noqa: PLR0913
         # TODO: save balances before transfer
         ...
 
+        # ACT
         ### Create transfer
         # Choose transfer operation
         await pilot.press("f2", "tab", "enter")
@@ -112,8 +107,8 @@ async def test_transfers(  # noqa: PLR0913
 
         node.wait_number_of_blocks(1)
 
+        # ASSERT
         history = node.api.account_history.get_account_history(account=USER, include_reversible=True)["history"]
-
         operation = history[-1][1]["op"]
         tt.logger.debug(f"operation: {operation}")
         assert (
@@ -146,10 +141,9 @@ async def test_transfers_finalize_cart(
     4. The user makes two transfers, the first in HBD, the second in HIVE, adds them to cart and then broadcasts.
     """
     tt.logger.debug(f"Enter '{request.node.name}' ...")
+    node, app = prepared_env
 
-    node = prepared_env[0]
-    app = prepared_env[1]
-
+    # ARRANGE
     async with app.run_test() as pilot:
         current_view(app, True)
         assert get_mode(app) == "inactive", "Expected 'inactive' mode!"
@@ -161,6 +155,7 @@ async def test_transfers_finalize_cart(
         # TODO: save balances before transfer
         ...
 
+        # ACT
         ### Create 2 transfers
         # Choose transfer operation
         await pilot.press("f2", "tab")
@@ -186,8 +181,8 @@ async def test_transfers_finalize_cart(
 
         node.wait_number_of_blocks(1)
 
+        # ASSERT
         history = node.api.account_history.get_account_history(account=USER, include_reversible=True)["history"]
-
         operation = history[-2][1]["op"]
         tt.logger.debug(f"operation1: {operation}")
         assert (
