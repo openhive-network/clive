@@ -4,7 +4,7 @@ import asyncio
 import json
 import shutil
 import tempfile
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from http import HTTPStatus
 from pathlib import Path
 from time import perf_counter
@@ -49,7 +49,7 @@ from schemas.jsonrpc import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import AsyncIterator, Callable, Iterator
     from types import TracebackType
 
     from typing_extensions import Self
@@ -184,6 +184,15 @@ class Beekeeper:
         """Allows to temporarily change connection details."""
         with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
             yield
+
+    @asynccontextmanager
+    async def with_session(self, token: str) -> AsyncIterator[None]:
+        previous_token = self.__token
+        try:
+            self.__token = token
+            yield
+        finally:
+            self.__token = previous_token
 
     @staticmethod
     def get_pid_from_file() -> int:
