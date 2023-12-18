@@ -10,9 +10,9 @@ repos:
       - id: pretty-format-json
         args: [ "--autofix" ]
       - id: trailing-whitespace
-        exclude: ".*_pattern.txt"
+        exclude: ".*(_pattern\\.txt|\\.wallet)$"
       - id: end-of-file-fixer
-        exclude: ".*_pattern.txt"
+        exclude: ".*(_pattern\\.txt|\\.wallet)$"
   - repo: https://github.com/python-poetry/poetry
     rev: 1.7.1
     hooks:
