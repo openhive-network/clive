@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import asyncio
 from typing import Final
 
 import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
 from clive.exceptions import CommunicationError
-from clive_local_tools import checkers
+from clive_local_tools import checkers, waiters
 
 WRONG_TOKEN: Final[str] = "104fc637d5c32c271bdfdc366af5bfc8f977e2462b01877454cfd1643196bcf1"
 
@@ -37,19 +36,12 @@ async def test_if_beekeeper_closes_after_last_session_termination() -> None:
     # ARRANGE
     beekeeper = await Beekeeper().launch()
 
-    async def wait_for_beekeeper_to_close() -> None:
-        while beekeeper.is_already_running_locally():
-            await asyncio.sleep(0.1)
-
     # ACT
     await beekeeper.api.close_session()
 
-    try:
-        await asyncio.wait_for(wait_for_beekeeper_to_close(), timeout=1)
-    except asyncio.TimeoutError:
-        pytest.fail("Beekeeper was not closed after last session termination in the expected time.")
-
     # ASSERT
+    await waiters.wait_for_beekeeper_to_close(beekeeper=beekeeper)
+
     with pytest.raises(CommunicationError, match="no response available"):
         await beekeeper.api.list_wallets()
 
