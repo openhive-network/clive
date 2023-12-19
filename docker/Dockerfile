@@ -85,6 +85,9 @@ ADD ./testnet_node.py /clive
 ENV TEST_TOOLS_PATH="hive/tests/python/hive-local-tools/test-tools/"
 ADD ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}
 
+ENV LOCAL_TOOLS_PATH="tests/clive-local-tools/"
+ADD ${LOCAL_TOOLS_PATH} /clive/${LOCAL_TOOLS_PATH}
+
 RUN curl -sSL https://install.python-poetry.org | python3 - --version 1.7.0
 ENV PATH="/home/hived_admin/.local/bin:$PATH"
 
