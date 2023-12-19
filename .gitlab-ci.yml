@@ -148,6 +148,16 @@ testing_cli:
     - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
     - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/cli
 
+testing_cli_with_bash:
+  extends: .testing
+  script:
+    - sudo apt update && sudo apt install bats -y
+    - bats $CI_PROJECT_DIR/tests/bash/run.bats
+    # - tests/bash/run_all.sh
+  artifacts:
+    paths:
+      - $CI_PROJECT_DIR/tests/bash/**/*/.log
+
 testing_password_private_key_logging:
   stage: tests
   needs:
