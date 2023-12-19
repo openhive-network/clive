@@ -139,6 +139,16 @@ testing_cli_commands:
     - echo -e "${TXT_BLUE}Launching cli commands concurrent tests...${TXT_CLEAR}"
     - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/cli
 
+testing_cli_with_bash:
+  extends: .testing
+  script:
+    - git clone https://github.com/bats-core/bats-core.git --branch v1.10.0 && pushd bats-core && sudo ./install.sh /usr/local && popd
+    - bats --version
+    - bats tests/bash_tests --recursive --timing
+      --report-formatter junit
+      --output $CI_PROJECT_DIR
+      --gather-test-outputs-in $CI_PROJECT_DIR/generated_clive_data
+
 testing_password_private_key_logging:
   stage: tests
   needs:
