@@ -81,6 +81,7 @@ ENV COMPRESS_BLOCK_LOG_PATH="${HIVED_BINARIES_DIR_DEST}/compress_block_log"
 
 # Get all the files required for embedded testnet
 ADD ./testnet_node.py /clive
+ADD ./testnet_block_log /clive/testnet_block_log
 
 ENV TEST_TOOLS_PATH="hive/tests/python/hive-local-tools/test-tools/"
 ADD ${TEST_TOOLS_PATH} /clive/${TEST_TOOLS_PATH}

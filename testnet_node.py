@@ -5,6 +5,7 @@ import asyncio
 import shutil
 import sys
 import time
+from pathlib import Path
 from random import randint
 from typing import TYPE_CHECKING, Final
 
@@ -64,19 +65,18 @@ WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob"
 # <<== WORKAROUND
 
 
-def prepare_node() -> tuple[tt.InitNode, tt.Wallet]:
-    node = tt.InitNode()
+def prepare_node(directory: Path) -> tt.RawNode:
+    node = tt.RawNode()
+    node.config.load_from_file(directory / "config.ini")
     node.config.webserver_http_endpoint = "0.0.0.0:8090"
     node.config.plugin.append("account_history_rocksdb")
     node.config.plugin.append("account_history_api")
     node.config.plugin.append("reputation_api")
     node.config.plugin.append("rc_api")
     node.config.plugin.append("transaction_status_api")
-    node.run()
+    node.run(replay_from=directory / "blockchain" / "block_log")
 
-    wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
-    wallet.api.import_key(node.config.private_key[0])
-    return node, wallet
+    return node
 
 
 def create_working_account(wallet: tt.Wallet) -> None:
@@ -102,7 +102,7 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
         )
 
 
-async def prepare_profile(node: tt.InitNode) -> None:
+async def prepare_profile(node: tt.RawNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
     settings["secrets.node_address"] = f"http://{node.http_endpoint}"
     settings["node.chain_id"] = "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e"
@@ -154,11 +154,8 @@ async def main() -> None:
     enable_clive_onboarding = args.perform_onboarding
     disable_tui = args.no_tui
 
-    node, wallet = prepare_node()
-    create_working_account(wallet)
-    create_watched_accounts(wallet)
-    node.set_vest_price(tt.Asset.Vest(1800))
-    send_test_transfer_from_working_account(wallet)
+    directory = (Path(__file__).parent.absolute() / "testnet_block_log").absolute()
+    node = prepare_node(directory)
     print_working_account_keys()
 
     if not enable_clive_onboarding:
