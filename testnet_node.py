@@ -5,7 +5,6 @@ import asyncio
 import shutil
 import sys
 import time
-from random import randint
 from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
@@ -18,6 +17,11 @@ from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
+from clive_local_tools.testnet_block_log import (
+    get_alternate_chain_spec_path,
+    get_block_log,
+    get_config,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -55,45 +59,20 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
     return parser.parse_args(args)
 
 
-def prepare_node() -> tuple[tt.InitNode, tt.Wallet]:
-    node = tt.InitNode()
+def prepare_node() -> tt.RawNode:
+    config_lines = get_config().write_to_lines()
+    block_log = get_block_log()
+    alternate_chain_spec_path = get_alternate_chain_spec_path()
+    node = tt.RawNode()
+    node.config.load_from_lines(config_lines)
     node.config.webserver_http_endpoint = "0.0.0.0:8090"
-    node.config.plugin.append("account_history_rocksdb")
-    node.config.plugin.append("account_history_api")
-    node.config.plugin.append("reputation_api")
-    node.config.plugin.append("rc_api")
-    node.config.plugin.append("transaction_status_api")
-    node.run()
+    arguments = ["--alternate-chain-spec", str(alternate_chain_spec_path)]
+    node.run(replay_from=block_log, arguments=arguments)
 
-    wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
-    wallet.api.import_key(node.config.private_key[0])
-    return node, wallet
+    return node
 
 
-def create_working_account(wallet: tt.Wallet) -> None:
-    wallet.create_account(
-        WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(100).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=tt.Asset.Test(100).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=tt.Asset.Tbd(100).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-    )
-
-
-def create_watched_accounts(wallet: tt.Wallet) -> None:
-    def random_amount() -> int:
-        return randint(1_000, 5_000)
-
-    tt.logger.info("Creating watched accounts...")
-    for account in WATCHED_ACCOUNTS:
-        wallet.create_account(
-            account.name,
-            hives=tt.Asset.Test(random_amount()).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            vests=tt.Asset.Test(random_amount()).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            hbds=tt.Asset.Tbd(random_amount()).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        )
-
-
-async def prepare_profile(node: tt.InitNode) -> None:
+async def prepare_profile(node: tt.RawNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
     settings["secrets.node_address"] = node.http_endpoint.as_string()
     settings["node.chain_id"] = "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e"
@@ -170,12 +149,7 @@ async def main() -> None:
     enable_clive_onboarding = args.perform_onboarding
     disable_tui = args.no_tui
 
-    node, wallet = prepare_node()
-    create_working_account(wallet)
-    create_watched_accounts(wallet)
-    create_proposal(wallet)
-    node.set_vest_price(tt.Asset.Vest(1800))
-    send_test_transfer_from_working_account(wallet)
+    node = prepare_node()
     print_working_account_keys()
 
     if not enable_clive_onboarding:
