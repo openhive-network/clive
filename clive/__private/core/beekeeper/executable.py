@@ -13,6 +13,7 @@ from typing import TextIO
 from clive.__private.config import settings
 from clive.__private.core.beekeeper.command_line_args import BeekeeperCLIArguments
 from clive.__private.core.beekeeper.config import BeekeeperConfig
+from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.__private.core.beekeeper.exceptions import (
     BeekeeperAlreadyRunningError,
     BeekeeperNotConfiguredError,
@@ -96,6 +97,13 @@ class BeekeeperExecutable:
             raise BeekeeperNotificationServerNotConfiguredError
 
         # prepare config
+
+        if (
+            arguments
+            and arguments.wallet_dir is not None
+            and arguments.wallet_dir != BeekeeperDefaults.DEFAULT_WALLET_DIR
+        ):
+            self.__config.wallet_dir = arguments.wallet_dir
         if not self.__config.wallet_dir.exists():
             self.__config.wallet_dir.mkdir()
         config_filename = self.__config.wallet_dir / "config.ini"
