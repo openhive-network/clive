@@ -78,8 +78,8 @@ class BeekeeperNotificationsServer:
         def __attempt_of_closing_all_wallets_notification(self, message: JsonT) -> None:
             details = message["value"]
             logger.debug("Got notification about closing all wallets")
-            if self.beekeeperNotificationServer.__is_tracked_wallet_closing(details):
-                self.beekeeperNotificationServer.__notify_listeners_about_wallets_closing()
+            if self.beekeeperNotificationServer._is_tracked_wallet_closing(details):
+                self.beekeeperNotificationServer._notify_listeners_about_wallets_closing()
             else:
                 logger.debug("The tracked wallet is not closing, ignoring notification")
 
@@ -150,7 +150,7 @@ class BeekeeperNotificationsServer:
     def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__wallet_closing_listeners.discard(listener)
 
-    def __is_tracked_wallet_closing(self, details: dict[str, Any]) -> bool:
+    def _is_tracked_wallet_closing(self, details: dict[str, Any]) -> bool:
         if self.__notify_closing_wallet_name_cb is None:
             return False
 
@@ -171,7 +171,7 @@ class BeekeeperNotificationsServer:
 
         return False
 
-    def __notify_listeners_about_wallets_closing(self) -> None:
+    def _notify_listeners_about_wallets_closing(self) -> None:
         logger.debug("Notifying listeners about tracked wallet closing")
         for listener in self.__wallet_closing_listeners:
             listener.notify_wallet_closing()
