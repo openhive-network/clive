@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import test_tools as tt
+
 if TYPE_CHECKING:
     from typer.testing import CliRunner
 
@@ -16,6 +18,7 @@ async def test_show_pending_withdrawals_none(
 
     # ASSERT
     result = runner.invoke(cli, ["show", "pending", "withdrawals", "--profile-name=alice", "--account-name=alice"])
+    tt.logger.info(f"{result.stdout=}")
     assert result.exit_code == 0
     assert "no pending withdrawals" in result.stdout
 
@@ -41,6 +44,7 @@ async def test_show_pending_withdrawals_basic(
             "--sign=alice_key",
         ],
     )
+    tt.logger.info(f"{result.stdout=}")
     assert result.exit_code == 0
 
     result = runner.invoke(
@@ -57,6 +61,7 @@ async def test_show_pending_withdrawals_basic(
             "--sign=alice_key",
         ],
     )
+    tt.logger.info(f"{result.stdout=}")
     assert result.exit_code == 0
 
     result = runner.invoke(
@@ -73,10 +78,12 @@ async def test_show_pending_withdrawals_basic(
             "--sign=alice_key",
         ],
     )
+    tt.logger.info(f"{result.stdout=}")
     assert result.exit_code == 0
 
     # ASSERT
     result = runner.invoke(cli, ["show", "pending", "withdrawals", "--profile-name=alice", "--account-name=alice"])
+    tt.logger.info(f"{result.stdout=}")
     assert result.exit_code == 0
     assert "0.111 HIVE" in result.stdout
     assert "0.112 HIVE" in result.stdout
