@@ -14,7 +14,7 @@ from textual.widgets import Input, Label, Static
 
 from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
-from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
@@ -96,7 +96,7 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
             created = humanize_datetime(witness.created)
             missed_blocks = witness.total_missed
             last_block = witness.last_confirmed_block_num
-            price_feed = int(witness.hbd_exchange_rate.base.amount) / 10**3
+            price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate)
             version = witness.running_version
             new_witness_data = f"""\
             === Time of the query: {humanize_datetime(datetime.now().replace(microsecond=0))} ===
@@ -104,7 +104,7 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
                 created: {created}
                 missed blocks: {missed_blocks}
                 last block: {last_block}
-                price feed: {price_feed} $
+                price feed: {price_feed}
                 version: {version}\
             """
 
@@ -142,13 +142,13 @@ class WitnessNameLabel(Label, CliveWidget):
             created = humanize_datetime(witness.created)
             missed_blocks = witness.total_missed
             last_block = witness.last_confirmed_block_num
-            price_feed = int(witness.hbd_exchange_rate.base.amount) / 10**3
+            price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate)
             version = witness.running_version
             new_tooltip_text = f"""\
         created: {created}
         missed blocks: {missed_blocks}
         last block: {last_block}
-        price feed: {price_feed} $
+        price feed: {price_feed}
         version: {version}\
     """
 

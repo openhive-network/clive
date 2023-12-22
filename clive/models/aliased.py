@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
+from schemas.apis.database_api import FindProposals as SchemasFindProposals
 from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
 from schemas.apis.database_api import (
     GetDynamicGlobalProperties,
@@ -61,6 +62,7 @@ SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF2
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 DynamicGlobalProperties = GetDynamicGlobalProperties
 TransactionStatus = SchemasFindTransaction
+FindProposals = SchemasFindProposals
 
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament

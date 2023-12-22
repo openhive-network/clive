@@ -3,9 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
-from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.formatters.humanize import humanize_hive_power
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -28,6 +27,14 @@ class Proposal:
     start_date: datetime.datetime
     end_date: datetime.datetime
     voted: bool = False
+
+    @property
+    def pretty_start_date(self) -> str:
+        return humanize_datetime(self.start_date, with_time=False)
+
+    @property
+    def pretty_end_date(self) -> str:
+        return humanize_datetime(self.end_date, with_time=False)
 
 
 @dataclass
@@ -119,10 +126,8 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             creator=proposal.creator,
             receiver=proposal.receiver,
             daily_pay=Asset.pretty_amount(proposal.daily_pay),
-            votes=humanize_hive_power(
-                calculate_hp_from_votes(
-                    proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
-                )
+            votes=humanize_votes_with_suffix(
+                proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
             ),
             status=proposal.status,
             start_date=proposal.start_date,
