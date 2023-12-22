@@ -38,7 +38,7 @@ class ShowPendingWithdrawals(WorldBasedCommand):
         table.add_column("RequestId", justify="right", style="green", no_wrap=True)
 
         transfer: SavingsWithdrawals
-        for transfer in result.pending_transfers:
+        for transfer in result.witnesses:
             table.add_row(
                 f"{transfer.to}",
                 f"{Asset.to_legacy(transfer.amount)}",

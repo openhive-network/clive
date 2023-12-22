@@ -47,18 +47,26 @@ default:
 pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
+  script:
+    - pwd
 
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
+  script:
+    - pwd
 
 formatting_with_black_check:
   stage: static_code_analysis
   extends: .formatting_with_black_check_template
+  script:
+    - pwd
 
 type_check_with_mypy:
   stage: static_code_analysis
   extends: .type_check_with_mypy_template
+  script:
+    - pwd
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 

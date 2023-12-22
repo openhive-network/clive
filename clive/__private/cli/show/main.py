@@ -74,3 +74,30 @@ async def show_transaction_status(
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowTransactionStatus(**common.as_dict(), transaction_id=transaction_id).run()
+
+
+@show.command(name="proxy", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+    """Show balances of the selected account."""
+    from clive.__private.cli.commands.show.show_proxy import ShowProxy
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowProxy(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="witnesses", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+    """Show balances of the selected account."""
+    from clive.__private.cli.commands.show.show_witnesses import ShowWitnesses
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowWitnesses(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="proposals", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+    """Show balances of the selected account."""
+    from clive.__private.cli.commands.show.show_proposals import ShowProposals
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowProposals(**common.as_dict(), account_name=account_name).run()
