@@ -10,6 +10,7 @@ from textual.widgets import Label, Select, Static
 
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
+from clive.__private.core.constants import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -37,8 +38,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models import Operation
-
-MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION: Final[int] = 5
 
 
 class ProposalsOrderSelect(Select[ProposalsDataRetrieval.Orders]):

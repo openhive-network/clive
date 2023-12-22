@@ -3,9 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
-from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.formatters.humanize import humanize_hive_power
+from clive.__private.core.formatters.humanize import humanize_votes
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -119,10 +118,8 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             creator=proposal.creator,
             receiver=proposal.receiver,
             daily_pay=Asset.pretty_amount(proposal.daily_pay),
-            votes=humanize_hive_power(
-                calculate_hp_from_votes(
-                    proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
-                )
+            votes=humanize_votes(
+                proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
             ),
             status=proposal.status,
             start_date=proposal.start_date,

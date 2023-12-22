@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any
 import typer
 
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.core.constants import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 
 if TYPE_CHECKING:
     from typer.models import OptionInfo
@@ -94,4 +95,8 @@ to_account_name_option = typer.Option(
     "--to",
     help='The account to use as "to" argument. (defaults to the working account of the last used profile)',
     show_default=bool(_get_default_working_account_name()),
+)
+
+proposal_id: list[int] = typer.Option(
+    ..., help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times."
 )

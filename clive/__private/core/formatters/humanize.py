@@ -7,11 +7,16 @@ from typing import TYPE_CHECKING, Any
 import humanize
 import inflection
 
+from clive.__private.core.constants import NULL_ACCOUNT_KEY_VALUE
 from clive.__private.core.formatters.case import underscore
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
     from datetime import timedelta
+
+    from schemas.fields.assets.hbd import AssetHbdHF26
+    from schemas.fields.assets.hive import AssetHiveHF26
+    from schemas.fields.compound import HbdExchangeRate
 
 
 def _is_null_date(value: datetime) -> bool:
@@ -110,3 +115,35 @@ def humanize_hive_power(value: int) -> str:
     matched = format_fix_regex.match(formatted_string)
     assert matched is not None, "Given string does not match regex"
     return f"{matched[1]}{matched[2]} HP".upper()
+
+
+def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate[AssetHiveHF26, AssetHbdHF26]) -> str:
+    """Return pretty formatted hdb exchange rate (price feed)."""
+    price_feed = int(hbd_exchange_rate.base.amount) / 10**3
+    return f"{price_feed:.3f} $"
+
+
+def humanize_hbd_interest_rate(hbd_interest_rate: int) -> str:
+    """Return pretty formatted hdb interese rate (APR)."""
+    percent = hbd_interest_rate / 100
+    return f"{round(percent, 2)}%"
+
+
+def humanize_hbd(hbd: AssetHbdHF26) -> str:
+    """Return pretty formatted hbd amount."""
+    amount = Asset.pretty_amount(hbd)
+    return humanize.metric(float(amount))
+
+
+def humanize_witness_status(signing_key: str) -> str:
+    """Return active/inactive string, witness is inactive if it has public key set to null account."""
+    return "active" if signing_key != NULL_ACCOUNT_KEY_VALUE else "inactive"
+
+
+def humanize_votes(votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests) -> str:
+    """Return pretty formatted votes converted to hive power."""
+    total_vesting_fund = int(total_vesting_fund_hive.amount) / 10**total_vesting_fund_hive.precision
+    total_shares = int(total_vesting_shares.amount) / 10**total_vesting_shares.precision
+
+    hive_power: int = (total_vesting_fund * (votes / total_shares)) // 1000000
+    return f"{humanize.intcomma(hive_power)} HP"

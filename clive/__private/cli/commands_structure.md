@@ -33,19 +33,21 @@ flowchart LR
         ProcessSavings --> ProcessSavingsDeposit[deposit]
         ProcessSavings --> ProcessSavingsWithdrawal[withdrawal]
         ProcessSavings --> ProcessSavingsWithdrawalCancel[withdrawal-cancel]
+        Process --> ProcessProxy[proxy]
+        ProcessProxy --> ProcessProxySet[set]
+        ProcessProxy --> ProcessProxyClear[clear]
 
         Process -->|"Not implemented yet"|ProcessPowerUp[power-up]
         Process -->|"Not implemented yet"|ProcessPowerDown[power-down]
         Process -->|"Not implemented yet"|ProcessUpdateAccount[update-account]
         Process -->|"Not implemented yet"|ProcessChangeAuthority[change-authority]
-        Process -->|"Not implemented yet"|ProcessSetProxy[set-proxy]
         Process -->|"Not implemented yet"|ProcessClaimToken[claim-token]
 
-        Process -->|"Not implemented yet"|ProcessVoteWitness(vote-witness)
+        Process --> ProcessVoteWitness(vote-witness)
         ProcessVoteWitness --> ProcessVoteWitnessAdd[add]
         ProcessVoteWitness --> ProcessVoteWitnessRemove[remove]
 
-        Process -->|"Not implemented yet"|ProcessVoteProposal(vote-proposal)
+        Process --> ProcessVoteProposal(vote-proposal)
         ProcessVoteProposal --> ProcessVoteProposalAdd[add]
         ProcessVoteProposal --> ProcessVoteProposalRemove[remove]
     end
@@ -65,10 +67,18 @@ flowchart LR
 
         Show --> ShowTransactionStatus[transaction-status]
 
-        Show -->|"Not implemented yet"| ShowWitnesses[witnesses]
+        Show --> ShowProxy[proxy]
+
+        Show --> ShowWitnesses[witnesses]
         ShowWitnesses ~~~|"witnesses:<br>- show witnesses the account votes for<br>- possible to list also proxy votes"| ShowWitnesses
 
-        Show -->|"Not implemented yet"| ShowProposals[proposals]
+        Show --> ShowWitness[witness]
+        ShowWitness ~~~|"witness:<br>- show details of chosen witness"| ShowWitness
+
+        Show --> ShowProposals[proposals]
+
+        Show --> ShowProposal[proposal]
+        ShowProposal ~~~|"proposal:<br>- show details of chosen proposal"| ShowProposal
 
         Show --> ShowPending(pending)
         ShowPending --> ShowPendingTransferFromSavings[withdrawals]
