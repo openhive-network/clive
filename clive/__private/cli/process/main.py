@@ -6,11 +6,17 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.cli.process.proxy import proxy
 from clive.__private.cli.process.savings import savings
+from clive.__private.cli.process.vote_proposal import vote_proposal
+from clive.__private.cli.process.vote_witness import vote_witness
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
+process.add_typer(proxy)
 process.add_typer(savings)
+process.add_typer(vote_proposal)
+process.add_typer(vote_witness)
 
 
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])

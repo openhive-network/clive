@@ -95,3 +95,9 @@ to_account_name_option = typer.Option(
     help='The account to use as "to" argument. (defaults to the working account of the last used profile)',
     show_default=bool(_get_default_working_account_name()),
 )
+
+unvote_option = typer.Option(
+    None,
+    "--unvote",
+    help="Flag to perform unvote. (if not present transaction with vote is send)",
+)
