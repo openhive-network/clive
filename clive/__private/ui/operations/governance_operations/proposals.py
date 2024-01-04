@@ -1,24 +1,29 @@
 from __future__ import annotations
 
-import contextlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.binding import Binding
-from textual.containers import Horizontal, ScrollableContainer, Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical
 from textual.css.query import NoMatches
-from textual.events import Click
 from textual.message import Message
 from textual.widgets import Label, Select, Static, TabPane
 
+from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
-from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
+    GovernanceActionRow,
+    GovernanceActions,
+    GovernanceListHeader,
+    GovernanceListWidget,
+    GovernanceTable,
+    GovernanceTableRow,
+    ScrollablePart,
+)
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from schemas.operations.update_proposal_votes_operation import UpdateProposalVotesOperation
 
@@ -28,7 +33,6 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
     from clive.models import Operation
 
 MAX_PROPOSALS_ON_PAGE: Final[int] = 10
@@ -78,10 +82,6 @@ class ProposalsStatusSelect(Select[ProposalsDataRetrieval.Statuses]):
         )
 
 
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
-
-
 class ProposalInformation(Vertical):
     def __init__(self, proposal: ProposalData, evenness: str) -> None:
         super().__init__()
@@ -115,315 +115,129 @@ class ProposalInformation(Vertical):
         return message
 
 
-class Proposal(Horizontal, CliveWidget, can_focus=True):
+class Proposal(GovernanceTableRow[ProposalData]):
     """The class first checks if there is a proposal in the action table - if so, move True to the GovernanceCheckbox parameter."""
 
-    BINDINGS = [
-        Binding("pageup", "previous_page", "PgDn"),
-        Binding("pagedown", "next_page", "PgUp"),
-        Binding("enter", "toggle_checkbox", "", show=False),
-    ]
-
-    def __init__(self, proposal: ProposalData, evenness: str = "even") -> None:
-        super().__init__()
-        self.__proposal = proposal
-        self.__evenness = evenness
-
-        self.governance_checkbox = GovernanceCheckbox(
-            is_voted=proposal.voted,
-            initial_state=self.is_already_in_proposal_actions_container or self.is_proposal_operation_in_cart,
-            disabled=bool(self.app.world.profile_data.working_account.data.proxy) or self.is_proposal_operation_in_cart,
-        )
-
-    def on_mount(self) -> None:
-        self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
-
-    def compose(self) -> ComposeResult:
-        yield self.governance_checkbox
-        yield ProposalInformation(self.__proposal, self.__evenness)
-
-    async def move_proposal_to_actions(self) -> None:
-        proposal_actions = self.app.query_one(ProposalsActions)
-        if self.governance_checkbox.value:
-            await proposal_actions.mount_proposal(
-                self.__proposal.proposal_id, voted=self.__proposal.voted, pending=self.is_proposal_operation_in_cart
-            )
-            return
-        await proposal_actions.unmount_proposal(self.__proposal.proposal_id)
-
-    def dimm_on_disabled_checkbox(self, value: bool) -> None:
-        if value:
-            self.add_class("dimmed")
-            return
-        self.remove_class("dimmed")
-
-    @on(GovernanceCheckbox.Clicked)
-    def focus_myself(self) -> None:
-        self.focus()
-
-    @on(GovernanceCheckbox.Changed)
-    async def modify_action_status(self) -> None:
-        await self.move_proposal_to_actions()
-
-    async def action_next_page(self) -> None:
-        await self.app.query_one(ProposalsTable).next_page()
-
-    async def action_previous_page(self) -> None:
-        await self.app.query_one(ProposalsTable).previous_page()
-
-    def action_toggle_checkbox(self) -> None:
-        self.governance_checkbox.toggle()
+    def create_row_content(self) -> ComposeResult:
+        yield ProposalInformation(self.row_data, self.evenness)
 
     @property
-    def is_proposal_operation_in_cart(self) -> bool:
+    def actions_type(self) -> type[ProposalsActions]:  # type: ignore[override]
+        return ProposalsActions
+
+    @property
+    def action_identifier(self) -> int:  # type: ignore[override]
+        return self.row_data.proposal_id
+
+    @property
+    def is_operation_in_cart(self) -> bool:
         for operation in self.app.world.profile_data.cart:
             if (
                 isinstance(operation, UpdateProposalVotesOperation)
-                and self.__proposal.proposal_id in operation.proposal_ids
+                and self.row_data.proposal_id in operation.proposal_ids
             ):
                 return True
         return False
 
     @property
-    def is_already_in_proposal_actions_container(self) -> bool:
+    def is_already_in_actions_container(self) -> bool:
         try:
-            self.app.query_one(ProposalsActions.get_proposal_action_row(self.__proposal.proposal_id))
+            self.app.query_one(ProposalsActions.get_action_id(identifier=self.row_data.proposal_id))
         except NoMatches:
             return False
         else:
             return True
 
 
-class ProposalActionRow(Horizontal):
-    def __init__(self, proposal_id: int, voted: bool = False, pending: bool = False):
-        super().__init__(id=f"proposal{proposal_id}-action-row")
-        self.__proposal_id = proposal_id
-        self.__pending = pending
-        self.__voted = voted
-
-    def compose(self) -> ComposeResult:
-        if self.__pending:
-            yield Label("Pending", classes="action-pending action-label")
-            yield Label(f"#{self.__proposal_id}", classes="action-proposal-id")
-            return
-
-        if not self.__voted:
-            yield Label("Vote", classes="action-vote action-label")
-        else:
-            yield Label("Unvote", classes="action-unvote action-label")
-        yield Label(f"#{self.__proposal_id}", classes="action-proposal-id")
+class ProposalActionRow(GovernanceActionRow[int]):
+    def create_widget_id(self) -> str:
+        return f"proposal{self.action_identifier}-action-row"
 
 
-class ProposalsActions(VerticalScroll, CanFocusWithScrollbarsOnly):
-    """
-    Contains a table of operations to be performed after confirmation.
-
-    Attributes
-    ----------
-    __actions_to_perform (dict): a dict with proposal_id as key and action to pe performed as key
-    """
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.__actions_to_perform: dict[int, bool] = {}
-
-    def compose(self) -> ComposeResult:
-        yield Static("Actions to be performed:", id="witnesses-actions-header")
-        with Horizontal(id="name-and-action"):
-            yield Static("Action", id="action-proposal-row")
-            yield Static("Proposal", id="proposal-id-actions-row")
-
-    async def on_mount(self) -> None:  # type: ignore[override]
+class ProposalsActions(GovernanceActions[int]):
+    async def mount_operations_from_cart(self) -> None:
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, UpdateProposalVotesOperation):
                 for proposal in operation.proposal_ids:
-                    await self.mount_proposal(proposal_id=proposal, pending=True)
+                    await self.mount_action(identifier=proposal, pending=True)
 
-    async def mount_proposal(self, proposal_id: int, voted: bool = False, pending: bool = False) -> None:
-        # check if proposal is already in the list, if so - return
-        with contextlib.suppress(NoMatches):
-            self.query_one(self.get_proposal_action_row(proposal_id))
-            return
+    def create_action_row(self, identifier: int, vote: bool, pending: bool) -> GovernanceActionRow[int]:
+        return ProposalActionRow(identifier, vote, pending)
 
-        await self.mount(ProposalActionRow(proposal_id, voted=voted, pending=pending))
-
-        if not pending:
-            self.__actions_to_perform[proposal_id] = not voted
-
-    async def unmount_proposal(self, proposal_id: int) -> None:
-        try:
-            await self.query_one(self.get_proposal_action_row(proposal_id)).remove()
-        except NoMatches:
-            return
-
-        self.__actions_to_perform.pop(proposal_id)
+    def create_number_of_votes_restriction(self) -> None:
+        """Proposals Tab has not restriction about the number of votes."""
 
     @staticmethod
-    def get_proposal_action_row(proposal_id: int) -> str:
-        return f"#proposal{proposal_id}-action-row"
+    def get_action_id(identifier: int) -> str:
+        return f"#proposal{identifier}-action-row"
 
     @property
-    def actions_to_perform(self) -> dict[int, bool]:
-        return self.__actions_to_perform
+    def name_of_action(self) -> str:
+        return "Proposal"
 
     @property
     def provider(self) -> ProposalsDataProvider:
         return self.app.query_one(ProposalsDataProvider)
 
 
-class ProposalsList(Vertical, CliveWidget):
-    def __init__(
-        self,
-        proposals: list[ProposalData] | None,
-    ) -> None:
-        super().__init__()
-        self.__proposals_to_display = proposals if proposals is not None else None
-
-    def compose(self) -> ComposeResult:
-        if self.__proposals_to_display is None:
-            self.loading = True
-            return
-
-        for id_, proposal in enumerate(self.__proposals_to_display):
-            if id_ % 2 == 0:
-                yield Proposal(proposal)
-            else:
-                yield Proposal(proposal, evenness="odd")
+class ProposalsList(GovernanceListWidget[ProposalData]):
+    def show_elements(self) -> ComposeResult:
+        if self.elements_to_display is not None:
+            for id_, proposal in enumerate(self.elements_to_display):
+                if id_ % 2 == 0:
+                    yield Proposal(proposal, table_selector=type(self.app.query_one(ProposalsTable)))
+                else:
+                    yield Proposal(proposal, table_selector=type(self.app.query_one(ProposalsTable)), evenness="odd")
 
 
-class ArrowUpWidget(Static):
-    def __init__(self) -> None:
-        super().__init__(renderable="↑ PgUp")
-
-    @on(Click)
-    async def previous_page(self) -> None:
-        await self.app.query_one(ProposalsTable).previous_page()
+class PlaceTaker(Static):
+    pass
 
 
-class ArrowDownWidget(Static):
-    def __init__(self) -> None:
-        super().__init__(renderable="↓ PgDn")
-
-    @on(Click)
-    async def next_page(self) -> None:
-        await self.app.query_one(ProposalsTable).next_page()
-
-
-class ProposalsListHeader(Horizontal):
-    def __init__(self) -> None:
-        super().__init__()
-        self.arrow_up = ArrowUpWidget()
-        self.arrow_down = ArrowDownWidget()
-
-        self.arrow_up.visible = False
-
-    def compose(self) -> ComposeResult:
-        yield self.arrow_up
+class ProposalsListHeader(GovernanceListHeader):
+    def create_custom_columns(self) -> ComposeResult:
         yield Static("Update your proposal votes", id="proposals-header-column")
-        yield self.arrow_down
+
+    def create_additional_headlines(self) -> ComposeResult:
+        """Proposals header has no additional headline."""
+        yield PlaceTaker()
 
 
-class ProposalsTable(Vertical, CliveWidget, can_focus=False):
-    def __init__(self) -> None:
-        super().__init__()
-
-        self.__proposal_index = 0
-        self.__header = ProposalsListHeader()
-        self.__is_loading = True
-
-    def compose(self) -> ComposeResult:
-        yield self.__header
-        yield ProposalsList(self.proposals_chunk)
-
-    async def __set_loading(self) -> None:
-        self.__is_loading = True
-        with contextlib.suppress(NoMatches):
-            witness_list = self.query_one(ProposalsList)
-            await witness_list.query("*").remove()
-            await witness_list.mount(Label("Loading..."))
-
-    def __set_loaded(self) -> None:
-        self.__is_loading = False
-
-    async def reset_page(self) -> None:
-        """During reset we cannot call __sync_witness_list because we have to wait for the provider to update the data."""
-        self.__proposal_index = 0
-        self.__header.arrow_up.visible = False
-        self.__header.arrow_down.visible = True
-
-        if not self.__is_loading:
-            await self.__sync_proposals_list()
-
-    async def next_page(self) -> None:
-        if self.__is_loading:
-            return
-
-        # It is used to prevent the user from switching to an empty page by key binding
-        if self.amount_of_fetched_proposals - MAX_PROPOSALS_ON_PAGE <= self.__proposal_index + 1:
-            self.notify("No proposals on the next page", severity="warning")
-            return
-
-        self.__proposal_index += MAX_PROPOSALS_ON_PAGE
-
-        self.__header.arrow_up.visible = True
-
-        if self.amount_of_fetched_proposals - MAX_PROPOSALS_ON_PAGE <= self.__proposal_index:
-            self.__header.arrow_down.visible = False
-
-        await self.__sync_proposals_list(focus_first_proposal=True)
-
-    async def previous_page(self) -> None:
-        if self.__is_loading:
-            return
-
-        # It is used to prevent the user going to a page with a negative index by key binding
-        if self.__proposal_index <= 0:
-            self.notify("No proposals on the previous page", severity="warning")
-            return
-
-        self.__header.arrow_down.visible = True
-
-        self.__proposal_index -= MAX_PROPOSALS_ON_PAGE
-
-        if self.__proposal_index <= 0:
-            self.__header.arrow_up.visible = False
-
-        await self.__sync_proposals_list(focus_first_proposal=True)
-
-    def on_mount(self) -> None:
-        self.watch(self.provider, "content", callback=lambda: self.__sync_proposals_list())
-
+class ProposalsTable(GovernanceTable):
     async def change_order(self, order: str, order_direction: str, status: str) -> None:
         await self.provider.change_order(order=order, order_direction=order_direction, status=status).wait()
         await self.reset_page()
 
-    async def __sync_proposals_list(self, focus_first_proposal: bool = False) -> None:
-        await self.__set_loading()
-
-        new_proposals_list = ProposalsList(self.proposals_chunk)
-
-        with self.app.batch_update():
-            await self.query(ProposalsList).remove()
-            await self.mount(new_proposals_list)
-
-        if focus_first_proposal:
-            first_proposal = self.query(Proposal).first()
-            first_proposal.focus()
-
-        self.__set_loaded()
+    def create_header(self) -> GovernanceListHeader:
+        return ProposalsListHeader(table_selector=type(self))
 
     @property
-    def amount_of_fetched_proposals(self) -> int:
+    def list_widget_type(self) -> type[GovernanceListWidget[ProposalData]]:  # type: ignore[override]
+        return ProposalsList
+
+    @property
+    def row_widget_type(self) -> type[GovernanceTableRow[ProposalData]]:  # type: ignore[override]
+        return Proposal
+
+    def create_new_list_widget(self) -> GovernanceListWidget[ProposalData]:  # type: ignore[override]
+        return ProposalsList(self.proposals_chunk)
+
+    @property
+    def max_elements_on_page(self) -> int:
+        return MAX_PROPOSALS_ON_PAGE
+
+    @property
+    def amount_of_fetched_elements(self) -> int:
         return len(self.provider.content.proposals)
 
     @property
     def proposals_chunk(self) -> list[ProposalData] | None:
-        if self.provider.content.proposals is None:
+        if not self.provider.updated:
             return None
-        return self.provider.content.proposals[self.__proposal_index : self.__proposal_index + MAX_PROPOSALS_ON_PAGE]
+        return self.provider.content.proposals[self.element_index : self.element_index + MAX_PROPOSALS_ON_PAGE]
 
     @property
-    def provider(self) -> ProposalsDataProvider:
+    def provider(self) -> ProposalsDataProvider:  # type: ignore[override]
         return self.app.query_one(ProposalsDataProvider)
 
 
@@ -463,13 +277,15 @@ class ProposalsOrderChange(Vertical):
 class Proposals(TabPane, OperationActionBindings):
     """TabPane with all content about proposals."""
 
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
     def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
 
     def compose(self) -> ComposeResult:
         self.__proposals_table = ProposalsTable()
 
-        with ScrollablePart(), Horizontal(id="proposals-vote-actions"):
+        with ScrollablePart(), Horizontal(classes="vote-actions"):
             yield self.__proposals_table
             yield ProposalsActions()
         yield ProposalsOrderChange()

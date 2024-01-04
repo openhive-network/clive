@@ -209,19 +209,19 @@ Governance WitnessesActions {
 
 Governance #action-row {
   background: $table-header-contrast-column;
+  width: 1fr;
+}
+
+Governance #witness-actions-row {
+  background: $table-header-column;
   width: 2fr;
 }
 
-Governance #witness-row {
-  background: $table-header-column;
-  width: 4fr;
-}
-
-Governance #witnesses-actions-header {
+Governance #actions-header {
   background: $table-info-headline;
 }
 
-Governance WitnessActionRow .action-witness-name {
+Governance WitnessActionRow .action-identifier {
   width: 4fr;
 }
 
@@ -310,6 +310,7 @@ Governance WitnessManualSearch Label {
 /*  PROPOSALS */
 
 Governance Proposal {
+  layout: horizontal;
   height: 3;
 }
 
@@ -360,6 +361,7 @@ Governance ProposalsListHeader #proposals-header-column {
 }
 
 Governance ProposalsListHeader {
+  layout: horizontal;
   height: auto;
 }
 
@@ -381,7 +383,7 @@ Governance #action-proposal-row {
 
 Governance #proposal-id-actions-row {
   background: $table-header-column;
-  width: 4fr;
+  width: 1fr;
 }
 
 Governance ProposalsTable {
@@ -398,10 +400,6 @@ Governance ProposalsActions {
 Governance #action-proposal-row {
   width: 1fr;
   height: 1;
-}
-
-Governance ProposalActionRow .action-proposal-id {
-  width: 1fr;
 }
 
 Governance #proposal-id-actions-row {
