@@ -62,7 +62,7 @@ class BeekeeperNotificationsServer:
                     f"Got notification with webserver http address on: {self.beekeeper_webserver_http_endpoint}"
                 )
                 self.http_listening_event.set()
-        elif name == "hived_status" and details["current_status"] == "signals attached":
+        elif name == "hived_status" and details["current_status"] == "beekeeper is ready":
             logger.debug("Beekeeper reports to be ready")
             self.ready.set()
         elif name == "Opening beekeeper failed":
@@ -80,6 +80,8 @@ class BeekeeperNotificationsServer:
                 self.__notify_listeners_about_wallets_closing()
             else:
                 logger.debug("The tracked wallet is not closing, ignoring notification")
+        else:
+            logger.warning(f"Ignored notification: {message}")
 
     @classmethod
     def __parse_endpoint_notification(cls, details: dict[str, str]) -> Url:
