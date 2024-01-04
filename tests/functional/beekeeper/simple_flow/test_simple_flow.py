@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 import shutil
 from pathlib import Path
 from typing import Final
@@ -49,7 +48,7 @@ async def prepare_wallet_dirs(
     if source_directory:
         source_directory_wallets = source_directory / "wallets"
         source_directory_keys = source_directory / "keys"
-        wallet_files = [f for f in os.listdir(source_directory_wallets) if f.endswith(".wallet")]
+        wallet_files = [f.name for f in source_directory_wallets.glob("*.wallet")]
         for wallet_file in wallet_files:
             for temp_dir in temp_directories:
                 source_path = source_directory_wallets / wallet_file
