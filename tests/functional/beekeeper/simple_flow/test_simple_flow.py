@@ -152,9 +152,9 @@ async def simple_flow(*, bk: Beekeeper, wallets: list[WalletInfo], use_existing_
 
 
 @pytest.mark.parametrize(
-    ("use_existing_wallets", "number_of_instances"), [(True, 1), (True, 2), (False, 1), (False, 2)]
+    ("use_existing_wallets", "number_of_beekeeper_instances"), [(True, 1), (True, 2), (False, 1), (False, 2)]
 )
-async def test_simple_flow(tmp_path: Path, use_existing_wallets: bool, number_of_instances: int) -> None:
+async def test_simple_flow(tmp_path: Path, use_existing_wallets: bool, number_of_beekeeper_instances: int) -> None:
     """
     Test simple flow of multiply instance of beekeepers launched parallel with each available session by newly created or imported wallets.
 
@@ -169,7 +169,7 @@ async def test_simple_flow(tmp_path: Path, use_existing_wallets: bool, number_of
     # ARRANGE
     source_directories = Path(__file__).parent / "prepared_wallets" if use_existing_wallets else None
     wallets, wallets_dirs = await prepare_wallet_dirs(
-        tmp_path=tmp_path, number_of_dirs=number_of_instances, source_directory=source_directories
+        tmp_path=tmp_path, number_of_dirs=number_of_beekeeper_instances, source_directory=source_directories
     )
 
     await asyncio.gather(
