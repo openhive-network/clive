@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from textual import on, work
 from textual.binding import Binding
-from textual.containers import Grid, Horizontal, ScrollableContainer, Vertical, VerticalScroll
+from textual.containers import Horizontal, Vertical
 from textual.css.query import NoMatches
 from textual.events import Click, Enter
 from textual.message import Message
@@ -15,11 +15,19 @@ from textual.screen import ModalScreen
 from textual.widgets import Input, Label, Static, TabPane
 
 from clive.__private.config import settings
+from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
-from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
+from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
+    GovernanceActionRow,
+    GovernanceActions,
+    GovernanceListHeader,
+    GovernanceListWidget,
+    GovernanceTable,
+    GovernanceTableRow,
+    ScrollablePart,
+)
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
@@ -32,7 +40,6 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
     from clive.models import Operation
 
 MAX_NUMBER_OF_WITNESSES_VOTES: Final[int] = 30
@@ -42,10 +49,6 @@ MAX_WITNESSES_ON_PAGE: Final[int] = 30
 
 def convert_witness_name_to_widget_id(witness_name: str) -> str:
     return witness_name.replace(".", "")
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class DetailsLabel(Label):
@@ -148,92 +151,49 @@ class WitnessNameLabel(Label, CliveWidget):
         self.tooltip = new_tooltip_text
 
 
-class Witness(Grid, CliveWidget, can_focus=True):
+class Witness(GovernanceTableRow[WitnessData]):
     """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
-    BINDINGS = [
-        Binding("f3", "show_details", "Details"),
-        Binding("pageup", "previous_page", "PgDn"),
-        Binding("pagedown", "next_page", "PgUp"),
-        Binding("enter", "toggle_checkbox", "", show=False),
-    ]
+    BINDINGS = [Binding("f3", "show_details", "Details")]
 
-    def __init__(self, witness: WitnessData, evenness: str = "even") -> None:
-        super().__init__()
-        self.__witness = witness
-        self.__evenness = evenness
-
-        self.witness_checkbox = GovernanceCheckbox(
-            is_voted=witness.voted,
-            initial_state=self.is_witness_operation_in_cart or self.is_already_in_witness_actions_container,
-            disabled=bool(self.app.world.profile_data.working_account.data.proxy) or self.is_witness_operation_in_cart,
-        )
-
-    def on_mount(self) -> None:
-        self.watch(self.witness_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
-
-    def compose(self) -> ComposeResult:
-        yield self.witness_checkbox
+    def create_row_content(self) -> ComposeResult:
         yield Label(
-            str(self.__witness.rank) if self.__witness.rank is not None else f">{MAX_NUMBER_OF_WITNESSES_IN_TABLE}",
-            classes=f"witness-rank-{self.__evenness}",
+            str(self.row_data.rank) if self.row_data.rank is not None else f">{MAX_NUMBER_OF_WITNESSES_IN_TABLE}",
+            classes=f"witness-rank-{self.evenness}",
         )
         yield WitnessNameLabel(
-            self.__witness.name,
-            classes=f"witness-name-{self.__evenness}",
+            self.row_data.name,
+            classes=f"witness-name-{self.evenness}",
         )
-        yield Label(str(self.__witness.votes), classes=f"witness-votes-{self.__evenness}")
-        yield DetailsLabel(classes=f"witness-details-{self.__evenness}")
-
-    async def move_witness_to_actions(self) -> None:
-        witnesses_actions = self.app.query_one(WitnessesActions)
-        if self.witness_checkbox.value:
-            await witnesses_actions.mount_witness(name=self.__witness.name, vote=not self.__witness.voted)
-            return
-        await witnesses_actions.unmount_witness(name=self.__witness.name, vote=not self.__witness.voted)
-
-    def dimm_on_disabled_checkbox(self, value: bool) -> None:
-        if value:
-            self.add_class("dimmed")
-            return
-        self.remove_class("dimmed")
-
-    @on(GovernanceCheckbox.Clicked)
-    def focus_myself(self) -> None:
-        self.focus()
-
-    @on(GovernanceCheckbox.Changed)
-    async def modify_action_status(self) -> None:
-        await self.move_witness_to_actions()
+        yield Label(str(self.row_data.votes), classes=f"witness-votes-{self.evenness}")
+        yield DetailsLabel(classes=f"witness-details-{self.evenness}")
 
     @on(DetailsLabel.Clicked)
     async def action_show_details(self) -> None:
-        await self.app.push_screen(DetailsScreen(witness_name=self.__witness.name))
+        await self.app.push_screen(DetailsScreen(witness_name=self.row_data.name))
 
-    async def action_next_page(self) -> None:
-        await self.app.query_one(WitnessesTable).next_page()
-
-    async def action_previous_page(self) -> None:
-        await self.app.query_one(WitnessesTable).previous_page()
-
-    def action_toggle_checkbox(self) -> None:
-        self.witness_checkbox.toggle()
+    async def move_row_to_actions(self) -> None:
+        witnesses_actions = self.app.query_one(WitnessesActions)
+        if self.governance_checkbox.value:
+            await witnesses_actions.mount_witness(name=self.row_data.name, vote=not self.row_data.voted)
+            return
+        await witnesses_actions.unmount_witness(name=self.row_data.name, vote=not self.row_data.voted)
 
     @property
-    def is_witness_operation_in_cart(self) -> bool:
+    def is_operation_in_cart(self) -> bool:
         return (
             AccountWitnessVoteOperation(
                 account=self.app.world.profile_data.working_account.name,
-                witness=self.__witness.name,
-                approve=not self.__witness.voted,
+                witness=self.row_data.name,
+                approve=not self.row_data.voted,
             )
             in self.app.world.profile_data.cart
         )
 
     @property
-    def is_already_in_witness_actions_container(self) -> bool:
+    def is_already_in_actions_container(self) -> bool:
         try:
-            self.app.query_one(WitnessesActions.get_witness_action_row(self.__witness.name))
+            self.app.query_one(WitnessesActions.get_action_id(self.row_data.name))
         except NoMatches:
             return False
         else:
@@ -295,27 +255,12 @@ class WitnessManualSearch(Horizontal):
         self.post_message(self.Clear())
 
 
-class WitnessActionRow(Horizontal):
-    def __init__(self, name: str, vote: bool, pending: bool = False):
-        super().__init__(id=f"{convert_witness_name_to_widget_id(name)}-witness-action-row")
-        self.__witness_name = name
-        self.__vote = vote
-        self.__pending = pending
-
-    def compose(self) -> ComposeResult:
-        if self.__pending:
-            yield Label("Pending", classes="action-pending action-label")
-            yield Label(self.__witness_name, classes="action-witness-name")
-            return
-
-        if self.__vote:
-            yield Label("Vote", classes="action-vote action-label")
-        else:
-            yield Label("Unvote", classes="action-unvote action-label")
-        yield Label(self.__witness_name, classes="action-witness-name")
+class WitnessActionRow(GovernanceActionRow[str]):
+    def create_widget_id(self) -> str:
+        return f"{convert_witness_name_to_widget_id(self.action_identifier)}-witness-action-row"
 
 
-class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
+class WitnessesActions(GovernanceActions):
     """
     Contains a table of operations to be performed after confirmation.
 
@@ -326,17 +271,12 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__actions_to_perform: dict[str, bool] = {}
-
         self.__actions_votes = 0
 
-    def compose(self) -> ComposeResult:
-        yield Static("Actions to be performed:", id="witnesses-actions-header")
-        with Horizontal(id="name-and-action"):
-            yield Static("Action", id="action-row")
-            yield Static("Witness", id="witness-row")
+    def name_action_type(self) -> ComposeResult:
+        yield Static("Witness", id="witness-actions-row")
 
-    async def on_mount(self) -> None:  # type: ignore[override]
+    async def mount_operations_from_cart(self) -> None:
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, AccountWitnessVoteOperation):
                 await self.mount_witness(name=operation.witness, vote=operation.approve, pending=True)
@@ -344,10 +284,10 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     async def mount_witness(self, name: str, vote: bool, pending: bool = False) -> None:
         # check if witness is already in the list, if so - return
         with contextlib.suppress(NoMatches):
-            self.query_one(self.get_witness_action_row(name))
+            self.query_one(self.get_action_id(name))
             return
 
-        await self.mount(WitnessActionRow(name=name, vote=vote, pending=pending))
+        await self.mount(WitnessActionRow(identifier=name, vote=vote, pending=pending))
 
         if vote:
             self.__actions_votes += 1
@@ -358,11 +298,11 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
             self.notify(f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}")
 
         if not pending:
-            self.__actions_to_perform[name] = vote
+            self.add_to_actions(name, vote)
 
     async def unmount_witness(self, name: str, vote: bool) -> None:
         try:
-            await self.query_one(self.get_witness_action_row(name)).remove()
+            await self.query_one(self.get_action_id(name)).remove()
         except NoMatches:
             return
 
@@ -371,101 +311,43 @@ class WitnessesActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         else:
             self.__actions_votes += 1
 
-        self.__actions_to_perform.pop(name)
+        self.delete_from_actions(name)
 
     @staticmethod
-    def get_witness_action_row(name: str) -> str:
-        return f"#{convert_witness_name_to_widget_id(name)}-witness-action-row"
-
-    @property
-    def provider(self) -> WitnessesDataProvider:
-        return self.app.query_one(WitnessesDataProvider)
-
-    @property
-    def actions_to_perform(self) -> dict[str, bool]:
-        return self.__actions_to_perform
+    def get_action_id(identifier: str) -> str:
+        return f"#{convert_witness_name_to_widget_id(identifier)}-witness-action-row"
 
     @property
     def actual_number_of_votes(self) -> int:
         return self.provider.content.number_of_votes + self.__actions_votes
 
-
-class WitnessesList(Vertical, CliveWidget):
-    def __init__(
-        self,
-        witnesses: list[WitnessData] | None,
-    ) -> None:
-        super().__init__()
-        self.__witnesses_to_display = witnesses if witnesses is not None else None
-
-    def compose(self) -> ComposeResult:
-        if not self.__witnesses_to_display:
-            self.loading = True
-            return
-
-        for id_, witness in enumerate(self.__witnesses_to_display):
-            if id_ % 2 == 0:
-                yield Witness(witness)
-            else:
-                yield Witness(witness, evenness="odd")
+    @property
+    def provider(self) -> WitnessesDataProvider:
+        return self.app.query_one(WitnessesDataProvider)
 
 
-class ArrowUpWidget(Static):
-    def __init__(self) -> None:
-        super().__init__(renderable="↑ PgUp")
-
-    @on(Click)
-    async def previous_page(self) -> None:
-        await self.app.query_one(WitnessesTable).previous_page()
-
-
-class ArrowDownWidget(Static):
-    def __init__(self) -> None:
-        super().__init__(renderable="↓ PgDn")
-
-    @on(Click)
-    async def next_page(self) -> None:
-        await self.app.query_one(WitnessesTable).next_page()
+class WitnessesList(GovernanceListWidget[WitnessData]):
+    def show_elements(self) -> ComposeResult:
+        if self.elements_to_display is not None:
+            for id_, witness in enumerate(self.elements_to_display):
+                if id_ % 2 == 0:
+                    yield Witness(witness, table_type="WitnessesTable")
+                else:
+                    yield Witness(witness, table_type="WitnessesTable", evenness="odd")
 
 
-class WitnessesListHeader(Grid):
-    def __init__(self) -> None:
-        super().__init__()
-        self.arrow_up = ArrowUpWidget()
-        self.arrow_down = ArrowDownWidget()
-
-        self.arrow_up.visible = False
-
-    def compose(self) -> ComposeResult:
-        yield self.arrow_up
+class WitnessesListHeader(GovernanceListHeader):
+    def create_custom_columns(self) -> ComposeResult:
         yield Static("rank", id="rank-column")
         yield Static("witness", id="name-column")
         yield Static("votes", id="votes-column")
-        yield self.arrow_down
 
 
-class WitnessesTable(Vertical, CliveWidget, can_focus=False):
-    def __init__(self) -> None:
-        super().__init__()
-        self.__witness_index = 0
-
-        self.__header = WitnessesListHeader()
-        self.__is_loading = True
-
+class WitnessesTable(GovernanceTable):
     def compose(self) -> ComposeResult:
         yield Static("Modify the votes for witnesses", id="witnesses-headline")
-        yield self.__header
+        yield self.header
         yield WitnessesList(self.witnesses_chunk)
-
-    async def __set_loading(self) -> None:
-        self.__is_loading = True
-        with contextlib.suppress(NoMatches):
-            witness_list = self.query_one(WitnessesList)
-            await witness_list.query("*").remove()
-            await witness_list.mount(Label("Loading..."))
-
-    def __set_loaded(self) -> None:
-        self.__is_loading = False
 
     async def search_witnesses(self, pattern: str, limit: int) -> None:
         await self.provider.set_mode_witnesses_by_name(pattern=pattern, limit=limit).wait()
@@ -475,56 +357,8 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
         await self.provider.set_mode_top_witnesses().wait()
         await self.reset_page()
 
-    async def reset_page(self) -> None:
-        """During reset we cannot call __sync_witness_list because we have to wait for the provider to update the data."""
-        self.__witness_index = 0
-        self.__header.arrow_up.visible = False
-        self.__header.arrow_down.visible = True
-
-        if not self.__is_loading:
-            await self.__sync_witnesses_list()
-
-    async def next_page(self) -> None:
-        if self.__is_loading:
-            return
-
-        # It is used to prevent the user from switching to an empty page by key binding
-        if self.amount_of_fetched_witnesses - MAX_WITNESSES_ON_PAGE <= self.__witness_index + 1:
-            self.notify("No witnesses on the next page", severity="warning")
-            return
-
-        self.__witness_index += MAX_WITNESSES_ON_PAGE
-
-        self.__header.arrow_up.visible = True
-
-        if self.amount_of_fetched_witnesses - MAX_WITNESSES_ON_PAGE <= self.__witness_index:
-            self.__header.arrow_down.visible = False
-
-        await self.__sync_witnesses_list(focus_first_witness=True)
-
-    async def previous_page(self) -> None:
-        if self.__is_loading:
-            return
-
-        # It is used to prevent the user going to a page with a negative index by key binding
-        if self.__witness_index <= 0:
-            self.notify("No witnesses on the previous page", severity="warning")
-            return
-
-        self.__header.arrow_down.visible = True
-
-        self.__witness_index -= 30
-
-        if self.__witness_index <= 0:
-            self.__header.arrow_up.visible = False
-
-        await self.__sync_witnesses_list(focus_first_witness=True)
-
-    def on_mount(self) -> None:
-        self.watch(self.provider, "content", callback=lambda: self.__sync_witnesses_list())
-
-    async def __sync_witnesses_list(self, focus_first_witness: bool = False) -> None:
-        await self.__set_loading()
+    async def sync_list(self, focus_first_element: bool = False) -> None:
+        await self.loading_set()
 
         new_witnesses_list = WitnessesList(self.witnesses_chunk)
 
@@ -532,26 +366,39 @@ class WitnessesTable(Vertical, CliveWidget, can_focus=False):
             await self.query(WitnessesList).remove()
             await self.mount(new_witnesses_list)
 
-        if focus_first_witness:
+        if focus_first_element:
             first_witness = self.query(Witness).first()
             first_witness.focus()
 
-        self.__set_loaded()
+        self.set_loaded()
+
+    def define_list_type(self) -> type[GovernanceListWidget[WitnessData]]:  # type: ignore[override]
+        return WitnessesList
+
+    def create_header(self) -> GovernanceListHeader:
+        return WitnessesListHeader(table_selector=self.__class__.__name__)
+
+    def on_mount(self) -> None:
+        self.watch(self.provider, "content", callback=lambda: self.sync_list())
 
     @property
     def provider(self) -> WitnessesDataProvider:
         return self.app.query_one(WitnessesDataProvider)
 
     @property
-    def amount_of_fetched_witnesses(self) -> int:
+    def amount_of_fetched_elements(self) -> int:
         return len(self.provider.content.witnesses)
+
+    @property
+    def max_elements_on_page(self) -> int:
+        return MAX_WITNESSES_ON_PAGE
 
     @property
     def witnesses_chunk(self) -> list[WitnessData] | None:
         if self.provider.content.witnesses is None:
             return None
         return list(self.provider.content.witnesses.values())[
-            self.__witness_index : self.__witness_index + MAX_WITNESSES_ON_PAGE
+            self.element_index : self.element_index + MAX_WITNESSES_ON_PAGE
         ]
 
 
