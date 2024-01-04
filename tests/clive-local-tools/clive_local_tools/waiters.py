@@ -15,4 +15,4 @@ async def wait_for_beekeeper_to_close(beekeeper: Beekeeper, timeout: float = 1.0
     try:
         await asyncio.wait_for(__wait_for_beekeeper_to_close(), timeout=timeout)
     except asyncio.TimeoutError:
-        raise AssertionError("Beekeeper was not closed after last session termination in the expected time.") from None
+        raise AssertionError(f"Beekeeper was not closed in expected time of {timeout:.2f}") from None
