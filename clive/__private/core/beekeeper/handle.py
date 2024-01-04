@@ -292,18 +292,21 @@ class Beekeeper:
         start_task = asyncio.create_task(self.__wait_for_beekeeper_to_start(timeout))
         already_running_task = asyncio.create_task(self.__wait_for_beekeeper_report_already_running(timeout))
 
-        try:
-            done, _ = await asyncio.wait(
-                [start_task, already_running_task],
-                timeout=timeout,
-                return_when=asyncio.FIRST_COMPLETED,
-            )
-        except asyncio.TimeoutError:
-            await self.__close_beekeeper()
-        else:
-            if already_running_task in done:
-                await self.__close_beekeeper(wait_for_deleted_pid=False, close_notifications_server=False)
+        done, _ = await asyncio.wait(
+            [start_task, already_running_task],
+            timeout=timeout,
+            return_when=asyncio.FIRST_COMPLETED,
+        )
+
+        if already_running_task in done and already_running_task.result():
+            await self.__close_beekeeper(wait_for_deleted_pid=False, close_notifications_server=False)
             self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
+        elif start_task in done and start_task.result():
+            self.config.webserver_http_endpoint = self.__notification_server.beekeeper_webserver_http_endpoint
+        else:
+            raise BeekeeperNotRunningError(
+                f"Couldn't start or connect to locally running beekeeper instance in {timeout:.2f} seconds."
+            )
 
     async def __wait_for_beekeeper_to_start(self, timeout: float) -> bool:
         ready_event, http_listening_event = await asyncio.gather(
