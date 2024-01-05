@@ -82,9 +82,9 @@ def prepare_node() -> tuple[tt.InitNode, tt.Wallet]:
 def create_working_account(wallet: tt.Wallet) -> None:
     wallet.create_account(
         WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(100).as_nai(),
-        vests=tt.Asset.Test(100).as_nai(),
-        hbds=tt.Asset.Tbd(100).as_nai(),
+        hives=tt.Asset.Test(100).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        vests=tt.Asset.Test(100).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hbds=tt.Asset.Tbd(100).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
     )
 
 
@@ -96,15 +96,15 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
     for account in WATCHED_ACCOUNTS:
         wallet.create_account(
             account.name,
-            hives=tt.Asset.Test(random_amount()).as_nai(),
-            vests=tt.Asset.Test(random_amount()).as_nai(),
-            hbds=tt.Asset.Tbd(random_amount()).as_nai(),
+            hives=tt.Asset.Test(random_amount()).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            vests=tt.Asset.Test(random_amount()).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hbds=tt.Asset.Tbd(random_amount()).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
         )
 
 
 async def prepare_profile(node: tt.InitNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
-    settings["secrets.node_address"] = f"http://{node.http_endpoint}"
+    settings["secrets.node_address"] = node.http_endpoint.as_string()
     settings["node.chain_id"] = "18dcf0a285365fc58b71f18b3d3fec954aa0c141c44e4e5cb4cf777b9eab274e"
 
     ProfileData(
@@ -123,7 +123,7 @@ async def prepare_profile(node: tt.InitNode) -> None:
 
         tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
         world.profile_data.working_account.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key._value, alias=f"{WORKING_ACCOUNT.name}_key")
+            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=f"{WORKING_ACCOUNT.name}_key")
         )
         await world.commands.sync_data_with_beekeeper()
 

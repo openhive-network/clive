@@ -89,7 +89,7 @@ async def world(wallet_name: str) -> AsyncIterator[World]:
 async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
-    await world.node.set_address(Url.parse(init_node.http_endpoint, protocol="http"))
+    await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
     yield init_node
     init_node.close()
 
@@ -101,7 +101,7 @@ async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
     init_node.config.plugin.append("account_history_api")
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
-    await world.node.set_address(Url.parse(init_node.http_endpoint, protocol="http"))
+    await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
     yield init_node
     init_node.close()
 
