@@ -53,7 +53,7 @@ class Convert(RawOperationBaseScreen):
             return None
 
         return ConvertOperation(
-            from_=self.app.world.profile_data.working_account.name,
-            request_id=request_id,
+            owner=self.app.world.profile_data.working_account.name,
+            requestid=request_id,
             amount=Asset.hbd(amount),
         )
