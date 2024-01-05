@@ -51,7 +51,7 @@ def run_prepare_before_launch() -> None:
     # set chain id to the testnet one
     settings.set("node.chain_id", TESTNET_CHAIN_ID)
 
-    prepare_before_launch()
+    prepare_before_launch(enable_stream_handlers=True)
 
 
 def generate_wallet_name(number: int = 0) -> str:
