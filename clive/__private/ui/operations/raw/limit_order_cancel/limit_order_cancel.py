@@ -44,5 +44,5 @@ class LimitOrderCancel(RawOperationBaseScreen):
     def _create_operation(self) -> LimitOrderCancelOperation:
         return LimitOrderCancelOperation(
             owner=self.app.world.profile_data.working_account.name,
-            order_id=self.__order_id_input.value,
+            orderid=self.__order_id_input.value,
         )

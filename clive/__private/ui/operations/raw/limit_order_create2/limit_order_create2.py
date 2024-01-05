@@ -75,7 +75,7 @@ class LimitOrderCreate2(RawOperationBaseScreen):
 
         return LimitOrderCreate2Operation(
             owner=self.app.world.profile_data.working_account.name,
-            order_id=self.__order_id_input.value,
+            orderid=self.__order_id_input.value,
             fill_or_kill=self.__fill_or_kill_input.value,
             expiration=self.__expiration_input.value,
             amount_to_sell=amount_to_sell,
