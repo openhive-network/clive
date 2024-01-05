@@ -47,7 +47,6 @@ class SanitizedData:
 @dataclass
 class ProposalsData:
     proposals: list[Proposal] = field(default_factory=list)
-    voted_proposals_ids: list[int] = field(default_factory=list)
 
 
 @dataclass(kw_only=True)
@@ -111,7 +110,6 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             return ProposalsData(self.__get_top_proposals_with_voted_first(data))
         return ProposalsData(
             proposals=self.__get_prepared_proposals(data.list_proposals, data),
-            voted_proposals_ids=self.__get_proposals_ids(data.list_voted_proposals),
         )
 
     def __create_proposal_data(self, proposal: ProposalSchema, data: SanitizedData) -> Proposal:
