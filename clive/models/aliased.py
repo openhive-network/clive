@@ -59,7 +59,7 @@ SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
 Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 RcAccount = SchemasRcAccount[AssetVestsHF26]
-DynamicGlobalProperties = GetDynamicGlobalProperties[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
+DynamicGlobalProperties = GetDynamicGlobalProperties
 TransactionStatus = SchemasFindTransaction
 
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
