@@ -1,22 +1,8 @@
-/*common parts of governance*/
 $governance-green-color: $success-darken-3;
 $governance-red-color: $error;
 
-/* colors to create table columns */
-$table-column-1-odd: $accent;
-$table-column-2-odd: $accent-lighten-1;
-$table-column-3-odd: $accent-lighten-2;
-$table-column-4-odd: $accent-darken-2;
-
-$table-column-1-even: $primary-background;
-$table-column-2-even: $primary-background-lighten-1;
-$table-column-3-even: $primary-background-lighten-2;
-$table-column-4-even: $primary-background-lighten-3;
-
-$table-header-contrast-column: $warning-darken-2;
-$table-header-column: $primary-darken-2;
-
 $table-info-headline: $accent-lighten-1;
+$table-header-contrast-column: $warning-darken-2;
 
 Governance Tab {
   width: 1fr;
@@ -31,58 +17,56 @@ Governance Button:focus {
   text-style: bold reverse;
 }
 
-/* Proxy */
-Governance Proxy .current-proxy-static {
-  background: $accent-lighten-1;
-  width: 1fr;
-  height: 1;
+Governance GovernanceTableRow:focus {
+  background: rgba(0, 0, 0, 1);
 }
 
-Governance Proxy AccountNameInput {
-  margin-top: 1;
-  margin-bottom: 1;
-  height: 3;
+Governance GovernanceTableRow.dimmed {
+  opacity: 0.7;
 }
 
-Governance Proxy #set-button-container {
-  align: center middle;
-  height: 4;
+Governance GovernanceListWidget {
+  height: auto;
 }
 
-Governance Proxy #set-proxy-button {
+Governance GovernanceActions {
+  margin-left: 1;
+  width: 3fr;
+}
+
+Governance GovernanceActionRow {
+  height: auto;
+}
+
+Governance GovernanceActionRow .action-vote {
   background: $governance-green-color;
 }
 
-Governance Proxy #proxy-set-information {
-  background: $accent-lighten-2;
-}
-
-Governance Proxy #modify-proxy-buttons {
-  align: center middle;
-  height: 3;
-}
-
-Governance Proxy #change-proxy-button {
-  margin-right: 3;
-  background: $governance-green-color;
-}
-
-Governance Proxy #remove-proxy-button {
-  margin-left: 3;
+Governance GovernanceActionRow .action-unvote {
   background: $governance-red-color;
 }
 
-/* WITNESSES */
-
-Governance Witnesses Label {
-  text-style: bold;
-  width: 1fr;
-  text-align: center;
+Governance GovernanceActionRow .action-pending {
+  background: $panel-lighten-3;
 }
 
-Governance Witnesses Static {
-  text-style: bold;
-  text-align: center;
+Governance #name-and-action {
+  height: auto;
+}
+
+Governance .vote-actions {
+  width: 1fr;
+  height: auto;
+  max-height: 32;
+}
+
+Governance #action-row {
+  background: $table-header-contrast-column;
+  width: 1fr;
+}
+
+Governance #actions-header {
+  background: $table-info-headline;
 }
 
 DetailsScreen {
@@ -93,392 +77,4 @@ DetailsScreen Static {
   border: $primary-lighten-3;
   width: 0.6fr;
   text-align: left;
-}
-
-/* WITNESSES */
-Governance Witnesses {
-  layout: vertical;
-  padding: 0 0 0 1;
-  height: auto;
-}
-
-Governance Tooltip {
-  padding-right: 4;
-  text-align: left;
-}
-
-Governance WitnessDetails {
-  border: blue;
-  width: 1fr;
-  height: auto;
-  text-align: center;
-}
-
-Governance WitnessDetails Static {
-  height: auto;
-}
-
-/*table to modify votes for the witnesses*/
-Governance WitnessesList {
-  height: auto;
-}
-
-Governance WitnessesList Witness {
-  grid-size: 5;
-  grid-columns: 2fr 1fr 3fr 2fr 2fr;
-  height: auto;
-}
-
-/* Could be done better, for not just so focus could be visible */
-Governance Witness:focus {
-  background: rgba(0, 0, 0, 1);
-}
-
-Governance Witness.dimmed {
-  opacity: 0.7;
-}
-
-Governance Witness .witness-name-even {
-  background: $table-column-1-even;
-}
-
-Governance Witness .witness-rank-even {
-  background: $table-column-2-even;
-}
-
-Governance Witness .witness-votes-even {
-  background: $table-column-3-even;
-}
-
-Governance Witness .witness-details-even {
-  background: $table-column-4-even;
-}
-
-Governance Witness .witness-name-odd {
-  background: $table-column-1-odd;
-}
-
-Governance Witness .witness-rank-odd {
-  background: $table-column-2-odd;
-}
-
-Governance Witness .witness-votes-odd {
-  background: $table-column-3-odd;
-}
-
-Governance Witness .witness-details-odd {
-  background: $table-column-4-odd;
-}
-
-Governance WitnessesListHeader {
-  grid-size: 5;
-  grid-columns: 2fr 1fr 3fr 2fr 2fr;
-  height: auto;
-}
-
-Governance WitnessesListHeader #rank-column {
-  background: $table-header-contrast-column;
-}
-
-Governance WitnessesListHeader #name-column {
-  background: $table-header-column;
-}
-
-Governance WitnessesListHeader #votes-column {
-  background: $table-header-column;
-}
-
-Governance #witnesses-headline {
-  background: $table-info-headline;
-}
-
-Governance WitnessesTable {
-  width: 7fr;
-  height: auto;
-}
-
-Governance WitnessesTable:focus {
-  background: rgba(0, 0, 0, 0.5);
-}
-/* a table with the actions to be performed after the creation of the operation */
-
-Governance WitnessesActions {
-  margin-left: 1;
-  width: 3fr;
-}
-
-Governance #action-row {
-  background: $table-header-contrast-column;
-  width: 1fr;
-}
-
-Governance #witness-actions-row {
-  background: $table-header-column;
-  width: 2fr;
-}
-
-Governance #actions-header {
-  background: $table-info-headline;
-}
-
-Governance WitnessActionRow .action-identifier {
-  width: 4fr;
-}
-
-Governance WitnessActionRow .action-vote {
-  background: $governance-green-color;
-}
-
-Governance WitnessActionRow .action-unvote {
-  background: $governance-red-color;
-}
-
-Governance WitnessActionRow .action-pending {
-  background: $panel-lighten-3;
-}
-
-Governance WitnessActionRow .action-label {
-  width: 2fr;
-}
-
-Governance WitnessActionRow {
-  height: auto;
-}
-
-Governance WitnessesActions #name-and-action {
-  height: auto;
-}
-
-/* manual search witness */
-Governance WitnessManualSearch {
-  margin-left: 1;
-  width: 1fr;
-  height: 5;
-}
-
-Governance CliveButton {
-  margin-right: 1;
-  margin-left: 1;
-  width: 1fr;
-}
-
-Governance #witness-search-button {
-  background: $governance-green-color;
-}
-
-CliveButton:focus {
-  text-style: bold reverse;
-}
-
-Governance #witness-vote-actions {
-  width: 1fr;
-  height: auto;
-  max-height: 32;
-}
-
-Governance #clear-custom-witnesses-button {
-  background: $accent-darken-3;
-}
-
-Governance #inputs-with-static-manual {
-  width: 1fr;
-}
-
-Governance #search-and-clear-buttons {
-  align: center top;
-  margin-top: 1;
-  width: 1fr;
-  height: auto;
-}
-
-Governance WitnessManualSearch Vertical {
-  height: auto;
-}
-
-Governance #witness-pattern-input-with-label {
-  width: 6fr;
-}
-
-Governance #witness-input-limit-with-label {
-  width: 4fr;
-}
-
-Governance WitnessManualSearch Label {
-  padding: 0;
-}
-
-/*  PROPOSALS */
-
-Governance Proposal {
-  layout: horizontal;
-  height: 3;
-}
-
-Governance Proposal:focus {
-  background: rgba(0, 0, 0, 1);
-}
-
-Governance Proposal.dimmed {
-  opacity: 0.7;
-}
-
-Governance Proposals Label {
-  text-style: bold;
-  width: 1fr;
-  text-align: center;
-}
-
-Governance #proposals-vote-actions {
-  width: 1fr;
-  height: auto;
-  max-height: 32;
-}
-
-Governance ProposalsList {
-  height: auto;
-}
-
-Governance Proposal GovernanceCheckbox {
-  align: center middle;
-  width: 1fr;
-  height: 1fr;
-}
-
-Governance Proposal ProposalInformation {
-  width: 7fr;
-}
-
-Governance ProposalsListHeader ArrowUpWidget {
-  width: 1fr;
-}
-
-Governance ProposalsListHeader ArrowDownWidget {
-  width: 1fr;
-}
-
-Governance ProposalsListHeader #proposals-header-column {
-  width: 3fr;
-}
-
-Governance ProposalsListHeader {
-  layout: horizontal;
-  height: auto;
-}
-
-Governance #proposals-vote-actions {
-  width: 1fr;
-  height: auto;
-  max-height: 32;
-}
-
-Governance ProposalsListHeader #proposals-header-column {
-  background: $table-header-contrast-column;
-  height: auto;
-}
-
-Governance #action-proposal-row {
-  background: $table-header-contrast-column;
-  width: 2fr;
-}
-
-Governance #proposal-id-actions-row {
-  background: $table-header-column;
-  width: 1fr;
-}
-
-Governance ProposalsTable {
-  width: 9fr;
-  height: auto;
-}
-
-Governance ProposalsActions {
-  margin-left: 1;
-  width: 3fr;
-  height: auto;
-}
-
-Governance #action-proposal-row {
-  width: 1fr;
-  height: 1;
-}
-
-Governance #proposal-id-actions-row {
-  width: 1fr;
-  height: 1;
-}
-
-Governance ProposalsActions #name-and-action {
-  height: auto;
-}
-
-Governance ProposalActionRow .action-vote {
-  background: $governance-green-color;
-}
-
-Governance ProposalActionRow .action-unvote {
-  background: $governance-red-color;
-}
-
-Governance ProposalActionRow .action-pending {
-  background: $panel-lighten-3;
-}
-
-Governance ProposalActionRow {
-  height: 1;
-}
-
-Governance ProposalInformation .proposal-id {
-  width: 1fr;
-}
-
-Governance ProposalInformation .proposal-title {
-  width: 1fr;
-  text-align: left;
-}
-
-Governance ProposalInformation .proposal-accounts {
-  width: 3fr;
-  text-align: left;
-}
-
-Governance ProposalInformation .proposal-votes {
-  width: 2fr;
-}
-
-Governance ProposalInformation .proposal-pay {
-  width: 5fr;
-  text-align: right;
-}
-
-Governance ProposalInformation .proposal-status {
-  width: 2fr;
-}
-
-Governance ProposalInformation .proposal-date {
-  width: 2fr;
-  text-align: right;
-}
-
-Governance ProposalInformation .proposal-id-even {
-  background: $table-column-1-even;
-}
-
-Governance ProposalInformation .proposal-id-odd {
-  background: $table-column-1-odd;
-}
-
-Governance ProposalInformation .proposal-row-even {
-  background: $table-column-2-even;
-}
-
-Governance ProposalInformation .proposal-row-odd {
-  background: $table-column-2-odd;
-}
-
-Governance ProposalsOrderChange {
-  height: 4;
-}
-
-Governance ProposalsOrderChange #selectors-labels {
-  height: 1;
 }

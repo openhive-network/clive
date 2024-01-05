@@ -6,6 +6,7 @@ from textual import on
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Button, Static, TabPane
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -22,6 +23,8 @@ class ScrollablePart(ScrollableContainer, can_focus=False):
 
 class Proxy(TabPane, CliveWidget):
     """TabPane with all content about proxy."""
+
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, title: TextType):
         super().__init__(title=title)

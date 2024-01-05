@@ -18,6 +18,7 @@ from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
     GovernanceActionRow,
@@ -405,13 +406,15 @@ class WitnessesTable(GovernanceTable):
 class Witnesses(TabPane, OperationActionBindings):
     """TabPane with all content about witnesses."""
 
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
     def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
 
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
 
-        with ScrollablePart(), Horizontal(id="witness-vote-actions"):
+        with ScrollablePart(), Horizontal(classes="vote-actions"):
             yield self.__witness_table
             yield WitnessesActions()
         yield WitnessManualSearch()

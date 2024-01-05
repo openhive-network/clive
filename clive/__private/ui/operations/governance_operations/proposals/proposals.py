@@ -14,6 +14,7 @@ from clive.__private.core.commands.data_retrieval.proposals_data import Proposal
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
     GovernanceActionRow,
@@ -296,13 +297,15 @@ class ProposalsOrderChange(Vertical):
 class Proposals(TabPane, OperationActionBindings):
     """TabPane with all content about proposals."""
 
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
     def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
 
     def compose(self) -> ComposeResult:
         self.__proposals_table = ProposalsTable()
 
-        with ScrollablePart(), Horizontal(id="proposals-vote-actions"):
+        with ScrollablePart(), Horizontal(classes="vote-actions"):
             yield self.__proposals_table
             yield ProposalsActions()
         yield ProposalsOrderChange()
