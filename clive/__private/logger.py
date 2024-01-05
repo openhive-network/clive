@@ -4,6 +4,8 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+from loguru._simple_sinks import StreamSink
+
 from clive.__private.cli.completion import is_tab_completion_active
 
 if not is_tab_completion_active():
@@ -14,6 +16,8 @@ if not is_tab_completion_active():
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from loguru._logger import Core
 
 LOG_FORMAT: Final[str] = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>"
@@ -85,15 +89,17 @@ class Logger:
 
         return __hooked
 
-    def setup(self, *, enable_loguru: bool = True, enable_textual: bool = True) -> None:
+    def setup(
+        self, *, enable_loguru: bool = True, enable_textual: bool = True, enable_stream_handlers: bool = False
+    ) -> None:
         self.__enabled_loguru = enable_loguru
         self.__enabled_textual = enable_textual
 
         if enable_loguru:
-            self.__configure_loguru()
+            self.__configure_loguru(enable_stream_handlers=enable_stream_handlers)
 
     @staticmethod
-    def __configure_loguru() -> None:
+    def __configure_loguru(*, enable_stream_handlers: bool = False) -> None:
         def make_filter(*, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
             level_no = getattr(logging, level) if isinstance(level, str) else level
             level_no_3rd_party = (
@@ -108,6 +114,13 @@ class Logger:
 
             return __filter
 
+        def remove_stream_handlers() -> None:
+            """Remove all handlers that log to stdout and stderr."""
+            core: Core = loguru_logger._core  # type: ignore[attr-defined]
+            for handler in core.handlers.values():
+                if isinstance(handler._sink, StreamSink):
+                    loguru_logger.remove(handler._id)
+
         log_file_path, latest_log_file_path = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
         log_file_path_debug, latest_log_file_path_debug = create_log_file(log_name="debug", log_group="debug")
 
@@ -120,7 +133,9 @@ class Logger:
             logging.getLogger(name).propagate = True
             logging.getLogger(name).setLevel(logging.DEBUG)
 
-        loguru_logger.remove()
+        if not enable_stream_handlers:
+            remove_stream_handlers()
+
         loguru_logger.add(
             sink=log_file_path,
             format=LOG_FORMAT,
