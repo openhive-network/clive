@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
+from schemas.fields.hive_int import HiveInt
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
@@ -34,8 +35,8 @@ class UpdateTransactionMetadata(Command):
         assert ref_block_num >= 0, f"ref_block_num value `{ref_block_num}` is invalid`"
         assert ref_block_prefix > 0, f"ref_block_prefix value `{ref_block_prefix}` is invalid`"
 
-        self.transaction.ref_block_num = ref_block_num
-        self.transaction.ref_block_prefix = ref_block_prefix
+        self.transaction.ref_block_num = HiveInt(ref_block_num)
+        self.transaction.ref_block_prefix = HiveInt(ref_block_prefix)
 
         # set expiration
         self.transaction.expiration = gdpo.time + self.expiration
