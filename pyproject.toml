@@ -23,8 +23,9 @@ include = [
 ]
 source = [
     { name = "PyPI", priority = "primary" },
-    { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-helpy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
 ]
 
 
@@ -39,8 +40,8 @@ typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
 
-wax = "0.0.3a2.dev16+af71c58"
-schemas = "0.0.1.dev255+9d748a8"
+wax = "0.0.3a2.dev39+44db07f"
+schemas = "0.0.1.dev283+db2351d"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
