@@ -1,0 +1,176 @@
+$governance-green-color: $success-darken-3;
+$governance-red-color: $error;
+
+$table-column-1-odd: $accent;
+$table-column-2-odd: $accent-lighten-1;
+$table-column-3-odd: $accent-lighten-2;
+$table-column-4-odd: $accent-darken-2;
+
+$table-column-1-even: $primary-background;
+$table-column-2-even: $primary-background-lighten-1;
+$table-column-3-even: $primary-background-lighten-2;
+$table-column-4-even: $primary-background-lighten-3;
+
+$table-header-contrast-column: $warning-darken-2;
+$table-header-column: $primary-darken-2;
+$table-info-headline: $accent-lighten-1;
+
+Witnesses Label {
+  text-style: bold;
+  width: 1fr;
+  text-align: center;
+}
+
+Witnesses Static {
+  text-style: bold;
+  text-align: center;
+}
+
+Witnesses {
+  layout: vertical;
+  padding: 0 0 0 1;
+  height: auto;
+}
+
+WitnessDetails {
+  border: blue;
+  width: 1fr;
+  height: auto;
+  text-align: center;
+}
+
+WitnessDetails Static {
+  height: auto;
+}
+
+Witnesses CliveButton {
+  margin-right: 1;
+  margin-left: 1;
+  width: 1fr;
+}
+
+/* Witnesses table row - information about the witness */
+Witness {
+  grid-size: 5;
+  grid-columns: 2fr 1fr 3fr 2fr 2fr;
+  height: auto;
+}
+
+Witness .witness-name-even {
+  background: $table-column-1-even;
+}
+
+Witness .witness-rank-even {
+  background: $table-column-2-even;
+}
+
+Witness .witness-votes-even {
+  background: $table-column-3-even;
+}
+
+Witness .witness-details-even {
+  background: $table-column-4-even;
+}
+
+Witness .witness-name-odd {
+  background: $table-column-1-odd;
+}
+
+Witness .witness-rank-odd {
+  background: $table-column-2-odd;
+}
+
+Witness .witness-votes-odd {
+  background: $table-column-3-odd;
+}
+
+Witness .witness-details-odd {
+  background: $table-column-4-odd;
+}
+
+/* Header of the list of witnesses */
+WitnessesListHeader {
+  grid-size: 5;
+  grid-columns: 2fr 1fr 3fr 2fr 2fr;
+  height: 2;
+}
+
+WitnessesTable #witnesses-additional-headline {
+  column-span: 5;
+  background: $table-info-headline;
+  height: 1;
+}
+
+WitnessesListHeader #rank-column {
+  background: $table-header-contrast-column;
+}
+
+WitnessesListHeader #name-column {
+  background: $table-header-column;
+}
+
+WitnessesListHeader #votes-column {
+  background: $table-header-column;
+}
+
+/* Table of witnesses */
+WitnessesTable {
+  width: 7fr;
+  height: auto;
+}
+
+/* Witnesses actions to be performed table */
+WitnessesActions #action-name-row {
+  background: $table-header-column;
+  width: 2fr;
+}
+
+WitnessActionRow .action-identifier {
+  width: 4fr;
+}
+
+WitnessActionRow .action-label {
+  width: 2fr;
+}
+
+/* Manual search of witness container */
+WitnessManualSearch {
+  margin-left: 1;
+  width: 1fr;
+  height: 5;
+}
+
+WitnessManualSearch Label {
+  padding: 0;
+}
+
+WitnessManualSearch Vertical {
+  height: auto;
+}
+
+WitnessManualSearch #witness-search-button {
+  background: $governance-green-color;
+}
+
+WitnessManualSearch #clear-custom-witnesses-button {
+  background: $accent-darken-3;
+}
+
+WitnessManualSearch #inputs-with-static-manual {
+  width: 1fr;
+}
+
+WitnessManualSearch #search-and-clear-buttons {
+  align: center top;
+  margin-top: 1;
+  width: 1fr;
+  height: auto;
+}
+
+WitnessManualSearch #witness-pattern-input-with-label {
+  width: 6fr;
+}
+
+WitnessManualSearch #witness-input-limit-with-label {
+  width: 4fr;
+}

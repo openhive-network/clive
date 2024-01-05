@@ -1,0 +1,113 @@
+$table-column-1-odd: $accent;
+$table-column-2-odd: $accent-lighten-1;
+
+$table-column-1-even: $primary-background;
+$table-column-2-even: $primary-background-lighten-1;
+
+$table-header-contrast-column: $warning-darken-2;
+$table-header-column: $primary-darken-2;
+
+Proposal {
+  layout: horizontal;
+  height: 3;
+}
+
+ProposalsTable {
+  width: 9fr;
+  height: auto;
+}
+
+Proposals Label {
+  text-style: bold;
+  width: 1fr;
+  text-align: center;
+}
+
+Proposal GovernanceCheckbox {
+  align: center middle;
+  width: 1fr;
+  height: 1fr;
+}
+
+ProposalsOrderChange {
+  height: 4;
+}
+
+ProposalsOrderChange #selectors-labels {
+  height: 1;
+}
+
+/* Header of the list of proposals */
+ProposalsListHeader {
+  grid-size: 3;
+  grid-columns: 1fr 3fr 1fr;
+  height: auto;
+}
+
+PlaceTaker {
+  column-span: 5;
+  height: 1;
+}
+
+ProposalsListHeader #proposals-header-column {
+  background: $table-header-contrast-column;
+}
+
+/* Proposals actions to be performed table */
+ProposalsActions #action-name-row {
+  background: $table-header-column;
+  width: 1fr;
+}
+
+/* row of the proposals table - information about the proposal*/
+ProposalInformation {
+  width: 7fr;
+}
+
+ProposalInformation .proposal-id {
+  width: 1fr;
+}
+
+ProposalInformation .proposal-title {
+  width: 1fr;
+  text-align: left;
+}
+
+ProposalInformation .proposal-accounts {
+  width: 3fr;
+  text-align: left;
+}
+
+ProposalInformation .proposal-votes {
+  width: 2fr;
+}
+
+ProposalInformation .proposal-pay {
+  width: 5fr;
+  text-align: right;
+}
+
+ProposalInformation .proposal-status {
+  width: 2fr;
+}
+
+ProposalInformation .proposal-date {
+  width: 2fr;
+  text-align: right;
+}
+
+ProposalInformation .proposal-id-even {
+  background: $table-column-1-even;
+}
+
+ProposalInformation .proposal-id-odd {
+  background: $table-column-1-odd;
+}
+
+ProposalInformation .proposal-row-even {
+  background: $table-column-2-even;
+}
+
+ProposalInformation .proposal-row-odd {
+  background: $table-column-2-odd;
+}
