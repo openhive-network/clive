@@ -119,6 +119,31 @@ async def prepare_profile(node: tt.InitNode) -> None:
         await world.commands.sync_data_with_beekeeper()
 
 
+def create_proposal(wallet: tt.Wallet) -> None:
+    proposal_authors = ["initminer", "alice", "bob", "john"]
+
+    for discriminator, author in enumerate(proposal_authors, start=1):
+        wallet.api.post_comment(
+            author=author,
+            permlink=f"test-permlink-{discriminator}",
+            parent_author="",
+            parent_permlink=f"test-parent-{discriminator}",
+            title=f"test-title-{discriminator}",
+            body=f"test-body-{discriminator}",
+            json="{}",
+        )
+
+        wallet.api.create_proposal(
+            creator=author,
+            receiver="alice",
+            start_date=tt.Time.now(),
+            end_date=tt.Time.from_now(weeks=discriminator),
+            daily_pay=tt.Asset.Tbd(discriminator).as_nai(),
+            subject=f"test-subject-{discriminator}",
+            permlink=f"test-permlink-{discriminator}",
+        )
+
+
 def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
     wallet.api.transfer(WORKING_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(1).as_nai(), memo="memo")
 
@@ -148,6 +173,7 @@ async def main() -> None:
     node, wallet = prepare_node()
     create_working_account(wallet)
     create_watched_accounts(wallet)
+    create_proposal(wallet)
     node.set_vest_price(tt.Asset.Vest(1800))
     send_test_transfer_from_working_account(wallet)
     print_working_account_keys()
