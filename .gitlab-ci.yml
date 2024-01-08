@@ -33,7 +33,7 @@ include:
     ref: 766d1d7bd95490a8312f3a5d7583f40b11ec5802
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
-    ref: 9fa33bb79897140891a724422c3507a523cd3e34
+    ref: 44d0cec8cfa8fb87d0daf5cef1485fb57b9e26fd
     file: '/templates/python_projects.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
