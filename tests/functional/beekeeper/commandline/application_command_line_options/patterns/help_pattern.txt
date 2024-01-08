@@ -3,6 +3,8 @@ Application Options:
           json-rpc log directory name.
   --webserver-http-endpoint arg
           Local http endpoint for webserver requests.
+  --webserver-https-endpoint arg
+          Local https endpoint for webserver requests.
   --webserver-unix-endpoint arg
           Local unix http endpoint for webserver requests.
   --webserver-ws-endpoint arg
@@ -15,6 +17,10 @@ Application Options:
           webserver-ws-endpoint
   --webserver-thread-pool-size arg (=32)
           Number of threads used to handle queries. Default: 32.
+  --webserver-https-certificate-file-name arg
+          File name with a server's certificate.
+  --webserver-https-key-file-name arg
+          File name with a server's private key.
 
 
   --notifications-endpoint arg
