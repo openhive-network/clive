@@ -132,14 +132,22 @@ class ProfileData(Context):
     def validate_profile_name(name: str) -> None:
         min_length = 3
         max_length = 22
-        allowed_special_characters = "-._"  # TODO: Add "@" when beekeeper supports it.
+        allowed_special_characters = "-._@"
+        alphanum = "a-zA-Z0-9"
 
         rules = f"""
 - Must be between {min_length} and {max_length} characters long.
 - Can consist only of alphanum and `{allowed_special_characters}`.
-- Any special character must be surrounded by alphanum characters.\
+- Cannot start or end with any special character.\
 """
-        expression = rf"^(?=.{{{min_length},{max_length}}}$)([a-zA-Z0-9]+[{allowed_special_characters}]?[a-zA-Z0-9]+)*$"
+        expression = (
+            rf"^"
+            rf"(?=.{{{min_length},{max_length}}}$)"
+            rf"[{alphanum}]"
+            rf"[{allowed_special_characters}{alphanum}]*"
+            rf"[{alphanum}]"
+            rf"$"
+        )
         if not re.match(expression, name):
             raise ProfileInvalidNameError(name, reason=rules)
 
