@@ -351,8 +351,6 @@ class ProfileData(Context):
         return [
             Url("https", "api.hive.blog"),
             Url("https", "api.openhive.network"),
-            Url("https", "api.deathwing.me"),
-            Url("https", "hive-api.arcange.eu"),
         ]
 
     @staticmethod
