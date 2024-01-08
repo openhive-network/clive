@@ -10,7 +10,7 @@ from clive_local_tools.models import WalletInfo
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
 
-SPECIAL_CASES: Final[list[str]] = [".", "_", "-"]
+SPECIAL_CASES: Final[list[str]] = [".", "_", "-", "@"]
 ALLOWED_CHARS: Final[list[str]] = [chr(i) for i in range(32, 126) if chr(i).isalnum() or chr(i) in SPECIAL_CASES]
 NOT_ALLOWED_CHARS: Final[list[str]] = [chr(i) for i in range(32, 126) if chr(i) not in ALLOWED_CHARS]
 
