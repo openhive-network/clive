@@ -20,3 +20,6 @@ class BeekeeperDefaults(BaseModel):
     DEFAULT_WALLET_DIR: ClassVar[Path] = Path.cwd()
     DEFAULT_WEBSERVER_THREAD_POOL_SIZE: ClassVar[int] = 32
     DEFAULT_WEBSERVER_HTTP_ENDPOINT: ClassVar[Url | None] = None
+    DEFAULT_WEBSERVER_HTTPS_ENDPOINT: ClassVar[Url | None] = None
+    DEFAULT_WEBSERVER_HTTPS_CERTIFICATE_FILEN_NAME: ClassVar[Path | None] = None
+    DEFAULT_WEBSERVER_HTTPS_KEY_FILE_NAME: ClassVar[Path | None] = None

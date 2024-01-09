@@ -363,6 +363,9 @@ class Beekeeper:
                 wallet_dir=None,
                 webserver_thread_pool_size=None,
                 webserver_http_endpoint=None,
+                webserver_https_endpoint=None,
+                webserver_https_certificate_file_name=None,
+                webserver_https_key_file_name=None,
             )
             self.__executable.run_and_get_output(
                 allow_empty_notification_server=True, allow_timeout=True, arguments=arguments
