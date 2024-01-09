@@ -121,6 +121,9 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
 
     def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
         request_id = self.__transfer.request_id if self.__transfer else self.__id_input.value
+        if request_id is None:
+            return None
+
         return CancelTransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
             request_id=request_id,
