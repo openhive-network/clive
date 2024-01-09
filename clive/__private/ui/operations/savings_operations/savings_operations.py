@@ -205,13 +205,18 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         if not asset:
             return None
 
+        to = self.__to_account_input.value
+        if not to:
+            return None
+
         if self.__to_button.value:
             return TransferToSavingsOperation(
                 from_=self.app.world.profile_data.working_account.name,
-                to=self.__to_account_input.value,
+                to=to,
                 amount=asset,
                 memo=self.__memo_input.value,
             )
+
         try:
             request_id = self.__create_request_id()
         except RequestIdError:
@@ -220,7 +225,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
         return TransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
-            to=self.__to_account_input.value,
+            to=to,
             amount=asset,
             memo=self.__memo_input.value,
             request_id=request_id,

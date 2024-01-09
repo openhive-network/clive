@@ -69,9 +69,13 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
         if not amount:
             return None
 
+        to = self.__to_input.value
+        if not to:
+            return None
+
         return TransferOperation(
             from_=self.app.world.profile_data.working_account.name,
-            to=self.__to_input.value,
+            to=to,
             amount=amount,
             memo=self.__memo_input.value,
         )
