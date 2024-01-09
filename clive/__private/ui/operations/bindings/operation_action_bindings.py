@@ -53,8 +53,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         return result[0] if result else None
 
     def create_operations(self) -> list[Operation] | None:
-        if self._create_operation() is not None:
-            raise ValueError("This method should be used only when creating multiple operations.")
+        with self.app.suppressed_notifications():
+            if self._create_operation() is not None:
+                raise ValueError("This method should be used only when creating multiple operations.")
 
         operations = self._create_operations()
         if operations is None:
