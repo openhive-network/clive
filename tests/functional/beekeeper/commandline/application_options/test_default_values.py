@@ -14,6 +14,12 @@ def check_default_values_from_config(default_config: BeekeeperConfig) -> None:
     assert default_config.notifications_endpoint == BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT
     assert default_config.backtrace == BeekeeperDefaults.DEFAULT_BACKTRACE
     assert default_config.export_keys_wallet == BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET
+    assert default_config.webserver_https_endpoint == BeekeeperDefaults.DEFAULT_WEBSERVER_HTTPS_ENDPOINT
+    assert (
+        default_config.webserver_https_certificate_file_name
+        == BeekeeperDefaults.DEFAULT_WEBSERVER_HTTPS_CERTIFICATE_FILEN_NAME
+    )
+    assert default_config.webserver_https_key_file_name == BeekeeperDefaults.DEFAULT_WEBSERVER_HTTPS_KEY_FILE_NAME
 
 
 async def test_default_values() -> None:
