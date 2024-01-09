@@ -58,9 +58,9 @@ class Clive(App[int], ManualReactive):
 
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
-        Binding("ctrl+x", "push_screen('quit')", "Quit"),
-        Binding("c", "clear_notifications", "Clear notifications"),
-        Binding("f1", "help", "Help"),
+        Binding("ctrl+x", "push_screen('quit')", "Quit", show=False),
+        Binding("c", "clear_notifications", "Clear notifications", show=False),
+        Binding("f1", "help", "Help", show=False),
     ]
 
     SCREENS = {
