@@ -143,6 +143,7 @@ class DashboardBase(BaseScreen):
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),
         Binding("ctrl+o", "terminal", "Extend terminal", show=False),
+        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
         Binding("f2", "operations", "Operations"),
     ]
 

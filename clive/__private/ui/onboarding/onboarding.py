@@ -18,7 +18,10 @@ if TYPE_CHECKING:
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
-    BINDINGS = [Binding("escape", "dummy", show=False)]
+    BINDINGS = [
+        Binding("escape", "dummy", show=False),
+        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
+    ]
 
 
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
