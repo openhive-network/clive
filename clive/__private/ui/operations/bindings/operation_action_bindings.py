@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from pydantic import ValidationError
 from textual.binding import Binding
@@ -14,8 +14,14 @@ from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from clive.__private.core.keys import PublicKeyAliased
     from clive.models import Operation
+
+
+class _NotImplemented:
+    """Used to indicate that a method hasn't been implemented."""
 
 
 class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
@@ -27,41 +33,66 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Binding("f10", "finalize", "Finalize transaction"),
     ]
 
-    def _create_operation(self) -> Operation | None:
-        """Should return a new operation based on the data from screen."""
-        return None
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        # Multiple inheritance friendly, passes arguments to next object in MRO.
+        super().__init__(*args, **kwargs)
 
-    def _create_operations(self) -> list[Operation] | None:
-        """Should return a list of operations based on the data from screen."""
-        return None
+        self.__check_if_correctly_implemented()
 
-    def _validate_and_notify(self, operations: list[Operation]) -> list[Operation] | None:
-        """Validates the given operations. If any of them is invalid, notifies the user and returns None."""
+    def _create_operation(self) -> Operation | None | _NotImplemented:
+        """Should return a new operation based on the data from screen or None."""
+        return _NotImplemented()
+
+    def _create_operations(self) -> list[Operation] | None | _NotImplemented:
+        """Should return a list of operations based on the data from screen or None."""
+        return _NotImplemented()
+
+    def _validate_and_notify(
+        self, create_one_many_operations_cb: Callable[[], Operation | list[Operation] | None | _NotImplemented]
+    ) -> list[Operation] | None:
+        """
+        Validates operations from callback result. If any of them is invalid, notifies the user and returns None.
+
+        First it checks for any unhandled ValidationError (which may lead to app crash) from pydantic
+        and then performs a wax validation.
+
+        Args:
+        ----
+        create_one_many_operations_cb: A callback that returns either a single operation or a list of operations.
+            It can also return None if the operation(s) couldn't be created. This means that the validation process
+            is done earlier and here it will be skipped.
+        """
+        validation_failed_message = "Operation failed the validation process."
+
+        try:
+            result = create_one_many_operations_cb()
+        except ValidationError as error:
+            self.notify(f"{validation_failed_message}\n{error}", severity="error")
+            return None
+
+        if isinstance(result, _NotImplemented):
+            return None
+
+        if result is None:
+            return None
+
+        operations = result if isinstance(result, list) else [result]
+
         try:
             for operation in operations:
                 iwax.validate_operation(operation)
-        except (ValidationError, iwax.WaxOperationFailedError) as error:
-            self.notify(f"Operation failed the validation process.\n{error}", severity="error")
+        except iwax.WaxOperationFailedError as error:
+            self.notify(f"{validation_failed_message}\n{error}", severity="error")
             return None
+
         return operations
 
     def create_operation(self) -> Operation | None:
-        operation = self._create_operation()
-        if operation is None:
-            return None
-        result = self._validate_and_notify([operation])
+        result = self._validate_and_notify(self._create_operation)
         return result[0] if result else None
 
     def create_operations(self) -> list[Operation] | None:
-        with self.app.suppressed_notifications():
-            if self._create_operation() is not None:
-                raise ValueError("This method should be used only when creating multiple operations.")
-
-        operations = self._create_operations()
-        if operations is None:
-            return None
-
-        return self._validate_and_notify(operations)
+        return self._validate_and_notify(self._create_operations)
 
     def action_finalize(self) -> None:
         if self.__add_to_cart():
@@ -89,8 +120,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         key = get_key()
 
-        operation = self.create_operation()
-        operations = [operation] if operation else self.create_operations()
+        operations = self.ensure_operations_list()
 
         if not key or not operations:
             return
@@ -114,12 +144,35 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         -------
         True if the operation was added to the cart successfully, False otherwise.
         """
-        operation = self.create_operation()
-        operations = [operation] if operation else self.create_operations()
-
+        operations = self.ensure_operations_list()
         if not operations:
             return False
 
         self.app.world.profile_data.cart.extend(operations)
         self.app.trigger_profile_data_watchers()
         return True
+
+    def ensure_operations_list(self) -> list[Operation]:
+        operation = self.create_operation()
+        if operation is not None:
+            return [operation]
+
+        operations = self.create_operations()
+        if operations is not None:
+            return operations
+        return []
+
+    def __check_if_correctly_implemented(self) -> None:
+        with self.app.suppressed_notifications():
+            try:
+                create_operation_missing = isinstance(self._create_operation(), _NotImplemented)
+            except Exception:  # noqa: BLE001
+                create_operation_missing = False
+
+            try:
+                create_operations_missing = isinstance(self._create_operations(), _NotImplemented)
+            except Exception:  # noqa: BLE001
+                create_operations_missing = False
+
+        if sum([create_operation_missing, create_operations_missing]) != 1:
+            raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
