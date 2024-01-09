@@ -5,8 +5,9 @@ the Hive blockchain. Inspired by midnight commander, written in Python.
 
 ## Global bindings:
 
-| Binding  | Action          |
-|:--------:|-----------------|
-|   `F1`   | Show help       |
-| `Ctrl+X` | Quit            |
-| `Ctrl+S` | Screenshot      |
+| Binding  | Action              |
+|:--------:|---------------------|
+|   `F1`   | Show help           |
+| `Ctrl+X` | Quit                |
+| `Ctrl+S` | Screenshot          |
+|   `C`    | Clear notifications |
