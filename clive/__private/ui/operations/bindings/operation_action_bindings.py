@@ -7,6 +7,7 @@ from textual.binding import Binding
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
+from clive.__private.core.ensure_transaction import ensure_transaction
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
@@ -94,16 +95,24 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         if not key or not operations:
             return
 
-        if not (await self.app.world.commands.fast_broadcast(content=operations, sign_with=key)).success:
+        result = await self.app.world.commands.fast_broadcast(content=operations, sign_with=key)
+
+        if not result.success:
             return
+
+        transaction = ensure_transaction(result.command.content)  # type: ignore
 
         self.app.pop_screen_until("Operations")
 
         if len(operations) == 1:
-            message = f"Operation `{operations[0].__class__.__name__}` broadcast successfully."
+            message = (
+                f"Operation `{operations[0].__class__.__name__}` broadcast successfully. "
+                f"Transaction_id: {transaction.calculate_transaction_id()}."
+            )
         else:
             message = (
-                f"Operations `{[operation.__class__.__name__ for operation in operations]}` broadcast successfully."
+                f"Operations `{[operation.__class__.__name__ for operation in operations]}` broadcast successfully. "
+                f"Transaction_id: {transaction.calculate_transaction_id()}."
             )
 
         self.notify(message)

@@ -231,7 +231,7 @@ class TransactionSummaryCommon(BaseScreen):
             return
 
         self.action_dashboard()
-        self.notify("Transaction broadcast successfully!")
+        self.notify(f"Transaction broadcast successfully! Transaction_id: {transaction.calculate_transaction_id()}.")
         self._actions_after_successful_broadcast()
 
     def _actions_after_successful_broadcast(self) -> None:
