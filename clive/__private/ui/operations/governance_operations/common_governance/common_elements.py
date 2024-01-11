@@ -42,13 +42,9 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataTypes], 
 
     def __init__(self, elements: list[GovernanceDataTypes] | None) -> None:
         super().__init__()
-        self.__elements_to_display: list[GovernanceDataTypes] | None = elements if elements is not None else None
+        self.__elements_to_display: list[GovernanceDataTypes] | None = elements
 
     def compose(self) -> ComposeResult:
-        if self.elements_to_display is None:
-            self.loading = True
-            return
-
         yield from self.show_elements()
 
     @abstractmethod

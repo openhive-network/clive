@@ -12,10 +12,10 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
 
-class WitnessesDataProvider(DataProvider):
+class WitnessesDataProvider(DataProvider[WitnessesData]):
     """A class for retrieving information about witnesses stored in a WitnessesData dataclass."""
 
-    content: WitnessesData = var(WitnessesData(), init=False)  # type: ignore[assignment]
+    _content: WitnessesData | None = var(None, init=False)  # type: ignore[assignment]
     """It is used to check whether witnesses data has been refreshed and to store witnesses data."""
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
@@ -43,8 +43,13 @@ class WitnessesDataProvider(DataProvider):
             return
 
         result = wrapper.result_or_raise
+
+        if not self.updated:
+            self._content = result
+            return
+
         if result.number_of_votes != self.content.number_of_votes or result.witness_names != self.content.witness_names:
-            self.content = result
+            self._content = result
 
     def set_mode_witnesses_by_name(
         self, pattern: str | None = None, limit: int = WitnessesDataRetrieval.DEFAULT_SEARCH_BY_NAME_LIMIT

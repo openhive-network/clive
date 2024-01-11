@@ -12,8 +12,8 @@ if TYPE_CHECKING:
     from textual.worker import Worker
 
 
-class ProposalsDataProvider(DataProvider):
-    content: ProposalsData = var(ProposalsData(), init=False)  # type: ignore[assignment]
+class ProposalsDataProvider(DataProvider[ProposalsData]):
+    _content: ProposalsData | None = var(None, init=False)  # type: ignore[assignment]
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__(paused=paused, init_update=init_update)
@@ -35,8 +35,13 @@ class ProposalsDataProvider(DataProvider):
             return
 
         result = wrapper.result_or_raise
+
+        if not self.updated:
+            self._content = result
+            return
+
         if result.proposals != self.content.proposals:
-            self.content = result
+            self._content = result
 
     def change_order(self, order: str, order_direction: str, status: str) -> Worker[None]:
         self.__order = order

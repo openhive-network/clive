@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
 from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
@@ -46,7 +46,7 @@ class SanitizedData:
 
 @dataclass
 class ProposalsData:
-    proposals: list[Proposal] = field(default_factory=list)
+    proposals: list[Proposal]
 
 
 @dataclass(kw_only=True)

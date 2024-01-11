@@ -7,7 +7,7 @@ from clive.__private.core.commands.data_retrieval.savings_data import SavingsDat
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 
 
-class SavingsDataProvider(DataProvider):
+class SavingsDataProvider(DataProvider[SavingsData]):
     """A class for retrieving information about savings stored in a SavingsData dataclass."""
 
     content: SavingsData = var(SavingsData(), init=False)  # type: ignore[assignment]

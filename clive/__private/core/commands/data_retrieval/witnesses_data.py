@@ -49,8 +49,8 @@ class SanitizedData:
 
 @dataclass
 class WitnessesData:
-    witnesses: dict[str, WitnessData] = field(default_factory=dict)
-    number_of_votes: int = 0
+    witnesses: dict[str, WitnessData]
+    number_of_votes: int
 
     @property
     def witness_names(self) -> list[str]:

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from typing import Final, Generic, TypeVar
 
 from textual import on, work
 from textual.reactive import var
@@ -9,9 +10,26 @@ from textual.worker import Worker, WorkerState
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.config import settings
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.exceptions import CliveError
+
+ProviderContentT = TypeVar("ProviderContentT")
 
 
-class DataProvider(CliveWidget, AbstractClassMessagePump):
+class ProviderError(CliveError):
+    """Base exception for all provider-related exceptions."""
+
+
+class ProviderNotSetYetError(ProviderError):
+    MESSAGE: Final[str] = """
+Provider content was referenced before the update actually occurred.
+You're probably using it too early.
+If you are sure, you can use the `updated` property to check if content is ready or `_content` which may be None."""
+
+    def __init__(self) -> None:
+        super().__init__(self.MESSAGE)
+
+
+class DataProvider(CliveWidget, Generic[ProviderContentT], AbstractClassMessagePump):
     """
     Retrieve data in a periodic manner. Data is stored in the reactive attributes.
 
@@ -20,7 +38,7 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
     method, but could be also done by using the provider methods.
     """
 
-    content: object = var(None, init=False)
+    _content: ProviderContentT = var(None, init=False)  # type: ignore[assignment]
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
     updated: bool = var(False)  # type: ignore[assignment]
@@ -47,6 +65,12 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
     def set_updated(self, event: Worker.StateChanged) -> None:
         if event.state == WorkerState.SUCCESS:
             self.updated = True
+
+    @property
+    def content(self) -> ProviderContentT:
+        if self._content is None:
+            raise ProviderNotSetYetError
+        return self._content
 
     def stop(self) -> None:
         self.interval.stop()
