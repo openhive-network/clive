@@ -5,7 +5,7 @@ import contextlib
 import math
 import traceback
 from asyncio import CancelledError
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
 from textual import work
@@ -31,11 +31,12 @@ from clive.__private.ui.terminal.terminal_screen import TerminalScreen
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import AsyncGenerator, Callable, Iterator
     from typing import ClassVar, Literal
 
     from rich.console import RenderableType
     from textual.message import Message
+    from textual.pilot import Pilot
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
@@ -134,6 +135,22 @@ class Clive(App[int], ManualReactive):
         finally:
             self.__cleanup()
         return 1
+
+    @asynccontextmanager
+    async def run_test(
+        self,
+        *,
+        headless: bool = True,
+        size: tuple[int, int] | None = (80, 24),
+        tooltips: bool = False,
+        notifications: bool = False,
+        message_hook: Callable[[Message], None] | None = None,
+    ) -> AsyncGenerator[Pilot[int], None]:
+        async with super().run_test(
+            headless=headless, size=size, tooltips=tooltips, notifications=notifications, message_hook=message_hook
+        ) as pilot:
+            yield pilot
+        self.__cleanup()
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
