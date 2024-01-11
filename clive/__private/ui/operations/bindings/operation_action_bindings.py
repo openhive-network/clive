@@ -94,19 +94,16 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         if not key or not operations:
             return
 
-        if not (await self.app.world.commands.fast_broadcast(content=operations, sign_with=key)).success:
+        wrapper = await self.app.world.commands.fast_broadcast(content=operations, sign_with=key)
+        if not wrapper.success:
             return
+
+        transaction = wrapper.result_or_raise
+        transaction_id = transaction.calculate_transaction_id()
 
         self.app.pop_screen_until("Operations")
 
-        if len(operations) == 1:
-            message = f"Operation `{operations[0].__class__.__name__}` broadcast successfully."
-        else:
-            message = (
-                f"Operations `{[operation.__class__.__name__ for operation in operations]}` broadcast successfully."
-            )
-
-        self.notify(message)
+        self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
     def __add_to_cart(self) -> bool:
         """
