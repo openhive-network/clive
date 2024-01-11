@@ -131,6 +131,12 @@ testing_clive_import_times_during_autocompletion:
     - echo -e "${TXT_BLUE}Launching clive test for autocompletion time...${TXT_CLEAR}"
     - python3 -m pytest -k "test_autocompletion_time" --durations 0 --junitxml=report.xml tests/
 
+testing_tui:
+  extends: .testing
+  script:
+    - echo -e "${TXT_BLUE}Launching tui tests...${TXT_CLEAR}"
+    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/tui
+
 testing_password_private_key_logging:
   stage: tests
   needs:
