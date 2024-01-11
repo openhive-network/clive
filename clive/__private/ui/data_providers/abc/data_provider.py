@@ -1,17 +1,14 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING
 
-from textual import work
+from textual import on, work
 from textual.reactive import var
+from textual.worker import Worker, WorkerState
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.config import settings
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-
-if TYPE_CHECKING:
-    from textual.worker import Worker
 
 
 class DataProvider(CliveWidget, AbstractClassMessagePump):
@@ -25,6 +22,9 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
 
     content: object = var(None, init=False)
     """Should be overridden by subclasses to store the data retrieved by the provider."""
+
+    updated: bool = var(False)  # type: ignore[assignment]
+    """Set to True when the provider has updated the content for the first time."""
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__()
@@ -42,6 +42,11 @@ class DataProvider(CliveWidget, AbstractClassMessagePump):
 
         The name of the worker can be included by overriding the work decorator, e.g.: @work("my work").
         """
+
+    @on(Worker.StateChanged)
+    def set_updated(self, event: Worker.StateChanged) -> None:
+        if event.state == WorkerState.SUCCESS:
+            self.updated = True
 
     def stop(self) -> None:
         self.interval.stop()
