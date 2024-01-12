@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import pytest
@@ -19,45 +20,6 @@ from clive_local_tools.tui.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
-
-    from textual.pilot import Pilot
-
-
-def create_working_account(wallet: tt.Wallet) -> None:
-    wallet.create_account(
-        WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(1000).as_nai(),
-        vests=tt.Asset.Test(1000).as_nai(),
-        hbds=tt.Asset.Tbd(1000).as_nai(),
-    )
-    # Supplying savings:
-    wallet.api.transfer_to_savings(
-        WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Test(100).as_nai(),
-        "Supplying HIVE savings",
-    )
-    wallet.api.transfer_to_savings(
-        WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Tbd(100).as_nai(),
-        "Supplying HBD savings",
-    )
-    account = wallet.api.get_account(WORKING_ACCOUNT.name)
-    tt.logger.debug(f"account: {account}")
-
-
-def create_watched_accounts(wallet: tt.Wallet) -> None:
-    tt.logger.info("Creating watched accounts...")
-    amount = 1_000
-    for account in WATCHED_ACCOUNTS:
-        wallet.create_account(
-            account.name,
-            hives=tt.Asset.Test(amount).as_nai(),
-            vests=tt.Asset.Test(amount).as_nai(),
-            hbds=tt.Asset.Tbd(amount).as_nai(),
-        )
-        amount += 1_000
 
 
 def prepare_profile() -> None:
@@ -104,12 +66,12 @@ async def prepared_env(world: TextualWorld) -> tuple[tt.InitNode, Clive]:
     node.config.plugin.append("reputation_api")
     node.config.plugin.append("rc_api")
     node.config.plugin.append("transaction_status_api")
-    node.run()
+    conftest_dir = Path(__file__).resolve().parent
+    node.run(replay_from = conftest_dir / "block_logs" / "testnet_block_log", wait_for_live = True)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
-    wallet.api.import_key(node.config.private_key[0])
-    create_working_account(wallet)
-    create_watched_accounts(wallet)
+    for key in node.config.private_key:
+        wallet.api.import_key(key)
 
     app = Clive.app_instance()
 
