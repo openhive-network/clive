@@ -355,7 +355,7 @@ class Beekeeper:
         arguments = BeekeeperCLIArguments(version=True)
         return self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
 
-    def generate_beekeepers_default_config(self) -> BeekeeperConfig:
+    def generate_beekeepers_default_config(self, extract_to: Path | None = None) -> BeekeeperConfig:
         with tempfile.TemporaryDirectory() as tmpdirname:
             arguments = BeekeeperCLIArguments(
                 backtrace=None,
@@ -366,12 +366,17 @@ class Beekeeper:
                 wallet_dir=None,
                 webserver_thread_pool_size=None,
                 webserver_http_endpoint=None,
+                webserver_https_endpoint=None,
+                webserver_https_certificate_file_name=None,
+                webserver_https_key_file_name=None,
             )
             self.__executable.run_and_get_output(
                 allow_empty_notification_server=True, allow_timeout=True, arguments=arguments
             )
-
-            return BeekeeperConfig.load(Path(tmpdirname) / "config.ini")
+            config_path = Path(tmpdirname) / "config.ini"
+            if extract_to:
+                shutil.copy(config_path, extract_to)
+            return BeekeeperConfig.load(config_path)
 
     async def export_keys_wallet(
         self, *, wallet_name: str, wallet_password: str, extract_to: Path | None = None
