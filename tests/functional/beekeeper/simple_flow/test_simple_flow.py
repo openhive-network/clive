@@ -81,8 +81,7 @@ async def simple_flow(*, bk: Beekeeper, wallets: list[WalletInfo], use_existing_
                 await bk.api.open(wallet_name=wallet.name)
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
 
-                bk_keys = [keys.public_key for keys in (await bk.api.get_public_keys()).keys]
-                bk_keys.sort()
+                bk_keys = sorted([keys.public_key for keys in (await bk.api.get_public_keys()).keys])
 
                 wallet_keys = wallet.keys.get_public_keys()
                 assert len(bk_keys) == len(
