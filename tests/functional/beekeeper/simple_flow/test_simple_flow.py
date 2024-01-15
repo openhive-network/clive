@@ -4,17 +4,15 @@ import asyncio
 import json
 import shutil
 from pathlib import Path
-from typing import Final
 
 import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
 from clive_local_tools import checkers, waiters
+from clive_local_tools.constants import DIGEST_TO_SIGN, MAX_SESSION_NUMBER
+from clive_local_tools.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.models import Keys, WalletInfo
-
-DIGEST_TO_SIGN: Final[str] = "9B29BA0710AF3918E81D7B935556D7AB205D8A8F5CA2E2427535980C2E8BDAFF"
-MAX_SESSION_NUMBER: Final[int] = 64
 
 
 async def prepare_wallet_dirs(
@@ -43,7 +41,10 @@ async def prepare_wallet_dirs(
     for tmp_dir in temp_directories:
         tmp_dir.mkdir()
 
-    wallets = [WalletInfo(name=str(i), password=str(i), keys=Keys(count=i % 5)) for i in range(MAX_SESSION_NUMBER)]
+    wallets = [
+        WalletInfo(name=generate_wallet_name(i), password=generate_wallet_password(i), keys=Keys(count=i % 5))
+        for i in range(MAX_SESSION_NUMBER)
+    ]
 
     if source_directory:
         source_directory_wallets = source_directory / "wallets"
