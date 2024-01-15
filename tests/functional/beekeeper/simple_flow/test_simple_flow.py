@@ -84,10 +84,7 @@ async def simple_flow(*, bk: Beekeeper, wallets: list[WalletInfo], use_existing_
                 bk_keys = sorted([keys.public_key for keys in (await bk.api.get_public_keys()).keys])
 
                 wallet_keys = wallet.keys.get_public_keys()
-                assert len(bk_keys) == len(
-                    wallet_keys
-                ), "Number of public keys from wallet should be the same as in bk."
-                assert bk_keys == wallet_keys, "There should be same number of keys."
+                assert bk_keys == wallet_keys, "There should be same keys."
                 for keys in wallet.keys.pairs:
                     # Sign digest with imported token
                     await bk.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=keys.public_key.value)
