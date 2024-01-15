@@ -10,6 +10,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable
 
@@ -49,6 +50,10 @@ class DynamicLabel(CliveWidget):
         self.__attribute_name = attribute_name
         self.__callback = callback
         self.__prefix = prefix
+
+    @property
+    def renderable(self) -> RenderableType:
+        return self.__label.renderable
 
     def on_mount(self) -> None:
         def delegate_work(attribute: Any) -> None:
