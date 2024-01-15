@@ -17,6 +17,7 @@ from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.world import World
 from clive.core.url import Url
 from clive_local_tools.constants import TESTNET_CHAIN_ID
+from clive_local_tools.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
@@ -52,14 +53,6 @@ def run_prepare_before_launch() -> None:
     settings.set("node.chain_id", TESTNET_CHAIN_ID)
 
     prepare_before_launch(enable_stream_handlers=True)
-
-
-def generate_wallet_name(number: int = 0) -> str:
-    return f"wallet-{number}"
-
-
-def generate_wallet_password(number: int = 0) -> str:
-    return f"password-{number}"
 
 
 @pytest.fixture()
