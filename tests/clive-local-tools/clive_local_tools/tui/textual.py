@@ -34,7 +34,7 @@ async def get_notification_transaction_id(pilot: Pilot[int]) -> str:
         raise AssertionError("Toast couldn't be found.") from error
     tt.logger.debug(f"get_notification_transaction_id toast: {toast.render()}")
     result = TRANSACTION_ID_RE_PAT.search(str(toast.render()))
-    assert type(result) == re.Match, f"Expected 're.Match' type, current is {type(result)}."
+    assert result is not None, "Transaction ID couldn't be found in the toast."
     transaction_id = result.group("transaction_id")
     tt.logger.debug(f"transaction_id: '{transaction_id}'")
 
