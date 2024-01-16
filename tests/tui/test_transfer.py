@@ -12,15 +12,14 @@ from clive_local_tools.tui.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.textual import get_notification_transaction_id, write_text
-from clive_local_tools.tui.utils import get_mode, log_current_view
-from schemas.operations import AnyOperation, TransferOperation
+from clive_local_tools.tui.utils import assert_operations_placed_in_blockchain, get_mode, log_current_view
+from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     import test_tools as tt
     from textual.pilot import Pilot
 
     from clive_local_tools.tui.types import ASSET_TOKEN, OPERATION_PROCESSING
-    from schemas.operations.representations import HF26Representation
 
 
 SENDER: Final[str] = WORKING_ACCOUNT.name
@@ -45,28 +44,6 @@ async def fill_transfer_data(
     if memo:
         await pilot.press("tab")
         await write_text(pilot, memo)
-
-
-def assert_operations_placed_in_blockchain(
-    node: tt.InitNode, transaction_id: str, *expected_operations: AnyOperation
-) -> None:
-    transaction = node.api.account_history.get_transaction(
-        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
-    )
-    operations_to_check = list(expected_operations)
-    for operation_representation in transaction.operations:
-        _operation_representation: HF26Representation[AnyOperation] = operation_representation
-        operation = _operation_representation.value
-        if operation in operations_to_check:
-            operations_to_check.remove(operation)
-
-    message = (
-        "Operations missing in blockchain.\n"
-        f"Operations: {operations_to_check}\n"
-        "were not found in the transaction:\n"
-        f"{transaction}."
-    )
-    assert not operations_to_check, message
 
 
 testdata = [
