@@ -71,7 +71,7 @@ type_check_with_mypy:
     REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
     REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
     SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
-    BINARY_CACHE_PATH: "${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
+    BINARY_CACHE_PATH: "${CI_PROJECT_DIR}/${HIVE_BUILD_ROOT_PATH}/${HIVE_NETWORK_TYPE}"
 
 prepare_mainnet_hived_image:
   extends: .common_prepare_hived_image
