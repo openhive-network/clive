@@ -200,7 +200,7 @@ class ProposalsListHeader(GovernanceListHeader):
         yield PlaceTaker()
 
 
-class ProposalsTable(GovernanceTable[ProposalData]):
+class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
     async def change_order(self, order: str, order_direction: str, status: str) -> None:
         await self.provider.change_order(order=order, order_direction=order_direction, status=status).wait()
         await self.reset_page()
@@ -212,7 +212,7 @@ class ProposalsTable(GovernanceTable[ProposalData]):
         return ProposalsList(self.data_chunk)
 
     @property
-    def provider(self) -> ProposalsDataProvider:  # type: ignore[override]
+    def provider(self) -> ProposalsDataProvider:
         return self.app.query_one(ProposalsDataProvider)
 
     @property

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from textual import on
 from textual.binding import Binding
@@ -15,6 +15,7 @@ from textual.widgets import Label, Static
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
+from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -22,9 +23,9 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.data_providers.abc.data_provider import DataProvider, ProviderContentT
 
 GovernanceDataT = TypeVar("GovernanceDataT", ProposalData, WitnessData)
+GovernanceDataProviderT = TypeVar("GovernanceDataProviderT", bound=DataProvider[Any])
 GovernanceActionsIdT = TypeVar("GovernanceActionsIdT", int, str)
 
 
@@ -333,7 +334,9 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
         """It should only be filled in if there is a limit on the number of votes - if not, a `pass` should be implemented."""
 
 
-class GovernanceTable(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=False):
+class GovernanceTable(
+    Vertical, CliveWidget, Generic[GovernanceDataT, GovernanceDataProviderT], AbstractClassMessagePump, can_focus=False
+):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 10
 
     BINDINGS = [
@@ -458,7 +461,7 @@ class GovernanceTable(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractC
 
     @property
     @abstractmethod
-    def provider(self) -> DataProvider[ProviderContentT]:
+    def provider(self) -> GovernanceDataProviderT:
         """Should query and return appropriate data provider."""
 
     @abstractmethod

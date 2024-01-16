@@ -308,7 +308,7 @@ class WitnessesListHeader(GovernanceListHeader):
         yield Static("Modify the votes for witnesses", id="witnesses-additional-headline")
 
 
-class WitnessesTable(GovernanceTable[WitnessData]):
+class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 30
 
     async def search_witnesses(self, pattern: str, limit: int) -> None:
@@ -326,7 +326,7 @@ class WitnessesTable(GovernanceTable[WitnessData]):
         return WitnessesListHeader()
 
     @property
-    def provider(self) -> WitnessesDataProvider:  # type: ignore[override]
+    def provider(self) -> WitnessesDataProvider:
         return self.app.query_one(WitnessesDataProvider)
 
     @property
