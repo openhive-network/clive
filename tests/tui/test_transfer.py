@@ -50,28 +50,6 @@ async def fill_transfer_data(
         await write_text(pilot, memo)
 
 
-def assert_operations_placed_in_blockchain(
-    node: tt.RawNode, transaction_id: str, *expected_operations: AnyOperation
-) -> None:
-    transaction = node.api.account_history.get_transaction(
-        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
-    )
-    operations_to_check = list(expected_operations)
-    for operation_representation in transaction.operations:
-        _operation_representation: HF26Representation[AnyOperation] = operation_representation
-        operation = _operation_representation.value
-        if operation in operations_to_check:
-            operations_to_check.remove(operation)
-
-    message = (
-        "Operations missing in blockchain.\n"
-        f"Operations: {operations_to_check}\n"
-        "were not found in the transaction:\n"
-        f"{transaction}."
-    )
-    assert not operations_to_check, message
-
-
 testdata = [
     ("memo1", "FAST_BROADCAST"),
     (None, "FINALIZE_TRANSACTION"),
@@ -161,7 +139,6 @@ async def test_transfers_finalize_cart(
     assert get_mode(pilot.app) == "inactive", "Expected 'inactive' mode!"
 
     expected0 = TransferOperation(from_=SENDER, to=RECEIVER, amount=Asset.hbd("1.0"), memo="memo0")
-
     expected1 = TransferOperation(from_=SENDER, to=RECEIVER, amount=Asset.hive("1.1"), memo="memo1")
 
     # TODO: save balances before transfer
