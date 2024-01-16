@@ -24,8 +24,8 @@ variables:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
 
-  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-7
-  CI_BASE_IMAGE_TAG: "@sha256:8f68baf07c6e581e1e8034a1447c4ff1268239fc886bfe4b02aa3f4182bf78bb"
+  # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
+  CI_BASE_IMAGE_TAG: "@sha256:080b16fd53013aeb9b89b00a8dfc90fecf886173f46448b05f45cee376c43330"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
 
 include:
