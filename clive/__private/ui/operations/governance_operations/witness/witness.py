@@ -332,10 +332,6 @@ class WitnessesTable(GovernanceTable):
         await self.provider.set_mode_top_witnesses().wait()
         await self.reset_page()
 
-    @property
-    def list_widget_type(self) -> type[GovernanceListWidget[WitnessData]]:  # type: ignore[override]
-        return WitnessesList
-
     def create_new_list_widget(self) -> WitnessesList:  # type: ignore[override]
         return WitnessesList(self.witnesses_chunk)
 

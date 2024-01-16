@@ -360,7 +360,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
         new_list = self.create_new_list_widget()
 
         with self.app.batch_update():
-            await self.query(self.list_widget_type).remove()  # type: ignore[arg-type]
+            await self.query(GovernanceListWidget).remove()  # type: ignore[type-abstract]
             await self.mount(new_list)
 
         if focus_first_element:
@@ -375,7 +375,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
     async def loading_set(self) -> None:
         self.__is_loading = True
         with contextlib.suppress(NoMatches):
-            selected_list = self.query_one(self.list_widget_type)  # type: ignore[arg-type]
+            selected_list = self.query_one(GovernanceListWidget)  # type: ignore[type-abstract]
             await selected_list.query("*").remove()
             await selected_list.mount(Label("Loading..."))
 
@@ -435,11 +435,6 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
     @property
     def header(self) -> GovernanceListHeader:
         return self.__header
-
-    @property
-    @abstractmethod
-    def list_widget_type(self) -> type[GovernanceListWidget[GovernanceDataTypes]]:
-        """Should return type of witnesses or proposals list."""
 
     @property
     @abstractmethod

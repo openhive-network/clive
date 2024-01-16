@@ -211,10 +211,6 @@ class ProposalsTable(GovernanceTable):
     def create_header(self) -> GovernanceListHeader:
         return ProposalsListHeader()
 
-    @property
-    def list_widget_type(self) -> type[GovernanceListWidget[ProposalData]]:  # type: ignore[override]
-        return ProposalsList
-
     def create_new_list_widget(self) -> GovernanceListWidget[ProposalData]:  # type: ignore[override]
         return ProposalsList(self.proposals_chunk)
 
