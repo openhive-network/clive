@@ -261,19 +261,7 @@ class WitnessActionRow(GovernanceActionRow[str]):
 
 
 class WitnessesActions(GovernanceActions[str]):
-    """
-    Contains a table of operations to be performed after confirmation.
-
-    Attributes
-    ----------
-    __actions_to_perform (dict): A dictionary with the witness name as the key and the action to perform (vote/unvote, represented as a boolean value).
-    """
-
     NAME_OF_ACTION: ClassVar[str] = "Witness"
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.__actions_votes = 0
 
     async def mount_operations_from_cart(self) -> None:
         for operation in self.app.world.profile_data.cart:
