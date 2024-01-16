@@ -24,15 +24,15 @@ if TYPE_CHECKING:
 
     from clive.__private.ui.data_providers.abc.data_provider import DataProvider, ProviderContentT
 
-GovernanceDataTypes = TypeVar("GovernanceDataTypes", ProposalData, WitnessData)
-GovernanceActionsIdentifiersT = TypeVar("GovernanceActionsIdentifiersT", int, str)
+GovernanceDataT = TypeVar("GovernanceDataT", ProposalData, WitnessData)
+GovernanceActionsIdT = TypeVar("GovernanceActionsIdT", int, str)
 
 
 class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 
-class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataTypes], AbstractClassMessagePump):
+class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
     """
     Governance data is used to create elements of the list, and its type must be passed generically.
 
@@ -41,9 +41,9 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataTypes], 
     elements (list[GovernanceDataTypes] | None): List of elements to be displayed in the table. Precise type must be passed generically!
     """
 
-    def __init__(self, elements: list[GovernanceDataTypes] | None) -> None:
+    def __init__(self, elements: list[GovernanceDataT] | None) -> None:
         super().__init__()
-        self.__elements_to_display: list[GovernanceDataTypes] | None = elements
+        self.__elements_to_display: list[GovernanceDataT] | None = elements
 
     def compose(self) -> ComposeResult:
         yield from self.show_elements()
@@ -53,7 +53,7 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataTypes], 
         """Should yield witnesses or proposals widgets."""
 
     @property
-    def elements_to_display(self) -> list[GovernanceDataTypes] | None:
+    def elements_to_display(self) -> list[GovernanceDataT] | None:
         return self.__elements_to_display
 
 
@@ -111,7 +111,7 @@ class GovernanceListHeader(Grid, AbstractClassMessagePump):
         """
 
 
-class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], AbstractClassMessagePump, can_focus=True):
+class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):
     """
     Base class for rows in governance tables. The type of data used to create rows must be passed generically.
 
@@ -128,9 +128,9 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], Abstra
         Binding("enter", "toggle_checkbox", "", show=False),
     ]
 
-    def __init__(self, row_data: GovernanceDataTypes, evenness: str = "even"):
+    def __init__(self, row_data: GovernanceDataT, evenness: str = "even"):
         super().__init__()
-        self.__row_data: GovernanceDataTypes = row_data
+        self.__row_data: GovernanceDataT = row_data
         self.__evenness = evenness
 
         self.governance_checkbox = GovernanceCheckbox(
@@ -176,12 +176,12 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], Abstra
 
     @property
     @abstractmethod
-    def actions_type(self) -> type[GovernanceActions[GovernanceActionsIdentifiersT]]:
+    def actions_type(self) -> type[GovernanceActions[GovernanceActionsIdT]]:
         """Should return type of actions table that action will be mounted."""
 
     @property
     @abstractmethod
-    def action_identifier(self) -> GovernanceActionsIdentifiersT:
+    def action_identifier(self) -> GovernanceActionsIdT:
         """Should return witness name or proposal id to mount the action correctly."""
 
     @property
@@ -195,7 +195,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], Abstra
         """Should check if operation is already in the cart."""
 
     @property
-    def row_data(self) -> GovernanceDataTypes:
+    def row_data(self) -> GovernanceDataT:
         return self.__row_data
 
     @property
@@ -203,7 +203,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], Abstra
         return self.__evenness
 
 
-class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdentifiersT], AbstractClassMessagePump):
+class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdT], AbstractClassMessagePump):
     """
     Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed.
 
@@ -214,8 +214,8 @@ class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdentifiersT], Ab
     pending (bool): Indicates if the operation with such identifier is already in the cart. Default is False.
     """
 
-    def __init__(self, identifier: GovernanceActionsIdentifiersT, vote: bool, pending: bool = False):
-        self.__identifier: GovernanceActionsIdentifiersT = identifier
+    def __init__(self, identifier: GovernanceActionsIdT, vote: bool, pending: bool = False):
+        self.__identifier: GovernanceActionsIdT = identifier
 
         super().__init__(id=self.create_widget_id())
         self.__vote = vote
@@ -234,7 +234,7 @@ class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdentifiersT], Ab
         yield Label(str(self.action_identifier), classes="action-identifier")
 
     @property
-    def action_identifier(self) -> GovernanceActionsIdentifiersT:
+    def action_identifier(self) -> GovernanceActionsIdT:
         return self.__identifier
 
     @abstractmethod
@@ -242,7 +242,7 @@ class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdentifiersT], Ab
         pass
 
 
-class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], CanFocusWithScrollbarsOnly):
+class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusWithScrollbarsOnly):
     """
     Contains a table of actions to be performed after confirmation. Type of the action identifier (witness name or proposal id) must be specified generically.
 
@@ -254,7 +254,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
     NAME_OF_ACTION: ClassVar[str] = "Action"
 
     def __init__(self) -> None:
-        self.__actions_to_perform: dict[GovernanceActionsIdentifiersT, bool] = {}
+        self.__actions_to_perform: dict[GovernanceActionsIdT, bool] = {}
         super().__init__()
         self.__actions_votes = 0
 
@@ -267,9 +267,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
     async def on_mount(self) -> None:  # type: ignore[override]
         await self.mount_operations_from_cart()
 
-    async def mount_action(
-        self, identifier: GovernanceActionsIdentifiersT, vote: bool = False, pending: bool = False
-    ) -> None:
+    async def mount_action(self, identifier: GovernanceActionsIdT, vote: bool = False, pending: bool = False) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
@@ -288,7 +286,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
         if not pending:
             self.add_to_actions(identifier, vote)
 
-    async def unmount_action(self, identifier: GovernanceActionsIdentifiersT, vote: bool = False) -> None:
+    async def unmount_action(self, identifier: GovernanceActionsIdT, vote: bool = False) -> None:
         try:
             await self.query_one(self.get_action_id(identifier)).remove()
         except NoMatches:
@@ -301,10 +299,10 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
 
         self.delete_from_actions(identifier)
 
-    def add_to_actions(self, identifier: GovernanceActionsIdentifiersT, vote: bool) -> None:
+    def add_to_actions(self, identifier: GovernanceActionsIdT, vote: bool) -> None:
         self.__actions_to_perform[identifier] = vote
 
-    def delete_from_actions(self, identifier: GovernanceActionsIdentifiersT) -> None:
+    def delete_from_actions(self, identifier: GovernanceActionsIdT) -> None:
         self.__actions_to_perform.pop(identifier)
 
     @property
@@ -312,12 +310,12 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
         return self.__actions_votes
 
     @property
-    def actions_to_perform(self) -> dict[GovernanceActionsIdentifiersT, bool]:
+    def actions_to_perform(self) -> dict[GovernanceActionsIdT, bool]:
         return self.__actions_to_perform
 
     @staticmethod
     @abstractmethod
-    def get_action_id(identifier: GovernanceActionsIdentifiersT) -> str:
+    def get_action_id(identifier: GovernanceActionsIdT) -> str:
         """Should return id of the action row."""
 
     @abstractmethod
@@ -326,8 +324,8 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
 
     @abstractmethod
     def create_action_row(
-        self, identifier: GovernanceActionsIdentifiersT, vote: bool, pending: bool
-    ) -> GovernanceActionRow[GovernanceActionsIdentifiersT]:
+        self, identifier: GovernanceActionsIdT, vote: bool, pending: bool
+    ) -> GovernanceActionRow[GovernanceActionsIdT]:
         pass
 
     @abstractmethod
@@ -441,7 +439,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
         """Should query and return appropriate data provider."""
 
     @abstractmethod
-    def create_new_list_widget(self) -> GovernanceListWidget[GovernanceDataTypes]:
+    def create_new_list_widget(self) -> GovernanceListWidget[GovernanceDataT]:
         """Should return the instance of the new witnesses or proposals list."""
 
     @abstractmethod
