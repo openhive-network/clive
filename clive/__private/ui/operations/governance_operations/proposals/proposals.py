@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from textual import on
 from textual.containers import Horizontal, Vertical
@@ -154,6 +154,8 @@ class ProposalActionRow(GovernanceActionRow[int]):
 
 
 class ProposalsActions(GovernanceActions[int]):
+    NAME_OF_ACTION: ClassVar[str] = "Proposal"
+
     async def mount_operations_from_cart(self) -> None:
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, UpdateProposalVotesOperation):
@@ -169,10 +171,6 @@ class ProposalsActions(GovernanceActions[int]):
     @staticmethod
     def get_action_id(identifier: int) -> str:
         return f"#proposal{identifier}-action-row"
-
-    @property
-    def name_of_action(self) -> str:
-        return "Proposal"
 
     @property
     def provider(self) -> ProposalsDataProvider:

@@ -251,6 +251,8 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
     __actions_to_perform (dict): a dict with proposal_id or witness name as key and action to pe performed as value
     """
 
+    NAME_OF_ACTION: ClassVar[str] = "Action"
+
     def __init__(self) -> None:
         self.__actions_to_perform: dict[GovernanceActionsIdentifiersT, bool] = {}
         super().__init__()
@@ -260,7 +262,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
         yield Static("Actions to be performed:", id="actions-header")
         with Horizontal(id="name-and-action"):
             yield Static("Action", id="action-row")
-            yield Static(self.name_of_action, id="action-name-row")
+            yield Static(self.NAME_OF_ACTION, id="action-name-row")
 
     async def on_mount(self) -> None:  # type: ignore[override]
         await self.mount_operations_from_cart()
@@ -331,11 +333,6 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
     @abstractmethod
     def create_number_of_votes_restriction(self) -> None:
         """It should only be filled in if there is a limit on the number of votes - if not, a `pass` should be implemented."""
-
-    @property
-    @abstractmethod
-    def name_of_action(self) -> str:
-        """Should return `Proposal` or `Witness`."""
 
 
 class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus=False):

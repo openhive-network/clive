@@ -269,6 +269,8 @@ class WitnessesActions(GovernanceActions[str]):
     __actions_to_perform (dict): A dictionary with the witness name as the key and the action to perform (vote/unvote, represented as a boolean value).
     """
 
+    NAME_OF_ACTION: ClassVar[str] = "Witness"
+
     def __init__(self) -> None:
         super().__init__()
         self.__actions_votes = 0
@@ -281,10 +283,6 @@ class WitnessesActions(GovernanceActions[str]):
     @staticmethod
     def get_action_id(identifier: str) -> str:
         return f"#{convert_witness_name_to_widget_id(identifier)}-witness-action-row"
-
-    @property
-    def name_of_action(self) -> str:
-        return "Witness"
 
     def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow[str]:
         return WitnessActionRow(identifier, vote, pending)
