@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 
 from textual import on, work
 from textual.binding import Binding
@@ -44,7 +44,6 @@ if TYPE_CHECKING:
 
 MAX_NUMBER_OF_WITNESSES_VOTES: Final[int] = 30
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
-MAX_WITNESSES_ON_PAGE: Final[int] = 30
 
 
 def convert_witness_name_to_widget_id(witness_name: str) -> str:
@@ -324,6 +323,8 @@ class WitnessesListHeader(GovernanceListHeader):
 
 
 class WitnessesTable(GovernanceTable):
+    MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 30
+
     async def search_witnesses(self, pattern: str, limit: int) -> None:
         await self.provider.set_mode_witnesses_by_name(pattern=pattern, limit=limit).wait()
         await self.reset_page()
@@ -347,16 +348,12 @@ class WitnessesTable(GovernanceTable):
         return len(self.provider.content.witnesses)
 
     @property
-    def max_elements_on_page(self) -> int:
-        return MAX_WITNESSES_ON_PAGE
-
-    @property
     def witnesses_chunk(self) -> list[WitnessData] | None:
         if not self.provider.updated:
             return None
 
         return list(self.provider.content.witnesses.values())[
-            self.element_index : self.element_index + MAX_WITNESSES_ON_PAGE
+            self.element_index : self.element_index + self.MAX_ELEMENTS_ON_PAGE
         ]
 
 

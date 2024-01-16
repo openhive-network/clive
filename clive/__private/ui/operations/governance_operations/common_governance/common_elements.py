@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar
 
 from textual import on
 from textual.binding import Binding
@@ -339,6 +339,8 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
 
 
 class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus=False):
+    MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 10
+
     BINDINGS = [
         Binding("pageup", "previous_page", "PgDn"),
         Binding("pagedown", "next_page", "PgUp"),
@@ -396,15 +398,15 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
             return
 
         # It is used to prevent the user from switching to an empty page by key binding
-        if self.amount_of_fetched_elements - self.max_elements_on_page <= self.__element_index + 1:
+        if self.amount_of_fetched_elements - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index + 1:
             self.notify("No elements on the next page", severity="warning")
             return
 
-        self.__element_index += self.max_elements_on_page
+        self.__element_index += self.MAX_ELEMENTS_ON_PAGE
 
         self.__header.arrow_up.visible = True
 
-        if self.amount_of_fetched_elements - self.max_elements_on_page <= self.__element_index:
+        if self.amount_of_fetched_elements - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
             self.__header.arrow_down.visible = False
 
         await self.sync_list(focus_first_element=True)
@@ -421,7 +423,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
 
         self.__header.arrow_down.visible = True
 
-        self.__element_index -= self.max_elements_on_page
+        self.__element_index -= self.MAX_ELEMENTS_ON_PAGE
 
         if self.__element_index <= 0:
             self.__header.arrow_up.visible = False
@@ -447,11 +449,6 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
 
     @abstractmethod
     def create_header(self) -> GovernanceListHeader:
-        pass
-
-    @property
-    @abstractmethod
-    def max_elements_on_page(self) -> int:
         pass
 
     @property

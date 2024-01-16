@@ -35,7 +35,6 @@ if TYPE_CHECKING:
 
     from clive.models import Operation
 
-MAX_PROPOSALS_ON_PAGE: Final[int] = 10
 MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION: Final[int] = 5
 
 
@@ -215,10 +214,6 @@ class ProposalsTable(GovernanceTable):
         return ProposalsList(self.proposals_chunk)
 
     @property
-    def max_elements_on_page(self) -> int:
-        return MAX_PROPOSALS_ON_PAGE
-
-    @property
     def amount_of_fetched_elements(self) -> int:
         return len(self.provider.content.proposals)
 
@@ -226,7 +221,7 @@ class ProposalsTable(GovernanceTable):
     def proposals_chunk(self) -> list[ProposalData] | None:
         if not self.provider.updated:
             return None
-        return self.provider.content.proposals[self.element_index : self.element_index + MAX_PROPOSALS_ON_PAGE]
+        return self.provider.content.proposals[self.element_index : self.element_index + self.MAX_ELEMENTS_ON_PAGE]
 
     @property
     def provider(self) -> ProposalsDataProvider:  # type: ignore[override]
