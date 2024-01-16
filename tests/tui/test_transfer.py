@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 import pytest
-import test_tools as tt
 
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.models import Asset
@@ -14,9 +13,10 @@ from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.textual import get_notification_transaction_id, write_text
 from clive_local_tools.tui.utils import get_mode, log_current_view
-from schemas.operations import TransferOperation
+from schemas.operations import AnyOperation, TransferOperation
 
 if TYPE_CHECKING:
+    import test_tools as tt
     from textual.pilot import Pilot
 
     from clive_local_tools.tui.types import ASSET_TOKEN, OPERATION_PROCESSING
@@ -45,6 +45,28 @@ async def fill_transfer_data(
     if memo:
         await pilot.press("tab")
         await write_text(pilot, memo)
+
+
+def assert_operations_placed_in_blockchain(
+    node: tt.InitNode, transaction_id: str, *expected_operations: AnyOperation
+) -> None:
+    transaction = node.api.account_history.get_transaction(
+        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
+    )
+    operations_to_check = list(expected_operations)
+    for operation_representation in transaction.operations:
+        _operation_representation: HF26Representation[AnyOperation] = operation_representation
+        operation = _operation_representation.value
+        if operation in operations_to_check:
+            operations_to_check.remove(operation)
+
+    message = (
+        "Operations missing in blockchain.\n"
+        f"Operations: {operations_to_check}\n"
+        "were not found in the transaction:\n"
+        f"{transaction}."
+    )
+    assert not operations_to_check, message
 
 
 testdata = [
@@ -114,14 +136,7 @@ async def test_transfers(
     node.wait_number_of_blocks(1)
 
     # ASSERT
-    transaction = node.api.account_history.get_transaction(
-        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
-    )
-    tt.logger.debug(f"transaction: {transaction}")
-    operation: HF26Representation[TransferOperation] = transaction.operations[0]
-    tt.logger.debug(f"operation: {operation}")
-    assert operation.type == "transfer_operation", f"Expected 'transfer_operation' type! Current is '{operation.type}'."
-    assert operation.value == expected, "Transfer operation different than expected!"
+    assert_operations_placed_in_blockchain(node, transaction_id, expected)
 
 
 @pytest.mark.parametrize("activated", [True, False])
@@ -180,17 +195,4 @@ async def test_transfers_finalize_cart(
     node.wait_number_of_blocks(1)
 
     # ASSERT
-    transaction = node.api.account_history.get_transaction(
-        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
-    )
-    tt.logger.debug(f"transaction: {transaction}")
-
-    operation: HF26Representation[TransferOperation] = transaction.operations[0]
-    tt.logger.debug(f"operation0: {operation}")
-    assert operation.type == "transfer_operation", f"Expected 'transfer_operation' type! Current is '{operation.type}'."
-    assert operation.value == expected0, "Transfer operation different than expected!"
-
-    operation = transaction.operations[1]
-    tt.logger.debug(f"operation1: {operation}")
-    assert operation.type == "transfer_operation", f"Expected 'transfer_operation' type! Current is '{operation.type}'."
-    assert operation.value == expected1, "Transfer operation different than expected!"
+    assert_operations_placed_in_blockchain(node, transaction_id, expected0, expected1)
