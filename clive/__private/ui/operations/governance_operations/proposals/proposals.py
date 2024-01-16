@@ -209,7 +209,7 @@ class ProposalsTable(GovernanceTable):
         await self.reset_page()
 
     def create_header(self) -> GovernanceListHeader:
-        return ProposalsListHeader(table_selector=type(self))
+        return ProposalsListHeader()
 
     @property
     def list_widget_type(self) -> type[GovernanceListWidget[ProposalData]]:  # type: ignore[override]

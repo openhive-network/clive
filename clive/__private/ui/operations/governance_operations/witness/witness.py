@@ -344,7 +344,7 @@ class WitnessesTable(GovernanceTable):
         return WitnessesList(self.witnesses_chunk)
 
     def create_header(self) -> GovernanceListHeader:
-        return WitnessesListHeader(table_selector=type(self))
+        return WitnessesListHeader()
 
     @property
     def provider(self) -> WitnessesDataProvider:  # type: ignore[override]

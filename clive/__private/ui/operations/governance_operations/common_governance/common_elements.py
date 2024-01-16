@@ -9,6 +9,7 @@ from textual.binding import Binding
 from textual.containers import Grid, Horizontal, ScrollableContainer, Vertical, VerticalScroll
 from textual.css.query import NoMatches
 from textual.events import Click
+from textual.message import Message
 from textual.widgets import Label, Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
@@ -57,56 +58,37 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataTypes], 
 
 
 class ArrowUpWidget(Static):
-    """
-    Widget that reacts to a click and switches the table page to the previous one.
+    class Clicked(Message):
+        """Message send when WitnessCheckbox is clicked."""
 
-    Args:
-    ----
-    table_selector (GovernanceTable): Type of the table class to which the arrow belongs.
-    """
-
-    def __init__(self, table_selector: type[GovernanceTable]) -> None:
+    def __init__(self) -> None:
         super().__init__(renderable="↑ PgUp")
-        self.__table_selector = table_selector
 
     @on(Click)
-    async def previous_page(self) -> None:
-        await self.app.query_one(self.__table_selector).previous_page()
+    async def clicked(self) -> None:
+        self.post_message(self.Clicked())
 
 
 class ArrowDownWidget(Static):
-    """
-    Widget that reacts to a click and switches the table page to the next one.
+    class Clicked(Message):
+        """Message send when WitnessCheckbox is clicked."""
 
-    Args:
-    ----
-    table_selector (GovernanceTable): Type of the table class to which the arrow belongs.
-    """
-
-    def __init__(self, table_selector: type[GovernanceTable]) -> None:
+    def __init__(self) -> None:
         super().__init__(renderable="↓ PgDn")
-        self.__table_selector = table_selector
 
     @on(Click)
-    async def next_page(self) -> None:
-        await self.app.query_one(self.__table_selector).next_page()
+    async def clicked(self) -> None:
+        self.post_message(self.Clicked())
 
 
 class GovernanceListHeader(Grid, AbstractClassMessagePump):
-    """
-    Widget representing the header of a list that allows page switching using PgUp and PgDn.
+    """Widget representing the header of a list that allows page switching using PgUp and PgDn."""
 
-    Args:
-    ----
-    table_selector (GovernanceTable): Type of the table class to which the header belongs.
-    """
-
-    def __init__(self, table_selector: type[GovernanceTable]):
+    def __init__(self) -> None:
         super().__init__()
-        self.__table_selector = table_selector
 
-        self.arrow_up = ArrowUpWidget(self.__table_selector)
-        self.arrow_down = ArrowDownWidget(self.__table_selector)
+        self.arrow_up = ArrowUpWidget()
+        self.arrow_down = ArrowDownWidget()
 
         self.arrow_up.visible = False
 
@@ -412,6 +394,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
     def set_loaded(self) -> None:
         self.__is_loading = False
 
+    @on(ArrowDownWidget.Clicked)
     async def next_page(self) -> None:
         if self.__is_loading:
             return
@@ -430,6 +413,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
 
         await self.sync_list(focus_first_element=True)
 
+    @on(ArrowUpWidget.Clicked)
     async def previous_page(self) -> None:
         if self.__is_loading:
             return
