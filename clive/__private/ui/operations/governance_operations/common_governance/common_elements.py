@@ -125,15 +125,12 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], Abstra
     """
 
     BINDINGS = [
-        Binding("pageup", "previous_page", "PgDn"),
-        Binding("pagedown", "next_page", "PgUp"),
         Binding("enter", "toggle_checkbox", "", show=False),
     ]
 
-    def __init__(self, row_data: GovernanceDataTypes, table_selector: type[GovernanceTable], evenness: str = "even"):
+    def __init__(self, row_data: GovernanceDataTypes, evenness: str = "even"):
         super().__init__()
         self.__row_data: GovernanceDataTypes = row_data
-        self.__table_type = table_selector
         self.__evenness = evenness
 
         self.governance_checkbox = GovernanceCheckbox(
@@ -165,12 +162,6 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataTypes], Abstra
             self.add_class("dimmed")
             return
         self.remove_class("dimmed")
-
-    async def action_next_page(self) -> None:
-        await self.app.query_one(self.__table_type).next_page()
-
-    async def action_previous_page(self) -> None:
-        await self.app.query_one(self.__table_type).previous_page()
 
     def action_toggle_checkbox(self) -> None:
         self.governance_checkbox.toggle()
@@ -348,6 +339,11 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdentifiersT], 
 
 
 class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus=False):
+    BINDINGS = [
+        Binding("pageup", "previous_page", "PgDn"),
+        Binding("pagedown", "next_page", "PgUp"),
+    ]
+
     def __init__(self) -> None:
         super().__init__()
         self.__element_index = 0
@@ -368,7 +364,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
             await self.mount(new_list)
 
         if focus_first_element:
-            first_row = self.query(self.row_widget_type).first()  # type: ignore[arg-type]
+            first_row = self.query(GovernanceTableRow).first()  # type: ignore[type-abstract]
             first_row.focus()
 
         self.set_loaded()
@@ -395,7 +391,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
         self.__is_loading = False
 
     @on(ArrowDownWidget.Clicked)
-    async def next_page(self) -> None:
+    async def action_next_page(self) -> None:
         if self.__is_loading:
             return
 
@@ -414,7 +410,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
         await self.sync_list(focus_first_element=True)
 
     @on(ArrowUpWidget.Clicked)
-    async def previous_page(self) -> None:
+    async def action_previous_page(self) -> None:
         if self.__is_loading:
             return
 
@@ -444,11 +440,6 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
     @abstractmethod
     def list_widget_type(self) -> type[GovernanceListWidget[GovernanceDataTypes]]:
         """Should return type of witnesses or proposals list."""
-
-    @property
-    @abstractmethod
-    def row_widget_type(self) -> type[GovernanceTableRow[GovernanceDataTypes]]:
-        """Should return Proposal or Witness type."""
 
     @property
     @abstractmethod

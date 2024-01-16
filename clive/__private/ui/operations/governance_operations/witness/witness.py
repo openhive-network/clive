@@ -308,9 +308,9 @@ class WitnessesList(GovernanceListWidget[WitnessData]):
         if self.elements_to_display is not None:
             for id_, witness in enumerate(self.elements_to_display):
                 if id_ % 2 == 0:
-                    yield Witness(witness, table_selector=type(self.app.query_one(WitnessesTable)))
+                    yield Witness(witness)
                 else:
-                    yield Witness(witness, table_selector=type(self.app.query_one(WitnessesTable)), evenness="odd")
+                    yield Witness(witness, evenness="odd")
 
 
 class WitnessesListHeader(GovernanceListHeader):
@@ -335,10 +335,6 @@ class WitnessesTable(GovernanceTable):
     @property
     def list_widget_type(self) -> type[GovernanceListWidget[WitnessData]]:  # type: ignore[override]
         return WitnessesList
-
-    @property
-    def row_widget_type(self) -> type[GovernanceTableRow[WitnessData]]:  # type: ignore[override]
-        return Witness
 
     def create_new_list_widget(self) -> WitnessesList:  # type: ignore[override]
         return WitnessesList(self.witnesses_chunk)

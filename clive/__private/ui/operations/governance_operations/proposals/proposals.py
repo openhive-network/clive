@@ -185,9 +185,9 @@ class ProposalsList(GovernanceListWidget[ProposalData]):
         if self.elements_to_display is not None:
             for id_, proposal in enumerate(self.elements_to_display):
                 if id_ % 2 == 0:
-                    yield Proposal(proposal, table_selector=type(self.app.query_one(ProposalsTable)))
+                    yield Proposal(proposal)
                 else:
-                    yield Proposal(proposal, table_selector=type(self.app.query_one(ProposalsTable)), evenness="odd")
+                    yield Proposal(proposal, evenness="odd")
 
 
 class PlaceTaker(Static):
@@ -214,10 +214,6 @@ class ProposalsTable(GovernanceTable):
     @property
     def list_widget_type(self) -> type[GovernanceListWidget[ProposalData]]:  # type: ignore[override]
         return ProposalsList
-
-    @property
-    def row_widget_type(self) -> type[GovernanceTableRow[ProposalData]]:  # type: ignore[override]
-        return Proposal
 
     def create_new_list_widget(self) -> GovernanceListWidget[ProposalData]:  # type: ignore[override]
         return ProposalsList(self.proposals_chunk)
