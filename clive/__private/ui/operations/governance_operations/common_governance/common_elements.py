@@ -333,7 +333,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
         """It should only be filled in if there is a limit on the number of votes - if not, a `pass` should be implemented."""
 
 
-class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus=False):
+class GovernanceTable(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=False):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 10
 
     BINDINGS = [
@@ -347,6 +347,29 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
 
         self.__header = self.create_header()
         self.__is_loading = True
+
+    @property
+    @abstractmethod
+    def data(self) -> list[GovernanceDataT]:
+        """Should return data from data provider."""
+
+    @property
+    def is_data_available(self) -> bool:
+        return self.provider.updated
+
+    @property
+    def data_chunk(self) -> list[GovernanceDataT] | None:
+        if not self.is_data_available:
+            return None
+
+        return self.data[self.__element_index : self.__element_index + self.MAX_ELEMENTS_ON_PAGE]
+
+    @property
+    def data_length(self) -> int:
+        if not self.is_data_available:
+            return 0
+
+        return len(self.data)
 
     def compose(self) -> ComposeResult:
         yield self.header
@@ -393,7 +416,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
             return
 
         # It is used to prevent the user from switching to an empty page by key binding
-        if self.amount_of_fetched_elements - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index + 1:
+        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index + 1:
             self.notify("No elements on the next page", severity="warning")
             return
 
@@ -401,7 +424,7 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
 
         self.__header.arrow_up.visible = True
 
-        if self.amount_of_fetched_elements - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
+        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
             self.__header.arrow_down.visible = False
 
         await self.sync_list(focus_first_element=True)
@@ -444,9 +467,4 @@ class GovernanceTable(Vertical, CliveWidget, AbstractClassMessagePump, can_focus
 
     @abstractmethod
     def create_header(self) -> GovernanceListHeader:
-        pass
-
-    @property
-    @abstractmethod
-    def amount_of_fetched_elements(self) -> int:
         pass

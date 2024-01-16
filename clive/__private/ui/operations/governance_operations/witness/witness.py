@@ -308,7 +308,7 @@ class WitnessesListHeader(GovernanceListHeader):
         yield Static("Modify the votes for witnesses", id="witnesses-additional-headline")
 
 
-class WitnessesTable(GovernanceTable):
+class WitnessesTable(GovernanceTable[WitnessData]):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 30
 
     async def search_witnesses(self, pattern: str, limit: int) -> None:
@@ -319,8 +319,8 @@ class WitnessesTable(GovernanceTable):
         await self.provider.set_mode_top_witnesses().wait()
         await self.reset_page()
 
-    def create_new_list_widget(self) -> WitnessesList:  # type: ignore[override]
-        return WitnessesList(self.witnesses_chunk)
+    def create_new_list_widget(self) -> WitnessesList:
+        return WitnessesList(self.data_chunk)
 
     def create_header(self) -> GovernanceListHeader:
         return WitnessesListHeader()
@@ -330,17 +330,8 @@ class WitnessesTable(GovernanceTable):
         return self.app.query_one(WitnessesDataProvider)
 
     @property
-    def amount_of_fetched_elements(self) -> int:
-        return len(self.provider.content.witnesses)
-
-    @property
-    def witnesses_chunk(self) -> list[WitnessData] | None:
-        if not self.provider.updated:
-            return None
-
-        return list(self.provider.content.witnesses.values())[
-            self.element_index : self.element_index + self.MAX_ELEMENTS_ON_PAGE
-        ]
+    def data(self) -> list[WitnessData]:
+        return list(self.provider.content.witnesses.values())
 
 
 class Witnesses(TabPane, OperationActionBindings):

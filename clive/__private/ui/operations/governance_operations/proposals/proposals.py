@@ -200,7 +200,7 @@ class ProposalsListHeader(GovernanceListHeader):
         yield PlaceTaker()
 
 
-class ProposalsTable(GovernanceTable):
+class ProposalsTable(GovernanceTable[ProposalData]):
     async def change_order(self, order: str, order_direction: str, status: str) -> None:
         await self.provider.change_order(order=order, order_direction=order_direction, status=status).wait()
         await self.reset_page()
@@ -208,22 +208,16 @@ class ProposalsTable(GovernanceTable):
     def create_header(self) -> GovernanceListHeader:
         return ProposalsListHeader()
 
-    def create_new_list_widget(self) -> GovernanceListWidget[ProposalData]:  # type: ignore[override]
-        return ProposalsList(self.proposals_chunk)
-
-    @property
-    def amount_of_fetched_elements(self) -> int:
-        return len(self.provider.content.proposals)
-
-    @property
-    def proposals_chunk(self) -> list[ProposalData] | None:
-        if not self.provider.updated:
-            return None
-        return self.provider.content.proposals[self.element_index : self.element_index + self.MAX_ELEMENTS_ON_PAGE]
+    def create_new_list_widget(self) -> GovernanceListWidget[ProposalData]:
+        return ProposalsList(self.data_chunk)
 
     @property
     def provider(self) -> ProposalsDataProvider:  # type: ignore[override]
         return self.app.query_one(ProposalsDataProvider)
+
+    @property
+    def data(self) -> list[ProposalData]:
+        return self.provider.content.proposals
 
 
 class ProposalsOrderChange(Vertical):
