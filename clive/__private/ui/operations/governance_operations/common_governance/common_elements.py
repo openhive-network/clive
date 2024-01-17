@@ -35,9 +35,16 @@ class ScrollablePart(ScrollableContainer, can_focus=False):
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
-    """A widget containing a list of rows."""
+    """A widget containing a list of `GovernanceTableRow` widgets."""
 
     def __init__(self, data: list[GovernanceDataT] | None) -> None:
+        """
+        Initialize the GovernanceListWidget.
+
+        Args:
+        ----
+        data: list of data to fill in the `GovernanceTableRow` widgets.
+        """
         super().__init__()
         self._data: list[GovernanceDataT] | None = data
 
@@ -115,12 +122,6 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     """
     Base class for rows in governance tables. The type of data used to create rows must be passed generically.
 
-    Args:
-    ----
-    row_data (GovernanceDataTypes): Data used to create the row of the table, either `ProposalsData` or `WitnessesData` in this case.
-    table_selector (GovernanceTable): Type of the table class to which the row belongs.
-    evenness (str): Defaults to "even."
-
     Widgets that belong to the row are displayed by `create_row_content` and are defined by the inheriting class.
     """
 
@@ -138,6 +139,14 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         """If True, add action to the actions container, if False - remove."""
 
     def __init__(self, row_data: GovernanceDataT, *, even: bool = False):
+        """
+        Initialize the GovernanceTableRow.
+
+        Args:
+        ----
+        row_data: Data used to create the row of the table.
+        even: Whether the row is even or odd.
+        """
         super().__init__()
         self.__row_data: GovernanceDataT = row_data
         self.__evenness = "even" if even else "odd"
@@ -207,17 +216,18 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
 
 class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
-    """
-    Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed.
-
-    Args:
-    ----
-    action_identifier (GovernanceActionsIdentifiers): Used to pass the ID of the proposal or the name of the witness. Type chosen generically - int or str.
-    vote (bool): Action to be performed - vote or not.
-    pending (bool): Indicates if the operation with such identifier is already in the cart. Default is False.
-    """
+    """Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed."""
 
     def __init__(self, identifier: str, vote: bool, pending: bool = False):
+        """
+        Initialize the GovernanceActionRow.
+
+        Args:
+        ----
+        identifier: Used to pass the identifier of the action. It is used to create id of the widget.
+        vote: Action to be performed - vote or not.
+        pending: Indicates if the operation with such identifier is already in the cart.
+        """
         self.__identifier: str = identifier
 
         super().__init__(id=self.create_action_row_id(identifier))
@@ -247,18 +257,13 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
 
 class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
-    """
-    Contains a table of actions to be performed after confirmation. Type of the action identifier (witness name or proposal id) must be specified generically.
-
-    Attributes
-    ----------
-    __actions_to_perform (dict): a dict with proposal_id or witness name as key and action to pe performed as value
-    """
+    """Contains a table of actions to be performed after confirmation."""
 
     NAME_OF_ACTION: ClassVar[str] = "Action"
 
     def __init__(self) -> None:
         self.__actions_to_perform: dict[str, bool] = {}
+        """A dict with action identifier as key and action to pe performed as value"""
         super().__init__()
         self.__actions_votes = 0
 
