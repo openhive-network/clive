@@ -100,6 +100,9 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
         """Should return row widget."""
 
     def compose(self) -> ComposeResult:
+        if self.is_data_empty:
+            yield Label("No elements to display")
+            return
         yield from self._create_rows()
 
     def _create_rows(self) -> ComposeResult:
@@ -109,6 +112,17 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
                     yield self._create_row(element, even=True)
                 else:
                     yield self._create_row(element)
+
+    @property
+    def is_data_empty(self) -> bool:
+        if self._data is None:
+            #  When _data is None - still waiting for the response.
+            return False
+
+        if len(self._data) == 0:
+            return True
+
+        return False
 
 
 class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):
@@ -234,11 +248,6 @@ class GovernanceTable(
     async def sync_list(self, focus_first_element: bool = False) -> None:
         await self.loading_set()
 
-        if self.is_data_available and self.data_length == 0:
-            await self.query(GovernanceListWidget).remove()  # type: ignore[type-abstract]
-            await self.mount(Label("No elements to display", id="no-elements-information"))
-            return
-
         new_list = self.create_new_list_widget()
 
         with self.app.batch_update():
@@ -254,17 +263,12 @@ class GovernanceTable(
     async def loading_set(self) -> None:
         self.__is_loading = True
         with contextlib.suppress(NoMatches):
-            await self.delete_no_elements_label()
             selected_list = self.query_one(GovernanceListWidget)  # type: ignore[type-abstract]
             await selected_list.query("*").remove()
             await selected_list.mount(Label("Loading..."))
 
     def set_loaded(self) -> None:
         self.__is_loading = False
-
-    async def delete_no_elements_label(self) -> None:
-        with contextlib.suppress(NoMatches):
-            await self.query_one("#no-elements-information").remove()
 
     @on(ArrowDownWidget.Clicked)
     async def action_next_page(self) -> None:
