@@ -189,7 +189,7 @@ class Witness(GovernanceTableRow[WitnessData]):
     @property
     def is_already_in_actions_container(self) -> bool:
         try:
-            self.app.query_one(WitnessesActions.get_action_id(self.row_data.name))
+            self.app.query_one(WitnessesActions.create_action_row_id(self.row_data.name))
         except NoMatches:
             return False
         else:
@@ -252,8 +252,9 @@ class WitnessManualSearch(Horizontal):
 
 
 class WitnessActionRow(GovernanceActionRow):
-    def create_widget_id(self) -> str:
-        return f"{convert_witness_name_to_widget_id(self.action_identifier)}-witness-action-row"
+    @staticmethod
+    def create_action_row_id(identifier: str) -> str:
+        return f"{convert_witness_name_to_widget_id(identifier)}-witness-action-row"
 
 
 class WitnessesActions(GovernanceActions):
@@ -265,8 +266,8 @@ class WitnessesActions(GovernanceActions):
                 await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
 
     @staticmethod
-    def get_action_id(identifier: str) -> str:
-        return f"#{convert_witness_name_to_widget_id(identifier)}-witness-action-row"
+    def create_action_row_id(identifier: str) -> str:
+        return WitnessActionRow.create_action_row_id(identifier)
 
     def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         return WitnessActionRow(identifier, vote, pending)

@@ -220,7 +220,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     def __init__(self, identifier: str, vote: bool, pending: bool = False):
         self.__identifier: str = identifier
 
-        super().__init__(id=self.create_widget_id())
+        super().__init__(id=self.create_action_row_id(identifier))
         self.__vote = vote
         self.__pending = pending
 
@@ -240,8 +240,9 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     def action_identifier(self) -> str:
         return self.__identifier
 
+    @staticmethod
     @abstractmethod
-    def create_widget_id(self) -> str:
+    def create_action_row_id(identifier: str) -> str:
         pass
 
 
@@ -274,7 +275,7 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
-            self.query_one(self.get_action_id(identifier))
+            self.get_widget_by_id(self.create_action_row_id(identifier))
             return
 
         await self.mount(self.create_action_row(identifier, vote, pending))
@@ -291,7 +292,7 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
 
     async def remove_row(self, identifier: str, vote: bool = False) -> None:
         try:
-            await self.query_one(self.get_action_id(identifier)).remove()
+            await self.get_widget_by_id(self.create_action_row_id(identifier)).remove()
         except NoMatches:
             return
 
@@ -318,7 +319,7 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
 
     @staticmethod
     @abstractmethod
-    def get_action_id(identifier: str) -> str:
+    def create_action_row_id(identifier: str) -> str:
         """Should return id of the action row."""
 
     @abstractmethod

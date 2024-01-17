@@ -137,7 +137,7 @@ class Proposal(GovernanceTableRow[ProposalData]):
     @property
     def is_already_in_actions_container(self) -> bool:
         try:
-            self.app.query_one(ProposalsActions.get_action_id(identifier=str(self.row_data.proposal_id)))
+            self.app.query_one(ProposalsActions.create_action_row_id(identifier=str(self.row_data.proposal_id)))
         except NoMatches:
             return False
         else:
@@ -145,8 +145,9 @@ class Proposal(GovernanceTableRow[ProposalData]):
 
 
 class ProposalActionRow(GovernanceActionRow):
-    def create_widget_id(self) -> str:
-        return f"proposal{self.action_identifier}-action-row"
+    @staticmethod
+    def create_action_row_id(identifier: str) -> str:
+        return f"proposal{identifier}-action-row"
 
 
 class ProposalsActions(GovernanceActions):
@@ -165,8 +166,8 @@ class ProposalsActions(GovernanceActions):
         """Proposals Tab has not restriction about the number of votes."""
 
     @staticmethod
-    def get_action_id(identifier: str) -> str:
-        return f"#proposal{identifier}-action-row"
+    def create_action_row_id(identifier: str) -> str:
+        return ProposalActionRow.create_action_row_id(identifier)
 
     @property
     def provider(self) -> ProposalsDataProvider:
