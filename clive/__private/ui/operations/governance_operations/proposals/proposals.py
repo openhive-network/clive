@@ -156,7 +156,7 @@ class ProposalsActions(GovernanceActions[int]):
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, UpdateProposalVotesOperation):
                 for proposal in operation.proposal_ids:
-                    await self.mount_action(identifier=proposal, pending=True)
+                    await self.add_row(identifier=proposal, pending=True)
 
     def create_action_row(self, identifier: int, vote: bool, pending: bool) -> GovernanceActionRow[int]:
         return ProposalActionRow(identifier, vote, pending)

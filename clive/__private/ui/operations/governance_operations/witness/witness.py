@@ -262,7 +262,7 @@ class WitnessesActions(GovernanceActions[str]):
     async def mount_operations_from_cart(self) -> None:
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, AccountWitnessVoteOperation):
-                await self.mount_action(identifier=operation.witness, vote=operation.approve, pending=True)
+                await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
 
     @staticmethod
     def get_action_id(identifier: str) -> str:

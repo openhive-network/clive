@@ -130,12 +130,13 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     ]
 
     @dataclass
-    class ChangeActionRequest(Message):
+    class ChangeActionStatus(Message):
         """Message send when user request by GovernanceCheckbox to change the action status."""
 
         action_identifier: str | int
         vote: bool
-        mount: bool
+        add: bool
+        """If True, add action to the actions container, if False - remove."""
 
     def __init__(self, row_data: GovernanceDataT, *, even: bool = False):
         super().__init__()
@@ -150,15 +151,6 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     def on_mount(self) -> None:
         self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
-
-    def move_row_to_actions(self) -> None:
-        self.post_message(
-            self.ChangeActionRequest(
-                action_identifier=self.action_identifier,
-                vote=not self.row_data.voted,
-                mount=self.governance_checkbox.value,
-            )
-        )
 
     def compose(self) -> ComposeResult:
         yield self.governance_checkbox
@@ -178,8 +170,14 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         self.governance_checkbox.toggle()
 
     @on(GovernanceCheckbox.Changed)
-    async def modify_action_status(self) -> None:
-        self.move_row_to_actions()
+    async def change_action_status(self) -> None:
+        self.post_message(
+            self.ChangeActionStatus(
+                action_identifier=self.action_identifier,
+                vote=not self.row_data.voted,
+                add=self.governance_checkbox.value,
+            )
+        )
 
     @abstractmethod
     def create_row_content(self) -> ComposeResult:
@@ -273,7 +271,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
     async def on_mount(self) -> None:  # type: ignore[override]
         await self.mount_operations_from_cart()
 
-    async def mount_action(self, identifier: GovernanceActionsIdT, vote: bool = False, pending: bool = False) -> None:
+    async def add_row(self, identifier: GovernanceActionsIdT, vote: bool = False, pending: bool = False) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
@@ -292,7 +290,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
         if not pending:
             self.add_to_actions(identifier, vote)
 
-    async def unmount_action(self, identifier: GovernanceActionsIdT, vote: bool = False) -> None:
+    async def remove_row(self, identifier: GovernanceActionsIdT, vote: bool = False) -> None:
         try:
             await self.query_one(self.get_action_id(identifier)).remove()
         except NoMatches:
@@ -348,14 +346,6 @@ class GovernanceTable(
         Binding("pageup", "previous_page", "PgDn"),
         Binding("pagedown", "next_page", "PgUp"),
     ]
-
-    @dataclass
-    class ChangeActions(Message):
-        """Emitted when `GovernanceTableRow` request to mount/unmount the action."""
-
-        action_identifier: int | str
-        vote: bool
-        mount: bool
 
     def __init__(self) -> None:
         super().__init__()
@@ -464,12 +454,6 @@ class GovernanceTable(
 
         await self.sync_list(focus_first_element=True)
 
-    @on(GovernanceTableRow.ChangeActionRequest)
-    def change_actions_status(self, event: GovernanceTableRow.ChangeActionRequest) -> None:
-        self.post_message(
-            self.ChangeActions(action_identifier=event.action_identifier, vote=event.vote, mount=event.mount)
-        )
-
     @property
     def element_index(self) -> int:
         return self.__element_index
@@ -495,11 +479,11 @@ class GovernanceTable(
 class GovernanceTabPane(TabPane, OperationActionBindings):
     """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
 
-    @on(GovernanceTable.ChangeActions)
-    async def change_action_status(self, event: GovernanceTable.ChangeActions) -> None:
+    @on(GovernanceTableRow.ChangeActionStatus)
+    async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:
         actions = self.query_one(GovernanceActions)  # type: ignore[type-abstract]
 
-        if event.mount:
-            await actions.mount_action(identifier=event.action_identifier, vote=event.vote)
-            return
-        await actions.unmount_action(identifier=event.action_identifier, vote=event.vote)
+        if event.add:
+            await actions.add_row(identifier=event.action_identifier, vote=event.vote)
+        else:
+            await actions.remove_row(identifier=event.action_identifier, vote=event.vote)
