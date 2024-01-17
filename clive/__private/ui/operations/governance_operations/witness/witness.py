@@ -272,7 +272,7 @@ class WitnessesActions(GovernanceActions):
     def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         return WitnessActionRow(identifier, vote, pending)
 
-    def create_number_of_votes_restriction(self) -> None:
+    def hook_on_row_added(self) -> None:
         if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
             self.notify(f"The number of voted witnesses may not exceed {MAX_NUMBER_OF_WITNESSES_VOTES}")
 

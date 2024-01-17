@@ -285,10 +285,10 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         else:
             self.__actions_votes -= 1
 
-        self.create_number_of_votes_restriction()
-
         if not pending:
             self.add_to_actions(identifier, vote)
+
+        self.hook_on_row_added()
 
     async def remove_row(self, identifier: str, vote: bool = False) -> None:
         try:
@@ -331,8 +331,8 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
         pass
 
     @abstractmethod
-    def create_number_of_votes_restriction(self) -> None:
-        """It should only be filled in if there is a limit on the number of votes - if not, a `pass` should be implemented."""
+    def hook_on_row_added(self) -> None:
+        """Method to create any action when an action row is added to the action table."""
 
 
 class GovernanceTable(
