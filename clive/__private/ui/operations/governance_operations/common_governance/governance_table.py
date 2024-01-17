@@ -7,61 +7,24 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Grid, Horizontal, ScrollableContainer, Vertical, VerticalScroll
+from textual.containers import Grid, Vertical
 from textual.css.query import NoMatches
 from textual.events import Click
 from textual.message import Message
-from textual.widgets import Label, Static, TabPane
+from textual.widgets import Label, Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
-from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
-from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-
 GovernanceDataT = TypeVar("GovernanceDataT", ProposalData, WitnessData)
 GovernanceDataProviderT = TypeVar("GovernanceDataProviderT", bound=DataProvider[Any])
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
-
-
-class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
-    """A widget containing a list of `GovernanceTableRow` widgets."""
-
-    def __init__(self, data: list[GovernanceDataT] | None) -> None:
-        """
-        Initialize the GovernanceListWidget.
-
-        Args:
-        ----
-        data: list of data to fill in the `GovernanceTableRow` widgets.
-        """
-        super().__init__()
-        self._data: list[GovernanceDataT] | None = data
-
-    @abstractmethod
-    def _create_row(self, data: GovernanceDataT, *, even: bool = False) -> GovernanceTableRow[GovernanceDataT]:
-        """Should return row widget."""
-
-    def compose(self) -> ComposeResult:
-        yield from self._create_rows()
-
-    def _create_rows(self) -> ComposeResult:
-        if self._data is not None:
-            for idx, element in enumerate(self._data):
-                if idx % 2 == 0:
-                    yield self._create_row(element, even=True)
-                else:
-                    yield self._create_row(element)
 
 
 class ArrowUpWidget(Static):
@@ -116,6 +79,36 @@ class GovernanceListHeader(Grid, AbstractClassMessagePump):
 
         If no custom headlines should yield an empty element (placeholder).
         """
+
+
+class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
+    """A widget containing a list of `GovernanceTableRow` widgets."""
+
+    def __init__(self, data: list[GovernanceDataT] | None) -> None:
+        """
+        Initialize the GovernanceListWidget.
+
+        Args:
+        ----
+        data: list of data to fill in the `GovernanceTableRow` widgets.
+        """
+        super().__init__()
+        self._data: list[GovernanceDataT] | None = data
+
+    @abstractmethod
+    def _create_row(self, data: GovernanceDataT, *, even: bool = False) -> GovernanceTableRow[GovernanceDataT]:
+        """Should return row widget."""
+
+    def compose(self) -> ComposeResult:
+        yield from self._create_rows()
+
+    def _create_rows(self) -> ComposeResult:
+        if self._data is not None:
+            for idx, element in enumerate(self._data):
+                if idx % 2 == 0:
+                    yield self._create_row(element, even=True)
+                else:
+                    yield self._create_row(element)
 
 
 class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):
@@ -187,6 +180,14 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
             )
         )
 
+    @property
+    def row_data(self) -> GovernanceDataT:
+        return self.__row_data
+
+    @property
+    def evenness(self) -> str:
+        return self.__evenness
+
     @abstractmethod
     def create_row_content(self) -> ComposeResult:
         """Should contain all the information that should be displayed about the item."""
@@ -206,139 +207,6 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     def is_operation_in_cart(self) -> bool:
         """Should check if operation is already in the cart."""
 
-    @property
-    def row_data(self) -> GovernanceDataT:
-        return self.__row_data
-
-    @property
-    def evenness(self) -> str:
-        return self.__evenness
-
-
-class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
-    """Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed."""
-
-    def __init__(self, identifier: str, vote: bool, pending: bool = False):
-        """
-        Initialize the GovernanceActionRow.
-
-        Args:
-        ----
-        identifier: Used to pass the identifier of the action. It is used to create id of the widget.
-        vote: Action to be performed - vote or not.
-        pending: Indicates if the operation with such identifier is already in the cart.
-        """
-        self.__identifier: str = identifier
-
-        super().__init__(id=self.create_action_row_id(identifier))
-        self.__vote = vote
-        self.__pending = pending
-
-    def compose(self) -> ComposeResult:
-        if self.__pending:
-            yield Label("Pending", classes="action-pending action-label")
-            yield Label(str(self.action_identifier), classes="action-identifier")
-            return
-
-        if self.__vote:
-            yield Label("Vote", classes="action-vote action-label")
-        else:
-            yield Label("Unvote", classes="action-unvote action-label")
-        yield Label(str(self.action_identifier), classes="action-identifier")
-
-    @property
-    def action_identifier(self) -> str:
-        return self.__identifier
-
-    @staticmethod
-    @abstractmethod
-    def create_action_row_id(identifier: str) -> str:
-        pass
-
-
-class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
-    """Contains a table of actions to be performed after confirmation."""
-
-    NAME_OF_ACTION: ClassVar[str] = "Action"
-
-    def __init__(self) -> None:
-        self.__actions_to_perform: dict[str, bool] = {}
-        """A dict with action identifier as key and action to pe performed as value"""
-        super().__init__()
-        self.__actions_votes = 0
-
-    def compose(self) -> ComposeResult:
-        yield Static("Actions to be performed:", id="actions-header")
-        with Horizontal(id="name-and-action"):
-            yield Static("Action", id="action-row")
-            yield Static(self.NAME_OF_ACTION, id="action-name-row")
-
-    async def on_mount(self) -> None:  # type: ignore[override]
-        await self.mount_operations_from_cart()
-
-    async def add_row(self, identifier: str, vote: bool = False, pending: bool = False) -> None:
-        # check if action is already in the list, if so - return
-
-        with contextlib.suppress(NoMatches):
-            self.get_widget_by_id(self.create_action_row_id(identifier))
-            return
-
-        await self.mount(self.create_action_row(identifier, vote, pending))
-
-        if vote:
-            self.__actions_votes += 1
-        else:
-            self.__actions_votes -= 1
-
-        if not pending:
-            self.add_to_actions(identifier, vote)
-
-        self.hook_on_row_added()
-
-    async def remove_row(self, identifier: str, vote: bool = False) -> None:
-        try:
-            await self.get_widget_by_id(self.create_action_row_id(identifier)).remove()
-        except NoMatches:
-            return
-
-        if vote:
-            self.__actions_votes -= 1
-        else:
-            self.__actions_votes += 1
-
-        self.delete_from_actions(identifier)
-
-    def add_to_actions(self, identifier: str, vote: bool) -> None:
-        self.__actions_to_perform[identifier] = vote
-
-    def delete_from_actions(self, identifier: str) -> None:
-        self.__actions_to_perform.pop(identifier)
-
-    @property
-    def actions_votes(self) -> int:
-        return self.__actions_votes
-
-    @property
-    def actions_to_perform(self) -> dict[str, bool]:
-        return self.__actions_to_perform
-
-    @staticmethod
-    @abstractmethod
-    def create_action_row_id(identifier: str) -> str:
-        """Should return id of the action row."""
-
-    @abstractmethod
-    async def mount_operations_from_cart(self) -> None:
-        """Should check cart and mount all appropriate operations."""
-
-    @abstractmethod
-    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
-        pass
-
-    @abstractmethod
-    def hook_on_row_added(self) -> None:
-        """Method to create any action when an action row is added to the action table."""
-
 
 class GovernanceTable(
     Vertical, CliveWidget, Generic[GovernanceDataT, GovernanceDataProviderT], AbstractClassMessagePump, can_focus=False
@@ -357,34 +225,19 @@ class GovernanceTable(
         self.__header = self.create_header()
         self.__is_loading = True
 
-    @property
-    @abstractmethod
-    def data(self) -> list[GovernanceDataT]:
-        """Should return data from data provider."""
-
-    @property
-    def is_data_available(self) -> bool:
-        return self.provider.updated
-
-    @property
-    def data_chunk(self) -> list[GovernanceDataT] | None:
-        if not self.is_data_available:
-            return None
-
-        return self.data[self.__element_index : self.__element_index + self.MAX_ELEMENTS_ON_PAGE]
-
-    @property
-    def data_length(self) -> int:
-        if not self.is_data_available:
-            return 0
-
-        return len(self.data)
-
     def compose(self) -> ComposeResult:
         yield self.header
 
+    def on_mount(self) -> None:
+        self.watch(self.provider, "_content", callback=lambda: self.sync_list())
+
     async def sync_list(self, focus_first_element: bool = False) -> None:
         await self.loading_set()
+
+        if self.is_data_available and self.data_length == 0:
+            await self.query(GovernanceListWidget).remove()  # type: ignore[type-abstract]
+            await self.mount(Label("No elements to display", id="no-elements-information"))
+            return
 
         new_list = self.create_new_list_widget()
 
@@ -398,26 +251,20 @@ class GovernanceTable(
 
         self.set_loaded()
 
-    def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=lambda: self.sync_list())
-
     async def loading_set(self) -> None:
         self.__is_loading = True
         with contextlib.suppress(NoMatches):
+            await self.delete_no_elements_label()
             selected_list = self.query_one(GovernanceListWidget)  # type: ignore[type-abstract]
             await selected_list.query("*").remove()
             await selected_list.mount(Label("Loading..."))
 
-    async def reset_page(self) -> None:
-        self.__element_index = 0
-        self.__header.arrow_up.visible = False
-        self.__header.arrow_down.visible = True
-
-        if not self.__is_loading:
-            await self.sync_list()
-
     def set_loaded(self) -> None:
         self.__is_loading = False
+
+    async def delete_no_elements_label(self) -> None:
+        with contextlib.suppress(NoMatches):
+            await self.query_one("#no-elements-information").remove()
 
     @on(ArrowDownWidget.Clicked)
     async def action_next_page(self) -> None:
@@ -457,6 +304,37 @@ class GovernanceTable(
 
         await self.sync_list(focus_first_element=True)
 
+    async def reset_page(self) -> None:
+        self.__element_index = 0
+        self.__header.arrow_up.visible = False
+        self.__header.arrow_down.visible = True
+
+        if not self.__is_loading:
+            await self.sync_list()
+
+    @property
+    @abstractmethod
+    def data(self) -> list[GovernanceDataT]:
+        """Should return data from data provider."""
+
+    @property
+    def is_data_available(self) -> bool:
+        return self.provider.updated
+
+    @property
+    def data_chunk(self) -> list[GovernanceDataT] | None:
+        if not self.is_data_available:
+            return None
+
+        return self.data[self.__element_index : self.__element_index + self.MAX_ELEMENTS_ON_PAGE]
+
+    @property
+    def data_length(self) -> int:
+        if not self.is_data_available:
+            return 0
+
+        return len(self.data)
+
     @property
     def element_index(self) -> int:
         return self.__element_index
@@ -477,16 +355,3 @@ class GovernanceTable(
     @abstractmethod
     def create_header(self) -> GovernanceListHeader:
         pass
-
-
-class GovernanceTabPane(TabPane, OperationActionBindings):
-    """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
-
-    @on(GovernanceTableRow.ChangeActionStatus)
-    async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:
-        actions = self.query_one(GovernanceActions)  # type: ignore[type-abstract]
-
-        if event.add:
-            await actions.add_row(identifier=event.action_identifier, vote=event.vote)
-        else:
-            await actions.remove_row(identifier=event.action_identifier, vote=event.vote)

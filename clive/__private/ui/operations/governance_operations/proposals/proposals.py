@@ -14,15 +14,19 @@ from clive.__private.core.commands.data_retrieval.proposals_data import Proposal
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
+from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
     GovernanceActionRow,
     GovernanceActions,
+)
+from clive.__private.ui.operations.governance_operations.common_governance.governance_tab_pane import (
+    GovernanceTabPane,
+    ScrollablePart,
+)
+from clive.__private.ui.operations.governance_operations.common_governance.governance_table import (
     GovernanceListHeader,
     GovernanceListWidget,
     GovernanceTable,
     GovernanceTableRow,
-    GovernanceTabPane,
-    ScrollablePart,
 )
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from schemas.operations.update_proposal_votes_operation import UpdateProposalVotesOperation

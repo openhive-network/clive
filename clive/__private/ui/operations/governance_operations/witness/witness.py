@@ -18,15 +18,19 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessD
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
+from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
     GovernanceActionRow,
     GovernanceActions,
+)
+from clive.__private.ui.operations.governance_operations.common_governance.governance_tab_pane import (
+    GovernanceTabPane,
+    ScrollablePart,
+)
+from clive.__private.ui.operations.governance_operations.common_governance.governance_table import (
     GovernanceListHeader,
     GovernanceListWidget,
     GovernanceTable,
     GovernanceTableRow,
-    GovernanceTabPane,
-    ScrollablePart,
 )
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
