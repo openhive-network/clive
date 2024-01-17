@@ -34,28 +34,26 @@ class ScrollablePart(ScrollableContainer, can_focus=False):
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
-    """
-    Governance data is used to create elements of the list, and its type must be passed generically.
+    """A widget containing a list of rows."""
 
-    Args:
-    ----
-    elements (list[GovernanceDataTypes] | None): List of elements to be displayed in the table. Precise type must be passed generically!
-    """
-
-    def __init__(self, elements: list[GovernanceDataT] | None) -> None:
+    def __init__(self, data: list[GovernanceDataT] | None) -> None:
         super().__init__()
-        self.__elements_to_display: list[GovernanceDataT] | None = elements
-
-    def compose(self) -> ComposeResult:
-        yield from self.show_elements()
+        self._data: list[GovernanceDataT] | None = data
 
     @abstractmethod
-    def show_elements(self) -> ComposeResult:
-        """Should yield witnesses or proposals widgets."""
+    def _create_row(self, data: GovernanceDataT, *, even: bool = False) -> GovernanceTableRow[GovernanceDataT]:
+        """Should return row widget."""
 
-    @property
-    def elements_to_display(self) -> list[GovernanceDataT] | None:
-        return self.__elements_to_display
+    def compose(self) -> ComposeResult:
+        yield from self._create_rows()
+
+    def _create_rows(self) -> ComposeResult:
+        if self._data is not None:
+            for idx, element in enumerate(self._data):
+                if idx % 2 == 0:
+                    yield self._create_row(element, even=True)
+                else:
+                    yield self._create_row(element)
 
 
 class ArrowUpWidget(Static):
@@ -129,10 +127,10 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         Binding("enter", "toggle_checkbox", "", show=False),
     ]
 
-    def __init__(self, row_data: GovernanceDataT, evenness: str = "even"):
+    def __init__(self, row_data: GovernanceDataT, *, even: bool = False):
         super().__init__()
         self.__row_data: GovernanceDataT = row_data
-        self.__evenness = evenness
+        self.__evenness = "even" if even else "odd"
 
         self.governance_checkbox = GovernanceCheckbox(
             is_voted=row_data.voted,

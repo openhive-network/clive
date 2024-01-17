@@ -289,13 +289,8 @@ class WitnessesActions(GovernanceActions[str]):
 
 
 class WitnessesList(GovernanceListWidget[WitnessData]):
-    def show_elements(self) -> ComposeResult:
-        if self.elements_to_display is not None:
-            for id_, witness in enumerate(self.elements_to_display):
-                if id_ % 2 == 0:
-                    yield Witness(witness)
-                else:
-                    yield Witness(witness, evenness="odd")
+    def _create_row(self, data: WitnessData, *, even: bool = False) -> Witness:
+        return Witness(data, even=even)
 
 
 class WitnessesListHeader(GovernanceListHeader):

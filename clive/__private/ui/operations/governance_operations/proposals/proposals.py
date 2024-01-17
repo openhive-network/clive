@@ -178,13 +178,8 @@ class ProposalsActions(GovernanceActions[int]):
 
 
 class ProposalsList(GovernanceListWidget[ProposalData]):
-    def show_elements(self) -> ComposeResult:
-        if self.elements_to_display is not None:
-            for id_, proposal in enumerate(self.elements_to_display):
-                if id_ % 2 == 0:
-                    yield Proposal(proposal)
-                else:
-                    yield Proposal(proposal, evenness="odd")
+    def _create_row(self, data: ProposalData, *, even: bool = False) -> Proposal:
+        return Proposal(data, even=even)
 
 
 class PlaceTaker(Static):
