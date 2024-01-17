@@ -28,7 +28,6 @@ if TYPE_CHECKING:
 
 GovernanceDataT = TypeVar("GovernanceDataT", ProposalData, WitnessData)
 GovernanceDataProviderT = TypeVar("GovernanceDataProviderT", bound=DataProvider[Any])
-GovernanceActionsIdT = TypeVar("GovernanceActionsIdT", int, str)
 
 
 class ScrollablePart(ScrollableContainer, can_focus=False):
@@ -133,7 +132,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     class ChangeActionStatus(Message):
         """Message send when user request by GovernanceCheckbox to change the action status."""
 
-        action_identifier: str | int
+        action_identifier: str
         vote: bool
         add: bool
         """If True, add action to the actions container, if False - remove."""
@@ -185,7 +184,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @property
     @abstractmethod
-    def action_identifier(self) -> GovernanceActionsIdT:
+    def action_identifier(self) -> str:
         """Should return witness name or proposal id to mount the action correctly."""
 
     @property
@@ -207,7 +206,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         return self.__evenness
 
 
-class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdT], AbstractClassMessagePump):
+class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     """
     Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed.
 
@@ -218,8 +217,8 @@ class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdT], AbstractCla
     pending (bool): Indicates if the operation with such identifier is already in the cart. Default is False.
     """
 
-    def __init__(self, identifier: GovernanceActionsIdT, vote: bool, pending: bool = False):
-        self.__identifier: GovernanceActionsIdT = identifier
+    def __init__(self, identifier: str, vote: bool, pending: bool = False):
+        self.__identifier: str = identifier
 
         super().__init__(id=self.create_widget_id())
         self.__vote = vote
@@ -238,7 +237,7 @@ class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdT], AbstractCla
         yield Label(str(self.action_identifier), classes="action-identifier")
 
     @property
-    def action_identifier(self) -> GovernanceActionsIdT:
+    def action_identifier(self) -> str:
         return self.__identifier
 
     @abstractmethod
@@ -246,7 +245,7 @@ class GovernanceActionRow(Horizontal, Generic[GovernanceActionsIdT], AbstractCla
         pass
 
 
-class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusWithScrollbarsOnly):
+class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     """
     Contains a table of actions to be performed after confirmation. Type of the action identifier (witness name or proposal id) must be specified generically.
 
@@ -258,7 +257,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
     NAME_OF_ACTION: ClassVar[str] = "Action"
 
     def __init__(self) -> None:
-        self.__actions_to_perform: dict[GovernanceActionsIdT, bool] = {}
+        self.__actions_to_perform: dict[str, bool] = {}
         super().__init__()
         self.__actions_votes = 0
 
@@ -271,7 +270,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
     async def on_mount(self) -> None:  # type: ignore[override]
         await self.mount_operations_from_cart()
 
-    async def add_row(self, identifier: GovernanceActionsIdT, vote: bool = False, pending: bool = False) -> None:
+    async def add_row(self, identifier: str, vote: bool = False, pending: bool = False) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
@@ -290,7 +289,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
         if not pending:
             self.add_to_actions(identifier, vote)
 
-    async def remove_row(self, identifier: GovernanceActionsIdT, vote: bool = False) -> None:
+    async def remove_row(self, identifier: str, vote: bool = False) -> None:
         try:
             await self.query_one(self.get_action_id(identifier)).remove()
         except NoMatches:
@@ -303,10 +302,10 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
 
         self.delete_from_actions(identifier)
 
-    def add_to_actions(self, identifier: GovernanceActionsIdT, vote: bool) -> None:
+    def add_to_actions(self, identifier: str, vote: bool) -> None:
         self.__actions_to_perform[identifier] = vote
 
-    def delete_from_actions(self, identifier: GovernanceActionsIdT) -> None:
+    def delete_from_actions(self, identifier: str) -> None:
         self.__actions_to_perform.pop(identifier)
 
     @property
@@ -314,12 +313,12 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
         return self.__actions_votes
 
     @property
-    def actions_to_perform(self) -> dict[GovernanceActionsIdT, bool]:
+    def actions_to_perform(self) -> dict[str, bool]:
         return self.__actions_to_perform
 
     @staticmethod
     @abstractmethod
-    def get_action_id(identifier: GovernanceActionsIdT) -> str:
+    def get_action_id(identifier: str) -> str:
         """Should return id of the action row."""
 
     @abstractmethod
@@ -327,9 +326,7 @@ class GovernanceActions(VerticalScroll, Generic[GovernanceActionsIdT], CanFocusW
         """Should check cart and mount all appropriate operations."""
 
     @abstractmethod
-    def create_action_row(
-        self, identifier: GovernanceActionsIdT, vote: bool, pending: bool
-    ) -> GovernanceActionRow[GovernanceActionsIdT]:
+    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         pass
 
     @abstractmethod

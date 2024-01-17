@@ -172,7 +172,7 @@ class Witness(GovernanceTableRow[WitnessData]):
         await self.app.push_screen(DetailsScreen(witness_name=self.row_data.name))
 
     @property
-    def action_identifier(self) -> str:  # type: ignore[override]
+    def action_identifier(self) -> str:
         return self.row_data.name
 
     @property
@@ -251,12 +251,12 @@ class WitnessManualSearch(Horizontal):
         self.post_message(self.Clear())
 
 
-class WitnessActionRow(GovernanceActionRow[str]):
+class WitnessActionRow(GovernanceActionRow):
     def create_widget_id(self) -> str:
         return f"{convert_witness_name_to_widget_id(self.action_identifier)}-witness-action-row"
 
 
-class WitnessesActions(GovernanceActions[str]):
+class WitnessesActions(GovernanceActions):
     NAME_OF_ACTION: ClassVar[str] = "Witness"
 
     async def mount_operations_from_cart(self) -> None:
@@ -268,7 +268,7 @@ class WitnessesActions(GovernanceActions[str]):
     def get_action_id(identifier: str) -> str:
         return f"#{convert_witness_name_to_widget_id(identifier)}-witness-action-row"
 
-    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow[str]:
+    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         return WitnessActionRow(identifier, vote, pending)
 
     def create_number_of_votes_restriction(self) -> None:

@@ -121,8 +121,8 @@ class Proposal(GovernanceTableRow[ProposalData]):
         yield ProposalInformation(self.row_data, self.evenness)
 
     @property
-    def action_identifier(self) -> int:  # type: ignore[override]
-        return self.row_data.proposal_id
+    def action_identifier(self) -> str:
+        return str(self.row_data.proposal_id)
 
     @property
     def is_operation_in_cart(self) -> bool:
@@ -137,35 +137,35 @@ class Proposal(GovernanceTableRow[ProposalData]):
     @property
     def is_already_in_actions_container(self) -> bool:
         try:
-            self.app.query_one(ProposalsActions.get_action_id(identifier=self.row_data.proposal_id))
+            self.app.query_one(ProposalsActions.get_action_id(identifier=str(self.row_data.proposal_id)))
         except NoMatches:
             return False
         else:
             return True
 
 
-class ProposalActionRow(GovernanceActionRow[int]):
+class ProposalActionRow(GovernanceActionRow):
     def create_widget_id(self) -> str:
         return f"proposal{self.action_identifier}-action-row"
 
 
-class ProposalsActions(GovernanceActions[int]):
+class ProposalsActions(GovernanceActions):
     NAME_OF_ACTION: ClassVar[str] = "Proposal"
 
     async def mount_operations_from_cart(self) -> None:
         for operation in self.app.world.profile_data.cart:
             if isinstance(operation, UpdateProposalVotesOperation):
-                for proposal in operation.proposal_ids:
-                    await self.add_row(identifier=proposal, pending=True)
+                for proposal_id in operation.proposal_ids:
+                    await self.add_row(identifier=str(proposal_id), pending=True)
 
-    def create_action_row(self, identifier: int, vote: bool, pending: bool) -> GovernanceActionRow[int]:
+    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         return ProposalActionRow(identifier, vote, pending)
 
     def create_number_of_votes_restriction(self) -> None:
         """Proposals Tab has not restriction about the number of votes."""
 
     @staticmethod
-    def get_action_id(identifier: int) -> str:
+    def get_action_id(identifier: str) -> str:
         return f"#proposal{identifier}-action-row"
 
     @property
@@ -297,7 +297,9 @@ class Proposals(GovernanceTabPane):
     def __split_proposals(self, approve: bool = True) -> list[list[int]]:
         operations_to_perform = self.app.query_one(ProposalsActions).actions_to_perform
         proposals_ids_to_return = [
-            proposal_id for proposal_id, action_approve in operations_to_perform.items() if action_approve == approve
+            int(proposal_id)
+            for proposal_id, action_approve in operations_to_perform.items()
+            if action_approve == approve
         ]
         proposals_ids_to_return.sort()
 
