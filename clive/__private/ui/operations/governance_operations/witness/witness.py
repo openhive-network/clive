@@ -11,14 +11,13 @@ from textual.css.query import NoMatches
 from textual.events import Click, Enter
 from textual.message import Message
 from textual.screen import ModalScreen
-from textual.widgets import Input, Label, Static, TabPane
+from textual.widgets import Input, Label, Static
 
 from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
     GovernanceActionRow,
     GovernanceActions,
@@ -26,6 +25,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.commo
     GovernanceListWidget,
     GovernanceTable,
     GovernanceTableRow,
+    GovernanceTabPane,
     ScrollablePart,
 )
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -170,10 +170,6 @@ class Witness(GovernanceTableRow[WitnessData]):
     @on(DetailsLabel.Clicked)
     async def action_show_details(self) -> None:
         await self.app.push_screen(DetailsScreen(witness_name=self.row_data.name))
-
-    @property
-    def actions_type(self) -> type[WitnessesActions]:  # type: ignore[override]
-        return WitnessesActions
 
     @property
     def action_identifier(self) -> str:  # type: ignore[override]
@@ -329,7 +325,7 @@ class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):
         return list(self.provider.content.witnesses.values())
 
 
-class Witnesses(TabPane, OperationActionBindings):
+class Witnesses(GovernanceTabPane):
     """TabPane with all content about witnesses."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)

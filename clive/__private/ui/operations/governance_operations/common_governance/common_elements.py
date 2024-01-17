@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeVar
 
 from textual import on
@@ -10,12 +11,13 @@ from textual.containers import Grid, Horizontal, ScrollableContainer, Vertical, 
 from textual.css.query import NoMatches
 from textual.events import Click
 from textual.message import Message
-from textual.widgets import Label, Static
+from textual.widgets import Label, Static, TabPane
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -127,6 +129,14 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         Binding("enter", "toggle_checkbox", "", show=False),
     ]
 
+    @dataclass
+    class ChangeActionRequest(Message):
+        """Message send when user request by GovernanceCheckbox to change the action status."""
+
+        action_identifier: str | int
+        vote: bool
+        mount: bool
+
     def __init__(self, row_data: GovernanceDataT, *, even: bool = False):
         super().__init__()
         self.__row_data: GovernanceDataT = row_data
@@ -141,12 +151,14 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     def on_mount(self) -> None:
         self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
 
-    async def move_row_to_actions(self) -> None:
-        actions_table = self.app.query_one(self.actions_type)  # type: ignore[arg-type]
-        if self.governance_checkbox.value:
-            await actions_table.mount_action(identifier=self.action_identifier, vote=not self.row_data.voted)  # type: ignore[arg-type]
-            return
-        await actions_table.unmount_action(identifier=self.action_identifier, vote=not self.row_data.voted)  # type: ignore[arg-type]
+    def move_row_to_actions(self) -> None:
+        self.post_message(
+            self.ChangeActionRequest(
+                action_identifier=self.action_identifier,
+                vote=not self.row_data.voted,
+                mount=self.governance_checkbox.value,
+            )
+        )
 
     def compose(self) -> ComposeResult:
         yield self.governance_checkbox
@@ -167,16 +179,11 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @on(GovernanceCheckbox.Changed)
     async def modify_action_status(self) -> None:
-        await self.move_row_to_actions()
+        self.move_row_to_actions()
 
     @abstractmethod
     def create_row_content(self) -> ComposeResult:
         """Should contain all the information that should be displayed about the item."""
-
-    @property
-    @abstractmethod
-    def actions_type(self) -> type[GovernanceActions[GovernanceActionsIdT]]:
-        """Should return type of actions table that action will be mounted."""
 
     @property
     @abstractmethod
@@ -342,6 +349,14 @@ class GovernanceTable(
         Binding("pagedown", "next_page", "PgUp"),
     ]
 
+    @dataclass
+    class ChangeActions(Message):
+        """Emitted when `GovernanceTableRow` request to mount/unmount the action."""
+
+        action_identifier: int | str
+        vote: bool
+        mount: bool
+
     def __init__(self) -> None:
         super().__init__()
         self.__element_index = 0
@@ -449,6 +464,12 @@ class GovernanceTable(
 
         await self.sync_list(focus_first_element=True)
 
+    @on(GovernanceTableRow.ChangeActionRequest)
+    def change_actions_status(self, event: GovernanceTableRow.ChangeActionRequest) -> None:
+        self.post_message(
+            self.ChangeActions(action_identifier=event.action_identifier, vote=event.vote, mount=event.mount)
+        )
+
     @property
     def element_index(self) -> int:
         return self.__element_index
@@ -469,3 +490,16 @@ class GovernanceTable(
     @abstractmethod
     def create_header(self) -> GovernanceListHeader:
         pass
+
+
+class GovernanceTabPane(TabPane, OperationActionBindings):
+    """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
+
+    @on(GovernanceTable.ChangeActions)
+    async def change_action_status(self, event: GovernanceTable.ChangeActions) -> None:
+        actions = self.query_one(GovernanceActions)  # type: ignore[type-abstract]
+
+        if event.mount:
+            await actions.mount_action(identifier=event.action_identifier, vote=event.vote)
+            return
+        await actions.unmount_action(identifier=event.action_identifier, vote=event.vote)

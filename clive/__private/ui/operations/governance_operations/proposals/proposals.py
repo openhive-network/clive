@@ -7,14 +7,13 @@ from textual import on
 from textual.containers import Horizontal, Vertical
 from textual.css.query import NoMatches
 from textual.message import Message
-from textual.widgets import Label, Select, Static, TabPane
+from textual.widgets import Label, Select, Static
 
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.common_governance.common_elements import (
     GovernanceActionRow,
     GovernanceActions,
@@ -22,6 +21,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.commo
     GovernanceListWidget,
     GovernanceTable,
     GovernanceTableRow,
+    GovernanceTabPane,
     ScrollablePart,
 )
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
@@ -119,10 +119,6 @@ class Proposal(GovernanceTableRow[ProposalData]):
 
     def create_row_content(self) -> ComposeResult:
         yield ProposalInformation(self.row_data, self.evenness)
-
-    @property
-    def actions_type(self) -> type[ProposalsActions]:  # type: ignore[override]
-        return ProposalsActions
 
     @property
     def action_identifier(self) -> int:  # type: ignore[override]
@@ -248,7 +244,7 @@ class ProposalsOrderChange(Vertical):
         self.post_message(self.Search(order_by, order_direction, status))
 
 
-class Proposals(TabPane, OperationActionBindings):
+class Proposals(GovernanceTabPane):
     """TabPane with all content about proposals."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
