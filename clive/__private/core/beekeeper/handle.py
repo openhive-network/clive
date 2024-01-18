@@ -106,6 +106,7 @@ class Beekeeper:
 
     async def launch(  # noqa: PLR0913
         self,
+        create_init_session: bool = True,
         *,
         backtrace: str = BeekeeperDefaults.DEFAULT_BACKTRACE,
         data_dir: Path = BeekeeperDefaults.DEFAULT_DATA_DIR,
@@ -129,8 +130,9 @@ class Beekeeper:
             webserver_http_endpoint=webserver_http_endpoint,
         )
         await self.__start(arguments=arguments)
-        await self.__set_token()
-        assert self.token
+        if create_init_session:
+            await self.__set_token()
+            assert self.token
         return self
 
     @property
