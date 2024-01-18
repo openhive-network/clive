@@ -28,9 +28,8 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         vote: Action to be performed - vote or not.
         pending: Indicates if the operation with such identifier is already in the cart.
         """
-        self.__identifier: str = identifier
-
         super().__init__(id=self.create_action_row_id(identifier))
+        self.__identifier = identifier
         self.__vote = vote
         self.__pending = pending
 
@@ -62,9 +61,9 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     NAME_OF_ACTION: ClassVar[str] = "Action"
 
     def __init__(self) -> None:
+        super().__init__()
         self.__actions_to_perform: dict[str, bool] = {}
         """A dict with action identifier as key and action to pe performed as value"""
-        super().__init__()
         self.__actions_votes = 0
 
     def compose(self) -> ComposeResult:
