@@ -121,6 +121,9 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     def actions_to_perform(self) -> dict[str, bool]:
         return self.__actions_to_perform
 
+    def hook_on_row_added(self) -> None:
+        """Method to create any action when an action row is added to the action table."""
+
     @staticmethod
     @abstractmethod
     def create_action_row_id(identifier: str) -> str:
@@ -133,7 +136,3 @@ class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     @abstractmethod
     def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         pass
-
-    @abstractmethod
-    def hook_on_row_added(self) -> None:
-        """Method to create any action when an action row is added to the action table."""

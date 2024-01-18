@@ -166,9 +166,6 @@ class ProposalsActions(GovernanceActions):
     def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
         return ProposalActionRow(identifier, vote, pending)
 
-    def hook_on_row_added(self) -> None:
-        """Proposals Tab has not additional actions."""
-
     @staticmethod
     def create_action_row_id(identifier: str) -> str:
         return ProposalActionRow.create_action_row_id(identifier)
