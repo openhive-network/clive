@@ -282,7 +282,10 @@ class WitnessesActions(GovernanceActions):
 
     @property
     def actual_number_of_votes(self) -> int:
-        return self.provider.content.number_of_votes + self.actions_votes
+        amount = self.actions_votes
+        if self.provider.updated:
+            amount += self.provider.content.number_of_votes
+        return amount
 
     @property
     def provider(self) -> WitnessesDataProvider:
