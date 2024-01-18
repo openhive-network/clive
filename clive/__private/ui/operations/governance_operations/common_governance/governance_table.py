@@ -212,9 +212,18 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         """Should return witness name or proposal id to mount the action correctly."""
 
     @property
-    @abstractmethod
     def is_already_in_actions_container(self) -> bool:
         """Should check if operation is already in the action container."""
+        try:
+            self.app.query_one(self.get_action_row_id())
+        except NoMatches:
+            return False
+        else:
+            return True
+
+    @abstractmethod
+    def get_action_row_id(self) -> str:
+        """Should return an id of the action row."""
 
     @property
     @abstractmethod

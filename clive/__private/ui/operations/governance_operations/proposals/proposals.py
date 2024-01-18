@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, ClassVar
 
 from textual import on
 from textual.containers import Horizontal, Vertical
-from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Label, Select, Static
 
@@ -128,6 +127,9 @@ class Proposal(GovernanceTableRow[ProposalData]):
     def action_identifier(self) -> str:
         return str(self.row_data.proposal_id)
 
+    def get_action_row_id(self) -> str:
+        return ProposalActionRow.create_action_row_id(self.action_identifier)
+
     @property
     def is_operation_in_cart(self) -> bool:
         for operation in self.app.world.profile_data.cart:
@@ -137,15 +139,6 @@ class Proposal(GovernanceTableRow[ProposalData]):
             ):
                 return True
         return False
-
-    @property
-    def is_already_in_actions_container(self) -> bool:
-        try:
-            self.app.query_one(ProposalsActions.create_action_row_id(identifier=str(self.row_data.proposal_id)))
-        except NoMatches:
-            return False
-        else:
-            return True
 
 
 class ProposalActionRow(GovernanceActionRow):

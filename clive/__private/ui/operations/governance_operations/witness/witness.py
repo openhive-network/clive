@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on, work
 from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
-from textual.css.query import NoMatches
 from textual.events import Click, Enter
 from textual.message import Message
 from textual.screen import ModalScreen
@@ -179,6 +178,9 @@ class Witness(GovernanceTableRow[WitnessData]):
     def action_identifier(self) -> str:
         return self.row_data.name
 
+    def get_action_row_id(self) -> str:
+        return WitnessesActions.create_action_row_id(self.action_identifier)
+
     @property
     def is_operation_in_cart(self) -> bool:
         return (
@@ -189,15 +191,6 @@ class Witness(GovernanceTableRow[WitnessData]):
             )
             in self.app.world.profile_data.cart
         )
-
-    @property
-    def is_already_in_actions_container(self) -> bool:
-        try:
-            self.app.query_one(WitnessesActions.create_action_row_id(self.row_data.name))
-        except NoMatches:
-            return False
-        else:
-            return True
 
 
 class WitnessManualSearch(Horizontal):
