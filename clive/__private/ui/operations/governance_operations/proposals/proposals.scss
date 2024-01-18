@@ -44,11 +44,6 @@ ProposalsListHeader {
   height: auto;
 }
 
-PlaceTaker {
-  column-span: 5;
-  height: 1;
-}
-
 ProposalsListHeader #proposals-header-column {
   background: $table-header-contrast-column;
 }

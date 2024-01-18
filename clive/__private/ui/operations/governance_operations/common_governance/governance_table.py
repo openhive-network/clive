@@ -72,13 +72,9 @@ class GovernanceListHeader(Grid, AbstractClassMessagePump):
     def create_custom_columns(self) -> ComposeResult:
         """Should yield custom columns for each table."""
 
-    @abstractmethod
     def create_additional_headlines(self) -> ComposeResult:
-        """
-        Should yield custom headlines that will be placed above the arrows and column names.
-
-        If no custom headlines should yield an empty element (placeholder).
-        """
+        """Should yield custom headlines that will be placed above the arrows and column names."""
+        return []
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):

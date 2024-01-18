@@ -173,17 +173,9 @@ class ProposalsList(GovernanceListWidget[ProposalData]):
         return Proposal(data, even=even)
 
 
-class PlaceTaker(Static):
-    pass
-
-
 class ProposalsListHeader(GovernanceListHeader):
     def create_custom_columns(self) -> ComposeResult:
         yield Static("Update your proposal votes", id="proposals-header-column")
-
-    def create_additional_headlines(self) -> ComposeResult:
-        """Proposals header has no additional headline."""
-        yield PlaceTaker()
 
 
 class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
