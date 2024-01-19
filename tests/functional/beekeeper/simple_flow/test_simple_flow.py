@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import json
 import shutil
 from pathlib import Path
 
@@ -9,7 +8,6 @@ import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.beekeeper.exceptions import BeekeeperTokenNotAvailableError
-from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
 from clive_local_tools import checkers, waiters
 from clive_local_tools.constants import DIGEST_TO_SIGN, MAX_SESSION_NUMBER
 from clive_local_tools.generates import generate_wallet_name, generate_wallet_password
@@ -22,32 +20,15 @@ async def prepare_wallet_dirs(
     source_directory: Path | None = None,
 ) -> tuple[list[WalletInfo], list[Path]]:
     """Copy wallets (.wallet) files from source_directory into number_of_dirs temp dirs."""
-
-    async def _export_wallet_to_wallet_info(wallets: list[WalletInfo], source_directory_keys: Path) -> None:
-        """Load keys from exported walled and save them into WalletInfo."""
-        for wallet in wallets:
-            with Path.open(source_directory_keys / f"{wallet.name}.keys") as key_file:
-                keys = json.load(key_file)
-                wallet.keys.pairs.clear()
-                for key in keys:
-                    wallet.keys.pairs.append(
-                        Keys.KeysPair(
-                            PublicKeyAliased(value=key["public_key"], alias=""),
-                            PrivateKeyAliased(value=key["private_key"], alias=""),
-                        )
-                    )
-
     temp_directories = [tmp_path / f"wallets-{n}" for n in range(number_of_dirs)]
 
     for tmp_dir in temp_directories:
         tmp_dir.mkdir()
 
-    wallets = [
-        WalletInfo(name=generate_wallet_name(i), password=generate_wallet_password(i), keys=Keys(count=i % 5))
-        for i in range(MAX_SESSION_NUMBER)
-    ]
-
+    source_directory_keys = None
     if source_directory:
+        # Copy wallets/keys to the target temp directories, so that all beekeepers
+        # will have its own source of wallets.
         source_directory_wallets = source_directory / "wallets"
         source_directory_keys = source_directory / "keys"
         wallet_files = [f.name for f in source_directory_wallets.glob("*.wallet")]
@@ -56,7 +37,15 @@ async def prepare_wallet_dirs(
                 source_path = source_directory_wallets / wallet_file
                 destination_path = temp_dir / wallet_file
                 shutil.copy2(source_path, destination_path)
-        await _export_wallet_to_wallet_info(wallets=wallets, source_directory_keys=source_directory_keys)
+    wallets = [
+        WalletInfo(
+            generate_wallet_password(i),
+            generate_wallet_name(i),
+            Keys() if source_directory_keys else Keys(count=i % 5),
+            source_directory_keys / f"{generate_wallet_name(i)}.keys" if source_directory_keys else None,
+        )
+        for i in range(MAX_SESSION_NUMBER)
+    ]
     return wallets, temp_directories
 
 
@@ -140,8 +129,17 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
         for nr, session in enumerate(sessions):
             wallet = wallets[nr]
             async with bk.with_session(token=session):
+                # Unlock wallet
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
+                unlocked_wallets = [
+                    wallet.name for wallet in (await bk.api.list_wallets()).wallets if wallet.unlocked is True
+                ]
+                assert wallet.name in unlocked_wallets, "Wallet should be unlocked."
+                # Close wallet
                 await bk.api.close(wallet_name=wallet.name)
+                opened_wallets = [wallet.name for wallet in (await bk.api.list_wallets()).wallets]
+                assert wallet.name not in opened_wallets, "Wallet should be closed."
+
             await bk.api.close_session(token=session)
 
         await waiters.wait_for_beekeeper_to_close(beekeeper=bk)
