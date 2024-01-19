@@ -13,6 +13,10 @@ from clive.models import Asset, Operation
 if TYPE_CHECKING:
     from datetime import timedelta
 
+    from schemas.fields.assets.hbd import AssetHbdHF26
+    from schemas.fields.assets.hive import AssetHiveHF26
+    from schemas.fields.compound import HbdExchangeRate
+
 
 def _is_null_date(value: datetime) -> bool:
     return value == datetime(1970, 1, 1, 0, 0, 0)
@@ -110,3 +114,9 @@ def humanize_hive_power(value: int) -> str:
     matched = format_fix_regex.match(formatted_string)
     assert matched is not None, "Given string does not match regex"
     return f"{matched[1]}{matched[2]} HP".upper()
+
+
+def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate[AssetHiveHF26, AssetHbdHF26]) -> str:
+    """Return pretty formatted hdb exchange rate (price feed)."""
+    price_feed = int(hbd_exchange_rate.base.amount) / 10**3
+    return f"{price_feed:.3f} $"

@@ -9,7 +9,7 @@ from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
 )
-from clive.__private.core.formatters.humanize import humanize_hive_power
+from clive.__private.core.formatters.humanize import humanize_hbd_exchange_rate, humanize_hive_power
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
@@ -202,7 +202,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             missed_blocks=witness.total_missed,
             voted=witness.owner in data.witnesses_votes,
             last_block=witness.last_confirmed_block_num,
-            price_feed=f"{int(witness.hbd_exchange_rate.base.amount) / 10 ** 3!s} $",
+            price_feed=humanize_hbd_exchange_rate(witness.hbd_exchange_rate),
             version=witness.running_version,
             url=witness.url,
         )
