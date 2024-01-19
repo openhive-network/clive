@@ -1,6 +1,10 @@
 $governance-green-color: $success-darken-3;
 $governance-red-color: $error;
 
+Proxy {
+  height: auto;
+}
+
 Proxy .current-proxy-static {
   background: $accent-lighten-1;
   width: 1fr;
@@ -10,7 +14,7 @@ Proxy .current-proxy-static {
 Proxy AccountNameInput {
   margin-top: 1;
   margin-bottom: 1;
-  height: 3;
+  height: auto;
 }
 
 Proxy #set-button-container {
@@ -39,4 +43,12 @@ Proxy #change-proxy-button {
 Proxy #remove-proxy-button {
   margin-left: 3;
   background: $governance-red-color;
+}
+
+ProxyNotSet {
+  height: auto;
+}
+
+ProxySet {
+  height: auto;
 }
