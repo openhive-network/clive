@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Container, Horizontal, ScrollableContainer
+from textual.containers import Container, Horizontal
 from textual.widgets import Button, Static, TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.operations.governance_operations.common_governance.governance_tab_pane import ScrollablePart
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -15,10 +16,6 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class ProxyBaseContainer(Container):
