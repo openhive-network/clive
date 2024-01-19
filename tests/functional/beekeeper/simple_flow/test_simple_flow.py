@@ -49,6 +49,44 @@ async def prepare_wallet_dirs(
     return wallets, temp_directories
 
 
+async def assert_wallet_unlocked(bk: Beekeeper, wallet_name: str) -> None:
+    """Assert function checking if given wallet has been unlocked."""
+    unlocked_wallets = [wallet.name for wallet in (await bk.api.list_wallets()).wallets if wallet.unlocked is True]
+    assert wallet_name in unlocked_wallets, "Wallet should be unlocked."
+
+
+async def assert_wallet_closed(bk: Beekeeper, wallet_name: str) -> None:
+    """Assert function checking if given wallet has been closed."""
+    opened_wallets = [wallet.name for wallet in (await bk.api.list_wallets()).wallets]
+    assert wallet_name not in opened_wallets, "Wallet should be closed."
+
+
+async def assert_wallet_opened(bk: Beekeeper, wallet_name: str) -> None:
+    """Assert function checking if given wallet has been opened."""
+    opened_wallets = [wallet.name for wallet in (await bk.api.list_wallets()).wallets]
+    assert wallet_name in opened_wallets, "Wallet should be opened."
+
+
+async def assert_wallet_availability(bk: Beekeeper, wallet_name: str) -> None:
+    """Assert function checking if bk has only one wallet unlocked in current session."""
+    bk_wallets = (await bk.api.list_wallets()).wallets
+    assert len(bk_wallets) == 1, "There should be only one wallet per session."
+    assert wallet_name == bk_wallets[0].name, "Name of wallet should be the same as unlocked one."
+
+
+async def assert_keys_coverege(bk: Beekeeper, wallet: WalletInfo) -> None:
+    """Assert function checkinf if bk holds the same keys, as given wallet."""
+    bk_keys = sorted([keys.public_key for keys in (await bk.api.get_public_keys()).keys])
+    wallet_keys = wallet.keys.get_public_keys()
+    assert bk_keys == wallet_keys, "There should be same keys."
+
+
+async def assert_keys_empty(bk: Beekeeper) -> None:
+    """Assert function checking if bk holds no public keys."""
+    bk_keys_empty = (await bk.api.get_public_keys()).keys
+    assert len(bk_keys_empty) == 0, "There should be no keys."
+
+
 async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existing_wallets: bool) -> None:
     async with await Beekeeper().launch(create_init_session=False, wallet_dir=wallet_dir) as bk:
         with pytest.raises(BeekeeperTokenNotAvailableError):
@@ -74,13 +112,14 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
                     for keys in wallet.keys.pairs:
                         # Import keys to wallet
                         await bk.api.import_key(wallet_name=wallet.name, wif_key=keys.private_key.value)
+
                 await bk.api.open(wallet_name=wallet.name)
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
 
-                bk_keys = sorted([keys.public_key for keys in (await bk.api.get_public_keys()).keys])
+                await assert_wallet_opened(bk, wallet.name)
+                await assert_wallet_unlocked(bk, wallet.name)
+                await assert_keys_coverege(bk, wallet)
 
-                wallet_keys = wallet.keys.get_public_keys()
-                assert bk_keys == wallet_keys, "There should be same keys."
                 for keys in wallet.keys.pairs:
                     # Sign digest with imported token
                     await bk.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=keys.public_key.value)
@@ -93,29 +132,20 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
             wallet = wallets[nr]
             async with bk.with_session(token=session):
                 # Check is valid token will be used
-                assert bk.token == session
+                assert bk.token == session, "Token should be switched."
+
                 # Unlock wallet locked in previous block
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
-                # Get keys from unlocked wallet
-                bk_keys = [keys.public_key for keys in (await bk.api.get_public_keys()).keys]
-                # Get unlocked wallet
-                bk_wallets = (await bk.api.list_wallets()).wallets
-                # Check if only one wallet has been unlocked
-                assert len(bk_wallets) == 1, "There should be only one wallet per session."
-                assert wallet.name == bk_wallets[0].name, "Name of wallet should be the same as unlocked one."
-                # Check if valid keys had been listed
-                assert len(bk_keys) == len(wallet.keys.pairs), " There should be only one key inside wallet."
-                for pub_key in wallet.keys.get_public_keys():
-                    assert (
-                        pub_key in bk_keys
-                    ), "Imported public keys should be the same as the one returned by beekeeper."
+                await assert_wallet_availability(bk, wallet.name)
+                await assert_keys_coverege(bk, wallet)
+
                 # Remove wallet from unlocked wallet
                 for keys in wallet.keys.pairs:
                     await bk.api.remove_key(
                         wallet_name=wallet.name, password=wallet.password, public_key=keys.public_key.value
                     )
-                bk_keys_empty = (await bk.api.get_public_keys()).keys
-                assert len(bk_keys_empty) == 0, "There should be no keys after removement."
+                await assert_keys_empty(bk)
+
                 # Set timeout for this session
                 await bk.api.set_timeout(seconds=1)
 
@@ -127,15 +157,11 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
             async with bk.with_session(token=session):
                 # Unlock wallet
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
-                unlocked_wallets = [
-                    wallet.name for wallet in (await bk.api.list_wallets()).wallets if wallet.unlocked is True
-                ]
-                assert wallet.name in unlocked_wallets, "Wallet should be unlocked."
+                await assert_wallet_unlocked(bk, wallet.name)
+
                 # Close wallet
                 await bk.api.close(wallet_name=wallet.name)
-                opened_wallets = [wallet.name for wallet in (await bk.api.list_wallets()).wallets]
-                assert wallet.name not in opened_wallets, "Wallet should be closed."
-
+                await assert_wallet_closed(bk, wallet.name)
             await bk.api.close_session(token=session)
 
         await waiters.wait_for_beekeeper_to_close(beekeeper=bk)
