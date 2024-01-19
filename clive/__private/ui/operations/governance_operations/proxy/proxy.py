@@ -87,6 +87,12 @@ class Proxy(TabPane, CliveWidget):
         if not self.new_proxy:
             return
 
+        working_account_name = self.app.world.profile_data.working_account.name
+
+        if self.new_proxy == working_account_name:
+            self.notify("You cannot set the proxy on yourself!", severity="error")
+            return
+
         self.app.push_screen(AccountWitnessProxy(is_raw=False, new_proxy=self.new_proxy))
 
     @on(Button.Pressed, "#remove-proxy-button")
