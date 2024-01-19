@@ -110,7 +110,6 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
                 if not use_existing_wallets:
                     await bk.api.create(wallet_name=wallet.name, password=wallet.password)
                     for keys in wallet.keys.pairs:
-                        # Import keys to wallet
                         await bk.api.import_key(wallet_name=wallet.name, wif_key=keys.private_key.value)
 
                 await bk.api.open(wallet_name=wallet.name)
@@ -121,7 +120,6 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
                 await assert_keys_coverege(bk, wallet)
 
                 for keys in wallet.keys.pairs:
-                    # Sign digest with imported token
                     await bk.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=keys.public_key.value)
                 # Lock wallet in this session
                 await bk.api.lock(wallet_name=wallet.name)
@@ -134,19 +132,16 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
                 # Check is valid token will be used
                 assert bk.token == session, "Token should be switched."
 
-                # Unlock wallet locked in previous block
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
                 await assert_wallet_availability(bk, wallet.name)
                 await assert_keys_coverege(bk, wallet)
 
-                # Remove wallet from unlocked wallet
                 for keys in wallet.keys.pairs:
                     await bk.api.remove_key(
                         wallet_name=wallet.name, password=wallet.password, public_key=keys.public_key.value
                     )
                 await assert_keys_empty(bk)
 
-                # Set timeout for this session
                 await bk.api.set_timeout(seconds=1)
 
         # ACT & ASSERT 3
@@ -155,11 +150,9 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
         for nr, session in enumerate(sessions):
             wallet = wallets[nr]
             async with bk.with_session(token=session):
-                # Unlock wallet
                 await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
                 await assert_wallet_unlocked(bk, wallet.name)
 
-                # Close wallet
                 await bk.api.close(wallet_name=wallet.name)
                 await assert_wallet_closed(bk, wallet.name)
             await bk.api.close_session(token=session)
