@@ -69,25 +69,21 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
             async with bk.with_session(token=new_session):
                 # Check is valid token will be used
                 assert bk.token == new_session, "All api calls should be made with provided token."
-                if use_existing_wallets:
-                    await bk.api.open(wallet_name=wallet.name)
-                    await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
-
-                    bk_keys = sorted([keys.public_key for keys in (await bk.api.get_public_keys()).keys])
-
-                    wallet_keys = wallet.keys.get_public_keys()
-                    assert bk_keys == wallet_keys, "There should be same keys."
-                    for keys in wallet.keys.pairs:
-                        # Sign digest with imported token
-                        await bk.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=keys.public_key.value)
-                else:
-                    # Create wallet
+                if not use_existing_wallets:
                     await bk.api.create(wallet_name=wallet.name, password=wallet.password)
                     for keys in wallet.keys.pairs:
                         # Import keys to wallet
                         await bk.api.import_key(wallet_name=wallet.name, wif_key=keys.private_key.value)
-                        # Sign digest with imported token
-                        await bk.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=keys.public_key.value)
+                await bk.api.open(wallet_name=wallet.name)
+                await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
+
+                bk_keys = sorted([keys.public_key for keys in (await bk.api.get_public_keys()).keys])
+
+                wallet_keys = wallet.keys.get_public_keys()
+                assert bk_keys == wallet_keys, "There should be same keys."
+                for keys in wallet.keys.pairs:
+                    # Sign digest with imported token
+                    await bk.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=keys.public_key.value)
                 # Lock wallet in this session
                 await bk.api.lock(wallet_name=wallet.name)
 
