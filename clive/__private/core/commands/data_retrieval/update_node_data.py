@@ -4,17 +4,17 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
-from math import ceil
-from typing import TYPE_CHECKING, Final, cast
+from typing import TYPE_CHECKING, Final
 
+from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
 )
+from clive.__private.core.vests_to_hive import vests_to_hive
 from clive.__private.storage.accounts import Account
 from clive.exceptions import CommunicationError
-from clive.models import Asset
 from clive.models.aliased import (
     DynamicGlobalProperties,
 )
@@ -239,7 +239,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             account.data.recovery_account = info.core.recovery_account
             account.data.proxy = info.core.proxy
 
-            account.data.hp_balance = self.__calculate_hive_power(gdpo, info.core)
+            account.data.hp_balance = calculate_hive_power(gdpo, self._calculate_vests_balance(info.core))
 
             self.__update_manabar(
                 gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
@@ -302,22 +302,11 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             return _get_utc_epoch()
         return self.__normalize_datetime(data.history[0][1].timestamp)
 
-    def __calculate_hive_power(
-        self,
-        gdpo: DynamicGlobalProperties,
-        account: SchemasAccount,
-    ) -> int:
-        account_vesting_shares = (
+    def _calculate_vests_balance(self, account: SchemasAccount) -> int:
+        return (
             int(account.vesting_shares.amount)
             - int(account.delegated_vesting_shares.amount)
             + int(account.received_vesting_shares.amount)
-        )
-        return cast(
-            int,
-            ceil(
-                int(self.__vests_to_hive(account_vesting_shares, gdpo).amount)
-                / (10 ** gdpo.total_reward_fund_hive.get_asset_information().precision)
-            ),
         )
 
     def __update_manabar(
@@ -325,9 +314,9 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     ) -> None:
         power_from_api = int(manabar.current_mana)
         last_update = int(manabar.last_update_time)
-        dest.max_value = int(self.__vests_to_hive(max_mana, gdpo).amount)
+        dest.max_value = int(vests_to_hive(max_mana, gdpo).amount)
         dest.value = int(
-            self.__vests_to_hive(
+            vests_to_hive(
                 calculate_current_manabar_value(
                     now=int(gdpo.time.timestamp()),
                     max_mana=max_mana,
@@ -355,13 +344,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 last_update_time=last_update_time,
             )
             - gdpo_time
-        )
-
-    def __vests_to_hive(self, amount: int | Asset.Vests, gdpo: DynamicGlobalProperties) -> Asset.Hive:
-        if isinstance(amount, Asset.Vests):
-            amount = int(amount.amount)
-        return Asset.Hive(
-            amount=int(amount * int(gdpo.total_vesting_fund_hive.amount) / int(gdpo.total_vesting_shares.amount))
         )
 
     @staticmethod
