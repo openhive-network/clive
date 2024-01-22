@@ -27,7 +27,9 @@ Proxy #set-proxy-button {
 }
 
 Proxy #proxy-set-information {
+  text-style: bold;
   background: $accent-lighten-2;
+  text-align: center;
 }
 
 Proxy #modify-proxy-buttons {

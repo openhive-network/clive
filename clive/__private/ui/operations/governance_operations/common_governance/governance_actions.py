@@ -9,6 +9,7 @@ from textual.css.query import NoMatches
 from textual.widgets import Label, Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 
 if TYPE_CHECKING:
@@ -17,6 +18,8 @@ if TYPE_CHECKING:
 
 class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
     """Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed."""
+
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, identifier: str, vote: bool, pending: bool = False):
         """
@@ -58,6 +61,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
     """Contains a table of actions to be performed after confirmation."""
 
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
     NAME_OF_ACTION: ClassVar[str] = "Action"
 
     def __init__(self) -> None:

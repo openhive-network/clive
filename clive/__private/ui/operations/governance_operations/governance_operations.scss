@@ -1,72 +1,11 @@
-$governance-green-color: $success-darken-3;
-$governance-red-color: $error;
-
-$table-info-headline: $accent-lighten-1;
-$table-header-contrast-column: $warning-darken-2;
-
 Governance Tab {
   width: 1fr;
-}
-
-Governance CliveTabbedContent Static {
-  text-style: bold;
-  text-align: center;
-}
-
-Governance Button:focus {
-  text-style: bold reverse;
-}
-
-Governance GovernanceTableRow:focus {
-  background: rgba(0, 0, 0, 1);
-}
-
-Governance GovernanceTableRow.dimmed {
-  opacity: 0.7;
-}
-
-Governance GovernanceListWidget {
-  height: auto;
-}
-
-Governance GovernanceActions {
-  margin-left: 1;
-  width: 3fr;
-}
-
-Governance GovernanceActionRow {
-  height: auto;
-}
-
-Governance GovernanceActionRow .action-vote {
-  background: $governance-green-color;
-}
-
-Governance GovernanceActionRow .action-unvote {
-  background: $governance-red-color;
-}
-
-Governance GovernanceActionRow .action-pending {
-  background: $panel-lighten-3;
-}
-
-Governance #name-and-action {
-  height: auto;
 }
 
 Governance .vote-actions {
   width: 1fr;
   height: auto;
   max-height: 32;
-}
-
-Governance #action-row {
-  background: $table-header-contrast-column;
-  width: 1fr;
-}
-
-Governance #actions-header {
-  background: $table-info-headline;
 }
 
 DetailsScreen {
