@@ -10,7 +10,7 @@ from textual.widgets import TabPane
 
 from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.operations import Governance, Savings, TransferToAccount
+from clive.__private.ui.operations import Governance, HivePowerManagement, Savings, TransferToAccount
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
@@ -68,7 +68,7 @@ class Operations(CartBasedScreen, CartBinding):
             with TabPane("Financial", id="financial"), ScrollablePart():
                 yield OperationButton(TransferToAccount, label="Transfer")
                 yield OperationButton(Savings, label="Saving")
-                yield OperationButton(None, label="Hive power management")
+                yield OperationButton(HivePowerManagement, label="Hive power management")
                 yield OperationButton(None, label="Convert")
             with TabPane("Social"), ScrollablePart():
                 yield OperationButton(None, label="Social operations")
