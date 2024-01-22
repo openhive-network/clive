@@ -1,0 +1,39 @@
+$governance-green-color: $success-darken-3;
+$governance-red-color: $error;
+
+$table-info-headline: $accent-lighten-1;
+$table-header-contrast-column: $warning-darken-2;
+
+GovernanceActions {
+  margin-left: 1;
+  width: 3fr;
+}
+
+GovernanceActionRow {
+  height: auto;
+}
+
+GovernanceActionRow .action-vote {
+  background: $governance-green-color;
+}
+
+GovernanceActionRow .action-unvote {
+  background: $governance-red-color;
+}
+
+GovernanceActionRow .action-pending {
+  background: $panel-lighten-3;
+}
+
+GovernanceActions #name-and-action {
+  height: auto;
+}
+
+GovernanceActions #action-row {
+  background: $table-header-contrast-column;
+  width: 1fr;
+}
+
+GovernanceActions #actions-header {
+  background: $table-info-headline;
+}

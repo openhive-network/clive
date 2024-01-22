@@ -4,6 +4,7 @@ from textual import on
 from textual.containers import ScrollableContainer
 from textual.widgets import TabPane
 
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
     GovernanceActions,
@@ -19,6 +20,8 @@ class ScrollablePart(ScrollableContainer, can_focus=False):
 
 class GovernanceTabPane(TabPane, OperationActionBindings):
     """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
+
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     @on(GovernanceTableRow.ChangeActionStatus)
     async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:

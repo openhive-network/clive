@@ -17,6 +17,7 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
+from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.governance_operations.governance_checkbox import GovernanceCheckbox
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -232,6 +233,7 @@ class GovernanceTable(
 ):
     MAX_ELEMENTS_ON_PAGE: ClassVar[int] = 10
 
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
     BINDINGS = [
         Binding("pageup", "previous_page", "PgDn"),
         Binding("pagedown", "next_page", "PgUp"),

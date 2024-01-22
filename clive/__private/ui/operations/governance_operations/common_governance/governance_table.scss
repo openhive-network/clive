@@ -1,0 +1,11 @@
+GovernanceTableRow:focus {
+  background: rgba(0, 0, 0, 1);
+}
+
+GovernanceTableRow.dimmed {
+  opacity: 0.7;
+}
+
+GovernanceListWidget {
+  height: auto;
+}
