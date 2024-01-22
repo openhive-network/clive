@@ -15,6 +15,11 @@ class ShowWitness(WorldBasedCommand):
         wrapper = await self.world.commands.find_witness(witness_name=self.name)
         witness = wrapper.result_or_raise
 
+        account_creation_fee: str | None = None
+        if witness.props.account_creation_fee:
+            account_creation_fee = witness.props.account_creation_fee.as_legacy()
+        props_as_legacy = witness.props.copy(update={"account_creation_fee": account_creation_fee}, deep=True)
+
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)
 
         table.add_row("created", f"{witness.created}")
@@ -25,7 +30,7 @@ class ShowWitness(WorldBasedCommand):
         table.add_row("last confirmed block num", f"{witness.last_confirmed_block_num}")
         table.add_row("last hbd exchange update", f"{witness.last_hbd_exchange_update}")
         table.add_row("last work", f"{witness.last_work}")
-        table.add_row("props", f"{witness.props}")
+        table.add_row("props", f"{props_as_legacy}")
         table.add_row("running version", f"{witness.running_version}")
         table.add_row("signing key", f"{witness.signing_key}")
         table.add_row("total missed", f"{witness.total_missed}")
