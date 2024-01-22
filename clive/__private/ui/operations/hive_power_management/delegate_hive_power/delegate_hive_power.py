@@ -2,17 +2,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.widgets import Static
+from textual.widgets import TabPane
 
-from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_tab_pane import HPTabPane
+from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
-    from textual.app import ComposeResult
+    from rich.text import TextType
 
 
-class DelegateHivePower(HPTabPane):
+class DelegateHivePower(TabPane, CliveWidget):
     """TabPane with all content about delegate hp."""
 
-    def create_tab_pane_content(self) -> ComposeResult:
-        """Will be implemented in next MR."""
-        yield Static("In progress")
+    def __init__(self, title: TextType):
+        """
+        Initialize a TabPane.
+
+        Args:
+        ----
+        title: Title of the TabPane (will be displayed in a tab label).
+        """
+        super().__init__(title=title)

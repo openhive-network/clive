@@ -2,9 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from textual import on
-
-from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.hive_power_management.delegate_hive_power.delegate_hive_power import (
     DelegateHivePower,
@@ -29,25 +26,7 @@ class HivePowerManagement(OperationBaseScreen):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        with HivePowerDataProvider(), CliveTabbedContent():
+        with CliveTabbedContent():
             yield PowerUp(POWER_UP_TAB_LABEL)
             yield PowerDown(POWER_DOWN_TAB_LABEL)
             yield DelegateHivePower(DELEGATE_HIVE_POWER_LABEL)
-
-    @on(CliveTabbedContent.TabActivated)
-    async def display_hp_table(self, event: CliveTabbedContent.TabActivated) -> None:
-        """
-        Method used to display hp_information_table on the TabPane that is actually active.
-
-        This method was created because TabbedContent was unable to create a common part for all TabPane, so there was
-        long time to load the screen after entry. Now, only when the corresponding TabPane is active - the
-        information table is mounted on it.
-        """
-        if str(event.tab.label) == POWER_UP_TAB_LABEL:
-            await self.query_one(PowerUp).mount_hp_table()
-
-        elif str(event.tab.label) == POWER_DOWN_TAB_LABEL:
-            await self.query_one(PowerDown).mount_hp_table()
-
-        elif str(event.tab.label) == DELEGATE_HIVE_POWER_LABEL:
-            await self.query_one(DelegateHivePower).mount_hp_table()
