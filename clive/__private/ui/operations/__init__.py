@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.ui.operations.governance_operations.governance_operations import Governance
+from clive.__private.ui.operations.hive_power_management.hive_power_management import HivePowerManagement
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -14,4 +15,5 @@ __all__ = [
     "TransferToAccount",
     "Savings",
     "Governance",
+    "HivePowerManagement",
 ]
