@@ -52,3 +52,16 @@ repos:
     rev: v2.2.4
     hooks:
     - id: codespell
+  - repo: https://github.com/lk16/detect-missing-init
+    rev: v0.1.6
+    hooks:
+      - id: detect-missing-init
+        args:
+          - "--create"
+          - "--python-folders"
+          - "\
+          tests/clive-local-tools/clive_local_tools,\
+          tests/functional/,\
+          tests/tui/,\
+          tests/unit/
+          "
