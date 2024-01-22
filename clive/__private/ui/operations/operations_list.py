@@ -25,6 +25,7 @@ from clive.__private.ui.operations import (
     EscrowRelease,
     EscrowTransfer,
     Governance,
+    HivePowerManagement,
     LimitOrderCancel,
     LimitOrderCreate,
     LimitOrderCreate2,
@@ -49,7 +50,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 
 
-MAJOR_OPERATIONS: Final[list[type[OperationBaseScreen]]] = [TransferToAccount, Savings, Governance]
+MAJOR_OPERATIONS: Final[list[type[OperationBaseScreen]]] = [TransferToAccount, Savings, Governance, HivePowerManagement]
 RAW_OPERATIONS: Final[list[type[RawOperationBaseScreen]]] = [
     TransferToVesting,
     WithdrawVesting,

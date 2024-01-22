@@ -70,7 +70,7 @@ class Operations(CartBasedScreen, CartBinding):
             with TabPane("Financial", id="financial"), ScrollablePart():
                 yield OperationButton(MAJOR_OPERATIONS[0], label="Transfer")
                 yield OperationButton(MAJOR_OPERATIONS[1], label="Saving")
-                yield OperationButton(None, label="Hive power management")
+                yield OperationButton(MAJOR_OPERATIONS[3], label="Hive power management")
                 yield OperationButton(None, label="Convert")
             with TabPane("Social"), ScrollablePart():
                 yield OperationButton(None, label="Social operations")
