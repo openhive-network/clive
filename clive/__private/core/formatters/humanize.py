@@ -120,3 +120,8 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate[AssetHiveHF26,
     """Return pretty formatted hdb exchange rate (price feed)."""
     price_feed = int(hbd_exchange_rate.base.amount) / 10**3
     return f"{price_feed:.3f} $"
+
+
+def humanize_amount(amount: str | float) -> str:
+    """Return pretty formatted amount."""
+    return humanize.metric(float(amount))
