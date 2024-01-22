@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.hive_power_management.delegate_hive_power.delegate_hive_power import (
     DelegateHivePower,
@@ -28,7 +29,7 @@ class HivePowerManagement(OperationBaseScreen):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("hive power management")
-        with CliveTabbedContent():
+        with HivePowerDataProvider(), CliveTabbedContent():
             yield PowerUp(POWER_UP_TAB_LABEL)
             yield PowerDown(POWER_DOWN_TAB_LABEL)
             yield DelegateHivePower(DELEGATE_HIVE_POWER_LABEL)
