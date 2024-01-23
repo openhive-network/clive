@@ -61,6 +61,7 @@ class WalletInfo:
                         PrivateKeyAliased(value=key["private_key"], alias=""),
                     )
                 )
+            self.keys_from_file = keys_from_file
 
     @property
     def public_key(self) -> PublicKeyAliased:
