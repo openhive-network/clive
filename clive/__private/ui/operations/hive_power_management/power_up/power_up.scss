@@ -1,0 +1,23 @@
+PowerUp {
+  height: auto;
+}
+
+PowerUp #power-up-inputs {
+  grid-size: 3;
+  grid-columns: 5fr 1fr 1fr;
+  grid-gutter: 1;
+  grid-rows: auto;
+  height: auto;
+}
+
+PowerUp #power-up-information {
+  text-style: bold;
+  margin-top: 3;
+  background: $accent-lighten-2;
+  width: 1fr;
+  text-align: center;
+}
+
+PowerUp CliveButton {
+  background: $success-darken-3;
+}
