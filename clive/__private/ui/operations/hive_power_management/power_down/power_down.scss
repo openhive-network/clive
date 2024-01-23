@@ -1,0 +1,115 @@
+Static {
+  text-style: bold;
+  text-align: center;
+}
+
+PowerDown CliveButton {
+  background: $success-darken-3;
+}
+
+PowerDown NumericInput {
+  width: 5fr;
+  height: auto;
+}
+
+PowerDown AccountNameInput {
+  height: auto;
+}
+
+PowerDown IntegerInput {
+  margin-top: 1;
+  height: auto;
+}
+
+PowerDown #container-with-checkbox {
+  align: center top;
+  margin-bottom: 1;
+  height: auto;
+}
+
+PowerDown CurrencySelectorHpVests {
+  width: 1fr;
+  height: auto;
+}
+
+PowerDown CliveButton {
+  width: 1fr;
+}
+
+PowerDown #withdraw-input-container {
+  width: 1fr;
+  height: auto;
+}
+
+PowerDown #withdraw-instalment-display {
+  text-style: bold;
+  margin-top: 2;
+  background: $panel-lighten-2;
+  height: 1;
+  text-align: center;
+}
+
+CurrentWithdrawalTable {
+  margin-top: 1;
+  width: 1fr;
+  height: 4;
+}
+
+CurrentWithdrawalTable Label {
+  width: 1fr;
+}
+
+CurrentWithdrawalTable .checkerboard-header-label {
+  text-style: bold;
+  height: 1;
+  text-align: center;
+}
+
+CurrentWithdrawalRow {
+  height: 3;
+}
+
+CurrentWithdrawalRow Label {
+  text-style: bold;
+  height: 1;
+  text-align: center;
+}
+
+WithdrawRoutes {
+  height: auto;
+}
+
+WithdrawRoutes .checkerboard-table-header {
+  height: 1;
+}
+
+WithdrawRoutes #withdraw-routes-table-title {
+  background: $primary;
+  width: 1fr;
+}
+
+WithdrawRoutes Static {
+  text-style: bold;
+  width: 1fr;
+  height: 1;
+  text-align: center;
+}
+
+WithdrawRoutes #withdraw-routes-info {
+  background: $primary-darken-1;
+  height: 1;
+}
+
+WithdrawRouteCell {
+  width: 1fr;
+  height: auto;
+}
+
+WithdrawRoute {
+  width: 1fr;
+  height: 3;
+}
+
+WithdrawRoute .remove-withdraw-route-button {
+  background: $error-darken-1;
+}
