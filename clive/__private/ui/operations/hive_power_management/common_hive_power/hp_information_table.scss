@@ -1,0 +1,92 @@
+$table-color-1: $accent;
+$table-color-2: $accent-lighten-1;
+$table-color-3: $background-darken-1;
+$table-contrast-color: $secondary-darken-3;
+$table-header-color: $primary-background;
+$table-second-header-color: $secondary;
+
+HpInformationTable {
+  border: $table-color-3;
+  width: 1fr;
+  height: auto;
+}
+
+Static {
+  text-style: bold;
+  text-align: center;
+}
+
+/* Header of the table */
+HpInformationTableHeader {
+  height: auto;
+}
+
+HpInformationTableHeader .empty-header-column {
+  width: 4fr;
+}
+
+HpInformationTable .additional-info-header {
+  background: $table-header-color;
+  width: 15fr;
+}
+
+HpInformationTable .shares-balance-header {
+  background: $table-header-color;
+  width: 8fr;
+}
+
+HpInformationTable .additional-header {
+  background: $table-second-header-color;
+  width: 15fr;
+  color: black;
+}
+
+/* Columns of the table */
+HpInformationTable .shares-balance-column {
+  width: 8fr;
+  text-align: right;
+}
+
+HpInformationTable .additional-info-column {
+  width: 15fr;
+}
+
+HpInformationTable .empty-column {
+  background: $table-color-3;
+  width: 0.4fr;
+}
+
+HpInformationTable .empty-column-fifth-row {
+  width: 3fr;
+}
+
+/* Rows of the table */
+HpInformationTable HpInformationTableFirstRow {
+  background: $table-color-1;
+}
+
+HpInformationTable HpInformationTableSecondRow {
+  background: $table-color-2;
+}
+
+HpInformationTable HpInformationTableThirdRow {
+  background: $table-color-1;
+}
+
+HpInformationTable HpInformationFourthRow {
+  background: $table-color-2;
+}
+
+HpInformationTable HpInformationFifthRow {
+  background: $table-color-1;
+}
+
+HpInformationTable .row-with-apr {
+  background: $table-header-color;
+  width: 24fr;
+}
+
+HpInformationTable .balance-row-title {
+  background: $table-header-color;
+  width: 4fr;
+}
