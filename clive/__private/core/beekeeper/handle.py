@@ -399,6 +399,6 @@ class Beekeeper:
             wallet_path = Path.cwd() / f"{wallet_name}.keys"
             with wallet_path.open() as keys_file:
                 if extract_to:
-                    shutil.copy(wallet_path, extract_to)
+                    shutil.move(wallet_path, extract_to)
                 keys: ExportedKeys = json.load(keys_file)
                 return keys

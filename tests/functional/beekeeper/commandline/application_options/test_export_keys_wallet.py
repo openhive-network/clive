@@ -65,10 +65,13 @@ async def test_export_keys(tmp_path: Path) -> None:
         keys = await beekeeper.export_keys_wallet(
             wallet_name=wallet_name, wallet_password=create.password, extract_to=extract_path
         )
-
         # ASSERT
         # Check extract_to path
         check_dumped_keys(extract_path / wallet_name_keys, keys)
+
+        # ACT
+        keys = await beekeeper.export_keys_wallet(wallet_name=wallet_name, wallet_password=create.password)
+        # ASSERT
         # Check default path of wallet_name.keys
         check_dumped_keys(Path.cwd() / wallet_name_keys, keys)
 
@@ -79,8 +82,13 @@ async def test_export_keys(tmp_path: Path) -> None:
     keys1 = await bk.export_keys_wallet(
         wallet_name=wallet_name, wallet_password=create.password, extract_to=extract_path
     )
-
     # ASSERT
+    # Check extract_to path
     check_dumped_keys(extract_path / wallet_name_keys, keys1)
+
+    # ACT
+    keys1 = await bk.export_keys_wallet(wallet_name=wallet_name, wallet_password=create.password)
+    # ASSERT
+    # Check default path of wallet_name.keys
     check_dumped_keys(Path.cwd() / wallet_name_keys, keys1)
     assert bk.is_running is False

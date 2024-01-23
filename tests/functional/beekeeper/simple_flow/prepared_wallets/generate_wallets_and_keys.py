@@ -29,7 +29,6 @@ async def generate_wallets_and_keys(number_of_wallets: int) -> None:
             _ = await bk.export_keys_wallet(
                 wallet_name=wallet.name, wallet_password=wallet.password, extract_to=extract_path
             )
-            Path(source_dir / f"{wallet.name}.keys").unlink()
 
 
 if __name__ == "__main__":
