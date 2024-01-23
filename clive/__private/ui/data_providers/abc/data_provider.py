@@ -42,7 +42,18 @@ class DataProvider(CliveWidget, Generic[ProviderContentT], AbstractClassMessageP
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
     updated: bool = var(False)  # type: ignore[assignment]
-    """Set to True when the provider has updated the content for the first time."""
+    """
+    Set to True when the provider has updated the content for the first time. Can be watched.
+
+    Warning: In case when you have to check if the content is ready in the watch callback method,
+    use `is_content_set` instead, as `updated` may be set to True **after** notifying watchers.
+    Flow looks like this:
+    1. Provider is created.
+    2. Provider is updated for the first time.
+    3. `is_content_set` will return True.
+    4. Watchers are notified.
+    3. `updated` is set to True.
+    """
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__()
@@ -71,6 +82,10 @@ class DataProvider(CliveWidget, Generic[ProviderContentT], AbstractClassMessageP
         if self._content is None:
             raise ProviderNotSetYetError
         return self._content
+
+    @property
+    def is_content_set(self) -> bool:
+        return self._content is not None
 
     def stop(self) -> None:
         self.interval.stop()

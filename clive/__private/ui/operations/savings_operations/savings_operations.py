@@ -83,9 +83,12 @@ class SavingsInterestInfo(AccountReferencingWidget):
                 yield LoadingIndicator()
 
     def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=self.sync_data, init=False)
+        self.watch(self.provider, "_content", callback=self.sync_data)
 
     def sync_data(self, content: SavingsData) -> None:
+        if not self.provider.is_content_set:
+            return
+
         def get_interest_date() -> str:
             last_interest_payment = humanize_datetime(content.last_interest_payment)
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
@@ -154,9 +157,12 @@ class PendingTransfers(Vertical):
         yield LoadingIndicator()
 
     def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=self.__sync_pending_transfers, init=False)
+        self.watch(self.provider, "_content", callback=self.__sync_pending_transfers)
 
     def __sync_pending_transfers(self, content: SavingsData) -> None:
+        if not self.provider.is_content_set:
+            return
+
         pending_transfers = content.pending_transfers
         if not pending_transfers:
             with self.app.batch_update():
@@ -272,6 +278,6 @@ class Savings(OperationBaseScreen, CartBinding):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Savings operations")
-        with SavingsDataProvider(init_update=False), CliveTabbedContent():
+        with SavingsDataProvider(), CliveTabbedContent():
             yield SavingsInfo(title="savings info")
             yield SavingsTransfers(title="transfer")
