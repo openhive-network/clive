@@ -1,0 +1,35 @@
+PowerUp {
+  height: auto;
+}
+
+#operation-name-info {
+  text-style: bold;
+  background: $accent;
+  text-align: center;
+}
+
+#power-up-inputs {
+  grid-size: 3;
+  grid-columns: 5fr 1fr 1fr;
+  grid-gutter: 1;
+  grid-rows: auto;
+  background: $panel;
+  padding: 2 4;
+  height: auto;
+}
+
+#power-up-information {
+  text-style: bold;
+  margin-top: 3;
+  background: $accent-lighten-2;
+  width: 1fr;
+  text-align: center;
+}
+
+#power-up-name-information {
+  text-style: bold;
+  margin-bottom: 2;
+  background: $accent-lighten-1;
+  width: 1fr;
+  text-align: center;
+}
