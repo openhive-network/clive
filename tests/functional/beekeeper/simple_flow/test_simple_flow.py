@@ -9,7 +9,7 @@ import pytest
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.beekeeper.exceptions import BeekeeperTokenNotAvailableError
 from clive_local_tools import checkers, waiters
-from clive_local_tools.constants import DIGEST_TO_SIGN, MAX_SESSION_NUMBER
+from clive_local_tools.constants import DIGEST_TO_SIGN, MAX_BEEKEEPER_SESSION_AMOUNT
 from clive_local_tools.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.models import Keys, WalletInfo
 
@@ -44,7 +44,7 @@ async def prepare_wallet_dirs(
             Keys() if source_directory_keys else Keys(count=i % 5),
             source_directory_keys / f"{generate_wallet_name(i)}.keys" if source_directory_keys else None,
         )
-        for i in range(MAX_SESSION_NUMBER)
+        for i in range(MAX_BEEKEEPER_SESSION_AMOUNT)
     ]
     return wallets, temp_directories
 
@@ -96,10 +96,10 @@ async def assert_beekeeper_close(bk: Beekeeper) -> None:
 
 
 async def prepare_sessions(bk: Beekeeper) -> list[str]:
-    """Create MAX_SESSION_NUMBER of sessions."""
+    """Create MAX_BEEKEEPER_SESSION_AMOUNT of sessions."""
     sessions = []
     notification_endpoint = bk.notification_server_http_endpoint.as_string(with_protocol=False)
-    for nr in range(MAX_SESSION_NUMBER):
+    for nr in range(MAX_BEEKEEPER_SESSION_AMOUNT):
         new_session = (
             await bk.api.create_session(notifications_endpoint=notification_endpoint, salt=f"salt-{nr}")
         ).token

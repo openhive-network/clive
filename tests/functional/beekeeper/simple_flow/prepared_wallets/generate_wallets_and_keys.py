@@ -8,7 +8,7 @@ from pathlib import Path
 import test_tools as tt
 
 from clive.__private.core.beekeeper import Beekeeper
-from clive_local_tools.constants import MAX_SESSION_NUMBER
+from clive_local_tools.constants import MAX_BEEKEEPER_SESSION_AMOUNT
 from clive_local_tools.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.models import Keys, WalletInfo
 
@@ -38,8 +38,8 @@ if __name__ == "__main__":
         "--number-of-wallets",
         required=False,
         type=int,
-        default=MAX_SESSION_NUMBER,
-        help="Number of wallets to generate [default=MAX_SESSION_NUMBER(64)",
+        default=MAX_BEEKEEPER_SESSION_AMOUNT,
+        help="Number of wallets to generate [default=MAX_BEEKEEPER_SESSION_AMOUNT(64)",
     )
 
     args = parser.parse_args()
