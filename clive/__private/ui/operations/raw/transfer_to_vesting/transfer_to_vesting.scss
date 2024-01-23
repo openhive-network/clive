@@ -1,16 +1,17 @@
 TransferToVesting Body {
   grid-size: 3;
-  grid-columns: 16 2fr 1fr;
+  grid-columns: 2fr 5fr 2fr;
   grid-rows: 3 4 4;
   margin: 0 4;
   background: $panel;
   height: 12;
 }
 
-TransferToVesting PlaceTaker {
-  row-span: 2;
-}
-
 TransferToVesting #from-label {
   padding: 1 2;
+}
+
+TransferToVesting #power-up-name-info {
+  text-style: bold;
+  text-align: center;
 }
