@@ -1,7 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime
+from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
@@ -10,6 +9,8 @@ from clive.__private.core.commands.abc.command_data_retrieval import (
 from clive.exceptions import RequestIdError
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from clive.__private.core.node import Node
     from clive.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
@@ -31,9 +32,9 @@ class SanitizedData:
 
 @dataclass
 class SavingsData:
-    hbd_interest_rate: int = 1000
-    pending_transfers: list[SavingsWithdrawals] | None = None
-    last_interest_payment: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
+    hbd_interest_rate: int
+    pending_transfers: list[SavingsWithdrawals]
+    last_interest_payment: datetime
 
     def create_request_id(self) -> int:
         max_number_of_request_ids: Final[int] = 100

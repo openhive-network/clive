@@ -70,25 +70,41 @@ class SavingsInterestInfo(AccountReferencingWidget):
     def __init__(self) -> None:
         super().__init__(account=self.app.world.profile_data.working_account)
 
-    def compose(self) -> ComposeResult:
-        provider = self.app.query_one(SavingsDataProvider)
+        self.interest_container = Container(id="interest-rate")
 
+    @property
+    def provider(self) -> SavingsDataProvider:
+        return self.app.query_one(SavingsDataProvider)
+
+    def compose(self) -> ComposeResult:
+        with Horizontal():
+            yield SavingsBalances(self._account)
+            with self.interest_container:
+                yield LoadingIndicator()
+
+    def on_mount(self) -> None:
+        self.watch(self.provider, "_content", callback=self.sync_data, init=False)
+
+    def sync_data(self, content: SavingsData) -> None:
         def get_interest_date() -> str:
-            last_interest_payment = humanize_datetime(provider.content.last_interest_payment)
+            last_interest_payment = humanize_datetime(content.last_interest_payment)
             return f"""Last interest payment: {last_interest_payment} (UTC)"""
 
         def get_estimated_interest() -> str:
             return f"Interest since last payment: {self._account.data.hbd_unclaimed.amount} HBD"
 
         def get_interest_rate_for_hbd() -> str:
-            return f"APR interest rate for HBD($) is {provider.content.hbd_interest_rate / 100}%"
+            return f"APR interest rate for HBD($) is {content.hbd_interest_rate / 100}%"
 
-        with Horizontal():
-            yield SavingsBalances(self._account)
-            with Container(id="interest-rate"):
-                yield self.create_dynamic_label(get_interest_date, "interest-rate-date")
-                yield self.create_dynamic_label(get_estimated_interest, "interest-rate-value")
-                yield self.create_dynamic_label(get_interest_rate_for_hbd, "interest-rate-value-percent")
+        with self.app.batch_update():
+            self.interest_container.query("*").remove()
+            self.interest_container.mount_all(
+                [
+                    self.create_dynamic_label(get_interest_date, "interest-rate-date"),
+                    self.create_dynamic_label(get_estimated_interest, "interest-rate-value"),
+                    self.create_dynamic_label(get_interest_rate_for_hbd, "interest-rate-value-percent"),
+                ]
+            )
 
 
 class PendingTransfer(CliveWidget):
@@ -130,12 +146,15 @@ class PendingHeader(Horizontal):
 
 
 class PendingTransfers(Vertical):
+    @property
+    def provider(self) -> SavingsDataProvider:
+        return self.app.query_one(SavingsDataProvider)
+
     def compose(self) -> ComposeResult:
         yield LoadingIndicator()
 
     def on_mount(self) -> None:
-        provider = self.app.query_one(SavingsDataProvider)
-        self.watch(provider, "content", callback=self.__sync_pending_transfers, init=False)
+        self.watch(self.provider, "_content", callback=self.__sync_pending_transfers, init=False)
 
     def __sync_pending_transfers(self, content: SavingsData) -> None:
         pending_transfers = content.pending_transfers
@@ -240,7 +259,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
         for cart_transfer in self.app.world.profile_data.cart:
             if isinstance(cart_transfer, TransferFromSavingsOperation):
-                savings_data.pending_transfers.append(cart_transfer)  # type: ignore[union-attr, arg-type]
+                savings_data.pending_transfers.append(cart_transfer)  # type: ignore[arg-type]
 
         return savings_data.create_request_id()
 
@@ -253,6 +272,6 @@ class Savings(OperationBaseScreen, CartBinding):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Savings operations")
-        with SavingsDataProvider(), CliveTabbedContent():
+        with SavingsDataProvider(init_update=False), CliveTabbedContent():
             yield SavingsInfo(title="savings info")
             yield SavingsTransfers(title="transfer")

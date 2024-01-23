@@ -10,7 +10,7 @@ from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 class SavingsDataProvider(DataProvider[SavingsData]):
     """A class for retrieving information about savings stored in a SavingsData dataclass."""
 
-    content: SavingsData = var(SavingsData(), init=False)  # type: ignore[assignment]
+    _content: SavingsData | None = var(None, init=False)  # type: ignore[assignment]
     """It is used to check whether savings data has been refreshed and to store savings data."""
 
     @work(name="savings data update worker")
@@ -23,5 +23,4 @@ class SavingsDataProvider(DataProvider[SavingsData]):
             return
 
         result = wrapper.result_or_raise
-        if self.content != result:
-            self.content = result
+        self._content = result
