@@ -5,3 +5,58 @@ Tab {
 TabPane {
   height: 1fr;
 }
+
+/* Table with amounts */
+$row-color-1: $accent;
+$row-color-2: $accent-lighten-1;
+
+$table-header-color: $primary-background;
+$table-row-title-color: $background-lighten-2;
+
+CliveDataTable {
+  width: 2fr;
+  height: auto;
+}
+
+/* Header of the table */
+HpInfoTableHeader {
+  height: auto;
+}
+
+HpInfoTableHeader Static {
+  text-style: bold;
+  text-align: center;
+}
+
+HpInfoTableHeader #shares-name-header {
+  background: $table-header-color;
+  width: 2fr;
+}
+
+HpInfoTableHeader .shares-balance-header {
+  background: $table-header-color;
+  width: 3fr;
+}
+
+/* Cells of the table */
+RowTitle {
+  text-style: bold;
+  background: $table-row-title-color;
+  width: 2fr;
+  text-align: center;
+}
+
+.shares-balance-cell {
+  text-style: bold;
+  width: 3fr;
+  text-align: right;
+}
+
+/* Rows of the table */
+.odd-row {
+  background: $row-color-1;
+}
+
+.even-row {
+  background: $row-color-2;
+}

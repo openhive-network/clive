@@ -4,6 +4,14 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_information_table import (
+    HpInfoTableDelegatedRow,
+    HpInfoTableEffectiveRow,
+    HpInfoTableHeader,
+    HpInfoTableOwnedRow,
+    HpInfoTablePowerDownRow,
+    HpInfoTableReceivedRow,
+)
 from clive.__private.ui.operations.hive_power_management.delegate_hive_power.delegate_hive_power import (
     DelegateHivePower,
 )
@@ -11,6 +19,7 @@ from clive.__private.ui.operations.hive_power_management.power_down.power_down i
 from clive.__private.ui.operations.hive_power_management.power_up.power_up import PowerUp
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.clive_data_table import CliveDataTable
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 
 if TYPE_CHECKING:
@@ -29,6 +38,14 @@ class HivePowerManagement(OperationBaseScreen):
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("hive power management")
+        yield CliveDataTable(
+            HpInfoTableHeader(),
+            HpInfoTableOwnedRow(),
+            HpInfoTableReceivedRow(),
+            HpInfoTableDelegatedRow(),
+            HpInfoTablePowerDownRow(),
+            HpInfoTableEffectiveRow(),
+        )
         with HivePowerDataProvider(), CliveTabbedContent():
             yield PowerUp(POWER_UP_TAB_LABEL)
             yield PowerDown(POWER_DOWN_TAB_LABEL)
