@@ -138,11 +138,11 @@ class PendingTransfers(Vertical):
         self.watch(provider, "content", callback=self.__sync_pending_transfers, init=False)
 
     def __sync_pending_transfers(self, content: SavingsData) -> None:
-        self.query("*").remove()
-
         pending_transfers = content.pending_transfers
         if not pending_transfers:
-            self.mount(Static("No transfers from savings now", classes="number-of-transfers"))
+            with self.app.batch_update():
+                self.query("*").remove()
+                self.mount(Static("No transfers from savings now", classes="number-of-transfers"))
             return
 
         things_to_mount = [
@@ -152,7 +152,10 @@ class PendingTransfers(Vertical):
                 *[PendingTransfer(transfer) for transfer in pending_transfers],
             ),
         ]
-        self.mount_all(things_to_mount)
+
+        with self.app.batch_update():
+            self.query("*").remove()
+            self.mount_all(things_to_mount)
 
 
 class SavingsInfo(TabPane, CliveWidget):
