@@ -87,7 +87,6 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
     @work(name="governance update modal details")
     async def refresh_witness_data(self) -> None:
         wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
-        await self.query("*").remove()
 
         if wrapper.error_occurred:
             new_witness_data = f"Unable to retrieve witness information:\n{wrapper.error}"
@@ -108,7 +107,10 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
                 price feed: {price_feed} $
                 version: {version}\
             """
-        await self.mount(WitnessDetailsWidget(new_witness_data))
+
+        with self.app.batch_update():
+            await self.query("*").remove()
+            await self.mount(WitnessDetailsWidget(new_witness_data))
 
     def action_request_quit(self) -> None:
         self.app.pop_screen()
