@@ -211,7 +211,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     def is_already_in_actions_container(self) -> bool:
         """Should check if operation is already in the action container."""
         try:
-            self.app.query_one(self.get_action_row_id())
+            self.app.get_widget_by_id(self.get_action_row_id())
         except NoMatches:
             return False
         else:
