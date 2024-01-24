@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
 
 def _is_null_date(value: datetime) -> bool:
-    return value == datetime(1970, 1, 1, 0, 0, 0)
+    return value == datetime(1970, 1, 1, 0, 0, 0) or value == datetime(1969, 12, 31, 23, 59, 59)
 
 
 def humanize_natural_time(value: datetime | timedelta) -> str:
