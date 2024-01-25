@@ -247,8 +247,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
         try:
             request_id = self.__create_request_id()
-        except RequestIdError:
-            self.notify("Maximum quantity of request ids is 100!", severity="error")
+        except RequestIdError as error:
+            self.notify(str(error), severity="error")
             return None
 
         return TransferFromSavingsOperation(
@@ -263,11 +263,12 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         provider = self.app.query_one(SavingsDataProvider)
         savings_data = provider.content
 
-        for cart_transfer in self.app.world.profile_data.cart:
-            if isinstance(cart_transfer, TransferFromSavingsOperation):
-                savings_data.pending_transfers.append(cart_transfer)  # type: ignore[arg-type]
-
-        return savings_data.create_request_id()
+        transfer_from_savings_operations_in_cart = [
+            operation
+            for operation in self.app.world.profile_data.cart
+            if isinstance(operation, TransferFromSavingsOperation)
+        ]
+        return savings_data.create_request_id(future_transfers=transfer_from_savings_operations_in_cart)
 
 
 class Savings(OperationBaseScreen, CartBinding):

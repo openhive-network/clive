@@ -14,6 +14,7 @@ if TYPE_CHECKING:
     from clive.__private.core.node import Node
     from clive.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
+    from schemas.operations import TransferFromSavingsOperation
 
 
 @dataclass
@@ -36,18 +37,29 @@ class SavingsData:
     pending_transfers: list[SavingsWithdrawals]
     last_interest_payment: datetime
 
-    def create_request_id(self) -> int:
+    def create_request_id(self, *, future_transfers: list[TransferFromSavingsOperation] | None = None) -> int:
+        """
+        Calculate the next available request id for TransferFromSavingsOperation.
+
+        Args:
+        ----
+        future_transfers: Future transfers to include in calculation. (e.g. already stored in the cart)
+
+        Raises:
+        ------
+        RequestIdError: If the maximum number of request ids is exceeded.
+        """
         max_number_of_request_ids: Final[int] = 100
 
-        if not self.pending_transfers:
+        future_transfers = future_transfers or []
+        all_transfers = self.pending_transfers + future_transfers
+        if not all_transfers:
             return 0
 
-        if len(self.pending_transfers) >= max_number_of_request_ids:
+        if len(all_transfers) >= max_number_of_request_ids:
             raise RequestIdError("Maximum quantity of request ids is 100")
 
-        sorted_transfers = sorted(self.pending_transfers, key=lambda x: x.request_id)
-        last_occupied_id = sorted_transfers[-1].request_id
-
+        last_occupied_id = max(all_transfers, key=lambda transfer: transfer.request_id).request_id
         return last_occupied_id + 1
 
 
