@@ -50,6 +50,7 @@ class Asset:
     Hbd: TypeAlias = AssetHbdHF26
     Vests: TypeAlias = AssetVestsHF26
     LiquidT: TypeAlias = Hive | Hbd
+    VotingT: TypeAlias = Hive | Vests
     AnyT: TypeAlias = Hive | Hbd | Vests
 
     @classmethod
