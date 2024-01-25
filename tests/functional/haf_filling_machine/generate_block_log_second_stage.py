@@ -1,10 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import random
-import time
-from concurrent.futures import ProcessPoolExecutor, as_completed, wait, ThreadPoolExecutor
-from functools import partial
 from pathlib import Path
 from typing import Final, Literal
 
@@ -31,9 +27,6 @@ ACCOUNTS_PER_CHUNK: Final[int] = 1024
 MAX_WORKERS: Final[int] = 6
 WITNESSES = [f"witness-{w}" for w in range(20)]
 account_names = [f"account-{account}" for account in range(NUMBER_OF_ACCOUNTS)]
-
-MAX_BEEKEEPER_SESSION_AMOUNT: Final[int] = 64
-DIGEST_TO_SIGN: Final[str] = "9B29BA0710AF3918E81D7B935556D7AB205D8A8F5CA2E2427535980C2E8BDAFF"
 
 
 @pytest.mark.parametrize("signature_type", ["single_sign"])
@@ -92,37 +85,26 @@ async def test_prepare_second_stage_of_block_log(
 
         await beekeeper.api.lock(wallet_name=wallet.name)
 
-        # Tworzymy maksymalna liczbe sesji
-        # sessions = [beekeeper.token]
-        # notification_endpoint = beekeeper.notification_server_http_endpoint.as_string(with_protocol=False)
-        # for nr in range(3):  # -1 bo beekeeper w launch tworzy pierwsza sesje nie jawnie
-        #     new_session = (
-        #         await beekeeper.api.create_session(notifications_endpoint=notification_endpoint, salt=f"salt-{nr}")
-        #     ).token
-        #     sessions.append(new_session)
-
-
-        num_chunks = 2 #len(sessions)  # fixme: zmienić numer workerów / sesji
+        num_chunks = 2  # fixme: Dla 2 sesji działa w 50%, przy większej ilości powodzenie spada
         chunk_size = len(operations) // num_chunks
         chunks = [operations[i: i + chunk_size] for i in range(0, len(operations), chunk_size)]
 
         created_wallets = await beekeeper.api.list_created_wallets(token=beekeeper.token)
-        tt.logger.warning(f"dupa Beekeeper created_wallets (first token): {created_wallets}")
+        tt.logger.warning(f"@@@ Beekeeper created_wallets (first token): {created_wallets}")
 
-
-        results1, results2 = await asyncio.gather(
-            sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, None, chunks[0], init_node_http_endpoint,
-                                                     init_node_ws_endpoint),
-            sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, None, chunks[1], init_node_http_endpoint,
-                                                     init_node_ws_endpoint),
+        singed_chunks = await asyncio.gather(
+            *[
+                sign_chunk_of_transactions_by_beekeeper2(
+                    wallet,
+                    beekeeper,
+                    chunk,
+                    init_node_http_endpoint,
+                    init_node_ws_endpoint)
+                for chunk in chunks
+            ]
         )
-        # results1 = await asyncio.gather(
-        #     sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, sessions[1], chunks[1], init_node_http_endpoint,
-        #                                              init_node_ws_endpoint),
-        # )
 
-
-
+        signed_transactions = [item for sublist in singed_chunks for item in sublist]
         print()
 
     ####################################################
@@ -202,28 +184,26 @@ async def test_prepare_second_stage_of_block_log(
     # node.block_log.copy_to(Path(__file__).parent / f"block_log_second_stage_{signature_type}")
 
 
-async def sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, session, chunk, init_node_http_endpoint,
+async def sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, chunk, init_node_http_endpoint,
                                                    init_node_ws_endpoint):
     notification_endpoint = beekeeper.notification_server_http_endpoint.as_string(with_protocol=False)
+    # Tworzymy sesję przy każdym włączeniu wątku ( maksymalna liczbe sesji 64 - 1 )
     session = (
-                await beekeeper.api.create_session(notifications_endpoint=notification_endpoint, salt='test')
-            ).token
-    tt.logger.info(f"Start session {session}")
+        await beekeeper.api.create_session(notifications_endpoint=notification_endpoint, salt='test')
+    ).token
+    tt.logger.info(f"@@@ Start session {session}. Session started!")
     async with beekeeper.with_session(session):
         await beekeeper.api.unlock(wallet_name=wallet.name, password=wallet.password)
+        tt.logger.info(f"@@@@ Beekeeper: session {session}. Unlocked wallet: {wallet.name}")
 
         created_wallets = await beekeeper.api.list_created_wallets(token=session)
-        tt.logger.warning(f"dupa Beekeeper created_wallets: {created_wallets}")
+        tt.logger.warning(f"@@@@@ Beekeeper created_wallets: {created_wallets}")
 
         wallets = await beekeeper.api.list_wallets()
-        tt.logger.warning(f"dupa Beekeeper wallets: {wallets}")
+        tt.logger.warning(f"@@@@@@ Beekeeper wallets: {wallets}")
 
         keys = await beekeeper.api.get_public_keys()
-        tt.logger.warning(f"dupa Beekeeper keys: {keys}")
-
-        # # TODO:
-        # await beekeeper.api.import_key(wallet_name=wallet.name,
-        #                                wif_key=tt.Account("account", secret="owner").private_key)
+        tt.logger.warning(f"@@@ Beekeeper keys: {keys}")
 
         remote_node = tt.RemoteNode(http_endpoint=init_node_http_endpoint, ws_endpoint=init_node_ws_endpoint)
         gdpo = remote_node.api.database.get_dynamic_global_properties()
