@@ -104,7 +104,7 @@ class DetailsScreen(ModalScreen[None], CliveWidget):
                 created: {created}
                 missed blocks: {missed_blocks}
                 last block: {last_block}
-                price feed: {price_feed} $
+                price feed: {price_feed}
                 version: {version}\
             """
 
@@ -148,7 +148,7 @@ class WitnessNameLabel(Label, CliveWidget):
         created: {created}
         missed blocks: {missed_blocks}
         last block: {last_block}
-        price feed: {price_feed} $
+        price feed: {price_feed}
         version: {version}\
     """
 
