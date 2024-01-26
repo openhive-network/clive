@@ -3,7 +3,7 @@ from __future__ import annotations
 import aiohttp
 import asyncio
 import json
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
 import requests
@@ -90,14 +90,14 @@ async def test_prepare_second_stage_of_block_log(
 
         await beekeeper.api.lock(wallet_name=wallet.name)
 
-        num_chunks = 16  # fixme: Dla 2 sesji działa w 50%, przy większej ilości powodzenie spada
+        num_chunks = 8  # fixme: Dla 2 sesji działa w 50%, przy większej ilości powodzenie spada
         chunk_size = len(operations) // num_chunks
         chunks = [operations[i: i + chunk_size] for i in range(0, len(operations), chunk_size)]
 
         created_wallets = await beekeeper.api.list_created_wallets(token=beekeeper.token)
         tt.logger.warning(f"@@@ Beekeeper created_wallets (first token): {created_wallets}")
 
-        ########################################################################################################################
+        ################################################################################################################
         # CURL TESTING
         token = beekeeper.token
         http_endpoint = beekeeper.http_endpoint
@@ -114,7 +114,7 @@ async def test_prepare_second_stage_of_block_log(
         signed_transactions = [item for sublist in singed_chunks for item in sublist]
         print()
 
-        ########################################################################################################################
+        ################################################################################################################
 
         # singed_chunks = await asyncio.gather(
         #     *[
@@ -250,6 +250,21 @@ async def sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, chunk, ini
         return transactions_in_chunk
 
 
+async def create_and_sign_transaction(ops, gdpo, node_config, num, sig_digest_pack, url):
+    tt.logger.info(f"@@@@@ SESSION {num} SIGNED!")
+
+    headers = {'Content-Type': 'application/json'}
+    trx: SimpleTransaction = generate_transaction_template(gdpo)
+    trx.operations.append(
+        *[HF26Representation(type=op.get_name_with_suffix(), value=op) for op in ops])
+    sig_digest = wax.calculate_sig_digest(
+        trx.json(by_alias=True).encode("ascii"), node_config.HIVE_CHAIN_ID.encode("ascii")
+    ).result.decode("ascii")
+    sig_digest_pack["params"]["digest"] = sig_digest
+    response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
+    return response_sig_digest
+
+
 async def send_by_curl(url, chunk, init_node_http_endpoint, init_node_ws_endpoint, chunk_num):
     headers = {'Content-Type': 'application/json'}
 
@@ -298,21 +313,55 @@ async def send_by_curl(url, chunk, init_node_http_endpoint, init_node_ws_endpoin
     }
 
     transactions_in_chunk = []
-    for pack_operations in chunk:
-        trx: SimpleTransaction = generate_transaction_template(gdpo)
-        trx.operations.append(
-            *[HF26Representation(type=op.get_name_with_suffix(), value=op) for op in pack_operations])
+    async with aiohttp.ClientSession() as session:
+        tt.logger.info(f"@@@@ session start id: {chunk_num}, token: {token}, object: {str(session)}")
 
-        sig_digest = wax.calculate_sig_digest(
-            trx.json(by_alias=True).encode("ascii"), node_config.HIVE_CHAIN_ID.encode("ascii")
-        ).result.decode("ascii")
+        singed_chunks = await asyncio.gather(
+            *[create_and_sign_transaction(pack_operations, gdpo, node_config, chunk_num, sig_digest_pack, url) for
+              pack_operations in chunk])
+        print()
+    print()
+    # for pack_operations in chunk:
+    #     trx: SimpleTransaction = generate_transaction_template(gdpo)
+    #     trx.operations.append(
+    #         *[HF26Representation(type=op.get_name_with_suffix(), value=op) for op in pack_operations])
+    #
+    #     sig_digest = wax.calculate_sig_digest(
+    #         trx.json(by_alias=True).encode("ascii"), node_config.HIVE_CHAIN_ID.encode("ascii")
+    #     ).result.decode("ascii")
+    #     sig_digest_pack["params"]["digest"] = sig_digest
+    #
+    #     async with session.post(url, headers=headers, json=sig_digest_pack) as response:
+    #         response_text = await response.text()
+    #         print()
 
-        sig_digest_pack["params"]["digest"] = sig_digest
-        response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
+    # response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
+    # try:
+    #     signature = json.loads(response_sig_digest.text)["result"]["signature"]
+    # except:
+    #     continue
 
-        signature = json.loads(response_sig_digest.text)["result"]["signature"]
-        trx.signatures.append(signature)
-        transactions_in_chunk.append(trx)
+    # async with session.post(url, headers=headers, json=sig_digest_pack) as response:
+    #     response_text = await response.text()
+    #     print()
+    # try:
+    #     signature = json.loads(response_text)["result"]["signature"]
+    # except:
+    #     continue
+    # response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
+    # try:
+    #     signature = json.loads(response_sig_digest.text)["result"]["signature"]
+    # except:
+    #     continue
+    # print()
+    # trx.signatures.append(signature)
+    # transactions_in_chunk.append(trx)
+
+    # response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
+
+    # signature = json.loads(response_sig_digest.text)["result"]["signature"]
+    # trx.signatures.append(signature)
+    # transactions_in_chunk.append(trx)
     return transactions_in_chunk
 
 
