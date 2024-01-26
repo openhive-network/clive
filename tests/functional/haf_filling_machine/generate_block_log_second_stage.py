@@ -1,7 +1,12 @@
 from __future__ import annotations
 
+import aiohttp
 import asyncio
+import json
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
 from pathlib import Path
+import requests
 from typing import Final, Literal
 
 import pytest
@@ -74,7 +79,7 @@ async def test_prepare_second_stage_of_block_log(
     init_node_ws_endpoint = node.ws_endpoint
 
     # Tworzymy pomocnicza obiekt reprezentujacy wallet z 0 parami kluczy priv/pub
-    wallet = WalletInfo(name="name", password="pass", keys=Keys(count=0))
+    wallet = WalletInfo(name="my_only_wallet", password="my_password", keys=Keys(count=0))
     async with await Beekeeper().launch() as beekeeper:
         # Tworzymy fizyczny wallet i importujemy do niego klucz
         await beekeeper.api.create(wallet_name=wallet.name, password=wallet.password)
@@ -85,27 +90,46 @@ async def test_prepare_second_stage_of_block_log(
 
         await beekeeper.api.lock(wallet_name=wallet.name)
 
-        num_chunks = 2  # fixme: Dla 2 sesji działa w 50%, przy większej ilości powodzenie spada
+        num_chunks = 16  # fixme: Dla 2 sesji działa w 50%, przy większej ilości powodzenie spada
         chunk_size = len(operations) // num_chunks
         chunks = [operations[i: i + chunk_size] for i in range(0, len(operations), chunk_size)]
 
         created_wallets = await beekeeper.api.list_created_wallets(token=beekeeper.token)
         tt.logger.warning(f"@@@ Beekeeper created_wallets (first token): {created_wallets}")
 
-        singed_chunks = await asyncio.gather(
-            *[
-                sign_chunk_of_transactions_by_beekeeper2(
-                    wallet,
-                    beekeeper,
-                    chunk,
-                    init_node_http_endpoint,
-                    init_node_ws_endpoint)
-                for chunk in chunks
-            ]
-        )
+        ########################################################################################################################
+        # CURL TESTING
+        token = beekeeper.token
+        http_endpoint = beekeeper.http_endpoint
 
+        singed_chunks = await asyncio.gather(*[send_by_curl(
+            http_endpoint.as_string(),
+            chunk,
+            init_node_http_endpoint,
+            init_node_ws_endpoint,
+            chunk_num,
+        )
+            for chunk_num, chunk in enumerate(chunks)])
+        print()
         signed_transactions = [item for sublist in singed_chunks for item in sublist]
         print()
+
+        ########################################################################################################################
+
+        # singed_chunks = await asyncio.gather(
+        #     *[
+        #         sign_chunk_of_transactions_by_beekeeper2(
+        #             wallet,
+        #             beekeeper,
+        #             chunk,
+        #             init_node_http_endpoint,
+        #             init_node_ws_endpoint)
+        #         for chunk in chunks
+        #     ]
+        # )
+        #
+        # signed_transactions = [item for sublist in singed_chunks for item in sublist]
+        # print()
 
     ####################################################
     #
@@ -146,9 +170,9 @@ async def test_prepare_second_stage_of_block_log(
     #     executor.shutdown(cancel_futures=True, wait=False)
     # tt.logger.info("Finish Signing Transactions")
     #
-    # # Broadcasting
+    # Broadcasting
     # tt.logger.info("Start Broadcasting")
-    # max_workers = 16
+    # max_workers = 2
     # with ProcessPoolExecutor(max_workers=max_workers) as executor:
     #     processor = BroadcastTransactionsChunk()
     #
@@ -157,7 +181,7 @@ async def test_prepare_second_stage_of_block_log(
     #     chunks = [signed_transactions[i: i + chunk_size] for i in range(0, len(signed_transactions), chunk_size)]
     #
     #     single_transaction_broadcast_with_address = partial(
-    #         processor.broadcast_chunk_of_transactions, init_node_address=http_endpoint
+    #         processor.broadcast_chunk_of_transactions, init_node_address=node.http_endpoint
     #     )
     #
     #     results = []
@@ -224,6 +248,72 @@ async def sign_chunk_of_transactions_by_beekeeper2(wallet, beekeeper, chunk, ini
             trx.signatures.append(signature)
             transactions_in_chunk.append(trx)
         return transactions_in_chunk
+
+
+async def send_by_curl(url, chunk, init_node_http_endpoint, init_node_ws_endpoint, chunk_num):
+    headers = {'Content-Type': 'application/json'}
+
+    create_session = {
+        "jsonrpc": "2.0",
+        "method": "beekeeper_api.create_session",
+        "params": {
+            "salt": chunk_num,
+            "notifications_endpoint": url
+        },
+        "id": 1
+    }
+
+    response_token = requests.post(url, json=create_session, headers=headers)
+    token = json.loads(response_token.text)["result"]["token"]
+
+    unlock = {
+        "jsonrpc": "2.0",
+        "method": "beekeeper_api.unlock",
+        "params": {
+            "token": token,
+            "wallet_name": "my_only_wallet",
+            "password": "my_password"
+        },
+        "id": 1
+    }
+
+    requests.post(url, json=unlock, headers=headers)
+    tt.logger.info(f"@@@ Session number: {chunk_num} with token: {token} is ready.")
+
+    remote_node = tt.RemoteNode(http_endpoint=init_node_http_endpoint, ws_endpoint=init_node_ws_endpoint)
+    gdpo = remote_node.api.database.get_dynamic_global_properties()
+    node_config = remote_node.api.database.get_config()
+
+    public_key = tt.Account("account", secret="owner").public_key[3:]
+
+    sig_digest_pack = {
+        "jsonrpc": "2.0",
+        "method": "beekeeper_api.sign_digest",
+        "params": {
+            "token": token,
+            "digest": "",
+            "public_key": public_key,
+        },
+        "id": 1
+    }
+
+    transactions_in_chunk = []
+    for pack_operations in chunk:
+        trx: SimpleTransaction = generate_transaction_template(gdpo)
+        trx.operations.append(
+            *[HF26Representation(type=op.get_name_with_suffix(), value=op) for op in pack_operations])
+
+        sig_digest = wax.calculate_sig_digest(
+            trx.json(by_alias=True).encode("ascii"), node_config.HIVE_CHAIN_ID.encode("ascii")
+        ).result.decode("ascii")
+
+        sig_digest_pack["params"]["digest"] = sig_digest
+        response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
+
+        signature = json.loads(response_sig_digest.text)["result"]["signature"]
+        trx.signatures.append(signature)
+        transactions_in_chunk.append(trx)
+    return transactions_in_chunk
 
 
 def sign_chunk_of_transactions_by_beekeeper(

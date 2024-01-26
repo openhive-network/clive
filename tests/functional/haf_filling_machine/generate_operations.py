@@ -60,7 +60,8 @@ def __prepare_operation(
         return create_comment_operation(account_name, depth_level, comment_permlinks, permlinks_for_current_iteration)
     if 61 <= random_number <= 80:
         return create_custom_json(account_name)
-    return create_comment_options(depth_level, comment_permlinks)
+    # return create_comment_options(depth_level, comment_permlinks)
+    return create_custom_json(account_name)
 
 def create_transfer(from_account: str) -> TransferOperation:
     return TransferOperation(
