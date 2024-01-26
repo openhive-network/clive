@@ -54,10 +54,12 @@ class CliveTyper(typer.Typer):
         *,
         name: Optional[str] = Default(None),
         help: Optional[str] = Default(None),  # noqa: A002
+        chain: bool = Default(False),
     ) -> None:
         super().__init__(
             name=name,
             help=help,
+            chain=chain,
             rich_markup_mode="rich",
             context_settings={"help_option_names": ["-h", "--help"]},
             no_args_is_help=True,
@@ -123,6 +125,7 @@ class CliveTyper(typer.Typer):
         *,
         help: Optional[str] = Default(None),  # noqa: A002
         invoke_without_command: bool = Default(False),
+        result_callback: Optional[Callable[..., Any]] = Default(None),
     ) -> Callable[[CommandFunctionType], CommandFunctionType]:
         return self.__common_decorator(
             super().callback,
@@ -130,6 +133,7 @@ class CliveTyper(typer.Typer):
             common_options=common_options,
             help=help,
             invoke_without_command=invoke_without_command,
+            result_callback=result_callback,
         )
 
     def __handle_error(self, error: ExceptionT) -> None:

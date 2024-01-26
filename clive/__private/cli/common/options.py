@@ -100,3 +100,24 @@ to_account_name_option = typer.Option(
 proposal_id: list[int] = typer.Option(
     ..., help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times."
 )
+
+authority_account_name_option = typer.Option(
+    ...,
+    "--account",
+    help="The account to  add/remove/modify (account must exist).",
+    show_default=False,
+)
+
+authority_key_option = typer.Option(
+    ...,
+    "--key",
+    help="The public key to add/remove/modify",
+    show_default=False,
+)
+
+authority_weight_option = typer.Option(
+    ...,
+    "--weight",
+    help="The new weight of account/key authority",
+    show_default=False,
+)

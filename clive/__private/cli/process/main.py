@@ -1,13 +1,15 @@
 import typing
 from enum import Enum
+from functools import partial
 
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions
+from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options, update_authority
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.proxy import proxy
 from clive.__private.cli.process.savings import savings
+from clive.__private.cli.process.update_authority_common import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
 
@@ -15,6 +17,9 @@ process = CliveTyper(name="process", help="Process something (e.g. perform a tra
 
 process.add_typer(proxy)
 process.add_typer(savings)
+process.add_typer(get_update_authority_typer("owner", update_authority.update_owner))
+process.add_typer(get_update_authority_typer("active", update_authority.update_active))
+process.add_typer(get_update_authority_typer("posting", update_authority.update_posting))
 process.add_typer(vote_proposal)
 process.add_typer(vote_witness)
 
@@ -65,4 +70,26 @@ async def process_transaction(
         from_file=from_file,
         force_unsign=force_unsign,
         already_signed_mode=already_signed_mode,  # type: ignore [arg-type]
+    ).run()
+
+
+@process.command(name="update-memo-key", common_options=[OperationCommonOptions])
+async def process_update_memo_key(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
+    memo_key: str = typer.Option(
+        ...,
+        "--key",
+        help="New memo public key that will be set for account.",
+        show_default=False,
+    ),
+) -> None:
+    """Sets memo key."""
+    from clive.__private.cli.commands.process.account_update import AccountUpdate
+
+    update_memo_key_callback = partial(update_authority.set_memo_key, key=memo_key)
+
+    common = OperationCommonOptions.get_instance()
+    await AccountUpdate(
+        **common.as_dict(), account_name=account_name, callbacks=[update_memo_key_callback], offline=True
     ).run()
