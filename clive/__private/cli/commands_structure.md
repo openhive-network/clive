@@ -37,10 +37,18 @@ flowchart LR
         ProcessProxy --> ProcessProxySet[set]
         ProcessProxy --> ProcessProxyClear[clear]
 
+        Process --> ProcessUpdateAuthority["update-[owner|active|posting]-authority"]
+        ProcessUpdateAuthority --> ProcessUpdateAuthorityAddAccount[add-account]
+        ProcessUpdateAuthority --> ProcessUpdateAuthorityAddKey[add-key]
+        ProcessUpdateAuthority --> ProcessUpdateAuthorityModifyAccount[modify-account]
+        ProcessUpdateAuthority --> ProcessUpdateAuthorityModifyKey[modify-key]
+        ProcessUpdateAuthority --> ProcessUpdateAuthorityRemoveAccount[remove-account]
+        ProcessUpdateAuthority --> ProcessUpdateAuthorityRemoveKey[remove-key]
+
+        Process --> ProcessUpdateMemoKey[update-memo-key]
+
         Process -->|"Not implemented yet"|ProcessPowerUp[power-up]
         Process -->|"Not implemented yet"|ProcessPowerDown[power-down]
-        Process -->|"Not implemented yet"|ProcessUpdateAccount[update-account]
-        Process -->|"Not implemented yet"|ProcessChangeAuthority[change-authority]
         Process -->|"Not implemented yet"|ProcessClaimToken[claim-token]
 
         Process --> ProcessVoteWitness(vote-witness)
@@ -85,6 +93,9 @@ flowchart LR
         ShowPending -->|"Not implemented yet"| ShowPendingPowerUps[power-ups]
         ShowPending -->|"Not implemented yet"| ShowPendingPowerDowns[power-downs]
         ShowPending -->|"Not implemented yet"| ShowPendingRecurrentTransfers[transfers]
+
+        Show --> ShowAuthority["[owner|active|posting]-authority"]
+        Show --> ShowMemoKey[memo-key]
     end
 
     subgraph Configuration[Configuration related commands]

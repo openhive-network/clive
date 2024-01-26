@@ -20,6 +20,10 @@ class AccountNotFoundError(FindAccountsCommandError):
     pass
 
 
+class UnrequestedAccountsReceivedError(FindAccountsCommandError):
+    pass
+
+
 @dataclass(kw_only=True)
 class FindAccounts(CommandWithResult[list[SchemasAccount]]):
     node: Node
@@ -28,9 +32,17 @@ class FindAccounts(CommandWithResult[list[SchemasAccount]]):
     async def _execute(self) -> None:
         response: SchemasFindAccounts = await self.node.api.database_api.find_accounts(accounts=self.accounts)
         self._check_if_all_accounts_received(response)
+        self._check_received_list_length(response)
         self._result = response.accounts
 
     def _check_if_all_accounts_received(self, response: SchemasFindAccounts) -> None:
         for account in self.accounts:
             if not any(response_account.name == account for response_account in response.accounts):
                 raise AccountNotFoundError(self, f"Account {account} not found on node {self.node.address}")
+
+    def _check_received_list_length(self, response: SchemasFindAccounts) -> None:
+        if len(self.accounts) != len(response.accounts):
+            received = [response_account.owner for response_account in response.accounts]
+            raise UnrequestedAccountsReceivedError(
+                self, f"Requested list {self.accounts} and received {received} on node {self.node.address}"
+            )

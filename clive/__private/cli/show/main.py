@@ -221,3 +221,45 @@ async def show_proposal(
         **common.as_dict(),
         proposal_id=proposal_id,
     ).run()
+
+
+@show.command(name="owner-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_owner_authority(
+    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+) -> None:
+    """Fetch from blockchain and display owner authority of selected account."""
+    from clive.__private.cli.commands.show.show_authority import ShowAuthority
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowAuthority(**common.as_dict(), account_name=account_name, authority="owner").run()
+
+
+@show.command(name="active-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_active_authority(
+    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+) -> None:
+    """Fetch from blockchain and display active authority of selected account."""
+    from clive.__private.cli.commands.show.show_authority import ShowAuthority
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowAuthority(**common.as_dict(), account_name=account_name, authority="active").run()
+
+
+@show.command(name="posting-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_posting_authority(
+    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+) -> None:
+    """Fetch from blockchain and display posting authority of selected account."""
+    from clive.__private.cli.commands.show.show_authority import ShowAuthority
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowAuthority(**common.as_dict(), account_name=account_name, authority="posting").run()
+
+
+@show.command(name="memo-key", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_memo_key(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+    """Fetch from blockchain and display memo key of selected account."""
+    from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowMemoKey(**common.as_dict(), account_name=account_name).run()
