@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.formatters.humanize import humanize_votes
+from clive.__private.core.formatters.humanize import humanize_votes_with_comma
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -118,7 +118,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             creator=proposal.creator,
             receiver=proposal.receiver,
             daily_pay=Asset.pretty_amount(proposal.daily_pay),
-            votes=humanize_votes(
+            votes=humanize_votes_with_comma(
                 proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
             ),
             status=proposal.status,

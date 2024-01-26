@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_comma
 from clive.models import Asset
 
 
@@ -17,7 +17,7 @@ class ShowProposal(WorldBasedCommand):
         proposal = wrapper.result_or_raise
 
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
-        votes = humanize_votes(proposal.total_votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares)
+        votes = humanize_votes_with_comma(proposal.total_votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares)
         daily_pay = Asset.pretty_amount(proposal.daily_pay)
 
         table = Table(title=f"Details of proposal with id `{self.proposal_id}`", show_header=False)

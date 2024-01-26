@@ -8,7 +8,10 @@ from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
 )
-from clive.__private.core.formatters.humanize import humanize_hbd_exchange_rate, humanize_votes
+from clive.__private.core.formatters.humanize import (
+    humanize_hbd_exchange_rate,
+    humanize_votes_with_suffix,
+)
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
@@ -193,7 +196,9 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             witness.owner,
             created=witness.created,
             rank=rank,
-            votes=humanize_votes(witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares),
+            votes=humanize_votes_with_suffix(
+                witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
+            ),
             missed_blocks=witness.total_missed,
             voted=witness.owner in data.witnesses_votes,
             last_block=witness.last_confirmed_block_num,

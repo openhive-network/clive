@@ -140,7 +140,20 @@ def humanize_witness_status(signing_key: str) -> str:
     return "active" if signing_key != NULL_ACCOUNT_KEY_VALUE else "inactive"
 
 
-def humanize_votes(votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests) -> str:
+def humanize_votes_with_suffix(
+    votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests
+) -> str:
+    """Return pretty formatted votes converted to hive power with K, M etc. suffix."""
+    total_vesting_fund = int(total_vesting_fund_hive.amount) / 10**total_vesting_fund_hive.precision
+    total_shares = int(total_vesting_shares.amount) / 10**total_vesting_shares.precision
+
+    hive_power: int = (total_vesting_fund * (votes / total_shares)) // 1000000
+    return humanize_hive_power(hive_power)
+
+
+def humanize_votes_with_comma(
+    votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests
+) -> str:
     """Return pretty formatted votes converted to hive power."""
     total_vesting_fund = int(total_vesting_fund_hive.amount) / 10**total_vesting_fund_hive.precision
     total_shares = int(total_vesting_shares.amount) / 10**total_vesting_shares.precision

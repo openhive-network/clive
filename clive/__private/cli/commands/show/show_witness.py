@@ -7,7 +7,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.core.formatters.humanize import (
     humanize_hbd_exchange_rate,
     humanize_hbd_interest_rate,
-    humanize_votes,
+    humanize_votes_with_comma,
     humanize_witness_status,
 )
 
@@ -21,7 +21,7 @@ class ShowWitness(WorldBasedCommand):
         witness = wrapper.result_or_raise
 
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
-        votes = humanize_votes(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares)
+        votes = humanize_votes_with_comma(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares)
 
         account_creation_fee: str | None = None
         if witness.props.account_creation_fee:
