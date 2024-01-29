@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Container, Horizontal
-from textual.widgets import Button, Static, TabPane
+from textual.widgets import Button, TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.governance_operations.common_governance.governance_tab_pane import ScrollablePart
@@ -12,6 +12,7 @@ from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_pro
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -32,9 +33,8 @@ class ProxyNotSet(ProxyBaseContainer):
         yield ProxyInput()
         with Container(id="set-button-container"):
             yield CliveButton("Set proxy", id_="set-proxy-button")
-        yield Static(
-            "Notice: setting proxy will delete your witnesses votes and deactivate your proposal votes",
-            id="proxy-set-information",
+        yield Notice(
+            "setting proxy will delete your witnesses votes and deactivate your proposal votes",
         )
 
 

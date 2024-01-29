@@ -23,6 +23,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.notice import Notice
 from clive.exceptions import RequestIdError
 from clive.models import Asset
 from schemas.operations import (
@@ -200,9 +201,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
         self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
 
-        self.__transfer_time_reminder = Static(
-            "Notice: transfer from savings will take 3 days", id="transfer-time-reminder"
-        )
+        self.__transfer_time_reminder = Notice("transfer from savings will take 3 days")
         self.__transfer_time_reminder.visible = False
 
     def compose(self) -> ComposeResult:
