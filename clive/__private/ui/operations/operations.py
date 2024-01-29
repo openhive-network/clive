@@ -12,12 +12,11 @@ from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.operations_list import MAJOR_OPERATIONS, RAW_OPERATIONS
+from clive.__private.ui.operations.operations_list import MAJOR_OPERATIONS
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.select_file import SelectFile
-from clive.dev import is_in_dev_mode
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -78,7 +77,6 @@ class Operations(CartBasedScreen, CartBinding):
                 yield OperationButton(MAJOR_OPERATIONS[2], label="Governance operations")
             with TabPane("Account management"), ScrollablePart():
                 yield OperationButton(None, label="Account management operations")
-            yield from self.__create_raw_operations_tab(hide=not is_in_dev_mode())
 
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
@@ -107,11 +105,3 @@ class Operations(CartBasedScreen, CartBinding):
             return
 
         await self.app.push_screen(TransactionSummaryFromFile(transaction, file_path))
-
-    def __create_raw_operations_tab(self, *, hide: bool = False) -> ComposeResult:
-        if hide:
-            return []
-
-        with TabPane("Raw"), ScrollablePart():
-            for operation in RAW_OPERATIONS:
-                yield OperationButton(operation)
