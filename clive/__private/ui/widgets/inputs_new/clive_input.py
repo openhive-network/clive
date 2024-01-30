@@ -105,9 +105,9 @@ class CliveInput(Input):
 
         self._configure()
 
-    def validate(self, value: str) -> ValidationResult | None:
+    def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
         """Validate the value of the input."""
-        if not self.required and not value:
+        if not self.required and not value and not treat_as_required:
             return ValidationResult.success()
 
         result = super().validate(value)

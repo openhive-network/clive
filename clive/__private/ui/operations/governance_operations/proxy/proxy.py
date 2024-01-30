@@ -11,7 +11,8 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs_new.proxy_input import ProxyInput
+from clive.__private.ui.widgets.inputs_new.text_input import TextInput
 from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
@@ -23,14 +24,30 @@ class ProxyBaseContainer(Container):
     """Base widget for the ProxyNotSet and ProxySet container to properly catch both by the query_one."""
 
 
-class ProxyInput(AccountNameInput):
-    pass
+class CurrentProxy(TextInput):
+    def __init__(self, current_proxy: str) -> None:
+        super().__init__(
+            "Current proxy",
+            value=current_proxy,
+            always_show_title=True,
+            required=False,
+            disabled=True,
+        )
+
+
+class NewProxyInput(ProxyInput):
+    def __init__(self, required: bool) -> None:
+        super().__init__(
+            "New proxy",
+            setting_proxy=True,
+            required=required,  # we need to treat the input as not required when the user presses the remove button
+        )
 
 
 class ProxyNotSet(ProxyBaseContainer):
     def compose(self) -> ComposeResult:
-        yield AccountNameInput(label="current proxy", value="Not set", disabled=True)
-        yield ProxyInput()
+        yield CurrentProxy("Proxy not set")
+        yield NewProxyInput(required=True)
         with Container(id="set-button-container"):
             yield CliveButton("Set proxy", id_="set-proxy-button")
         yield Notice(
@@ -51,8 +68,8 @@ class ProxySet(ProxyBaseContainer):
         self._current_proxy = current_proxy
 
     def compose(self) -> ComposeResult:
-        yield AccountNameInput(label="current proxy", value=self._current_proxy, disabled=True)
-        yield ProxyInput()
+        yield CurrentProxy(self._current_proxy)
+        yield NewProxyInput(required=False)
         with Horizontal(id="modify-proxy-buttons"):
             yield CliveButton("Change proxy", id_="set-proxy-button")
             yield CliveButton("Remove proxy", id_="remove-proxy-button")
@@ -71,8 +88,8 @@ class Proxy(TabPane, CliveWidget):
         self.watch(self.app.world, "profile_data", self.sync_when_proxy_changed)
 
     @property
-    def new_proxy(self) -> str | None:
-        return self.query_one(ProxyInput).value
+    def new_proxy_input(self) -> NewProxyInput:
+        return self.query_one(NewProxyInput)
 
     def compose(self) -> ComposeResult:
         content = ProxySet(self._current_proxy) if self._current_proxy else ProxyNotSet()
@@ -81,16 +98,13 @@ class Proxy(TabPane, CliveWidget):
 
     @on(Button.Pressed, "#set-proxy-button")
     def set_new_proxy(self) -> None:
-        if not self.new_proxy:
+        if not self.new_proxy_input.validate_with_notification():
+            # we need to exclusively validate the input when set button is pressed, because the input is not validated
+            # when the user presses the remove button - that's also why we can't use required=True in the input init
             return
 
-        working_account_name = self.app.world.profile_data.working_account.name
-
-        if self.new_proxy == working_account_name:
-            self.notify("You cannot set the proxy on yourself!", severity="error")
-            return
-
-        self.app.push_screen(AccountWitnessProxy(new_proxy=self.new_proxy))
+        new_proxy = self.new_proxy_input.value_raw  # already validated
+        self.app.push_screen(AccountWitnessProxy(new_proxy=new_proxy))
 
     @on(Button.Pressed, "#remove-proxy-button")
     def remove_proxy(self) -> None:

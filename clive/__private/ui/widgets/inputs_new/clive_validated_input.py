@@ -153,14 +153,14 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         FailedCliveInputValidationError: Raised when validation fails.
         CliveInputValueError: Raised when cannot get the value of the input.
         """
-        self.validate_with_error()
+        self.validate_with_error(treat_as_required=False)
         return self._value
 
     @property
     def value_or_none(self) -> InputReturnT | None:
         """Return the value of the input as given InputReturnT or None if validation fails."""
         try:
-            self.validate_with_error()
+            self.validate_with_error(treat_as_required=False)
         except CliveValidatedInputError:
             return None
         return self._value
@@ -169,13 +169,13 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
     def value_or_notification(self) -> InputReturnT | None:
         """Return the value of the input as given InputReturnT or None and raise a Notification if validation fails."""
         try:
-            self.validate_with_error()
+            self.validate_with_error(treat_as_required=False)
         except CliveValidatedInputError as error:
             self.app.notify(str(error), severity="error")
             return None
         return self._value
 
-    def validate_with_error(self) -> None:
+    def validate_with_error(self, *, treat_as_required: bool = True) -> None:
         """
         Validate the input and raise an exception if validation fails.
 
@@ -191,7 +191,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
             except Exception as error:  # noqa: BLE001
                 raise InputValueError(str(error), input_name=self.input.title) from error
 
-        validation_result = self.input.validate(self.value_raw)
+        validation_result = self.input.validate(self.value_raw, treat_as_required=treat_as_required)
 
         if validation_result is None:
             # Means no validators were defined for the input.
@@ -202,6 +202,15 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
             raise FailedValidationError(validation_result, input_name=self.input.title)
 
         try_get_value()
+
+    def validate_with_notification(self, *, treat_as_required: bool = True) -> bool:
+        """Validate the input and raise a Notification if validation fails."""
+        try:
+            self.validate_with_error(treat_as_required=treat_as_required)
+        except CliveValidatedInputError as error:
+            self.app.notify(str(error), severity="error")
+            return False
+        return True
 
     @on(CliveInput.Validated)
     def _show_invalid_reasons(self, event: CliveInput.Validated) -> None:

@@ -5,18 +5,6 @@ Proxy {
   height: auto;
 }
 
-Proxy .current-proxy-static {
-  background: $accent-lighten-1;
-  width: 1fr;
-  height: 1;
-}
-
-Proxy AccountNameInput {
-  margin-top: 1;
-  margin-bottom: 1;
-  height: auto;
-}
-
 Proxy #set-button-container {
   align: center middle;
   height: 4;
@@ -41,10 +29,11 @@ Proxy #remove-proxy-button {
   background: $governance-red-color;
 }
 
-ProxyNotSet {
+ProxyBaseContainer {
   height: auto;
-}
 
-ProxySet {
-  height: auto;
+  CurrentProxy,
+  ProxyInput {
+    margin-bottom: 1;
+  }
 }
