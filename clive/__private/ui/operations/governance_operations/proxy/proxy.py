@@ -90,11 +90,11 @@ class Proxy(TabPane, CliveWidget):
             self.notify("You cannot set the proxy on yourself!", severity="error")
             return
 
-        self.app.push_screen(AccountWitnessProxy(is_raw=False, new_proxy=self.new_proxy))
+        self.app.push_screen(AccountWitnessProxy(new_proxy=self.new_proxy))
 
     @on(Button.Pressed, "#remove-proxy-button")
     def remove_proxy(self) -> None:
-        self.app.push_screen(AccountWitnessProxy(is_raw=False))
+        self.app.push_screen(AccountWitnessProxy(new_proxy=None))
 
     def sync_when_proxy_changed(self) -> None:
         proxy_profile_data = self.app.world.profile_data.working_account.data.proxy

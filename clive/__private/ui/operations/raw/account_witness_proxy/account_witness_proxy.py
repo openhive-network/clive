@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid, ScrollableContainer
-from textual.widgets import Static
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
@@ -21,54 +20,38 @@ class Body(Grid):
     """All the content of the screen, excluding the title."""
 
 
-class PlaceTaker(Static):
-    """Container used for making correct layout of a grid."""
-
-
 class AccountWitnessProxy(RawOperationBaseScreen):
     CSS_PATH = [
         *RawOperationBaseScreen.CSS_PATH,
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self, is_raw: bool = True, new_proxy: str | None = None) -> None:
+    def __init__(self, *, new_proxy: str | None) -> None:
         super().__init__()
-        self.__is_raw = is_raw
-        self.__new_proxy = new_proxy
-
-        self.__proxy_input = AccountNameInput(label="proxy")
+        self._new_proxy = new_proxy
 
     @property
-    def proxy_to_be_set(self) -> str | None:
-        if self.__is_raw:
-            return self.__proxy_input.value
-
-        if self.__new_proxy is None:
+    def proxy_to_be_set(self) -> str:
+        if self._new_proxy is None:
             return ""
-        return self.__new_proxy
+        return self._new_proxy
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Account witness proxy")
         with ScrollableContainer(), Body():
             yield InputLabel("account")
             yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-            if self.__is_raw:
-                yield from self.__proxy_input.compose()
-            else:
-                yield from AccountNameInput(
-                    label="new proxy",
-                    value=self.__new_proxy if self.__new_proxy is not None else "Proxy will be removed",
-                    disabled=True,
-                ).compose()
+            yield from AccountNameInput(
+                label="new proxy",
+                value=self._new_proxy if self._new_proxy is not None else "Proxy will be removed",
+                disabled=True,
+            ).compose()
 
     def action_add_to_cart(self) -> None:
         super().action_add_to_cart()
-        if not self.__is_raw:
-            self.app.pop_screen()
+        self.app.pop_screen()
 
-    def _create_operation(self) -> AccountWitnessProxyOperation | None:
-        if self.proxy_to_be_set is None:
-            return None
+    def _create_operation(self) -> AccountWitnessProxyOperation:
         return AccountWitnessProxyOperation(
             account=self.app.world.profile_data.working_account.name, proxy=self.proxy_to_be_set
         )
