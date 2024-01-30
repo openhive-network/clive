@@ -1,16 +1,8 @@
 CancelTransferFromSavings Body {
-  grid-size: 2;
-  grid-columns: 15 1fr;
-  grid-rows: 4;
+  grid-rows: auto;
+  grid-gutter: 1;
   margin: 0 4;
   background: $panel;
-  height: 8;
-}
-
-CancelTransferFromSavings #from-label {
   padding: 1 2;
-}
-
-CancelTransferFromSavings #account-label {
-  padding: 1 2;
+  height: auto;
 }
