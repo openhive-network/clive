@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInput
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
+from clive.__private.ui.widgets.placeholders_constants import INTEGER_PLACEHOLDER
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -11,16 +12,15 @@ if TYPE_CHECKING:
     from textual.widgets._input import InputValidationOn
 
 
-class NumericInput(CliveValidatedInput[float]):
-    """An input for a numeric value."""
+class IntegerInput(CliveValidatedInput[int]):
+    """An input for a integer value."""
 
     def __init__(
         self,
         title: str,
-        value: str | float | None = None,
-        placeholder: str = "",
+        value: str | int | None = None,
+        placeholder: str = INTEGER_PLACEHOLDER,
         *,
-        precision: int = 2,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
@@ -32,16 +32,6 @@ class NumericInput(CliveValidatedInput[float]):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
-        """
-        Initialise the widget.
-
-        New args (compared to `CliveValidatedInput`):
-        ------------------------------------
-        precision: Maximum allowed precision, enforced by restriction.
-        """
-        if precision < 1:
-            raise ValueError("Precision should be at least 1. Instead use a IntegerInput.")
-
         super().__init__(
             title=title,
             value=str(value) if value is not None else None,
@@ -50,8 +40,7 @@ class NumericInput(CliveValidatedInput[float]):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            restrict=self._create_restriction(precision),
-            type="number",
+            type="integer",
             validators=validators,
             validate_on=validate_on,
             valid_empty=valid_empty,
@@ -61,10 +50,5 @@ class NumericInput(CliveValidatedInput[float]):
         )
 
     @property
-    def _value(self) -> float:
-        return float(self.value_raw)
-
-    @staticmethod
-    def _create_restriction(precision: int) -> str:
-        precision_digits = f"{{0,{precision}}}"
-        return rf"\d*\.?\d{precision_digits}"
+    def _value(self) -> int:
+        return int(self.value_raw)

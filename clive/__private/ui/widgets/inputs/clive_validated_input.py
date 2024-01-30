@@ -9,7 +9,7 @@ from textual.widgets import Pretty
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs_new.clive_input import CliveInput
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

@@ -12,7 +12,7 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import (
+from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
 )
 

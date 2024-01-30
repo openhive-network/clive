@@ -7,7 +7,7 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from schemas.operations import CancelTransferFromSavingsOperation
 
 if TYPE_CHECKING:

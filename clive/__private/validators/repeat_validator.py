@@ -7,7 +7,7 @@ from textual.validation import Validator
 if TYPE_CHECKING:
     from textual.validation import ValidationResult
 
-    from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInput
+    from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 
 
 class RepeatValidator(Validator):

@@ -2,29 +2,30 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
-from clive.__private.ui.widgets.placeholders_constants import PROFILE_NAME_PLACEHOLDER
-from clive.__private.validators.profile_name_validator import ProfileNameValidator
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
+    from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
 
-class SetProfileNameInput(TextInput):
-    """An input for setting a Clive profile name."""
+class TextInput(CliveValidatedInput[str]):
+    """An input for a text value."""
 
     def __init__(
         self,
-        title: str = "Profile name",
+        title: str,
         value: str | None = None,
-        placeholder: str = PROFILE_NAME_PLACEHOLDER,
+        placeholder: str = "",
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
         required: bool = True,
+        password: bool = False,
+        validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
@@ -39,10 +40,16 @@ class SetProfileNameInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            validators=[ProfileNameValidator()],
+            password=password,
+            type="text",
+            validators=validators,
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
             classes=classes,
             disabled=disabled,
         )
+
+    @property
+    def _value(self) -> str:
+        return self.value_raw

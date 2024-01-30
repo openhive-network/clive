@@ -18,10 +18,10 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInputError
-from clive.__private.ui.widgets.inputs_new.set_password_input import SetPasswordInput
-from clive.__private.ui.widgets.inputs_new.set_profile_name_input import SetProfileNameInput
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
+from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
+from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.validators.repeat_validator import RepeatValidator
 from clive.exceptions import FormValidationError
 

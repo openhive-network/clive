@@ -20,9 +20,9 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs_new.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs_new.liquid_asset_amount_input import LiquidAssetAmountInput
-from clive.__private.ui.widgets.inputs_new.memo_input import MemoInput
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.exceptions import RequestIdError
 from clive.models import Asset

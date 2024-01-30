@@ -9,9 +9,9 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs_new.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs_new.liquid_asset_amount_input import LiquidAssetAmountInput
-from clive.__private.ui.widgets.inputs_new.memo_input import MemoInput
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.models import Asset
 from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation

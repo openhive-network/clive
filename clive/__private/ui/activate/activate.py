@@ -14,8 +14,8 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.inputs_new.integer_input import IntegerInput
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
+from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

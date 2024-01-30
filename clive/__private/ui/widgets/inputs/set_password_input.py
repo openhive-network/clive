@@ -1,22 +1,26 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInput
+from textual.validation import Length
+
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
 
-class TextInput(CliveValidatedInput[str]):
-    """An input for a text value."""
+class SetPasswordInput(TextInput):
+    """An input for setting a Clive password."""
+
+    PASSWORD_MIN_LENGTH: Final[int] = 8
+    PASSWORD_MAX_LENGTH: Final[int] = 64
 
     def __init__(
         self,
-        title: str,
+        title: str = "Password",
         value: str | None = None,
         placeholder: str = "",
         *,
@@ -24,8 +28,6 @@ class TextInput(CliveValidatedInput[str]):
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
         required: bool = True,
-        password: bool = False,
-        validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
@@ -40,16 +42,13 @@ class TextInput(CliveValidatedInput[str]):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            password=password,
-            type="text",
-            validators=validators,
+            password=True,
+            validators=[
+                Length(minimum=self.PASSWORD_MIN_LENGTH, maximum=self.PASSWORD_MAX_LENGTH),
+            ],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
             classes=classes,
             disabled=disabled,
         )
-
-    @property
-    def _value(self) -> str:
-        return self.value_raw

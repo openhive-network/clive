@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from textual.validation import Length
 
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PATTERN_PLACEHOLDER
+from clive.models.aliased import AccountName
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -12,17 +14,14 @@ if TYPE_CHECKING:
     from textual.widgets._input import InputValidationOn
 
 
-class SetPasswordInput(TextInput):
-    """An input for setting a Clive password."""
-
-    PASSWORD_MIN_LENGTH: Final[int] = 8
-    PASSWORD_MAX_LENGTH: Final[int] = 64
+class AccountNamePatternInput(TextInput):
+    """An input for a Hive account name pattern."""
 
     def __init__(
         self,
-        title: str = "Password",
+        title: str = "Account name pattern",
         value: str | None = None,
-        placeholder: str = "",
+        placeholder: str = ACCOUNT_NAME_PATTERN_PLACEHOLDER,
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
@@ -42,9 +41,8 @@ class SetPasswordInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            password=True,
             validators=[
-                Length(minimum=self.PASSWORD_MIN_LENGTH, maximum=self.PASSWORD_MAX_LENGTH),
+                Length(minimum=1, maximum=AccountName.max_length),
             ],
             validate_on=validate_on,
             valid_empty=valid_empty,

@@ -11,8 +11,8 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs_new.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInputError
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:

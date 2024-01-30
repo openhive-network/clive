@@ -11,8 +11,8 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs_new.proxy_input import ProxyInput
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
+from clive.__private.ui.widgets.inputs.proxy_input import ProxyInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:

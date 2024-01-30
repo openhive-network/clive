@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Horizontal, Vertical
 
 from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import (
+from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
 )
 from clive.__private.ui.widgets.placeholders_constants import NUMERIC_PLACEHOLDER

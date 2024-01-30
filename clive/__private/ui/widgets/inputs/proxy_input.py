@@ -2,53 +2,58 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInput
-from clive.__private.ui.widgets.placeholders_constants import INTEGER_PLACEHOLDER
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
+from clive.__private.validators.proxy_validator import ProxyValidator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
-    from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
 
-class IntegerInput(CliveValidatedInput[int]):
-    """An input for a integer value."""
+class ProxyInput(AccountNameInput):
+    """An input for a Hive proxy account name."""
 
     def __init__(
         self,
-        title: str,
-        value: str | int | None = None,
-        placeholder: str = INTEGER_PLACEHOLDER,
+        title: str = "Proxy account name",
+        value: str | None = None,
+        placeholder: str = ACCOUNT_NAME2_PLACEHOLDER,
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
         show_invalid_reasons: bool = True,
         required: bool = True,
-        validators: Validator | Iterable[Validator] | None = None,
+        ask_known_account: bool = True,
+        setting_proxy: bool = False,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
+        """
+        Initialise the widget.
+
+        New args (compared to `CliveInput`):
+        ------------------------------------
+        setting_proxy: Whether setting proxy or just getting proxy for other purpose.
+        """
+        working_account_name = self.app.world.profile_data.working_account.name
         super().__init__(
             title=title,
-            value=str(value) if value is not None else None,
+            value=value,
             placeholder=placeholder,
             always_show_title=always_show_title,
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            type="integer",
-            validators=validators,
+            ask_known_account=ask_known_account,
+            validators=[ProxyValidator(working_account_name if setting_proxy else None)],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
             classes=classes,
             disabled=disabled,
         )
-
-    @property
-    def _value(self) -> int:
-        return int(self.value_raw)

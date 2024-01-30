@@ -2,11 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.validation import Length
-
-from clive.__private.ui.widgets.inputs_new.text_input import TextInput
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PATTERN_PLACEHOLDER
-from clive.models.aliased import AccountName
+from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.ui.widgets.placeholders_constants import PROFILE_NAME_PLACEHOLDER
+from clive.__private.validators.profile_name_validator import ProfileNameValidator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -14,14 +12,14 @@ if TYPE_CHECKING:
     from textual.widgets._input import InputValidationOn
 
 
-class AccountNamePatternInput(TextInput):
-    """An input for a Hive account name pattern."""
+class SetProfileNameInput(TextInput):
+    """An input for setting a Clive profile name."""
 
     def __init__(
         self,
-        title: str = "Account name pattern",
+        title: str = "Profile name",
         value: str | None = None,
-        placeholder: str = ACCOUNT_NAME_PATTERN_PLACEHOLDER,
+        placeholder: str = PROFILE_NAME_PLACEHOLDER,
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
@@ -41,9 +39,7 @@ class AccountNamePatternInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            validators=[
-                Length(minimum=1, maximum=AccountName.max_length),
-            ],
+            validators=[ProfileNameValidator()],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
