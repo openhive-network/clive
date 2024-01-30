@@ -6,14 +6,15 @@ from typing import TYPE_CHECKING, ClassVar
 
 from textual import on, work
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical
+from textual.containers import Grid, Horizontal
 from textual.events import Click, Enter
 from textual.message import Message
 from textual.screen import ModalScreen
-from textual.widgets import Input, Label, Static
+from textual.validation import Integer
+from textual.widgets import Label, Static
 
 from clive.__private.config import settings
-from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData
+from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -33,8 +34,8 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 )
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
-from clive.__private.ui.widgets.inputs.witness_pattern_input import WitnessPatternInput
+from clive.__private.ui.widgets.inputs_new.account_name_pattern_input import AccountNamePatternInput
+from clive.__private.ui.widgets.inputs_new.integer_input import IntegerInput
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
@@ -195,7 +196,10 @@ class Witness(GovernanceTableRow[WitnessData]):
         )
 
 
-class WitnessManualSearch(Horizontal):
+class WitnessManualSearch(Grid):
+    LIMIT_MINIMUM: Final[int] = 1
+    LIMIT_MAXIMUM: Final[int] = WitnessesDataRetrieval.TOP_WITNESSES_HARD_LIMIT
+
     @dataclass
     class Search(Message):
         """Emitted when the search button is pressed."""
@@ -209,44 +213,51 @@ class WitnessManualSearch(Horizontal):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__witness_input = WitnessPatternInput(id_="witness-pattern-input")
-        self.__limit_input = IntegerInput(label="limit", id_="limit-input", placeholder="default - 150")
-
-        self.__limit_just_input: Input
-        self.__limit_just_label, self.__limit_just_input = self.__limit_input.compose()  # type: ignore[assignment]
-        self.__witness_just_label, self.__witness_just_input = self.__witness_input.compose()
+        self._witness_input = AccountNamePatternInput(
+            "Witness name",
+            always_show_title=True,
+            required=False,
+        )
+        self._limit_input = IntegerInput(
+            "Limit",
+            MAX_NUMBER_OF_WITNESSES_IN_TABLE,
+            validators=[
+                Integer(
+                    minimum=self.LIMIT_MINIMUM,
+                    maximum=self.LIMIT_MAXIMUM,
+                    failure_description=f"Must be between {self.LIMIT_MINIMUM} and {self.LIMIT_MAXIMUM}.",  # explicit description since textual Integer doesn't have description when NotANumber
+                ),
+            ],
+            always_show_title=True,
+            required=False,
+        )
 
     def compose(self) -> ComposeResult:
-        with Horizontal(id="inputs-with-statics-manual"):
-            with Vertical(id="witness-pattern-input-with-label"):
-                yield self.__witness_just_label
-                yield self.__witness_just_input
-            with Vertical(id="witness-input-limit-with-label"):
-                yield self.__limit_just_label
-                yield self.__limit_just_input
-
-        with Horizontal(id="search-and-clear-buttons"):
-            yield CliveButton("Search", id_="witness-search-button")
-            yield CliveButton("Clear", id_="clear-custom-witnesses-button")
+        yield self._witness_input
+        yield self._limit_input
+        yield CliveButton("Search", id_="witness-search-button")
+        yield CliveButton("Clear", id_="clear-custom-witnesses-button")
 
     @on(CliveButton.Pressed, "#witness-search-button")
     def search_witnesses(self) -> None:
-        pattern = self.__witness_input.value
-
-        try:
-            limit = int(self.__limit_just_input.value)
-        except ValueError:
-            limit = MAX_NUMBER_OF_WITNESSES_IN_TABLE
-
-        if pattern is None or limit is None:
+        if not all(
+            [
+                self._witness_input.validate_with_notification(),
+                self._limit_input.validate_with_notification(),
+            ]
+        ):
             return
+
+        # already validated
+        pattern = self._witness_input.value_or_error
+        limit = self._limit_input.value_or_error
 
         self.post_message(self.Search(pattern, limit))
 
     @on(CliveButton.Pressed, "#clear-custom-witnesses-button")
     def clear_searched_witnesses(self) -> None:
-        self.__witness_input.input.clear()
-        self.__limit_just_input.clear()
+        self._witness_input.input.clear()
+        self._limit_input.input.value = str(self.LIMIT_MAXIMUM)
         self.post_message(self.Clear())
 
 
@@ -339,7 +350,7 @@ class Witnesses(GovernanceTabPane):
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
 
-        with ScrollablePart(), Horizontal(classes="vote-actions"):
+        with ScrollablePart(), Horizontal():
             yield self.__witness_table
             yield WitnessesActions()
         yield WitnessManualSearch()

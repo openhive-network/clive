@@ -6,6 +6,7 @@ from typing import Final
 NUMERIC_PLACEHOLDER: Final[str] = "e.g: 1.000"
 ACCOUNT_NAME_PLACEHOLDER: Final[str] = "e.g: alice"
 ACCOUNT_NAME2_PLACEHOLDER: Final[str] = "e.g: bob"
+ACCOUNT_NAME_PATTERN_PLACEHOLDER: Final[str] = "part of the name e.g: ali"
 PROFILE_NAME_PLACEHOLDER: Final[str] = "e.g: Master"
 WITNESS_PLACEHOLDER: Final[str] = "e.g: hiveio"
 ACCOUNT_AUTHS_PLACEHOLDER: Final[str] = "e.g: alice, 1; bob, 1. Notice: split pair of values by ;"

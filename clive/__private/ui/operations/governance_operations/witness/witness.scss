@@ -39,16 +39,6 @@ WitnessDetails {
   text-align: center;
 }
 
-WitnessDetails Static {
-  height: auto;
-}
-
-Witnesses CliveButton {
-  margin-right: 1;
-  margin-left: 1;
-  width: 1fr;
-}
-
 /* Witnesses table row - information about the witness */
 Witness {
   grid-size: 5;
@@ -133,44 +123,23 @@ WitnessActionRow .action-label {
   width: 2fr;
 }
 
-/* Manual search of witness container */
 WitnessManualSearch {
-  margin-left: 1;
-  width: 1fr;
-  height: 5;
-}
-
-WitnessManualSearch Label {
-  padding: 0;
-}
-
-WitnessManualSearch Vertical {
+  grid-size: 4 1;
+  grid-gutter: 1;
+  grid-rows: auto;
+  dock: bottom;
+  margin-bottom: 1;
   height: auto;
-}
 
-WitnessManualSearch #witness-search-button {
-  background: $governance-green-color;
-}
+  CliveButton {
+    width: 1fr;
+  }
 
-WitnessManualSearch #clear-custom-witnesses-button {
-  background: $accent-darken-3;
-}
+  #witness-search-button {
+    background: $governance-green-color;
+  }
 
-WitnessManualSearch #inputs-with-static-manual {
-  width: 1fr;
-}
-
-WitnessManualSearch #search-and-clear-buttons {
-  align: center top;
-  margin-top: 1;
-  width: 1fr;
-  height: auto;
-}
-
-WitnessManualSearch #witness-pattern-input-with-label {
-  width: 6fr;
-}
-
-WitnessManualSearch #witness-input-limit-with-label {
-  width: 4fr;
+  #clear-custom-witnesses-button {
+    background: $accent-darken-3;
+  }
 }
