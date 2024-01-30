@@ -112,18 +112,6 @@ class NodeAddressError(FormValidationError):
     """Base class for all node address exceptions."""
 
 
-class InputTooShortError(FormValidationError):
-    def __init__(self, *, expected_length: int, given_value: str) -> None:
-        super().__init__(
-            f"Expected length of {expected_length}, but string of {len(given_value)} given", given_value=given_value
-        )
-
-
-class RepeatedPasswordIsDifferentError(FormValidationError):
-    def __init__(self) -> None:
-        super().__init__("Repeated password is different than original one")
-
-
 class AliasAlreadyInUseFormError(FormValidationError):
     def __init__(self, alias: str) -> None:
         super().__init__(f"Alias `{alias}` is already in use.", given_value=alias)

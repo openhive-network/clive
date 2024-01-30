@@ -1,8 +1,8 @@
 CreateProfileCommon DialogContainer {
-  grid-columns: 20 1fr;
-  grid-rows: 4;
-  grid-size: 2;
   layout: grid;
+  grid-gutter: 1;
+  grid-rows: auto;
+  height: auto;
 }
 
 CreateProfileCommon .label {

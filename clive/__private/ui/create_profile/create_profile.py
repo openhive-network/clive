@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING, Any
 
 from textual import on
 from textual.binding import Binding
@@ -11,16 +11,19 @@ from textual.widgets import Static
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.profile_data import ProfileData, ProfileInvalidNameError
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.inputs.profile_name_input import ProfileNameInput
-from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.exceptions import FormValidationError, InputTooShortError, RepeatedPasswordIsDifferentError
+from clive.__private.ui.widgets.inputs_new.clive_validated_input import CliveValidatedInputError
+from clive.__private.ui.widgets.inputs_new.set_password_input import SetPasswordInput
+from clive.__private.ui.widgets.inputs_new.set_profile_name_input import SetProfileNameInput
+from clive.__private.ui.widgets.inputs_new.text_input import TextInput
+from clive.__private.validators.repeat_validator import RepeatValidator
+from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -34,21 +37,23 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
-        self.__profile_name_input = ProfileNameInput(id_="profile_name_input")
-        self.__password_input = TextInput(label="password", placeholder="Password", password=True, id_="password_input")
-        self.__repeat_password_input = TextInput(
-            label="repeat password",
-            placeholder="Repeat password",
+        self._profile_name_input = SetProfileNameInput()
+        self._password_input = SetPasswordInput(id="password_input")
+        self._repeat_password_input = TextInput(
+            "Repeat password",
             password=True,
-            id_="repeat_password_input",
+            validators=[
+                RepeatValidator(input_to_repeat=self._password_input, failure_description="Passwords do not match")
+            ],
+            id="repeat_password_input",
         )
         super().__init__(*args, **kwargs)
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
-            yield from self.__profile_name_input.compose()
-            yield from self.__password_input.compose()
-            yield from self.__repeat_password_input.compose()
+            yield self._profile_name_input
+            yield self._password_input
+            yield self._repeat_password_input
             yield from self._additional_content()
 
     def _additional_content(self) -> ComposeResult:
@@ -57,22 +62,12 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
     def _get_valid_args(self) -> tuple[str, str]:
         """Selects all input fields and validates them, if something is invalid throws an exception."""
-        minimum_input_length: Final[int] = 3
-
-        profile_name = self.__profile_name_input.raw_value
-        password = self.__password_input.value
-        repeated_password = self.__repeat_password_input.value
-
         try:
-            ProfileData.validate_profile_name(profile_name)
-        except ProfileInvalidNameError as error:
-            raise FormValidationError(str(error), given_value=profile_name) from None
-
-        if len(password) < minimum_input_length:
-            raise InputTooShortError(expected_length=minimum_input_length, given_value=profile_name)
-
-        if password != repeated_password:
-            raise RepeatedPasswordIsDifferentError
+            profile_name = self._profile_name_input.value_or_error
+            password = self._password_input.value_or_error
+            self._repeat_password_input.validate_with_error()
+        except CliveValidatedInputError as error:
+            raise FormValidationError(str(error)) from None
 
         return profile_name, password
 
