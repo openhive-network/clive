@@ -7,14 +7,15 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
+from textual.validation import Integer
 from textual.widgets import Checkbox, Static
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
-from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.ui.widgets.inputs_new.integer_input import IntegerInput
+from clive.__private.ui.widgets.inputs_new.text_input import TextInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -38,20 +39,30 @@ class Activate(BaseScreen):
 
     def __init__(self, *, activation_result_callback: ActivationResultCallbackOptionalT = None) -> None:
         super().__init__()
-        self.__activation_result_callback = activation_result_callback
-        self.__name_input = TextInput(label="profile name", value=self.app.world.profile_data.name, disabled=True)
-        self.__password_input = TextInput(label="password", placeholder="Password", password=True)
-        self.__permanent_active_mode_switch = Checkbox("Permanent active mode?")
-        self.__temporary_active_mode_input = IntegerInput(
-            label="Active mode time (minutes)", value=60, placeholder="Time in minutes", id_="active-mode-input"
+        self._activation_result_callback = activation_result_callback
+        self._name_input = TextInput(
+            "Profile name",
+            value=self.app.world.profile_data.name,
+            always_show_title=True,
+            required=False,
+            disabled=True,
+        )
+        self._password_input = TextInput("Password", password=True)
+        self._permanent_active_mode_switch = Checkbox("Permanent active mode?")
+        self._temporary_active_mode_input = IntegerInput(
+            "Active mode time (minutes)",
+            value=60,
+            always_show_title=True,
+            validators=[Integer(minimum=1)],
+            id="active-mode-input",
         )
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
-            yield from self.__name_input.compose()
-            yield from self.__password_input.compose()
-            yield self.__permanent_active_mode_switch
-            yield from self.__temporary_active_mode_input.compose()
+            yield self._name_input
+            yield self._password_input
+            yield self._permanent_active_mode_switch
+            yield self._temporary_active_mode_input
             yield Static()
             with ButtonsContainer():
                 yield CliveButton("Ok", variant="primary", id_="activate-button")
@@ -59,9 +70,7 @@ class Activate(BaseScreen):
 
     @on(Checkbox.Changed)
     def toggle_active_mode_temporary_time(self) -> None:
-        custom_input = self.__temporary_active_mode_input
-        for widget in [custom_input.label, custom_input.input]:
-            widget.toggle_class("-hidden")
+        self._temporary_active_mode_input.toggle_class("-hidden")
 
     @on(CliveButton.Pressed, "#cancel-button")
     async def action_cancel(self) -> None:
@@ -69,24 +78,26 @@ class Activate(BaseScreen):
 
     @on(CliveButton.Pressed, "#activate-button")
     async def action_activate(self) -> None:
-        permanent_active = self.__permanent_active_mode_switch.value
+        permanent_active = self._permanent_active_mode_switch.value
         active_mode_time: timedelta | None = None
 
         if not permanent_active:
-            raw_active_mode_time = self.__get_active_mode_time()
+            raw_active_mode_time = self._temporary_active_mode_input.value_or_notification
             if raw_active_mode_time is None:
-                self.notify("The active mode time must be a number and >= 1", severity="error")
-                await self.__exit_cancel()
+                # do not exit_cancel here, because we want to stay on the screen
                 return
 
             active_mode_time = timedelta(minutes=raw_active_mode_time)
 
+        password = self._password_input.value_or_notification
+        if password is None:
+            # do not exit_cancel here, because we want to stay on the screen
+            return
+
         if not (
-            await self.app.world.commands.activate(
-                password=self.__password_input.value, time=active_mode_time, permanent=permanent_active
-            )
+            await self.app.world.commands.activate(password=password, time=active_mode_time, permanent=permanent_active)
         ).success:
-            await self.__exit_cancel()
+            # do not exit_cancel here, because we want to stay on the screen
             return
 
         await self.__exit_success()
@@ -100,10 +111,5 @@ class Activate(BaseScreen):
         await self.__set_activation_result(False)
 
     async def __set_activation_result(self, value: bool) -> None:
-        if self.__activation_result_callback is not None:
-            await self.__activation_result_callback(value)
-
-    def __get_active_mode_time(self) -> int | None:
-        with self.app.suppressed_notifications():
-            value = self.__temporary_active_mode_input.value
-        return value if value is not None and value >= 1 else None
+        if self._activation_result_callback is not None:
+            await self._activation_result_callback(value)
