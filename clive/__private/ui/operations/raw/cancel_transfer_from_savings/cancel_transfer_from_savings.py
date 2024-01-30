@@ -3,12 +3,9 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from textual import on
 from textual.containers import Grid, ScrollableContainer
-from textual.css.query import NoMatches
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
-from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -46,15 +43,13 @@ class FromSavingsTransferParameters(Grid):
         yield Static("amount", id="amount-column")
         yield Static("memo", id="memo-column")
         yield Static(self.__transfer.to, classes="transfer-parameters")
-        yield Static(self.__realized_on, classes="transfer-parameters")  # type: ignore[arg-type]
+        yield Static(self.__realized_on, classes="transfer-parameters")
         yield Static(Asset.to_legacy(self.__transfer.amount), classes="transfer-parameters")
         yield Static(self.__transfer.memo, classes="transfer-parameters")
 
     @property
-    def __realized_on(self) -> str | None:
-        if self.__transfer:
-            return datetime.strftime(self.__transfer.complete, "%Y-%m-%dT%H:%M:%S")
-        return None
+    def __realized_on(self) -> str:
+        return datetime.strftime(self.__transfer.complete, "%Y-%m-%dT%H:%M:%S")
 
 
 class CancelTransferFromSavings(RawOperationBaseScreen):
@@ -63,55 +58,18 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self, transfer: SavingsWithdrawals | None = None) -> None:
+    def __init__(self, transfer: SavingsWithdrawals) -> None:
         super().__init__()
-        self.__transfer = transfer
-        self.__scrollable_container = ScrollableContainer()
-        self.__provider: SavingsDataProvider | None = None
-        self.__id_input = IdInput(
-            "request id",
-            id_="id-input",
-            disabled=self.is_transfer_given,
-            value=transfer.request_id if self.is_transfer_given else None,  # type: ignore[union-attr]
-        )
+        self._transfer = transfer
+        self._id_input = IdInput("request id", id_="id-input", disabled=True, value=transfer.request_id)
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Cancel transfer")
-        with self.__scrollable_container:
-            with CancelTransferParameters():
-                yield InputLabel("from")
-                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
-                yield from self.__id_input.compose()
-                if not self.is_transfer_given:
-                    with SavingsDataProvider() as provider:
-                        self.__provider = provider
-            if self.is_transfer_given:
-                yield FromSavingsTransferParameters(self.__transfer)  # type: ignore[arg-type]
-
-    @property
-    def is_transfer_given(self) -> bool:
-        return self.__transfer is not None
-
-    @on(Input.Changed)
-    def search_given_transfer(self, event: Input.Changed) -> None:
-        if self.__provider is None:
-            return
-        if self.__provider.content.pending_transfers:
-            for transfer in self.__provider.content.pending_transfers:
-                if event.value == str(transfer.request_id):
-                    self.replace_displayed_transfer(transfer)
-                    return
-        self.replace_displayed_transfer()
-
-    def replace_displayed_transfer(self, transfer: SavingsWithdrawals | None = None) -> None:
-        try:
-            self.query_one(FromSavingsTransferParameters).remove()
-        except NoMatches:
-            pass
-        finally:
-            if transfer is not None:
-                new_transfer_container = FromSavingsTransferParameters(transfer)
-                self.__scrollable_container.mount(new_transfer_container)
+        with ScrollableContainer(), CancelTransferParameters():
+            yield InputLabel("from")
+            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="account-label")
+            yield from self._id_input.compose()
+            yield FromSavingsTransferParameters(self._transfer)
 
     def action_add_to_cart(self) -> None:
         if self.create_operation() in self.app.world.profile_data.cart:
@@ -119,10 +77,8 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
         else:
             super().action_add_to_cart()
 
-    def _create_operation(self) -> CancelTransferFromSavingsOperation | None:
-        request_id = self.__transfer.request_id if self.__transfer else self.__id_input.value
-        if request_id is None:
-            return None
+    def _create_operation(self) -> CancelTransferFromSavingsOperation:
+        request_id = self._transfer.request_id
 
         return CancelTransferFromSavingsOperation(
             from_=self.app.world.profile_data.working_account.name,
