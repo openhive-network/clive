@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any
+from abc import ABC
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual.containers import Grid, ScrollableContainer
 from textual.message import Message
-from textual.widgets import Input, Static
+from textual.widgets import Static
 
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.exceptions import FormValidationError
+from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -33,6 +34,9 @@ class SubTitle(Static):
 class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
+    BIG_TITLE: ClassVar[str] = "Change me in subclass"
+    IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = True
+
     class Changed(Message):
         """Emitted when key alias have been changed."""
 
@@ -40,23 +44,27 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self._key_alias_input = Input(self._default_key_alias_name(), placeholder="e.g. My active key")
-        self._public_key_input = Input(
-            self._default_public_key(), placeholder="Public key will be calculated here", disabled=True
+        self._key_alias_input = PublicKeyAliasInput(
+            value=self._default_key_alias_name(),
+            setting_key_alias=True,
+            required=self.IS_KEY_ALIAS_REQUIRED,
+        )
+        self._public_key_input = TextInput(
+            "Public key",
+            self._default_public_key(),
+            placeholder="Public key will be calculated here",
+            always_show_title=True,
+            required=False,
+            validate_on=[],
+            disabled=True,
         )
 
-    @property
-    def _key_alias_raw(self) -> str:
-        return self._key_alias_input.value
-
     def create_main_panel(self) -> ComposeResult:
-        yield BigTitle(self._title())
+        yield BigTitle(self.BIG_TITLE)
         yield from self._content_after_big_title()
         with ScrollablePart(), Body():
-            yield Static("Key alias:", classes="label")
             yield self._key_alias_input
             yield from self._content_after_alias_input()
-            yield Static("Public key:", classes="label")
             yield self._public_key_input
 
     def _content_after_big_title(self) -> ComposeResult:
@@ -65,31 +73,15 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
     def _content_after_alias_input(self) -> ComposeResult:
         return []
 
-    def _validate_with_notification(self, *, reraise_exception: bool = False) -> bool:
-        """
-        Validate the form and show a notification if there are any errors.
-
-        Returns True if the form is valid, False otherwise.
-
-        Info
-            If reraise_exception is True, the exception will be reraised after showing the notification.
-        """
-        try:
-            self._validate()
-        except FormValidationError as error:
-            self.notify(f"Failed the validation process! Could not continue. Reason: {error.reason}", severity="error")
-            if reraise_exception:
-                raise
-            return False
-        else:
-            return True
-
-    @abstractmethod
     def _validate(self) -> None:
-        """Should raise FormValidationError if validation fails."""
+        """
+        Validates the inputs.
 
-    def _title(self) -> str:
-        return ""
+        Raises
+        ------
+        FailedValidationError: when key alias is not valid.
+        """
+        self._key_alias_input.validate_with_error()
 
     def _default_key_alias_name(self) -> str:
         return ""

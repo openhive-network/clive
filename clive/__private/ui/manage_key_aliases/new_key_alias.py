@@ -1,24 +1,30 @@
 from __future__ import annotations
 
+import contextlib
 import typing
 from abc import ABC
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual import on
 from textual.binding import Binding
 from textual.message import Message
-from textual.widgets import Input, Static
+from textual.widgets import Input
 
 from clive.__private.config import settings
-from clive.__private.core.keys import PrivateKey, PrivateKeyAliased, PrivateKeyInvalidFormatError
+from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm, SubTitle
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
+from clive.__private.ui.widgets.inputs.clive_validated_input import (
+    CliveValidatedInput,
+    CliveValidatedInputError,
+    FailedManyValidationError,
+)
+from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.select_file import SelectFile
 from clive.exceptions import (
-    AliasAlreadyInUseFormError,
     FormValidationError,
 )
 
@@ -35,6 +41,9 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         Binding("f2", "load_from_file", "Load from file"),
     ]
 
+    BIG_TITLE: ClassVar[str] = "Define keys"
+    IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = True
+
     class Saved(Message, bubble=True):
         """Emitted when user Saves the form."""
 
@@ -46,86 +55,81 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self.__key_input = Input(
-            self._default_key(), placeholder="You can paste your key here", password=True, id="key_input"
+        self._key_input = PrivateKeyInput(
+            value=self._default_key(),
+            placeholder="You can paste your private key here",
+            include_title_in_placeholder_when_blurred=False,
+            password=True,
+            required=self.IS_PRIVATE_KEY_REQUIRED,
+            id="key_input",
         )
         self.__key_file_path: Path | None = None
 
     @property
     def _is_key_provided(self) -> bool:
-        return bool(self._private_key_raw)
+        return bool(self._key_input.value_raw)
 
     @property
-    def _private_key_raw(self) -> str:
-        return self.__key_input.value
-
-    @property
-    def _private_key(self) -> PrivateKeyAliased:
+    def _private_key_aliased(self) -> PrivateKeyAliased:
         """
-        Get private key from input.
+        Returns a PrivateKeyAliased instance with the given alias and private key value.
 
         Raises
         ------
-        PrivateKeyInvalidFormatError: if private key is not in valid format
+        FailedManyValidationError: when cannot create a private key from the given inputs.
         """
-        return PrivateKeyAliased(value=self._private_key_raw, file_path=self.__key_file_path, alias=self._key_alias_raw)
+        CliveValidatedInput.validate_many_with_error(self._key_input, self._key_alias_input)
+
+        private_key = self._key_input.value_or_error
+        key_alias = self._key_alias_input.value_or_error
+        return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=key_alias)
 
     def action_load_from_file(self) -> None:
         self.app.push_screen(SelectFile(placeholder="e.g. /home/me/my-active-key.wif"))
 
     @on(SelectFile.Saved)
     def load_private_key_from_file(self, event: SelectFile.Saved) -> None:
-        self.__key_input.value = PrivateKey.read_key_from_file(event.file_path)
+        self._key_input.input.value = PrivateKey.read_key_from_file(event.file_path)
         self.__key_file_path = event.file_path
         self.notify(f"Private key loaded from `{event.file_path}`")
 
-    @on(Input.Changed, "#key_input")
+    @on(Input.Changed, "#key_input Input")
     def recalculate_public_key(self) -> None:
         try:
-            self._public_key_input.value = self._private_key.calculate_public_key().value
-        except PrivateKeyInvalidFormatError:
-            self._public_key_input.value = "Invalid form of private key"
+            private_key = self._private_key_aliased
+        except CliveValidatedInputError:
+            text = "Cannot calculate public key"
+            calculated = False
+        else:
+            text = private_key.calculate_public_key().value
+            calculated = True
 
-    def _save(self, *, reraise_exception: bool = False) -> None:
-        if not self._is_key_provided:
-            self.notify("Not saving any private key, because none has been provided", severity="warning")
-            return
+        self._public_key_input.input.value = text
+        self._public_key_input.input.set_style(valid=calculated)
 
-        if not self._validate_with_notification(reraise_exception=reraise_exception):
-            return
-
-        self.app.post_message_to_everyone(self.Saved(private_key=self._private_key))
-
-    def _validate(self) -> None:
+    def _save(self) -> None:
         """
-        Validate form data.
+        Proceeds with saving the form.
 
         Raises
         ------
-        FormValidationError: if key is invalid
-        AliasAlreadyInUseError: if alias is already in use
+        FailedManyValidationError: when key alias or private key inputs are invalid.
         """
-        if not self.context.working_account.keys.is_public_alias_available(self._key_alias_raw):
-            raise AliasAlreadyInUseFormError(self._key_alias_raw)
+        self._validate()
+        self.app.post_message_to_everyone(self.Saved(private_key=self._private_key_aliased))
 
-        try:
-            _ = self._private_key
-        except PrivateKeyInvalidFormatError as error:
-            raise FormValidationError(str(error), given_value=error.value) from error
+    def _validate(self) -> None:
+        """
+        Validates the inputs.
 
-    def _content_after_big_title(self) -> ComposeResult:
-        if self._subtitle():
-            yield SubTitle(self._subtitle())
+        Raises
+        ------
+        FailedManyValidationError: when key alias or private key inputs are invalid.
+        """
+        CliveValidatedInput.validate_many_with_error(self._key_input, self._key_alias_input)
 
     def _content_after_alias_input(self) -> ComposeResult:
-        yield Static("Key:", classes="label")
-        yield self.__key_input
-
-    def _title(self) -> str:
-        return "define keys"
-
-    def _subtitle(self) -> str:
-        return ""
+        yield self._key_input
 
     def _default_key(self) -> str:
         return typing.cast(str, settings.get("secrets.default_key", ""))
@@ -139,6 +143,16 @@ class NewKeyAlias(NewKeyAliasBase):
         Binding("escape", "pop_screen", "Back"),
         Binding("f10", "save", "Save"),
     ]
+
+    class FailedValidationAlreadyHandledError(Exception):
+        """
+        A special error to indicate that the validation error was already shown to the user.
+
+        Needed, because in the Form version of this screen, the validation error has to be converted to
+        FormValidationError. It means, we always have to raise some error in the _validate method.
+        This one exists because we don't want to show extra notification about the FailedManyValidationError.
+        (which without this error, should be raised in _save, otherwise InputValueError would always be ignored).
+        """
 
     @property
     def context(self) -> ProfileData:
@@ -158,8 +172,28 @@ class NewKeyAlias(NewKeyAliasBase):
     def action_save(self) -> None:
         self._save()
 
+    def _save(self) -> None:
+        # suppressing the validation error, because it was already shown, and no further logic relies on it in that case
+        with contextlib.suppress(self.FailedValidationAlreadyHandledError):
+            super()._save()
+
+    def _validate(self) -> None:
+        """
+        Validates the inputs.
+
+        Shows the validation error to the user. Either by notification when InputValueError occurs or by placing the
+        validation failures under the inputs when FailedValidationError occurs.
+        Then raises the FailedValidationAlreadyHandledError to exit from methods using this _validate. This error should
+        be later suppressed.
+        """
+        if not CliveValidatedInput.validate_many(self._key_input, self._key_alias_input):
+            raise self.FailedValidationAlreadyHandledError
+
 
 class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
+    IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
+    IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
+
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
@@ -170,7 +204,22 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
 
     async def apply_and_validate(self) -> None:
         if self._is_key_provided:  # NewKeyAliasForm step is optional, so we can skip it when no key is provided
-            self._save(reraise_exception=True)
+            self._save()
 
-    def _subtitle(self) -> str:
-        return "(Optional step, could be done later)"
+    def _validate(self) -> None:
+        """
+        Validates the inputs.
+
+        Converts the FailedManyValidationError to FormValidationError which can be handled by form later.
+
+        Raises
+        ------
+        FormValidationError: when key alias or private key inputs are invalid.
+        """
+        try:
+            super()._validate()
+        except FailedManyValidationError as error:
+            raise FormValidationError(str(error)) from error
+
+    def _content_after_big_title(self) -> ComposeResult:
+        yield SubTitle("(Optional step, could be done later)")

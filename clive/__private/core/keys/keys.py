@@ -150,6 +150,14 @@ class PrivateKey(Key):
         except iwax.WaxOperationFailedError:
             raise PrivateKeyInvalidFormatError(key) from None
 
+    @classmethod
+    def is_valid(cls, key: str) -> bool:
+        try:
+            cls.validate(key)
+        except PrivateKeyInvalidFormatError:
+            return False
+        return True
+
     @overload
     def calculate_public_key(self) -> PublicKey:
         ...

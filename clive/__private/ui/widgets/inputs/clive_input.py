@@ -112,7 +112,7 @@ class CliveInput(Input):
 
         result = super().validate(value)
 
-        self._set_valid_invalid_styles()
+        self.set_style(valid=self.is_valid)
         self.post_message(self.Validated(value, result))
         return result
 
@@ -167,8 +167,8 @@ class CliveInput(Input):
         if self._should_include_title_in_placeholder:
             self.placeholder = self._get_modified_placeholder()
 
-    def _set_valid_invalid_styles(self) -> None:
-        color = "green" if self.is_valid else "red"
+    def set_style(self, *, valid: bool) -> None:
+        color = "green" if valid else "red"
 
         self.styles.border_title_background = color
         self.styles.border = ("tall", color)

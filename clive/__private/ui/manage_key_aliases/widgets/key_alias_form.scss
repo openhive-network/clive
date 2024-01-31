@@ -4,17 +4,12 @@ KeyAliasForm SubTitle {
 }
 
 KeyAliasForm Body {
-  grid-columns: 15 1fr;
-  grid-rows: 4;
-  grid-size: 2;
+  grid-rows: auto;
+  grid-gutter: 1;
   height: auto;
 }
 
 KeyAliasForm ScrollablePart {
   padding: 2 4;
   height: 1fr;
-}
-
-KeyAliasForm .label {
-  padding: 1 2;
 }

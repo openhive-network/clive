@@ -112,11 +112,6 @@ class NodeAddressError(FormValidationError):
     """Base class for all node address exceptions."""
 
 
-class AliasAlreadyInUseFormError(FormValidationError):
-    def __init__(self, alias: str) -> None:
-        super().__init__(f"Alias `{alias}` is already in use.", given_value=alias)
-
-
 class CannotActivateError(CliveError):
     pass
 
