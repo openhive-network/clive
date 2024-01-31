@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.vests_to_hive import vests_to_hive
+from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.models import Asset
 
 if TYPE_CHECKING:
