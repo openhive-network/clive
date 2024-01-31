@@ -98,12 +98,12 @@ class Proxy(TabPane, CliveWidget):
 
     @on(Button.Pressed, "#set-proxy-button")
     def set_new_proxy(self) -> None:
-        if not self.new_proxy_input.validate_with_notification():
+        if not self.new_proxy_input.validate_passed():
             # we need to exclusively validate the input when set button is pressed, because the input is not validated
             # when the user presses the remove button - that's also why we can't use required=True in the input init
             return
 
-        new_proxy = self.new_proxy_input.value_raw  # already validated
+        new_proxy = self.new_proxy_input.value_or_error  # already validated
         self.app.push_screen(AccountWitnessProxy(new_proxy=new_proxy))
 
     @on(Button.Pressed, "#remove-proxy-button")

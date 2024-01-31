@@ -18,7 +18,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
@@ -63,12 +63,15 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     def _get_valid_args(self) -> tuple[str, str]:
         """Selects all input fields and validates them, if something is invalid throws an exception."""
         try:
-            profile_name = self._profile_name_input.value_or_error
-            password = self._password_input.value_or_error
-            self._repeat_password_input.validate_with_error()
+            CliveValidatedInput.validate_many_with_error(
+                self._profile_name_input, self._password_input, self._repeat_password_input
+            )
         except CliveValidatedInputError as error:
             raise FormValidationError(str(error)) from None
 
+        # all inputs are valid, so we can safely get the values
+        profile_name = self._profile_name_input.value_or_error
+        password = self._password_input.value_or_error
         return profile_name, password
 
     def _create_profile(self) -> tuple[CreateWallet, SyncDataWithBeekeeper]:

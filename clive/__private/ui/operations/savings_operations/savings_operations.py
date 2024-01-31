@@ -21,6 +21,7 @@ from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.notice import Notice
@@ -231,6 +232,10 @@ class SavingsTransfers(TabPane, OperationActionBindings):
     def _create_operation(
         self,
     ) -> TransferToSavingsOperation | TransferFromSavingsOperation | None:
+        # So all inputs are validated together, and not one by one.
+        if not CliveValidatedInput.validate_many(self._to_account_input, self._amount_input, self._memo_input):
+            return None
+
         data = {
             "from_": self.default_receiver,
             "to": self._to_account_input.value_or_error,

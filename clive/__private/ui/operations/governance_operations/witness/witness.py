@@ -35,6 +35,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
@@ -240,12 +241,7 @@ class WitnessManualSearch(Grid):
 
     @on(CliveButton.Pressed, "#witness-search-button")
     def search_witnesses(self) -> None:
-        if not all(
-            [
-                self._witness_input.validate_with_notification(),
-                self._limit_input.validate_with_notification(),
-            ]
-        ):
+        if not CliveValidatedInput.validate_many(self._witness_input, self._limit_input):
             return
 
         # already validated

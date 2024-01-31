@@ -10,6 +10,7 @@ from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.models import Asset
@@ -64,6 +65,10 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
             yield self._memo_input
 
     def _create_operation(self) -> TransferOperation | None:
+        # So all inputs are validated together, and not one by one.
+        if not CliveValidatedInput.validate_many(self._to_input, self._amount_input, self._memo_input):
+            return None
+
         return TransferOperation(
             from_=self.from_account,
             to=self._to_input.value_or_error,

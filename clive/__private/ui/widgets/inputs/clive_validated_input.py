@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import TYPE_CHECKING, Generic, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
 from textual import on
 from textual.containers import Vertical
@@ -44,6 +44,27 @@ class FailedValidationError(CliveValidatedInputError):
 Input validation failed{additional}. Reasons:
 {validation_result.failure_descriptions}"""
         super().__init__(self.message)
+
+
+class FailedManyValidationError(CliveValidatedInputError):
+    """Raised when validation of many `CliveValidatedInput` fails."""
+
+    def __init__(self, errors: list[InputValueError | FailedValidationError]) -> None:
+        self.errors = errors
+        self.message = self._create_error_message(errors)
+        super().__init__(self.message)
+
+    def _create_error_message(self, errors: list[InputValueError | FailedValidationError]) -> str:
+        message = "Input validation failed for:\n"
+        for error in errors:
+            message += f"- `{error.input_name}`"
+            if isinstance(error, InputValueError):
+                message += f" Reason:\n{error.reason}"
+            elif isinstance(error, FailedValidationError):
+                message += f" Reasons:\n{error.validation_result.failure_descriptions}"
+            message += "\n"
+
+        return message.strip()  # remove the last \n
 
 
 class InputValueError(CliveValidatedInputError):
@@ -156,21 +177,29 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         self.validate_with_error(treat_as_required=False)
         return self._value
 
-    @property
-    def value_or_none(self) -> InputReturnT | None:
-        """Return the value of the input as given InputReturnT or None if validation fails."""
-        try:
-            self.validate_with_error(treat_as_required=False)
-        except CliveValidatedInputError:
-            return None
-        return self._value
+    def value_or_none(
+        self,
+        *,
+        notify_on_value_error: bool = True,
+        notify_on_validation_error: bool = False,
+    ) -> InputReturnT | None:
+        """
+        Return the value of the input as given InputReturnT or None if validation fails.
 
-    @property
-    def value_or_notification(self) -> InputReturnT | None:
-        """Return the value of the input as given InputReturnT or None and raise a Notification if validation fails."""
+        Args:
+        ----
+        notify_on_value_error: Whether to show a notification when the input value is invalid.
+            True by default since this error won't be visible in the UI otherwise.
+        notify_on_validation_error: Whether to show a notification when the input validation fails.
+            False by default since the validation error will be visible in the UI, under the input.
+        """
         try:
             self.validate_with_error(treat_as_required=False)
-        except CliveValidatedInputError as error:
+        except (InputValueError, FailedValidationError) as error:
+            if isinstance(error, InputValueError) and not notify_on_value_error:
+                return None
+            if isinstance(error, FailedValidationError) and not notify_on_validation_error:
+                return None
             self.app.notify(str(error), severity="error")
             return None
         return self._value
@@ -203,14 +232,78 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
 
         try_get_value()
 
-    def validate_with_notification(self, *, treat_as_required: bool = True) -> bool:
-        """Validate the input and raise a Notification if validation fails."""
+    def validate_passed(
+        self,
+        *,
+        treat_as_required: bool = True,
+        notify_on_value_error: bool = True,
+        notify_on_validation_error: bool = False,
+    ) -> bool:
+        """
+        Validate the input and return True if validation passes, False otherwise.
+
+        Args:
+        ----
+        treat_as_required: Whether to treat the input as required when validating.
+            Even if the input is not required, it will be validated as if it was.
+        notify_on_value_error: Whether to show a notification when the input value is invalid.
+            True by default since this error won't be visible in the UI otherwise.
+        notify_on_validation_error: Whether to show a notification when the input validation fails.
+            False by default since the validation error will be visible in the UI, under the input.
+        """
         try:
             self.validate_with_error(treat_as_required=treat_as_required)
-        except CliveValidatedInputError as error:
+        except (InputValueError, FailedValidationError) as error:
+            if isinstance(error, InputValueError) and not notify_on_value_error:
+                return False
+            if isinstance(error, FailedValidationError) and not notify_on_validation_error:
+                return False
             self.app.notify(str(error), severity="error")
             return False
         return True
+
+    @classmethod
+    def validate_many(
+        cls,
+        *inputs: CliveValidatedInput[Any],
+        treat_as_required: bool = True,
+        notify_on_value_error: bool = True,
+        notify_on_validation_error: bool = False,
+    ) -> bool:
+        """
+        Validate many inputs and return True if all of them are valid, False otherwise.
+
+        For more info look into `validate_passed`.
+        """
+        results: list[bool] = [
+            input_obj.validate_passed(
+                treat_as_required=treat_as_required,
+                notify_on_value_error=notify_on_value_error,
+                notify_on_validation_error=notify_on_validation_error,
+            )
+            for input_obj in inputs
+        ]
+        # Couldn't use `all` right away because we want to validate all inputs, and `all` stops at the first False.
+        return all(results)
+
+    @classmethod
+    def validate_many_with_error(cls, *inputs: CliveValidatedInput[Any]) -> None:
+        """
+        Validate many inputs and raise an exception if any of them is invalid.
+
+        Raises
+        ------
+        FailedManyValidationError: Raised when validation fails.
+        """
+        combined_errors: list[FailedValidationError | InputValueError] = []
+        for input_obj in inputs:
+            try:
+                input_obj.validate_with_error()
+            except (FailedValidationError, InputValueError) as error:
+                combined_errors.append(error)
+
+        if combined_errors:
+            raise FailedManyValidationError(combined_errors)
 
     @on(CliveInput.Validated)
     def _show_invalid_reasons(self, event: CliveInput.Validated) -> None:

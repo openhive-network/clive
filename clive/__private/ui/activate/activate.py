@@ -14,6 +14,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
+from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 
@@ -82,14 +83,13 @@ class Activate(BaseScreen):
         active_mode_time: timedelta | None = None
 
         if not permanent_active:
-            raw_active_mode_time = self._temporary_active_mode_input.value_or_notification
-            if raw_active_mode_time is None:
+            if not CliveValidatedInput.validate_many(self._password_input, self._temporary_active_mode_input):
                 # do not exit_cancel here, because we want to stay on the screen
                 return
 
-            active_mode_time = timedelta(minutes=raw_active_mode_time)
+            active_mode_time = timedelta(minutes=self._temporary_active_mode_input.value_or_error)  # already validated
 
-        password = self._password_input.value_or_notification
+        password = self._password_input.value_or_none()
         if password is None:
             # do not exit_cancel here, because we want to stay on the screen
             return
