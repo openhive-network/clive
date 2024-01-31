@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, Any, Final
 from rich.highlighter import Highlighter
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, ScrollableContainer
-from textual.widgets import Input, Select, Static, Switch
+from textual.containers import Container, ScrollableContainer
+from textual.widgets import Select, Static
 from textual.widgets._select import NoSelection
 
 from clive.__private.core.communication import Communication
@@ -34,10 +34,6 @@ if TYPE_CHECKING:
 
 class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     """All the content of the screen, excluding the title."""
-
-
-class ModeSwitch(Switch):
-    """A switch that changes the way the node address is selected."""
 
 
 class NodeSelector(Select[Url], CliveWidget):
@@ -94,23 +90,6 @@ class NodeUrlHighlighter(Highlighter):
         text.stylize(self.__last_style)
 
 
-class ManualNode(Container, CliveWidget):
-    def compose(self) -> ComposeResult:
-        yield Static("Please manually enter the node address you want to connect to.")
-        yield Input(
-            placeholder=f"e.g.: {self.app.world.node.address}",
-            id="node-address-input",
-            highlighter=NodeUrlHighlighter(),
-        )
-        yield CliveButton("Save", id_="save-node-address-button")
-
-
-class ModeSwitchContainer(Horizontal):
-    def compose(self) -> ComposeResult:
-        yield ModeSwitch()
-        yield Static("Toggle mode")
-
-
 class SetNodeAddressBase(BaseScreen, ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
@@ -119,24 +98,17 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
         self.__selected_node = SelectedNodeAddress()
         self.__nodes_list = NodesList()
-        self.__manual_node = ManualNode(classes="-hidden")
 
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle("set node address")
         with ScrollablePart():
             yield self.__selected_node
             yield Static()
-            yield ModeSwitchContainer(disabled=True)
-            yield Static()
             yield self.__nodes_list
-            yield self.__manual_node
 
     async def _valid_and_save_address(self) -> None:
-        if self._in_nodes_list_mode():
-            address = self.query_one(NodeSelector).value
-            assert not isinstance(address, NoSelection), "No node was selected."
-        else:
-            address = Url.parse(self.app.query_one("#node-address-input", Input).value)
+        address = self.query_one(NodeSelector).value
+        assert not isinstance(address, NoSelection), "No node was selected."
         await self.app.world.node.set_address(address)
         self.app.trigger_node_watchers()
         self.__selected_node.refresh()
@@ -153,15 +125,6 @@ class SetNodeAddressBase(BaseScreen, ABC):
             )
         else:
             self.notify(f"Node address set to `{self.app.world.node.address}`.")
-
-    @on(Switch.Changed)
-    def change_mode(self) -> None:
-        self.__nodes_list.toggle_class("-hidden")
-        self.__manual_node.toggle_class("-hidden")
-
-    def _in_nodes_list_mode(self) -> bool:
-        """Returns True if the nodes list (combobox) mode is active, False otherwise."""
-        return not self.app.query_one(ModeSwitch).value
 
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):

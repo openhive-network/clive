@@ -3,22 +3,6 @@ SetNodeAddressBase ScrollablePart {
   height: 1fr;
 }
 
-SetNodeAddressBase NodesList,
-SetNodeAddressBase ManualNode,
-SetNodeAddressBase ModeSwitchContainer {
+SetNodeAddressBase NodesList {
   height: auto;
-}
-
-SetNodeAddressBase ModeSwitchContainer {
-  display: none;
-}
-
-SetNodeAddressBase ModeSwitchContainer Static {
-  padding: 1 2;
-  text-align: left;
-}
-
-SetNodeAddressBase ManualNode Button {
-  margin-top: 1;
-  background: $primary;
 }
