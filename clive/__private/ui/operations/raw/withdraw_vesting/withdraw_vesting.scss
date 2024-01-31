@@ -1,8 +1,16 @@
 WithdrawVesting Body {
-  grid-size: 2;
-  grid-columns: 20 1fr;
-  grid-rows: 4;
-  margin: 0 4;
   background: $panel;
-  height: 15;
+  height: 14;
+}
+
+WithdrawVesting #withdraw-vesting-account-input,
+#withdraw-vesting-shares-input {
+  margin-top: 1;
+  height: auto;
+}
+
+WithdrawVesting #hp-vests-conversion-info {
+  text-style: bold;
+  margin-top: 1;
+  text-align: center;
 }
