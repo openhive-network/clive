@@ -20,7 +20,6 @@ from clive.__private.ui.widgets.select_file import SelectFile
 from clive.exceptions import (
     AliasAlreadyInUseFormError,
     FormValidationError,
-    PrivateKeyAlreadyInUseError,
 )
 
 if TYPE_CHECKING:
@@ -103,33 +102,16 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
 
         Raises
         ------
-        PrivateKeyInvalidFormatFormError: if key is invalid
+        FormValidationError: if key is invalid
         AliasAlreadyInUseError: if alias is already in use
-        PrivateKeyAlreadyInUseError: if private key is already in use.
         """
+        if not self.context.working_account.keys.is_public_alias_available(self._key_alias_raw):
+            raise AliasAlreadyInUseFormError(self._key_alias_raw)
+
         try:
-            self.__check_if_private_key_already_exists(self._private_key)
+            _ = self._private_key
         except PrivateKeyInvalidFormatError as error:
             raise FormValidationError(str(error), given_value=error.value) from error
-
-    def __check_if_private_key_already_exists(self, private_key: PrivateKeyAliased) -> None:
-        """
-        Check if private key is already stored.
-
-        Raises
-        ------
-        AliasAlreadyInUseFormError: if alias is already in use
-        PrivateKeyAlreadyInUseError: if private key is already in use.
-        """
-
-        def __private_key_already_exists() -> bool:
-            return private_key.without_alias() in self.context.working_account.keys
-
-        if not self.context.working_account.keys.is_public_alias_available(private_key.alias):
-            raise AliasAlreadyInUseFormError(private_key.alias)
-
-        if __private_key_already_exists():
-            raise PrivateKeyAlreadyInUseError
 
     def _content_after_big_title(self) -> ComposeResult:
         if self._subtitle():
