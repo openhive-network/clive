@@ -16,6 +16,7 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
+from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
@@ -41,13 +42,7 @@ class Activate(BaseScreen):
     def __init__(self, *, activation_result_callback: ActivationResultCallbackOptionalT = None) -> None:
         super().__init__()
         self._activation_result_callback = activation_result_callback
-        self._name_input = TextInput(
-            "Profile name",
-            value=self.app.world.profile_data.name,
-            always_show_title=True,
-            required=False,
-            disabled=True,
-        )
+        self._name_input = LabelizedInput("Profile name", value=self.app.world.profile_data.name)
         self._password_input = TextInput("Password", password=True)
         self._permanent_active_mode_switch = Checkbox("Permanent active mode?")
         self._temporary_active_mode_input = IntegerInput(

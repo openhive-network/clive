@@ -11,6 +11,7 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
+from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.models import Asset
@@ -52,14 +53,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Transfer to account")
         with ScrollablePart(), Body():
-            yield AccountNameInput(
-                "From",
-                self.from_account,
-                always_show_title=True,
-                required=False,
-                ask_known_account=False,
-                disabled=True,
-            )
+            yield LabelizedInput("From", self.from_account)
             yield self._to_input
             yield self._amount_input
             yield self._memo_input

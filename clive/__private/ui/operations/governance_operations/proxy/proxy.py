@@ -11,8 +11,8 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_proxy import AccountWitnessProxy
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.proxy_input import ProxyInput
-from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
@@ -24,15 +24,9 @@ class ProxyBaseContainer(Container):
     """Base widget for the ProxyNotSet and ProxySet container to properly catch both by the query_one."""
 
 
-class CurrentProxy(TextInput):
+class CurrentProxy(LabelizedInput):
     def __init__(self, current_proxy: str) -> None:
-        super().__init__(
-            "Current proxy",
-            value=current_proxy,
-            always_show_title=True,
-            required=False,
-            disabled=True,
-        )
+        super().__init__("Current proxy", current_proxy)
 
 
 class NewProxyInput(ProxyInput):

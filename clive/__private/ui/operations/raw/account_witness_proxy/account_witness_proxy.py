@@ -7,7 +7,7 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from schemas.operations import AccountWitnessProxyOperation
 
 if TYPE_CHECKING:
@@ -41,19 +41,9 @@ class AccountWitnessProxy(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Account witness proxy")
         with ScrollableContainer(), Body():
-            yield TextInput(
-                "Account name",
-                value=self.working_account_name,
-                always_show_title=True,
-                required=False,
-                disabled=True,
-            )
-            yield TextInput(
-                "New proxy",
-                value=self._new_proxy if self._new_proxy is not None else "Proxy will be removed",
-                always_show_title=True,
-                required=False,
-                disabled=True,
+            yield LabelizedInput("Account name", self.working_account_name)
+            yield LabelizedInput(
+                "New proxy", self._new_proxy if self._new_proxy is not None else "Proxy will be removed"
             )
 
     def action_add_to_cart(self) -> None:

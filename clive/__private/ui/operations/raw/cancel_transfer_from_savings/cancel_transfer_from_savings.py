@@ -7,7 +7,7 @@ from textual.containers import Grid, ScrollableContainer
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from schemas.operations import CancelTransferFromSavingsOperation
 
 if TYPE_CHECKING:
@@ -33,20 +33,8 @@ class CancelTransferFromSavings(RawOperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Cancel transfer")
         with ScrollableContainer(), Body():
-            yield TextInput(
-                "From",
-                value=self.app.world.profile_data.working_account.name,
-                always_show_title=True,
-                required=False,
-                disabled=True,
-            )
-            yield TextInput(
-                "Request id",
-                value=str(self._transfer.request_id),
-                always_show_title=True,
-                required=False,
-                disabled=True,
-            )
+            yield LabelizedInput("From", self.app.world.profile_data.working_account.name)
+            yield LabelizedInput("Request id", str(self._transfer.request_id))
 
     def action_add_to_cart(self) -> None:
         if self.create_operation() in self.app.world.profile_data.cart:

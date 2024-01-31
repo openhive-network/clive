@@ -12,8 +12,8 @@ from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
-from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -49,14 +49,8 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
             setting_key_alias=True,
             required=self.IS_KEY_ALIAS_REQUIRED,
         )
-        self._public_key_input = TextInput(
-            "Public key",
-            self._default_public_key(),
-            placeholder="Public key will be calculated here",
-            always_show_title=True,
-            required=False,
-            validate_on=[],
-            disabled=True,
+        self._public_key_input = LabelizedInput(
+            "Public key", self._default_public_key() or "Public key will be calculated here"
         )
 
     def create_main_panel(self) -> ComposeResult:
