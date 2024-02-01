@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 class CancelTransferFromSavings(OperationSummary):
     BIG_TITLE: ClassVar[str] = "Cancel transfer"
 
+    ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = False
+
     def __init__(self, transfer: SavingsWithdrawals) -> None:
         super().__init__()
         self._transfer = transfer
@@ -22,13 +24,6 @@ class CancelTransferFromSavings(OperationSummary):
     def content(self) -> ComposeResult:
         yield LabelizedInput("From", self.app.world.profile_data.working_account.name)
         yield LabelizedInput("Request id", str(self._transfer.request_id))
-
-    def _add_to_cart(self) -> bool:
-        if self.create_operation() in self.app.world.profile_data.cart:
-            self.notify("Operation already in the cart", severity="error")
-            return False
-
-        return super()._add_to_cart()
 
     def _create_operation(self) -> CancelTransferFromSavingsOperation:
         request_id = self._transfer.request_id

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from pydantic import ValidationError
 from textual.binding import Binding
@@ -35,6 +35,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Binding("f5", "fast_broadcast", "Fast broadcast"),
         Binding("f10", "finalize", "Finalize transaction"),
     ]
+
+    ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -150,6 +152,12 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         -------
         True if the operation was added to the cart successfully, False otherwise.
         """
+        if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES:
+            operation = self.create_operation()
+            if operation is not None and operation in self.app.world.profile_data.cart:
+                self.notify("Operation already in the cart", severity="error")
+                return False
+
         operations = self.ensure_operations_list()
         if not operations:
             return False
