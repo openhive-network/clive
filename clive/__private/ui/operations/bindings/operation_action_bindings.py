@@ -12,6 +12,9 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.inputs_new.clive_validated_input import (
+    CliveValidatedInputError,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -66,6 +69,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         try:
             result = create_one_many_operations_cb()
+        except CliveValidatedInputError as error:
+            self.notify(str(error), severity="error")
+            return None
         except ValidationError as error:
             self.notify(f"{validation_failed_message}\n{error}", severity="error")
             return None
