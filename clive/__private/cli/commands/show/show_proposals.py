@@ -5,7 +5,6 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 
 if TYPE_CHECKING:
@@ -22,10 +21,8 @@ class ShowProposals(WorldBasedCommand):
     page_no: int
 
     async def _run(self) -> None:
-        response = await self.world.node.api.database_api.find_accounts(accounts=[self.account_name])
-        if len(response.accounts) == 0:
-            raise CLIPrettyError(f"Account {self.account_name} not found on node {self.world.node.address}")
-        proxy = response.accounts[0].proxy
+        accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
+        proxy = accounts[0].proxy
 
         wrapper = await self.world.commands.retrieve_proposals_data(
             account_name=proxy if proxy else self.account_name,
