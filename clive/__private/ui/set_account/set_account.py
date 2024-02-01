@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import ScrollableContainer
 from textual.widgets import Checkbox
 
+from clive.__private.core.commands.find_accounts import AccountNotFoundError
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.accounts import Account
 from clive.__private.ui.get_css import get_relative_css_path
@@ -53,12 +54,23 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         except CliveValidatedInputError as error:
             raise FormValidationError(str(error)) from error
 
+        if not await self._does_account_exist_in_node(account_name):
+            raise FormValidationError(f"Account {account_name} does not exist in the node.")
+
         if self.__is_working_account():
             self.context.set_working_account(account_name)
             self.context.watched_accounts.clear()
         else:
             self.context.unset_working_account()
             self.context.watched_accounts.add(Account(name=account_name))
+
+    async def _does_account_exist_in_node(self, account_name: str) -> bool:
+        try:
+            wrapper = await self.app.world.commands.find_accounts(accounts=[account_name])
+        except AccountNotFoundError:
+            return False
+        else:
+            return wrapper.success
 
     def __is_working_account(self) -> bool:
         return self.query_one(WorkingAccountCheckbox).value

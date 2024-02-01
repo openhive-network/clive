@@ -17,6 +17,7 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
 )
 from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
+from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
@@ -53,7 +54,7 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
-    from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, TransactionStatus, Witness
+    from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, SchemasAccount, TransactionStatus, Witness
 
 WorldT = TypeVar("WorldT", bound="World")
 
@@ -313,6 +314,9 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             FindProposal(node=self._world.node, proposal_id=proposal_id)
         )
+
+    async def find_accounts(self, *, accounts: list[str]) -> CommandWithResultWrapper[list[SchemasAccount]]:
+        return await self.__surround_with_exception_handlers(FindAccounts(node=self._world.node, accounts=accounts))
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[misc]
