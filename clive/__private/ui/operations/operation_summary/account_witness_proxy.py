@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 
 class AccountWitnessProxy(OperationSummary):
     BIG_TITLE: ClassVar[str] = "Account witness proxy"
+    ADD_TO_CART_POP_SCREEN_MODE = "until_operations"
 
     def __init__(self, *, new_proxy: str | None) -> None:
         super().__init__()
@@ -30,10 +31,6 @@ class AccountWitnessProxy(OperationSummary):
     def content(self) -> ComposeResult:
         yield LabelizedInput("Account name", self.working_account_name)
         yield LabelizedInput("New proxy", self._new_proxy if self._new_proxy is not None else "Proxy will be removed")
-
-    def action_add_to_cart(self) -> None:
-        super().action_add_to_cart()
-        self.app.pop_screen_until("Operations")
 
     def _create_operation(self) -> AccountWitnessProxyOperation:
         return AccountWitnessProxyOperation(account=self.working_account_name, proxy=self.proxy_to_be_set)

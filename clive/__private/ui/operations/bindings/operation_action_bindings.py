@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, Literal
 
 from pydantic import ValidationError
 from textual.binding import Binding
@@ -37,6 +37,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     ]
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
+    ADD_TO_CART_POP_SCREEN_MODE: Literal["pop", "until_operations"] = "pop"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -109,7 +110,13 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     def action_add_to_cart(self) -> None:
         if self._add_to_cart():
+            self._pop_screen_on_successfully_added_to_cart()
+
+    def _pop_screen_on_successfully_added_to_cart(self) -> None:
+        if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
             self.app.pop_screen()
+        elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations":
+            self.app.pop_screen_until("Operations")
 
     async def action_fast_broadcast(self) -> None:
         if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
