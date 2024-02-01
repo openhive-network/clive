@@ -6,6 +6,9 @@ from clive.__private.ui.operations.raw.account_witness_proxy.account_witness_pro
 from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
+from clive.__private.ui.operations.raw.remove_withdraw_vesting_route.remove_withdraw_vesting_route import (
+    RemoveWithdrawVestingRoute,
+)
 from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 
@@ -13,6 +16,7 @@ __all__ = [
     "AccountWitnessProxy",
     "CancelTransferFromSavings",
     "TransferToAccount",
+    "RemoveWithdrawVestingRoute",
     "Savings",
     "Governance",
     "HivePowerManagement",

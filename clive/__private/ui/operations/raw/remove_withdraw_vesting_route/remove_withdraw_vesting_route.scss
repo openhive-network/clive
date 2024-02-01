@@ -1,0 +1,37 @@
+SetWithdrawVestingRoute Body {
+  margin: 0 4;
+  background: $panel;
+  height: 16;
+}
+
+SetWithdrawVestingRoute InputLabel {
+  padding: 1 2;
+  width: 1fr;
+}
+
+SetWithdrawVestingRoute #from-label {
+  padding: 1 6;
+  width: 6fr;
+}
+
+SetWithdrawVestingRoute #container-with-checkbox {
+  align: center middle;
+}
+
+SetWithdrawVestingRoute #from-account-display {
+  height: auto;
+}
+
+SetWithdrawVestingRoute Checkbox {
+  margin-left: 2;
+  width: auto;
+}
+
+SetWithdrawVestingRoute AccountNameInput {
+  height: auto;
+}
+
+SetWithdrawVestingRoute IntegerInput {
+  margin-top: 1;
+  height: auto;
+}
