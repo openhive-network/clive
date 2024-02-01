@@ -34,7 +34,7 @@ class SelectFileToSaveTransaction(SelectFile):
         should_be_signed: bool = False
 
     def __init__(self) -> None:
-        super().__init__(file_must_exist=False)
+        super().__init__(validator_mode="is_file_or_can_be_file")
         self.__binary_checkbox = Checkbox("Binary?")
         self.__signed_checkbox = Checkbox("Signed?")
 
@@ -58,5 +58,7 @@ class SelectFileToSaveTransaction(SelectFile):
 
     def _create_saved_message(self) -> Saved:
         return self.Saved(
-            file_path=self.file_path, save_as_binary=self.is_binary_checked, should_be_signed=self.is_signed_checked
-        )
+            file_path=self._file_path_input.value_or_error,
+            save_as_binary=self.is_binary_checked,
+            should_be_signed=self.is_signed_checked,
+        )  # already validated in action_save
