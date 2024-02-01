@@ -4,7 +4,8 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any, Final
 
 from textual.containers import Horizontal
-from textual.widgets import Label, Static
+from textual.css.query import NoMatches
+from textual.widgets import Static
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -82,6 +83,12 @@ class CliveDataTableRow(CliveWidget):
         width: 1fr;
         height: 1;
     }
+
+    CliveDataTableRow #loading-label {
+        text-align: center;
+        text-style: bold;
+        align: center middle;
+    }
     """
 
     def __init__(self, title_of_row: str, *, dynamic: bool = False, id_: str | None = None) -> None:
@@ -110,7 +117,12 @@ class CliveDataTableRow(CliveWidget):
     async def _sync_row(self) -> None:
         await self.loading_set()
 
-        new_row = self.create_row()
+        try:
+            new_row = self.create_row()
+        except NoMatches:
+            await self.loading_set()
+            return
+
         if new_row is None:
             return
 
@@ -121,7 +133,7 @@ class CliveDataTableRow(CliveWidget):
     async def loading_set(self) -> None:
         with self.app.batch_update():
             await self.query("*").remove()
-            await self.mount(Label("Loading..."))
+            await self.mount(Static("Loading...", id="loading-label"))
 
     @property
     def provider(self) -> Any:
