@@ -2,10 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid, ScrollableContainer
+from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Checkbox
 
-from clive.__private.core.get_default_from_model import get_default_from_model
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
@@ -20,43 +19,61 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class Body(Grid):
+class Body(Vertical):
     """All the content of the screen, excluding the title."""
 
 
 class SetWithdrawVestingRoute(RawOperationBaseScreen):
+    """Screen to set/remove withdraw vesting route."""
+
     CSS_PATH = [
         *RawOperationBaseScreen.CSS_PATH,
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self) -> None:
+    def __init__(self, receiver: str, percent: int, auto_vest: bool, cancel: bool = False) -> None:
+        """
+        Initialize the SetWithdrawVestingRoute screen.
+
+        Args:
+        ----
+        receiver: receiver of withdraw route.
+        percent: percent to sent to the receiver (0 if removing withdraw route).
+        auto_vest: whether withdrawal with auto vest or no.
+        cancel: whether the payment is cancelled or not.
+        """
         super().__init__()
 
-        default_percent = get_default_from_model(SetWithdrawVestingRouteOperation, "percent", int)
-        default_auto_vest = get_default_from_model(SetWithdrawVestingRouteOperation, "auto_vest", bool)
-
-        self.__to_account_input = AccountNameInput(label="to account")
-        self.__percent_input = IntegerInput(label="percent", value=default_percent, placeholder=PERCENT_PLACEHOLDER)
-        self.__auto_vest_input = Checkbox("auto vest", value=default_auto_vest)
+        self._to_account_input = AccountNameInput(label="to account", value=receiver, disabled=True)
+        self._percent_input = IntegerInput(
+            label="percent", value=percent, placeholder=PERCENT_PLACEHOLDER, disabled=True
+        )
+        self._auto_vest_input = Checkbox("auto vest", value=auto_vest, disabled=True)
+        self._cancel = cancel
 
     def create_left_panel(self) -> ComposeResult:
-        yield BigTitle("Set withdraw vesting route")
+        if not self._cancel:
+            yield BigTitle("Set withdraw route")
+        else:
+            yield BigTitle("Remove withdraw route")
         with ScrollableContainer(), Body():
-            yield InputLabel("from")
-            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-            yield from self.__to_account_input.compose()
-            yield from self.__percent_input.compose()
-            yield self.__auto_vest_input
+            with Horizontal(id="from-account-display"):
+                yield InputLabel("from")
+                yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
+            yield self._to_account_input
+            if not self._cancel:
+                yield self._percent_input
+            with Container(id="container-with-checkbox"):
+                yield self._auto_vest_input
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation | None:
-        percent = self.__percent_input.value
-        if not percent:
-            return None
+        percent = self._percent_input.value
+        if percent is not None:
+            percent *= 100
 
         return SetWithdrawVestingRouteOperation(
             from_account=self.app.world.profile_data.working_account.name,
-            to_account=self.__to_account_input.value,
-            auto_vest=self.__auto_vest_input.value,
+            to_account=self._to_account_input.value,
+            auto_vest=self._auto_vest_input.value,
             percent=percent,
         )
