@@ -23,11 +23,12 @@ class CancelTransferFromSavings(OperationSummary):
         yield LabelizedInput("From", self.app.world.profile_data.working_account.name)
         yield LabelizedInput("Request id", str(self._transfer.request_id))
 
-    def action_add_to_cart(self) -> None:
+    def _add_to_cart(self) -> bool:
         if self.create_operation() in self.app.world.profile_data.cart:
             self.notify("Operation already in the cart", severity="error")
-        else:
-            super().action_add_to_cart()
+            return False
+
+        return super()._add_to_cart()
 
     def _create_operation(self) -> CancelTransferFromSavingsOperation:
         request_id = self._transfer.request_id

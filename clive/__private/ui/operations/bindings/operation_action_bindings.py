@@ -101,12 +101,12 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         return self._validate_and_notify(self._create_operations)
 
     def action_finalize(self) -> None:
-        if self.__add_to_cart():
+        if self._add_to_cart():
             self.app.switch_screen(TransactionSummaryFromCart())
             self.app.push_screen_at(-1, Cart())
 
     def action_add_to_cart(self) -> None:
-        if self.__add_to_cart():
+        if self._add_to_cart():
             self.app.pop_screen()
 
     async def action_fast_broadcast(self) -> None:
@@ -142,7 +142,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
-    def __add_to_cart(self) -> bool:
+    def _add_to_cart(self) -> bool:
         """
         Create a new operation and adds it to the cart.
 
