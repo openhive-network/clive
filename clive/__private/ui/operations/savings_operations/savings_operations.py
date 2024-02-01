@@ -11,7 +11,7 @@ from clive.__private.ui.data_providers.savings_data_provider import SavingsDataP
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import CartBinding, OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.operations.raw.cancel_transfer_from_savings.cancel_transfer_from_savings import (
+from clive.__private.ui.operations.operation_summary.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget

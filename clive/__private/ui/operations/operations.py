@@ -23,13 +23,12 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-    from clive.__private.ui.operations.raw_operation_base_screen import RawOperationBaseScreen
 
 
 class OperationButton(CliveButton):
     def __init__(
         self,
-        operation_screen: type[OperationBaseScreen | RawOperationBaseScreen] | None,
+        operation_screen: type[OperationBaseScreen] | None,
         *,
         label: TextType | None = None,
     ) -> None:
