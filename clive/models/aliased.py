@@ -17,6 +17,7 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     ListDeclineVotingRightsRequestsFundament,
     OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
+    WithdrawVestingRoutesFundament,
     WitnessesFundament,
 )
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
@@ -65,6 +66,7 @@ DynamicGlobalProperties = GetDynamicGlobalProperties
 TransactionStatus = SchemasFindTransaction
 FindProposals = SchemasFindProposals
 FindAccounts = SchemasFindAccounts
+WithdrawRouteSchema = WithdrawVestingRoutesFundament
 
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
