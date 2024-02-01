@@ -76,6 +76,7 @@ class SelectFile(BaseScreen):
         return []
 
     @on(DirectoryTree.FileSelected)
+    @on(DirectoryTree.DirectorySelected)
     def update_input_path(self, event: DirectoryTree.FileSelected) -> None:
         self._file_path_input.input.value = str(event.path)
 
