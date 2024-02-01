@@ -9,7 +9,6 @@ from textual.widgets._select import NoSelection
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.models.asset import (
     AssetAmount,
-    AssetAmountInvalidFormatError,
     AssetFactory,
     AssetFactoryHolder,
     AssetT,
@@ -20,14 +19,21 @@ class CurrencySelectorBase(Select[AssetFactoryHolder[AssetT]], Generic[AssetT], 
     """Base Currency Selector for operations, which require to choose type of Assets."""
 
     def __init__(self) -> None:
-        selectable = self._create_selectable()
-        first_value = next(iter(selectable.values()))
+        self._selectable = self._create_selectable()
         super().__init__(
-            selectable.items(),
+            self._selectable.items(),
             prompt="Select currency",
             allow_blank=False,
-            value=first_value,
+            value=self.default_asset_factory_holder,
         )
+
+    @property
+    def default_asset_factory_holder(self) -> AssetFactoryHolder[AssetT]:
+        return next(iter(self._selectable.values()))
+
+    @property
+    def default_asset_cls(self) -> type[AssetT]:
+        return self.default_asset_factory_holder.asset_cls
 
     @staticmethod
     @abstractmethod
@@ -51,10 +57,17 @@ class CurrencySelectorBase(Select[AssetFactoryHolder[AssetT]], Generic[AssetT], 
         """Returns selected asset factory."""
         return self.value_ensure.asset_factory
 
-    def create_asset(self, amount: AssetAmount) -> AssetT | None:
+    def create_asset(self, amount: AssetAmount) -> AssetT:
+        """
+        Creates asset from amount.
+
+        Args:
+        ----
+        amount: Amount of asset.
+
+        Raises:
+        ------
+        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+        """
         asset_factory = self.asset_factory
-        try:
-            return asset_factory(amount)
-        except AssetAmountInvalidFormatError as error:
-            self.notify(error.message, severity="error")
-            return None
+        return asset_factory(amount)

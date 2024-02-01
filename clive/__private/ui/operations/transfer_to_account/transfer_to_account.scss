@@ -1,16 +1,8 @@
 TransferToAccount Body {
-  grid-size: 3;
-  grid-columns: 11 2fr 23%;
-  grid-rows: 3 4 4 4;
+  grid-rows: auto;
+  grid-gutter: 1;
   margin: 0 4;
   background: $panel;
-  height: 18;
-}
-
-TransferToAccount #from-label {
-  padding: 1 2;
-}
-
-TransferToAccount KnownAccount {
-  column-span: 1;
+  padding: 2 4;
+  height: auto;
 }

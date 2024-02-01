@@ -13,9 +13,10 @@ if TYPE_CHECKING:
 
 
 class KnownAccount(CliveWidget):
-    def __init__(self, input_: Input):
-        self.input = input_
-        self.checkbox = Checkbox("Known account?", disabled=True)
+    def __init__(self, input: Input):  # noqa: A002
+        self.input = input
+
+        self.checkbox = Checkbox("Known?", disabled=True)
         super().__init__()
 
     @property
@@ -34,7 +35,14 @@ class KnownAccount(CliveWidget):
         return Account(self.account_name_raw)
 
     def on_mount(self) -> None:
+        # workaround for Textual calling validate on input when self.watch is used. Setting validate_on to values
+        # different from "changed" prevents this.
+        before = self.input.validate_on
+        self.input.validate_on = ["blur"]
+
         self.watch(self.input, "value", self.__input_changed)
+
+        self.input.validate_on = before
 
     def compose(self) -> ComposeResult:
         yield self.checkbox

@@ -4,18 +4,14 @@ from collections.abc import Callable
 from typing import TYPE_CHECKING
 
 from textual.containers import Grid, ScrollableContainer
-from textual.widgets import Static
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
-from clive.__private.ui.widgets.inputs.input_label import InputLabel
-from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive.__private.ui.widgets.known_account import KnownAccount
+from clive.__private.ui.widgets.inputs_new.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs_new.liquid_asset_amount_input import LiquidAssetAmountInput
+from clive.__private.ui.widgets.inputs_new.memo_input import MemoInput
 from clive.models import Asset
 from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation
@@ -44,38 +40,33 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__to_input = AccountNameInput(label="to")
-        self.__memo_input = MemoInput()
+        self._to_input = AccountNameInput("To")
+        self._amount_input = LiquidAssetAmountInput()
+        self._memo_input = MemoInput(include_title_in_placeholder_when_blurred=True)
 
-        self.__amount_input = AssetAmountInput()
+    @property
+    def from_account(self) -> str:
+        return self.app.world.profile_data.working_account.name
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle("Transfer to account")
         with ScrollablePart(), Body():
-            to_label, to_input = self.__to_input.compose()
-
-            yield InputLabel("from")
-            yield EllipsedStatic(self.app.world.profile_data.working_account.name, id_="from-label")
-            yield Static()
-            yield to_label
-            yield to_input
-            yield KnownAccount(to_input)  # type: ignore[arg-type]
-            yield from self.__amount_input.compose()
-            yield Static()
-            yield from self.__memo_input.compose()
+            yield AccountNameInput(
+                "From",
+                self.from_account,
+                always_show_title=True,
+                required=False,
+                ask_known_account=False,
+                disabled=True,
+            )
+            yield self._to_input
+            yield self._amount_input
+            yield self._memo_input
 
     def _create_operation(self) -> TransferOperation | None:
-        amount = self.__amount_input.value
-        if not amount:
-            return None
-
-        to = self.__to_input.value
-        if not to:
-            return None
-
         return TransferOperation(
-            from_=self.app.world.profile_data.working_account.name,
-            to=to,
-            amount=amount,
-            memo=self.__memo_input.value,
+            from_=self.from_account,
+            to=self._to_input.value_or_error,
+            amount=self._amount_input.value_or_error,
+            memo=self._memo_input.value_or_error,
         )
