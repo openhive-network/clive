@@ -20,9 +20,9 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.asset_amount_input import AssetAmountInput
-from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.inputs_new.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs_new.liquid_asset_amount_input import LiquidAssetAmountInput
+from clive.__private.ui.widgets.inputs_new.memo_input import MemoInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.exceptions import RequestIdError
 from clive.models import Asset
@@ -194,15 +194,19 @@ class SavingsTransfers(TabPane, OperationActionBindings):
     def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
 
-        self.__amount_input = AssetAmountInput()
-        self.__memo_input = MemoInput()
-        self.__to_account_input = AccountNameInput(value=self.app.world.profile_data.working_account.name)
+        self._amount_input = LiquidAssetAmountInput()
+        self._memo_input = MemoInput()
+        self._to_account_input = AccountNameInput("To", value=self.default_receiver)
 
         self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
         self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
 
-        self.__transfer_time_reminder = Notice("transfer from savings will take 3 days")
-        self.__transfer_time_reminder.visible = False
+        self._transfer_time_reminder = Notice("transfer from savings will take 3 days")
+        self._transfer_time_reminder.visible = False
+
+    @property
+    def default_receiver(self) -> str:
+        return self.app.world.profile_data.working_account.name
 
     def compose(self) -> ComposeResult:
         yield Static("Choose type of operation", id="savings-transfer-header")
@@ -211,38 +215,31 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             yield self.__from_button
 
         yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
-        yield self.__transfer_time_reminder
+        yield self._transfer_time_reminder
         with ScrollablePart(), Body():
-            yield from self.__to_account_input.compose()
-            yield from self.__amount_input.compose()
-            yield from self.__memo_input.compose()
+            yield self._to_account_input
+            yield self._amount_input
+            yield self._memo_input
 
     @on(RadioSet.Changed)
     def visibility_of_transfer_time_reminder(self, event: RadioSet.Changed) -> None:
         if event.radio_set.pressed_button.id == "from-savings-choose":  # type: ignore[union-attr]
-            self.__transfer_time_reminder.visible = True
+            self._transfer_time_reminder.visible = True
             return
-        self.__transfer_time_reminder.visible = False
+        self._transfer_time_reminder.visible = False
 
     def _create_operation(
         self,
     ) -> TransferToSavingsOperation | TransferFromSavingsOperation | None:
-        asset = self.__amount_input.value
-
-        if not asset:
-            return None
-
-        to = self.__to_account_input.value
-        if not to:
-            return None
+        data = {
+            "from_": self.default_receiver,
+            "to": self._to_account_input.value_or_error,
+            "amount": self._amount_input.value_or_error,
+            "memo": self._memo_input.value_or_error,
+        }
 
         if self.__to_button.value:
-            return TransferToSavingsOperation(
-                from_=self.app.world.profile_data.working_account.name,
-                to=to,
-                amount=asset,
-                memo=self.__memo_input.value,
-            )
+            return TransferToSavingsOperation(**data)
 
         try:
             request_id = self.__create_request_id()
@@ -250,13 +247,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             self.notify(str(error), severity="error")
             return None
 
-        return TransferFromSavingsOperation(
-            from_=self.app.world.profile_data.working_account.name,
-            to=to,
-            amount=asset,
-            memo=self.__memo_input.value,
-            request_id=request_id,
-        )
+        return TransferFromSavingsOperation(**data, request_id=request_id)
 
     def __create_request_id(self) -> int:
         provider = self.app.query_one(SavingsDataProvider)
