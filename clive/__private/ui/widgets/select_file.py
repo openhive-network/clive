@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, ClassVar, Final
 
 from textual import on
 from textual.binding import Binding
@@ -42,6 +42,8 @@ class SelectFile(BaseScreen):
         Binding("f2", "save", "Ok"),
     ]
 
+    BIG_TITLE: ClassVar[str] = "Select file"
+
     _DEFAULT_PLACEHOLDER: Final[str] = "e.g.: /home/me/some-path"
 
     @dataclass
@@ -66,7 +68,7 @@ class SelectFile(BaseScreen):
         return Path(self.__file_path_input.value)
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer("Select file"), Body():
+        with DialogContainer(self.BIG_TITLE), Body():
             with FilePathInputContainer():
                 yield FilePathLabel("File path:")
                 yield self.__file_path_input
