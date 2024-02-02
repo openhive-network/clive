@@ -1,18 +1,17 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
-from textual.css.query import NoMatches
+from textual.widgets._toast import Toast
 
 if TYPE_CHECKING:
     from textual.app import App
     from textual.pilot import Pilot
-    from textual.widget import Widget
 
 
-TRANSACTION_ID_RE_PAT = re.compile(r"Transaction with ID '(?P<transaction_id>[0-9a-z]+)'")
+TRANSACTION_ID_RE_PAT: Final[re.Pattern[str]] = re.compile(r"Transaction with ID '(?P<transaction_id>[0-9a-z]+)'")
 
 
 async def write_text(pilot: Pilot[int], text: str) -> None:
@@ -28,14 +27,21 @@ def is_key_binding_active(app: App[int], key: str, description: str) -> bool:
 
 
 async def get_notification_transaction_id(pilot: Pilot[int]) -> str:
-    try:
-        toast: Widget = pilot.app.query_one("Toast")
-    except NoMatches as error:
-        raise AssertionError("Toast couldn't be found.") from error
-    tt.logger.debug(f"get_notification_transaction_id toast: {toast.render()}")
-    result = TRANSACTION_ID_RE_PAT.search(str(toast.render()))
-    assert result is not None, "Transaction ID couldn't be found in the toast."
-    transaction_id = result.group("transaction_id")
-    tt.logger.debug(f"transaction_id: '{transaction_id}'")
+    """
+    Will look for a toast notification containing the transaction ID and return it.
 
+    If no toast notification is found, will raise an AssertionError. If more than one toast notification is found, will
+    ignore the rest and return the transaction ID from the last one.
+    """
+    toasts = pilot.app.query(Toast)
+    contents = [str(toast.render()) for toast in toasts]
+
+    transaction_id = ""
+    for content in contents:
+        result = TRANSACTION_ID_RE_PAT.search(content)
+        if result is not None:
+            transaction_id = result.group("transaction_id")
+
+    message = f"Toast notification containing the transaction ID couldn't be found. Current toasts are: {contents}"
+    assert transaction_id, message
     return transaction_id
