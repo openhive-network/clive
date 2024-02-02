@@ -192,7 +192,6 @@ class TransactionSummaryCommon(BaseScreen):
                 )
             ).result_or_raise
         except CommandRequiresActiveModeError:
-            self.notify("Active mode is required for this action.", severity="warning")
             raise  # reraise so try_again_after_activation decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
@@ -224,7 +223,6 @@ class TransactionSummaryCommon(BaseScreen):
                 )
             ).raise_if_error_occurred()
         except CommandRequiresActiveModeError:
-            self.notify("Active mode is required for this action.", severity="warning")
             raise  # reraise so try_again_after_activation decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
