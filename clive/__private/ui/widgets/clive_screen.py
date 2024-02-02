@@ -61,11 +61,12 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
                     async def _on_activation_result(value: bool) -> None:
                         if not value:
-                            app_.notify("Aborted. Active mode is required for this action.", severity="warning")
+                            app_.notify("Aborted. Active mode was required for this action.", severity="warning")
                             return
 
                         await func(*args, **kwargs)
 
+                    app_.notify("This action requires active mode. Please activate...")
                     await app_.push_screen(Activate(activation_result_callback=_on_activation_result))
 
             return wrapper
