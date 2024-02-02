@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import re
 import shelve
 from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
@@ -13,6 +12,7 @@ from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.storage.contextual import Context
+from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models import Operation
@@ -130,23 +130,11 @@ class ProfileData(Context):
 
     @staticmethod
     def validate_profile_name(name: str) -> None:
-        min_length = 3
-        max_length = 22
-        allowed_special_characters = "-._@"
-        alphanum = "a-zA-Z0-9"
+        result = ProfileNameValidator().validate(name)
+        if result.is_valid:
+            return
 
-        rules = f"""
-- Must be between {min_length} and {max_length} characters long.
-- Can consist only of alphanum and `{allowed_special_characters}`."""
-
-        expression = (
-            rf"^"
-            rf"(?=.{{{min_length},{max_length}}}$)"
-            rf"[{allowed_special_characters}{alphanum}]*"
-            rf"$"
-        )  # fmt: skip
-        if not re.match(expression, name):
-            raise ProfileInvalidNameError(name, reason=rules)
+        raise ProfileInvalidNameError(name, reason=str(result.failure_descriptions))
 
     @property
     def working_account(self) -> WorkingAccount:
