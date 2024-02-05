@@ -25,7 +25,7 @@ class AppState:
         return self._dynamic_global_properties
 
     @property
-    async def is_active(self) -> bool:
+    def is_active(self) -> bool:
         return self._is_active
 
     def activate(self) -> None:

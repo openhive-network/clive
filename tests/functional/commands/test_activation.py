@@ -21,7 +21,7 @@ async def test_activate(world: clive.World, wallet: WalletInfo) -> None:
     await world.commands.activate(password=wallet.password)
 
     # ASSERT
-    assert await world.app_state.is_active
+    assert world.app_state.is_active
 
 
 async def test_activate_non_existing_wallet(world: clive.World) -> None:
@@ -34,21 +34,21 @@ async def test_activate_non_existing_wallet(world: clive.World) -> None:
 
 async def test_deactivate(world: clive.World, wallet: WalletInfo) -> None:  # noqa: ARG001
     # ARRANGE & ACT
-    assert await world.app_state.is_active
+    assert world.app_state.is_active
     await world.commands.deactivate()
 
     # ASSERT
-    assert not await world.app_state.is_active
+    assert not world.app_state.is_active
 
 
 async def test_reactivate(world: clive.World, wallet: WalletInfo) -> None:
     # ARRANGE & ACT
-    assert await world.app_state.is_active
+    assert world.app_state.is_active
     await world.commands.deactivate()
     await world.commands.activate(password=wallet.password)
 
     # ASSERT
-    assert await world.app_state.is_active
+    assert world.app_state.is_active
 
 
 async def test_deactivate_after_given_time(world: clive.World, wallet: WalletInfo) -> None:
@@ -58,8 +58,8 @@ async def test_deactivate_after_given_time(world: clive.World, wallet: WalletInf
 
     # ACT
     await world.commands.activate(password=wallet.password, time=time_to_sleep)
-    assert await world.app_state.is_active
+    assert world.app_state.is_active
     await asyncio.sleep(time_to_sleep.total_seconds() + 1)  # extra second for notification
 
     # ASSERT
-    assert not await world.app_state.is_active
+    assert not world.app_state.is_active

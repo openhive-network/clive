@@ -9,7 +9,7 @@ from clive.__private.core.commands.abc.command_restricted import CommandExecutio
 
 class AppStateProtocol(Protocol):
     @property
-    async def is_active(self) -> bool:
+    def is_active(self) -> bool:
         ...
 
 
@@ -27,4 +27,4 @@ class CommandInActive(CommandRestricted, ABC):
     _execution_impossible_error: ClassVar[type[CommandExecutionNotPossibleError]] = CommandRequiresActiveModeError
 
     async def _is_execution_possible(self) -> bool:
-        return await self.app_state.is_active
+        return self.app_state.is_active

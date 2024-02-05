@@ -134,7 +134,7 @@ class Header(TextualHeader, CliveWidget):
                 yield AlarmsSummary()
 
                 async def mode_callback(app_state: AppState) -> str:
-                    if await app_state.is_active:
+                    if app_state.is_active:
                         self.add_class("-active")
                         return "active"
                     self.remove_class("-active")
