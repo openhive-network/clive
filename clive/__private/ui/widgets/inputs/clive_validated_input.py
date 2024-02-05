@@ -305,15 +305,22 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         if combined_errors:
             raise FailedManyValidationError(combined_errors)
 
+    def clear_validation(self, clear_value: bool = True) -> None:
+        """Clear the validation of the input."""
+        self.input.clear_validation(clear_value=clear_value)
+
     @on(CliveInput.Validated)
     def _show_invalid_reasons(self, event: CliveInput.Validated) -> None:
         # Updating the UI to show the reasons why validation failed
         validation_result = event.result
         if validation_result is None:
+            # restore to the unchanged state
+            self.pretty.update([])
+            self.pretty.display = False
             return
 
         if validation_result.is_valid:
             self.pretty.display = False
         else:
-            self.query_one(Pretty).update(validation_result.failure_descriptions)
+            self.pretty.update(validation_result.failure_descriptions)
             self.pretty.display = True

@@ -26,3 +26,8 @@ class LabelizedInput(TextInput):
             classes=classes,
             disabled=True,
         )
+
+    def clear_validation(self, _: bool = False) -> None:
+        """Clear the validation of the input."""
+        # Cannot clear the value of a labelized input
+        self.input.clear_validation(clear_value=False)
