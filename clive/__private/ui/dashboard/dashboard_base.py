@@ -12,6 +12,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_natural_time,
 )
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
+from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -145,6 +146,7 @@ class DashboardBase(BaseScreen):
         Binding("ctrl+o", "terminal", "Extend terminal", show=False),
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
         Binding("f2", "operations", "Operations"),
+        Binding("f9", "config", "Config"),
     ]
 
     def create_main_panel(self) -> ComposeResult:
@@ -161,6 +163,9 @@ class DashboardBase(BaseScreen):
             return
 
         self.app.push_screen(Operations())
+
+    def action_config(self) -> None:
+        self.app.push_screen(Config())
 
     def __has_working_account(self) -> bool:
         return self.app.world.profile_data.is_working_account_set()

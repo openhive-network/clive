@@ -7,6 +7,7 @@ from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
@@ -15,6 +16,10 @@ if TYPE_CHECKING:
 
 
 P = ParamSpec("P")
+
+
+class OnlyInActiveModeError(CliveError):
+    """Should be raised when some action is only available in active mode."""
 
 
 class CliveScreen(Screen[ScreenResultType], CliveWidget):
@@ -40,7 +45,7 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
                 try:
                     await func(*args, **kwargs)
-                except CommandRequiresActiveModeError:
+                except (CommandRequiresActiveModeError, OnlyInActiveModeError):
                     from clive.__private.ui.activate.activate import Activate
 
                     async def _on_activation_result(value: bool) -> None:
@@ -50,7 +55,7 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
                         await func(*args, **kwargs)
 
-                    app_.push_screen(Activate(activation_result_callback=_on_activation_result))
+                    await app_.push_screen(Activate(activation_result_callback=_on_activation_result))
 
             return wrapper
 
