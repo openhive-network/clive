@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from textual import on, validation
 from textual.events import Blur, Focus
@@ -140,9 +140,17 @@ class CliveInput(Input):
 
         result = super().validate(value)
 
-        self.set_style(valid=self.is_valid)
+        self.set_style(mode="valid" if self.is_valid else "invalid")
         self.post_message(self.Validated(value, result))
         return result
+
+    def clear_validation(self, *, clear_value: bool = True) -> None:
+        """Clear the validation of the input."""
+        if clear_value:
+            self.clear()
+        self._valid = True
+        self.set_style("initial")
+        self.post_message(self.Validated("", None))
 
     @property
     def _should_include_title_in_placeholder(self) -> bool:
@@ -203,9 +211,15 @@ class CliveInput(Input):
         self.border_title = self._get_title_with_required() if should_show_title else self._get_required_symbol()
         return super()._watch_value(value)
 
-    def set_style(self, *, valid: bool) -> None:
+    def set_style(self, mode: Literal["initial", "valid", "invalid"]) -> None:
         valid_class = "-valid"
         invalid_class = "-invalid"
+
+        if mode == "initial":
+            self.remove_class(valid_class, invalid_class)
+            return
+
+        valid = mode == "valid"
 
         self.add_class(valid_class if valid else invalid_class)
         self.remove_class(invalid_class if valid else valid_class)
