@@ -10,9 +10,9 @@ from textual.widgets import TabPane
 
 from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.operations import Governance, Savings, TransferToAccount
 from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
-from clive.__private.ui.operations.operations_list import MAJOR_OPERATIONS
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
@@ -67,14 +67,14 @@ class Operations(CartBasedScreen, CartBinding):
     def create_left_panel(self) -> ComposeResult:
         with CliveTabbedContent(initial="financial"):
             with TabPane("Financial", id="financial"), ScrollablePart():
-                yield OperationButton(MAJOR_OPERATIONS[0], label="Transfer")
-                yield OperationButton(MAJOR_OPERATIONS[1], label="Saving")
+                yield OperationButton(TransferToAccount, label="Transfer")
+                yield OperationButton(Savings, label="Saving")
                 yield OperationButton(None, label="Hive power management")
                 yield OperationButton(None, label="Convert")
             with TabPane("Social"), ScrollablePart():
                 yield OperationButton(None, label="Social operations")
             with TabPane("Governance"), ScrollablePart():
-                yield OperationButton(MAJOR_OPERATIONS[2], label="Governance operations")
+                yield OperationButton(Governance, label="Governance operations")
             with TabPane("Account management"), ScrollablePart():
                 yield OperationButton(None, label="Account management operations")
 
