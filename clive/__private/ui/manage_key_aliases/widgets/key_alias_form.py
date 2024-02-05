@@ -50,9 +50,7 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
             key_manager=self.context.working_account.keys,
             required=self.IS_KEY_ALIAS_REQUIRED,
         )
-        self._public_key_input = LabelizedInput(
-            "Public key", self._default_public_key() or "Public key will be calculated here"
-        )
+        self._public_key_input = LabelizedInput("Public key", self._default_public_key() or "will be calculated here")
 
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle(self.BIG_TITLE)
