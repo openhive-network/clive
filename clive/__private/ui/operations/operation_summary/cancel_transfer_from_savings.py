@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from clive.__private.core.formatters import humanize
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from schemas.operations import CancelTransferFromSavingsOperation
@@ -21,9 +22,17 @@ class CancelTransferFromSavings(OperationSummary):
         super().__init__()
         self._transfer = transfer
 
+    @property
+    def realized_on(self) -> str:
+        return humanize.humanize_datetime(self._transfer.complete)
+
     def content(self) -> ComposeResult:
-        yield LabelizedInput("From", self.app.world.profile_data.working_account.name)
         yield LabelizedInput("Request id", str(self._transfer.request_id))
+        yield LabelizedInput("Realized on", self.realized_on)
+        yield LabelizedInput("From", self.app.world.profile_data.working_account.name)
+        yield LabelizedInput("To", self._transfer.to)
+        yield LabelizedInput("Amount", self._transfer.amount.as_legacy())
+        yield LabelizedInput("Memo", self._transfer.memo)
 
     def _create_operation(self) -> CancelTransferFromSavingsOperation:
         request_id = self._transfer.request_id
