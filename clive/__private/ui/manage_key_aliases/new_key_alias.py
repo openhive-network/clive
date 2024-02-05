@@ -102,7 +102,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
             calculated = True
 
         self._public_key_input.input.value = text
-        self._public_key_input.input.set_style(valid=calculated)
+        self._public_key_input.input.set_style("valid" if calculated else "invalid")
 
     def _save(self) -> None:
         """
