@@ -277,3 +277,9 @@ class Savings(OperationBaseScreen, CartBinding):
         with SavingsDataProvider(), CliveTabbedContent():
             yield SavingsInfo(title="savings info")
             yield SavingsTransfers(title="transfer")
+
+    @on(CliveTabbedContent.TabActivated)
+    def _tab_changed(self) -> None:
+        inputs = self.query(CliveValidatedInput)  # type: ignore[type-abstract]
+        for input_obj in inputs:
+            input_obj.clear_validation()
