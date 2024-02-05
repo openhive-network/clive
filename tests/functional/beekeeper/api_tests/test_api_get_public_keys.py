@@ -126,7 +126,7 @@ async def test_many_session(beekeeper: Beekeeper, setup_wallets: WalletsGenerato
 
     partial_function = functools.partial(create_and_unlock_sessions, url=beekeeper.http_endpoint.as_string(),
                                          wallet_name=wallet.name, wallet_password=wallet.password,
-                                         request_count=request_count)
+                                         request_count=request_count, nr_sessions=additional_sessions)
 
     with ThreadPoolExecutor(max_workers=additional_sessions) as executor:
         results = list(executor.map(partial_function, range(additional_sessions)))
@@ -136,7 +136,7 @@ async def test_many_session(beekeeper: Beekeeper, setup_wallets: WalletsGenerato
 
 
 def create_and_unlock_sessions(session_number, url: str, wallet_name: str, wallet_password: str,
-                               request_count: int) -> None:
+                               request_count: int, nr_sessions: int) -> None:
     headers = {'Content-Type': 'application/json'}
 
     template = {
@@ -155,8 +155,9 @@ def create_and_unlock_sessions(session_number, url: str, wallet_name: str, walle
     response_token = requests.post(url, json=create_session, headers=headers)
     token = json.loads(response_token.text)["result"]["token"]
 
-    # wait for start session
-    time.sleep(2)
+    # It's impossible to unlock many wallets in short time, because we have 500ms protection against unlocking by bots.
+    # Only one wallet can be unlocked every 500ms.
+    protection_interval = 0.51
 
     # unlock
     unlock = copy.deepcopy(template)
@@ -166,7 +167,13 @@ def create_and_unlock_sessions(session_number, url: str, wallet_name: str, walle
         "wallet_name": wallet_name,
         "password": wallet_password,
     }
-    requests.post(url, json=unlock, headers=headers)
+    for _cnt in range(nr_sessions):
+        time.sleep(protection_interval)
+        unlock_response = requests.post(url, json=unlock, headers=headers)
+        if "error" in json.loads(unlock_response.text) and "message" in json.loads(unlock_response.text)["error"]:
+            assert "unlock is not accessible" in json.loads(unlock_response.text)["error"]["message"]
+        else:
+            break
 
     # get public keys
     get_public_keys = copy.deepcopy(template)
