@@ -47,6 +47,7 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
         self._key_alias_input = PublicKeyAliasInput(
             value=self._default_key_alias_name(),
             setting_key_alias=True,
+            key_manager=self.context.working_account.keys,
             required=self.IS_KEY_ALIAS_REQUIRED,
         )
         self._public_key_input = LabelizedInput(

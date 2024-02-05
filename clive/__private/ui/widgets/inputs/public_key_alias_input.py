@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
     from textual.widgets._input import InputValidationOn
 
+    from clive.__private.core.keys import KeyManager
+
 
 class PublicKeyAliasInput(TextInput):
     """An input for a public key alias."""
@@ -26,6 +28,7 @@ class PublicKeyAliasInput(TextInput):
         show_invalid_reasons: bool = True,
         required: bool = True,
         setting_key_alias: bool = False,
+        key_manager: KeyManager | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
         id: str | None = None,  # noqa: A002
@@ -38,7 +41,10 @@ class PublicKeyAliasInput(TextInput):
         New args (compared to `TextInput`):
         ------------------------------------
         setting_key_alias: Whether setting public key alias or just getting key alias for other purpose.
+        key_manager: Key manager to use for validation. If not provided, the key manager from the world will be used.
         """
+        key_manager = key_manager if key_manager is not None else self.app.world.profile_data.working_account.keys
+
         super().__init__(
             title=title,
             value=value,
@@ -47,12 +53,7 @@ class PublicKeyAliasInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            validators=[
-                PublicKeyAliasValidator(
-                    self.app.world.profile_data.working_account.keys,
-                    validate_if_already_exists=setting_key_alias,
-                )
-            ],
+            validators=[PublicKeyAliasValidator(key_manager, validate_if_already_exists=setting_key_alias)],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
