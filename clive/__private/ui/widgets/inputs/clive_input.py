@@ -115,9 +115,13 @@ class CliveInput(Input):
         self._always_show_title = always_show_title
         self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
 
-        self._initial_placeholder = placeholder
+        self._unmodified_placeholder = placeholder
 
         self._configure()
+
+    def set_unmodified_placeholder(self, placeholder: str) -> None:
+        self._unmodified_placeholder = placeholder
+        self.placeholder = self._get_placeholder()
 
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
         """Validate the value of the input."""
@@ -141,8 +145,7 @@ class CliveInput(Input):
         if self._always_show_title or self.value:
             self.border_title = self._get_title_with_required()
 
-        if self._should_include_title_in_placeholder:
-            self.placeholder = self._get_modified_placeholder()
+        self.placeholder = self._get_placeholder()
 
     def _get_required_symbol(self) -> str:
         return "*" if self.required else ""
@@ -152,10 +155,12 @@ class CliveInput(Input):
         return f"{prefix} {self.title}".strip()
 
     def _get_modified_placeholder(self) -> str:
-        return f"{self.title} {self._initial_placeholder}"
+        return f"{self.title} {self._unmodified_placeholder}"
 
-    def _get_unmodified_placeholder(self) -> str:
-        return self._initial_placeholder
+    def _get_placeholder(self) -> str:
+        if self._should_include_title_in_placeholder:
+            return self._get_modified_placeholder()
+        return self._unmodified_placeholder
 
     @on(Focus)
     def _show_border_title(self) -> None:
@@ -164,8 +169,7 @@ class CliveInput(Input):
 
         self.border_title = self._get_title_with_required()
 
-        if self._should_include_title_in_placeholder:
-            self.placeholder = self._get_unmodified_placeholder()
+        self.placeholder = self._unmodified_placeholder
 
     @on(Blur)
     def _hide_border_title(self) -> None:
@@ -178,8 +182,7 @@ class CliveInput(Input):
             # So when there is value, the user can still see the title.
             self.border_title = self._get_required_symbol()
 
-        if self._should_include_title_in_placeholder:
-            self.placeholder = self._get_modified_placeholder()
+        self.placeholder = self._get_placeholder()
 
     def set_style(self, *, valid: bool) -> None:
         valid_class = "-valid"

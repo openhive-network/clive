@@ -9,7 +9,6 @@ from clive.__private.ui.widgets.currency_selector import CurrencySelectorLiquid
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
 )
-from clive.__private.ui.widgets.placeholders_constants import NUMERIC_PLACEHOLDER
 from clive.__private.validators.asset_amount_validator import AssetAmountValidator
 from clive.models import Asset
 
@@ -49,7 +48,7 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
         self,
         title: str = "Amount",
         value: str | float | None = None,
-        placeholder: str = NUMERIC_PLACEHOLDER,
+        placeholder: str | None = None,
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
@@ -61,6 +60,13 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
         classes: str | None = None,
         disabled: bool = False,
     ) -> None:
+        """
+        Initialize the widget.
+
+        Args difference from `CliveValidatedInput`:
+        ----
+        placeholder: If not provided, placeholder will be dynamically generated based on the asset type.
+        """
         self._currency_selector = CurrencySelectorLiquid()
         default_asset_type = self._currency_selector.default_asset_cls
         default_asset_precision = default_asset_type.get_asset_information().precision
@@ -68,7 +74,7 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
         super().__init__(
             title=title,
             value=str(value) if value is not None else None,
-            placeholder=placeholder,
+            placeholder=self._get_dynamic_placeholder(default_asset_precision),
             always_show_title=always_show_title,
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
@@ -83,6 +89,8 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
             disabled=disabled,
         )
 
+        self._dynamic_placeholder = placeholder is None
+
     @property
     def _value(self) -> Asset.LiquidT:
         """
@@ -96,6 +104,14 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
         """
         return self._currency_selector.create_asset(self.value_raw)
 
+    @property
+    def selected_asset_type(self) -> type[Asset.LiquidT]:
+        return self._currency_selector.asset_cls
+
+    @property
+    def selected_asset_precision(self) -> int:
+        return self.selected_asset_type.get_asset_information().precision
+
     def compose(self) -> ComposeResult:
         with Vertical():
             with Horizontal():
@@ -104,18 +120,19 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
             yield self.pretty
 
     @on(CurrencySelectorLiquid.Changed)
-    def _update_restrictions(self) -> None:
-        selected_asset_type = self._currency_selector.asset_cls
-        selected_asset_precision = selected_asset_type.get_asset_information().precision
+    def _asset_changed(self) -> None:
+        # update placeholder
+        if self._dynamic_placeholder:
+            self.input.set_unmodified_placeholder(self._get_dynamic_placeholder(self.selected_asset_precision))
 
         # update input restrict
-        self.input.restrict = self._create_restriction(selected_asset_precision)
+        self.input.restrict = self._create_restriction(self.selected_asset_precision)
 
         # update asset amount validator
         self.input.validators = [
             validator for validator in self.input.validators if not isinstance(validator, AssetAmountValidator)
         ]
-        self.input.validators.append(AssetAmountValidator(selected_asset_type))
+        self.input.validators.append(AssetAmountValidator(self.selected_asset_type))
 
         # need to revalidate the input (possible to switch from higher precision to lower precision)
         self.input.validate(self.input.value)
@@ -123,3 +140,10 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
     def _create_restriction(self, precision: int) -> str:
         precision_digits = f"{{0,{precision}}}"
         return rf"\d*\.?\d{precision_digits}"
+
+    def _get_dynamic_placeholder(self, precision: int) -> str:
+        max_allowed_precision = 9
+        assert precision >= 0, f"Precision must be non-negative, got {precision}"
+        assert precision <= max_allowed_precision, f"Precision must be at most {max_allowed_precision}, got {precision}"
+        numbers = "123456789"
+        return f"e.g.: 1.{numbers[:precision]}"
