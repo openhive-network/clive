@@ -21,10 +21,24 @@ class CliveInput(Input):
     """A custom input that shows a title on the border top-left corner."""
 
     DEFAULT_CSS = """
+    $regular-color: $accent
+    $invalid-color: $error;
+    $valid-color: $success-darken-3;
+
     CliveInput {
-        border-title-background: $accent;
+        border-title-background: $regular-color;
         border-title-color: $text;
         border-title-style: bold;
+
+        &.-valid {
+            border-title-background: $valid-color;
+            border: tall $valid-color;
+        }
+
+        &.-invalid {
+            border-title-background: $invalid-color;
+            border: tall $invalid-color;
+        }
     }
     """
 
@@ -168,7 +182,8 @@ class CliveInput(Input):
             self.placeholder = self._get_modified_placeholder()
 
     def set_style(self, *, valid: bool) -> None:
-        color = "green" if valid else "red"
+        valid_class = "-valid"
+        invalid_class = "-invalid"
 
-        self.styles.border_title_background = color
-        self.styles.border = ("tall", color)
+        self.add_class(valid_class if valid else invalid_class)
+        self.remove_class(invalid_class if valid else valid_class)
