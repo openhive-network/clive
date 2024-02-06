@@ -42,7 +42,7 @@ humanize = "4.6.0"
 
 wax = "0.0.3a2.dev39+44db07f"
 schemas = "0.0.1.dev283+db2351d"
-
+helpy = "0.0.1.dev125+419067e"
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
