@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import random
-
+import json
 from generate_block_log import generate_random_text
 
 import test_tools as tt
@@ -35,7 +35,7 @@ def generate_random_custom_json_as_string():
 
     output_as_string = output_as_string[:-2]  # get rid of last comma and space
     output_as_string += "}"
-    return output_as_string
+    return json.dumps(output_as_string)
 
 
 def __prepare_operation(

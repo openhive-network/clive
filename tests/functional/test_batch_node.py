@@ -25,7 +25,6 @@ async def test_batch_node(init_node: tt.InitNode, world: World) -> None:  # noqa
 async def test_batch_node_response_not_ready(init_node: tt.InitNode, world: World) -> None:  # noqa: ARG001
     async with world.node.batch() as node:
         dynamic_properties = await node.api.database_api.get_dynamic_global_properties()
-
         with pytest.raises(ResponseNotReadyError):
             _ = dynamic_properties.head_block_id
 
