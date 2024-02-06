@@ -36,6 +36,7 @@ from clive.__private.core.beekeeper.notifications import (
     BeekeeperNotificationsServer,
     WalletClosingListener,
 )
+from clive.__private.core.beekeeper.session import BeekeeperSession
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
 from clive.core.url import Url
@@ -391,3 +392,10 @@ class Beekeeper:
                     shutil.copy(wallet_path, extract_to)
                 keys: ExportedKeys = json.load(keys_file)
                 return keys
+
+    async def create_session(self) -> BeekeeperSession:
+        """Create BeekeeperSession object that is used to communicate with beekeeper instance."""
+        assert self.is_running, "Beekeeber need to work in order to create session."
+        bs = BeekeeperSession(self.http_endpoint, self.notification_server_http_endpoint)
+        await bs.init_session()
+        return bs
