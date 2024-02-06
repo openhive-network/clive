@@ -13,12 +13,11 @@ from schemas.operations.vote_operation import VoteOperation
 from schemas.operations.extensions.comment_options_extensions import BeneficiaryRoute, CommentPayoutBeneficiaries
 
 
-def draw_comment_permlink(comment_permlinks: list):
-    return comment_permlinks[random.randint(0, len(comment_permlinks) - 1)]
-
-
-def get_author_from_permlink(permlink: str):
-    return f"account-{permlink[permlink.rfind('-') + 1:]}"
+def draw_comment(comment_data: dict) -> tuple:
+    random_element = random.randint(0, len(comment_data) - 1)
+    permlink = list(comment_data.keys())[random_element]
+    account_name = comment_data[permlink]
+    return permlink, account_name
 
 
 def generate_random_custom_json_as_string():
@@ -39,8 +38,13 @@ def generate_random_custom_json_as_string():
     return output_as_string
 
 
+def get_last_index_from(data_dict: dict) -> int:
+    last_element = list(data_dict.keys())[-1]
+    return int(last_element[last_element.rfind("-")+1:])
+
+
 def __prepare_operation(
-    account_name: str, comment_permlinks: list, permlinks_for_current_iteration: list
+    account_name: str, comment_data: dict, comment_data_for_current_iteration: dict
 ) -> VoteOperation | CommentOperation | CustomJsonOperation | TransferOperation | CommentOptionsOperation:
     # range 0-24 -> transfer
     # range 25-49 -> vote
@@ -52,10 +56,10 @@ def __prepare_operation(
     if 25 <= random_number < 50:
         return create_vote(
             account_name,
-            comment_permlinks,
+            comment_data,
         )
     if 50 <= random_number < 75:
-        return create_comment_operation(account_name, comment_permlinks, permlinks_for_current_iteration)
+        return create_comment_operation(account_name, comment_data, comment_data_for_current_iteration)
     return create_custom_json(account_name)
 
 
@@ -68,30 +72,31 @@ def create_transfer(from_account: str) -> TransferOperation:
     )
 
 
-def create_vote(account_name: str, comment_permlinks: list) -> VoteOperation:
+def create_vote(account_name: str, comment_data: dict) -> VoteOperation:
     vote_weight = 0
     while vote_weight == 0:
         vote_weight = random.randint(-100, 100)
 
-    permlink_to_vote_on = draw_comment_permlink(comment_permlinks)
-    content_author = get_author_from_permlink(permlink_to_vote_on)
+    permlink_to_vote_on, content_author = draw_comment(comment_data)
     return VoteOperation(voter=account_name, author=content_author, permlink=permlink_to_vote_on, weight=vote_weight)
 
 
 def create_comment_operation(
-    account_name: str, comment_permlinks: list, permlinks_for_current_iteration: list
+    account_name: str, comment_data: dict, comment_data_for_current_iteration: dict
 ) -> CommentOperation:
-    create_article = False
+
     # 20% chance for creating new article instead of just reply
     if random.randint(0, 5) == 0:
-        create_article = True
-    del comment_permlinks[0]
-    parent_comment_permlink = f"article-category-{generate_random_text(1,10)}" if (
-        create_article) else draw_comment_permlink(comment_permlinks)
-    parent_author = "" if create_article else get_author_from_permlink(parent_comment_permlink)
-    current_permlink = f"permlink-{account_name}" if create_article else (
-            parent_comment_permlink + "-" + account_name[account_name.rfind("-") + 1:])
-    permlinks_for_current_iteration.append(current_permlink)
+        parent_comment_permlink = f"article-category-{generate_random_text(1, 10)}"
+        parent_author = ""
+    else:
+        parent_comment_permlink, parent_author = draw_comment(comment_data)
+    index = get_last_index_from(comment_data) if len(comment_data_for_current_iteration) == 0 else (
+        get_last_index_from(comment_data_for_current_iteration))
+    current_permlink = f"permlink-{index+1}"
+    del comment_data[list(comment_data.keys())[0]]
+
+    comment_data_for_current_iteration[current_permlink] = account_name
 
     return CommentOperation(
         parent_author=parent_author,
@@ -113,10 +118,11 @@ def create_custom_json(account_name: str) -> CustomJsonOperation:
     )
 
 
-def create_comment_options(account_name: str) -> CommentOptionsOperation:
+def create_comment_options(account_name: str, comment_data_for_current_iteration: dict) -> CommentOptionsOperation:
     # comment options is created only with article
     author_of_comment = account_name
-    permlink = f"permlink-{account_name}"
+    index = get_last_index_from(comment_data_for_current_iteration)
+    permlink = f"permlink-{index}"
     beneficiaries = []
 
     while len(beneficiaries) < 3:  # draw 3 accounts to be beneficiaries
@@ -155,10 +161,10 @@ def prepare_operations_for_transactions(
     # list of lists containing permlinks of all comments, every first-dimensional list matches comments created during
     # every main iteration
     # block log contains 99999 prepared comments for first iteration
-    comment_permlinks = [f"permlink-account-{x}" for x in range(100_000)]
+    comment_data = {f"permlink-{index}": f"account-{index}" for index in range(100_000)}  # comment permlinks with authors
     account_it = 0
     for main_iteration in range(iterations):
-        permlinks_for_current_iteration = []
+        comment_data_for_current_iteration = {}
 
         for y in range(elements_number_for_iteration):
             list_of_ops = []
@@ -166,13 +172,14 @@ def prepare_operations_for_transactions(
                 if account_it >= 99_999:
                     account_it = 0
                 generated_op = __prepare_operation(
-                    f"account-{account_it}", comment_permlinks, permlinks_for_current_iteration
+                    f"account-{account_it}", comment_data, comment_data_for_current_iteration
                 )
                 list_of_ops.append(generated_op)
                 # add comment options to new article
                 if generated_op.get_name() == "comment" and generated_op.parent_author == "":
-                    list_of_ops.append(create_comment_options(f"account-{account_it}"))
+                    list_of_ops.append(create_comment_options(f"account-{account_it}", comment_data_for_current_iteration))
                 account_it += 1
             output.append(list_of_ops)
-        comment_permlinks.extend(permlinks_for_current_iteration)
+        comment_data.update(comment_data_for_current_iteration)
     return output
+
