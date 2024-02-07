@@ -130,9 +130,11 @@ def create_comment_options(account_name: str, comment_data_for_current_iteration
         beneficiary_name = f"account-{account_number}"
         for beneficiary in beneficiaries:
             # avoid duplicating beneficiary and making comment author as beneficiary
-            if beneficiary.account == beneficiary_name or beneficiary.account == account_name:
+            if beneficiary == beneficiary_name or beneficiary == account_name:
                 continue
-        beneficiaries.append(BeneficiaryRoute(account=beneficiary_name, weight=500))
+        beneficiaries.append(beneficiary_name)
+    beneficiaries = sorted(beneficiaries)
+    beneficiaries = [BeneficiaryRoute(account=beneficiary_name, weight=500) for beneficiary_name in beneficiaries]
 
     prepared_beneficiaries = CommentPayoutBeneficiaries(beneficiaries=beneficiaries)
     extensions = [{"type": "comment_payout_beneficiaries", "value": prepared_beneficiaries}]
@@ -182,4 +184,3 @@ def prepare_operations_for_transactions(
             output.append(list_of_ops)
         comment_data.update(comment_data_for_current_iteration)
     return output
-
