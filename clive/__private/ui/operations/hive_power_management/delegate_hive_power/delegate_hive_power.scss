@@ -1,0 +1,15 @@
+AccountNameInput {
+  height: auto;
+}
+
+NumericInput {
+  height: auto;
+}
+
+#delegate-inputs {
+  grid-size: 2;
+  grid-columns: 4fr 1fr;
+  grid-gutter: 1;
+  grid-rows: auto;
+  height: auto;
+}
