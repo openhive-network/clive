@@ -144,8 +144,8 @@ def create_comment_options(account_name: str, comment_data_for_current_iteration
         permlink=permlink,
         max_accepted_payout=tt.Asset.Tbd(100),
         percent_hbd=10000,
-        allow_votes=random.randint(0, 1),
-        allow_curation_rewards=random.randint(0, 1),
+        allow_votes=True,
+        allow_curation_rewards=True,
         extensions=extensions,
     )
 
