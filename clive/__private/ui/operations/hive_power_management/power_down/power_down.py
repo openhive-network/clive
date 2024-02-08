@@ -2,30 +2,17 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.widgets import TabPane
+from textual.widgets import Static
 
-from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_information_table import (
-    HpInformationTable,
-)
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_tab_pane import HPTabPane
 
 if TYPE_CHECKING:
-    from rich.text import TextType
     from textual.app import ComposeResult
 
 
-class PowerDown(TabPane, CliveWidget):
-    """TabPane with all content about power down."""
+class PowerDown(HPTabPane):
+    """TabPane with all content about delegate hp."""
 
-    def __init__(self, title: TextType):
-        """
-        Initialize a TabPane.
-
-        Args:
-        ----
-        title: Title of the TabPane (will be displayed in a tab label).
-        """
-        super().__init__(title=title)
-
-    def compose(self) -> ComposeResult:
-        yield HpInformationTable()
+    def create_tab_pane_content(self) -> ComposeResult:
+        """Will be implemented in the next MR."""
+        yield Static("In progress")

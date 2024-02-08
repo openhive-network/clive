@@ -4,13 +4,11 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Grid, ScrollableContainer
-from textual.widgets import Static, TabPane
+from textual.widgets import Static
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings, _NotImplemented
-from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_information_table import (
-    HpInformationTable,
-)
+from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_tab_pane import HPTabPane
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.currency_selector.currency_selector_hive import CurrencySelectorHive
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -31,19 +29,12 @@ class ScrollablePart(ScrollableContainer):
     pass
 
 
-class PowerUp(TabPane, OperationActionBindings):
+class PowerUp(HPTabPane, OperationActionBindings):
     """TabPane with all content about power up."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, title: TextType):
-        """
-        Initialize a TabPane.
-
-        Args:
-        ----
-        title: Title of the TabPane (will be displayed in a tab label).
-        """
         super().__init__(title=title)
         self._receiver_input = AccountNameInput(label="receiver", value=self.working_account)
         self._asset_input = NumericInput()
@@ -51,8 +42,7 @@ class PowerUp(TabPane, OperationActionBindings):
         self._currency_selector = CurrencySelectorHive()
         self._currency_selector.disabled = True
 
-    def compose(self) -> ComposeResult:
-        yield HpInformationTable()
+    def create_tab_pane_content(self) -> ComposeResult:
         with ScrollablePart():
             yield Static(
                 "Notice: `Power up` is different name for a `Transfer to vesting` operation",
