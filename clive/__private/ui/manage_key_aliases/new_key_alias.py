@@ -57,7 +57,6 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
 
         self._key_input = PrivateKeyInput(
             value=self._default_key(),
-            placeholder="can be pasted here",
             password=True,
             required=self.IS_PRIVATE_KEY_REQUIRED,
             id="key_input",

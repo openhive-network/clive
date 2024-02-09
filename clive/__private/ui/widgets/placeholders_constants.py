@@ -17,3 +17,5 @@ MEMO_PLACEHOLDER: Final[str] = "e.g.: For the coffee!"
 KEY_ALIAS_PLACEHOLDER: Final[str] = "e.g.: my-active-key"
 
 PATH_PLACEHOLDER: Final[str] = "e.g.: /home/me/some-path"
+
+PRIVATE_KEY_PLACEHOLDER: Final[str] = "can be pasted here"
