@@ -40,6 +40,10 @@ class CurrencySelectorBase(Select[AssetFactoryHolder[AssetT]], Generic[AssetT], 
     def _create_selectable() -> dict[str, AssetFactoryHolder[AssetT]]:
         """Should return dict of selectable items."""
 
+    def get_selectable(self, asset: str) -> AssetFactoryHolder[AssetT]:
+        """Returns selectable item for given asset."""
+        return self._selectable[asset]
+
     @property
     def value_ensure(self) -> AssetFactoryHolder[AssetT]:
         """Returns selected asset factory."""

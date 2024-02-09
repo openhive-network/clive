@@ -2,6 +2,11 @@ PowerUp {
   height: auto;
 }
 
+Notice {
+  margin-top: 1;
+  margin-bottom: 1;
+}
+
 #operation-name-info {
   text-style: bold;
   background: $accent;
@@ -9,8 +14,8 @@ PowerUp {
 }
 
 #power-up-inputs {
-  grid-size: 3;
-  grid-columns: 5fr 1fr 1fr;
+  grid-size: 2;
+  grid-columns: 1fr 13;
   grid-gutter: 1;
   grid-rows: auto;
   background: $panel;
@@ -18,18 +23,13 @@ PowerUp {
   height: auto;
 }
 
-#power-up-information {
-  text-style: bold;
-  margin-top: 3;
-  background: $accent-lighten-2;
-  width: 1fr;
-  text-align: center;
+AccountNameInput {
+  column-span: 2;
+  height: auto;
+  max-height: 4;
 }
 
-#power-up-name-information {
-  text-style: bold;
-  margin-bottom: 2;
-  background: $accent-lighten-1;
-  width: 1fr;
-  text-align: center;
+CliveButton {
+  width: 14;
+  height: auto;
 }
