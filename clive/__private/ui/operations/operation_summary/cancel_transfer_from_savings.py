@@ -23,13 +23,17 @@ class CancelTransferFromSavings(OperationSummary):
         self._transfer = transfer
 
     @property
+    def from_account(self) -> str:
+        return self.app.world.profile_data.working_account.name
+
+    @property
     def realized_on(self) -> str:
         return humanize.humanize_datetime(self._transfer.complete)
 
     def content(self) -> ComposeResult:
         yield LabelizedInput("Request id", str(self._transfer.request_id))
         yield LabelizedInput("Realized on", self.realized_on)
-        yield LabelizedInput("From", self.app.world.profile_data.working_account.name)
+        yield LabelizedInput("From", self.from_account)
         yield LabelizedInput("To", self._transfer.to)
         yield LabelizedInput("Amount", self._transfer.amount.as_legacy())
         yield LabelizedInput("Memo", self._transfer.memo)
@@ -38,6 +42,6 @@ class CancelTransferFromSavings(OperationSummary):
         request_id = self._transfer.request_id
 
         return CancelTransferFromSavingsOperation(
-            from_=self.app.world.profile_data.working_account.name,
+            from_=self.from_account,
             request_id=request_id,
         )
