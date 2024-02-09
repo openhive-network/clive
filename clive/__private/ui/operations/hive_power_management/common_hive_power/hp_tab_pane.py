@@ -54,7 +54,7 @@ class HPTabPane(TabPane, CliveWidget, AbstractClassMessagePump):
         self._is_table_mounted = False
 
     def compose(self) -> ComposeResult:
-        yield from self.create_headline()
+        yield from self.create_header()
         yield self._container_for_table
         yield from self.create_tab_pane_content()
 
@@ -70,6 +70,6 @@ class HPTabPane(TabPane, CliveWidget, AbstractClassMessagePump):
     def create_tab_pane_content(self) -> ComposeResult:
         """Method used to create all contents of TabPane except hp_information_table - managed in TabbedContent."""
 
-    def create_headline(self) -> ComposeResult:
+    def create_header(self) -> ComposeResult:
         """Must be overridden if you want to create a header for TapPane."""
         return []
