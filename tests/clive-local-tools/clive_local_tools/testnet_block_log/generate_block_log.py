@@ -4,17 +4,10 @@ import json
 from datetime import datetime
 from pathlib import Path
 from random import uniform
-from string import ascii_lowercase
-from typing import Final
 
 import test_tools as tt
 
-WITNESSES = [f"witness-{i:03d}" for i in range(60)]
-PROPOSALS = [f"proposal-{c}" for c in ascii_lowercase]
-
-CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
-WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
-WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob", "timmy", "john")]
+from .constants import CREATOR_ACCOUNT, PROPOSALS, WATCHED_ACCOUNTS, WITNESSES, WORKING_ACCOUNT
 
 
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:

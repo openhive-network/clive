@@ -5,7 +5,7 @@ import asyncio
 import shutil
 import sys
 import time
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 import test_tools as tt
 
@@ -22,14 +22,10 @@ from clive_local_tools.testnet_block_log import (
     get_block_log,
     get_config,
 )
+from clive_local_tools.testnet_block_log.constants import CREATOR_ACCOUNT, WATCHED_ACCOUNTS, WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-
-
-CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
-WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
-WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob", "timmy", "john")]
 
 
 def init_argparse(args: Sequence[str]) -> argparse.Namespace:

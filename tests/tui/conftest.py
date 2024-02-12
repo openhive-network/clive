@@ -14,50 +14,19 @@ from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.core.url import Url
+from clive_local_tools.testnet_block_log import (
+    get_alternate_chain_spec_path,
+    get_block_log,
+    get_config,
+    get_time_offset,
+)
+from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.clive_quit import clive_quit
-from clive_local_tools.tui.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
     from textual.pilot import Pilot
-
-
-def create_working_account(wallet: tt.Wallet) -> None:
-    wallet.create_account(
-        WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(1000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=tt.Asset.Test(1000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=tt.Asset.Tbd(1000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-    )
-    # Supplying savings:
-    wallet.api.transfer_to_savings(
-        WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Test(100).as_nai(),
-        "Supplying HIVE savings",
-    )
-    wallet.api.transfer_to_savings(
-        WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Tbd(100).as_nai(),
-        "Supplying HBD savings",
-    )
-    account = wallet.api.get_account(WORKING_ACCOUNT.name)
-    tt.logger.debug(f"account: {account}")
-
-
-def create_watched_accounts(wallet: tt.Wallet) -> None:
-    tt.logger.info("Creating watched accounts...")
-    amount = 1_000
-    for account in WATCHED_ACCOUNTS:
-        wallet.create_account(
-            account.name,
-            hives=tt.Asset.Test(amount).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            vests=tt.Asset.Test(amount).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            hbds=tt.Asset.Tbd(amount).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        )
-        amount += 1_000
 
 
 def prepare_profile() -> None:
@@ -97,19 +66,22 @@ async def world() -> AsyncIterator[TextualWorld]:
 
 
 @pytest.fixture()
-async def prepared_env(world: TextualWorld) -> tuple[tt.InitNode, Clive]:
-    node = tt.InitNode()
-    node.config.plugin.append("account_history_rocksdb")
-    node.config.plugin.append("account_history_api")
-    node.config.plugin.append("reputation_api")
-    node.config.plugin.append("rc_api")
-    node.config.plugin.append("transaction_status_api")
-    node.run()
+async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
+    node = tt.RawNode()
+
+    config_lines = get_config().write_to_lines()
+    block_log = get_block_log()
+    alternate_chain_spec_path = get_alternate_chain_spec_path()
+    node = tt.RawNode()
+    node.config.load_from_lines(config_lines)
+    arguments = ["--alternate-chain-spec", str(alternate_chain_spec_path)]
+    time_offset = get_time_offset()
+    node.run(replay_from=block_log, arguments=arguments, time_offset=time_offset)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])
-    create_working_account(wallet)
-    create_watched_accounts(wallet)
+    account = wallet.api.get_account(WORKING_ACCOUNT.name)
+    tt.logger.debug(f"working account: {account}")
 
     app = Clive.app_instance()
 
@@ -122,8 +94,8 @@ async def prepared_env(world: TextualWorld) -> tuple[tt.InitNode, Clive]:
 
 @pytest.fixture()
 async def prepared_tui_on_dashboard(
-    prepared_env: tuple[tt.InitNode, Clive]
-) -> AsyncIterator[tuple[tt.InitNode, Pilot[int]]]:
+    prepared_env: tuple[tt.RawNode, Clive]
+) -> AsyncIterator[tuple[tt.RawNode, Pilot[int]]]:
     node, app = prepared_env
     async with app.run_test() as pilot:
         yield node, pilot

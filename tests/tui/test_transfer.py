@@ -6,9 +6,9 @@ import pytest
 
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.models import Asset
+from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.activate import activate
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
-from clive_local_tools.tui.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.textual import get_notification_transaction_id, write_text
@@ -48,7 +48,7 @@ async def fill_transfer_data(
 
 
 def assert_operations_placed_in_blockchain(
-    node: tt.InitNode, transaction_id: str, *expected_operations: AnyOperation
+    node: tt.RawNode, transaction_id: str, *expected_operations: AnyOperation
 ) -> None:
     transaction = node.api.account_history.get_transaction(
         id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
@@ -80,7 +80,7 @@ testdata = [
 @pytest.mark.parametrize("asset_token", ["HIVE", "HBD"])
 @pytest.mark.parametrize(("memo", "operation_processing"), testdata)
 async def test_transfers(
-    prepared_tui_on_dashboard: tuple[tt.InitNode, Pilot[int]],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, Pilot[int]],
     activated: bool,
     asset_token: ASSET_TOKEN,
     memo: str | None,
@@ -141,7 +141,7 @@ async def test_transfers(
 
 @pytest.mark.parametrize("activated", [True, False])
 async def test_transfers_finalize_cart(
-    prepared_tui_on_dashboard: tuple[tt.InitNode, Pilot[int]], activated: bool
+    prepared_tui_on_dashboard: tuple[tt.RawNode, Pilot[int]], activated: bool
 ) -> None:
     """
     #103: I.4, II.4.
