@@ -2,8 +2,12 @@ Tab {
   width: 1fr;
 }
 
-TabPane {
-  height: 1fr;
+#hive-power-info {
+  height: 6;
+}
+
+WithdrawalInfo {
+  width: 1fr;
 }
 
 /* Table with amounts */
@@ -14,6 +18,7 @@ $table-header-color: $primary-background;
 $table-row-title-color: $background-lighten-2;
 
 CliveDataTable {
+  margin-right: 2;
   width: 2fr;
   height: auto;
 }

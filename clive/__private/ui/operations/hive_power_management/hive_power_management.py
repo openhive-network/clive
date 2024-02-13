@@ -2,8 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
+from textual.containers import Horizontal
+
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.operations.hive_power_management.common_hive_power.additional_info_widgets import (
+    APR,
+    WithdrawalInfo,
+)
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_information_table import (
     HpInfoTableDelegatedRow,
     HpInfoTableEffectiveRow,
@@ -37,16 +43,20 @@ class HivePowerManagement(OperationBaseScreen):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        yield BigTitle("hive power management")
-        yield CliveDataTable(
-            HpInfoTableHeader(),
-            HpInfoTableOwnedRow(),
-            HpInfoTableReceivedRow(),
-            HpInfoTableDelegatedRow(),
-            HpInfoTablePowerDownRow(),
-            HpInfoTableEffectiveRow(),
-        )
-        with HivePowerDataProvider(), CliveTabbedContent():
-            yield PowerUp(POWER_UP_TAB_LABEL)
-            yield PowerDown(POWER_DOWN_TAB_LABEL)
-            yield DelegateHivePower(DELEGATE_HIVE_POWER_LABEL)
+        with HivePowerDataProvider() as provider:
+            yield BigTitle("hive power management")
+            with Horizontal(id="hive-power-info"):
+                yield CliveDataTable(
+                    HpInfoTableHeader(),
+                    HpInfoTableOwnedRow(),
+                    HpInfoTableReceivedRow(),
+                    HpInfoTableDelegatedRow(),
+                    HpInfoTablePowerDownRow(),
+                    HpInfoTableEffectiveRow(),
+                )
+                yield WithdrawalInfo(provider)
+            yield APR(provider)
+            with CliveTabbedContent():
+                yield PowerUp(POWER_UP_TAB_LABEL)
+                yield PowerDown(POWER_DOWN_TAB_LABEL)
+                yield DelegateHivePower(DELEGATE_HIVE_POWER_LABEL)
