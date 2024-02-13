@@ -91,7 +91,9 @@ class CliveInput(Input):
         if required:
             _validators = [*_validators, validation.Length(minimum=1, failure_description="This field is required")]
 
+        self.title = title
         self.required = required
+        self._always_show_title = always_show_title
 
         super().__init__(
             value=value,
@@ -110,9 +112,7 @@ class CliveInput(Input):
             classes=classes,
             disabled=disabled,
         )
-        self.title = title
 
-        self._always_show_title = always_show_title
         self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
 
         self._unmodified_placeholder = placeholder
@@ -183,6 +183,15 @@ class CliveInput(Input):
             self.border_title = self._get_required_symbol()
 
         self.placeholder = self._get_placeholder()
+
+    def _watch_value(self, value: str) -> None:
+        # value can be set programmatically, so we need to update the border title accordingly
+        if self._always_show_title:
+            return super()._watch_value(value)
+
+        should_show_title = bool(value) or self.has_focus
+        self.border_title = self._get_title_with_required() if should_show_title else self._get_required_symbol()
+        return super()._watch_value(value)
 
     def set_style(self, *, valid: bool) -> None:
         valid_class = "-valid"
