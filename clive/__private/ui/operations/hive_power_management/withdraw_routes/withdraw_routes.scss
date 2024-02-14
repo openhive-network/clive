@@ -1,0 +1,61 @@
+WithdrawRoutes {
+  height: 1fr;
+
+  #inputs-container {
+    background: $panel;
+    padding: 2 4;
+    height: auto;
+  }
+
+  #input-with-checkbox {
+    margin-top: 1;
+    height: auto;
+    PercentInput {
+      width: 1fr;
+    }
+    Checkbox {
+      width: 17;
+    }
+  }
+
+  AccountNameInput KnownAccount {
+    margin-left: 3;
+  }
+
+  WithdrawRoutesTable {
+    height: auto;
+
+    WithdrawRoutesHeader {
+      height: auto;
+      Static {
+        text-style: bold;
+        width: 1fr;
+        text-align: center;
+      }
+    }
+
+    #no-withdraw-routes-info {
+      text-style: bold;
+      margin-top: 1;
+      background: $primary;
+      height: auto;
+      text-align: center;
+    }
+
+    #withdraw-routes-table-title {
+      text-style: bold;
+      margin-top: 1;
+      background: $primary;
+      width: 1fr;
+      text-align: center;
+    }
+
+    WithdrawRoute {
+      height: auto;
+
+      #remove-withdraw-route-button {
+        width: 1fr;
+      }
+    }
+  }
+}
