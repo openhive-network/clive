@@ -14,7 +14,7 @@ from schemas.fields.hive_int import HiveInt
 from schemas.operations import AccountUpdate2Operation
 
 if TYPE_CHECKING:
-    from clive.__private.cli.common.authority_types import (
+    from clive.__private.cli.types import (
         AccountOrKeyT,
         AccountUpdateFunction,
         AuthorityType,
