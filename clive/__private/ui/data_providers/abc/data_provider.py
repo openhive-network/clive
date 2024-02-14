@@ -9,6 +9,7 @@ from textual.worker import Worker, WorkerState
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.config import settings
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError
 
@@ -90,9 +91,11 @@ class DataProvider(CliveWidget, Generic[ProviderContentT], AbstractClassMessageP
     def stop(self) -> None:
         self.interval.stop()
 
+    @on(CliveScreen.Suspended)
     def pause(self) -> None:
         self.interval.pause()
 
+    @on(CliveScreen.Resumed)
     def resume(self) -> None:
         self.interval.resume()
 

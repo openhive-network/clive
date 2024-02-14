@@ -3,6 +3,9 @@ from __future__ import annotations
 from functools import wraps
 from typing import TYPE_CHECKING, ParamSpec
 
+from textual import on
+from textual.events import ScreenResume, ScreenSuspend
+from textual.message import Message
 from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
@@ -11,6 +14,8 @@ from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
+
+    from textual.widget import Widget
 
     from clive.__private.ui.app import Clive
 
@@ -28,6 +33,12 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
     Inspired by: https://github.com/Textualize/textual/discussions/1099#discussioncomment-4049612
     """
+
+    class Suspended(Message):
+        """Message to notify children widgets that the screen they were mounted on, was suspended."""
+
+    class Resumed(Message):
+        """Message to notify children widgets that the screen they were mounted on, was resumed."""
 
     @staticmethod
     def try_again_after_activation(
@@ -60,3 +71,24 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
             return wrapper
 
         return decorator
+
+    @on(ScreenSuspend)
+    def _post_suspended(self) -> None:
+        """
+        Notify children widgets that the screen they were mounted on, was suspended.
+
+        Textual lacks a way to notify children widgets that the screen they were mounted on, was suspended.
+        This is a workaround.
+        """
+        self._post_to_children(self, self.Suspended())
+
+    @on(ScreenResume)
+    def _post_resumed(self) -> None:
+        """Look in the docstring of _post_suspended."""
+        self._post_to_children(self, self.Resumed())
+
+    def _post_to_children(self, node: Widget, message: Message) -> None:
+        """Post a message to all widgets of the screen (even grandchildren and further)."""
+        for child in node.children:
+            self._post_to_children(child, message)
+            child.post_message(message)
