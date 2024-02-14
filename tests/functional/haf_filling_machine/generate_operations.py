@@ -3,6 +3,7 @@ from __future__ import annotations
 import copy
 import json
 import random
+import time
 from functools import partial
 
 import requests
@@ -217,6 +218,7 @@ def prepare_blocks(
     account_it = 0
 
     for main_iteration in range(iterations):
+        start_time = time.time()  # fixme: delete comment
         block = []
         comment_data_for_current_iteration = {}
         for y in range(elements_number_for_iteration):
@@ -235,8 +237,13 @@ def prepare_blocks(
                 account_it += 1
             # output.append(list_of_ops)
             block.append(list_of_ops)
+        end_time = time.time()  # fixme: delete comment
+        execution_time = end_time - start_time  # fixme: delete comment
+        tt.logger.info(
+            f"CREATE_OPERATIONS_FOR_BLOCK_{main_iteration}::time: {execution_time}s")  # fixme: delete comment
 
         with ProcessPoolExecutor(max_workers=len(tokens)) as executor:
+            start_time = time.time()  # fixme: delete comment
             chunk_size = len(block) // len(tokens)
             chunks = [block[i: i + chunk_size] for i in range(0, len(block), chunk_size)]
             sign_futures: list[Future] = []
@@ -256,8 +263,13 @@ def prepare_blocks(
                 index = sign_futures.index(future)
                 results[index] = future.result()
             sign_futures.clear()
+            end_time = time.time()  # fixme: delete comment
+            execution_time = end_time - start_time  # fixme: delete comment
+            tt.logger.info(
+                f"SIGN_TRANSACTIONS_FOR_BLOCK_{main_iteration}::time: {execution_time}s")  # fixme: delete comment
 
             # broadcasting
+            start_time = time.time()  # fixme: delete comment
             broadcast_futures: list[Future] = []
             to_broadcast = [item for sublist in results for item in sublist]
 
@@ -276,6 +288,10 @@ def prepare_blocks(
 
             executor.shutdown(cancel_futures=True, wait=False)
 
+            execution_time = end_time - start_time  # fixme: delete comment
+            tt.logger.info(
+                f"BROADCAST_TRANSACTIONS_FOR_BLOCK_{main_iteration}::time: {execution_time}s")  # fixme: delete comment
+        # # ZAPIS DO PLIKU
         # file_path = Path(__file__).parent / f"block_log_{signature_type}/full_blocks"
         # file_path.mkdir(parents=True, exist_ok=True)
         #
