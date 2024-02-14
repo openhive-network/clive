@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
+    from clive.__private.cli.types import AuthorityType
+    from schemas.fields.basic import PublicKey
 
 
 def assert_no_exit_code_error(result: Result) -> None:
@@ -48,3 +50,76 @@ def assert_pending_withrawals(output: str, *, account_name: str, asset_amount: t
         account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
         for line in output.split("\n")
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
+
+
+def assert_is_authority(
+    runner: CliRunner,
+    cli: CliveTyper,
+    entry: str | PublicKey,
+    authority: AuthorityType,
+) -> None:
+    result = runner.invoke(cli, ["show", f"{authority}-authority"])
+    output = result.output
+
+    assert_no_exit_code_error(result)
+    table = output.split("\n")[2:]
+    assert any(
+        str(entry) in line for line in table
+    ), f"no {entry!s} entry in show {authority}-authority output:\n{output}"
+
+
+def assert_is_not_authority(
+    runner: CliRunner,
+    cli: CliveTyper,
+    entry: str | PublicKey,
+    authority: AuthorityType,
+) -> None:
+    result = runner.invoke(cli, ["show", f"{authority}-authority"])
+    output = result.output
+
+    assert_no_exit_code_error(result)
+    table = output.split("\n")[2:]
+    assert not any(
+        str(entry) in line for line in table
+    ), f"there is {entry!s} entry in show {authority}-authority output:\n{output}"
+
+
+def assert_authority_weight(
+    runner: CliRunner,
+    cli: CliveTyper,
+    entry: str | PublicKey,
+    authority: AuthorityType,
+    weight: int,
+) -> None:
+    result = runner.invoke(cli, ["show", f"{authority}-authority"])
+    output = result.output
+
+    assert_no_exit_code_error(result)
+    assert any(
+        str(entry) in line and f"{weight}" in line for line in output.split("\n")
+    ), f"no {entry!s} entry with weight {weight} in show {authority}-authority output:\n{output}"
+
+
+def assert_weight_threshold(
+    runner: CliRunner,
+    cli: CliveTyper,
+    authority: AuthorityType,
+    threshold: int,
+) -> None:
+    result = runner.invoke(cli, ["show", f"{authority}-authority"])
+    output = result.output
+
+    assert_no_exit_code_error(result)
+    assert f"weight threshold is {threshold}" in output
+
+
+def assert_memo_key(
+    runner: CliRunner,
+    cli: CliveTyper,
+    memo_key: PublicKey,
+) -> None:
+    result = runner.invoke(cli, ["show", "memo-key"])
+    output = result.output
+
+    assert_no_exit_code_error(result)
+    assert str(memo_key) in output
