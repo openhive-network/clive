@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.common.authority_types import AuthorityType
+from clive.__private.cli.types import AuthorityType
 
 
 @dataclass(kw_only=True)
