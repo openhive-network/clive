@@ -23,6 +23,7 @@ from clive.__private.ui.operations.hive_power_management.delegate_hive_power.del
 )
 from clive.__private.ui.operations.hive_power_management.power_down.power_down import PowerDown
 from clive.__private.ui.operations.hive_power_management.power_up.power_up import PowerUp
+from clive.__private.ui.operations.hive_power_management.withdraw_routes.withdraw_routes import WithdrawRoutes
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_data_table import CliveDataTable
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
 
 POWER_UP_TAB_LABEL: Final[str] = "Power up"
 POWER_DOWN_TAB_LABEL: Final[str] = "Power down"
+WITHDRAW_ROUTES_TAB_LABEL: Final[str] = "Withdraw routes"
 DELEGATE_HIVE_POWER_LABEL: Final[str] = "Delegate"
 
 
@@ -59,4 +61,5 @@ class HivePowerManagement(OperationBaseScreen):
             with CliveTabbedContent():
                 yield PowerUp(POWER_UP_TAB_LABEL)
                 yield PowerDown(POWER_DOWN_TAB_LABEL)
+                yield WithdrawRoutes(WITHDRAW_ROUTES_TAB_LABEL)
                 yield DelegateHivePower(DELEGATE_HIVE_POWER_LABEL)
