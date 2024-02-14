@@ -10,6 +10,8 @@ CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
 WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
 WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob", "timmy", "john")]
 
+WORKING_ACCOUNT_PASSWORD: Final[str] = WORKING_ACCOUNT.name
+
 WORKING_ACCOUNT_KEY_ALIAS: Final[str] = f"{WORKING_ACCOUNT.name}_key"
 
 WORKING_ACCOUNT_HIVE_LIQUID_BALANCE: Final[tt.Asset.TestT] = tt.Asset.Test(1234)

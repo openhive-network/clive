@@ -2,40 +2,30 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .show import balances as show_balances
+import pytest
+from click.testing import Result
+
+from .cli_tester import CLITester
 
 if TYPE_CHECKING:
     from typing import Literal
 
     import test_tools as tt
-    from click.testing import Result
-    from typer.testing import CliRunner
 
-    from clive.__private.cli.clive_typer import CliveTyper
+    from clive.__private.cli.types import AuthorityType
+    from schemas.fields.basic import PublicKey
 
-
-def assert_no_exit_code_error(result: Result) -> None:
-    exit_code = 0
-    message = f"Exit code '{result.exit_code}' is different than expected '{exit_code}'. Output:\n{result.output}"
-    assert result.exit_code == exit_code, message
-
-
-def assert_exit_code(result: Result, expected_code: int) -> None:
-    message = f"Exit code '{result.exit_code}' is different than expected '{expected_code}'. Output:\n{result.output}"
-    assert result.exit_code == expected_code, message
+    from .exceptions import CLITestCommandError
 
 
 def assert_balances(
-    runner: CliRunner,
-    cli: CliveTyper,
+    context: CLITester | Result,
     account_name: str,
     asset_amount: tt.Asset.AnyT,
     balance: Literal["Liquid", "Savings", "Unclaimed"],
 ) -> None:
-    result = show_balances(runner, cli, account_name=account_name)
+    result = context.show_balances(account_name=account_name) if isinstance(context, CLITester) else context
     output = result.output
-
-    assert_no_exit_code_error(result)
     assert account_name in output, f"no balances of {account_name} account in balances output: {output}"
     assert any(
         asset_amount.token() in line and asset_amount.pretty_amount() in line and balance in line
@@ -43,8 +33,75 @@ def assert_balances(
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()}  in balances output:\n{output}"
 
 
-def assert_pending_withrawals(output: str, *, account_name: str, asset_amount: tt.Asset.AnyT) -> None:
+def assert_pending_withrawals(context: CLITester | Result, account_name: str, asset_amount: tt.Asset.AnyT) -> None:
+    result = context.show_pending_withdrawals() if isinstance(context, CLITester) else context
+    output = result.output
     assert any(
         account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
         for line in output.split("\n")
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
+
+
+def get_authority_output(context: CLITester | Result, authority: AuthorityType) -> str:
+    result = context.show_authority(authority) if isinstance(context, CLITester) else context
+    return result.output
+
+
+def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+    output = get_authority_output(context, authority)
+    table = output.split("\n")[2:]
+    assert any(
+        str(entry) in line for line in table
+    ), f"no {entry} entry in show {authority}-authority output:\n{output}"
+
+
+def assert_is_not_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+    output = get_authority_output(context, authority)
+    table = output.split("\n")[2:]
+    assert not any(
+        str(entry) in line for line in table
+    ), f"there is {entry} entry in show {authority}-authority output:\n{output}"
+
+
+def assert_authority_weight(
+    context: CLITester | Result,
+    entry: str | PublicKey,
+    authority: AuthorityType,
+    weight: int,
+) -> None:
+    output = get_authority_output(context, authority)
+    assert any(
+        str(entry) in line and f"{weight}" in line for line in output.split("\n")
+    ), f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
+
+
+def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
+    output = get_authority_output(context, authority)
+    expected_output = f"weight threshold is {threshold}"
+    assert expected_output in output, f"expected `{expected_output}` in show {authority}-authority output:\n{output}"
+
+
+def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
+    result = context.show_memo_key() if isinstance(context, CLITester) else context
+    output = result.output
+    expected_output = str(memo_key)
+    assert expected_output in output, f"expected `{expected_output}` in show memo-key output:\n{output}"
+
+
+def assert_no_exit_code_error(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int) -> None:
+    assert_exit_code(result, 0)
+
+
+def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int, expected_exit_code: int) -> None:
+    if isinstance(result, Result):
+        actual_exit_code = result.exit_code
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'. Output:\n{result.output}"
+    elif isinstance(result, pytest.ExceptionInfo):
+        command_result = result.value.result
+        actual_exit_code = command_result.exit_code
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'. Output:\n{command_result.output}"
+    else:
+        actual_exit_code = result
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
+
+    assert actual_exit_code == expected_exit_code, message
