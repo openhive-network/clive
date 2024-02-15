@@ -2,23 +2,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
-from textual.containers import Grid, ScrollableContainer
+from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Static, TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.generous_button import GenerousButton
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hive_asset_amount_input import HiveAssetAmountInput
 from clive.__private.ui.widgets.notice import Notice
-from clive.models import Asset
 from schemas.operations import TransferToVestingOperation as TransferToVesting
 
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
+
+    from clive.models import Asset
 
 
 class ScrollablePart(ScrollableContainer):
@@ -46,19 +46,14 @@ class PowerUp(TabPane, OperationActionBindings):
         with ScrollablePart():
             yield Static("Power up corresponds to a `transfer to vesting` operation", id="operation-name-info")
             yield Notice("Your governance voting power will be increased after 30 days")
-            with Grid(id="power-up-inputs"):
+            with Vertical(id="power-up-inputs"):
                 yield self._receiver_input
-                yield self._asset_input
-                yield CliveButton("All !", id_="clive-button-all", variant="success")
+                with Horizontal(id="input-with-button"):
+                    yield self._asset_input
+                    yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
 
-    @on(CliveButton.Pressed, "#clive-button-all")
-    def fill_input_by_all(self) -> None:
-        """If the balance is not 0, fill the amount input with the entire HIVE balance."""
-        hive_balance = self.app.world.profile_data.working_account.data.hive_balance
-        if float(hive_balance.amount) == 0:
-            self.notify("Zero is not enough value to make power up", severity="warning")
-            return
-        self._asset_input.input.value = Asset.pretty_amount(hive_balance)
+    def _get_hive_balance(self) -> Asset.Hive:
+        return self.app.world.profile_data.working_account.data.hive_balance
 
     def _create_operation(self) -> TransferToVesting | None:
         if not CliveValidatedInput.validate_many(self._asset_input, self._receiver_input):

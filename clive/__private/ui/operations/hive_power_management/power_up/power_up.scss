@@ -14,22 +14,21 @@ Notice {
 }
 
 #power-up-inputs {
-  grid-size: 2;
-  grid-columns: 1fr 13;
-  grid-gutter: 1;
-  grid-rows: auto;
   background: $panel;
-  padding: 2 4;
+  padding: 2 2;
   height: auto;
 }
 
-AccountNameInput {
-  column-span: 2;
+#input-with-button {
+  margin-top: 1;
   height: auto;
-  max-height: 4;
 }
 
-CliveButton {
+#input-with-button HiveAssetAmountInput {
+  width: 1fr;
+}
+
+#input-with-button GenerousButton {
   width: 14;
-  height: auto;
+  min-width: 14;
 }
