@@ -294,17 +294,6 @@ async def import_keys_to_beekeeper(bk: Beekeeper, wallet_name: str, signature_ty
                 for num in range(10)
             ]
 
-
-class BroadcastTransactionsChunk:
-    @staticmethod
-    def broadcast_chunk_of_transactions(chunk: list[dict], init_node_address: str) -> None:
-        headers = {'Content-Type': 'application/json'}
-        remote_node = tt.RemoteNode(http_endpoint=init_node_address)
-        url = remote_node.http_endpoint.as_string()
-        for trx in chunk:
-            requests.post(url, json=trx, headers=headers)
-
-
 def start_session(url, chunk_num):
     headers = {'Content-Type': 'application/json'}
     template = {
@@ -332,52 +321,10 @@ def start_session(url, chunk_num):
     }
     requests.post(url, json=unlock, headers=headers)
 
-    get_public_keys = copy.deepcopy(template)
-    get_public_keys["method"] = "beekeeper_api.get_public_keys"
-    get_public_keys["params"] = {"token": token}
-    a = requests.post(url, json=get_public_keys, headers=headers)
-    tt.logger.info(f"@@@ KEY: {a.text}")
     return token
 
-
-def sign(url, chunk, chunk_num, token, time_offset, gdpo, node_config, authority_type):
-    public_key = tt.Account("account", secret="owner").public_key[3:]
-    singed_chunks = []
-    for operation in chunk:
-        try:
-            trx = create_and_sign_transaction(operation, gdpo, node_config, chunk_num, url, token, public_key,
-                                              time_offset, authority_type)
-            singed_chunks.append(trx)
-        except:
-            tt.logger.info("fail")
-    return singed_chunks
 
 # if __name__ == "__main__":
 # prepare_second_stage_of_block_log("open_sign")
 # prepare_second_stage_of_block_log("single_sign")
 # prepare_second_stage_of_block_log("multi_sign")
-
-
-def test_block_log():
-    block_log_directory = Path("/home/dev/Documents/full_block_generator")
-    block_log_path = block_log_directory / "block_log"
-    timestamp_path = block_log_directory / "timestamp"
-    alternate_chain_spec_path = block_log_directory / ALTERNATE_CHAIN_JSON_FILENAME
-
-    block_log = tt.BlockLog(block_log_path)
-
-    smf_dir = 'home/dev/Documents/test_smf'
-
-    node = tt.InitNode()
-    node.config.plugin.append("account_history_api")
-    node.config.shared_file_size = "24G"
-    node.run(
-        replay_from=block_log,
-        time_offset=block_log.get_head_block_time(serialize=True, serialize_format=tt.TimeFormats.TIME_OFFSET_FORMAT),
-        wait_for_live=False,
-        # arguments=[f"--alternate-chain-spec={str(alternate_chain_spec_path)}",
-        #            f"--shared-file-dir={smf_dir}"],
-        arguments=["--alternate-chain-spec", str(alternate_chain_spec_path)],
-        # arguments=[f"--alternate-chain-spec={str(alternate_chain_spec_path)}"],
-    )
-    print()

@@ -37,7 +37,7 @@ def generate_random_custom_json_as_string():
     output_as_string = "{"
     for it in range(elements):
         key_name = generate_random_text(3, random.randint(3, 15))
-        value = generate_random_text(5, 100) if it % 2 == 0 else random.randint(-1000000, 1000000)
+        value = generate_random_text(50, 1000) if it % 2 == 0 else random.randint(-1000000, 1000000)
         output_as_string += (
             '"' + key_name + '": ' + str(value) + ", "
             if isinstance(value, int)
@@ -114,7 +114,7 @@ def create_comment_operation(
         author=account_name,
         permlink=current_permlink,
         title=generate_random_text(5, 15),
-        body=generate_random_text(5, 100),
+        body=generate_random_text(100, 1000),
         json_metadata="{}",
     )
 
@@ -305,7 +305,6 @@ def prepare_blocks(
         #                 # file.write(line.json(by_alias=True).encode("ascii") + b"\n")
         #                 file.write(json.dumps(wrap_in_send_pack(line)) + "\n")
         comment_data.update(comment_data_for_current_iteration)
-        tt.logger.info(f"Done: {main_iteration + 1} / {iterations} blocks - {main_iteration / iterations * 100}%")
 
 
 class BroadcastTransactionsChunk:
