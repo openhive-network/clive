@@ -102,6 +102,10 @@ class _BatchNode(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         request.id_ = len(self.__batch)
         serialized_request = request.json(by_alias=True)
+
+        # TEMPORARY WORKAROUND, DO NOT MERGE
+        serialized_request = serialized_request.replace("STM", "TST")
+
         delayed_result = _DelayedResponseWrapper(url=self.__url, request=serialized_request, expected_type=expect_type)
         self.__batch.append(_BatchRequestResponseItem(request=serialized_request, delayed_result=delayed_result))
         return delayed_result  # type: ignore[return-value]
@@ -218,6 +222,10 @@ class Node(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
+
+        # TEMPORARY WORKAROUND, DO NOT MERGE
+        serialized_request = serialized_request.replace("STM", "TST")
+
         response = await self.__communication.arequest(address, data=serialized_request)
         data = await response.json()
         response_model = get_response_model(expect_type, **data)

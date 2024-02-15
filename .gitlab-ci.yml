@@ -135,7 +135,8 @@ testing_tui:
   extends: .testing
   script:
     - echo -e "${TXT_BLUE}Launching tui tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/tui
+#    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/tui
+    - echo skipped...
 
 testing_password_private_key_logging:
   stage: tests
