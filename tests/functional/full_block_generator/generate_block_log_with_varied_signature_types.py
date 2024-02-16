@@ -347,12 +347,10 @@ def wait_for_current_hardfork(node, hardfork_version: int) -> None:
     tt.logger.info("Finish waiting...")
 
 
-def generate_random_text(min_length: int, max_length: int):
+def generate_random_text(min_length: int, max_length: int) -> str:
     length_of_text = random.randint(min_length, max_length)
-    output = ""
-    for _it in range(length_of_text):
-        output += random_letter()
-    return output
+    random_chars = [random_letter() for _ in range(length_of_text)]
+    return ''.join(random_chars)
 
 
 def random_letter():
