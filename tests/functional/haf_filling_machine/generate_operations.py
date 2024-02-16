@@ -199,7 +199,7 @@ def prepare_operations_for_transactions(
     return output
 
 
-def prepare_blocks(
+def generate_blocks(
         iterations: int, ops_in_one_element: int, elements_number_for_iteration, tokens: list[str], beekeeper_url: str,
         gdpo, node_config, signature_type: str, node: tt.InitNode
 ) -> list:

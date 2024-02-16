@@ -1,45 +1,33 @@
 from __future__ import annotations
 
-import copy
-import time
-from functools import partial
-
-import wax
-import json
-from concurrent.futures import ProcessPoolExecutor, as_completed, Future
 from pathlib import Path
-import requests
 from typing import Final, Literal
+import copy
+import json
+import requests
 
 import pytest
-from schemas.operations.representations import HF26Representation
-from generate_operations import prepare_operations_for_transactions, prepare_blocks
-
 import test_tools as tt
+
+from clive.__private.core.beekeeper import Beekeeper
+from clive_local_tools.models import Keys, WalletInfo
 from hive_local_tools import ALTERNATE_CHAIN_JSON_FILENAME
 from hive_local_tools.functional.python.operation import get_vesting_price
 
-from clive.__private.core.beekeeper import Beekeeper
-
-from generate_transaction_template import (
-    generate_transaction_template,
-    SimpleTransaction,
-)
-
-from clive_local_tools.models import Keys, WalletInfo
+from generate_operations import generate_blocks
 
 # Node parameters
 SHARED_MEMORY_FILE_DIRECTORY: Final[str] = "/home/dev/Documents/full_block_generator/"
 SHARED_MEMORY_FILE_SIZE: Final[int] = 24
 
-#
+# Processes parameters
 SIGNING_MAX_WORKERS: Final[int] = 60
 BROADCASTING_MAX_WORKERS: Final[int] = 8
 
 # Block parameters
 BLOCK_TO_GENERATE: Final[int] = 5
 OPERATIONS_IN_TRANSACTION: Final[int] = 1
-TRANSACTIONS_IN_ONE_BLOCK: Final[int] = 6000
+TRANSACTIONS_IN_ONE_BLOCK: Final[int] = 3720
 
 NUMBER_OF_ACCOUNTS: Final[int] = 100_000
 ACCOUNTS_PER_CHUNK: Final[int] = 1024
@@ -87,14 +75,12 @@ async def test_prepare_second_stage_of_block_log(
     )
 
     cli_wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization=hf26"])
-
     assert len(cli_wallet.api.list_witnesses("", 1000)) == 21, "Incorrect number of witnesses"
     assert get_vesting_price(node) > 1_799_990, "Too low price Hive to Vest"
+    cli_wallet.close()
 
     gdpo = node.api.database.get_dynamic_global_properties()
     node_config = node.api.database.get_config()
-
-    # node.close()
 
     wallet = WalletInfo(name="my_only_wallet", password="my_password", keys=Keys(count=0))
     async with await Beekeeper().launch() as beekeeper:
@@ -106,12 +92,10 @@ async def test_prepare_second_stage_of_block_log(
         # Create and unlock sessions
         tokens = []
         for iteration, chunk in enumerate(range(SIGNING_MAX_WORKERS)):
-            # time.sleep(0.51)  # the minimum time between unlocking subsequent beekeeper sessions is 0.50s
             tokens.append(start_session(beekeeper.http_endpoint.as_string(), iteration))
 
         # Create signing transactions
-        start_time = time.time()  # fixme: delete comment
-        prepare_blocks(
+        generate_blocks(
             iterations=BLOCK_TO_GENERATE,
             ops_in_one_element=OPERATIONS_IN_TRANSACTION,
             elements_number_for_iteration=TRANSACTIONS_IN_ONE_BLOCK,
@@ -122,81 +106,7 @@ async def test_prepare_second_stage_of_block_log(
             signature_type=signature_type,
             node=node
         )
-        end_time = time.time()  # fixme: delete comment
-        execution_time = end_time - start_time  # fixme: delete comment
-        tt.logger.info(
-            f"prepare_blocks::time: {execution_time}, on {SIGNING_MAX_WORKERS} processes.")  # fixme: delete comment
 
-        # # Signing
-        # start_time = time.time()  # fixme: delete comment
-        # with ProcessPoolExecutor(max_workers=SIGNING_MAX_WORKERS) as executor:
-        #     blocks = []
-        #     for time_offset, c in enumerate(operations_by_block):
-        #         chunk_size = len(c) // SIGNING_MAX_WORKERS
-        #         chunks = [c[i: i + chunk_size] for i in range(0, len(c), chunk_size)]
-        #         sign_futures: list[Future] = []
-        #         assert len(tokens) == len(chunks)
-        #         for num, cc in enumerate(chunks):
-        #             sign_futures.append(executor.submit(sign,
-        #                                                 beekeeper.http_endpoint.as_string(),
-        #                                                 cc,
-        #                                                 num,
-        #                                                 tokens[num],
-        #                                                 time_offset * 3,
-        #                                                 gdpo,
-        #                                                 node_config,
-        #                                                 signature_type
-        #                                                 ))
-        #         results = [None] * len(chunks)
-        #         for future in as_completed(sign_futures):
-        #             index = sign_futures.index(future)
-        #             results[index] = future.result()
-        #         sign_futures.clear()
-        #         blocks.append([item for sublist in results for item in sublist])
-        #
-        # executor.shutdown(cancel_futures=True, wait=False)
-        # end_time = time.time()  # fixme: delete comment
-        # execution_time = end_time - start_time  # fixme: delete comment
-        # tt.logger.info(f">>>TIME: {execution_time}, on {SIGNING_MAX_WORKERS} processes.")  # fixme: delete comment
-
-    # create_send_pack(blocks)
-
-    # node.run(
-    #     replay_from=block_log_path,
-    #     time_offset=tt.Time.serialize(timestamp, format_=tt.TimeFormats.TIME_OFFSET_FORMAT),
-    #     wait_for_live=True,
-    #     arguments=[
-    #         f"--alternate-chain-spec={str(alternate_chain_spec_path)}",
-    #         f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}",
-    #     ],
-    # )
-    #
-    # # Broadcasting
-    # for block in range(BLOCK_TO_GENERATE):
-    #     transactions = []
-    #     with open(Path(__file__).parent / f"block_log_{signature_type}/full_blocks/block_{block}.txt", 'r') as file:
-    #         for transaction in file:
-    #             transactions.append(json.loads(transaction))
-    #
-    #     tt.logger.info("Start Broadcasting")
-    #     with ProcessPoolExecutor(max_workers=BROADCASTING_MAX_WORKERS) as executor:
-    #         processor = BroadcastTransactionsChunk()
-    #
-    #         num_chunks = BROADCASTING_MAX_WORKERS
-    #         chunk_size = len(transactions) // num_chunks
-    #         chunks = [transactions[i: i + chunk_size] for i in range(0, len(transactions), chunk_size)]
-    #
-    #         single_transaction_broadcast_with_address = partial(
-    #             processor.broadcast_chunk_of_transactions, init_node_address=node.http_endpoint
-    #         )
-    #
-    #         results = []
-    #         results.extend(list(executor.map(single_transaction_broadcast_with_address, chunks)))
-    #         executor.shutdown(cancel_futures=True, wait=False)
-    #         transactions.clear()
-    # tt.logger.info("Finish Broadcasting")
-
-    # todo: część zapisu block_loga
     # assert node.get_last_block_number() >= 57600, "Generated block log its shorted than 2 days."
     # waiting for the block with the last transaction to become irreversible
     # node.wait_for_irreversible_block()
@@ -212,52 +122,6 @@ async def test_prepare_second_stage_of_block_log(
     #
     # node.close()
     # node.block_log.copy_to(Path(__file__).parent / f"block_log_second_stage_{signature_type}")
-
-
-def create_send_pack(blocks) -> list:
-    template = {
-        "jsonrpc": "2.0",
-        "method": "network_broadcast_api.broadcast_transaction",
-        "params": {},
-        "id": 0,
-    }
-    for block_num, block in enumerate(blocks):
-        transactions = []
-        for trx_num, trx in enumerate(block):
-            message = copy.deepcopy(template)
-            message["params"] = {"trx": json.loads(wax.deserialize_transaction(trx).result.decode('ascii'))}
-            transactions.append(message)
-        blocks[block_num] = transactions
-
-
-def create_and_sign_transaction(ops, gdpo, node_config, num, url, token, public_key, time_offset, authority_type):
-    trx: SimpleTransaction = generate_transaction_template(gdpo, time_offset)
-    trx.operations.extend(
-        [HF26Representation(type=op.get_name_with_suffix(), value=op) for op in ops])
-
-    if authority_type != "open_sign":
-        headers = {'Content-Type': 'application/json'}
-
-        sig_digest_pack = {
-            "jsonrpc": "2.0",
-            "method": "beekeeper_api.sign_digest",
-            "params": {
-                "token": token,
-                "sig_digest": "",
-                "public_key": public_key,
-            },
-            "id": 1
-        }
-
-        sig_digest = wax.calculate_sig_digest(
-            trx.json(by_alias=True).encode("ascii"), node_config.HIVE_CHAIN_ID.encode("ascii")
-        ).result.decode("ascii")
-        sig_digest_pack["params"]["sig_digest"] = sig_digest
-        response_sig_digest = requests.post(url, json=sig_digest_pack, headers=headers)
-        signature = json.loads(response_sig_digest.text)["result"]["signature"]
-        trx.signatures.append(signature)
-    binary_transaction = wax.serialize_transaction(trx.json(by_alias=True).encode("ascii")).result
-    return binary_transaction
 
 
 async def import_keys_to_beekeeper(bk: Beekeeper, wallet_name: str, signature_type: str):
@@ -293,6 +157,7 @@ async def import_keys_to_beekeeper(bk: Beekeeper, wallet_name: str, signature_ty
                 )
                 for num in range(10)
             ]
+
 
 def start_session(url, chunk_num):
     headers = {'Content-Type': 'application/json'}
