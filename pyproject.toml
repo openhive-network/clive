@@ -41,7 +41,7 @@ inflection = "0.5.1"
 humanize = "4.6.0"
 
 wax = "0.0.3a2.dev39+44db07f"
-schemas = "0.0.1.dev283+db2351d"
+schemas = "0.0.1.dev287+cd51c18"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
