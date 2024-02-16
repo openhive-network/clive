@@ -54,25 +54,25 @@ class WithdrawalInfo(Vertical, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield Static("Next withdrawal", classes="withdrawal-info-header")
-        yield DynamicLabel(self._provider, "_content", self._get_next_withdrawal_date, id_="withdrawal-info-date")
+        yield DynamicLabel(
+            self._provider, "_content", self._get_next_withdrawal_date, id_="withdrawal-info-date", init=False
+        )
         yield Static("To withdraw", classes="withdrawal-info-header", id="to-withdraw-header")
-        yield DynamicLabel(self._provider, "_content", self._get_to_withdraw_hp, id_="withdrawal-info-vests-amount")
-        yield DynamicLabel(self._provider, "_content", self._get_to_withdraw_vests, id_="withdrawal-info-hp-amount")
+        yield DynamicLabel(
+            self._provider, "_content", self._get_to_withdraw_hp, id_="withdrawal-info-vests-amount", init=False
+        )
+        yield DynamicLabel(
+            self._provider, "_content", self._get_to_withdraw_vests, id_="withdrawal-info-hp-amount", init=False
+        )
 
     def _get_next_withdrawal_date(self, content: HivePowerData) -> str:
-        if self._provider.is_content_set:
-            return humanize_datetime(content.next_vesting_withdrawal)
-        return "loading..."
+        return humanize_datetime(content.next_vesting_withdrawal)
 
     def _get_to_withdraw_hp(self, content: HivePowerData) -> str:
-        if self._provider.is_content_set:
-            return f"{Asset.pretty_amount(content.to_withdraw.hp_balance)} HP"
-        return "loading..."
+        return f"{Asset.pretty_amount(content.to_withdraw.hp_balance)} HP"
 
     def _get_to_withdraw_vests(self, content: HivePowerData) -> str:
-        if self._provider.is_content_set:
-            return f"{Asset.pretty_amount(content.to_withdraw.vests_balance)} VESTS"
-        return "loading..."
+        return f"{Asset.pretty_amount(content.to_withdraw.vests_balance)} VESTS"
 
 
 class APR(DynamicLabel):
@@ -88,10 +88,8 @@ class APR(DynamicLabel):
     """
 
     def __init__(self, provider: HivePowerDataProvider):
-        super().__init__(obj_to_watch=provider, attribute_name="_content", callback=self._get_apr)
+        super().__init__(obj_to_watch=provider, attribute_name="_content", callback=self._get_apr, init=False)
         self._provider = provider
 
     def _get_apr(self, content: HivePowerData) -> str:
-        if self._provider.is_content_set:
-            return f"APR interest for HP/VESTS ≈ {content.current_hp_apr} %"
-        return "loading..."
+        return f"APR interest for HP/VESTS ≈ {content.current_hp_apr} %"

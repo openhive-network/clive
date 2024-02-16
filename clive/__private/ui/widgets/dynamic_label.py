@@ -37,6 +37,7 @@ class DynamicLabel(CliveWidget):
         callback: Callable[[Any], Any],
         *,
         prefix: str = "",
+        init: bool = True,
         shrink: bool = False,
         id_: str | None = None,
         classes: str | None = None,
@@ -44,8 +45,8 @@ class DynamicLabel(CliveWidget):
         super().__init__(id=id_, classes=classes)
 
         self.__label = Label("loading...", shrink=shrink)
-        self.__label.loading = True
 
+        self._init = init
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__callback = callback
@@ -59,7 +60,7 @@ class DynamicLabel(CliveWidget):
         def delegate_work(attribute: Any) -> None:
             self.run_worker(self.attribute_changed(attribute))
 
-        self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work)
+        self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work, self._init)
 
     def compose(self) -> ComposeResult:
         yield self.__label
@@ -70,7 +71,3 @@ class DynamicLabel(CliveWidget):
             value = await value
         if value != self.__label.renderable:
             self.__label.update(f"{self.__prefix}{value}")
-        self.__loading_done()
-
-    def __loading_done(self) -> None:
-        self.__label.loading = False
