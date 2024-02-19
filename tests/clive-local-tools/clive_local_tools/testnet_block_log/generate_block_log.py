@@ -7,7 +7,13 @@ from random import uniform
 
 import test_tools as tt
 
-from .constants import CREATOR_ACCOUNT, PROPOSALS, WATCHED_ACCOUNTS, WITNESSES, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log.constants import (
+    CREATOR_ACCOUNT,
+    PROPOSALS,
+    WATCHED_ACCOUNTS,
+    WITNESSES,
+    WORKING_ACCOUNT,
+)
 
 
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
