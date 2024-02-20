@@ -1,16 +1,16 @@
 from dataclasses import dataclass
-from typing import Literal
 
 from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.common.authority_types import AuthorityType
 
 
 @dataclass(kw_only=True)
 class ShowAuthority(WorldBasedCommand):
     account_name: str
-    authority: Literal["owner", "active", "posting"]
+    authority: AuthorityType
 
     async def _run(self) -> None:
         accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise

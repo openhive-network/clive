@@ -14,16 +14,13 @@ from schemas.fields.hive_int import HiveInt
 from schemas.operations import AccountUpdate2Operation
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-    from typing import Literal, TypeVar
-
+    from clive.__private.cli.common.authority_types import (
+        AccountOrKeyT,
+        AccountUpdateFunction,
+        AuthorityType,
+        AuthorityUpdateFunction,
+    )
     from clive.models.aliased import SchemasAccount
-
-    AccountUpdateFunction = Callable[[AccountUpdate2Operation], AccountUpdate2Operation]
-    AuthorityUpdateFunction = Callable[[Authority], Authority]
-
-    AuthorityType = Literal["owner", "active", "posting"]
-    AccountOrKeyT = TypeVar("AccountOrKeyT", AccountName, PublicKey)
 
 
 @dataclass(kw_only=True)

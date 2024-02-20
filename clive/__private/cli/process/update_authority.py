@@ -11,10 +11,7 @@ from clive.__private.cli.common import OperationCommonOptions, options
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
-    from clive.__private.cli.commands.process.process_account_update import (
-        AccountUpdateFunction,
-        AuthorityType,
-    )
+    from clive.__private.cli.common.authority_types import AccountUpdateFunction, AuthorityType
 
 
 @pass_context
