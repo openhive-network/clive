@@ -193,7 +193,6 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 witness_data = self.__create_witness_data(witness, data)
             witnesses[witness.owner] = witness_data
 
-        assert len(witnesses) == self.search_by_pattern_limit
         return witnesses
 
     def __create_witness_data(self, witness: Witness, data: SanitizedData, *, rank: int | None = None) -> WitnessData:
