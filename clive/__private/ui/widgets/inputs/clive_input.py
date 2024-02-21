@@ -30,14 +30,18 @@ class CliveInput(Input):
         border-title-background: $regular-color;
         border-title-color: $text;
         border-title-style: bold;
+        border-subtitle-background: $regular-color;
+        border-subtitle-color: $text;
 
         &.-valid {
             border-title-background: $valid-color;
+            border-subtitle-background: $valid-color;
             border: tall $valid-color;
         }
 
         &.-invalid {
             border-title-background: $invalid-color;
+            border-subtitle-background: $invalid-color;
             border: tall $invalid-color;
         }
     }

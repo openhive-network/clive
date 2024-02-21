@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
+from textual import on
 from textual.containers import Horizontal, Vertical
 
 from clive.__private.ui.widgets.inputs.text_input import TextInput
@@ -20,6 +21,9 @@ if TYPE_CHECKING:
 class AccountNameInput(TextInput):
     """An input for a Hive account name."""
 
+    _KNOWN_ACCOUNT_CLASS: Final[str] = "-known-account"
+    _UNKNOWN_ACCOUNT_CLASS: Final[str] = "-unknown-account"
+
     DEFAULT_CSS = """
     AccountNameInput {
       height: auto;
@@ -32,6 +36,16 @@ class AccountNameInput(TextInput):
 
           CliveInput {
             width: 1fr;
+
+            &.-known-account {
+              border-subtitle-background: $success-darken-3;
+
+            }
+
+            &.-unknown-account {
+              border-subtitle-background: $warning-lighten-1;
+              border-subtitle-color: black;
+            }
           }
 
           KnownAccount {
@@ -92,3 +106,21 @@ class AccountNameInput(TextInput):
                 if self._ask_known_account:
                     yield self._known_account
             yield self.pretty
+
+    @on(KnownAccount.Status)
+    def _update_known_account_status(self, event: KnownAccount.Status) -> None:
+        known_account_text = "known account"
+        unknown_account_text = "unknown account"
+
+        is_account_known = event.is_account_known
+
+        self.input.border_subtitle = known_account_text if is_account_known else unknown_account_text
+        self.input.add_class(self._KNOWN_ACCOUNT_CLASS if is_account_known else self._UNKNOWN_ACCOUNT_CLASS)
+        self.input.remove_class(self._UNKNOWN_ACCOUNT_CLASS if is_account_known else self._KNOWN_ACCOUNT_CLASS)
+        self.input.refresh()  # sometimes it's not refreshed automatically without this..
+
+    @on(KnownAccount.Disabled)
+    def _remove_known_account_status(self) -> None:
+        self.input.border_subtitle = ""
+        self.input.remove_class(self._KNOWN_ACCOUNT_CLASS)
+        self.input.remove_class(self._UNKNOWN_ACCOUNT_CLASS)

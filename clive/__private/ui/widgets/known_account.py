@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from textual import on
+from textual.message import Message
 from textual.widgets import Checkbox, Input
 
 from clive.__private.storage.accounts import Account
@@ -13,6 +15,17 @@ if TYPE_CHECKING:
 
 
 class KnownAccount(CliveWidget):
+    @dataclass
+    class Status(Message):
+        """Posted when the known account status changes."""
+
+        is_account_known: bool
+        account_name: str
+        """A valid account name."""
+
+    class Disabled(Message):
+        """Posted when the widget is going to the disabled state. (e.g. account name is invalid so can't be known)."""
+
     def __init__(self, input: Input):  # noqa: A002
         self.input = input
 
@@ -35,14 +48,17 @@ class KnownAccount(CliveWidget):
         return Account(self.account_name_raw)
 
     def on_mount(self) -> None:
-        # workaround for Textual calling validate on input when self.watch is used. Setting validate_on to values
-        # different from "changed" prevents this.
+        # >>> start workaround for Textual calling validate on input when self.watch is used. Setting validate_on to
+        # values different from "changed" prevents this.
         before = self.input.validate_on
         self.input.validate_on = ["blur"]
 
         self.watch(self.input, "value", self.__input_changed)
 
         self.input.validate_on = before
+        # <<< end workaround
+
+        self.watch(self.checkbox, "disabled", self.__post_disabled)
 
     def compose(self) -> ComposeResult:
         yield self.checkbox
@@ -58,12 +74,27 @@ class KnownAccount(CliveWidget):
         else:
             self.app.world.profile_data.known_accounts.discard(self.account)
 
+        self.post_message(self.Status(is_account_known=checked, account_name=self.account_name_raw))
+
     def __input_changed(self) -> None:
-        self.checkbox.disabled = not self.__is_account_name_valid()
-        self.checkbox.value = self.__is_account_name_valid() and self.__is_given_account_known()
+        valid = self.__is_account_name_valid()
+        is_account_known = self.__should_check_as_known()
+
+        self.checkbox.disabled = not valid
+        self.checkbox.value = is_account_known
+
+        if valid:
+            self.post_message(self.Status(is_account_known=is_account_known, account_name=self.account_name_raw))
+
+    def __post_disabled(self, disabled: bool) -> None:
+        if disabled:
+            self.post_message(self.Disabled())
 
     def __is_account_name_valid(self) -> bool:
         return Account.is_valid(self.account_name_raw)
 
     def __is_given_account_known(self) -> bool:
         return self.account in self.app.world.profile_data.known_accounts
+
+    def __should_check_as_known(self) -> bool:
+        return self.__is_account_name_valid() and self.__is_given_account_known()
