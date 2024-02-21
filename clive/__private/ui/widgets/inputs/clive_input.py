@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from textual import on, validation
 from textual.events import Blur, Focus
 from textual.message import Message
+from textual.reactive import var
 from textual.validation import ValidationResult, Validator
 from textual.widgets import Input
 
@@ -46,6 +47,8 @@ class CliveInput(Input):
     class Validated(Message):
         value: str
         result: ValidationResult | None = None
+
+    title: str = var("", init=False)  # type: ignore
 
     def __init__(
         self,
@@ -91,7 +94,7 @@ class CliveInput(Input):
         if required:
             _validators = [*_validators, validation.Length(minimum=1, failure_description="This field is required")]
 
-        self.title = title
+        self.set_reactive(self.__class__.title, title)  # type: ignore[arg-type]
         self.required = required
         self._always_show_title = always_show_title
 
@@ -123,6 +126,9 @@ class CliveInput(Input):
         self._unmodified_placeholder = placeholder
         self.placeholder = self._get_placeholder()
 
+    def _watch_title(self) -> None:
+        self.border_title = self._determine_border_title()
+
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
         """Validate the value of the input."""
         if not self.required and not value and not treat_as_required:
@@ -139,13 +145,13 @@ class CliveInput(Input):
         return bool(self.title) and self._include_title_in_placeholder_when_blurred and not self._always_show_title
 
     def _configure(self) -> None:
-        if self.required:
-            self.border_title = self._get_required_symbol()
-
-        if self._always_show_title or self.value:
-            self.border_title = self._get_title_with_required()
-
+        self.border_title = self._determine_border_title()
         self.placeholder = self._get_placeholder()
+
+    def _determine_border_title(self) -> str:
+        if self._always_show_title or self.value:
+            return self._get_title_with_required()
+        return self._get_required_symbol()
 
     def _get_required_symbol(self) -> str:
         return "*" if self.required else ""
