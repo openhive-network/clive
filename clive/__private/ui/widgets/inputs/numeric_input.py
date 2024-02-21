@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING
 
+from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 
 if TYPE_CHECKING:
@@ -11,7 +13,7 @@ if TYPE_CHECKING:
     from textual.widgets._input import InputValidationOn
 
 
-class NumericInput(CliveValidatedInput[float]):
+class NumericInput(CliveValidatedInput[Decimal]):
     """An input for a numeric value."""
 
     def __init__(
@@ -44,7 +46,7 @@ class NumericInput(CliveValidatedInput[float]):
 
         super().__init__(
             title=title,
-            value=str(value) if value is not None else None,
+            value=str(DecimalConverter.convert(value)) if value is not None else None,
             placeholder=placeholder,
             always_show_title=always_show_title,
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
@@ -61,8 +63,8 @@ class NumericInput(CliveValidatedInput[float]):
         )
 
     @property
-    def _value(self) -> float:
-        return float(self.value_raw)
+    def _value(self) -> Decimal:
+        return DecimalConverter.convert(self.value_raw)
 
     @staticmethod
     def _create_restriction(precision: int) -> str:
