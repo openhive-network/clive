@@ -1,0 +1,51 @@
+#inputs-container {
+  background: $panel;
+  padding: 2 4;
+  height: auto;
+}
+
+HPVestsAmountInput {
+  margin-top: 1;
+}
+
+HpVestsFactor {
+  margin-bottom: 1;
+}
+
+DelegationsTable {
+  height: auto;
+
+  #delegations-table-title {
+    text-style: bold;
+    margin-top: 1;
+    background: $primary;
+    width: 1fr;
+    height: 1;
+    text-align: center;
+  }
+
+  DelegationsTableHeader {
+    height: auto;
+  }
+
+  Static {
+    text-style: bold;
+    width: 1fr;
+    text-align: center;
+  }
+
+  #no-delegations-info {
+    margin-top: 1;
+    background: $primary;
+    height: 1;
+  }
+
+  Delegation {
+    width: 1fr;
+    height: auto;
+
+    #remove-delegation-button {
+      width: 1fr;
+    }
+  }
+}

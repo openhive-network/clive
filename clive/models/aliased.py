@@ -17,6 +17,7 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     ListDeclineVotingRightsRequestsFundament,
     OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
+    VestingDelegationsFundament,
     WithdrawVestingRoutesFundament,
     WitnessesFundament,
 )
@@ -67,6 +68,7 @@ TransactionStatus = SchemasFindTransaction
 FindProposals = SchemasFindProposals
 FindAccounts = SchemasFindAccounts
 WithdrawRouteSchema = WithdrawVestingRoutesFundament
+VestingDelegation = VestingDelegationsFundament
 
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
