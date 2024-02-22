@@ -290,9 +290,9 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
     def __check_is_governance_is_expiring(self, data: _AccountSanitizedData) -> bool:
         warning_period_in_days: Final[int] = 31
-        return data.core.governance_vote_expiration_ts - timedelta(
-            days=warning_period_in_days
-        ) > self.__normalize_datetime(datetime.utcnow())
+        expiration: datetime = data.core.governance_vote_expiration_ts
+        current_time = self.__normalize_datetime(datetime.utcnow())
+        return (expiration - current_time).days <= warning_period_in_days
 
     def __get_account_reputation(self, data: Reputation | None) -> int:
         return 0 if data is None else int(data.reputation)
