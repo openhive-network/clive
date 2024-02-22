@@ -35,6 +35,10 @@ Witnesses {
     text-align: center;
   }
 
+  #witnesses-content {
+    height: auto;
+  }
+
   Witness {
     grid-size: 5;
     grid-columns: 2fr 1fr 3fr 2fr 2fr;

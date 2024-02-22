@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.hive_vests_conversions import hive_to_vests, vests_to_hive
@@ -37,6 +37,10 @@ if TYPE_CHECKING:
 
 
 class PlaceTaker(Static):
+    pass
+
+
+class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 
@@ -122,12 +126,13 @@ class DelegateHivePower(TabPane, OperationActionBindings):
         self._shares_input = HPVestsAmountInput()
 
     def compose(self) -> ComposeResult:
-        yield HpVestsFactor(self.provider)
-        yield SectionTitle("Delegate your shares")
-        with Vertical(id="inputs-container"):
-            yield self._delegate_input
-            yield self._shares_input
-        yield DelegationsTable()
+        with ScrollablePart():
+            yield HpVestsFactor(self.provider)
+            yield SectionTitle("Delegate your shares")
+            with Vertical(id="inputs-container"):
+                yield self._delegate_input
+                yield self._shares_input
+            yield DelegationsTable()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
         if not CliveValidatedInput.validate_many(self._delegate_input, self._shares_input):

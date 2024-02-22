@@ -168,9 +168,7 @@ class PendingTransfers(Vertical):
         things_to_mount = [
             Static(f"Number of transfers from savings now: {len(pending_transfers)}", classes="number-of-transfers"),
             PendingHeader(),
-            ScrollablePart(
-                *[PendingTransfer(transfer) for transfer in pending_transfers],
-            ),
+            *[PendingTransfer(transfer) for transfer in pending_transfers],
         ]
 
         with self.app.batch_update():
@@ -180,8 +178,9 @@ class PendingTransfers(Vertical):
 
 class SavingsInfo(TabPane, CliveWidget):
     def compose(self) -> ComposeResult:
-        yield SavingsInterestInfo()
-        yield PendingTransfers()
+        with ScrollablePart():
+            yield SavingsInterestInfo()
+            yield PendingTransfers()
 
 
 class SavingsTransfers(TabPane, OperationActionBindings):

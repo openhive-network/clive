@@ -101,7 +101,7 @@ Savings {
   }
 
   PendingTransfers {
-    margin-bottom: 3;
+    height: auto;
 
     LoadingIndicator {
       margin-top: 2;
@@ -111,7 +111,6 @@ Savings {
 
   PendingTransfer {
     layout: horizontal;
-    margin-bottom: 1;
     height: 3;
 
     Label {
@@ -142,7 +141,7 @@ Savings {
   Body {
     grid-rows: auto;
     grid-gutter: 1;
-    margin: 1 2;
+    margin: 1 2 0 2;
     background: $panel;
     padding: 2 4;
     height: auto;

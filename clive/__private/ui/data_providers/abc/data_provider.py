@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Final, Generic, TypeVar
 
 from textual import on, work
+from textual.containers import Container
 from textual.reactive import var
 from textual.worker import Worker, WorkerState
 
@@ -30,7 +31,7 @@ If you are sure, you can use the `updated` property to check if content is ready
         super().__init__(self._MESSAGE)
 
 
-class DataProvider(CliveWidget, Generic[ProviderContentT], AbstractClassMessagePump):
+class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractClassMessagePump):
     """
     Retrieve data in a periodic manner. Data is stored in the reactive attributes.
 

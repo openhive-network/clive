@@ -21,6 +21,12 @@ class CliveTabs(ContentTabs):
 class CliveTabbedContent(TabbedContent):
     """A tabbed content that shows "left" and "right" bindings in the footer when header (Tabs) is focused."""
 
+    DEFAULT_CSS = """
+    CliveTabbedContent {
+        height: 1fr;
+    }
+    """
+
     def compose(self) -> ComposeResult:
         pane_content = [
             self._set_id(
