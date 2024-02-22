@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import re
 from typing import TYPE_CHECKING, Final
 
@@ -33,15 +34,36 @@ async def get_notification_transaction_id(pilot: Pilot[int]) -> str:
     If no toast notification is found, will raise an AssertionError. If more than one toast notification is found, will
     ignore the rest and return the transaction ID from the last one.
     """
-    toasts = pilot.app.query(Toast)
-    contents = [str(toast.render()) for toast in toasts]
+    seconds_to_wait: Final[float] = 3.0
 
-    transaction_id = ""
-    for content in contents:
-        result = TRANSACTION_ID_RE_PAT.search(content)
-        if result is not None:
-            transaction_id = result.group("transaction_id")
+    async def look_for_transaction_id_in_toasts() -> str:
+        toasts = pilot.app.query(Toast)
+        contents = [str(toast.render()) for toast in toasts]
 
-    message = f"Toast notification containing the transaction ID couldn't be found. Current toasts are: {contents}"
-    assert transaction_id, message
-    return transaction_id
+        transaction_id = ""
+        for content in contents:
+            result = TRANSACTION_ID_RE_PAT.search(content)
+            if result is not None:
+                transaction_id = result.group("transaction_id")
+        return transaction_id
+
+    async def wait_for_transaction_id_to_be_found() -> str:
+        seconds_already_waited = 0.0
+        pool_time = 0.1
+        while True:
+            transaction_id = await look_for_transaction_id_in_toasts()
+            if transaction_id:
+                return transaction_id
+            tt.logger.info(
+                "Didn't find the transaction ID in the toast notification. Already waited"
+                f" {seconds_already_waited:.2f}s."
+            )
+            await asyncio.sleep(pool_time)
+            seconds_already_waited += pool_time
+
+    try:
+        return await asyncio.wait_for(wait_for_transaction_id_to_be_found(), timeout=seconds_to_wait)
+    except asyncio.TimeoutError:
+        raise AssertionError(
+            f"Toast notification containing the transaction ID couldn't be found. Waited {seconds_to_wait:.2f}s"
+        ) from None
