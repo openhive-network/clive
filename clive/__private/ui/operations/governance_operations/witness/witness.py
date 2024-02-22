@@ -291,7 +291,7 @@ class Witnesses(GovernanceTabPane):
     def compose(self) -> ComposeResult:
         self.__witness_table = WitnessesTable()
 
-        with ScrollablePart(), Horizontal():
+        with ScrollablePart(), Horizontal(id="witnesses-content"):
             yield self.__witness_table
             yield WitnessesActions()
         yield WitnessManualSearch()

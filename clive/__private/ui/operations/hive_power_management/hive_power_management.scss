@@ -4,8 +4,16 @@ $table-header-color: $primary-background;
 $table-row-title-color: $background-lighten-2;
 
 HivePowerManagement {
-  Tab {
-    width: 1fr;
+  TabbedContent {
+    height: 1fr;
+
+    Tab {
+      width: 1fr;
+    }
+
+    ContentSwitcher {
+      height: 1fr;
+    }
   }
 
   #hive-power-info {

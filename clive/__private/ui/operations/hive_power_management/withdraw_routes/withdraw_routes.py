@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
@@ -35,7 +35,7 @@ if TYPE_CHECKING:
     from clive.models.aliased import WithdrawRouteSchema
 
 
-class ScrollablePart(CanFocusWithScrollbarsOnly):
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     pass
 
 

@@ -1,6 +1,18 @@
 Savings {
-  Tab {
-    width: 1fr;
+  TabbedContent {
+    height: 1fr;
+
+    Tab {
+      width: 1fr;
+    }
+
+    ContentSwitcher {
+      height: 1fr;
+    }
+  }
+
+  SavingsDataProvider {
+    height: 1fr;
   }
 
   SavingsInterestInfo {
@@ -142,7 +154,7 @@ Savings {
   Body {
     grid-rows: auto;
     grid-gutter: 1;
-    margin: 1 2;
+    margin: 1 2 0 2;
     background: $panel;
     padding: 2 4;
     height: auto;

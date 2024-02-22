@@ -1,6 +1,10 @@
 WithdrawRoutes {
   height: 1fr;
 
+  ScrollablePart {
+    height: 1fr;
+  }
+
   #inputs-container {
     background: $panel;
     padding: 2 4;

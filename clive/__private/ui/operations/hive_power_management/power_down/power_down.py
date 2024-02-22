@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal
+from textual.containers import Horizontal, ScrollableContainer
 from textual.widgets import Pretty, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
@@ -44,7 +44,7 @@ class PlaceTaker(Static):
     pass
 
 
-class ScrollablePart(CanFocusWithScrollbarsOnly):
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     pass
 
 

@@ -12,9 +12,10 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.operations.governance_operations.common_governance.governance_table import (
     GovernanceTableRow,
 )
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 
 
-class ScrollablePart(ScrollableContainer, can_focus=False):
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     pass
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from clive.models import Asset
 
 
-class ScrollablePart(CanFocusWithScrollbarsOnly):
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     pass
 
 

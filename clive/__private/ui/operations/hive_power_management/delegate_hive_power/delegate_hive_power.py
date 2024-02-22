@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.hive_vests_conversions import hive_to_vests, vests_to_hive
@@ -12,6 +12,7 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.operations.operation_summary.remove_delegation import RemoveDelegation
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
@@ -37,6 +38,10 @@ if TYPE_CHECKING:
 
 
 class PlaceTaker(Static):
+    pass
+
+
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     pass
 
 
@@ -122,12 +127,13 @@ class DelegateHivePower(TabPane, OperationActionBindings):
         self._shares_input = HPVestsAmountInput()
 
     def compose(self) -> ComposeResult:
-        yield HpVestsFactor(self.provider)
-        yield SectionTitle("Delegate your shares")
-        with Vertical(id="inputs-container"):
-            yield self._delegate_input
-            yield self._shares_input
-        yield DelegationsTable()
+        with ScrollablePart():
+            yield HpVestsFactor(self.provider)
+            yield SectionTitle("Delegate your shares")
+            with Vertical(id="inputs-container"):
+                yield self._delegate_input
+                yield self._shares_input
+            yield DelegationsTable()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
         if not CliveValidatedInput.validate_many(self._delegate_input, self._shares_input):
