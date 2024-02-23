@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 
 from clive_local_tools.cli import checkers
-from clive_local_tools.constants import WORKING_ACCOUNT, WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.data.constants import WORKING_ACCOUNT, WORKING_ACCOUNT_KEY_ALIAS
 
 if TYPE_CHECKING:
     from typer.testing import CliRunner

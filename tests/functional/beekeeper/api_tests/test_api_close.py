@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from clive.exceptions import CommunicationError
-from clive_local_tools.models import WalletInfo
+from clive_local_tools.data.models import WalletInfo
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper

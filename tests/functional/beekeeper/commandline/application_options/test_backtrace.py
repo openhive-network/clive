@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
-from clive_local_tools import checkers
+from clive_local_tools.beekeeper import checkers
 
 
 @pytest.mark.parametrize("backtrace", ["yes", "no"])

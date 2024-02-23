@@ -10,7 +10,7 @@ from clive.__private.core.commands.activate import Activate, WalletDoesNotExists
 
 if TYPE_CHECKING:
     import clive
-    from clive_local_tools.models import WalletInfo
+    from clive_local_tools.data.models import WalletInfo
 
 
 async def test_activate(world: clive.World, wallet: WalletInfo) -> None:

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.models import WalletInfo
+    from clive_local_tools.data.models import WalletInfo
 
 
 async def test_api_set_timeout(beekeeper: Beekeeper, wallet: WalletInfo) -> None:

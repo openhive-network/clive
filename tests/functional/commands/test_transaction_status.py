@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.core.world import World
-    from clive_local_tools.models import WalletInfo
+    from clive_local_tools.data.models import WalletInfo
 
 
 async def test_transaction_status_in_blockchain(

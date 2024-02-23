@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 
 from clive_local_tools.cli import checkers
-from clive_local_tools.constants import (
+from clive_local_tools.data.constants import (
     WORKING_ACCOUNT,
     WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
     WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,

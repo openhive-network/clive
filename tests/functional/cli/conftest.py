@@ -13,7 +13,7 @@ from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.core.url import Url
-from clive_local_tools.constants import (
+from clive_local_tools.data.constants import (
     CREATOR_ACCOUNT,
     WATCHED_ACCOUNTS,
     WORKING_ACCOUNT,

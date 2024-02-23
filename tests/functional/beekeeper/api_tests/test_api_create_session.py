@@ -1,17 +1,15 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 import pytest
 
 from clive.exceptions import CommunicationError
-from clive_local_tools import checkers
+from clive_local_tools.beekeeper import checkers
+from clive_local_tools.beekeeper.constants import MAX_BEEKEEPER_SESSION_AMOUNT
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-
-
-MAX_SESSION_NUMBER: Final[int] = 64
 
 
 async def create_session(beekeeper: Beekeeper, salt: str) -> None:
@@ -46,11 +44,11 @@ async def test_api_create_session_max_sessions(beekeeper: Beekeeper) -> None:
     salt = "test_api_create_session_max_sessions"
 
     # ARRANGE & ACT
-    for _ in range(MAX_SESSION_NUMBER - 1):
+    for _ in range(MAX_BEEKEEPER_SESSION_AMOUNT - 1):
         await create_session(beekeeper, salt)
 
     # ASSERT
     with pytest.raises(
-        CommunicationError, match=f"Number of concurrent sessions reached a limit ==`{MAX_SESSION_NUMBER}`"
+        CommunicationError, match=f"Number of concurrent sessions reached a limit ==`{MAX_BEEKEEPER_SESSION_AMOUNT}`"
     ):
         await create_session(beekeeper, salt)

@@ -7,7 +7,7 @@ import pytest
 from clive.__private.config import settings
 from clive.__private.core.profile_data import InvalidChainIdError, ProfileData
 from clive.models import Asset, Transaction
-from clive_local_tools.constants import TESTNET_CHAIN_ID
+from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive import World
-    from clive_local_tools.models import WalletInfo
+    from clive_local_tools.data.models import WalletInfo
 
 DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 

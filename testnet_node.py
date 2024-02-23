@@ -17,7 +17,7 @@ from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
-from clive_local_tools.constants import TESTNET_CHAIN_ID
+from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.testnet_block_log import (
     get_alternate_chain_spec_path,
     get_block_log,
