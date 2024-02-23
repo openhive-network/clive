@@ -219,6 +219,13 @@ deploy_wheel_to_pypi:
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${CLIVE_IMAGE_NAME}${TXT_CLEAR}"
+    - |
+      if [[ -n "$CI_COMMIT_TAG" ]]; then
+        GIT_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-${CI_COMMIT_TAG}"
+        echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${GIT_IMAGE_TAG}${TXT_CLEAR}"
+        docker tag "${CLIVE_IMAGE_NAME}" "${GIT_IMAGE_TAG}"
+        docker push "${GIT_IMAGE_TAG}"
+      fi
   artifacts:
     reports:
       dotenv: docker_image_name.env
