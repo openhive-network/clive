@@ -33,6 +33,7 @@ def _wallet_dir_default() -> Path:
 class BeekeeperConfig(CliveBaseModel):
     wallet_dir: Path = Field(default_factory=_wallet_dir_default)
     unlock_timeout: int = BeekeeperDefaults.DEFAULT_UNLOCK_TIMEOUT
+    unlock_interval: int = BeekeeperDefaults.DEFAULT_UNLOCK_INTERVAL
     log_json_rpc: Path | None = BeekeeperDefaults.DEFAULT_LOG_JSON_RPC
     webserver_http_endpoint: Url | None = Field(default_factory=webserver_default)
     webserver_unix_endpoint: Url | None = None
