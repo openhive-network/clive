@@ -11,9 +11,9 @@ repos:
         args: [ "--autofix" ]
         exclude: ".*alternate-chain-spec.json"
       - id: trailing-whitespace
-        exclude: ".*_pattern.txt"
+        exclude: ".*_pattern.txt|.*wallet"
       - id: end-of-file-fixer
-        exclude: ".*_pattern.txt|.*config.ini|.*alternate-chain-spec.json|.*timestamp"
+        exclude: ".*_pattern.txt|.*config.ini|.*alternate-chain-spec.json|.*timestamp|.*wallet"
   - repo: https://github.com/python-poetry/poetry
     rev: 1.7.1
     hooks:
@@ -53,3 +53,17 @@ repos:
     rev: v2.2.4
     hooks:
     - id: codespell
+  - repo: https://github.com/lk16/detect-missing-init
+    rev: v0.1.6
+    hooks:
+      - id: detect-missing-init
+        args:
+          - "--create"
+          - "--python-folders"
+          - "\
+          tests/clive-local-tools/clive_local_tools,\
+          tests/functional/,\
+          tests/tui/,\
+          tests/unit/,\
+          clive,
+          "
