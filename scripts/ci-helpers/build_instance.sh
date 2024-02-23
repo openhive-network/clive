@@ -4,7 +4,8 @@ set -euo pipefail
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SCRIPTSDIR="$SCRIPTPATH/.."
 
-LOG_FILE=build_instance.log
+export LOG_FILE=build_instance.log
+# shellcheck source=../common.sh
 source "$SCRIPTSDIR/common.sh"
 
 BUILD_IMAGE_TAG=""
@@ -34,8 +35,6 @@ print_help () {
     echo "  --help                              Display this help screen and exit"
     echo
 }
-
-EXPORT_PATH=""
 
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -80,13 +79,17 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-TST_IMGTAG=${BUILD_IMAGE_TAG:?"Missing arg #1 to specify built image tag"}
-TST_SRCDIR=${SRCROOTDIR:?"Missing arg #2 to specify source directory"}
-TST_REGISTRY=${REGISTRY:?"Missing arg #3 to specify target container registry"}
+# Unused variables should be replaced with _ or have names starting with an underscore
+# to clearly indicate they're meant to be unused and are not to be removed.
+# See https://www.shellcheck.net/wiki/SC2034 for more info.
 
-TST_HIVED_IMAGE=${HIVED_IMAGE:?"Missing --hived-source-image to specify source for binaries of hived"}
-TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"}
-TST_CLIVE_VERSION=${CLIVE_VERSION:?"Missing --clive-version option to specify clive version to be installed"}
+_TST_IMGTAG=${BUILD_IMAGE_TAG:?"Missing arg #1 to specify built image tag"}
+_TST_SRCDIR=${SRCROOTDIR:?"Missing arg #2 to specify source directory"}
+_TST_REGISTRY=${REGISTRY:?"Missing arg #3 to specify target container registry"}
+
+_TST_HIVED_IMAGE=${HIVED_IMAGE:?"Missing --hived-source-image to specify source for binaries of hived"}
+_TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"}
+_TST_CLIVE_VERSION=${CLIVE_VERSION:?"Missing --clive-version option to specify clive version to be installed"}
 
 # Supplement a registry path by trailing slash (if needed)
 [[ "${REGISTRY}" != */ ]] && REGISTRY="${REGISTRY}/"
@@ -101,13 +104,52 @@ CLIVE_IMAGE_TAG_PREFIX="${IMAGE_TAG_PREFIX}instance"
 CLIVE_IMAGE_PATH="${REGISTRY}${CLIVE_IMAGE_TAG_PREFIX}${IMAGE_PATH_SUFFIX}"
 CLIVE_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-${BUILD_IMAGE_TAG}"
 
-docker build --target=${DOCKER_TARGET} \
-  --build-arg CI_REGISTRY_IMAGE=$REGISTRY \
-  --build-arg BASE_IMAGE=${BASE_IMAGE} \
-  --build-arg HIVED_IMAGE=${HIVED_IMAGE} \
-  --build-arg CLIVE_VERSION=${CLIVE_VERSION} \
-  -t ${CLIVE_IMAGE_NAME} \
-  -f docker/Dockerfile .
+BUILD_TIME="$(date -uIseconds)"
+
+GIT_COMMIT_SHA="$(git rev-parse HEAD || true)"
+if [ -z "$GIT_COMMIT_SHA" ]; then
+  GIT_COMMIT_SHA="[unknown]"
+fi
+
+GIT_CURRENT_BRANCH="$(git branch --show-current || true)"
+if [ -z "$GIT_CURRENT_BRANCH" ]; then
+  GIT_CURRENT_BRANCH="$(git describe --abbrev=0 --all | sed 's/^.*\///' || true)"
+  if [ -z "$GIT_CURRENT_BRANCH" ]; then
+    GIT_CURRENT_BRANCH="[unknown]"
+  fi
+fi
+
+GIT_LAST_LOG_MESSAGE="$(git log -1 --pretty=%B || true)"
+if [ -z "$GIT_LAST_LOG_MESSAGE" ]; then
+  GIT_LAST_LOG_MESSAGE="[unknown]"
+fi
+
+GIT_LAST_COMMITTER="$(git log -1 --pretty="%an <%ae>" || true)"
+if [ -z "$GIT_LAST_COMMITTER" ]; then
+  GIT_LAST_COMMITTER="[unknown]"
+fi
+
+GIT_LAST_COMMIT_DATE="$(git log -1 --pretty="%aI" || true)"
+if [ -z "$GIT_LAST_COMMIT_DATE" ]; then
+  GIT_LAST_COMMIT_DATE="[unknown]"
+fi
+
+# Variables in scripts should be double-quoted to prevent globbing and splitting.
+# See https://www.shellcheck.net/wiki/SC2086 for more info.
+
+docker buildx build --target="${DOCKER_TARGET}" \
+  --build-arg CI_REGISTRY_IMAGE="$REGISTRY" \
+  --build-arg BASE_IMAGE="${BASE_IMAGE}" \
+  --build-arg HIVED_IMAGE="${HIVED_IMAGE}" \
+  --build-arg CLIVE_VERSION="${CLIVE_VERSION}" \
+  --build-arg BUILD_TIME="${BUILD_TIME}" \
+  --build-arg GIT_COMMIT_SHA="${GIT_COMMIT_SHA}" \
+  --build-arg GIT_CURRENT_BRANCH="${GIT_CURRENT_BRANCH}" \
+  --build-arg GIT_LAST_LOG_MESSAGE="${GIT_LAST_LOG_MESSAGE}" \
+  --build-arg GIT_LAST_COMMITTER="${GIT_LAST_COMMITTER}" \
+  --build-arg GIT_LAST_COMMIT_DATE="${GIT_LAST_COMMIT_DATE}" \
+  --tag "${CLIVE_IMAGE_NAME}" \
+  --file docker/Dockerfile .
 
 popd
 
