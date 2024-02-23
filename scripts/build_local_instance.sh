@@ -23,12 +23,12 @@ BUILD_INSTANCE_PATH=$(realpath "${SCRIPTSDIR}/ci-helpers/")
 cd "${BUILD_INSTANCE_PATH}"
 
 BUILD_ARGS=(
-  ${IMAGE_TAG}
-  ${SRC_DIR}
-  ${REGISTRY_URL}
-  --hived-source-image=${HIVED_SOURCE_IMAGE}
-  --base-image=${BASE_IMAGE}
-  --clive-version=${CLIVE_VERSION}
+  "${IMAGE_TAG}"
+  "${SRC_DIR}"
+  "${REGISTRY_URL}"
+  "--hived-source-image=${HIVED_SOURCE_IMAGE}"
+  "--base-image=${BASE_IMAGE}"
+  "--clive-version=${CLIVE_VERSION}"
 )
 
 if [ ${BUILD_TESTNET} -eq 1 ]; then

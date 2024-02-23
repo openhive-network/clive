@@ -41,6 +41,13 @@ FROM common AS instance
 
 ARG CLIVE_VERSION
 
+ARG BUILD_TIME
+ARG GIT_COMMIT_SHA
+ARG GIT_CURRENT_BRANCH
+ARG GIT_LAST_LOG_MESSAGE
+ARG GIT_LAST_COMMITTER
+ARG GIT_LAST_COMMIT_DATE
+
 # Project IDS:
 # - 362 -> schemas
 # - 392 -> clive
@@ -51,6 +58,21 @@ RUN pip install clive=="${CLIVE_VERSION}" \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
 
 ENV TESTNET_MODE=0
+
+LABEL org.opencontainers.image.created="$BUILD_TIME"
+LABEL org.opencontainers.image.url="https://hive.io/"
+LABEL org.opencontainers.image.documentation="https://gitlab.syncad.com/hive/clive"
+LABEL org.opencontainers.image.source="https://gitlab.syncad.com/hive/clive"
+LABEL org.opencontainers.image.version="${CLIVE_VERSION}"
+LABEL org.opencontainers.image.revision="$GIT_COMMIT_SHA"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.ref.name="Clive"
+LABEL org.opencontainers.image.title="Clive Image"
+LABEL org.opencontainers.image.description="Runs Clive application"
+LABEL io.hive.image.branch="$GIT_CURRENT_BRANCH"
+LABEL io.hive.image.commit.log_message="$GIT_LAST_LOG_MESSAGE"
+LABEL io.hive.image.commit.author="$GIT_LAST_COMMITTER"
+LABEL io.hive.image.commit.date="$GIT_LAST_COMMIT_DATE"
 
 ENTRYPOINT ["/entrypoint.sh"]
 
@@ -95,5 +117,9 @@ ENV PATH="/home/hived_admin/.local/bin:$PATH"
 RUN poetry install --only embeddedtestnet --no-root
 
 ENV TESTNET_MODE=1
+
+LABEL org.opencontainers.image.ref.name="Clive+Testnet"
+LABEL org.opencontainers.image.title="Clive with Testnet Image"
+LABEL org.opencontainers.image.description="Runs Clive with embedded Hive Testnet"
 
 ENTRYPOINT ["/entrypoint.sh"]
