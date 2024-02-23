@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass, field
+from pathlib import Path
 
 from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
 
@@ -42,6 +44,29 @@ class WalletInfo:
     password: str
     name: str
     keys: Keys = field(default_factory=Keys)
+    keys_from_file: Path | None = None
+
+    def __post_init__(self) -> None:
+        if self.keys_from_file:
+            self.load_keys_from_file(self.keys_from_file)
+
+    def load_keys_from_file(self, keys_from_file: Path) -> None:
+        """Load keys from given path."""
+        with Path.open(keys_from_file) as key_file:
+            keys = json.load(key_file)
+            if keys_from_file.name.endswith("alias.keys"):
+                for alias, wif_key in keys.items():
+                    pv = PrivateKeyAliased(value=wif_key, alias=alias)
+                    self.keys.pairs.append(Keys.KeysPair(pv.calculate_public_key(), pv))
+            else:
+                for nr, key in enumerate(keys):
+                    self.keys.pairs.append(
+                        Keys.KeysPair(
+                            PublicKeyAliased(value=key["public_key"], alias=f"key-{nr}"),
+                            PrivateKeyAliased(value=key["private_key"], alias=f"key-{nr}"),
+                        )
+                    )
+            self.keys_from_file = keys_from_file
 
     @property
     def public_key(self) -> PublicKeyAliased:

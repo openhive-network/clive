@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Protocol
 
-from clive_local_tools.models import WalletInfo
+from clive_local_tools.data.models import WalletInfo
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
