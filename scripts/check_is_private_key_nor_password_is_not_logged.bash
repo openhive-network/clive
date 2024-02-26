@@ -12,4 +12,4 @@ if [[ $amount_of_occurences -ne 0 ]]; then
     echo "Error! Found $amount_of_occurences occurrences of private key or password"
     find_password_private_keys 2>&1
 fi;
-exit $amount_of_occurences
+exit "$amount_of_occurences"

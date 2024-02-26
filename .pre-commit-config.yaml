@@ -61,9 +61,13 @@ repos:
           - "--create"
           - "--python-folders"
           - "\
-          tests/clive-local-tools/clive_local_tools,\
-          tests/functional/,\
-          tests/tui/,\
-          tests/unit/,\
-          clive,
-          "
+            tests/clive-local-tools/clive_local_tools,\
+            tests/functional/,\
+            tests/tui/,\
+            tests/unit/,\
+            clive,
+            "
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.9.0.6
+    hooks:
+      -  id: shellcheck

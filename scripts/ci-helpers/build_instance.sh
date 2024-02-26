@@ -5,7 +5,7 @@ SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 SCRIPTSDIR="$SCRIPTPATH/.."
 
 export LOG_FILE=build_instance.log
-# shellcheck source=../common.sh
+# shellcheck source=scripts/common.sh
 source "$SCRIPTSDIR/common.sh"
 
 BUILD_IMAGE_TAG=""

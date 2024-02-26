@@ -45,8 +45,8 @@ do_clone() {
   local commit="$4"
 
   if [[ "$commit" != "" ]]; then
-    do_clone_commit $commit "$src_dir" $repo_url
+    do_clone_commit "$commit" "$src_dir" "$repo_url"
   else
-    do_clone_branch "$branch" "$src_dir" $repo_url
+    do_clone_branch "$branch" "$src_dir" "$repo_url"
   fi
 }

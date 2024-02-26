@@ -1,9 +1,10 @@
 #! /bin/bash
 
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P )"
 echo "$SCRIPTPATH"
 
-LOG_FILE=run_instance.log
+export LOG_FILE=run_instance.log
+# shellcheck source=scripts/common.sh
 source "$SCRIPTPATH/common.sh"
 
 log_exec_params "$@"
@@ -53,8 +54,11 @@ while [ $# -gt 0 ]; do
       ;;
 
     --docker-option=*)
-        option="${1#*=}"
-        add_docker_arg "$option"
+        options_string="${1#*=}"
+        IFS=" " read -ra options <<< "$options_string"
+        for option in "${options[@]}"; do
+          add_docker_arg "$option"
+        done
         ;;
     --help)
         print_help
@@ -86,5 +90,14 @@ CMD_ARGS+=("${CLIVE_ARGS[@]}")
 #echo "Using docker image: $IMAGE_NAME"
 #echo "Additional hived args: ${CMD_ARGS[@]}"
 
+# If command 'tput' exists
+if command -v tput &> /dev/null
+then
+  add_docker_arg "--env"
+  add_docker_arg "COLUMNS=$(tput cols)"
+  add_docker_arg "--env"
+  add_docker_arg "LINES=$(tput lines)"
+fi
+
 docker container rm -f -v "$CONTAINER_NAME" 2>/dev/null || true
-docker run --rm -it -e HIVED_UID=$(id -u) -e COLUMNS=$(tput cols) -e LINES=$(tput lines) --name "$CONTAINER_NAME" --stop-timeout=180 ${DOCKER_ARGS[@]} "${IMAGE_NAME}" "${CMD_ARGS[@]}"
+docker run --rm -it -e HIVED_UID="$(id -u)" --name "$CONTAINER_NAME" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"
