@@ -9,15 +9,12 @@ from clive_local_tools.cli.checkers import (
     assert_authority_weight,
     assert_is_authority,
     assert_is_not_authority,
-    assert_no_exit_code_error,
     assert_weight_threshold,
 )
 from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT, WORKING_ACCOUNT_KEY_ALIAS
 
 if TYPE_CHECKING:
-    from typer.testing import CliRunner
-
-    from clive.__private.cli.clive_typer import CliveTyper
+    from clive_local_tools.cli.testing_cli import TestingCli
 
 
 weight_threshold = 12
@@ -27,85 +24,46 @@ modified_weight = 324
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_set_threshold_offline(cli_with_runner: tuple[CliveTyper, CliRunner], authority: AuthorityType) -> None:
-    # ARRANGE
-    cli, runner = cli_with_runner
-
+async def test_set_threshold_offline(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    result = runner.invoke(
-        cli,
-        [
-            "process",
-            f"update-{authority}-authority",
-            f"--password={WORKING_ACCOUNT.name}",
-            f"--sign={WORKING_ACCOUNT_KEY_ALIAS}",
-            "--force-offline",
-            f"--threshold={weight_threshold}",
-            "add-account",
-            f"--account={WORKING_ACCOUNT.name}",
-            f"--weight={weight}",
-        ],
-    )
-    assert_no_exit_code_error(result)
+    with testing_cli.chain_commands() as chain_command_builder:
+        getattr(chain_command_builder, f"process_update-{authority}-authority")(
+            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+        )
+        getattr(chain_command_builder, "add-account")(account=WORKING_ACCOUNT.name, weight=weight)
 
     # ASSERT
-    assert_weight_threshold(runner, cli, authority, weight_threshold)
-    assert_is_authority(runner, cli, WORKING_ACCOUNT.name, authority)
-    assert_authority_weight(runner, cli, WORKING_ACCOUNT.name, authority, weight)
+    assert_weight_threshold(testing_cli, authority, weight_threshold)
+    assert_is_authority(testing_cli, WORKING_ACCOUNT.name, authority)
+    assert_authority_weight(testing_cli, WORKING_ACCOUNT.name, authority, weight)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_add_account_offline(cli_with_runner: tuple[CliveTyper, CliRunner], authority: AuthorityType) -> None:
-    # ARRANGE
-    cli, runner = cli_with_runner
-
+async def test_add_account_offline(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    result = runner.invoke(
-        cli,
-        [
-            "process",
-            f"update-{authority}-authority",
-            f"--password={WORKING_ACCOUNT.name}",
-            f"--sign={WORKING_ACCOUNT_KEY_ALIAS}",
-            "--force-offline",
-            "add-account",
-            f"--account={other_account.name}",
-            f"--weight={weight}",
-        ],
-    )
-    assert_no_exit_code_error(result)
+    with testing_cli.chain_commands() as chain_command_builder:
+        getattr(chain_command_builder, f"process_update-{authority}-authority")(
+            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        )
+        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
 
     # ASSERT
-    assert_is_authority(runner, cli, other_account.name, authority)
-    assert_authority_weight(runner, cli, other_account.name, authority, weight)
-    assert_is_not_authority(runner, cli, WORKING_ACCOUNT.name, authority)
-    assert_is_not_authority(runner, cli, WORKING_ACCOUNT.public_key, authority)
+    assert_is_authority(testing_cli, other_account.name, authority)
+    assert_authority_weight(testing_cli, other_account.name, authority, weight)
+    assert_is_not_authority(testing_cli, WORKING_ACCOUNT.name, authority)
+    assert_is_not_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_modify_key_offline(cli_with_runner: tuple[CliveTyper, CliRunner], authority: AuthorityType) -> None:
-    # ARRANGE
-    cli, runner = cli_with_runner
-
+async def test_modify_key_offline(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    result = runner.invoke(
-        cli,
-        [
-            "process",
-            f"update-{authority}-authority",
-            f"--password={WORKING_ACCOUNT.name}",
-            f"--sign={WORKING_ACCOUNT_KEY_ALIAS}",
-            "--force-offline",
-            "add-key",
-            f"--key={WORKING_ACCOUNT.public_key}",
-            f"--weight={weight}",
-            "modify-key",
-            f"--key={WORKING_ACCOUNT.public_key}",
-            f"--weight={modified_weight}",
-        ],
-    )
-    assert_no_exit_code_error(result)
+    with testing_cli.chain_commands() as chain_command_builder:
+        getattr(chain_command_builder, f"process_update-{authority}-authority")(
+            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        )
+        getattr(chain_command_builder, "add-key")(key=WORKING_ACCOUNT.public_key, weight=weight)
+        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=modified_weight)
 
     # ASSERT
-    assert_is_authority(runner, cli, WORKING_ACCOUNT.public_key, authority)
-    assert_authority_weight(runner, cli, WORKING_ACCOUNT.public_key, authority, modified_weight)
+    assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
+    assert_authority_weight(testing_cli, WORKING_ACCOUNT.public_key, authority, modified_weight)
