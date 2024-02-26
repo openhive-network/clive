@@ -46,6 +46,7 @@ async def get_notification_transaction_id(pilot: Pilot[int]) -> str:
     async def look_for_transaction_id_in_toasts() -> str:
         toasts = pilot.app.query(Toast)
         contents = [str(toast.render()) for toast in toasts]
+        tt.logger.debug(f"Toasts: {contents}")
 
         transaction_id = ""
         for content in contents:
