@@ -20,6 +20,13 @@ async def write_text(pilot: Pilot[int], text: str) -> None:
     await pilot.press(*list(text))
 
 
+async def key_press(pilot: Pilot[int], *keys: str) -> None:
+    """Safer version of Pilot.press method."""
+    tt.logger.debug(keys)
+    for key in keys:
+        await pilot.press(key)
+
+
 def is_key_binding_active(app: App[int], key: str, description: str) -> bool:
     """Check if key binding is active."""
     tt.logger.debug(f"Current active bindings: {app.namespace_bindings}")
