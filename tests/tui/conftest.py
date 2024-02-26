@@ -67,8 +67,6 @@ async def world() -> AsyncIterator[TextualWorld]:
 
 @pytest.fixture()
 async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
-    node = tt.RawNode()
-
     config_lines = get_config().write_to_lines()
     block_log = get_block_log()
     alternate_chain_spec_path = get_alternate_chain_spec_path()
@@ -80,6 +78,7 @@ async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])
+    wallet.api.import_key(WORKING_ACCOUNT.private_key)
     account = wallet.api.get_account(WORKING_ACCOUNT.name)
     tt.logger.debug(f"working account: {account}")
 

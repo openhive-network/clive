@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 
-from .textual import write_text
+from .textual import key_press, write_text
 from .utils import get_mode, log_current_view
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ async def activate_body(pilot: Pilot[int], password: str) -> None:
         pilot.app.screen, Activate
     ), f"'activate_body' requires 'Activate' to be the current screen! Current screen is: '{pilot.app.screen}'."
     await write_text(pilot, password)
-    await pilot.press("f2")
+    await key_press(pilot, "f2")
     log_current_view(pilot.app, nodes=True)
     assert get_mode(pilot.app) == "active", "Expected 'active' mode!"
 
@@ -28,5 +28,5 @@ async def activate(pilot: Pilot[int], password: str) -> None:
     assert isinstance(
         pilot.app.screen, DashboardInactive
     ), f"'activate' requires 'DashboardInactive' to be the current screen! Current screen is: '{pilot.app.screen}'."
-    await pilot.press("f4")
+    await key_press(pilot, "f4")
     await activate_body(pilot, password)

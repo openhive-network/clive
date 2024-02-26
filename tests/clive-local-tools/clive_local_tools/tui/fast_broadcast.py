@@ -7,6 +7,8 @@ from clive.__private.ui.operations.operations import Operations
 from .activate import activate_body
 from .textual import is_key_binding_active
 from .utils import log_current_view
+from .textual import key_press
+
 
 if TYPE_CHECKING:
     from textual.pilot import Pilot
@@ -16,7 +18,7 @@ async def fast_broadcast(pilot: Pilot[int], activated: bool, password: str) -> N
     """Fast broadcast with optional activation if 'activated' == False."""
     log_current_view(pilot.app)
     assert is_key_binding_active(pilot.app, "f5", "Fast broadcast"), "There are no expected binding for F5 key!"
-    await pilot.press("f5")
+    await key_press(pilot, "f5")
     if not activated:
         await activate_body(pilot, password)
     assert isinstance(
