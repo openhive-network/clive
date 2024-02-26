@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 import pytest
 import test_tools as tt
 from typer.testing import CliRunner
@@ -13,6 +11,7 @@ from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.core.url import Url
+from clive_local_tools.cli.testing_cli import TestingCli
 from clive_local_tools.data.constants import (
     CREATOR_ACCOUNT,
     WATCHED_ACCOUNTS,
@@ -23,12 +22,9 @@ from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_VEST_BALANCE,
 )
 
-if TYPE_CHECKING:
-    from clive.__private.cli.clive_typer import CliveTyper
-
 
 @pytest.fixture()
-async def cli_with_runner() -> tuple[CliveTyper, CliRunner]:
+async def testing_cli() -> TestingCli:
     """Will run init node, configure profile and return CliRunner from typer.testing module."""
     init_node = tt.InitNode()
     init_node.config.plugin.append("transaction_status_api")
@@ -83,9 +79,9 @@ async def cli_with_runner() -> tuple[CliveTyper, CliRunner]:
         )
         await world.commands.sync_data_with_beekeeper()
 
-    runner = CliRunner()
-
     # import cli after default profile is set, default values for --profile-name option are set during loading
     from clive.__private.cli.main import cli
 
-    return cli, runner
+    runner = CliRunner()
+
+    return TestingCli(cli, runner)
