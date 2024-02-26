@@ -200,11 +200,10 @@ class Node(BaseNode):
         with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
             yield
 
-    async def setup(self) -> None:
-        await self.__sync_node_version()
-
     @property
-    def network_type(self) -> str:
+    async def network_type(self) -> str:
+        if not self.__network_type:
+            await self.__sync_node_version()
         return self.__network_type
 
     @property
