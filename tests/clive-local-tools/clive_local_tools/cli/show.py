@@ -2,24 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import test_tools as tt
-
 if TYPE_CHECKING:
     from click.testing import Result
-    from typer.testing import CliRunner
 
-    from clive.__private.cli.clive_typer import CliveTyper
+    from clive_local_tools.cli.testing_cli import TestingCli
 
 
-def balances(
-    runner: CliRunner, cli: CliveTyper, profile_name: str | None = None, account_name: str | None = None
-) -> Result:
+def balances(testing_cli: TestingCli, profile_name: str | None = None, account_name: str | None = None) -> Result:
     """If profile_name or account_name is None then default value is used."""
-    command = ["show", "balances"]
+    attrs = {}
     if profile_name is not None:
-        command.append(f"--profile-name={profile_name}")
+        attrs["profile-name"] = profile_name
     if account_name is not None:
-        command.append(f"--account-name={account_name}")
+        attrs["account-name"] = account_name
 
-    tt.logger.info(f"executing command {command}")
-    return runner.invoke(cli, command)
+    return testing_cli.show_balances(**attrs)

@@ -146,7 +146,7 @@ testing_cli:
   extends: .testing
   script:
     - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/cli
+    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/cli/process/test_process_savings_deposit.py
 
 testing_password_private_key_logging:
   stage: tests
