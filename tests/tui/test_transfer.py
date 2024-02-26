@@ -11,7 +11,7 @@ from clive_local_tools.tui.activate import activate
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
-from clive_local_tools.tui.textual import get_notification_transaction_id, write_text
+from clive_local_tools.tui.textual import get_notification_transaction_id, key_press, write_text
 from clive_local_tools.tui.utils import get_mode, log_current_view
 from schemas.operations import AnyOperation, TransferOperation
 
@@ -38,12 +38,12 @@ async def fill_transfer_data(
         f" '{pilot.app.screen}'."
     )
     await write_text(pilot, beneficient)
-    await pilot.press("tab", "tab")
+    await key_press(pilot, "tab", "tab")
     await write_text(pilot, amount)
-    await pilot.press("tab")
+    await key_press(pilot, "tab")
     await choose_asset_token(pilot, asset_token)
     if memo:
-        await pilot.press("tab")
+        await key_press(pilot, "tab")
         await write_text(pilot, memo)
 
 
@@ -116,7 +116,7 @@ async def test_transfers(
 
     ### Create transfer
     # Choose transfer operation
-    await pilot.press("f2", "tab", "enter")
+    await key_press(pilot, "f2", "tab", "enter")
     # Fill transfer data
     await fill_transfer_data(pilot, RECEIVER, AMOUNT, asset_token, memo)
     log_current_view(pilot.app, nodes=True)
@@ -125,7 +125,7 @@ async def test_transfers(
         await fast_broadcast(pilot, activated, PASS)
     else:  # "ADD_TO_CART" or "FINALIZE_TRANSACTION"
         if operation_processing == "ADD_TO_CART":
-            await pilot.press("f2", "f2")  # add to cart, go to cart
+            await key_press(pilot, "f2", "f2")  # add to cart, go to cart
         await finalize_transaction(pilot, activated, PASS)
 
     transaction_id = await get_notification_transaction_id(pilot)
@@ -168,7 +168,7 @@ async def test_transfers_finalize_cart(
 
     ### Create 2 transfers
     # Choose transfer operation
-    await pilot.press("f2", "tab")
+    await key_press(pilot, "f2", "tab")
 
     asset_token: ASSET_TOKEN = "HBD"
 
@@ -177,16 +177,16 @@ async def test_transfers_finalize_cart(
         amount = "1." + str(i)
 
         # Fill transfer data
-        await pilot.press("enter")
+        await key_press(pilot, "enter")
         await fill_transfer_data(pilot, RECEIVER, amount, asset_token, memo)
         log_current_view(pilot.app, nodes=True)
 
-        await pilot.press("f2")  # add to cart (goes back to Operations screen)
+        await key_press(pilot, "f2")  # add to cart (goes back to Operations screen)
         log_current_view(pilot.app)
 
         asset_token = "HIVE"
 
-    await pilot.press("f2")  # go to cart
+    await key_press(pilot, "f2")  # go to cart
     await finalize_transaction(pilot, activated, PASS)
 
     transaction_id = await get_notification_transaction_id(pilot)

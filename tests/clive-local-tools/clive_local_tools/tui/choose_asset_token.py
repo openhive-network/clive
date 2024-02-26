@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
 from clive.models.asset import AssetFactoryHolder
 
+from .textual import key_press
+
 if TYPE_CHECKING:
     from textual.pilot import Pilot
 
@@ -16,7 +18,7 @@ async def choose_asset_token(pilot: Pilot[int], asset_token: ASSET_TOKEN) -> Non
         pilot.app.focused, CurrencySelectorLiquid
     ), f"'choose_asset_token' requires focus on 'CurrencySelectorLiquid'! Current focus set on: {pilot.app.focused}."
     if asset_token == "HIVE":
-        await pilot.press("down", "down", "enter")
+        await key_press(pilot, "down", "down", "enter")
     selected_asset = pilot.app.query_one(CurrencySelectorLiquid).value
     assert (
         type(selected_asset) == AssetFactoryHolder
