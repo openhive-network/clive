@@ -2,15 +2,16 @@ from __future__ import annotations
 
 import asyncio
 import re
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Any, Final
 
 import test_tools as tt
 from textual.widgets._toast import Toast
 
-if TYPE_CHECKING:
-    from textual.app import App
-    from textual.pilot import Pilot
+from clive_local_tools.tui.checkers import assert_is_key_binding_active
 
+if TYPE_CHECKING:
+    from textual.pilot import Pilot
+    from textual.screen import Screen
 
 TRANSACTION_ID_RE_PAT: Final[re.Pattern[str]] = re.compile(r"Transaction with ID '(?P<transaction_id>[0-9a-z]+)'")
 
@@ -20,11 +21,39 @@ async def write_text(pilot: Pilot[int], text: str) -> None:
     await pilot.press(*list(text))
 
 
-def is_key_binding_active(app: App[int], key: str, description: str) -> bool:
-    """Check if key binding is active."""
-    tt.logger.debug(f"Current active bindings: {app.namespace_bindings}")
-    binding = app.namespace_bindings.get(key)
-    return binding is not None and binding[1].description == description
+async def press_binding(pilot: Pilot[int], key: str, key_description: str | None = None) -> None:
+    """Safer version of pilot.press which ensures that the key binding is active and optionally asserts binding desc."""
+    assert_is_key_binding_active(pilot.app, key, key_description)
+    await pilot.press(key)
+
+
+async def press_and_wait_for_screen(
+    pilot: Pilot[int],
+    key: str,
+    expected_screen: type[Screen[Any]],
+    *,
+    key_description: str | None = None,
+) -> None:
+    """Press some binding and ensure screen changed after some action."""
+    await press_binding(pilot, key, key_description)
+    await wait_for_screen(pilot, expected_screen)
+
+
+async def wait_for_screen(pilot: Pilot[int], expected_screen: type[Screen[Any]], *, timeout: float = 3.0) -> None:
+    """Wait for the expected screen to be active."""
+
+    async def wait_for_screen_change() -> None:
+        while not isinstance(app.screen, expected_screen):
+            await pilot.pause(0.1)
+
+    app = pilot.app
+
+    try:
+        await asyncio.wait_for(wait_for_screen_change(), timeout=timeout)
+    except asyncio.TimeoutError:
+        raise AssertionError(
+            f"Screen didn't changed to '{expected_screen}' in {timeout=}. Current one is: {app.screen}"
+        ) from None
 
 
 async def get_notification_transaction_id(pilot: Pilot[int]) -> str:

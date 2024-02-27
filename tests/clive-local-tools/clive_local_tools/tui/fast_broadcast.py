@@ -2,11 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.operations import Operations
 
 from .activate import activate_body
-from .textual import is_key_binding_active
-from .utils import log_current_view
+from .textual import press_and_wait_for_screen
 
 if TYPE_CHECKING:
     from textual.pilot import Pilot
@@ -14,11 +14,8 @@ if TYPE_CHECKING:
 
 async def fast_broadcast(pilot: Pilot[int], activated: bool, password: str) -> None:
     """Fast broadcast with optional activation if 'activated' == False."""
-    log_current_view(pilot.app)
-    assert is_key_binding_active(pilot.app, "f5", "Fast broadcast"), "There are no expected binding for F5 key!"
-    await pilot.press("f5")
-    if not activated:
-        await activate_body(pilot, password)
-    assert isinstance(
-        pilot.app.screen, Operations
-    ), f"'fast_broadcast' expects 'Operations' to be the screen after finish! Current screen is: '{pilot.app.screen}'."
+    if activated:
+        await press_and_wait_for_screen(pilot, "f5", Operations)
+    else:
+        await press_and_wait_for_screen(pilot, "f5", Activate)
+        await activate_body(pilot, password, expected_screen=Operations)

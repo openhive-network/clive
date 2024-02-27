@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 
 from .activate import activate_body
-from .textual import is_key_binding_active
-from .utils import log_current_view
+from .textual import press_and_wait_for_screen
 
 if TYPE_CHECKING:
     from textual.pilot import Pilot
@@ -15,20 +15,11 @@ if TYPE_CHECKING:
 
 async def finalize_transaction(pilot: Pilot[int], activated: bool, password: str) -> None:
     """Finalize transaction with optional activation if 'activated' == False."""
-    log_current_view(pilot.app)
-    assert is_key_binding_active(pilot.app, "f10", "Finalize transaction") or is_key_binding_active(
-        pilot.app, "f10", "Summary"
-    ), "There are no expected binding for F10 key!"
-    await pilot.press("f10")
-    assert isinstance(pilot.app.screen, TransactionSummaryFromCart), (
-        "'finalize_transaction' expects 'TransactionSummaryFromCart' to be the final screen! "
-        f"Current screen is: '{pilot.app.screen}'."
-    )
-    assert is_key_binding_active(pilot.app, "f10", "Broadcast"), "There are no expected binding for F10 key!"
-    await pilot.press("f10")
-    if not activated:
-        await activate_body(pilot, password)
-    assert isinstance(pilot.app.screen, DashboardActive), (
-        "'finalize_transaction' expects 'DashboardActive' to be the screen after finish! "
-        f"Current screen is: '{pilot.app.screen}'."
-    )
+    broadcast_binding_description = "Broadcast"
+
+    await press_and_wait_for_screen(pilot, "f10", TransactionSummaryFromCart)
+    if activated:
+        await press_and_wait_for_screen(pilot, "f10", DashboardActive, key_description=broadcast_binding_description)
+    else:
+        await press_and_wait_for_screen(pilot, "f10", Activate, key_description=broadcast_binding_description)
+        await activate_body(pilot, password, expected_screen=DashboardActive)

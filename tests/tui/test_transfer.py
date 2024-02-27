@@ -4,14 +4,17 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.ui.operations.cart import Cart
+from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.models import Asset
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.activate import activate
+from clive_local_tools.tui.checkers import assert_is_screen_active
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
-from clive_local_tools.tui.textual import get_notification_transaction_id, write_text
+from clive_local_tools.tui.textual import get_notification_transaction_id, press_and_wait_for_screen, write_text
 from clive_local_tools.tui.utils import get_mode, log_current_view
 from schemas.operations import AnyOperation, TransferOperation
 
@@ -33,10 +36,7 @@ async def fill_transfer_data(
     pilot: Pilot[int], beneficient: str, amount: str, asset_token: ASSET_TOKEN, memo: str | None
 ) -> None:
     """Assuming Transfer is current screen."""
-    assert isinstance(pilot.app.screen, TransferToAccount), (
-        "'fill_transfer_data' requires 'TransferToAccount' to be the current screen! Current screen is:"
-        f" '{pilot.app.screen}'."
-    )
+    assert_is_screen_active(pilot, TransferToAccount)
     await write_text(pilot, beneficient)
     await pilot.press("tab", "tab")
     await write_text(pilot, amount)
@@ -115,8 +115,10 @@ async def test_transfers(
         await activate(pilot, PASS)
 
     ### Create transfer
-    # Choose transfer operation
-    await pilot.press("f2", "tab", "enter")
+    await press_and_wait_for_screen(pilot, "f2", Operations)
+    await pilot.press("tab")  # Choose transfer operation
+    await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
+
     # Fill transfer data
     await fill_transfer_data(pilot, RECEIVER, AMOUNT, asset_token, memo)
     log_current_view(pilot.app, nodes=True)
@@ -125,7 +127,8 @@ async def test_transfers(
         await fast_broadcast(pilot, activated, PASS)
     else:  # "ADD_TO_CART" or "FINALIZE_TRANSACTION"
         if operation_processing == "ADD_TO_CART":
-            await pilot.press("f2", "f2")  # add to cart, go to cart
+            await press_and_wait_for_screen(pilot, "f2", Operations)  # add to cart
+            await press_and_wait_for_screen(pilot, "f2", Cart)  # go to cart
         await finalize_transaction(pilot, activated, PASS)
 
     transaction_id = await get_notification_transaction_id(pilot)
@@ -181,12 +184,12 @@ async def test_transfers_finalize_cart(
         await fill_transfer_data(pilot, RECEIVER, amount, asset_token, memo)
         log_current_view(pilot.app, nodes=True)
 
-        await pilot.press("f2")  # add to cart (goes back to Operations screen)
+        await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
         log_current_view(pilot.app)
 
         asset_token = "HIVE"
 
-    await pilot.press("f2")  # go to cart
+    await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to cart
     await finalize_transaction(pilot, activated, PASS)
 
     transaction_id = await get_notification_transaction_id(pilot)
