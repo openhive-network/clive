@@ -136,7 +136,7 @@ def create_comment_options(account_name: str, comment_data_for_current_iteration
     beneficiaries = []
 
     while len(beneficiaries) < 3:  # draw 3 accounts to be beneficiaries
-        account_number = random.randint(0, 99_999)
+        account_number = random.randint(0, 99_999)  # fixme dodać więcej acc albo z przedziału
         beneficiary_name = f"account-{account_number}"
         for beneficiary in beneficiaries:
             # avoid duplicating beneficiary and making comment author as beneficiary
@@ -180,41 +180,72 @@ def generate_blocks(
     comment_data = {f"permlink-{index}": f"account-{index}" for index in
                     range(100_000)}  # comment permlinks with authors
 
-    account_it = 0
+    # account_it = 0
     with ProcessPoolExecutor(max_workers=len(tokens)) as executor:
         main_iteration = 0
         while True:
             block = []
-            comment_data_for_current_iteration = {}
-            for y in range(elements_number_for_iteration):
-                list_of_ops = []
-                for _z in range(ops_in_one_element):
-                    if account_it >= 99_999:
-                        account_it = 0
-                    generated_op = __prepare_operation(
-                        f"account-{account_it}", comment_data, comment_data_for_current_iteration
-                    )
-                    list_of_ops.append(generated_op)
-                    # add comment options to new article
-                    if generated_op.get_name() == "comment" and generated_op.parent_author == "":
-                        list_of_ops.append(
-                            create_comment_options(f"account-{account_it}", comment_data_for_current_iteration))
-                    account_it += 1
-                block.append(list_of_ops)
+
+            splitted_accounts = split_to_chunks(list(range(NUMBER_OF_ACCOUNTS)), max_broadcast_workers)
+            operation_chunks = split_to_chunks(list(range(elements_number_for_iteration)), max_broadcast_workers)
+
+            chunk_size = len(comment_data) // max_broadcast_workers
+            splitted_comment_data = [({key: comment_data[key] for key in list(comment_data.keys())[i:i + chunk_size]})
+                                     for i in range(0, len(comment_data), chunk_size)]
+            assert len(splitted_accounts) == len(operation_chunks)
+
+            start_time = time()
+            operations_futures: list[Future] = []
+            for chunk, account_range, comments in zip(operation_chunks, splitted_accounts, splitted_comment_data):
+                operations_futures.append(executor.submit(generate_chunk_of_operations,
+                                                          chunk,
+                                                          comment_data,
+                                                          ops_in_one_element,
+                                                          account_range.copy(),
+                                                          comments
+                                                          ))
+            results = []
+            to_delete = 0
+            permlinks_to_delete = []
+            for chunk in as_completed(operations_futures):
+                results.append(chunk.result())
+                block.extend(results[-1][0])
+                permlinks_to_delete.append(results[-1][1])
+                to_delete += len(results[-1][1])
+            operations_futures.clear()
+            end_time = time()
+            execution_time = end_time - start_time
+            print("Czas wykonania: ", execution_time, "sekund")
+
+            # for y in range(elements_number_for_iteration):
+            #     list_of_ops = []
+            #     for _z in range(ops_in_one_element):
+            #         if account_it >= 99_999:
+            #             account_it = 0
+            #         generated_op = __prepare_operation(
+            #             f"account-{account_it}", comment_data, comment_data_for_current_iteration
+            #         )
+            #         list_of_ops.append(generated_op)
+            #         # add comment options to new article
+            #         if generated_op.get_name() == "comment" and generated_op.parent_author == "":
+            #             list_of_ops.append(
+            #                 create_comment_options(f"account-{account_it}", comment_data_for_current_iteration))
+            #         account_it += 1
+            #         block.append(list_of_ops)
 
             gdpo = node.api.database.get_dynamic_global_properties()
             node_config = node.api.database.get_config()
 
-            chunk_size = len(block) // len(tokens)
-            chunks = [block[i: i + chunk_size] for i in range(0, len(block), chunk_size)]
+            chunks = split_to_chunks(block, len(tokens))
+
             sign_futures: list[Future] = []
-            for num, chunk in enumerate(chunks):
+            for chunk, token in zip(chunks, tokens):
                 sign_futures.append(executor.submit(sign,
                                                     gdpo,
                                                     node_config,
                                                     beekeeper_url,
                                                     chunk,
-                                                    tokens[num],
+                                                    token,
                                                     public_keys,
                                                     ))
             results = [None] * len(chunks)
@@ -240,13 +271,46 @@ def generate_blocks(
             )
             broadcast_futures.extend(list(executor.map(single_transaction_broadcast_with_address, broadcast)))
             broadcast_futures.clear()
-            comment_data.update(comment_data_for_current_iteration)
+            # fixme:
+            # comment_data.update(comment_data_for_current_iteration)
 
             if main_iteration == stop_at_block:
                 executor.shutdown(cancel_futures=False, wait=True)
                 return
 
             main_iteration += 1
+
+
+def split_to_chunks(input_list, num_parts):
+    part_length = len(input_list) // num_parts
+    remainder = len(input_list) % num_parts
+    splitted_list = [input_list[i * part_length + min(i, remainder):(i + 1) * part_length + min(i + 1, remainder)] for i
+                     in range(num_parts)]
+    return splitted_list
+
+
+def generate_chunk_of_operations(elements_number_for_iteration, comment_data, ops_in_one_element, splitted_accounts,
+                                 comments):
+    comment_data_for_current_iteration = comments.copy()
+    account_it = splitted_accounts.copy()[0]
+
+    list_of_trx = []
+    for y in elements_number_for_iteration:
+        for _z in range(ops_in_one_element):
+            if account_it >= splitted_accounts[-1]:
+                account_it = splitted_accounts[0]
+            generated_op = __prepare_operation(
+                f"account-{account_it}", comment_data, comment_data_for_current_iteration
+            )
+            list_of_trx.append(generated_op)
+            # add comment options to new article
+            if generated_op.get_name() == "comment":
+                comment_data_for_current_iteration[generated_op.permlink] = f"account-{account_it}"
+            if generated_op.get_name() == "comment" and generated_op.parent_author == "":
+                list_of_trx.append(
+                    create_comment_options(f"account-{account_it}", comment_data_for_current_iteration))
+            account_it += 1
+    return list_of_trx, comment_data_for_current_iteration
 
 
 class BroadcastTransactionsChunk:
@@ -285,10 +349,11 @@ def sign(gdpo, node_config, url, chunk, token, public_keys):
     return singed_chunks
 
 
-def create_and_sign_transaction(ops, gdpo, node_config, url, token, public_keys, binary_transaction: bool = False):
+def create_and_sign_transaction(ops: list, gdpo, node_config, url, token, public_keys,
+                                binary_transaction: bool = False):
     trx: SimpleTransaction = generate_transaction_template(gdpo)
     trx.operations.extend(
-        [HF26Representation(type=op.get_name_with_suffix(), value=op) for op in ops])
+        [HF26Representation(type=op.get_name_with_suffix(), value=op) for op in [ops]])
     if len(public_keys) != 0:
         headers = {'Content-Type': 'application/json'}
 
