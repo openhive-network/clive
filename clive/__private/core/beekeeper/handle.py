@@ -174,6 +174,10 @@ class Beekeeper:
             raise BeekeeperNotificationServerNotSetError
         return self.config.notifications_endpoint
 
+    @property
+    def is_opening_beekeeper_failed(self) -> bool:
+        return self.__notification_server.opening_beekeeper_failed.is_set()
+
     @contextmanager
     def modified_connection_details(
         self,
