@@ -112,6 +112,8 @@ build_wheel:
       - "**/generated*/"
     when: always
     expire_in: 7 days
+  after_script:
+    - (bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash" && echo $?) || (echo $? && false)
 
 testing_beekeeper:
   extends: .testing
