@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
 
@@ -11,9 +11,9 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.testing_cli import TestingCli
 
 
-amount_to_withdraw = tt.Asset.Test(0.111)
-amount_to_withdraw2 = tt.Asset.Test(0.112)
-amount_to_deposit = tt.Asset.Test(0.345)
+AMOUNT_TO_WITHDRAW: Final[tt.Asset.TestT] = tt.Asset.Test(0.111)
+AMOUNT_TO_WITHDRAW2: Final[tt.Asset.TestT] = tt.Asset.Test(0.112)
+AMOUNT_TO_DEPOSIT: Final[tt.Asset.TestT] = tt.Asset.Test(0.345)
 
 
 async def test_show_pending_withdrawals_none(
@@ -31,15 +31,15 @@ async def test_show_pending_withdrawals_basic(
 ) -> None:
     # ARRANGE
     testing_cli.process_savings_deposit(
-        amount=amount_to_deposit.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     testing_cli.process_savings_withdrawal(
-        amount=amount_to_withdraw.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_WITHDRAW.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     testing_cli.process_savings_withdrawal(
-        amount=amount_to_withdraw2.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_WITHDRAW2.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ACT
@@ -47,10 +47,10 @@ async def test_show_pending_withdrawals_basic(
     checkers.assert_pending_withrawals(
         testing_cli,
         account_name=f"{WORKING_ACCOUNT.name}",
-        asset_amount=amount_to_withdraw,
+        asset_amount=AMOUNT_TO_WITHDRAW,
     )
     checkers.assert_pending_withrawals(
         testing_cli,
         account_name=f"{WORKING_ACCOUNT.name}",
-        asset_amount=amount_to_withdraw2,
+        asset_amount=AMOUNT_TO_WITHDRAW2,
     )

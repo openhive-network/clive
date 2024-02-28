@@ -15,7 +15,5 @@ if TYPE_CHECKING:
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_show_authoruty_basic(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    getattr(testing_cli, f"show_{authority}-authority")()
-
     # ASSERT
     assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, get_args
+from typing import TYPE_CHECKING, Final, get_args
 
 import pytest
 
@@ -14,14 +14,16 @@ from clive_local_tools.cli.checkers import (
 from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT, WORKING_ACCOUNT_KEY_ALIAS
 
 if TYPE_CHECKING:
+    import test_tools as tt
+
     from clive_local_tools.cli.testing_cli import TestingCli
 
 
-other_account = WATCHED_ACCOUNTS[0]
-other_account2 = WATCHED_ACCOUNTS[1]
-weight = 213
-modified_weight = 214
-weight_threshold = 2
+OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS[0]
+OTHER_ACCOUNT2: Final[tt.Account] = WATCHED_ACCOUNTS[1]
+WEIGHT: Final[int] = 213
+MODIFIED_WEIGHT: Final[int] = 214
+WEIGHT_THRESHOLD: Final[int] = 2
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
@@ -29,18 +31,18 @@ async def test_chaining(testing_cli: TestingCli, authority: AuthorityType) -> No
     # ACT
     with testing_cli.chain_commands() as chain_command_builder:
         getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
         )
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
-        getattr(chain_command_builder, "add-key")(key=other_account.public_key, weight=weight)
+        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
+        getattr(chain_command_builder, "add-key")(key=OTHER_ACCOUNT.public_key, weight=WEIGHT)
 
     # ASSERT
-    assert_weight_threshold(testing_cli, authority, weight_threshold)
+    assert_weight_threshold(testing_cli, authority, WEIGHT_THRESHOLD)
     assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
-    assert_is_authority(testing_cli, other_account.name, authority)
-    assert_is_authority(testing_cli, other_account.public_key, authority)
-    assert_authority_weight(testing_cli, other_account.name, authority, weight)
-    assert_authority_weight(testing_cli, other_account.public_key, authority, weight)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.name, authority)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.public_key, authority)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT.name, authority, WEIGHT)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT.public_key, authority, WEIGHT)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
@@ -48,20 +50,20 @@ async def test_chaining2(testing_cli: TestingCli, authority: AuthorityType) -> N
     # ACT
     with testing_cli.chain_commands() as chain_command_builder:
         getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
         )
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
-        getattr(chain_command_builder, "add-account")(account=other_account2.name, weight=weight)
-        getattr(chain_command_builder, "add-key")(key=other_account.public_key, weight=weight)
+        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
+        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT2.name, weight=WEIGHT)
+        getattr(chain_command_builder, "add-key")(key=OTHER_ACCOUNT.public_key, weight=WEIGHT)
         getattr(chain_command_builder, "remove-key")(key=WORKING_ACCOUNT.public_key)
 
     # ASSERT
-    assert_weight_threshold(testing_cli, authority, weight_threshold)
-    assert_is_authority(testing_cli, other_account.name, authority)
-    assert_is_authority(testing_cli, other_account2.name, authority)
-    assert_is_authority(testing_cli, other_account.public_key, authority)
-    assert_authority_weight(testing_cli, other_account2.name, authority, weight)
-    assert_authority_weight(testing_cli, other_account.public_key, authority, weight)
+    assert_weight_threshold(testing_cli, authority, WEIGHT_THRESHOLD)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.name, authority)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT2.name, authority)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.public_key, authority)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT2.name, authority, WEIGHT)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT.public_key, authority, WEIGHT)
     assert_is_not_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
 
 
@@ -70,16 +72,16 @@ async def test_chaining3(testing_cli: TestingCli, authority: AuthorityType) -> N
     # ACT
     with testing_cli.chain_commands() as chain_command_builder:
         getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
         )
-        getattr(chain_command_builder, "add-key")(key=other_account.public_key, weight=weight)
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
-        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=modified_weight)
+        getattr(chain_command_builder, "add-key")(key=OTHER_ACCOUNT.public_key, weight=WEIGHT)
+        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
+        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT)
 
     # ASSERT
     assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
-    assert_is_authority(testing_cli, other_account.public_key, authority)
-    assert_is_authority(testing_cli, other_account.name, authority)
-    assert_authority_weight(testing_cli, WORKING_ACCOUNT.public_key, authority, modified_weight)
-    assert_authority_weight(testing_cli, other_account.public_key, authority, weight)
-    assert_authority_weight(testing_cli, other_account.name, authority, weight)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.public_key, authority)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.name, authority)
+    assert_authority_weight(testing_cli, WORKING_ACCOUNT.public_key, authority, MODIFIED_WEIGHT)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT.public_key, authority, WEIGHT)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT.name, authority, WEIGHT)

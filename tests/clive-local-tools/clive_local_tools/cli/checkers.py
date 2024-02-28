@@ -48,7 +48,7 @@ def assert_is_authority(
     table = output.split("\n")[2:]
     assert any(
         str(entry) in line for line in table
-    ), f"no {entry!s} entry in show {authority}-authority output:\n{output}"
+    ), f"no {entry} entry in show {authority}-authority output:\n{output}"
 
 
 def assert_is_not_authority(
@@ -61,7 +61,7 @@ def assert_is_not_authority(
     table = output.split("\n")[2:]
     assert not any(
         str(entry) in line for line in table
-    ), f"there is {entry!s} entry in show {authority}-authority output:\n{output}"
+    ), f"there is {entry} entry in show {authority}-authority output:\n{output}"
 
 
 def assert_authority_weight(
@@ -74,7 +74,7 @@ def assert_authority_weight(
     output = result.output
     assert any(
         str(entry) in line and f"{weight}" in line for line in output.split("\n")
-    ), f"no {entry!s} entry with weight {weight} in show {authority}-authority output:\n{output}"
+    ), f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
 
 
 def assert_weight_threshold(

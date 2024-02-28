@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import pytest
 import test_tools as tt
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.testing_cli import TestingCli
 
 
-amount_to_deposit = tt.Asset.Test(0.234)
+AMOUNT_TO_DEPOSIT: Final[tt.Asset.TestT] = tt.Asset.Test(0.234)
 
 
 async def test_withdrawal_cancel_valid(testing_cli: TestingCli) -> None:
@@ -21,10 +21,10 @@ async def test_withdrawal_cancel_valid(testing_cli: TestingCli) -> None:
     request_id = 13
 
     testing_cli.process_savings_deposit(
-        amount=amount_to_deposit.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     testing_cli.process_savings_withdrawal(
-        amount=amount_to_deposit.as_legacy(),
+        amount=AMOUNT_TO_DEPOSIT.as_legacy(),
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         **{"request-id": request_id},
@@ -37,7 +37,7 @@ async def test_withdrawal_cancel_valid(testing_cli: TestingCli) -> None:
 
     # ASSERT
     result = testing_cli.show_pending_withdrawals()
-    assert str(amount_to_deposit.amount) not in result.stdout
+    assert str(AMOUNT_TO_DEPOSIT.amount) not in result.stdout
 
 
 async def test_withdrawal_cancel_invalid(testing_cli: TestingCli) -> None:
@@ -46,11 +46,11 @@ async def test_withdrawal_cancel_invalid(testing_cli: TestingCli) -> None:
     invalid_request_id = 24
 
     testing_cli.process_savings_deposit(
-        amount=amount_to_deposit.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     testing_cli.process_savings_withdrawal(
-        amount=amount_to_deposit.as_legacy(),
+        amount=AMOUNT_TO_DEPOSIT.as_legacy(),
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         **{"request-id": actual_request_id},
@@ -68,5 +68,5 @@ async def test_withdrawal_cancel_invalid(testing_cli: TestingCli) -> None:
     checkers.assert_pending_withrawals(
         testing_cli,
         account_name=f"{WORKING_ACCOUNT.name}",
-        asset_amount=amount_to_deposit,
+        asset_amount=AMOUNT_TO_DEPOSIT,
     )

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, get_args
+from typing import TYPE_CHECKING, Final, get_args
 
 import pytest
 
@@ -14,13 +14,15 @@ from clive_local_tools.cli.checkers import (
 from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT, WORKING_ACCOUNT_KEY_ALIAS
 
 if TYPE_CHECKING:
+    import test_tools as tt
+
     from clive_local_tools.cli.testing_cli import TestingCli
 
 
-weight_threshold = 12
-other_account = WATCHED_ACCOUNTS[0]
-weight = 323
-modified_weight = 324
+OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS[0]
+WEIGHT_THRESHOLD: Final[int] = 12
+WEIGHT: Final[int] = 323
+MODIFIED_WEIGHT: Final[int] = 324
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
@@ -28,14 +30,14 @@ async def test_set_threshold_offline(testing_cli: TestingCli, authority: Authori
     # ACT
     with testing_cli.chain_commands() as chain_command_builder:
         getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
         )
-        getattr(chain_command_builder, "add-account")(account=WORKING_ACCOUNT.name, weight=weight)
+        getattr(chain_command_builder, "add-account")(account=WORKING_ACCOUNT.name, weight=WEIGHT)
 
     # ASSERT
-    assert_weight_threshold(testing_cli, authority, weight_threshold)
+    assert_weight_threshold(testing_cli, authority, WEIGHT_THRESHOLD)
     assert_is_authority(testing_cli, WORKING_ACCOUNT.name, authority)
-    assert_authority_weight(testing_cli, WORKING_ACCOUNT.name, authority, weight)
+    assert_authority_weight(testing_cli, WORKING_ACCOUNT.name, authority, WEIGHT)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
@@ -45,11 +47,11 @@ async def test_add_account_offline(testing_cli: TestingCli, authority: Authority
         getattr(chain_command_builder, f"process_update-{authority}-authority")(
             "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
         )
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
+        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
 
     # ASSERT
-    assert_is_authority(testing_cli, other_account.name, authority)
-    assert_authority_weight(testing_cli, other_account.name, authority, weight)
+    assert_is_authority(testing_cli, OTHER_ACCOUNT.name, authority)
+    assert_authority_weight(testing_cli, OTHER_ACCOUNT.name, authority, WEIGHT)
     assert_is_not_authority(testing_cli, WORKING_ACCOUNT.name, authority)
     assert_is_not_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
 
@@ -61,9 +63,9 @@ async def test_modify_key_offline(testing_cli: TestingCli, authority: AuthorityT
         getattr(chain_command_builder, f"process_update-{authority}-authority")(
             "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
         )
-        getattr(chain_command_builder, "add-key")(key=WORKING_ACCOUNT.public_key, weight=weight)
-        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=modified_weight)
+        getattr(chain_command_builder, "add-key")(key=WORKING_ACCOUNT.public_key, weight=WEIGHT)
+        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT)
 
     # ASSERT
     assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
-    assert_authority_weight(testing_cli, WORKING_ACCOUNT.public_key, authority, modified_weight)
+    assert_authority_weight(testing_cli, WORKING_ACCOUNT.public_key, authority, MODIFIED_WEIGHT)

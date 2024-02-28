@@ -11,7 +11,5 @@ if TYPE_CHECKING:
 
 async def test_show_memo_key_basic(testing_cli: TestingCli) -> None:
     # ACT
-    getattr(testing_cli, "show_memo-key")()
-
     # ASSERT
     assert_memo_key(testing_cli, WORKING_ACCOUNT.public_key)
