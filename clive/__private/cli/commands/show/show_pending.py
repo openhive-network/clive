@@ -25,7 +25,7 @@ class ShowPendingWithdrawals(WorldBasedCommand):
         result: SavingsData = wrapper.result_or_raise
 
         if not result.pending_transfers:
-            typer.echo(f"Account has {self.account_name} no pending withdrawals")
+            typer.echo(f"Account `{self.account_name}` has no pending withdrawals")
             return
 
         console = Console()
