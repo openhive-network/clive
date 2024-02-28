@@ -11,7 +11,7 @@ from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.core.url import Url
-from clive_local_tools.cli.testing_cli import TestingCli
+from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
     CREATOR_ACCOUNT,
     WATCHED_ACCOUNTS,
@@ -19,12 +19,13 @@ from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
     WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
     WORKING_ACCOUNT_KEY_ALIAS,
+    WORKING_ACCOUNT_PASSWORD,
     WORKING_ACCOUNT_VEST_BALANCE,
 )
 
 
 @pytest.fixture()
-async def testing_cli() -> TestingCli:
+async def cli_tester() -> CLITester:
     """Will run init node, configure profile and return CliRunner from typer.testing module."""
     init_node = tt.InitNode()
     init_node.config.plugin.append("transaction_status_api")
@@ -70,7 +71,7 @@ async def testing_cli() -> TestingCli:
             app_state=world.app_state,
             beekeeper=world.beekeeper,
             wallet=WORKING_ACCOUNT.name,
-            password=WORKING_ACCOUNT.name,
+            password=WORKING_ACCOUNT_PASSWORD,
         ).execute_with_result()
 
         await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
@@ -84,4 +85,4 @@ async def testing_cli() -> TestingCli:
 
     runner = CliRunner()
 
-    return TestingCli(cli, runner)
+    return CLITester(cli, runner)

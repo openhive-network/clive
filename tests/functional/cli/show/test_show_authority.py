@@ -9,13 +9,11 @@ from clive_local_tools.cli.checkers import assert_is_authority
 from clive_local_tools.data.constants import WORKING_ACCOUNT
 
 if TYPE_CHECKING:
-    from clive_local_tools.cli.testing_cli import TestingCli
+    from clive_local_tools.cli.cli_tester import CLITester
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_show_authoruty_basic(testing_cli: TestingCli, authority: AuthorityType) -> None:
+async def test_show_authority_basic(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    getattr(testing_cli, f"show_{authority}-authority")()
-
     # ASSERT
-    assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)
+    assert_is_authority(cli_tester, WORKING_ACCOUNT.public_key, authority)

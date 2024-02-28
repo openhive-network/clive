@@ -1,76 +1,66 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, get_args
+from typing import TYPE_CHECKING, Final, get_args
 
 import pytest
 
 from clive.__private.cli.types import AuthorityType
 from clive_local_tools.cli.checkers import assert_authority_weight, assert_is_authority, assert_is_not_authority
-from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT, WORKING_ACCOUNT_KEY_ALIAS
+from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 
 if TYPE_CHECKING:
-    from clive_local_tools.cli.testing_cli import TestingCli
+    import test_tools as tt
+
+    from clive_local_tools.cli.cli_tester import CLITester
 
 
-other_account = WATCHED_ACCOUNTS[0]
-weight = 123
-modified_weight = 124
+OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS[0]
+WEIGHT: Final[int] = 123
+MODIFIED_WEIGHT: Final[int] = 124
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_add_account(testing_cli: TestingCli, authority: AuthorityType) -> None:
+async def test_add_account(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
+    cli_tester.process_update_authority(
+        authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).fire()
 
     # ASSERT
-    assert_is_authority(testing_cli, other_account.name, authority)
-    assert_authority_weight(testing_cli, other_account.name, authority, weight)
+    assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
+    assert_authority_weight(cli_tester, OTHER_ACCOUNT.name, authority, WEIGHT)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_remove_account(testing_cli: TestingCli, authority: AuthorityType) -> None:
+async def test_remove_account(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ARRANGE
-    other_account = WATCHED_ACCOUNTS[0]
-
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
-    assert_is_authority(testing_cli, other_account.name, authority)
+    cli_tester.process_update_authority(
+        authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).fire()
+    assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "remove-account")(account=other_account.name)
+    cli_tester.process_update_authority(
+        authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).remove_account(account=OTHER_ACCOUNT.name).fire()
 
     # ASSERT
-    assert_is_not_authority(testing_cli, other_account.name, authority)
+    assert_is_not_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
-async def test_modify_account(testing_cli: TestingCli, authority: AuthorityType) -> None:
+async def test_modify_account(cli_tester: CLITester, authority: AuthorityType) -> None:
     # ARRANGE
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "add-account")(account=other_account.name, weight=weight)
-    assert_is_authority(testing_cli, other_account.name, authority)
+    cli_tester.process_update_authority(
+        authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).fire()
+    assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
 
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "modify-account")(account=other_account.name, weight=modified_weight)
+    cli_tester.process_update_authority(
+        authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).modify_account(account=OTHER_ACCOUNT.name, weight=MODIFIED_WEIGHT).fire()
 
     # ASSERT
-    assert_is_authority(testing_cli, other_account.name, authority)
-    assert_authority_weight(testing_cli, other_account.name, authority, modified_weight)
+    assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
+    assert_authority_weight(cli_tester, OTHER_ACCOUNT.name, authority, MODIFIED_WEIGHT)

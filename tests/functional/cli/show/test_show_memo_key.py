@@ -6,12 +6,10 @@ from clive_local_tools.cli.checkers import assert_memo_key
 from clive_local_tools.data.constants import WORKING_ACCOUNT
 
 if TYPE_CHECKING:
-    from clive_local_tools.cli.testing_cli import TestingCli
+    from clive_local_tools.cli.cli_tester import CLITester
 
 
-async def test_show_memo_key_basic(testing_cli: TestingCli) -> None:
+async def test_show_memo_key_basic(cli_tester: CLITester) -> None:
     # ACT
-    getattr(testing_cli, "show_memo-key")()
-
     # ASSERT
-    assert_memo_key(testing_cli, WORKING_ACCOUNT.public_key)
+    assert_memo_key(cli_tester, WORKING_ACCOUNT.public_key)

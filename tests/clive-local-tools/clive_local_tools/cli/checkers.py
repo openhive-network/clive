@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from .show import balances as show_balances
+import pytest
+from click.testing import Result
+
+from .cli_tester import CLITester
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -10,17 +13,18 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.cli.types import AuthorityType
-    from clive_local_tools.cli.testing_cli import TestingCli
     from schemas.fields.basic import PublicKey
+
+    from .exceptions import CLITestCommandError
 
 
 def assert_balances(
-    testing_cli: TestingCli,
+    context: CLITester | Result,
     account_name: str,
     asset_amount: tt.Asset.AnyT,
     balance: Literal["Liquid", "Savings", "Unclaimed"],
 ) -> None:
-    result = show_balances(testing_cli, account_name=account_name)
+    result = context.show_balances(account_name=account_name) if isinstance(context, CLITester) else context
     output = result.output
     assert account_name in output, f"no balances of {account_name} account in balances output: {output}"
     assert any(
@@ -29,8 +33,8 @@ def assert_balances(
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()}  in balances output:\n{output}"
 
 
-def assert_pending_withrawals(testing_cli: TestingCli, account_name: str, asset_amount: tt.Asset.AnyT) -> None:
-    result = testing_cli.show_pending_withdrawals()
+def assert_pending_withrawals(context: CLITester | Result, account_name: str, asset_amount: tt.Asset.AnyT) -> None:
+    result = context.show_pending_withdrawals() if isinstance(context, CLITester) else context
     output = result.output
     assert any(
         account_name in line and asset_amount.pretty_amount() in line and asset_amount.token() in line.upper()
@@ -38,59 +42,63 @@ def assert_pending_withrawals(testing_cli: TestingCli, account_name: str, asset_
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
 
 
-def assert_is_authority(
-    testing_cli: TestingCli,
-    entry: str | PublicKey,
-    authority: AuthorityType,
-) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+    result = context.show_authority(authority) if isinstance(context, CLITester) else context
     output = result.output
     table = output.split("\n")[2:]
     assert any(
         str(entry) in line for line in table
-    ), f"no {entry!s} entry in show {authority}-authority output:\n{output}"
+    ), f"no {entry} entry in show {authority}-authority output:\n{output}"
 
 
-def assert_is_not_authority(
-    testing_cli: TestingCli,
-    entry: str | PublicKey,
-    authority: AuthorityType,
-) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+def assert_is_not_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+    result = context.show_authority(authority) if isinstance(context, CLITester) else context
     output = result.output
     table = output.split("\n")[2:]
     assert not any(
         str(entry) in line for line in table
-    ), f"there is {entry!s} entry in show {authority}-authority output:\n{output}"
+    ), f"there is {entry} entry in show {authority}-authority output:\n{output}"
 
 
 def assert_authority_weight(
-    testing_cli: TestingCli,
+    context: CLITester | Result,
     entry: str | PublicKey,
     authority: AuthorityType,
     weight: int,
 ) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+    result = context.show_authority(authority) if isinstance(context, CLITester) else context
     output = result.output
     assert any(
         str(entry) in line and f"{weight}" in line for line in output.split("\n")
-    ), f"no {entry!s} entry with weight {weight} in show {authority}-authority output:\n{output}"
+    ), f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
 
 
-def assert_weight_threshold(
-    testing_cli: TestingCli,
-    authority: AuthorityType,
-    threshold: int,
-) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
+    result = context.show_authority(authority) if isinstance(context, CLITester) else context
     output = result.output
     assert f"weight threshold is {threshold}" in output
 
 
-def assert_memo_key(
-    testing_cli: TestingCli,
-    memo_key: PublicKey,
-) -> None:
-    result = getattr(testing_cli, "show_memo-key")()
+def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
+    result = context.show_memo_key() if isinstance(context, CLITester) else context
     output = result.output
     assert str(memo_key) in output
+
+
+def assert_no_exit_code_error(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int) -> None:
+    assert_exit_code(result, 0)
+
+
+def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int, expected_exit_code: int) -> None:
+    if isinstance(result, Result):
+        actual_exit_code = result.exit_code
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'. Output:\n{result.output}"
+    elif isinstance(result, pytest.ExceptionInfo):
+        command_result = result.value.result
+        actual_exit_code = command_result.exit_code
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'. Output:\n{command_result.output}"
+    else:
+        actual_exit_code = result
+        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
+
+    assert actual_exit_code == expected_exit_code, message
