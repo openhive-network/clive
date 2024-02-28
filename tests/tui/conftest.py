@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partialmethod
 from typing import TYPE_CHECKING
 
 import pytest
@@ -22,11 +23,17 @@ from clive_local_tools.testnet_block_log import (
 )
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.clive_quit import clive_quit
+from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
     from textual.pilot import Pilot
+
+
+@pytest.fixture(autouse=True)
+def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(Clive, "notify", partialmethod(Clive.notify, timeout=TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT))
 
 
 def prepare_profile() -> None:
@@ -67,8 +74,6 @@ async def world() -> AsyncIterator[TextualWorld]:
 
 @pytest.fixture()
 async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
-    node = tt.RawNode()
-
     config_lines = get_config().write_to_lines()
     block_log = get_block_log()
     alternate_chain_spec_path = get_alternate_chain_spec_path()
