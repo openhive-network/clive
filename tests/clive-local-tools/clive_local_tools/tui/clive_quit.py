@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.ui.quit.quit import Quit
-from clive_local_tools.tui.textual import press_and_wait_for_screen, press_binding
+from clive_local_tools.tui.textual_helpers import press_and_wait_for_screen, press_binding
 
 if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot

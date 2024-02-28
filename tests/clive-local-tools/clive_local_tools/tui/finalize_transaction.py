@@ -7,7 +7,7 @@ from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 
 from .activate import activate_body
-from .textual import press_and_wait_for_screen
+from .textual_helpers import press_and_wait_for_screen
 
 if TYPE_CHECKING:
     from .types import ClivePilot

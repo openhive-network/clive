@@ -7,7 +7,7 @@ from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 
 from .checkers import assert_is_screen_active
-from .textual import press_and_wait_for_screen, press_binding, write_text
+from .textual_helpers import press_and_wait_for_screen, press_binding, write_text
 from .utils import get_mode, log_current_view
 
 if TYPE_CHECKING:

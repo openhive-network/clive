@@ -14,8 +14,8 @@ from clive_local_tools.tui.checkers import assert_is_screen_active
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
-from clive_local_tools.tui.textual import (
-    extract_transaction_id_from_notification,
+from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
+from clive_local_tools.tui.textual_helpers import (
     press_and_wait_for_screen,
     write_text,
 )

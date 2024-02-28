@@ -6,7 +6,7 @@ from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.operations.operations import Operations
 
 from .activate import activate_body
-from .textual import press_and_wait_for_screen
+from .textual_helpers import press_and_wait_for_screen
 
 if TYPE_CHECKING:
     from .types import ClivePilot
