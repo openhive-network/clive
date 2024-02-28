@@ -11,9 +11,7 @@ from clive.__private.cli.configure.main import configure
 from clive.__private.cli.process.main import process
 from clive.__private.cli.show.main import show
 
-HELP: Final[
-    str
-] = """
+HELP: Final[str] = """
 CLI tool for the Clive TUI application to interact with the [bold red]Hive[/bold red] blockchain :bee: \n
 Type "clive <command> --help" to read more about a specific subcommand.
 """

@@ -91,6 +91,7 @@ files = [
 [tool.black]
 line-length = 120
 preview = true
+enable-unstable-feature = ["multiline_string_handling"]
 
 
 [tool.mypy]
