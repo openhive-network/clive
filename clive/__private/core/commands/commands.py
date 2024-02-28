@@ -329,7 +329,7 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(FindAccounts(node=self._world.node, accounts=accounts))
 
     @overload
-    async def __surround_with_exception_handlers(  # type: ignore[misc]
+    async def __surround_with_exception_handlers(  # type: ignore[overload-overlap]
         self, command: CommandWithResult[CommandResultT]
     ) -> CommandWithResultWrapper[CommandResultT]: ...
 
@@ -350,7 +350,7 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handler(command, self.__exception_handlers)  # type: ignore[arg-type]
 
     @overload
-    async def __surround_with_exception_handler(  # type: ignore[misc]
+    async def __surround_with_exception_handler(  # type: ignore[overload-overlap]
         self,
         command: CommandWithResult[CommandResultT],
         exception_handlers: list[type[ErrorHandlerContextManager]],
@@ -394,7 +394,7 @@ class Commands(Generic[WorldT]):
         return self.__create_command_wrapper(command, handler.error)
 
     @overload
-    def __create_command_wrapper(  # type: ignore[misc]
+    def __create_command_wrapper(  # type: ignore[overload-overlap]
         self, command: CommandWithResult[CommandResultT], error: Exception | None = None
     ) -> CommandWithResultWrapper[CommandResultT]: ...
 

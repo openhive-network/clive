@@ -97,7 +97,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                     raise ValueError(f"Unknown order: {self.order}")
 
                 searched_proposals = await node.api.database_api.list_proposals(
-                    start=[],  # type: ignore[arg-type] # TODO: API interface should allow an empty list
+                    start=[],
                     limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
                     order=order,
                     order_direction=self.order_direction,
