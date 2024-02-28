@@ -122,6 +122,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "B",
     "A",
     "C4",
+    "ISC",
     "INP",
     "PIE",
     "T20",
