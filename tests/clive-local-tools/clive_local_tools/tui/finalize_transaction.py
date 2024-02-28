@@ -10,10 +10,10 @@ from .activate import activate_body
 from .textual import press_and_wait_for_screen
 
 if TYPE_CHECKING:
-    from textual.pilot import Pilot
+    from .types import ClivePilot
 
 
-async def finalize_transaction(pilot: Pilot[int], activated: bool, password: str) -> None:
+async def finalize_transaction(pilot: ClivePilot, activated: bool, password: str) -> None:
     """Finalize transaction with optional activation if 'activated' == False."""
     broadcast_binding_description = "Broadcast"
 

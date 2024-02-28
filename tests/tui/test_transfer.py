@@ -20,9 +20,8 @@ from schemas.operations import AnyOperation, TransferOperation
 
 if TYPE_CHECKING:
     import test_tools as tt
-    from textual.pilot import Pilot
 
-    from clive_local_tools.tui.types import ASSET_TOKEN, OPERATION_PROCESSING
+    from clive_local_tools.tui.types import ClivePilot, LiquidAssetToken, OperationProcessing
     from schemas.operations.representations import HF26Representation
 
 
@@ -33,7 +32,7 @@ AMOUNT: Final[str] = "1.03"
 
 
 async def fill_transfer_data(
-    pilot: Pilot[int], beneficient: str, amount: str, asset_token: ASSET_TOKEN, memo: str | None
+    pilot: ClivePilot, beneficient: str, amount: str, asset_token: LiquidAssetToken, memo: str | None
 ) -> None:
     """Assuming Transfer is current screen."""
     assert_is_screen_active(pilot, TransferToAccount)
@@ -80,11 +79,11 @@ testdata = [
 @pytest.mark.parametrize("asset_token", ["HIVE", "HBD"])
 @pytest.mark.parametrize(("memo", "operation_processing"), testdata)
 async def test_transfers(
-    prepared_tui_on_dashboard: tuple[tt.RawNode, Pilot[int]],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, ClivePilot],
     activated: bool,
-    asset_token: ASSET_TOKEN,
+    asset_token: LiquidAssetToken,
     memo: str | None,
-    operation_processing: OPERATION_PROCESSING,
+    operation_processing: OperationProcessing,
 ) -> None:
     """
     #103: I.1..3, II.1..3.
@@ -144,7 +143,7 @@ async def test_transfers(
 
 @pytest.mark.parametrize("activated", [True, False])
 async def test_transfers_finalize_cart(
-    prepared_tui_on_dashboard: tuple[tt.RawNode, Pilot[int]], activated: bool
+    prepared_tui_on_dashboard: tuple[tt.RawNode, ClivePilot], activated: bool
 ) -> None:
     """
     #103: I.4, II.4.
@@ -173,7 +172,7 @@ async def test_transfers_finalize_cart(
     # Choose transfer operation
     await pilot.press("f2", "tab")
 
-    asset_token: ASSET_TOKEN = "HBD"
+    asset_token: LiquidAssetToken = "HBD"
 
     for i in range(2):
         memo = "memo" + str(i)

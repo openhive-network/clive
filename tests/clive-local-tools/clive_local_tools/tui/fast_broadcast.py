@@ -9,10 +9,12 @@ from .activate import activate_body
 from .textual import press_and_wait_for_screen
 
 if TYPE_CHECKING:
-    from textual.pilot import Pilot
+    from .types import ClivePilot
+
+    pass
 
 
-async def fast_broadcast(pilot: Pilot[int], activated: bool, password: str) -> None:
+async def fast_broadcast(pilot: ClivePilot, activated: bool, password: str) -> None:
     """Fast broadcast with optional activation if 'activated' == False."""
     if activated:
         await press_and_wait_for_screen(pilot, "f5", Operations)

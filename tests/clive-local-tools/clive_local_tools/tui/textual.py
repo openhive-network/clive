@@ -10,25 +10,26 @@ from textual.widgets._toast import Toast
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 
 if TYPE_CHECKING:
-    from textual.pilot import Pilot
     from textual.screen import Screen
+
+    from clive_local_tools.tui.types import ClivePilot
 
 TRANSACTION_ID_RE_PAT: Final[re.Pattern[str]] = re.compile(r"Transaction with ID '(?P<transaction_id>[0-9a-z]+)'")
 
 
-async def write_text(pilot: Pilot[int], text: str) -> None:
+async def write_text(pilot: ClivePilot, text: str) -> None:
     """Useful for place text in any Input widget."""
     await pilot.press(*list(text))
 
 
-async def press_binding(pilot: Pilot[int], key: str, key_description: str | None = None) -> None:
+async def press_binding(pilot: ClivePilot, key: str, key_description: str | None = None) -> None:
     """Safer version of pilot.press which ensures that the key binding is active and optionally asserts binding desc."""
     assert_is_key_binding_active(pilot.app, key, key_description)
     await pilot.press(key)
 
 
 async def press_and_wait_for_screen(
-    pilot: Pilot[int],
+    pilot: ClivePilot,
     key: str,
     expected_screen: type[Screen[Any]],
     *,
@@ -39,7 +40,7 @@ async def press_and_wait_for_screen(
     await wait_for_screen(pilot, expected_screen)
 
 
-async def wait_for_screen(pilot: Pilot[int], expected_screen: type[Screen[Any]], *, timeout: float = 3.0) -> None:
+async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]], *, timeout: float = 3.0) -> None:
     """Wait for the expected screen to be active."""
 
     async def wait_for_screen_change() -> None:
@@ -56,7 +57,7 @@ async def wait_for_screen(pilot: Pilot[int], expected_screen: type[Screen[Any]],
         ) from None
 
 
-async def get_notification_transaction_id(pilot: Pilot[int]) -> str:
+async def get_notification_transaction_id(pilot: ClivePilot) -> str:
     """
     Will look for a toast notification containing the transaction ID and return it.
 

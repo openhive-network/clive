@@ -11,11 +11,12 @@ from .textual import press_and_wait_for_screen, press_binding, write_text
 from .utils import get_mode, log_current_view
 
 if TYPE_CHECKING:
-    from textual.pilot import Pilot
     from textual.screen import Screen
 
+    from .types import ClivePilot
 
-async def activate_body(pilot: Pilot[int], password: str, *, expected_screen: type[Screen[Any]] | None = None) -> None:
+
+async def activate_body(pilot: ClivePilot, password: str, *, expected_screen: type[Screen[Any]] | None = None) -> None:
     """Do activate when Activate is current screen."""
     activate_binding_desc = "Ok"
 
@@ -29,7 +30,7 @@ async def activate_body(pilot: Pilot[int], password: str, *, expected_screen: ty
     assert get_mode(pilot.app) == "active", "Expected 'active' mode!"
 
 
-async def activate(pilot: Pilot[int], password: str) -> None:
+async def activate(pilot: ClivePilot, password: str) -> None:
     """Do activate when DashboardInactive is current screen."""
     assert_is_screen_active(pilot, DashboardInactive)
     await press_and_wait_for_screen(pilot, "f4", Activate)

@@ -8,10 +8,10 @@ from textual.css.query import NoMatches
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
-    from textual.app import App
+    from clive_local_tools.tui.types import CliveApp
 
 
-def get_mode(app: App[int]) -> str:
+def get_mode(app: CliveApp) -> str:
     """Do not call while onboarding process."""
     try:
         widget = app.query_one("#mode-label", TitledLabel)
@@ -20,7 +20,7 @@ def get_mode(app: App[int]) -> str:
     return str(widget.value).strip()
 
 
-def log_current_view(app: App[int], *, nodes: bool = False) -> None:
+def log_current_view(app: CliveApp, *, nodes: bool = False) -> None:
     """For debug purposes."""
     tt.logger.debug(f"screen: {app.screen}, focused: {app.focused}")
     if nodes:

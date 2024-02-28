@@ -28,7 +28,7 @@ from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEO
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-    from textual.pilot import Pilot
+    from clive_local_tools.tui.types import ClivePilot
 
 
 @pytest.fixture(autouse=True)
@@ -100,7 +100,7 @@ async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
 @pytest.fixture()
 async def prepared_tui_on_dashboard(
     prepared_env: tuple[tt.RawNode, Clive]
-) -> AsyncIterator[tuple[tt.RawNode, Pilot[int]]]:
+) -> AsyncIterator[tuple[tt.RawNode, ClivePilot]]:
     node, app = prepared_env
     async with app.run_test() as pilot:
         yield node, pilot

@@ -8,12 +8,12 @@ from clive.models.asset import AssetFactoryHolder
 from .checkers import assert_is_focused
 
 if TYPE_CHECKING:
-    from textual.pilot import Pilot
+    from clive_local_tools.tui.types import ClivePilot
 
-    from .types import ASSET_TOKEN
+    from .types import LiquidAssetToken
 
 
-async def choose_asset_token(pilot: Pilot[int], asset_token: ASSET_TOKEN) -> None:
+async def choose_asset_token(pilot: ClivePilot, asset_token: LiquidAssetToken) -> None:
     assert_is_focused(pilot.app, CurrencySelectorLiquid)
     if asset_token == "HIVE":
         await pilot.press("down", "down", "enter")

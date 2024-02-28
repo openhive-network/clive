@@ -36,11 +36,11 @@ if TYPE_CHECKING:
 
     from rich.console import RenderableType
     from textual.message import Message
-    from textual.pilot import Pilot
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
     from clive.__private.storage.accounts import Account
+    from clive.__private.ui.pilot import ClivePilot
     from clive.__private.ui.types import NamespaceBindingsMapType
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -145,11 +145,11 @@ class Clive(App[int], ManualReactive):
         tooltips: bool = False,
         notifications: bool = True,
         message_hook: Callable[[Message], None] | None = None,
-    ) -> AsyncGenerator[Pilot[int], None]:
+    ) -> AsyncGenerator[ClivePilot, None]:
         async with super().run_test(
             headless=headless, size=size, tooltips=tooltips, notifications=notifications, message_hook=message_hook
         ) as pilot:
-            yield pilot
+            yield pilot  # type: ignore[misc]
         self.__cleanup()
 
     def on_mount(self) -> None:
