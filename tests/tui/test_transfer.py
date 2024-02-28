@@ -14,7 +14,11 @@ from clive_local_tools.tui.checkers import assert_is_screen_active
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
-from clive_local_tools.tui.textual import get_notification_transaction_id, press_and_wait_for_screen, write_text
+from clive_local_tools.tui.textual import (
+    extract_transaction_id_from_notification,
+    press_and_wait_for_screen,
+    write_text,
+)
 from clive_local_tools.tui.utils import get_mode, log_current_view
 from schemas.operations import AnyOperation, TransferOperation
 
@@ -130,7 +134,7 @@ async def test_transfers(
             await press_and_wait_for_screen(pilot, "f2", Cart)  # go to cart
         await finalize_transaction(pilot, activated, PASS)
 
-    transaction_id = await get_notification_transaction_id(pilot)
+    transaction_id = await extract_transaction_id_from_notification(pilot)
 
     log_current_view(pilot.app)
 
@@ -191,7 +195,7 @@ async def test_transfers_finalize_cart(
     await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to cart
     await finalize_transaction(pilot, activated, PASS)
 
-    transaction_id = await get_notification_transaction_id(pilot)
+    transaction_id = await extract_transaction_id_from_notification(pilot)
 
     # Wait for transaction be available in block
     node.wait_number_of_blocks(1)

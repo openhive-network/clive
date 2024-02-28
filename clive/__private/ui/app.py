@@ -8,11 +8,11 @@ from asyncio import CancelledError
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
-from textual import work
+from textual import on, work
 from textual._context import active_message_pump
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
-from textual.notifications import Notification, SeverityLevel
+from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
@@ -84,6 +84,9 @@ class Clive(App[int], ManualReactive):
     logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
     """A list of all log messages. Shared between all Terminal.Logs widgets."""
 
+    notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
+    """A list of all notifications that were displayed."""
+
     @property
     def namespace_bindings(self) -> NamespaceBindingsMapType:
         """Provides the ability to control the binding order in the footer."""
@@ -100,6 +103,11 @@ class Clive(App[int], ManualReactive):
         title = title if title else severity.capitalize()
         timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
+
+    @on(Notify)
+    def _store_notification(self, event: Notify) -> None:
+        self.notification_history.append(event.notification)
+        self.update_reactive("notification_history")
 
     @contextmanager
     def suppressed_notifications(self) -> Iterator[None]:

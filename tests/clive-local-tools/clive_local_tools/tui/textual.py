@@ -10,9 +10,11 @@ from textual.widgets._toast import Toast
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from textual.screen import Screen
 
-    from clive_local_tools.tui.types import ClivePilot
+    from clive_local_tools.tui.types import CliveApp, ClivePilot
 
 TRANSACTION_ID_RE_PAT: Final[re.Pattern[str]] = re.compile(r"Transaction with ID '(?P<transaction_id>[0-9a-z]+)'")
 
@@ -57,43 +59,122 @@ async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]],
         ) from None
 
 
-async def get_notification_transaction_id(pilot: ClivePilot) -> str:
+async def extract_transaction_id_from_notification(pilot: ClivePilot) -> str:
     """
-    Will look for a toast notification containing the transaction ID and return it.
+    Extract the transaction ID from the notification message.
 
-    If no toast notification is found, will raise an AssertionError. If more than one toast notification is found, will
-    ignore the rest and return the transaction ID from the last one.
+    For more details see `extract_message_from_notification` docstring.
     """
-    seconds_to_wait: Final[float] = 3.0
 
-    async def look_for_transaction_id_in_toasts() -> str:
-        toasts = pilot.app.query(Toast)
-        contents = [str(toast.render()) for toast in toasts]
+    def look_for_transaction_id_in_string(string: str) -> str:
+        result = TRANSACTION_ID_RE_PAT.search(string)
+        if result is not None:
+            return result.group("transaction_id")
+        return ""
 
-        transaction_id = ""
-        for content in contents:
-            result = TRANSACTION_ID_RE_PAT.search(content)
-            if result is not None:
-                transaction_id = result.group("transaction_id")
-        return transaction_id
+    return await extract_message_from_notification(pilot, look_for_transaction_id_in_string)
 
-    async def wait_for_transaction_id_to_be_found() -> str:
+
+async def extract_message_from_notification(
+    pilot: ClivePilot, find_message_cb: Callable[[str], str], *, search_in_history: bool = True, timeout: float = 3.0
+) -> str:
+    """
+    Will look for a notification containing the expected message and returns it.
+
+    First, will try to find the expected message in the toast notifications. If not found, and set to search in history,
+    will look also in the notification history (as it may be already expired).
+
+    Args:
+    ----
+    pilot: The ClivePilot instance.
+    find_message_cb : The callback function to find the message within the notification content.
+    search_in_history: If set to True, will also look for the message in the notification history.
+    timeout: The maximum time to wait for the notification to appear.
+
+    Returns:
+    -------
+    The message extracted from the notification.
+
+    Raises:
+    ------
+    AssertionError: If the toast notification containing the expected message couldn't be found within the timeout.
+    """
+    app = pilot.app
+
+    async def wait_for_message_to_be_found() -> str:
         seconds_already_waited = 0.0
         pool_time = 0.1
+        first_try = True
+
         while True:
-            transaction_id = await look_for_transaction_id_in_toasts()
+            transaction_id = _extract_message_from_toasts(app, find_message_cb)
+            if search_in_history and first_try and not transaction_id:
+                # If message wasn't found in the toast notification, check the notification history,
+                # but only on the first try, so if notification arrives later, it will be found as in the toast.
+                first_try = False
+                tt.logger.info(
+                    "Didn't found the expected message in the toast notification. Checking notification history..."
+                )
+                transaction_id = _extract_message_from_notifications_history(app, find_message_cb)
+
             if transaction_id:
                 return transaction_id
+
             tt.logger.info(
-                "Didn't find the transaction ID in the toast notification. Already waited"
+                "Didn't found the expected message in the toast notification or notification history. Already waited"
                 f" {seconds_already_waited:.2f}s."
             )
-            await asyncio.sleep(pool_time)
+            await pilot.pause(pool_time)
             seconds_already_waited += pool_time
 
     try:
-        return await asyncio.wait_for(wait_for_transaction_id_to_be_found(), timeout=seconds_to_wait)
+        return await asyncio.wait_for(wait_for_message_to_be_found(), timeout=timeout)
     except asyncio.TimeoutError:
         raise AssertionError(
-            f"Toast notification containing the transaction ID couldn't be found. Waited {seconds_to_wait:.2f}s"
+            f"Toast notification containing the transaction ID couldn't be found. Waited {timeout:.2f}s"
         ) from None
+
+
+def _extract_message_from_toasts(app: CliveApp, find_message_cb: Callable[[str], str]) -> str:
+    """
+    Extract the message from currently present toast notifications.
+
+    If more than one message is found, the most recent will be returned.
+
+    Args:
+    ----
+    app: The CliveApp instance
+    find_message_cb : The callback function to find the message within the notification content.
+
+    Returns:
+    -------
+    The message extracted from the present toast notifications. Will return an empty string if no message was found.
+    """
+    toasts = app.query(Toast)
+    contents = [str(toast.render()) for toast in toasts]
+
+    message = ""
+    for content in contents:
+        message = find_message_cb(content)
+    return message
+
+
+def _extract_message_from_notifications_history(app: CliveApp, find_message_cb: Callable[[str], str]) -> str:
+    """
+    Extract the message from notification history.
+
+    If more than one message is found, the most recent will be returned.
+
+    Args:
+    ----
+    app: The CliveApp instance
+    find_message_cb : The callback function to find the message within the notification content.
+
+    Returns:
+    -------
+    The message extracted from the notification history. Will return an empty string if no message was found.
+    """
+    message = ""
+    for notification in app.notification_history:
+        message = find_message_cb(notification.message)
+    return message
