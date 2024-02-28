@@ -100,7 +100,9 @@ class Beekeeper:
             return self
         return await self.launch()
 
-    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(
+        self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
+    ) -> None:
         if not self.__run_in_background:
             await self.close()
 

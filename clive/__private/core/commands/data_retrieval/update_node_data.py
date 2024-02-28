@@ -60,7 +60,7 @@ class SuppressNotExistingApis:
     def __enter__(self) -> None:
         return None
 
-    def __exit__(self, _: type[Exception] | None, error: Exception | None, __: TracebackType | None) -> bool:
+    def __exit__(self, _: type[BaseException] | None, error: BaseException | None, __: TracebackType | None) -> bool:
         if isinstance(error, CommunicationError):
             apis_not_found = set(self.__get_apis_not_found(str(error)))
             not_suppressed_apis = apis_not_found - set(self.__api_names)

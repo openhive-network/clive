@@ -18,7 +18,7 @@ class ExitCallHandler(Generic[T]):
         self,
         obj: T,
         *,
-        exception_callback: Callable[[T, Exception], Awaitable[None]] = dummy,
+        exception_callback: Callable[[T, BaseException], Awaitable[None]] = dummy,
         finally_callback: Callable[[T], Awaitable[None]] = dummy,
     ) -> None:
         self.__obj = obj
@@ -28,7 +28,9 @@ class ExitCallHandler(Generic[T]):
     async def __aenter__(self) -> T:
         return self.__obj
 
-    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(
+        self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
+    ) -> None:
         try:
             if ex is not None:
                 await self.__exception_callback(self.__obj, ex)

@@ -22,5 +22,5 @@ class Stopwatch:
     def __enter__(self) -> Self:
         return self
 
-    def __exit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+    def __exit__(self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None) -> None:
         logger.debug(f"{self.__name} took: {self.__now() - self.__start :.6f}s")

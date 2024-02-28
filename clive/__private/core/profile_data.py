@@ -125,7 +125,9 @@ class ProfileData(Context):
     async def __aenter__(self) -> Self:
         return self
 
-    async def __aexit__(self, _: type[Exception] | None, __: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(
+        self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
+    ) -> None:
         self.save()
 
     @staticmethod

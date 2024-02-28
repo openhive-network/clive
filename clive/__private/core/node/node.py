@@ -157,7 +157,9 @@ class _BatchNode(BaseNode):
     async def __aenter__(self) -> Self:
         return self
 
-    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(
+        self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
+    ) -> None:
         if not self.__is_anything_to_send():
             raise NothingToSendError
 

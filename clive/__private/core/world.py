@@ -64,7 +64,9 @@ class World:
     async def __aenter__(self) -> Self:
         return await self.setup()
 
-    async def __aexit__(self, _: type[Exception] | None, ex: Exception | None, ___: TracebackType | None) -> None:
+    async def __aexit__(
+        self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
+    ) -> None:
         await self.close()
 
     @property
