@@ -11,8 +11,6 @@ from .textual_helpers import press_and_wait_for_screen
 if TYPE_CHECKING:
     from .types import ClivePilot
 
-    pass
-
 
 async def fast_broadcast(pilot: ClivePilot, activated: bool, password: str) -> None:
     """Fast broadcast with optional activation if 'activated' == False."""

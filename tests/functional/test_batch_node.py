@@ -31,7 +31,7 @@ async def test_batch_node_response_not_ready(init_node: tt.InitNode, world: Worl
 
 
 async def test_batch_node_error_response(init_node: tt.InitNode, world: World) -> None:  # noqa: ARG001
-    with pytest.raises(CommunicationError, match="Invalid cast"):  # noqa: PT012
+    with pytest.raises(CommunicationError, match="Invalid cast"):
         async with world.node.batch() as node:
             await node.api.database_api.find_accounts(accounts=123)  # type: ignore[arg-type]
 

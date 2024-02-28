@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any, Literal, overload
+from typing import TYPE_CHECKING, Literal, overload
 
 from clive.__private.core import iwax
 from clive.exceptions import CliveError
@@ -26,7 +26,7 @@ class PrivateKeyInvalidFormatError(PrivateKeyError):
 class Key(ABC):
     value: str
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, Key):
             return self.value == other.value
         return super().__eq__(other)
@@ -36,7 +36,7 @@ class Key(ABC):
         """Should return a new instance of the key with the given alias."""
 
     @staticmethod
-    def determine_key_type(key: str) -> type[PublicKey] | type[PrivateKey]:
+    def determine_key_type(key: str) -> type[PublicKey | PrivateKey]:
         """
         Determines the type of the key from the given key raw string.
 
@@ -54,7 +54,7 @@ class Key(ABC):
 class KeyAliased(Key, ABC):
     alias: str
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, KeyAliased):
             return self.alias == other.alias and super().__eq__(other)
         return super().__eq__(other)
@@ -68,7 +68,7 @@ class KeyAliased(Key, ABC):
 class PublicKey(Key):
     value: str
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, PrivateKey):
             return self == other.calculate_public_key()
         if isinstance(other, str):
@@ -83,7 +83,7 @@ class PublicKey(Key):
 
 @dataclass(kw_only=True, frozen=True)
 class PublicKeyAliased(KeyAliased, PublicKey):
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return super().__eq__(other)
 
     def without_alias(self) -> PublicKey:
@@ -105,7 +105,7 @@ class PrivateKey(Key):
     def __post_init__(self) -> None:
         self.validate(self.value)
 
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         if isinstance(other, PublicKey):
             return self.calculate_public_key() == other
         if isinstance(other, str):
@@ -175,7 +175,7 @@ class PrivateKey(Key):
 
 @dataclass(kw_only=True, frozen=True)
 class PrivateKeyAliased(KeyAliased, PrivateKey):
-    def __eq__(self, other: Any) -> bool:
+    def __eq__(self, other: object) -> bool:
         return super().__eq__(other)
 
     @overload  # type: ignore[override]

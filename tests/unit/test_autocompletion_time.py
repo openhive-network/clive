@@ -11,7 +11,7 @@ def test_autocompletion_time() -> None:
     command = "_CLIVE_COMPLETE=1 TIMEFORMAT='%U' /bin/bash -c 'time python3 -X importtime clive/main.py --help'"
 
     # ACT
-    result = subprocess.run(command, shell=True, capture_output=True, text=True)
+    result = subprocess.run(command, shell=True, capture_output=True, text=True, check=False)
 
     # ASSERT
     assert result.returncode == 0

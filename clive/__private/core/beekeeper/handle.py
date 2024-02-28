@@ -351,7 +351,7 @@ class Beekeeper:
 
         return Url(connection.type_, connection.address, connection.port)
 
-    def help(self) -> str:  # noqa: A003
+    def help(self) -> str:
         arguments = BeekeeperCLIArguments(help=True)
         return self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
 

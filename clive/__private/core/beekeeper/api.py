@@ -41,7 +41,7 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def open(self, *, wallet_name: str) -> model.EmptyResponse:  # noqa: A003
+    async def open(self, *, wallet_name: str) -> model.EmptyResponse:
         """Open wallet file / mount hardware key."""
         raise NotImplementedError
 

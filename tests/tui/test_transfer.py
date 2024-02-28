@@ -111,7 +111,6 @@ async def test_transfers(
     )
 
     # TODO: save balances before transfer
-    ...
 
     # ACT
     if activated:
@@ -166,7 +165,6 @@ async def test_transfers_finalize_cart(
     expected1 = TransferOperation(from_=SENDER, to=RECEIVER, amount=Asset.hive("1.1"), memo="memo1")
 
     # TODO: save balances before transfer
-    ...
 
     # ACT
     if activated:

@@ -42,6 +42,6 @@ def test_raising_exception_when_api_is_not_suppressed() -> None:
     response = str([create_error_response("rc_api"), create_error_response("reputation_api")])
 
     # ACT & ASSERT
-    with pytest.raises(CommunicationError, match="Could not find API reputation_api"):  # noqa: PT012, SIM117
+    with pytest.raises(CommunicationError, match="Could not find API reputation_api"):  # noqa: SIM117
         with SuppressNotExistingApis("rc_api"):
             raise CommunicationError(URL, REQUEST, response=response)

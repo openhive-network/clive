@@ -35,7 +35,7 @@ async def test_catching_correct_exception(exception: type[CommandError]) -> None
 
 @pytest.mark.parametrize("exception", [Exception, AssertionError, ValueError, TypeError])
 async def test_catching_incorrect_exception(exception: type[Exception]) -> None:
-    with pytest.raises(exception):  # noqa: PT012
+    with pytest.raises(exception):
         async with FailedCommandNotificator():
             raise exception
 
@@ -44,6 +44,6 @@ async def test_catch_only() -> None:
     async with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
         raise CommandRequiresActiveModeError(MockCommandInActive())
 
-    with pytest.raises(CommandError):  # noqa: PT012
+    with pytest.raises(CommandError):
         async with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
             raise CommandError(MockCommand())
