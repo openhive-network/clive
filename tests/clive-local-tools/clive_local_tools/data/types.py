@@ -13,5 +13,4 @@ Wallets = list[WalletInfo]
 class WalletsGeneratorT(Protocol):
     def __call__(
         self, count: int, *, import_keys: bool = True, keys_per_wallet: int = 1
-    ) -> Coroutine[Any, Any, list[WalletInfo]]:
-        ...
+    ) -> Coroutine[Any, Any, list[WalletInfo]]: ...

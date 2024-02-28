@@ -15,8 +15,7 @@ if TYPE_CHECKING:
 
 
 class WalletClosingListener(Protocol):
-    def notify_wallet_closing(self) -> None:
-        ...
+    def notify_wallet_closing(self) -> None: ...
 
 
 class BeekeeperNotificationsServer:

@@ -9,8 +9,7 @@ from clive.__private.core.commands.abc.command_restricted import CommandExecutio
 
 class AppStateProtocol(Protocol):
     @property
-    def is_active(self) -> bool:
-        ...
+    def is_active(self) -> bool: ...
 
 
 class CommandRequiresActiveModeError(CommandExecutionNotPossibleError):

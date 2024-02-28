@@ -15,8 +15,7 @@ class BeekeeperCommon(ABC):
 
     @property
     @abstractmethod
-    def beekeeper(self) -> Beekeeper:
-        ...
+    def beekeeper(self) -> Beekeeper: ...
 
     @property
     def beekeeper_remote_url(self) -> Url | None:

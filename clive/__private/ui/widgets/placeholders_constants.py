@@ -1,4 +1,5 @@
 """File with placeholders that are used very often."""
+
 from __future__ import annotations
 
 from typing import Final

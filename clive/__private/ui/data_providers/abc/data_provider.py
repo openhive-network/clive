@@ -21,7 +21,9 @@ class ProviderError(CliveError):
 
 
 class ProviderNotSetYetError(ProviderError):
-    MESSAGE: Final[str] = """
+    MESSAGE: Final[
+        str
+    ] = """
 Provider content was referenced before the update actually occurred.
 You're probably using it too early.
 If you are sure, you can use the `updated` property to check if content is ready or `_content` which may be None."""

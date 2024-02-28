@@ -19,13 +19,13 @@ class NoMatchesError(CliveError):
 
 
 @overload
-def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str) -> Any:
-    ...
+def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str) -> Any: ...
 
 
 @overload
-def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[ExpectT]) -> ExpectT:
-    ...
+def get_default_from_model(
+    model: type[BaseModel] | BaseModel, field_name: str, expect_type: type[ExpectT]
+) -> ExpectT: ...
 
 
 def get_default_from_model(

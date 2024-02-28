@@ -34,8 +34,7 @@ class ResponseNotReadyError(BatchRequestError):
 
 class BaseNode:
     @abstractmethod
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
-        ...
+    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT: ...
 
 
 class _DelayedResponseWrapper:

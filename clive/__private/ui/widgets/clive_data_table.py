@@ -18,7 +18,9 @@ class CliveDataTableError(CliveError):
 
 
 class DynamicRowInvalidDefinedError(CliveDataTableError):
-    MESSAGE: Final[str] = """
+    MESSAGE: Final[
+        str
+    ] = """
 You set the `dynamic` parameter to `True` without overriding `sync_row` or `provider` to update the cells.
 Override the `sync_row` method or `provider` property or set the `dynamic` parameter to False.
 """

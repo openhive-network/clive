@@ -206,8 +206,7 @@ class Clive(App[int], ManualReactive):
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
         wait_for_dismiss: Literal[False] = False,
-    ) -> AwaitMount:
-        ...
+    ) -> AwaitMount: ...
 
     @overload
     def push_screen(
@@ -215,8 +214,7 @@ class Clive(App[int], ManualReactive):
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
         wait_for_dismiss: Literal[True] = True,
-    ) -> asyncio.Future[ScreenResultType]:
-        ...
+    ) -> asyncio.Future[ScreenResultType]: ...
 
     def push_screen(
         self,

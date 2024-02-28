@@ -331,12 +331,10 @@ class Commands(Generic[WorldT]):
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[misc]
         self, command: CommandWithResult[CommandResultT]
-    ) -> CommandWithResultWrapper[CommandResultT]:
-        ...
+    ) -> CommandWithResultWrapper[CommandResultT]: ...
 
     @overload
-    async def __surround_with_exception_handlers(self, command: Command) -> CommandWrapper:
-        ...
+    async def __surround_with_exception_handlers(self, command: Command) -> CommandWrapper: ...
 
     async def __surround_with_exception_handlers(
         self, command: CommandWithResult[CommandResultT] | Command
@@ -357,8 +355,7 @@ class Commands(Generic[WorldT]):
         command: CommandWithResult[CommandResultT],
         exception_handlers: list[type[ErrorHandlerContextManager]],
         error: Exception | None = None,
-    ) -> CommandWithResultWrapper[CommandResultT]:
-        ...
+    ) -> CommandWithResultWrapper[CommandResultT]: ...
 
     @overload
     async def __surround_with_exception_handler(
@@ -366,8 +363,7 @@ class Commands(Generic[WorldT]):
         command: Command,
         exception_handlers: list[type[ErrorHandlerContextManager]],
         error: Exception | None = None,
-    ) -> CommandWrapper:
-        ...
+    ) -> CommandWrapper: ...
 
     async def __surround_with_exception_handler(
         self,
@@ -400,12 +396,10 @@ class Commands(Generic[WorldT]):
     @overload
     def __create_command_wrapper(  # type: ignore[misc]
         self, command: CommandWithResult[CommandResultT], error: Exception | None = None
-    ) -> CommandWithResultWrapper[CommandResultT]:
-        ...
+    ) -> CommandWithResultWrapper[CommandResultT]: ...
 
     @overload
-    def __create_command_wrapper(self, command: Command, error: Exception | None = None) -> CommandWrapper:
-        ...
+    def __create_command_wrapper(self, command: Command, error: Exception | None = None) -> CommandWrapper: ...
 
     def __create_command_wrapper(
         self, command: Command | CommandWithResult[CommandResultT], error: Exception | None = None

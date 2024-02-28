@@ -114,13 +114,11 @@ class PrivateKey(Key):
 
     @staticmethod
     @overload
-    def create() -> PrivateKey:
-        ...
+    def create() -> PrivateKey: ...
 
     @staticmethod
     @overload
-    def create(*, with_alias: str) -> PrivateKeyAliased:
-        ...
+    def create(*, with_alias: str) -> PrivateKeyAliased: ...
 
     @staticmethod
     def create(*, with_alias: str = "") -> PrivateKey | PrivateKeyAliased:
@@ -159,12 +157,10 @@ class PrivateKey(Key):
         return True
 
     @overload
-    def calculate_public_key(self) -> PublicKey:
-        ...
+    def calculate_public_key(self) -> PublicKey: ...
 
     @overload
-    def calculate_public_key(self, *, with_alias: str) -> PublicKeyAliased:
-        ...
+    def calculate_public_key(self, *, with_alias: str) -> PublicKeyAliased: ...
 
     def calculate_public_key(self, *, with_alias: str = "") -> PublicKey | PublicKeyAliased:
         public_key = iwax.calculate_public_key(self.value)
@@ -183,12 +179,10 @@ class PrivateKeyAliased(KeyAliased, PrivateKey):
         return super().__eq__(other)
 
     @overload  # type: ignore[override]
-    def calculate_public_key(self, *, with_alias: Literal[False]) -> PublicKey:
-        ...
+    def calculate_public_key(self, *, with_alias: Literal[False]) -> PublicKey: ...
 
     @overload
-    def calculate_public_key(self, *, with_alias: Literal[True] = True) -> PublicKeyAliased:
-        ...
+    def calculate_public_key(self, *, with_alias: Literal[True] = True) -> PublicKeyAliased: ...
 
     def calculate_public_key(self, *, with_alias: bool = True) -> PublicKey | PublicKeyAliased:
         if with_alias:

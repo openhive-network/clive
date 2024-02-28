@@ -26,8 +26,7 @@ class ServerAlreadyRunningError(AsyncHttpServerError):
 
 
 class Notifiable(Protocol):
-    def notify(self, message: JsonT) -> None:
-        ...
+    def notify(self, message: JsonT) -> None: ...
 
 
 class AsyncHttpServer:
