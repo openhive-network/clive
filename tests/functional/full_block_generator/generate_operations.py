@@ -136,7 +136,7 @@ def create_comment_options(account_name: str, comment_data_for_current_iteration
     beneficiaries = []
 
     while len(beneficiaries) < 3:  # draw 3 accounts to be beneficiaries
-        account_number = random.randint(0, 99_999)  # fixme dodać więcej acc albo z przedziału
+        account_number = random.randint(0, 1_999_999)  # fixme dodać więcej acc albo z przedziału
         beneficiary_name = f"account-{account_number}"
         for beneficiary in beneficiaries:
             # avoid duplicating beneficiary and making comment author as beneficiary
