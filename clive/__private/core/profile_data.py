@@ -76,7 +76,7 @@ class ProfileAlreadyExistsError(ProfileDataError):
 class ProfileInvalidNameError(ProfileDataError):
     def __init__(self, profile_name: str, reason: str | None = None) -> None:
         self.profile_name = profile_name
-        reason = reason
+        self.reason = reason
         message = f"Profile name `{profile_name}` is invalid."
         message += f" Reason: {reason}" if reason else ""
         super().__init__(message)

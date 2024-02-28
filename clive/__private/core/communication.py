@@ -130,7 +130,7 @@ class Communication:
             url, data=data, max_attempts=max_attempts, timeout_secs=timeout_secs, pool_time_secs=pool_time_secs
         )
 
-    async def __request(  # noqa: PLR0913, C901
+    async def __request(  # noqa: PLR0913, C901, PLR0915
         self,
         url: str,
         *,

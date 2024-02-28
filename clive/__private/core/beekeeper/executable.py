@@ -154,7 +154,7 @@ class BeekeeperExecutable:
                 command,
                 stdout=self.__files["stdout"],
                 stderr=self.__files["stderr"],
-                preexec_fn=os.setpgrp,  # create new process group, so signals won't be passed to child process
+                preexec_fn=os.setpgrp,  # noqa: PLW1509 create new process group, so signals won't be passed to child process
             )
         except Exception as e:
             logger.debug(f"Caught exception during start, closing: {e}")

@@ -17,7 +17,7 @@ class DecimalConversionNotANumberError(CliveError):
 
 class DecimalConverter:
     @classmethod
-    def get_precision(cls, amount: int | float | str | Decimal) -> int:
+    def get_precision(cls, amount: float | str | Decimal) -> int:
         """
         Get precision of given amount.
 
@@ -34,7 +34,7 @@ class DecimalConverter:
         return -1 * exponent
 
     @classmethod
-    def convert(cls, amount: int | float | str | Decimal, *, precision: int | None = None) -> Decimal:
+    def convert(cls, amount: float | str | Decimal, *, precision: int | None = None) -> Decimal:
         """
         Convert given amount to Decimal.
 

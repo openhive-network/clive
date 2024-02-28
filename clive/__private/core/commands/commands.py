@@ -376,7 +376,7 @@ class Commands(Generic[WorldT]):
         except IndexError:
             # No more exception handlers
             assert error is not None
-            raise error
+            raise error from None
 
         handler = next_exception_handler()
 

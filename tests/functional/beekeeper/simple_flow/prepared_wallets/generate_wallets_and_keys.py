@@ -37,7 +37,7 @@ async def generate_wallets_and_keys(number_of_wallets: int, aliased_format: bool
             else:
                 # Save as alias format.
                 extract_path = Path(f"{source_dir}/keys/{wallet.name}.alias.keys")
-                with extract_path.open("w") as path:
+                with extract_path.open("w") as path:  # noqa: ASYNC101
                     json.dump(aliased, path)
 
 

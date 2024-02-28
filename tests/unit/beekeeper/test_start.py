@@ -13,7 +13,7 @@ def test_proper_closing(beekeeper: Beekeeper) -> None:
     assert beekeeper is not None  # dummy assertion
 
 
-@pytest.mark.parametrize("wallet_name", ["test", "123", "test"])
+@pytest.mark.parametrize("wallet_name", ["test", "123", "test"])  # noqa: PT014 we want to test duplicate wallet_name
 def test_clean_dirs(beekeeper: Beekeeper, wallet_name: str) -> None:
     test_file = beekeeper.config.wallet_dir / wallet_name
     assert not test_file.exists()
