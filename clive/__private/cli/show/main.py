@@ -263,3 +263,12 @@ async def show_memo_key(ctx: typer.Context, account_name: str = options.account_
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowMemoKey(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="chain", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
+    """Fetch from blockchain and display chain info."""
+    from clive.__private.cli.commands.show.show_chain import ShowChain
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowChain(**common.as_dict()).run()
