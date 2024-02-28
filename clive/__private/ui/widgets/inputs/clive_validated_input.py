@@ -299,7 +299,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         for input_obj in inputs:
             try:
                 input_obj.validate_with_error()
-            except (FailedValidationError, InputValueError) as error:
+            except (FailedValidationError, InputValueError) as error:  # noqa: PERF203, need to catch all errors
                 combined_errors.append(error)
 
         if combined_errors:

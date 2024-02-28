@@ -25,10 +25,7 @@ class CommunicationFailureNotificator(ErrorNotificator):
         if not error_messages:
             return str(exception)
 
-        replaced = []
-        for searched, printed in cls.SEARCHED_AND_PRINTED_MESSAGES.items():
-            for error_message in error_messages:
-                if searched in error_message:
-                    replaced.append((searched, printed))
-
+        replaced = [
+            printed for searched, printed in cls.SEARCHED_AND_PRINTED_MESSAGES.items() if searched in error_messages
+        ]
         return str(replaced) if replaced else str(error_messages)

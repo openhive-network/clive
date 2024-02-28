@@ -154,11 +154,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         return [self.__create_proposal_data(proposal, data) for proposal in proposals]
 
     def __get_proposals_ids(self, proposals: list[ProposalSchema]) -> list[int]:
-        proposal_ids: list[int] = []
-        for proposal in proposals:
-            proposal_ids.append(proposal.proposal_id)
-
-        return proposal_ids
+        return [proposal.proposal_id for proposal in proposals]
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
         assert data is not None, "DynamicGlobalProperties data is missing"
