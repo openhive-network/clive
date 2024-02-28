@@ -139,6 +139,7 @@ select = [# https://beta.ruff.rs/docs/rules/
     "PL",
     "TRY",
     "FLY",
+    "PERF",
     "RUF",
 ]
 ignore = [
