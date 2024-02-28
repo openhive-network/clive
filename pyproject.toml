@@ -153,6 +153,7 @@ ignore = [
     "D203", # 1 blank line required before class docstring; because we re using D211
     "D212", # Multi-line docstring summary should start at the first line; because we re using D213
     "D401", # first line should be in imperative mood
+    "D413", # Missing blank line after last section
     "B008", # in Typer it is common to do that
     "PT004", # fixture does not return anything, add leading underscore;  issue: pytest seems to ignore (not launch) auto-use fixtures with leading underscode
     "TRY003", # too restrictive
