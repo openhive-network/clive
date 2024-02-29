@@ -16,7 +16,7 @@ OTHER_MEMO_KEY: Final[PublicKey] = WATCHED_ACCOUNTS[0].public_key
 
 async def test_set_memo_key(testing_cli: TestingCli) -> None:
     # ACT
-    getattr(testing_cli, "process_update-memo-key")(
+    testing_cli.process_update_memo_key(
         password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, key=ALICE_MEMO_KEY
     )
 
@@ -26,9 +26,7 @@ async def test_set_memo_key(testing_cli: TestingCli) -> None:
 
 async def test_set_memo_key_no_broadcast(testing_cli: TestingCli) -> None:
     # ACT
-    result = getattr(testing_cli, "process_update-memo-key")(
-        "--no-broadcast", password=WORKING_ACCOUNT.name, key=OTHER_MEMO_KEY
-    )
+    result = testing_cli.process_update_memo_key("--no-broadcast", password=WORKING_ACCOUNT.name, key=OTHER_MEMO_KEY)
 
     # ASSERT
     assert OTHER_MEMO_KEY in result.stdout
@@ -37,7 +35,7 @@ async def test_set_memo_key_no_broadcast(testing_cli: TestingCli) -> None:
 
 async def test_set_other_memo_key(testing_cli: TestingCli) -> None:
     # ACT
-    getattr(testing_cli, "process_update-memo-key")(
+    testing_cli.process_update_memo_key(
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         key=OTHER_MEMO_KEY,

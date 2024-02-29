@@ -1,8 +1,15 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
 
-class CliveCommandError(Exception):
-    def __init__(self, stdout: str, exit_code: int, command: list[str]) -> None:
-        super().__init__(stdout)
-        self.exit_code = exit_code
+if TYPE_CHECKING:
+    from click.testing import Result
+
+
+class CliveCommandError(AssertionError):
+    def __init__(self, command: list[str], exit_code: int, stdout: str, result: Result) -> None:
+        super().__init__(f"command {command} failed")
         self.command = command
+        self.exit_code = exit_code
+        self.stdout = stdout
+        self.result = result
