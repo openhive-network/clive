@@ -40,10 +40,10 @@ class FailedValidationError(CliveValidatedInputError):
         self.validation_result = validation_result
         self.input_name = input_name
         additional = self._get_input_name_details(input_name)
-        self.message = f"""\
+        message = f"""\
 Input validation failed{additional}. Reasons:
 {validation_result.failure_descriptions}"""
-        super().__init__(self.message)
+        super().__init__(message)
 
 
 class FailedManyValidationError(CliveValidatedInputError):
@@ -51,8 +51,8 @@ class FailedManyValidationError(CliveValidatedInputError):
 
     def __init__(self, errors: list[InputValueError | FailedValidationError]) -> None:
         self.errors = errors
-        self.message = self._create_error_message(errors)
-        super().__init__(self.message)
+        message = self._create_error_message(errors)
+        super().__init__(message)
 
     def _create_error_message(self, errors: list[InputValueError | FailedValidationError]) -> str:
         message = "Input validation failed for:\n"
@@ -74,10 +74,10 @@ class InputValueError(CliveValidatedInputError):
         self.reason = reason
         self.input_name = input_name
         additional = self._get_input_name_details(input_name)
-        self.message = f"""\
+        message = f"""\
 Input value error{additional}. Reason:
 {reason}"""
-        super().__init__(self.message)
+        super().__init__(message)
 
 
 class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessagePump):

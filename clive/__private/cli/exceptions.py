@@ -61,6 +61,7 @@ class CLIProfileDoesNotExistsError(CLIPrettyError):
 class CLIProfileAlreadyExistsError(CLIPrettyError):
     def __init__(self, profile_name: str | None = None, existing_profiles: list[str] | None = None) -> None:
         self.profile_name = profile_name
+        self.existing_profiles = existing_profiles
 
         profile_name_detail = f" `{profile_name}` " if profile_name else " "
         existing_profiles_detail = f", different than {existing_profiles}." if existing_profiles else "."

@@ -18,13 +18,13 @@ class CliveDataTableError(CliveError):
 
 
 class DynamicRowInvalidDefinedError(CliveDataTableError):
-    MESSAGE: Final[str] = """
+    _MESSAGE: Final[str] = """
 You set the `dynamic` parameter to `True` without overriding `sync_row` or `provider` to update the cells.
 Override the `sync_row` method or `provider` property or set the `dynamic` parameter to False.
 """
 
     def __init__(self) -> None:
-        super().__init__(self.MESSAGE)
+        super().__init__(self._MESSAGE)
 
 
 class CliveDataTableRow(Horizontal, CliveWidget):

@@ -17,8 +17,8 @@ class InvalidAccountNameError(CliveError):
 
     def __init__(self, value: str) -> None:
         self.value = value
-        self.message = f"Given account name is invalid: `{value}`"
-        super().__init__(self.message)
+        message = f"Given account name is invalid: `{value}`"
+        super().__init__(message)
 
 
 class AccountType(str, Enum):

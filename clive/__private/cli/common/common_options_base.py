@@ -8,6 +8,7 @@ from clive.exceptions import CliveError
 
 class CommonOptionInstanceNotAvailableError(CliveError):
     def __init__(self, cls: type["CommonOptionsBase"]) -> None:
+        self.cls = cls
         super().__init__(f"Common option instance of {cls.__name__} not available.")
 
 

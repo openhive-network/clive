@@ -76,6 +76,8 @@ class UnknownResponseFormatError(CommunicationError):
     """Raised when the response format is unknown."""
 
     def __init__(self, url: str, request: str, response: CommunicationResponseT | None = None) -> None:
+        self.url = url
+        self.request = request
         self.response = response
         message = f"Unknown response format from: {url=}, {request=}, {self._get_reply()}"
         super().__init__(url, request, response, message=message)
@@ -83,6 +85,10 @@ class UnknownResponseFormatError(CommunicationError):
 
 class CommunicationTimeoutError(CommunicationError):
     def __init__(self, url: str, request: str, timeout: float, attempts: int) -> None:
+        self.url = url
+        self.request = request
+        self.timeout = timeout
+        self.attempts = attempts
         message = (
             f"Timeout occurred during communication with: {url=}. Exceeded {attempts} attempts, each of {timeout:.2f}s."
         )

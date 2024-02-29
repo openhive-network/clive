@@ -69,8 +69,8 @@ class ProfileAlreadyExistsError(ProfileDataError):
         self.profile_name = profile_name
         self.existing_profiles = existing_profiles
         detail = f", different than {existing_profiles}." if existing_profiles else "."
-        self.message = f"Profile `{self.profile_name}` already exists. Please choose another name{detail}"
-        super().__init__(f"Profile `{profile_name}` already exists.")
+        message = f"Profile `{self.profile_name}` already exists. Please choose another name{detail}"
+        super().__init__(message)
 
 
 class ProfileInvalidNameError(ProfileDataError):

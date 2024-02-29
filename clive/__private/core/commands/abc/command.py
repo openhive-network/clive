@@ -9,10 +9,11 @@ from clive.exceptions import CliveError
 
 
 class CommandError(CliveError):
-    def __init__(self, command: Command, message: str = "") -> None:
+    def __init__(self, command: Command, reason: str = "") -> None:
         self.command = command
-        self.message = f"Command {command.__class__.__name__} failed. Reason: {message}"
-        super().__init__(self.message)
+        self.reason = reason
+        message = f"Command {command.__class__.__name__} failed. Reason: {reason}"
+        super().__init__(message)
 
 
 @dataclass(kw_only=True)

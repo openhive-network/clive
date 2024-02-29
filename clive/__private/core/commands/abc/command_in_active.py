@@ -14,7 +14,7 @@ class AppStateProtocol(Protocol):
 
 class CommandRequiresActiveModeError(CommandExecutionNotPossibleError):
     def __init__(self, command: CommandInActive) -> None:
-        super().__init__(command, message="requires the application to be in active mode.")
+        super().__init__(command, reason="requires the application to be in active mode.")
 
 
 @dataclass(kw_only=True)

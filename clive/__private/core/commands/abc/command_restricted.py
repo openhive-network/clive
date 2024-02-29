@@ -7,10 +7,10 @@ from clive.__private.core.commands.abc.command import Command, CommandError
 
 
 class CommandExecutionNotPossibleError(CommandError):
-    _DEFAULT_MESSAGE: Final[str] = "does not met the requirements to be executed."
+    _DEFAULT_REASON: Final[str] = "does not met the requirements to be executed."
 
-    def __init__(self, command: CommandRestricted, *, message: str = _DEFAULT_MESSAGE) -> None:
-        super().__init__(command, message)
+    def __init__(self, command: CommandRestricted, *, reason: str = _DEFAULT_REASON) -> None:
+        super().__init__(command, reason)
 
 
 class CommandRestricted(Command, ABC):

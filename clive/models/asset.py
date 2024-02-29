@@ -24,13 +24,15 @@ class AssetError(CliveError):
 
 class AssetLegacyInvalidFormatError(CliveError):
     def __init__(self, value: str) -> None:
+        self.value = value
         super().__init__(f"Invalid asset format: {value}")
 
 
 class AssetAmountInvalidFormatError(CliveError):
     def __init__(self, value: str) -> None:
-        self.message = f"Invalid asset amount format: '{value}'. Should be a number."
-        super().__init__(self.message)
+        self.value = value
+        message = f"Invalid asset amount format: '{value}'. Should be a number."
+        super().__init__(message)
 
 
 class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):

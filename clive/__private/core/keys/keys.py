@@ -18,8 +18,8 @@ class PrivateKeyError(CliveError):
 class PrivateKeyInvalidFormatError(PrivateKeyError):
     def __init__(self, value: str) -> None:
         self.value = value
-        self.message = f"Given key is in invalid form: `{value}`"
-        super().__init__(self.message)
+        message = f"Given key is in invalid form: `{value}`"
+        super().__init__(message)
 
 
 @dataclass(kw_only=True, frozen=True)
