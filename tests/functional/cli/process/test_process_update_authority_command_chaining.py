@@ -29,12 +29,9 @@ WEIGHT_THRESHOLD: Final[int] = 2
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_chaining(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
-        )
-        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
-        getattr(chain_command_builder, "add-key")(key=OTHER_ACCOUNT.public_key, weight=WEIGHT)
+    testing_cli.process_update_authority(
+        authority, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
+    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).fire()
 
     # ASSERT
     assert_weight_threshold(testing_cli, authority, WEIGHT_THRESHOLD)
@@ -48,14 +45,15 @@ async def test_chaining(testing_cli: TestingCli, authority: AuthorityType) -> No
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_chaining2(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
-        )
-        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
-        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT2.name, weight=WEIGHT)
-        getattr(chain_command_builder, "add-key")(key=OTHER_ACCOUNT.public_key, weight=WEIGHT)
-        getattr(chain_command_builder, "remove-key")(key=WORKING_ACCOUNT.public_key)
+    testing_cli.process_update_authority(
+        authority, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
+    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_account(
+        account=OTHER_ACCOUNT2.name, weight=WEIGHT
+    ).add_key(
+        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
+    ).remove_key(
+        key=WORKING_ACCOUNT.public_key
+    ).fire()
 
     # ASSERT
     assert_weight_threshold(testing_cli, authority, WEIGHT_THRESHOLD)
@@ -70,13 +68,13 @@ async def test_chaining2(testing_cli: TestingCli, authority: AuthorityType) -> N
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_chaining3(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
-        )
-        getattr(chain_command_builder, "add-key")(key=OTHER_ACCOUNT.public_key, weight=WEIGHT)
-        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
-        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT)
+    testing_cli.process_update_authority(
+        authority, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
+    ).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).add_account(
+        account=OTHER_ACCOUNT.name, weight=WEIGHT
+    ).modify_key(
+        key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT
+    ).fire()
 
     # ASSERT
     assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)

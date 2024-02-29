@@ -40,24 +40,24 @@ async def test_withdrawal_valid(
 ) -> None:
     # ARRANGE
     testing_cli.process_savings_deposit(
-        amount=amount_to_deposit.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=amount_to_deposit, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ACT
     testing_cli.process_savings_withdrawal(
-        amount=amount_to_deposit.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=amount_to_deposit, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
     checkers.assert_balances(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=working_account_balance - amount_to_deposit.amount,
         balance="Liquid",
     )
@@ -67,7 +67,7 @@ async def test_withdrawal_invalid(testing_cli: TestingCli) -> None:
     # ACT
     with pytest.raises(CliveCommandError) as withdrawal_exception_info:
         testing_cli.process_savings_withdrawal(
-            amount=LARGE_AMOUNT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+            amount=LARGE_AMOUNT, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
         )
     withdrawal_error = withdrawal_exception_info.value
     assert withdrawal_error.exit_code == 1
@@ -75,13 +75,13 @@ async def test_withdrawal_invalid(testing_cli: TestingCli) -> None:
     # ASSERT
     checkers.assert_balances(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
         balance="Liquid",
     )
@@ -90,7 +90,7 @@ async def test_withdrawal_invalid(testing_cli: TestingCli) -> None:
 async def test_withdrawal_with_memo(testing_cli: TestingCli) -> None:
     # ARRANGE
     testing_cli.process_savings_deposit(
-        amount=AMOUNT_TO_DEPOSIT_HIVE.as_legacy(),
+        amount=AMOUNT_TO_DEPOSIT_HIVE,
         memo=DEPOSIT_MEMO,
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
@@ -98,7 +98,7 @@ async def test_withdrawal_with_memo(testing_cli: TestingCli) -> None:
 
     # ACT
     testing_cli.process_savings_withdrawal(
-        amount=AMOUNT_TO_DEPOSIT_HIVE.as_legacy(),
+        amount=AMOUNT_TO_DEPOSIT_HIVE,
         memo=WITHDRAWAL_MEMO,
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
@@ -107,13 +107,13 @@ async def test_withdrawal_with_memo(testing_cli: TestingCli) -> None:
     # ASSERT
     checkers.assert_balances(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE - AMOUNT_TO_DEPOSIT_HIVE.amount,
         balance="Liquid",
     )

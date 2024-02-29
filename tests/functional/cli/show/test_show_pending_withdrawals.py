@@ -31,15 +31,15 @@ async def test_show_pending_withdrawals_basic(
 ) -> None:
     # ARRANGE
     testing_cli.process_savings_deposit(
-        amount=AMOUNT_TO_DEPOSIT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     testing_cli.process_savings_withdrawal(
-        amount=AMOUNT_TO_WITHDRAW.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_WITHDRAW, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     testing_cli.process_savings_withdrawal(
-        amount=AMOUNT_TO_WITHDRAW2.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_WITHDRAW2, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ACT

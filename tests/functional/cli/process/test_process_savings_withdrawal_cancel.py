@@ -21,18 +21,18 @@ async def test_withdrawal_cancel_valid(testing_cli: TestingCli) -> None:
     request_id = 13
 
     testing_cli.process_savings_deposit(
-        amount=AMOUNT_TO_DEPOSIT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     testing_cli.process_savings_withdrawal(
-        amount=AMOUNT_TO_DEPOSIT.as_legacy(),
+        amount=AMOUNT_TO_DEPOSIT,
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
-        **{"request-id": request_id},
+        request_id=request_id,
     )
 
     # ACT
-    getattr(testing_cli, "process_savings_withdrawal-cancel")(
-        password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, **{"request-id": request_id}
+    testing_cli.process_savings_withdrawal_cancel(
+        password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=request_id
     )
 
     # ASSERT
@@ -46,20 +46,20 @@ async def test_withdrawal_cancel_invalid(testing_cli: TestingCli) -> None:
     invalid_request_id = 24
 
     testing_cli.process_savings_deposit(
-        amount=AMOUNT_TO_DEPOSIT.as_legacy(), password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_DEPOSIT, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     testing_cli.process_savings_withdrawal(
-        amount=AMOUNT_TO_DEPOSIT.as_legacy(),
+        amount=AMOUNT_TO_DEPOSIT,
         password=WORKING_ACCOUNT.name,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
-        **{"request-id": actual_request_id},
+        request_id=actual_request_id,
     )
 
     # ACT
     with pytest.raises(CliveCommandError) as withdrawal_cancel_exception_info:
-        getattr(testing_cli, "process_savings_withdrawal-cancel")(
-            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, **{"request-id": invalid_request_id}
+        testing_cli.process_savings_withdrawal_cancel(
+            password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, request_id=invalid_request_id
         )
     withdrawal_cancel_error = withdrawal_cancel_exception_info.value
     assert withdrawal_cancel_error.exit_code == 1
@@ -67,6 +67,6 @@ async def test_withdrawal_cancel_invalid(testing_cli: TestingCli) -> None:
     # ASSERT
     checkers.assert_pending_withrawals(
         testing_cli,
-        account_name=f"{WORKING_ACCOUNT.name}",
+        account_name=WORKING_ACCOUNT.name,
         asset_amount=AMOUNT_TO_DEPOSIT,
     )

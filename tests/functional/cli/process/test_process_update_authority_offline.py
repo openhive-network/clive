@@ -28,11 +28,13 @@ MODIFIED_WEIGHT: Final[int] = 324
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_set_threshold_offline(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
-        )
-        getattr(chain_command_builder, "add-account")(account=WORKING_ACCOUNT.name, weight=WEIGHT)
+    testing_cli.process_update_authority(
+        authority,
+        force_offline=True,
+        password=WORKING_ACCOUNT.name,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
+        threshold=WEIGHT_THRESHOLD,
+    ).add_account(account=WORKING_ACCOUNT.name, weight=WEIGHT).fire()
 
     # ASSERT
     assert_weight_threshold(testing_cli, authority, WEIGHT_THRESHOLD)
@@ -43,11 +45,9 @@ async def test_set_threshold_offline(testing_cli: TestingCli, authority: Authori
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_add_account_offline(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "add-account")(account=OTHER_ACCOUNT.name, weight=WEIGHT)
+    testing_cli.process_update_authority(
+        authority, force_offline=True, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).fire()
 
     # ASSERT
     assert_is_authority(testing_cli, OTHER_ACCOUNT.name, authority)
@@ -59,12 +59,11 @@ async def test_add_account_offline(testing_cli: TestingCli, authority: Authority
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
 async def test_modify_key_offline(testing_cli: TestingCli, authority: AuthorityType) -> None:
     # ACT
-    with testing_cli.chain_commands() as chain_command_builder:
-        getattr(chain_command_builder, f"process_update-{authority}-authority")(
-            "--force-offline", password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
-        )
-        getattr(chain_command_builder, "add-key")(key=WORKING_ACCOUNT.public_key, weight=WEIGHT)
-        getattr(chain_command_builder, "modify-key")(key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT)
+    testing_cli.process_update_authority(
+        authority, force_offline=True, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS
+    ).add_key(key=WORKING_ACCOUNT.public_key, weight=WEIGHT).modify_key(
+        key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT
+    ).fire()
 
     # ASSERT
     assert_is_authority(testing_cli, WORKING_ACCOUNT.public_key, authority)

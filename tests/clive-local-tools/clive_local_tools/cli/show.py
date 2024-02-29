@@ -10,10 +10,4 @@ if TYPE_CHECKING:
 
 def balances(testing_cli: TestingCli, profile_name: str | None = None, account_name: str | None = None) -> Result:
     """If profile_name or account_name is None then default value is used."""
-    attrs = {}
-    if profile_name is not None:
-        attrs["profile-name"] = profile_name
-    if account_name is not None:
-        attrs["account-name"] = account_name
-
-    return testing_cli.show_balances(**attrs)
+    return testing_cli.show_balances(profile_name=profile_name, account_name=account_name)

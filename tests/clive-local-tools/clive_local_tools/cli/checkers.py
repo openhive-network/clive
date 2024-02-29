@@ -43,7 +43,7 @@ def assert_is_authority(
     entry: str | PublicKey,
     authority: AuthorityType,
 ) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+    result = testing_cli.show_authority(authority)
     output = result.output
     table = output.split("\n")[2:]
     assert any(
@@ -56,7 +56,7 @@ def assert_is_not_authority(
     entry: str | PublicKey,
     authority: AuthorityType,
 ) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+    result = testing_cli.show_authority(authority)
     output = result.output
     table = output.split("\n")[2:]
     assert not any(
@@ -70,7 +70,7 @@ def assert_authority_weight(
     authority: AuthorityType,
     weight: int,
 ) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+    result = testing_cli.show_authority(authority)
     output = result.output
     assert any(
         str(entry) in line and f"{weight}" in line for line in output.split("\n")
@@ -82,7 +82,7 @@ def assert_weight_threshold(
     authority: AuthorityType,
     threshold: int,
 ) -> None:
-    result = getattr(testing_cli, f"show_{authority}-authority")()
+    result = testing_cli.show_authority(authority)
     output = result.output
     assert f"weight threshold is {threshold}" in output
 
@@ -91,6 +91,6 @@ def assert_memo_key(
     testing_cli: TestingCli,
     memo_key: PublicKey,
 ) -> None:
-    result = getattr(testing_cli, "show_memo-key")()
+    result = testing_cli.show_memo_key()
     output = result.output
     assert str(memo_key) in output

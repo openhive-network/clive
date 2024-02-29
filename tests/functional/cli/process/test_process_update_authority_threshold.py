@@ -18,9 +18,9 @@ async def test_set_threshold(testing_cli: TestingCli, authority: AuthorityType) 
     weight_threshold = 3
 
     # ACT
-    getattr(testing_cli, f"process_update-{authority}-authority")(
-        password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
-    )
+    testing_cli.process_update_authority(
+        authority, password=WORKING_ACCOUNT.name, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
+    ).fire()
 
     # ASSERT
     assert_weight_threshold(testing_cli, authority, weight_threshold)

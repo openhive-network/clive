@@ -1,0 +1,81 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+import test_tools as tt
+
+from .command_options import kwargs_to_cli_options
+from .exceptions import CliveCommandError
+
+if TYPE_CHECKING:
+    from click.testing import Result
+    from typer.testing import CliRunner
+
+    from clive.__private.cli.clive_typer import CliveTyper
+    from clive_local_tools.cli.command_options import KwargsType
+    from schemas.fields.basic import PublicKey
+
+
+class ChainedCommand:
+    def __init__(self, command: list[str], typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
+        self.__full_command = [*command, *kwargs_to_cli_options(**kwargs)]
+        self.__typer = typer
+        self.__runner = runner
+        self.__was_invoked = False
+
+    def _add_command_to_chain(self, next_command: str, **kwargs: KwargsType) -> None:
+        self.__full_command.append(next_command)
+        self.__full_command.extend(kwargs_to_cli_options(**kwargs))
+
+    def fire(self) -> Result:
+        assert self.__was_invoked is False, f"Command '{self.__full_command}' was already invoked."
+        self.__was_invoked = True
+        tt.logger.info(f"Executing command {self.__full_command}.")
+        result = self.__runner.invoke(self.__typer, self.__full_command)
+        if result.exit_code != 0:
+            raise CliveCommandError(self.__full_command, result.exit_code, result.stdout, result)
+        return result
+
+
+class UpdateAuthority(ChainedCommand):
+    def add_key(self, /, *, key: PublicKey, weight: int) -> UpdateAuthority:
+        self._add_command_to_chain("add-key", key=key, weight=weight)
+        return self
+
+    def add_account(self, /, *, account: str, weight: int) -> UpdateAuthority:
+        self._add_command_to_chain("add-account", account=account, weight=weight)
+        return self
+
+    def remove_key(self, /, *, key: PublicKey) -> UpdateAuthority:
+        self._add_command_to_chain("remove-key", key=key)
+        return self
+
+    def remove_account(self, /, *, account: str) -> UpdateAuthority:
+        self._add_command_to_chain("remove-account", account=account)
+        return self
+
+    def modify_key(self, /, *, key: PublicKey, weight: int) -> UpdateAuthority:
+        self._add_command_to_chain("modify-key", key=key, weight=weight)
+        return self
+
+    def modify_account(self, /, *, account: str, weight: int) -> UpdateAuthority:
+        self._add_command_to_chain("modify-account", account=account, weight=weight)
+        return self
+
+
+class UpdateOwnerAuthority(UpdateAuthority):
+    def __init__(self, typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
+        command = ["process", "update-owner-authority"]
+        super().__init__(command, typer, runner, **kwargs)
+
+
+class UpdateActiveAuthority(UpdateAuthority):
+    def __init__(self, typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
+        command = ["process", "update-active-authority"]
+        super().__init__(command, typer, runner, **kwargs)
+
+
+class UpdatePostingAuthority(UpdateAuthority):
+    def __init__(self, typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
+        command = ["process", "update-posting-authority"]
+        super().__init__(command, typer, runner, **kwargs)
