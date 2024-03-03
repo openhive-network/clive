@@ -3,9 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
 from queue import Queue
-from typing import Final
+from typing import Awaitable, Final
 
-from clive.__private.core.commands.abc.command import Command
 from clive.__private.storage.contextual import ContextT, Contextual
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
@@ -13,6 +12,7 @@ from clive.__private.ui.shared.form_screen import FormScreenBase
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
+PostActionFunctionT = Callable[[], Awaitable[None]]
 
 
 class Form(Contextual[ContextT], CliveScreen[None]):
@@ -28,7 +28,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         self.__skipped_screens: set[ScreenBuilder[ContextT]] = set()
         assert len(self.__screens) > self.AMOUNT_OF_DEFAULT_SCREENS, "no screen given to display"
         self._rebuild_context()
-        self._post_actions = Queue[Command]()
+        self._post_actions = Queue[PostActionFunctionT]()
 
         super().__init__()
 
@@ -107,13 +107,13 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     def create_finish_screen(self) -> ScreenBuilder[ContextT]:
         return lambda owner: FinishFormScreen(owner, "Hope it didn't take too long")
 
-    def add_post_action(self, *commands: Command) -> None:
+    def add_post_action(self, *commands: PostActionFunctionT) -> None:
         for command in commands:
             self._post_actions.put_nowait(command)
 
     def clear_post_actions(self) -> None:
-        self._post_actions = Queue[Command]()
+        self._post_actions = Queue[PostActionFunctionT]()
 
     async def execute_post_actions(self) -> None:
         while not self._post_actions.empty():
-            await self._post_actions.get_nowait().execute()
+            await self._post_actions.get_nowait()()

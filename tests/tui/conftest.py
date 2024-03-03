@@ -14,7 +14,7 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
-from clive.core.url import Url
+from clive.models.aliased import Url
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import (
     get_alternate_chain_spec_path,
@@ -87,7 +87,7 @@ async def _world(  # noqa: PT005 # not intended for direct usage
     _prepare_profile()
 
     async with TextualWorld() as world:
-        await world.node.set_address(Url.parse(node.http_endpoint.as_string()))
+        world.node.http_endpoint = Url(node.http_endpoint.as_string())
         yield world
 
 

@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+from beekeepy import AsyncBeekeeper
+from beekeepy._interface.abc.asynchronous.session import Session as AsyncSession
+from beekeepy._interface.abc.asynchronous.wallet import UnlockedWallet as AsyncUnlockedWallet
+from beekeepy._interface.abc.asynchronous.wallet import Wallet as AsyncWallet
+from beekeepy.settings import Settings as BeekeepySettings
+from helpy import AsyncHived, HttpUrl
+
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
 from schemas.apis.database_api import FindAccounts as SchemasFindAccounts
 from schemas.apis.database_api import FindProposals as SchemasFindProposals
@@ -74,3 +81,11 @@ ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
 
 ChainIdSchema = Sha256
+
+Node = AsyncHived
+Beekeeper = AsyncBeekeeper
+Session = AsyncSession
+Wallet = AsyncWallet
+UnlockedWallet = AsyncUnlockedWallet
+Settings = BeekeepySettings
+Url = HttpUrl

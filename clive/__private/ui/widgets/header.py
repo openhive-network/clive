@@ -24,8 +24,8 @@ if TYPE_CHECKING:
     from textual.events import Mount
 
     from clive.__private.core.app_state import AppState
-    from clive.__private.core.node.node import Node
     from clive.__private.storage.accounts import Account
+    from clive.models.aliased import Node
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -110,7 +110,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         return f"{block_num} ({block_time} UTC)"
 
     async def __get_last_update(self, _: bool) -> str:
-        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
+        gdpo = await self.app.world.node.api.database.get_dynamic_global_properties()
         return humanize_natural_time(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
 
     def __trigger_last_update(self) -> None:
@@ -198,7 +198,7 @@ class Header(TextualHeader, CliveWidget):
 
     @staticmethod
     def __get_node_address(node: Node) -> str:
-        return str(node.address)
+        return str(node.http_endpoint.as_string())
 
     @staticmethod
     def __get_profile_name(profile_data: ProfileData) -> str:

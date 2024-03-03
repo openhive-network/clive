@@ -9,8 +9,8 @@ from clive.__private.core.commands.abc.command import Command
 from schemas.fields.hive_int import HiveInt
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
     from clive.models import Transaction
+    from clive.models.aliased import Node
 
 
 @dataclass(kw_only=True)
@@ -24,7 +24,7 @@ class UpdateTransactionMetadata(Command):
 
     async def _execute(self) -> None:
         # get dynamic global properties
-        gdpo = await self.node.api.database_api.get_dynamic_global_properties()
+        gdpo = await self.node.api.database.get_dynamic_global_properties()
         block_id = gdpo.head_block_id
 
         # set header

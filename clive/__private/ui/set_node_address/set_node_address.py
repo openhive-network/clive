@@ -4,6 +4,7 @@ from abc import ABC
 from datetime import datetime
 from typing import TYPE_CHECKING, Any, Final
 
+from helpy import HttpUrl
 from rich.highlighter import Highlighter
 from textual import on
 from textual.binding import Binding
@@ -19,7 +20,6 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
-from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
 from schemas.jsonrpc import JSONRPCRequest
 
@@ -32,14 +32,14 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class NodeSelector(Select[Url], CliveWidget):
+class NodeSelector(Select[HttpUrl], CliveWidget):
     """Select for the node address."""
 
     def __init__(self) -> None:
         super().__init__(
             [(str(url), url) for url in self.app.world.profile_data.backup_node_addresses],
             allow_blank=False,
-            value=self.app.world.node.address,
+            value=self.app.world.node.http_endpoint,
         )
 
 
@@ -47,7 +47,7 @@ class SelectedNodeAddress(Static, CliveWidget):
     """The currently selected node address."""
 
     def render(self) -> RenderableType:
-        return f"Selected node address: {self.app.world.node.address}"
+        return f"Selected node address: {self.app.world.node.http_endpoint}"
 
 
 class NodesList(Container, CliveWidget):
@@ -72,7 +72,9 @@ class NodeUrlHighlighter(Highlighter):
 
     def is_valid_url(self, url: str) -> bool:
         try:
-            Communication().request(url, data=JSONRPCRequest(method="database_api.get_config"))
+            Communication().send(
+                HttpUrl(url), data=JSONRPCRequest(method="database_api.get_config").json(by_alias=True)
+            )
         except CommunicationError:
             return False
         return True
@@ -105,7 +107,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
     async def _valid_and_save_address(self) -> None:
         address = self.query_one(NodeSelector).value
         assert not isinstance(address, NoSelection), "No node was selected."
-        await self.app.world.node.set_address(address)
+        self.app.world.node.http_endpoint = HttpUrl(address)
         self.app.trigger_node_watchers()
         self.__selected_node.refresh()
 
@@ -120,7 +122,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 severity="error",
             )
         else:
-            self.notify(f"Node address set to `{self.app.world.node.address}`.")
+            self.notify(f"Node address set to `{self.app.world.node.http_endpoint}`.")
 
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):

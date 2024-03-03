@@ -7,14 +7,14 @@ from clive.__private.core.commands.abc.command import Command
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
+    from clive.models.aliased import Session
 
 
 @dataclass(kw_only=True)
 class SetTimeout(Command):
-    beekeeper: Beekeeper
+    session: Session
     seconds: int
 
     async def _execute(self) -> None:
-        await self.beekeeper.api.set_timeout(seconds=self.seconds)
+        await self.session.set_timeout(seconds=self.seconds)
         logger.info(f"Timeout set to {self.seconds} s.")

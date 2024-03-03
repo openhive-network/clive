@@ -7,15 +7,17 @@ from clive.__private.core.commands.abc.command import Command
 
 if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
-    from clive.__private.core.beekeeper import Beekeeper
+    from clive.models.aliased import UnlockedWallet
 
 
 @dataclass(kw_only=True)
 class Deactivate(Command):
     app_state: AppState
-    beekeeper: Beekeeper
-    wallet: str
+    wallet: UnlockedWallet | None
 
     async def _execute(self) -> None:
-        await self.beekeeper.api.lock(wallet_name=self.wallet)
+        if self.wallet is None:
+            return
+
+        await self.wallet.lock()
         self.app_state.deactivate()

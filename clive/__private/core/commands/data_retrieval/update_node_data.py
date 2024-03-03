@@ -23,12 +23,12 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from types import TracebackType
 
-    from clive.__private.core.node.node import Node
     from clive.__private.storage import mock_database
     from clive.models.aliased import (
         ChangeRecoveryAccountRequest,
         DeclineVotingRightsRequest,
         FindRcAccounts,
+        Node,
         OwnerHistory,
         RcAccount,
         Reputation,
@@ -137,7 +137,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             # We only need to fetch GDPO if no accounts were provided - otherwise it will be fetched in the same (batch)
             # query with other account-related data. Otherwise, if that would happen in a separate call we might get a
             # stale GDPO (for previous block).
-            self._result = await self.node.api.database_api.get_dynamic_global_properties()
+            self._result = await self.node.api.database.get_dynamic_global_properties()
             return
 
         await super()._execute()
@@ -148,36 +148,34 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         harvested_data: HarvestedDataRaw = HarvestedDataRaw()
 
         async with self.node.batch(delay_error_on_data_access=True) as node:
-            harvested_data.gdpo = await node.api.database_api.get_dynamic_global_properties()
-            harvested_data.core_accounts = await node.api.database_api.find_accounts(accounts=account_names)
-            harvested_data.rc_accounts = await node.api.rc_api.find_rc_accounts(accounts=account_names)
+            harvested_data.gdpo = await node.api.database.get_dynamic_global_properties()
+            harvested_data.core_accounts = await node.api.database.find_accounts(accounts=account_names)
+            harvested_data.rc_accounts = await node.api.rc.find_rc_accounts(accounts=account_names)
 
             account_harvested_data = harvested_data.account_harvested_data
             for account in self.accounts:
-                account_harvested_data[account].reputations = await node.api.reputation_api.get_account_reputations(
+                account_harvested_data[account].reputations = await node.api.reputation.get_account_reputations(
                     account_lower_bound=account.name, limit=1
                 )
 
-                account_harvested_data[account].account_history = (
-                    await node.api.account_history_api.get_account_history(
-                        account=account.name,
-                        limit=1,
-                        operation_filter_low=non_virtual_operations_filter,
-                        include_reversible=True,
-                    )
+                account_harvested_data[account].account_history = await node.api.account_history.get_account_history(
+                    account=account.name,
+                    limit=1,
+                    operation_filter_low=non_virtual_operations_filter,
+                    include_reversible=True,
                 )
 
                 account_harvested_data[account].decline_voting_rights = (
-                    await node.api.database_api.list_decline_voting_rights_requests(
+                    await node.api.database.list_decline_voting_rights_requests(
                         start=account.name, limit=1, order="by_account"
                     )
                 )
                 account_harvested_data[account].change_recovery_account_requests = (
-                    await node.api.database_api.list_change_recovery_account_requests(
+                    await node.api.database.list_change_recovery_account_requests(
                         start=account.name, limit=1, order="by_account"
                     )
                 )
-                account_harvested_data[account].owner_history = await node.api.database_api.list_owner_histories(
+                account_harvested_data[account].owner_history = await node.api.database.list_owner_histories(
                     start=(account.name, _get_utc_epoch()), limit=1
                 )
 

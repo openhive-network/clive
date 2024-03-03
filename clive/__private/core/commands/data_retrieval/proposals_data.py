@@ -6,12 +6,13 @@ from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
 from clive.models import Asset
+from clive.models.aliased import Node  # noqa: TCH001
 
 if TYPE_CHECKING:
     import datetime
 
-    from clive.__private.core.node import Node
-    from clive.__private.core.node.api.database_api import DatabaseApi
+    from helpy._handles.hived.api.database_api.async_api import DatabaseApi
+
     from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, ProposalsList, ProposalVotes
 
 
@@ -78,8 +79,8 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
         async with self.node.batch() as node:
-            gdpo = await node.api.database_api.get_dynamic_global_properties()
-            proposal_votes = await node.api.database_api.list_proposal_votes(
+            gdpo = await node.api.database.get_dynamic_global_properties()
+            proposal_votes = await node.api.database.list_proposal_votes(
                 start=[self.account_name],
                 limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
                 order="by_voter_proposal",
@@ -95,7 +96,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             else:
                 raise ValueError(f"Unknown order: {self.order}")
 
-            searched_proposals = await node.api.database_api.list_proposals(
+            searched_proposals = await node.api.database.list_proposals(
                 start=[],
                 limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
                 order=order,

@@ -3,10 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from helpy.exceptions import RequestError
 
 from clive.__private.core.keys import PrivateKeyAliased
 from clive.__private.logger import logger
-from clive.exceptions import CommunicationError
 from clive.models import Asset
 from schemas.operations import TransferOperation
 
@@ -51,5 +51,5 @@ async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt
 
 async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:  # noqa: ARG001
     # ACT & ASSERT
-    with pytest.raises(CommunicationError):
+    with pytest.raises(RequestError):
         await world.commands.find_transaction(transaction_id="deadbeef")

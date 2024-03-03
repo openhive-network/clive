@@ -11,8 +11,7 @@ from clive.exceptions import RequestIdError
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from clive.__private.core.node import Node
-    from clive.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
+    from clive.models.aliased import DynamicGlobalProperties, Node, SavingsWithdrawals, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
     from schemas.operations import TransferFromSavingsOperation
 
@@ -71,9 +70,9 @@ class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
         async with self.node.batch() as node:
             return HarvestedDataRaw(
-                await node.api.database_api.get_dynamic_global_properties(),
-                await node.api.database_api.find_accounts(accounts=[self.account_name]),
-                await node.api.database_api.find_savings_withdrawals(account=self.account_name),
+                await node.api.database.get_dynamic_global_properties(),
+                await node.api.database.find_accounts(accounts=[self.account_name]),
+                await node.api.database.find_savings_withdrawals(account=self.account_name),
             )
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:

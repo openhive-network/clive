@@ -28,6 +28,8 @@ from clive.exceptions import FormValidationError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.ui.shared.form import PostActionFunctionT
+
 
 class ButtonsContainer(Horizontal):
     """Container for the buttons."""
@@ -73,7 +75,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         password = self._password_input.value_or_error
         return profile_name, password
 
-    def _create_profile(self) -> tuple[CreateWallet, SyncDataWithBeekeeper]:
+    def _create_profile(self) -> tuple[PostActionFunctionT, PostActionFunctionT]:
         """
         Collects the data from the form and creates a profile.
 
@@ -84,17 +86,24 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         profile_name, password = self._get_valid_args()
         self.context.name = profile_name
 
-        create_wallet = CreateWallet(
-            app_state=self.app.world.app_state,
-            beekeeper=self.app.world.beekeeper,
-            wallet=profile_name,
-            password=password,
-        )
-        write_data = SyncDataWithBeekeeper(
-            app_state=self.app.world.app_state,
-            profile_data=self.context,
-            beekeeper=self.app.world.beekeeper,
-        )
+        async def create_wallet() -> None:
+            wallet = await CreateWallet(
+                app_state=self.app.world.app_state,
+                session=self.app.world.session,
+                wallet=profile_name,
+                password=password,
+            ).execute_with_result()
+            self.app.world.wallet = wallet
+
+        async def write_data() -> None:
+            wallet = await self.app.world.wallet.unlocked
+            assert wallet is not None
+            await SyncDataWithBeekeeper(
+                app_state=self.app.world.app_state,
+                profile_data=self.context,
+                wallet=wallet,
+            ).execute()
+
         return create_wallet, write_data
 
 

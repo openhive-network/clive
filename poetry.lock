@@ -173,6 +173,24 @@ tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "beekeepy"
+version = "1.25.2rc0.dev3890+04a94d629.dirty"
+description = ""
+optional = false
+python-versions = ">=3.10,<4.0"
+files = [
+    {file = "beekeepy-1.25.2rc0.dev3890+04a94d629.dirty-py3-none-any.whl", hash = "sha256:0710fc068e83b0a971da5d074b8c7d928b09ae672744fbb3460b46f9cf846ea5"},
+]
+
+[package.dependencies]
+helpy = "0.0.1.dev163+09dbdfa"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple"
+reference = "gitlab-beekeepy"
+
+[[package]]
 name = "black"
 version = "24.2.0"
 description = "The uncompromising code formatter."
@@ -466,12 +484,12 @@ hyperframe = ">=6.0,<7"
 
 [[package]]
 name = "helpy"
-version = "0.0.1.dev161+1457c67"
+version = "0.0.1.dev163+09dbdfa"
 description = "Easily interact with the Hive blockchain using Python."
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "helpy-0.0.1.dev161+1457c67-py3-none-any.whl", hash = "sha256:777192d8ca160bfc2071368f437777ed5155e151b72a25454674f4e435ae2176"},
+    {file = "helpy-0.0.1.dev163+09dbdfa-py3-none-any.whl", hash = "sha256:20285928d451b3336a2573ab5f741d337720d8dfd9e974fff3998a123fb47e1a"},
 ]
 
 [package.dependencies]
@@ -481,7 +499,7 @@ loguru = "0.7.2"
 pytest-is-running = "1.5.0"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
-schemas = "0.0.1.dev291+af0fba1"
+schemas = "0.0.1.dev293+ec86a3c"
 wax = "0.0.3a2.dev187+207f9b4"
 
 [package.source]
@@ -1320,12 +1338,12 @@ files = [
 
 [[package]]
 name = "schemas"
-version = "0.0.1.dev291+af0fba1"
+version = "0.0.1.dev293+ec86a3c"
 description = "Tools for checking if message fits expected format"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "schemas-0.0.1.dev291+af0fba1-py3-none-any.whl", hash = "sha256:c7e8c70ab9598944f41d13f510c05be912eb8f7c1f8bcf992a96ba1a1ffe613f"},
+    {file = "schemas-0.0.1.dev293+ec86a3c-py3-none-any.whl", hash = "sha256:dcc30eff2587ed209ce38e2beb8e783ec5b0199d4590a0eed4723ef7e0e868b9"},
 ]
 
 [package.dependencies]
@@ -1396,7 +1414,7 @@ develop = false
 
 [package.dependencies]
 abstractcp = "0.9.9"
-helpy = "0.0.1.dev161+1457c67"
+beekeepy = "1.25.2rc0.dev3890+04a94d629.dirty"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
@@ -1687,4 +1705,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "dc6f8a74160037f8369016c185640658b8ca98be6109b1c3fc4c76ea81718bd1"
+content-hash = "2abc9a4042e2196dc54385ee44db5c79fe4d06e1ad509f50ec371d301228d533"

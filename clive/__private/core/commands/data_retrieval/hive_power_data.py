@@ -10,8 +10,7 @@ from clive.models import Asset
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from clive.__private.core.node import Node
-    from clive.models.aliased import DynamicGlobalProperties, SchemasAccount
+    from clive.models.aliased import DynamicGlobalProperties, Node, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindVestingDelegations, ListWithdrawVestingRoutes
     from schemas.apis.database_api.fundaments_of_reponses import VestingDelegationsFundament as VestingDelegation
     from schemas.apis.database_api.fundaments_of_reponses import WithdrawVestingRoutesFundament as WithdrawRoute
@@ -66,12 +65,12 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
         async with self.node.batch() as node:
             return HarvestedDataRaw(
-                await node.api.database_api.get_dynamic_global_properties(),
-                await node.api.database_api.find_accounts(accounts=[self.account_name]),
-                await node.api.database_api.list_withdraw_vesting_routes(
+                await node.api.database.get_dynamic_global_properties(),
+                await node.api.database.find_accounts(accounts=[self.account_name]),
+                await node.api.database.list_withdraw_vesting_routes(
                     start=(self.account_name, ""), limit=_MAX_WITHDRAW_VESTING_ROUTES_LIMIT, order="by_withdraw_route"
                 ),
-                await node.api.database_api.find_vesting_delegations(account=self.account_name),
+                await node.api.database.find_vesting_delegations(account=self.account_name),
             )
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:

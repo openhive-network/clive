@@ -34,9 +34,9 @@ def _get_default_working_account_name() -> str | None:
 
 def _get_default_beekeeper_remote() -> str | None:
     if not is_tab_completion_active():
-        from clive.__private.core.beekeeper import Beekeeper
+        from clive.__private.config import settings
 
-        address = Beekeeper.get_remote_address_from_settings() or Beekeeper.get_remote_address_from_connection_file()
+        address = settings.get("beekeeper.remote_address")
         return str(address) if address else None
     return None
 

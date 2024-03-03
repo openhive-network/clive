@@ -8,10 +8,11 @@ from clive.__private.core.commands.abc.command_in_active import CommandInActive
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import calculate_sig_digest
 from clive.models import Signature, Transaction
+from schemas.fields.basic import PublicKey as SchemaPublicKey
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys import PublicKey
+    from clive.models.aliased import UnlockedWallet
 
 
 class SignCommandError(CommandError):
@@ -28,7 +29,7 @@ ALREADY_SIGNED_MODE_DEFAULT: Final[Literal["error"]] = "error"
 
 @dataclass(kw_only=True)
 class Sign(CommandInActive, CommandWithResult[Transaction]):
-    beekeeper: Beekeeper
+    wallet: UnlockedWallet
     transaction: Transaction
     key: PublicKey
     chain_id: str
@@ -39,9 +40,9 @@ class Sign(CommandInActive, CommandWithResult[Transaction]):
         self.__throw_already_signed_error_when_needed()
 
         sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
-        result = await self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.value)
+        result = await self.wallet.sign_digest(sig_digest=sig_digest, key=SchemaPublicKey(self.key.value))
 
-        self.__set_transaction_signature(Signature(result.signature))
+        self.__set_transaction_signature(result)
         self._result = self.transaction
 
     def __throw_already_signed_error_when_needed(self) -> None:

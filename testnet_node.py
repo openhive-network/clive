@@ -81,14 +81,14 @@ async def prepare_profile(node: tt.RawNode) -> None:
     ).save()
 
     async with World(WORKING_ACCOUNT.name) as world:
-        password = await CreateWallet(
+        await CreateWallet(
             app_state=world.app_state,
-            beekeeper=world.beekeeper,
+            session=world.session,
             wallet=WORKING_ACCOUNT.name,
             password=WORKING_ACCOUNT.name,
         ).execute_with_result()
 
-        tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
+        tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{WORKING_ACCOUNT.name}`")
         world.profile_data.working_account.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=f"{WORKING_ACCOUNT.name}_key")
         )

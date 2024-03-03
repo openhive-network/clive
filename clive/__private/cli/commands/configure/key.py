@@ -3,11 +3,12 @@ from dataclasses import dataclass
 from pathlib import Path
 
 import typer
+from beekeepy._interface.exceptions import NoWalletWithSuchNameError
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
-from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
+from clive.__private.core.commands.activate import ActivateInvalidPasswordError
 from clive.__private.core.keys import (
     PrivateKey,
     PrivateKeyAliased,
@@ -72,7 +73,7 @@ class AddKey(WorldBasedCommand):
 
         try:
             await self.world.commands.activate(password=self.password)
-        except (ActivateInvalidPasswordError, WalletDoesNotExistsError):
+        except (ActivateInvalidPasswordError, NoWalletWithSuchNameError):
             profile_data.skip_saving()
             raise
 

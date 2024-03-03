@@ -57,7 +57,14 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
-    from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, SchemasAccount, TransactionStatus, Witness
+    from clive.models.aliased import (
+        DynamicGlobalProperties,
+        ProposalSchema,
+        SchemasAccount,
+        TransactionStatus,
+        UnlockedWallet,
+        Witness,
+    )
 
 WorldT = TypeVar("WorldT", bound="World")
 
@@ -76,11 +83,11 @@ class Commands(Generic[WorldT]):
         self._world = world
         self.__exception_handlers = [AsyncClosedErrorHandler, *(exception_handlers or [])]
 
-    async def create_wallet(self, *, password: str | None) -> CommandWithResultWrapper[str]:
+    async def create_wallet(self, *, password: str) -> CommandWithResultWrapper[UnlockedWallet]:
         return await self.__surround_with_exception_handlers(
             CreateWallet(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
+                session=self._world.session,
                 wallet=self._world.profile_data.name,
                 password=password,
             )
@@ -94,39 +101,40 @@ class Commands(Generic[WorldT]):
     async def activate(
         self, *, password: str, time: timedelta | None = None, permanent: bool = False
     ) -> CommandWrapper:
-        return await self.__surround_with_exception_handlers(
+        wrapper = await self.__surround_with_exception_handlers(
             Activate(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
+                session=self._world.session,
                 wallet=self._world.profile_data.name,
                 password=password,
                 time=time,
                 permanent=permanent,
             )
         )
+        wallet = wrapper.command.result
+        if wallet is not None:
+            self._world.wallet = wallet
+        return wrapper # type: ignore
 
     async def deactivate(self) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             Deactivate(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
-                wallet=self._world.profile_data.name,
+                wallet=await self._world.unlocked_wallet,
             )
         )
 
     async def is_password_valid(self, *, password: str) -> CommandWithResultWrapper[bool]:
         return await self.__surround_with_exception_handlers(
             IsPasswordValid(
-                beekeeper=self._world.beekeeper,
+                session=self._world.session,
                 wallet=self._world.profile_data.name,
                 password=password,
             )
         )
 
     async def set_timeout(self, *, seconds: int) -> CommandWrapper:
-        return await self.__surround_with_exception_handlers(
-            SetTimeout(beekeeper=self._world.beekeeper, seconds=seconds)
-        )
+        return await self.__surround_with_exception_handlers(SetTimeout(session=self._world.session, seconds=seconds))
 
     async def perform_actions_on_transaction(  # noqa: PLR0913
         self,
@@ -144,7 +152,7 @@ class Commands(Generic[WorldT]):
             PerformActionsOnTransaction(
                 app_state=self._world.app_state,
                 node=self._world.node,
-                beekeeper=self._world.beekeeper if sign_key else None,
+                wallet=await self._world.wallet.unlocked,
                 content=content,
                 sign_key=sign_key,
                 already_signed_mode=already_signed_mode,
@@ -195,10 +203,10 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             Sign(
                 app_state=self._world.app_state,
-                beekeeper=self._world.beekeeper,
+                wallet=await self._world.unlocked_wallet,
                 transaction=transaction,
                 key=sign_with,
-                chain_id=chain_id or await self._world.node.chain_id,
+                chain_id=chain_id or (await self._world.node.api.database.get_config()).HIVE_CHAIN_ID,
                 already_signed_mode=already_signed_mode,
             )
         )
@@ -231,7 +239,7 @@ class Commands(Generic[WorldT]):
                 app_state=self._world.app_state,
                 node=self._world.node,
                 content=content,
-                beekeeper=self._world.beekeeper,
+                wallet=await self._world.unlocked_wallet,
                 sign_with=sign_with,
             )
         )
@@ -240,9 +248,8 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             ImportKey(
                 app_state=self._world.app_state,
-                wallet=self._world.profile_data.name,
                 key_to_import=key_to_import,
-                beekeeper=self._world.beekeeper,
+                wallet=await self._world.unlocked_wallet,
             )
         )
 
@@ -250,8 +257,8 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             RemoveKey(
                 app_state=self._world.app_state,
-                wallet=self._world.profile_data.name,
-                beekeeper=self._world.beekeeper,
+                session=self._world.session,
+                wallet=self._world.wallet,
                 key_to_remove=key_to_remove,
                 password=password,
             )
@@ -262,7 +269,7 @@ class Commands(Generic[WorldT]):
             SyncDataWithBeekeeper(
                 app_state=self._world.app_state,
                 profile_data=self._world.profile_data,
-                beekeeper=self._world.beekeeper,
+                wallet=await self._world.unlocked_wallet,
             )
         )
 

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import os
+os.environ["HIVE_BUILD_ROOT_PATH"] = "/workspace/build"
+
 import shutil
 from functools import wraps
 from typing import TYPE_CHECKING
@@ -15,7 +18,7 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.world import World
-from clive.core.url import Url
+from clive.models.aliased import Url
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
@@ -23,9 +26,9 @@ from clive_local_tools.data.models import Keys, WalletInfo
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
-    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from clive_local_tools.data.types import Wallets, WalletsGeneratorT
+    from clive.models.aliased import Beekeeper
+    from clive_local_tools.data.types import WalletGeneratorT
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -82,7 +85,7 @@ async def world(wallet_name: str) -> AsyncIterator[World]:
 async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
-    await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
+    world.node.http_endpoint = Url(init_node.http_endpoint.as_string())
     yield init_node
     init_node.close()
 
@@ -94,7 +97,7 @@ async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
     init_node.config.plugin.append("account_history_api")
     init_node.config.plugin.append("account_history_rocksdb")
     init_node.run()
-    await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
+    world.node.http_endpoint = Url(init_node.http_endpoint.as_string())
     yield init_node
     init_node.close()
 
@@ -105,47 +108,37 @@ def beekeeper(world: World) -> Beekeeper:
 
 
 @pytest.fixture()
-def setup_wallets(world: World) -> WalletsGeneratorT:
-    @wraps(setup_wallets)
-    async def __setup_wallets(count: int, *, import_keys: bool = True, keys_per_wallet: int = 1) -> Wallets:
-        wallets = [
-            WalletInfo(name=generate_wallet_name(i), password=generate_wallet_password(i), keys=Keys(keys_per_wallet))
-            for i in range(count)
-        ]
-        for wallet in wallets:
-            await CreateWallet(
-                app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet.name, password=wallet.password
-            ).execute()
+def setup_wallet(world: World) -> WalletGeneratorT:
+    @wraps(setup_wallet)
+    async def __setup_wallet(*, import_keys: bool = True, keys_per_wallet: int = 1) -> WalletInfo:
+        wallet = WalletInfo(name=generate_wallet_name(0), password=generate_wallet_password(0), keys=Keys(keys_per_wallet))
+        unlocked_wallet = await CreateWallet(
+            app_state=world.app_state, session=world.session, wallet=wallet.name, password=wallet.password
+        ).execute_with_result()
+        world.wallet = unlocked_wallet
 
-            if import_keys:
-                for pairs in wallet.keys.pairs:
-                    await ImportKey(
-                        app_state=world.app_state,
-                        wallet=wallet.name,
-                        key_to_import=pairs.private_key,
-                        beekeeper=world.beekeeper,
-                    ).execute()
-        return wallets
+        if import_keys:
+            for pairs in wallet.keys.pairs:
+                await ImportKey(
+                    app_state=world.app_state, key_to_import=pairs.private_key, wallet=unlocked_wallet
+                ).execute()
+        return wallet
 
-    return __setup_wallets
+    return __setup_wallet
 
 
 @pytest.fixture()
-async def wallet(setup_wallets: WalletsGeneratorT) -> WalletInfo:
+async def wallet(setup_wallet: WalletGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with 1 key-pair already imported."""
-    wallets = await setup_wallets(1, import_keys=True, keys_per_wallet=1)
-    return wallets[0]
-
+    return await setup_wallet(import_keys=True, keys_per_wallet=1)
 
 @pytest.fixture()
-async def wallet_key_to_import(setup_wallets: WalletsGeneratorT) -> WalletInfo:
+async def wallet_key_to_import(setup_wallet: WalletGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with 1 key-pair ready to import."""
-    wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=1)
-    return wallets[0]
+    return await setup_wallet(import_keys=False, keys_per_wallet=1)
 
 
 @pytest.fixture()
-async def wallet_no_keys(setup_wallets: WalletsGeneratorT) -> WalletInfo:
+async def wallet_no_keys(setup_wallet: WalletGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with no keys available."""
-    wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=0)
-    return wallets[0]
+    return await setup_wallet(import_keys=False, keys_per_wallet=0)

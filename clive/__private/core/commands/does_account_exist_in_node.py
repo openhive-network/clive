@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandWithRes
 from clive.__private.core.commands.find_accounts import AccountNotFoundError, FindAccounts
 
 if TYPE_CHECKING:
-    from clive.__private.core.node import Node
+    from clive.models.aliased import Node
 
 
 @dataclass(kw_only=True)

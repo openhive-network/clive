@@ -34,7 +34,9 @@ class CreateProfile(BeekeeperBasedCommand):
         profile.save()
 
         try:
-            await CreateWallet(beekeeper=self.beekeeper, wallet=profile.name, password=self.password).execute()
+            session = await self.beekeeper.create_session()
+            with session:
+                await CreateWallet(session=session, wallet=profile.name, password=self.password).execute()
         except CommunicationError:
             profile.delete()
             raise

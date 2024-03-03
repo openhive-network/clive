@@ -9,17 +9,16 @@ from clive.__private.core.commands.perform_actions_on_transaction import Perform
 from clive.models import Transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.keys import PublicKey
-    from clive.__private.core.node.node import Node
+    from clive.models.aliased import Node, UnlockedWallet
 
 
 @dataclass(kw_only=True)
 class FastBroadcast(CommandInActive, CommandWithResult[Transaction]):
     node: Node
     content: TransactionConvertibleType
-    beekeeper: Beekeeper
+    wallet: UnlockedWallet
     sign_with: PublicKey
 
     async def _execute(self) -> None:
@@ -27,7 +26,7 @@ class FastBroadcast(CommandInActive, CommandWithResult[Transaction]):
             content=self.content,
             app_state=self.app_state,
             node=self.node,
-            beekeeper=self.beekeeper,
+            wallet=self.wallet,
             sign_key=self.sign_with,
             save_file_path=None,
             broadcast=True,

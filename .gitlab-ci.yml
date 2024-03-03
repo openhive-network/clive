@@ -118,12 +118,6 @@ build_wheel:
   after_script:
     - (bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash" && echo $?) || (echo $? && false)
 
-testing_beekeeper:
-  extends: .testing
-  script:
-    - echo -e "${TXT_BLUE}Launching beekeeper tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/beekeeper
-
 testing_clive:
   extends: .testing
   script:

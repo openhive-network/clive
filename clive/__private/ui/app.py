@@ -401,7 +401,7 @@ class Clive(App[int], ManualReactive):
         logger.debug(f"Currently focused: {self.focused}")
         logger.debug(f"Screen stack: {self.screen_stack}")
 
-        response = await self.world.node.api.database_api.get_dynamic_global_properties()
+        response = await self.world.node.api.database.get_dynamic_global_properties()
         logger.debug(f"Current block: {response.head_block_number}")
 
         logger.debug("=================================================")

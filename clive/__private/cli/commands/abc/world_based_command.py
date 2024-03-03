@@ -3,8 +3,8 @@ from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperCommon
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.world import TyperWorld, World
+from clive.models.aliased import Beekeeper
 
 
 @dataclass(kw_only=True)

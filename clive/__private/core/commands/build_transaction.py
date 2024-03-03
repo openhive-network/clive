@@ -9,7 +9,7 @@ from clive.__private.core.ensure_transaction import TransactionConvertibleType, 
 from clive.models import Transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.node import Node
+    from clive.models.aliased import Node
 
 
 @dataclass(kw_only=True)

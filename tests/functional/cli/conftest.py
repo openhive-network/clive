@@ -10,7 +10,7 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
-from clive.core.url import Url
+from clive.models.aliased import Url
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
     CREATOR_ACCOUNT,
@@ -67,14 +67,14 @@ async def cli_tester() -> CLITester:
     ).save()
 
     async with World(WORKING_ACCOUNT.name) as world:
-        await CreateWallet(
+        world.wallet = await CreateWallet(
             app_state=world.app_state,
-            beekeeper=world.beekeeper,
+            session=world.session,
             wallet=WORKING_ACCOUNT.name,
             password=WORKING_ACCOUNT_PASSWORD,
         ).execute_with_result()
 
-        await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
+        world.node.http_endpoint = Url(init_node.http_endpoint.as_string())
         world.profile_data.working_account.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
@@ -83,6 +83,6 @@ async def cli_tester() -> CLITester:
     # import cli after default profile is set, default values for --profile-name option are set during loading
     from clive.__private.cli.main import cli
 
-    runner = CliRunner()
+    runner = CliRunner(mix_stderr=False)
 
     return CLITester(cli, runner)

@@ -1,29 +1,28 @@
 from __future__ import annotations
 
 import contextlib
-from contextlib import contextmanager
+from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
+from beekeepy import async_beekeeper_factory, async_beekeeper_remote_factory
+from beekeepy._interface.exceptions import NoWalletWithSuchNameError
 from textual.reactive import var
 
+from clive.__private.config import settings
 from clive.__private.core.app_state import AppState
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
-from clive.__private.core.communication import Communication
-from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import ScreenNotFoundError
+from clive.models.aliased import Node, Session, Settings, UnlockedWallet, Wallet
 
 if TYPE_CHECKING:
-    from collections.abc import Iterator
     from types import TracebackType
-    from typing import Literal
 
+    from beekeepy import AsyncBeekeeper
+    from helpy import HttpUrl
     from typing_extensions import Self
-
-    from clive.core.url import Url
 
 
 class World:
@@ -43,7 +42,7 @@ class World:
         self,
         profile_name: str | None = None,
         use_beekeeper: bool = True,
-        beekeeper_remote_endpoint: Url | None = None,
+        beekeeper_remote_endpoint: HttpUrl | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -56,9 +55,11 @@ class World:
 
         self._use_beekeeper = use_beekeeper
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
-        self._beekeeper: Beekeeper | None = None
+        self._beekeeper: AsyncBeekeeper | None = None
+        self.__session: Session | None = None
+        self.__wallet: Wallet | None = None
 
-        self._node = Node(self._profile_data)
+        self._node = Node(settings=Settings(http_endpoint=self._profile_data.node_address))
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -73,45 +74,50 @@ class World:
         return self._commands
 
     @property
-    def beekeeper(self) -> Beekeeper:
+    def beekeeper(self) -> AsyncBeekeeper:
         assert self._beekeeper is not None, "Beekeeper is not initialized"
         return self._beekeeper
+
+    @property
+    def session(self) -> Session:
+        assert self.__session is not None, "Beekeeper is not initialized"
+        return self.__session
+
+    @property
+    def wallet(self) -> Wallet:
+        assert self.__wallet is not None, "Wallet has never been touched"
+        return self.__wallet
+
+    @wallet.setter
+    def wallet(self, incoming_wallet: Wallet) -> None:
+        self.__wallet = incoming_wallet
+
+    @property
+    async def unlocked_wallet(self) -> UnlockedWallet:
+        wallet = await self.wallet.unlocked
+        assert wallet is not None, "Wallet is not unlocked"
+        return wallet
 
     @property
     def node(self) -> Node:
         return self._node
 
-    @contextmanager
-    def modified_connection_details(
-        self,
-        max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
-        pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
-        target: Literal["beekeeper", "node", "all"] = "all",
-    ) -> Iterator[None]:
-        """Allows to temporarily change connection details."""
-        contexts_to_enter = []
-        if target in ("beekeeper", "all"):
-            contexts_to_enter.append(
-                self.beekeeper.modified_connection_details(max_attempts, timeout_secs, pool_time_secs)
-            )
-        if target in ("node", "all"):
-            contexts_to_enter.append(self.node.modified_connection_details(max_attempts, timeout_secs, pool_time_secs))
-
-        with contextlib.ExitStack() as stack:
-            for context in contexts_to_enter:
-                stack.enter_context(context)
-            yield
-
     async def setup(self) -> Self:
         if self._use_beekeeper:
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+            self.__session = await self.beekeeper.create_session()
+            self.__session.on_wallet_locked(self.notify_wallet_closing)
+            with contextlib.suppress(NoWalletWithSuchNameError):
+                self.__wallet = await self.session.open_wallet(name=self.profile_data.name)
         return self
 
     async def close(self) -> None:
         self.profile_data.save()
         if self._beekeeper is not None:
-            await self._beekeeper.close()
+            assert self.__session is not None
+            await self.__session.close_session()
+            self.__session = None
+            self._beekeeper.delete()
 
     def _load_profile(self, profile_name: str | None) -> ProfileData:
         return ProfileData.load(profile_name)
@@ -119,14 +125,12 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
-        beekeeper = Beekeeper(
-            remote_endpoint=remote_endpoint,
-            notify_closing_wallet_name_cb=lambda: self.profile_data.name,
-        )
-        beekeeper.attach_wallet_closing_listener(self)
-        await beekeeper.launch()
-        return beekeeper
+    async def __setup_beekeeper(self, *, remote_endpoint: HttpUrl | None = None) -> AsyncBeekeeper:
+        options = Settings(working_directory=Path(settings.get("data_path")) / "beekeeper")
+        if remote_endpoint is not None:
+            options.http_endpoint=remote_endpoint
+            return async_beekeeper_remote_factory(url_or_settings=options)
+        return async_beekeeper_factory(settings=options)
 
     @property
     def profile_data(self) -> ProfileData:
@@ -136,8 +140,14 @@ class World:
     def app_state(self) -> AppState:
         return self._app_state
 
-    def notify_wallet_closing(self) -> None:
-        self.app_state.deactivate()
+    async def notify_wallet_closing(self, wallet_names: list[str]) -> None:
+        if self.__wallet is None:
+            return
+        my_wallet_name = self.wallet.name
+        for name in wallet_names:
+            if my_wallet_name == name:
+                self.app_state.deactivate()
+                return
 
 
 class TextualWorld(World, CliveWidget, ManualReactive):

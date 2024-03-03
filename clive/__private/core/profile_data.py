@@ -5,6 +5,8 @@ from contextlib import asynccontextmanager, contextmanager
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+from helpy import HttpUrl
+
 from clive.__private import config
 from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
@@ -13,7 +15,6 @@ from clive.__private.logger import logger
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
-from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models import Operation
 from clive.models.aliased import ChainIdSchema
@@ -169,16 +170,16 @@ class ProfileData(Context):
         self.__working_account = None
 
     @property
-    def node_address(self) -> Url:
+    def node_address(self) -> HttpUrl:
         return self.__get_secret_node_address() or self.__node_address
 
     @property
-    def backup_node_addresses(self) -> list[Url]:
+    def backup_node_addresses(self) -> list[HttpUrl]:
         if secret_node_address := self.__get_secret_node_address():
             return [secret_node_address]
         return self.__backup_node_addresses
 
-    def _set_node_address(self, value: Url) -> None:
+    def _set_node_address(self, value: HttpUrl) -> None:
         """
         Set the node address.
 
@@ -350,13 +351,13 @@ class ProfileData(Context):
         return chain_id
 
     @staticmethod
-    def __default_node_address() -> list[Url]:
+    def __default_node_address() -> list[HttpUrl]:
         return [
-            Url("https", "api.hive.blog"),
-            Url("https", "api.openhive.network"),
+            HttpUrl("api.hive.blog", protocol="https"),
+            HttpUrl("api.openhive.network", protocol="https"),
         ]
 
     @staticmethod
-    def __get_secret_node_address() -> Url | None:
+    def __get_secret_node_address() -> HttpUrl | None:
         node_address = settings.get("secrets.node_address", None)
-        return Url.parse(node_address) if node_address else None
+        return HttpUrl(node_address) if node_address else None

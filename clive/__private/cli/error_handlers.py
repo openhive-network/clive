@@ -1,9 +1,10 @@
 import errno
 
+from beekeepy._interface.exceptions import NoWalletWithSuchNameError
+
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
-from clive.__private.core.commands.activate import WalletDoesNotExistsError
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileDoesNotExistsError
 from clive.exceptions import CommunicationError
 
@@ -23,8 +24,8 @@ def register_error_handlers(cli: CliveTyper) -> None:
     def handle_invalid_password_error(_: InvalidPasswordError) -> None:
         raise CLIPrettyError("Invalid password.", errno.EINVAL) from None
 
-    @cli.error_handler(WalletDoesNotExistsError)
-    def handle_wallet_does_not_exists_error(_: WalletDoesNotExistsError) -> None:
+    @cli.error_handler(NoWalletWithSuchNameError)
+    def handle_wallet_does_not_exists_error(_: NoWalletWithSuchNameError) -> None:
         raise CLIPrettyError("Wallet does not exists.", errno.ENOENT) from None
 
     @cli.error_handler(ProfileDoesNotExistsError)

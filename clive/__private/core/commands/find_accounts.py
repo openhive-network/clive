@@ -9,7 +9,7 @@ from clive.models.aliased import FindAccounts as SchemasFindAccounts
 from clive.models.aliased import SchemasAccount
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
+    from clive.models.aliased import Node
 
 
 class FindAccountsCommandError(CommandError):
@@ -30,7 +30,7 @@ class FindAccounts(CommandWithResult[list[SchemasAccount]]):
     accounts: list[str]
 
     async def _execute(self) -> None:
-        response: SchemasFindAccounts = await self.node.api.database_api.find_accounts(accounts=self.accounts)
+        response: SchemasFindAccounts = await self.node.api.database.find_accounts(accounts=self.accounts)
         self._check_if_all_accounts_received(response)
         self._check_received_list_length(response)
         self._result = response.accounts
@@ -38,11 +38,14 @@ class FindAccounts(CommandWithResult[list[SchemasAccount]]):
     def _check_if_all_accounts_received(self, response: SchemasFindAccounts) -> None:
         for account in self.accounts:
             if not any(response_account.name == account for response_account in response.accounts):
-                raise AccountNotFoundError(self, f"Account {account} not found on node {self.node.address}")
+                raise AccountNotFoundError(
+                    self, f"Account {account} not found on node {self.node.http_endpoint.as_string()}"
+                )
 
     def _check_received_list_length(self, response: SchemasFindAccounts) -> None:
         if len(self.accounts) != len(response.accounts):
             received = [response_account.owner for response_account in response.accounts]
             raise UnrequestedAccountsReceivedError(
-                self, f"Requested list {self.accounts} and received {received} on node {self.node.address}"
+                self,
+                f"Requested list {self.accounts} and received {received} on node {self.node.http_endpoint.as_string()}",
             )

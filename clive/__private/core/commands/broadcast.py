@@ -7,8 +7,8 @@ from clive.__private.core.commands.abc.command import Command
 from clive.exceptions import TransactionNotSignedError
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
     from clive.models import Transaction
+    from clive.models.aliased import Node
 
 
 @dataclass(kw_only=True)

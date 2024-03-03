@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandWithRes
 from clive.models.aliased import FindProposals, ProposalSchema
 
 if TYPE_CHECKING:
-    from clive.__private.core.node.node import Node
+    from clive.models.aliased import Node
 
 
 @dataclass(kw_only=True)
@@ -16,7 +16,7 @@ class FindProposal(CommandWithResult[ProposalSchema]):
     proposal_id: int
 
     async def _execute(self) -> None:
-        response: FindProposals = await self.node.api.database_api.find_proposals(proposal_ids=[self.proposal_id])
+        response: FindProposals = await self.node.api.database.find_proposals(proposal_ids=[self.proposal_id])
         proposals_amount = len(response.proposals)
         assert (
             proposals_amount == 1
