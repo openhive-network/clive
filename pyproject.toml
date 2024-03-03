@@ -26,6 +26,7 @@ source = [
     { name = "gitlab-schemas", url = "https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-wax", url = "https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple", priority = "supplemental" },
     { name = "gitlab-helpy", url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple", priority = "supplemental" },
+    { name = "gitlab-beekeepy", url = "https://gitlab.syncad.com/api/v4/projects/198/packages/pypi/simple", priority = "supplemental" },
 ]
 
 
@@ -39,14 +40,12 @@ pydantic = "1.10.11"
 typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
-
-wax = "0.0.3a2.dev39+44db07f"
-schemas = "0.0.1.dev288+c98e6b2"
+beekeepy = "1.25.2rc0.dev3819+2de68d28d.dirty"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
+# test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
 pytest = "7.2.0"  # required by test-tools, otherwise they will fail
 
 
@@ -61,7 +60,7 @@ ruff = "0.2.2"
 types-pyyaml = "6.0.12.4"
 textual-dev = "1.2.1"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
+# test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
 
 
 [tool.poetry.scripts]
