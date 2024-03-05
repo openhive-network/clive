@@ -16,6 +16,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.models import Operation
+    from schemas.fields.assets.hive import AssetHiveHF26
 
 
 class WaxOperationFailedError(CliveError):
@@ -143,4 +144,20 @@ def vests(amount: int) -> WaxJsonAsset:
 
 
 def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
-    return wax.get_tapos_data(block_id.encode())  # type: ignore[no-any-return]
+    return wax.get_tapos_data(block_id.encode())
+
+
+def calculate_hp_apr(
+    head_block_num: int,
+    vesting_reward_percent: int,
+    virtual_supply: AssetHiveHF26,
+    total_vesting_fund_hive: AssetHiveHF26,
+) -> str:
+    result = wax.calculate_hp_apr(
+        head_block_num=head_block_num,
+        vesting_reward_percent=vesting_reward_percent,
+        virtual_supply=wax.hive(int(virtual_supply.amount)),
+        total_vesting_fund_hive=wax.hive(int(total_vesting_fund_hive.amount)),
+    )
+    __validate_wax_response(result)
+    return result.result.decode()
