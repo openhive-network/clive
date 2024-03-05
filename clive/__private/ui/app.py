@@ -12,6 +12,7 @@ from textual import on, work
 from textual._context import active_message_pump
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
+from textual.events import ScreenResume
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import reactive, var
 
@@ -262,7 +263,9 @@ class Clive(App[int], ManualReactive):
 
             with self.batch_update():
                 while not self.__screen_eq(self.screen_stack[-1], screen):
-                    self.pop_screen()
+                    with self.prevent(ScreenResume):
+                        self.pop_screen()
+                self.screen.post_message(ScreenResume())
             break  # Screen found and located on top of the stack, stop
         else:
             raise ScreenNotFoundError(
