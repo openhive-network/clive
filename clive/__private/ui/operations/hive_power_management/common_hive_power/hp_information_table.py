@@ -31,7 +31,7 @@ class HpInfoTableRow(CliveDataTableRow):
 
     @property
     def provider(self) -> HivePowerDataProvider:
-        return self.app.query_one(HivePowerDataProvider)
+        return self.screen.query_one(HivePowerDataProvider)
 
 
 class HpInfoTableHeader(Horizontal):

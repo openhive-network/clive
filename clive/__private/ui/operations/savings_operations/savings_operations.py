@@ -76,7 +76,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
 
     @property
     def provider(self) -> SavingsDataProvider:
-        return self.app.query_one(SavingsDataProvider)
+        return self.screen.query_one(SavingsDataProvider)
 
     def compose(self) -> ComposeResult:
         with Horizontal():
@@ -153,7 +153,7 @@ class PendingHeader(Horizontal):
 class PendingTransfers(Vertical):
     @property
     def provider(self) -> SavingsDataProvider:
-        return self.app.query_one(SavingsDataProvider)
+        return self.screen.query_one(SavingsDataProvider)
 
     def compose(self) -> ComposeResult:
         yield LoadingIndicator()
@@ -255,7 +255,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         return TransferFromSavingsOperation(**data, request_id=request_id)
 
     def __create_request_id(self) -> int:
-        provider = self.app.query_one(SavingsDataProvider)
+        provider = self.screen.query_one(SavingsDataProvider)
         savings_data = provider.content
 
         transfer_from_savings_operations_in_cart = [
