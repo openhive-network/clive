@@ -29,6 +29,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
     DEFAULT_CSS = """
     AssetAmountInput {
       height: auto;
+      width: 1fr;
 
       Vertical {
         height: auto;

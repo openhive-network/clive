@@ -25,6 +25,7 @@ class LiquidAssetAmountInput(CliveValidatedInput[Asset.LiquidT]):
     DEFAULT_CSS = """
     LiquidAssetAmountInput {
       height: auto;
+      width: 1fr;
 
       Vertical {
         height: auto;

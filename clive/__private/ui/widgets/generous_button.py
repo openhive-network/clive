@@ -16,6 +16,13 @@ if TYPE_CHECKING:
 class GenerousButton(CliveButton):
     """Button that fill the related input with the entire selected asset balance."""
 
+    DEFAULT_CSS = """
+    GenerousButton {
+        min-width: 14;
+        width: 14;
+    }
+    """
+
     def __init__(
         self,
         related_input: CliveValidatedInput[Asset.AnyT],
