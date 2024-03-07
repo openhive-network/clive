@@ -25,6 +25,6 @@ class AccountReferencingWidget(CliveWidget):
         return DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: foo() if self._account.name else "NULL",
+            lambda: foo() if self._account.name else "NULL",
             classes=classes,
         )

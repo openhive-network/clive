@@ -1,18 +1,27 @@
 from __future__ import annotations
 
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Union
 
 from textual.widgets import Label
 
+from clive.__private.core.callback import count_parameters
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable
+
+
+DynamicLabelCallbackType = Union[
+    Callable[[], Awaitable[str]],
+    Callable[[Any], Awaitable[str]],
+    Callable[[Any, Any], Awaitable[str]],
+    Callable[[], str],
+    Callable[[Any], str],
+    Callable[[Any, Any], str],
+]
 
 
 class DynamicLabel(CliveWidget):
@@ -34,7 +43,7 @@ class DynamicLabel(CliveWidget):
         self,
         obj_to_watch: Reactable,
         attribute_name: str,
-        callback: Callable[[Any], Any],
+        callback: DynamicLabelCallbackType,
         *,
         prefix: str = "",
         init: bool = True,
@@ -57,17 +66,26 @@ class DynamicLabel(CliveWidget):
         return self.__label.renderable
 
     def on_mount(self) -> None:
-        def delegate_work(attribute: Any) -> None:
-            self.run_worker(self.attribute_changed(attribute))
+        def delegate_work(old_value: Any, value: Any) -> None:
+            self.run_worker(self.attribute_changed(old_value, value))
 
         self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work, self._init)
 
     def compose(self) -> ComposeResult:
         yield self.__label
 
-    async def attribute_changed(self, attribute: Any) -> None:
-        value = self.__callback(attribute)
-        if isawaitable(value):
-            value = await value
-        if value != self.__label.renderable:
-            self.__label.update(f"{self.__prefix}{value}")
+    async def attribute_changed(self, old_value: Any, value: Any) -> None:
+        callback = self.__callback
+
+        param_count = count_parameters(callback)
+        if param_count == 2:  # noqa: PLR2004
+            result = callback(old_value, value)  # type: ignore[call-arg]
+        elif param_count == 1:
+            result = callback(value)  # type: ignore[call-arg]
+        else:
+            result = callback()  # type: ignore[call-arg]
+
+        if isawaitable(result):
+            result = await result
+        if result != self.__label.renderable:
+            self.__label.update(f"{self.__prefix}{result}")

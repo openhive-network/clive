@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual.widgets import Label
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_label import DynamicLabel, DynamicLabelCallbackType
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
 
     from rich.console import RenderableType
     from textual.app import ComposeResult
@@ -33,7 +32,7 @@ class TitledLabel(CliveWidget):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
-        callback: Callable[[Any], Any] | None = None,
+        callback: DynamicLabelCallbackType | None = None,
         init: bool = True,
         id_: str | None = None,
     ) -> None:

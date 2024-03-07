@@ -101,12 +101,12 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: f"History entry: {humanize_datetime(self._account.data.last_history_entry)}",
+            lambda: f"History entry: {humanize_datetime(self._account.data.last_history_entry)}",
         )
         yield DynamicLabel(
             self.app.world,
             "profile_data",
-            lambda _: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
+            lambda: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
         )
 
 

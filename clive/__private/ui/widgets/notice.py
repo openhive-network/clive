@@ -1,13 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
 
     from textual.reactive import Reactable
+
+    from clive.__private.ui.widgets.dynamic_label import DynamicLabelCallbackType
 
 
 class Notice(TitledLabel):
@@ -27,7 +28,7 @@ class Notice(TitledLabel):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
-        callback: Callable[[Any], Any] | None = None,
+        callback: DynamicLabelCallbackType | None = None,
         init: bool = True,
     ) -> None:
         super().__init__(

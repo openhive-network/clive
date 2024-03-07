@@ -148,8 +148,8 @@ class PowerDown(TabPane, OperationActionBindings):
         self._one_withdrawal_display = Notice(
             obj_to_watch=self._shares_input.input,
             attribute_name="value",
-            callback=lambda _: self._calculate_one_withdrawal(),
-            init=False
+            callback=self._calculate_one_withdrawal,
+            init=False,
         )
         self._one_withdrawal_display.display = False
 

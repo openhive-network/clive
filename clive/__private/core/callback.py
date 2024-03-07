@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 
 @lru_cache(maxsize=2048)
-def __count_parameters(callback: Callable[..., Any]) -> int:
+def count_parameters(callback: Callable[..., Any]) -> int:
     """Count the number of parameters in a callable."""
     return len(signature(callback).parameters)
 
@@ -27,7 +27,7 @@ async def invoke(callback: Callable[..., Any], *params: Any) -> Any:
     -------
     The return value of the invoked callable.
     """
-    parameter_count = __count_parameters(callback)
+    parameter_count = count_parameters(callback)
     result = callback(*params[:parameter_count])
     if isawaitable(result):
         result = await result
