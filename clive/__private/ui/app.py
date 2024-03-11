@@ -51,7 +51,7 @@ class Clive(App[int], ManualReactive):
 
     from clive import __version__
 
-    SUB_TITLE = __version__
+    TITLE = f"Clive ({__version__})"
 
     CSS_PATH = [get_relative_css_path(__file__, name="global")]
 
