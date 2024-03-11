@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, ScrollableContainer
+from textual.containers import Horizontal
 from textual.widgets import Pretty, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
@@ -15,6 +15,7 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.operations.operation_summary.cancel_power_down import CancelPowerDown
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
@@ -42,7 +43,7 @@ class PlaceTaker(Static):
     pass
 
 
-class ScrollablePart(ScrollableContainer):
+class ScrollablePart(CanFocusWithScrollbarsOnly):
     pass
 
 
