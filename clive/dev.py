@@ -22,6 +22,8 @@ def main() -> None:
     environment["TEXTUAL"] = ",".join(sorted(features))
     environment["CLIVE_DEV"] = "1"
 
+    environment["CLIVE_LOG_DEBUG_LOOP"] = "1"
+
     run_app("clive/main.py", [], environment)
 
 
