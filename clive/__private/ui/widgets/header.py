@@ -21,7 +21,6 @@ if TYPE_CHECKING:
 
     from textual import events
     from textual.app import ComposeResult
-    from textual.events import Mount
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
@@ -121,7 +120,6 @@ class Header(TextualHeader, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self) -> None:
-        self._header_title = HeaderTitle()
         super().__init__()
         self.__node_version_label = DynamicLabel(
             obj_to_watch=self.app.world,
@@ -130,23 +128,7 @@ class Header(TextualHeader, CliveWidget):
             id_="node-type-label",
         )
 
-    def on_mount(self, event: Mount) -> None:
-        # >>> start workaround for query_one(HeaderTitle) raising NoMatches error when title reactive is updated right
-        # after pop_screen happens
-        def set_title() -> None:
-            self._header_title.text = self.screen_title
-
-        def set_sub_title() -> None:
-            self._header_title.sub_text = self.screen_sub_title
-
-        event.prevent_default()
-
-        self.watch(self.app, "title", set_title)
-        self.watch(self.app, "sub_title", set_sub_title)
-        self.watch(self.screen, "title", set_title)
-        self.watch(self.screen, "sub_title", set_sub_title)
-        # <<< end workaround
-
+    def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
     def compose(self) -> ComposeResult:
@@ -180,7 +162,7 @@ class Header(TextualHeader, CliveWidget):
             yield DynamicPropertiesClock()
 
         with Vertical(id="expandable"):
-            yield self._header_title
+            yield HeaderTitle()
             yield TitledLabel(
                 "Node address",
                 obj_to_watch=self.app.world,
