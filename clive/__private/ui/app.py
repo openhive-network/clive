@@ -361,6 +361,7 @@ class Clive(App[int], ManualReactive):
             self.trigger_profile_data_watchers()
             self.trigger_app_state_watchers()
 
+    @work(name="debug log")
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
         logger.debug(f"Currently focused: {self.focused}")
