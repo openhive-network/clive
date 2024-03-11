@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import asyncio
 import contextlib
 import math
 import traceback
 from asyncio import CancelledError
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, TypeVar
 
 from textual import on, work
 from textual._context import active_message_pump
@@ -211,31 +210,6 @@ class Clive(App[int], ManualReactive):
     def is_screen_on_top(self, screen: str | type[Screen[Any]]) -> bool:
         return self.__screen_eq(self.screen, screen)
 
-    @overload
-    def push_screen(  # type: ignore[overload-overlap]
-        self,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: Literal[False] = False,
-    ) -> AwaitMount: ...
-
-    @overload
-    def push_screen(
-        self,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: Literal[True] = True,
-    ) -> asyncio.Future[ScreenResultType]: ...
-
-    def push_screen(
-        self,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: bool = False,
-    ) -> AwaitMount | asyncio.Future[ScreenResultType]:
-        fun = super().push_screen
-        return self.__update_screen(lambda: fun(screen=screen, callback=callback, wait_for_dismiss=wait_for_dismiss))  # type: ignore[no-any-return, call-overload]
-
     def push_screen_at(
         self,
         index: int,
@@ -254,10 +228,6 @@ class Clive(App[int], ManualReactive):
         self._load_screen_css(next_screen)
         self.app._screen_stack.insert(index, next_screen)
         return await_mount
-
-    def pop_screen(self) -> Screen[Any]:
-        fun = super().pop_screen
-        return self.__update_screen(lambda: fun())
 
     def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> None:
         """
@@ -281,21 +251,6 @@ class Clive(App[int], ManualReactive):
             raise ScreenNotFoundError(
                 f"None of the {screens} screens was found in stack.\nScreen stack: {self.screen_stack}"
             )
-
-    def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
-        fun = super().switch_screen
-        return self.__update_screen(lambda: fun(screen))
-
-    def __update_screen(self, callback: Callable[[], UpdateScreenResultT]) -> UpdateScreenResultT:
-        """
-        Auxiliary function to override the default push_screen, switch_screen and pop_screen methods.
-
-        Because of Textual's event ScreenResume not being bubbled up, we can't easily hook on it via
-        `def on_screen_resume` so we have to override the push_screen, switch_screen and pop_screen methods.
-        """
-        reply = callback()
-        self.title = f"{self.__class__.__name__} ({self.screen.__class__.__name__})"
-        return reply
 
     def action_terminal(self) -> None:
         self.push_screen(TerminalScreen())
