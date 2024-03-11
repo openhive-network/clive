@@ -86,7 +86,7 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
     @on(ScreenResume)
     def _handle_screen_resume(self) -> None:
         """Also look in the docstring of _post_suspended."""
-        self.app.title = f"Clive ({self.__class__.__name__})"
+        self.app.sub_title = self.__class__.__name__
         self._post_to_children(self, self.Resumed())
 
     def _post_to_children(self, node: Widget, message: Message) -> None:
