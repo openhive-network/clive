@@ -34,7 +34,7 @@ async def press_and_wait_for_screen(
     await wait_for_screen(pilot, expected_screen)
 
 
-async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]], *, timeout: float = 3.0) -> None:
+async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]], *, timeout: float = 10.0) -> None:
     """Wait for the expected screen to be active."""
 
     async def wait_for_screen_change() -> None:

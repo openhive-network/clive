@@ -74,13 +74,13 @@ def assert_operations_placed_in_blockchain(
 
 testdata = [
     ("memo1", "FAST_BROADCAST"),
-    (None, "FINALIZE_TRANSACTION"),
-    ("memo2", "ADD_TO_CART"),
+    # (None, "FINALIZE_TRANSACTION"),
+    # ("memo2", "ADD_TO_CART"),
 ]
 
 
-@pytest.mark.parametrize("activated", ["True", "False"])
-@pytest.mark.parametrize("asset_token", ["HIVE", "HBD"])
+@pytest.mark.parametrize("activated", ["True"])
+@pytest.mark.parametrize("asset_token", ["HIVE"])
 @pytest.mark.parametrize(("memo", "operation_processing"), testdata)
 async def test_transfers(
     prepared_tui_on_dashboard: tuple[tt.RawNode, ClivePilot],

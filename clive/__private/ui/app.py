@@ -3,11 +3,13 @@ from __future__ import annotations
 import asyncio
 import contextlib
 import math
+import sys
 import traceback
 from asyncio import CancelledError
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
+import pytest
 from textual import on, work
 from textual._context import active_message_pump
 from textual.app import App, AutopilotCallbackType
@@ -420,6 +422,21 @@ class Clive(App[int], ManualReactive):
         logger.error(f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}")
         self.__cleanup()
         super()._handle_exception(error)
+
+
+
+    # def _fatal_error(self) -> None:
+    #     super()._fatal_error()
+    #     # We already had a situation where Textual swallowed an exception without logging it.
+    #     # This is a safeguard to prevent that from happening again.
+    #     _, error, _ = sys.exc_info()
+    #     if error is not None:
+    #         error_details = f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}"
+    #         logger.error(error_details)
+    #         self.__cleanup()
+    #         pytest.fail(error_details)
+
+
 
     def __cleanup(self) -> None:
         logger.debug("Cleaning up...")

@@ -77,6 +77,8 @@ class Operations(CartBasedScreen, CartBinding):
             with TabPane("Account management"), ScrollablePart():
                 yield OperationButton(None, label="Account management operations")
 
+        self.query_one(OperationButton).focus()
+
     def action_show_tab(self, tab: str) -> None:
         """Switch to a new tab."""
         self.get_child_by_type(CliveTabbedContent).active = tab
