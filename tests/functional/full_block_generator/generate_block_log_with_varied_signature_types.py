@@ -6,14 +6,14 @@ from pathlib import Path
 from typing import Final, Literal
 
 import test_tools as tt
-from hive_local_tools import create_alternate_chain_spec_file
 from hive_local_tools.constants import (
-    ALTERNATE_CHAIN_JSON_FILENAME,
     HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD,
     TRANSACTION_TEMPLATE,
 )
 from hive_local_tools.functional.python.datagen.recurrent_transfer import execute_function_in_threads
 from hive_local_tools.functional.python.operation import get_vesting_price
+
+CHAIN_ID: Final[int] = 24
 
 NUMBER_OF_ACCOUNTS: Final[int] = 2_000_000
 NUMBER_OF_COMMENTS: Final[int] = 100_000  # There are active posts from account-0 to account-99999
@@ -60,24 +60,24 @@ def prepare_block_log(signature_type: Literal["open_sign", "multi_sign", "single
         node.config.private_key.append(key)
 
     current_hardfork_number = int(node.get_version()["version"]["blockchain_version"].split(".")[1])
-    create_alternate_chain_spec_file(
+
+    block_log_config = tt.AlternateChainSpecs(
         genesis_time=int(tt.Time.now(serialize=False).timestamp()),
-        hardfork_schedule=[
-            {"hardfork": 18, "block_num": 0},
-            {"hardfork": current_hardfork_number, "block_num": 1800 + (5 * 24 * 3600 // 3)},  # related to  5-day shift
-        ],
+        hardfork_schedule=[tt.HardforkSchedule(hardfork=18, block_num=0),
+                           tt.HardforkSchedule(hardfork=current_hardfork_number,
+                                               block_num=1800 + (5 * 24 * 3600 // 3))],
         init_supply=INIT_SUPPLY,
         hbd_init_supply=HBD_INIT_SUPPLY,
         initial_vesting={"hive_amount": INITIAL_VESTING, "vests_per_hive": 1800},
         init_witnesses=WITNESSES,
         min_root_comment_interval=3,
-        path_to_save=block_log_directory,
     )
+    block_log_config.export_to_file(block_log_directory)
 
-    node.run(arguments=["--alternate-chain-spec", str(block_log_directory / ALTERNATE_CHAIN_JSON_FILENAME)])
+    node.run(alternate_chain_specs=block_log_config, arguments=[f"--chain-id={CHAIN_ID}"])
     tt.logger.info(f"Price Hive / Vest:  {get_vesting_price(node)}")
 
-    wallet = tt.Wallet(attach_to=node)
+    wallet = tt.Wallet(attach_to=node, additional_arguments=[f"--chain-id={CHAIN_ID}"])
     wallet.api.set_transaction_expiration(3600 - 1)
 
     for witness in wallet.api.list_witnesses("", 100):
@@ -149,8 +149,10 @@ def prepare_block_log(signature_type: Literal["open_sign", "multi_sign", "single
     # fixme: after adding ability to pass `--alternate-chain-spec` parameter to node.restart() method
     wallet.close()
     node.close()
-    node.run(time_offset=f"+{HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD!s}s",
-             arguments=["--alternate-chain-spec", str(block_log_directory / ALTERNATE_CHAIN_JSON_FILENAME)])
+    node.run(
+        time_offset=f"+{HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD!s}s",
+        alternate_chain_specs=block_log_config,
+        arguments=[f"--chain-id={CHAIN_ID}"])
     wallet.run()
     node.wait_number_of_blocks(1)
     # fixme
@@ -356,6 +358,6 @@ def random_letter():
 
 
 if __name__ == "__main__":
-    prepare_block_log("open_sign")
+    # prepare_block_log("open_sign")
     prepare_block_log("single_sign")
-    prepare_block_log("multi_sign")
+    # prepare_block_log("multi_sign")

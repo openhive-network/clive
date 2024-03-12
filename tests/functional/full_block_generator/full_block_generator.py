@@ -13,8 +13,7 @@ import test_tools as tt
 
 from clive.__private.core.beekeeper import Beekeeper
 from clive_local_tools.models import Keys, WalletInfo
-from tests.functional.full_block_generator.generate_block_log_with_varied_signature_types import WITNESSES
-from hive_local_tools import ALTERNATE_CHAIN_JSON_FILENAME
+from tests.functional.full_block_generator.generate_block_log_with_varied_signature_types import CHAIN_ID, WITNESSES
 from generate_operations import generate_blocks
 
 SIGNATURE_TYPE: Literal["open_sign", "single_sign", "multi_sign"] = "single_sign"
@@ -49,7 +48,7 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
 
     block_log_directory = Path(__file__).parent / f"block_log_{signature_type}"
     block_log = tt.BlockLog(block_log_directory / "block_log")
-    alternate_chain_spec_path = block_log_directory / ALTERNATE_CHAIN_JSON_FILENAME
+    alternate_chain_spec_path = block_log_directory / "alternate-chain-spec.json"
 
     node = tt.InitNode()
 
@@ -76,10 +75,8 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
         time_offset=tt.Time.serialize(block_log.get_head_block_time(), format_=tt.TimeFormats.TIME_OFFSET_FORMAT),
         timeout=120,
         wait_for_live=True,
-        arguments=[
-            f"--alternate-chain-spec={str(alternate_chain_spec_path)}",
-            f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}",
-        ],
+        alternate_chain_specs=alternate_chain_spec_path,
+        arguments=[f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}", f"--chain-id={CHAIN_ID}"],
     )
 
     wallet = WalletInfo(name="my_only_wallet", password="my_password", keys=Keys(count=0))
