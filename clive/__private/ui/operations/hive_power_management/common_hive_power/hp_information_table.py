@@ -37,8 +37,8 @@ class HpInfoTableRow(CliveDataTableRow):
 class HpInfoTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
         yield Static("Voting Power", id="shares-name-header")
-        yield Static("Amount in HP", classes="shares-balance-header")
-        yield Static("Amount in VESTS", classes="shares-balance-header")
+        yield Static("Amount [HP]", classes="shares-balance-header")
+        yield Static("Amount [VESTS]", classes="shares-balance-header")
 
 
 class HpInfoTableOwnedRow(HpInfoTableRow):

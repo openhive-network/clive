@@ -1,29 +1,29 @@
 PowerUp {
   height: auto;
-}
 
-ScrollablePart {
-  height: auto;
-}
+  ScrollablePart {
+    height: auto;
+  }
 
-Notice {
-  margin-top: 1;
-  margin-bottom: 1;
-}
+  Notice {
+    margin-top: 1;
+    margin-bottom: 1;
+  }
 
-#operation-name-info {
-  text-style: bold;
-  background: $accent;
-  text-align: center;
-}
+  #operation-name-info {
+    text-style: bold;
+    background: $accent;
+    text-align: center;
+  }
 
-#power-up-inputs {
-  background: $panel;
-  padding: 2 2;
-  height: auto;
-}
+  #power-up-inputs {
+    background: $panel;
+    padding: 2 2;
+    height: auto;
+  }
 
-#input-with-button {
-  margin-top: 1;
-  height: auto;
+  #input-with-button {
+    margin-top: 1;
+    height: auto;
+  }
 }

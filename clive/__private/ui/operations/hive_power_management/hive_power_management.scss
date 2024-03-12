@@ -21,47 +21,42 @@ CliveDataTable {
   margin-right: 2;
   width: 2fr;
   height: auto;
-}
 
-/* Header of the table */
-HpInfoTableHeader {
-  height: auto;
-}
+  HpInfoTableHeader {
+    height: auto;
 
-HpInfoTableHeader Static {
-  text-style: bold;
-  text-align: center;
-}
+    Static {
+      text-style: bold;
+      text-align: center;
+    }
 
-HpInfoTableHeader #shares-name-header {
-  background: $table-header-color;
-  width: 2fr;
-}
+    #shares-name-header {
+      background: $table-header-color;
+      width: 2fr;
+    }
+    .shares-balance-header {
+      background: $table-header-color;
+      width: 3fr;
+    }
+  }
+  RowTitle {
+    text-style: bold;
+    background: $table-row-title-color;
+    width: 2fr;
+    text-align: center;
+  }
 
-HpInfoTableHeader .shares-balance-header {
-  background: $table-header-color;
-  width: 3fr;
-}
+  .shares-balance-cell {
+    text-style: bold;
+    width: 3fr;
+    text-align: right;
+  }
 
-/* Cells of the table */
-RowTitle {
-  text-style: bold;
-  background: $table-row-title-color;
-  width: 2fr;
-  text-align: center;
-}
+  .odd-row {
+    background: $row-color-1;
+  }
 
-.shares-balance-cell {
-  text-style: bold;
-  width: 3fr;
-  text-align: right;
-}
-
-/* Rows of the table */
-.odd-row {
-  background: $row-color-1;
-}
-
-.even-row {
-  background: $row-color-2;
+  .even-row {
+    background: $row-color-2;
+  }
 }
