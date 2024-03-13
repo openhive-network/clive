@@ -6,6 +6,7 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
+from clive.__private.core.formatters.humanize import humanize_bool
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.proposals_data import Proposal, ProposalsData
@@ -51,7 +52,7 @@ class ShowProposals(WorldBasedCommand):
         proposal: Proposal
         for proposal in proposals_chunk:
             table.add_row(
-                f"{'YES' if proposal.voted else 'NO'}",
+                humanize_bool(proposal.voted),
                 f"{proposal.title}",
                 f"{proposal.proposal_id}",
                 f"{proposal.votes}",

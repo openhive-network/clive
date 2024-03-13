@@ -7,6 +7,7 @@ from textual.containers import Horizontal, Vertical
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
+from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
@@ -57,7 +58,7 @@ class WithdrawRoute(CliveCheckerboardTableRow):
         super().__init__(
             CliveCheckerBoardTableCell(withdraw_route.to_account),
             CliveCheckerBoardTableCell(f"{withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %"),
-            CliveCheckerBoardTableCell(f"{'YES' if withdraw_route.auto_vest else 'NO'}"),
+            CliveCheckerBoardTableCell(humanize_bool(withdraw_route.auto_vest)),
             CliveCheckerBoardTableCell(CliveButton("Remove", id_="remove-withdraw-route-button", variant="error")),
         )
         self._withdraw_route = withdraw_route

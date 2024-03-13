@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
+from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from schemas.operations import SetWithdrawVestingRouteOperation
@@ -29,7 +30,7 @@ class RemoveWithdrawVestingRoute(OperationSummary):
         yield LabelizedInput("From account", self.working_account)
         yield LabelizedInput("To account", self._withdraw_route.to_account)
         yield LabelizedInput("Percent", f"{self._withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %")
-        yield LabelizedInput("Auto vest", str(self._withdraw_route.auto_vest))
+        yield LabelizedInput("Auto vest", humanize_bool(self._withdraw_route.auto_vest))
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation:
         return SetWithdrawVestingRouteOperation(

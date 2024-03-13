@@ -6,6 +6,7 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessesDataRetrieval
+from clive.__private.core.formatters.humanize import humanize_bool
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesData
@@ -51,7 +52,7 @@ class ShowWitnesses(WorldBasedCommand):
         witness: WitnessData
         for witness in witnesses_chunk:
             table.add_row(
-                f"{'YES' if witness.voted else 'NO'}",
+                humanize_bool(witness.voted),
                 f"{witness.rank}",
                 f"{witness.name}",
                 f"{witness.votes}",

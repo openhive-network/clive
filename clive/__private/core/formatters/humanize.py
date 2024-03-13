@@ -158,3 +158,10 @@ def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: 
         # To not allow display + or - if balance is equal to zero.
         return f"{sign_prefix}{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()
     return f"{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()
+
+
+def humanize_bool(value: bool) -> str:
+    """Convert True/False to a more human-readable format."""
+    if value:
+        return "YES"
+    return "NO"
