@@ -85,6 +85,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
 
     DEFAULT_CSS = """
     CliveValidatedInput {
+        width: 1fr;
         height: auto;
 
         Vertical {
