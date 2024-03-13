@@ -10,6 +10,11 @@ WithdrawalInfo {
   width: 1fr;
 }
 
+#loading-static {
+  margin-top: 1;
+  background: $primary;
+}
+
 /* Table with amounts */
 $row-color-1: $accent;
 $row-color-2: $accent-lighten-1;
