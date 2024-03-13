@@ -11,25 +11,30 @@ if TYPE_CHECKING:
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
+    from clive_local_tools.cli.command_options import KwargsType
 
 
-def kwargs_to_cli_options(**kwargs: str) -> list[str]:
+def kwargs_to_cli_options(**kwargs: KwargsType) -> list[str]:
     options: list[str] = []
     for key, value in kwargs.items():
         option_name = key.strip("_").replace("_", "-")
-        options.append(f"--{option_name}={value}")
+        if value is True:
+            options.append(f"--{option_name}")
+        elif value is False:
+            options.append(f"--no-{option_name}")
+        elif value is not None:
+            options.append(f"--{option_name}={value}")
     return options
 
 
 class ChainedCommand:
-    def __init__(self, command: list[str], typer: CliveTyper, runner: CliRunner, *args: str, **kwargs: str) -> None:
-        self.__full_command = [*command, *args, *kwargs_to_cli_options(**kwargs)]
+    def __init__(self, command: list[str], typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
+        self.__full_command = [*command, *kwargs_to_cli_options(**kwargs)]
         self.__typer = typer
         self.__runner = runner
         self.__was_invoked = False
 
-    def _add_command_to_chain(self, *args: str, **kwargs: str) -> None:
-        self.__full_command.extend(args)
+    def _add_command_to_chain(self, **kwargs: KwargsType) -> None:
         self.__full_command.extend(kwargs_to_cli_options(**kwargs))
 
     def fire(self) -> Result:
@@ -43,44 +48,44 @@ class ChainedCommand:
 
 
 class UpdateAuthority(ChainedCommand):
-    def add_key(self, *args: str, **kwargs: str) -> UpdateAuthority:
-        self._add_command_to_chain("add-key", *args, **kwargs)
+    def add_key(self, **kwargs: KwargsType) -> UpdateAuthority:
+        self._add_command_to_chain("add-key", **kwargs)
         return self
 
-    def add_account(self, *args: str, **kwargs: str) -> UpdateAuthority:
-        self._add_command_to_chain("add-account", *args, **kwargs)
+    def add_account(self, **kwargs: KwargsType) -> UpdateAuthority:
+        self._add_command_to_chain("add-account", **kwargs)
         return self
 
-    def remove_key(self, *args: str, **kwargs: str) -> UpdateAuthority:
-        self._add_command_to_chain("remove-key", *args, **kwargs)
+    def remove_key(self, **kwargs: KwargsType) -> UpdateAuthority:
+        self._add_command_to_chain("remove-key", **kwargs)
         return self
 
-    def remove_account(self, *args: str, **kwargs: str) -> UpdateAuthority:
-        self._add_command_to_chain("remove-account", *args, **kwargs)
+    def remove_account(self, **kwargs: KwargsType) -> UpdateAuthority:
+        self._add_command_to_chain("remove-account", **kwargs)
         return self
 
-    def modify_key(self, *args: str, **kwargs: str) -> UpdateAuthority:
-        self._add_command_to_chain("modify-key", *args, **kwargs)
+    def modify_key(self, **kwargs: KwargsType) -> UpdateAuthority:
+        self._add_command_to_chain("modify-key", **kwargs)
         return self
 
-    def modify_account(self, *args: str, **kwargs: str) -> UpdateAuthority:
-        self._add_command_to_chain("modify-account", *args, **kwargs)
+    def modify_account(self, **kwargs: KwargsType) -> UpdateAuthority:
+        self._add_command_to_chain("modify-account", **kwargs)
         return self
 
 
 class UpdateOwnerAuthority(UpdateAuthority):
-    def __init__(self, typer: CliveTyper, runner: CliRunner, *args: str, **kwargs: str) -> None:
+    def __init__(self, typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
         command = ["process", "update-owner-authority"]
-        super().__init__(command, typer, runner, *args, **kwargs)
+        super().__init__(command, typer, runner, **kwargs)
 
 
 class UpdateActiveAuthority(UpdateAuthority):
-    def __init__(self, typer: CliveTyper, runner: CliRunner, *args: str, **kwargs: str) -> None:
+    def __init__(self, typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
         command = ["process", "update-active-authority"]
-        super().__init__(command, typer, runner, *args, **kwargs)
+        super().__init__(command, typer, runner, **kwargs)
 
 
 class UpdatePostingAuthority(UpdateAuthority):
-    def __init__(self, typer: CliveTyper, runner: CliRunner, *args: str, **kwargs: str) -> None:
+    def __init__(self, typer: CliveTyper, runner: CliRunner, **kwargs: KwargsType) -> None:
         command = ["process", "update-posting-authority"]
-        super().__init__(command, typer, runner, *args, **kwargs)
+        super().__init__(command, typer, runner, **kwargs)
