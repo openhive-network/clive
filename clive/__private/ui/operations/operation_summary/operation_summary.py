@@ -26,6 +26,8 @@ class OperationSummary(OperationBaseScreen, OperationActionBindings, AbstractCla
 
     BIG_TITLE: ClassVar[str] = "Operation summary"
 
+    ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES = False
+
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle(self.BIG_TITLE)
         with ScrollableContainer(), Body():

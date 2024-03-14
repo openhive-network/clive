@@ -16,8 +16,6 @@ if TYPE_CHECKING:
 class CancelTransferFromSavings(OperationSummary):
     BIG_TITLE: ClassVar[str] = "Cancel transfer"
 
-    ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = False
-
     def __init__(self, transfer: SavingsWithdrawals) -> None:
         super().__init__()
         self._transfer = transfer
