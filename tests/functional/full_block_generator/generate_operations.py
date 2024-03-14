@@ -330,6 +330,12 @@ def sign(gdpo, node_config, url, chunk, token, public_keys):
 def create_and_sign_transaction(ops: list, gdpo, node_config, url, token, public_keys,
                                 binary_transaction: bool = False):
     trx: SimpleTransaction = generate_transaction_template(gdpo)
+
+    # fixme:  workaround - problem with serialization field `json_` in CustomJsonOperation
+    for o in [ops]:
+        if isinstance(o, CustomJsonOperation):
+            o.json_ = json.dumps(o.json_)
+
     trx.operations.extend(
         [HF26Representation(type=op.get_name_with_suffix(), value=op) for op in [ops]])
     if len(public_keys) != 0:
