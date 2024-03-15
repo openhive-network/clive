@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from datetime import datetime
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 import humanize
 import inflection
@@ -18,6 +18,9 @@ if TYPE_CHECKING:
     from schemas.fields.assets.hbd import AssetHbdHF26
     from schemas.fields.assets.hive import AssetHiveHF26
     from schemas.fields.compound import HbdExchangeRate
+
+
+SignPrefixT: TypeAlias = Literal["", "+", "-"]
 
 
 def _is_null_date(value: datetime) -> bool:
@@ -151,7 +154,7 @@ def humanize_votes_with_comma(
     return f"{humanize.intcomma(hive_power, ndigits=0)} HP"
 
 
-def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: Literal["", "+", "-"] = "") -> str:
+def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
     pretty_asset = Asset.pretty_amount(asset)
     asset_symbol = asset.get_asset_information().symbol[0]
     if sign_prefix and int(asset.amount) != 0:

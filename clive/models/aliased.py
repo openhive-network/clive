@@ -3,6 +3,7 @@ from __future__ import annotations
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
 from schemas.apis.database_api import FindAccounts as SchemasFindAccounts
 from schemas.apis.database_api import FindProposals as SchemasFindProposals
+from schemas.apis.database_api import FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations
 from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
 from schemas.apis.database_api import (
     GetDynamicGlobalProperties,
@@ -17,6 +18,7 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     ListDeclineVotingRightsRequestsFundament,
     OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
+    VestingDelegationExpirationsFundament,
     VestingDelegationsFundament,
     WithdrawVestingRoutesFundament,
     WitnessesFundament,
@@ -69,6 +71,8 @@ FindProposals = SchemasFindProposals
 FindAccounts = SchemasFindAccounts
 WithdrawRouteSchema = WithdrawVestingRoutesFundament
 VestingDelegation = VestingDelegationsFundament
+FindVestingDelegationExpirations = SchemasFindVestingDelegationExpirations
+SchemasVestingDelegationExpirations = VestingDelegationExpirationsFundament[AssetVestsHF26]
 
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament

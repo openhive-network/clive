@@ -2,6 +2,12 @@ from __future__ import annotations
 
 from clive.__private.cli.completion import is_tab_completion_active
 
+from .asset import Asset
+
+__all__ = [
+    "Asset",
+]
+
 if not is_tab_completion_active():
     from .aliased import (
         ApiOperationObject,
@@ -14,7 +20,6 @@ if not is_tab_completion_active():
         VirtualOperationBaseClass,
         VirtualOperationRepresentationType,
     )
-    from .asset import Asset
     from .transaction import Transaction, TransactionWithHash
 
     __all__ = [

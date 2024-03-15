@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from typing import Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 from pydantic.generics import GenericModel
 
@@ -10,6 +10,9 @@ from clive.__private.core.decimal_conventer import DecimalConversionNotANumberEr
 from clive.exceptions import CliveError
 from clive.models.base import CliveBaseModel
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
+
+if TYPE_CHECKING:
+    from clive.__private.core.iwax import WaxJsonAsset
 
 AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
 AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
@@ -132,6 +135,16 @@ class Asset:
                 raise ValueError(f"Unknown asset type: '{symbol}'")
 
     @classmethod
+    def resolve_nai(cls, nai: str) -> type[Asset.AnyT]:
+        if nai == AssetHiveHF26.get_asset_information().nai:
+            return Asset.Hive
+        if nai == AssetHbdHF26.get_asset_information().nai:
+            return Asset.Hbd
+        if nai == AssetVestsHF26.get_asset_information().nai:
+            return Asset.Vests
+        raise ValueError(f"Unknown asset nai: '{nai}'")
+
+    @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
         match = re.match(r"(\d+(?:\.\d+)?)\s*(\w+)", value)
         if not match:
@@ -141,6 +154,11 @@ class Asset:
 
         asset_cls = cls.resolve_symbol(symbol)
         return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
+
+    @classmethod
+    def from_wax_json(cls, value: WaxJsonAsset) -> Asset.AnyT:
+        asset_cls = cls.resolve_nai(value.nai)
+        return asset_cls(amount=cls.__convert_amount_to_internal_representation(value.amount, 0))
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:
