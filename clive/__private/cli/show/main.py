@@ -263,3 +263,15 @@ async def show_memo_key(ctx: typer.Context, account_name: str = options.account_
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowMemoKey(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="hive-power", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_delegations(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
+) -> None:
+    """Shows info about hive power related to account including delegations and withdraw routes."""
+    from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowHivePower(**common.as_dict(), account_name=account_name).run()

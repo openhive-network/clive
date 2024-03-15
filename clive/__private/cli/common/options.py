@@ -8,6 +8,8 @@ import typer
 
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.constants import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
+from clive.exceptions import CliveError
+from clive.models import Asset
 
 if TYPE_CHECKING:
     from typer.models import OptionInfo
@@ -97,6 +99,19 @@ to_account_name_option = typer.Option(
     show_default=bool(_get_default_working_account_name()),
 )
 
+to_account_name_no_default_option = typer.Option(
+    ...,
+    "--to",
+    help='The account to use as "to" argument.',
+    show_default=False,
+)
+
+delegatee_account_name_option = typer.Option(
+    ...,
+    help='The account to use as "delegatee" argument.',
+    show_default=False,
+)
+
 proposal_id: list[int] = typer.Option(
     ..., help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times."
 )
@@ -120,4 +135,28 @@ authority_weight_option = typer.Option(
     "--weight",
     help="The new weight of account/key authority",
     show_default=False,
+)
+
+
+class OptionParser:
+    class ParsingVotingAssetError(CliveError):
+        def __init__(self, value: str) -> None:
+            self.value = value
+            message = f"Can't parse invalid voting asset: {value}"
+            super().__init__(message)
+
+    @classmethod
+    def voting_asset(cls, value: str) -> Asset.VotingT:
+        any_asset = Asset.from_legacy(value)
+        if not isinstance(any_asset, Asset.Hive) and not isinstance(any_asset, Asset.Vests):
+            raise cls.ParsingVotingAssetError(value)
+        return any_asset
+
+
+hive_or_vests_option = typer.Option(
+    ...,
+    "--amount",
+    help="The amount in vests (e.g. 2.500 VESTS) or equivalent in hive (e.g. 2.500 HIVE).",
+    show_default=False,
+    parser=OptionParser.voting_asset,
 )
