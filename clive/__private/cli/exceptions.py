@@ -6,7 +6,10 @@ from typing import TYPE_CHECKING
 from click import ClickException
 
 if TYPE_CHECKING:
+    from typing import TypeAlias
+
     from clive.__private.core.profile_data import ProfileData
+    from clive.models import Asset
 
 
 class CLIPrettyError(ClickException):
@@ -90,3 +93,15 @@ class CLIBroadcastCannotBeUsedWithForceUnsignError(CLIPrettyError):
     def __init__(self) -> None:
         message = "You cannot broadcast a transaction and force-unsign it at the same time."
         super().__init__(message, errno.EINVAL)
+
+
+class InvalidAssetError(CLIPrettyError):
+    def __init__(self, asset: Asset.AnyT, expected_type: TypeAlias) -> None:
+        message = f"Asset format is invalid. Actual asset is {asset.as_legacy()}, expected instance of {expected_type}"
+        super().__init__(message, errno.EINVAL)
+
+
+class PowerDownInProgressError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Power-down is already in progress, if you want to discard existing power-down and create new then use command `clive process power-down restart`"
+        super().__init__(message, errno.EPERM)

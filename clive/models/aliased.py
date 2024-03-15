@@ -3,6 +3,7 @@ from __future__ import annotations
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
 from schemas.apis.database_api import FindAccounts as SchemasFindAccounts
 from schemas.apis.database_api import FindProposals as SchemasFindProposals
+from schemas.apis.database_api import FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations
 from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
 from schemas.apis.database_api import (
     GetDynamicGlobalProperties,
@@ -21,6 +22,7 @@ from schemas.apis.database_api.fundaments_of_reponses import (
     ListDeclineVotingRightsRequestsFundament,
     OwnerHistoriesFundament,
     SavingsWithdrawalsFundament,
+    VestingDelegationExpirationsFundament,
     VestingDelegationsFundament,
     WithdrawVestingRoutesFundament,
     WitnessesFundament,
@@ -57,6 +59,7 @@ FeedHistory = GetFeedHistory
 FindAccounts = SchemasFindAccounts
 FindProposals = SchemasFindProposals
 FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
+FindVestingDelegationExpirations = SchemasFindVestingDelegationExpirations
 FindWitnesses = SchemasFindWitnesses
 HardforkProperties = GetHardforkProperties
 HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
@@ -72,6 +75,7 @@ RcAccount = SchemasRcAccount[AssetVestsHF26]
 Reputation = GetAccountReputationsFundament
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
+SchemasVestingDelegationExpirations = VestingDelegationExpirationsFundament[AssetVestsHF26]
 Signature = SchemasSignature
 TransactionStatus = SchemasFindTransaction
 Version = GetVersion

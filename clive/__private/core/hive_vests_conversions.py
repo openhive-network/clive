@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from clive.models import Asset
 
 if TYPE_CHECKING:
+
     from clive.models.aliased import DynamicGlobalProperties
 
 

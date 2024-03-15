@@ -7,6 +7,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.cli.process.hive_power import delegations, power_down, withdraw_routes
 from clive.__private.cli.process.proxy import proxy
 from clive.__private.cli.process.savings import savings
 from clive.__private.cli.process.update_authority import get_update_authority_typer
@@ -22,6 +23,9 @@ process.add_typer(get_update_authority_typer("active"))
 process.add_typer(get_update_authority_typer("posting"))
 process.add_typer(vote_proposal)
 process.add_typer(vote_witness)
+process.add_typer(delegations)
+process.add_typer(power_down)
+process.add_typer(withdraw_routes)
 
 
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])
@@ -93,3 +97,17 @@ async def process_update_memo_key(
     operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name)
     operation.add_callback(update_memo_key_callback)
     await operation.run()
+
+
+@process.command(name="power-up", common_options=[OperationCommonOptions])
+async def process_power_up(
+    ctx: typer.Context,  # noqa: ARG001
+    from_account: str = options.from_account_name_option,
+    to_account: str = options.to_account_name_option,
+    amount: str = typer.Option(..., help="The amount to transfer to vesting. (e.g. 2.500 HIVE)", show_default=False),
+) -> None:
+    """Perform power-up by sending transfer_to_vesting_operation."""
+    from clive.__private.cli.commands.process.process_power_up import ProcessPowerUp
+
+    common = OperationCommonOptions.get_instance()
+    await ProcessPowerUp(**common.as_dict(), from_account=from_account, to_account=to_account, amount=amount).run()

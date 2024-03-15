@@ -23,6 +23,7 @@ from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
+from clive.__private.core.commands.find_vesting_delegation_expirations import FindVestingDelegationExpirations
 from clive.__private.core.commands.find_witness import FindWitness
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
@@ -58,7 +59,14 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
-    from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, SchemasAccount, TransactionStatus, Witness
+    from clive.models.aliased import (
+        DynamicGlobalProperties,
+        ProposalSchema,
+        SchemasAccount,
+        SchemasVestingDelegationExpirations,
+        TransactionStatus,
+        Witness,
+    )
 
 WorldT = TypeVar("WorldT", bound="World")
 
@@ -347,6 +355,13 @@ class Commands(Generic[WorldT]):
 
     async def find_accounts(self, *, accounts: list[str]) -> CommandWithResultWrapper[list[SchemasAccount]]:
         return await self.__surround_with_exception_handlers(FindAccounts(node=self._world.node, accounts=accounts))
+
+    async def find_vesting_delegation_expirations(
+        self, *, account: str
+    ) -> CommandWithResultWrapper[list[SchemasVestingDelegationExpirations]]:
+        return await self.__surround_with_exception_handlers(
+            FindVestingDelegationExpirations(node=self._world.node, account=account)
+        )
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[overload-overlap]
