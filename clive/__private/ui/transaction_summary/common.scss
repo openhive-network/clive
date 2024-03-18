@@ -1,62 +1,63 @@
 $metadata-color: $primary-darken-1;
 
-StaticPart {
-  height: auto;
-}
+TransactionSummaryCommon {
+  StaticPart {
+    height: auto;
+  }
 
-ScrollablePart {
-  padding-bottom: 1;
-  height: 1fr;
-}
+  ScrollablePart {
+    padding-bottom: 1;
+    height: 1fr;
+  }
 
-ActionsContainer {
-  margin: 1;
-  height: 3;
-}
+  ActionsContainer {
+    margin: 1;
+    height: 3;
+  }
 
-SelectKey {
-  max-width: 25%;
-}
+  SelectKey {
+    max-width: 25%;
+  }
 
-KeyHint {
-  text-style: bold;
-  margin: 1;
-}
+  KeyHint {
+    text-style: bold;
+    margin: 1;
+  }
 
-TransactionContentHint {
-  margin: 0 1;
-  background: $panel;
-  padding: 1;
-}
+  TransactionContentHint {
+    margin: 0 1;
+    background: $panel;
+    padding: 1;
+  }
 
-OperationItem {
-  margin: 0 1;
-  background: $panel;
-  padding: 1;
-}
+  OperationItem {
+    margin: 0 1;
+    background: $panel;
+    padding: 1;
+  }
 
-OperationItem.-even {
-  background: $panel-lighten-1;
-}
+  OperationItem.-even {
+    background: $panel-lighten-1;
+  }
 
-TransactionMetadataContainer {
-  border-title-background: $metadata-color;
-  border-title-color: $text;
-  border-title-style: bold;
-  margin: 0 1; /* bug there, if margin is not set or set to 0, margin-right: 2 appears */
-  border: $metadata-color;
-  height: auto;
-}
+  TransactionMetadataContainer {
+    border-title-background: $metadata-color;
+    border-title-color: $text;
+    border-title-style: bold;
+    margin: 0 1; /* bug there, if margin is not set or set to 0, margin-right: 2 appears */
+    border: $metadata-color;
+    height: auto;
 
-TransactionMetadataContainer Label {
-  width: 1fr;
-}
+    Label {
+      width: 1fr;
+    }
+  }
 
-TaposHolder {
-  height: auto;
-}
-
-TaposHolder #ref-block-num,
-TaposHolder #ref-block-prefix {
-  margin-left: 1;
+  TaposHolder {
+    height: auto;
+    #ref-block-num,
+    #ref-block-prefix {
+      margin-left: 1;
+    }
+  }
 }

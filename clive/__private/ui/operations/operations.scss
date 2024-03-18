@@ -1,14 +1,13 @@
-Operations OperationButton {
-  margin: 1 2 0 2;
-  background: $primary;
-  width: 1fr;
-}
-
-Operations Tab {
-  width: 1fr;
-}
-
-Operations #hint {
-  text-style: bold;
-  text-align: center;
+Operations {
+  OperationButton {
+    margin: 1 2 0 2;
+    width: 1fr;
+  }
+  Tab {
+    width: 1fr;
+  }
+  #hint {
+    text-style: bold;
+    text-align: center;
+  }
 }

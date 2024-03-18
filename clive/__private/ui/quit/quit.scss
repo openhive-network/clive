@@ -1,20 +1,22 @@
-Quit #hint {
-  color: $text-muted;
-}
+Quit {
+  #hint {
+    color: $text-muted;
+  }
 
-Quit #question,
-Quit #hint {
-  content-align: center middle;
-}
+  #question,
+  #hint {
+    content-align: center middle;
+  }
 
-Quit Button {
-  width: 1fr;
-}
+  Button {
+    width: 1fr;
+  }
 
-Quit #buttons {
-  height: auto;
-}
+  #buttons {
+    height: auto;
+  }
 
-Quit #quit {
-  margin-right: 1;
+  #quit {
+    margin-right: 1;
+  }
 }

@@ -1,35 +1,29 @@
-Activate DialogContainer {
-  layout: grid;
-  grid-gutter: 1;
-  grid-rows: auto;
-  height: auto;
-}
+Activate {
+  DialogContainer {
+    layout: grid;
+    grid-gutter: 1;
+    grid-rows: auto;
+    height: auto;
+  }
 
-Activate ButtonsContainer {
-  height: auto;
-}
+  ButtonsContainer {
+    height: auto;
+  }
 
-Activate Button {
-  width: 1fr;
-}
+  Button {
+    width: 1fr;
+  }
 
-Activate #activate-button {
-  margin-right: 1;
-}
+  #activate-button {
+    margin-right: 1;
+  }
 
-Activate #activate-button:focus {
-  background: $primary-darken-1;
-}
+  Checkbox {
+    column-span: 2;
+    margin: 0 1;
+  }
 
-Activate #cancel-button:focus {
-  background: $error-darken-1;
-}
-
-Activate Checkbox {
-  column-span: 2;
-  margin: 0 1;
-}
-
-Activate #active-mode-input--input {
-  width: 25;
+  #active-mode-input--input {
+    width: 25;
+  }
 }

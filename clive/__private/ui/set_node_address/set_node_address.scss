@@ -1,8 +1,10 @@
-SetNodeAddressBase ScrollablePart {
-  padding: 2 4;
-  height: 1fr;
-}
+SetNodeAddressBase {
+  ScrollablePart {
+    padding: 2 4;
+    height: 1fr;
+  }
 
-SetNodeAddressBase NodesList {
-  height: auto;
+  NodesList {
+    height: auto;
+  }
 }

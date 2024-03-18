@@ -1,12 +1,14 @@
-SetAccount ScrollablePart {
-  padding: 2 4;
-  height: 1fr;
-}
+SetAccount {
+  ScrollablePart {
+    padding: 2 4;
+    height: 1fr;
+  }
 
-SetAccount AccountNameInput {
-  height: auto;
-}
+  AccountNameInput {
+    height: auto;
 
-SetAccount AccountNameInput InputLabel {
-  width: 18;
+    InputLabel {
+      width: 18;
+    }
+  }
 }

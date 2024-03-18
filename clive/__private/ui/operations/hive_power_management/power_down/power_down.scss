@@ -1,68 +1,69 @@
 $info-color: $accent;
-
-ScrollablePart {
-  height: auto;
-}
-
-HpVestsFactor {
-  margin-bottom: 1;
-}
-
-#input-with-button {
-  background: $panel;
-  padding: 2 2;
-  height: auto;
-}
-
-WithdrawRoutesDisplay {
-  height: auto;
-
-  Pretty {
-    content-align: center middle;
-    width: 1fr;
+PowerDown {
+  ScrollablePart {
+    height: auto;
   }
 
-  #withdraw-routes-header {
-    text-style: bold;
-    margin-top: 1;
-    background: $primary;
-    width: 1fr;
-    height: 1;
-    text-align: center;
-  }
-}
-
-PendingPowerDown {
-  height: auto;
-
-  CliveButton {
-    width: 1fr;
+  HpVestsFactor {
+    margin-bottom: 1;
   }
 
-  #current-power-down-title {
-    text-style: bold;
-    margin-top: 1;
-    background: $primary;
-    width: 1fr;
-    height: 1;
-    text-align: center;
+  #input-with-button {
+    background: $panel;
+    padding: 2 2;
+    height: auto;
   }
 
-  #no-current-power-down-info {
-    text-style: bold;
-    margin-top: 1;
-    background: $primary;
-    width: 1fr;
-    height: 1;
-    text-align: center;
-  }
-  PendingPowerDownHeader {
-    height: 1;
+  WithdrawRoutesDisplay {
+    height: auto;
 
-    Static {
-      text-style: bold;
+    Pretty {
+      content-align: center middle;
       width: 1fr;
+    }
+
+    #withdraw-routes-header {
+      text-style: bold;
+      margin-top: 1;
+      background: $primary;
+      width: 1fr;
+      height: 1;
       text-align: center;
+    }
+  }
+
+  PendingPowerDown {
+    height: auto;
+
+    CliveButton {
+      width: 1fr;
+    }
+
+    #current-power-down-title {
+      text-style: bold;
+      margin-top: 1;
+      background: $primary;
+      width: 1fr;
+      height: 1;
+      text-align: center;
+    }
+
+    #no-current-power-down-info {
+      text-style: bold;
+      margin-top: 1;
+      background: $primary;
+      width: 1fr;
+      height: 1;
+      text-align: center;
+    }
+    PendingPowerDownHeader {
+      height: 1;
+
+      Static {
+        text-style: bold;
+        width: 1fr;
+        text-align: center;
+      }
     }
   }
 }

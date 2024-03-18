@@ -1,40 +1,40 @@
-CartBasedScreen LeftContainer {
-  width: 1fr;
-}
-
-CartBasedScreen RightContainer {
-  background: $panel;
-  width: 30;
-}
-
-CartBasedScreen CartOverview Resources {
-  grid-size: 2;
-  grid-rows: 1;
-  border: $primary;
-  height: auto;
-}
-
-CartBasedScreen CartOverview CartItemsAmount {
-  align: center middle;
-  text-style: bold;
-  background: $secondary-lighten-1;
-  padding: 1;
-  width: 1fr;
-  height: 3;
-  color: $text;
-}
-
-CartBasedScreen CartOverview CartInfoContainer {
-  border: $secondary;
-  height: 1fr;
-  overflow: hidden;
-}
-
-CartBasedScreen CartOverview CartItemsContainer {
-  padding: 1;
-  height: 8fr;
-}
-
-CartBasedScreen CartInfoContainer:focus-within {
-  background: $panel-darken-1;
+CartBasedScreen {
+  LeftContainer {
+    width: 1fr;
+  }
+  RightContainer {
+    background: $panel;
+    width: 30;
+  }
+  CartOverview {
+    Resources {
+      grid-size: 2;
+      grid-rows: 1;
+      border: $primary;
+      height: auto;
+    }
+    CartItemsAmount {
+      align: center middle;
+      text-style: bold;
+      background: $secondary-lighten-1;
+      padding: 1;
+      width: 1fr;
+      height: 3;
+      color: $text;
+    }
+    CartInfoContainer {
+      border: $secondary;
+      height: 1fr;
+      overflow: hidden;
+    }
+    CartItemsContainer {
+      padding: 1;
+      height: 8fr;
+    }
+  }
+  CartInfoContainer {
+    &:focus-within {
+      background: $panel-darken-1;
+    }
+  }
 }

@@ -1,67 +1,69 @@
-Tab {
-  width: 1fr;
-}
-
-#hive-power-info {
-  height: 6;
-}
-
-WithdrawalInfo {
-  width: 1fr;
-}
-
-#loading-static {
-  margin-top: 1;
-  background: $primary;
-}
-
-/* Table with amounts */
 $row-color-1: $accent;
 $row-color-2: $accent-lighten-1;
 
 $table-header-color: $primary-background;
 $table-row-title-color: $background-lighten-2;
 
-CliveDataTable {
-  margin-right: 2;
-  width: 2fr;
-  height: auto;
+HivePowerManagement {
+  Tab {
+    width: 1fr;
+  }
 
-  HpInfoTableHeader {
+  #hive-power-info {
+    height: 6;
+  }
+
+  WithdrawalInfo {
+    width: 1fr;
+  }
+
+  #loading-static {
+    margin-top: 1;
+    background: $primary;
+  }
+
+  CliveDataTable {
+    margin-right: 2;
+    width: 2fr;
     height: auto;
 
-    Static {
+    HpInfoTableHeader {
+      height: auto;
+
+      Static {
+        text-style: bold;
+        text-align: center;
+      }
+
+      #shares-name-header {
+        background: $table-header-color;
+        width: 2fr;
+      }
+      .shares-balance-header {
+        background: $table-header-color;
+        width: 3fr;
+      }
+    }
+    RowTitle {
       text-style: bold;
+      background: $table-row-title-color;
+      width: 2fr;
       text-align: center;
     }
 
-    #shares-name-header {
-      background: $table-header-color;
-      width: 2fr;
-    }
-    .shares-balance-header {
-      background: $table-header-color;
+    .shares-balance-cell {
+      text-style: none;
+      text-style: bold;
       width: 3fr;
+      text-align: right;
     }
-  }
-  RowTitle {
-    text-style: bold;
-    background: $table-row-title-color;
-    width: 2fr;
-    text-align: center;
-  }
 
-  .shares-balance-cell {
-    text-style: bold;
-    width: 3fr;
-    text-align: right;
-  }
+    .odd-row {
+      background: $row-color-1;
+    }
 
-  .odd-row {
-    background: $row-color-1;
-  }
-
-  .even-row {
-    background: $row-color-2;
+    .even-row {
+      background: $row-color-2;
+    }
   }
 }

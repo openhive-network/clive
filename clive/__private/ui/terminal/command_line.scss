@@ -2,6 +2,10 @@ CommandLinePrompt {
   dock: left;
   margin-left: 1;
   width: auto;
+
+  .--active {
+    color: $success;
+  }
 }
 
 CommandLine {
@@ -14,8 +18,4 @@ CommandLineInput {
   border: none !important;
   background: $panel;
   padding: 0;
-}
-
-CommandLinePrompt.--active {
-  color: $success;
 }

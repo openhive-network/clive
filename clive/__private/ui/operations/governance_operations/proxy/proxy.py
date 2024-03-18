@@ -43,7 +43,7 @@ class ProxyNotSet(ProxyBaseContainer):
         yield CurrentProxy("Proxy not set")
         yield NewProxyInput(required=True)
         with Container(id="set-button-container"):
-            yield CliveButton("Set proxy", id_="set-proxy-button")
+            yield CliveButton("Set proxy", id_="set-proxy-button", variant="success")
         yield Notice(
             "setting proxy will delete your witnesses votes and deactivate your proposal votes",
         )
@@ -65,8 +65,8 @@ class ProxySet(ProxyBaseContainer):
         yield CurrentProxy(self._current_proxy)
         yield NewProxyInput(required=False)
         with Horizontal(id="modify-proxy-buttons"):
-            yield CliveButton("Change proxy", id_="set-proxy-button")
-            yield CliveButton("Remove proxy", id_="remove-proxy-button")
+            yield CliveButton("Change proxy", variant="success", id_="set-proxy-button")
+            yield CliveButton("Remove proxy", variant="error", id_="remove-proxy-button")
 
 
 class Proxy(TabPane, CliveWidget):

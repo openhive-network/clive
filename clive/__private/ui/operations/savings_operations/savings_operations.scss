@@ -1,163 +1,134 @@
-Savings Tab {
-  width: 1fr;
-}
-
-Savings SavingsInterestInfo {
-  border: $secondary-darken-2;
-  height: auto;
-  max-height: 5;
-}
-
-Savings SavingsInterestInfo Horizontal,
-Savings SavingsInterestInfo Container {
-  height: auto;
-}
-
-/* savings-balances */
-Savings SavingsBalances {
-  layout: grid;
-  grid-size: 2 3;
-  grid-rows: 1;
-  width: 1fr;
-  height: auto;
-}
-
-Savings SavingsBalances DynamicLabel {
-  align: center middle;
-  text-style: bold;
-  width: 100%;
-}
-
-Savings SavingsBalances Static {
-  text-style: bold;
-  text-align: center;
-}
-
-Savings SavingsBalances #savings-title {
-  text-style: bold;
-  column-span: 2;
-  background: $accent-lighten-1;
-  text-align: center;
-}
-
-Savings SavingsBalances #savings-token-hbd {
-  background: $primary-darken-1;
-}
-
-Savings SavingsBalances #savings-token-hive {
-  background: $primary-darken-2;
-}
-
-Savings SavingsBalances .savings-value-hive {
-  background: $accent-lighten-1;
-}
-
-Savings SavingsBalances .savings-value-hbd {
-  background: $accent-lighten-3;
-}
-
-Savings .transfer-savings-balances {
-  border: $secondary-darken-2;
-}
-
-/* interest-rate */
-
-SavingsInterestInfo #interest-rate DynamicLabel {
-  text-style: bold;
-  align: center middle;
-  width: 1fr;
-  height: 1fr;
-}
-
-SavingsInterestInfo .interest-rate-date {
-  background: $primary-lighten-2;
-}
-
-SavingsInterestInfo .interest-rate-value {
-  background: $primary-lighten-1;
-}
-
-SavingsInterestInfo .interest-rate-value-percent {
-  background: $primary-lighten-2;
-}
-
-/* pending-transfers */
-
-Savings PendingHeader {
-  margin-top: 1;
-  width: 1fr;
-  height: 1;
-}
-
-Savings PendingHeader Label {
-  text-style: bold;
-  width: 1fr;
-  height: 1fr;
-  text-align: center;
-}
-
-Savings .EvenColumn {
-  background: $primary-background-darken-2;
-}
-
-Savings .OddColumn {
-  background: $primary-background-darken-1;
-}
-
-Savings PendingTransfers {
-  margin-bottom: 3;
-}
-
-Savings PendingTransfers LoadingIndicator {
-  margin-top: 2;
-  height: 1;
-}
-
-Savings PendingTransfer Label {
-  content-align: center middle;
-  text-style: bold;
-  width: 1fr;
-  height: 1fr;
-}
-
-Savings PendingTransfer {
-  layout: horizontal;
-  margin-bottom: 1;
-  height: 3;
-}
-
-Savings CliveButton {
-  width: 1fr;
-}
-
-Savings .number-of-transfers {
-  text-style: bold;
-  background: $accent-lighten-1;
-  width: 100%;
-  text-align: center;
-}
-
-/* transfer from and to savings*/
-
-Savings #savings-transfer-header {
-  text-style: bold;
-  margin-bottom: 1;
-  text-align: center;
-}
-
-Savings Body {
-  grid-rows: auto;
-  grid-gutter: 1;
-  margin: 1 2;
-  background: $panel;
-  padding: 2 4;
-  height: auto;
-}
-
-Savings #operation-type-choose {
-  align: center middle;
-  layout: horizontal;
-  margin-bottom: 1;
-  width: 1fr;
-  height: 3;
+Savings {
+  Tab {
+    width: 1fr;
+  }
+  SavingsInterestInfo {
+    border: $secondary-darken-2;
+    height: auto;
+    max-height: 5;
+    Horizontal {
+      height: auto;
+    }
+    Container {
+      height: auto;
+    }
+    #interest-rate {
+      DynamicLabel {
+        text-style: bold;
+        align: center middle;
+        width: 1fr;
+        height: 1fr;
+      }
+    }
+    .interest-rate-date {
+      background: $primary-lighten-2;
+    }
+    .interest-rate-value {
+      background: $primary-lighten-1;
+    }
+    .interest-rate-value-percent {
+      background: $primary-lighten-2;
+    }
+  }
+  SavingsBalances {
+    layout: grid;
+    grid-size: 2 3;
+    grid-rows: 1;
+    width: 1fr;
+    height: auto;
+    DynamicLabel {
+      align: center middle;
+      text-style: bold;
+      width: 100%;
+    }
+    Static {
+      text-style: bold;
+      text-align: center;
+    }
+    #savings-title {
+      text-style: bold;
+      column-span: 2;
+      background: $accent-lighten-1;
+      text-align: center;
+    }
+    #savings-token-hbd {
+      background: $primary-darken-1;
+    }
+    #savings-token-hive {
+      background: $primary-darken-2;
+    }
+    .savings-value-hive {
+      background: $accent-lighten-1;
+    }
+    .savings-value-hbd {
+      background: $accent-lighten-3;
+    }
+  }
+  .transfer-savings-balances {
+    border: $secondary-darken-2;
+  }
+  PendingHeader {
+    margin-top: 1;
+    width: 1fr;
+    height: 1;
+    Label {
+      text-style: bold;
+      width: 1fr;
+      height: 1fr;
+      text-align: center;
+    }
+  }
+  .EvenColumn {
+    background: $primary-background-darken-2;
+  }
+  .OddColumn {
+    background: $primary-background-darken-1;
+  }
+  PendingTransfers {
+    margin-bottom: 3;
+    LoadingIndicator {
+      margin-top: 2;
+      height: 1;
+    }
+  }
+  PendingTransfer {
+    layout: horizontal;
+    margin-bottom: 1;
+    height: 3;
+    Label {
+      content-align: center middle;
+      text-style: bold;
+      width: 1fr;
+      height: 1fr;
+    }
+  }
+  CliveButton {
+    width: 1fr;
+  }
+  .number-of-transfers {
+    text-style: bold;
+    background: $accent-lighten-1;
+    width: 100%;
+    text-align: center;
+  }
+  #savings-transfer-header {
+    text-style: bold;
+    margin-bottom: 1;
+    text-align: center;
+  }
+  Body {
+    grid-rows: auto;
+    grid-gutter: 1;
+    margin: 1 2;
+    background: $panel;
+    padding: 2 4;
+    height: auto;
+  }
+  #operation-type-choose {
+    align: center middle;
+    layout: horizontal;
+    margin-bottom: 1;
+    width: 1fr;
+    height: 3;
+  }
 }

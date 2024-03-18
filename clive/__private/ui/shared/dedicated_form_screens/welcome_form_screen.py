@@ -35,7 +35,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):
             yield WelcomeTitle(self.__title)
-            yield CliveButton("Start!", id_="welcome_button_start")
+            yield CliveButton("Start!", variant="primary", id_="welcome_button_start")
 
     @on(CliveButton.Pressed, "#welcome_button_start")
     async def begin(self) -> None:

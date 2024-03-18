@@ -59,8 +59,8 @@ class KeyAlias(ColumnLayout, CliveWidget):
         yield StaticColumn(str(self.__index + 1), id="key_alias_row_number", classes=even)
         yield StaticColumn(self.__public_key.alias, id="key_alias_name", classes=odd)
         yield StaticColumn(self.__public_key.value, id="key_alias_public_key", classes=even)
-        yield CliveButton("Edit", id_="edit_key_alias_button", classes=odd)
-        yield CliveButton("Remove", id_="remove_key_alias_button", classes=even)
+        yield CliveButton("Edit", variant="primary", id_="edit_key_alias_button")
+        yield CliveButton("Remove", variant="error", id_="remove_key_alias_button")
 
     @on(CliveButton.Pressed, "#edit_key_alias_button")
     def push_edit_key_alias_screen(self) -> None:

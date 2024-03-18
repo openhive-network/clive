@@ -1,22 +1,23 @@
-Governance Tab {
-  width: 1fr;
-}
+Governance {
+  Tab {
+    width: 1fr;
+  }
 
-Governance .vote-actions {
-  width: 1fr;
-  height: auto;
-  max-height: 32;
-}
+  .vote-actions {
+    width: 1fr;
+    height: auto;
+    max-height: 32;
+  }
 
-DetailsScreen {
-  align: center middle;
-  height: auto;
-}
-
-DetailsScreen Static {
-  border: $primary-lighten-3;
-  width: 0.6fr;
-  height: auto;
-  min-height: 3;
-  text-align: left;
+  DetailsScreen {
+    align: center middle;
+    height: auto;
+    Static {
+      border: $primary-lighten-3;
+      width: 0.6fr;
+      height: auto;
+      min-height: 3;
+      text-align: left;
+    }
+  }
 }

@@ -1,8 +1,10 @@
-Body {
-  grid-rows: auto;
-  grid-gutter: 1;
-  margin: 0 4;
-  background: $panel;
-  padding: 1 2;
-  height: auto;
+OperationSummary {
+  Body {
+    grid-rows: auto;
+    grid-gutter: 1;
+    margin: 0 4;
+    background: $panel;
+    padding: 1 2;
+    height: auto;
+  }
 }

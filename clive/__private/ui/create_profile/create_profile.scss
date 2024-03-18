@@ -1,31 +1,27 @@
-CreateProfileCommon DialogContainer {
-  layout: grid;
-  grid-gutter: 1;
-  grid-rows: auto;
-  height: auto;
+CreateProfileCommon {
+  DialogContainer {
+    layout: grid;
+    grid-gutter: 1;
+    grid-rows: auto;
+    height: auto;
+  }
+
+  .label {
+    padding: 1 2;
+    text-align: right;
+  }
 }
 
-CreateProfileCommon .label {
-  padding: 1 2;
-  text-align: right;
-}
+CreateProfile {
+  ButtonsContainer {
+    height: auto;
+  }
 
-CreateProfile ButtonsContainer {
-  height: auto;
-}
+  Button {
+    width: 1fr;
+  }
 
-CreateProfile Button {
-  width: 1fr;
-}
-
-CreateProfile #create-button {
-  margin-right: 1;
-}
-
-CreateProfile #create-button:focus {
-  background: $primary-darken-1;
-}
-
-CreateProfile #cancel-button:focus {
-  background: $error-darken-1;
+  #create-button {
+    margin-right: 1;
+  }
 }

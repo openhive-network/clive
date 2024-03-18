@@ -1,19 +1,21 @@
-SelectFile FilePathInputContainer {
-  height: auto;
-}
+SelectFile {
+  FilePathInputContainer {
+    height: auto;
+  }
 
-SelectFile FilePathLabel {
-  padding: 1 2;
-}
+  FilePathLabel {
+    padding: 1 2;
+  }
 
-SelectFile Input {
-  width: 1fr;
-}
+  Input {
+    width: 1fr;
+  }
 
-SelectFile DirectoryTreeHint {
-  color: $text-muted;
-}
+  DirectoryTreeHint {
+    color: $text-muted;
+  }
 
-SelectFile DirectoryTree {
-  min-height: 3;
+  DirectoryTree {
+    min-height: 3;
+  }
 }

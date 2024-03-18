@@ -1,130 +1,124 @@
 $working-color: $secondary-darken-2;
 $watched-color: $primary-darken-1;
 
-DashboardBase WorkingAccountContainer,
-DashboardBase WatchedAccountContainer {
-  border-title-color: $text;
-  border-title-style: bold;
-}
+DashboardBase {
+  WorkingAccountContainer,
+  WatchedAccountContainer {
+    border-title-color: $text;
+    border-title-style: bold;
+  }
 
-DashboardBase WorkingAccountContainer {
-  border-title-background: $working-color;
-  border: $working-color;
-}
+  WorkingAccountContainer {
+    border-title-background: $working-color;
+    border: $working-color;
+  }
 
-DashboardBase WatchedAccountContainer {
-  border-title-background: $watched-color;
-  border: $watched-color;
-}
+  WatchedAccountContainer {
+    border-title-background: $watched-color;
+    border: $watched-color;
+  }
 
-/* AccountRow */
+  AccountRow {
+    box-sizing: content-box;
+    height: 6;
 
-DashboardBase AccountRow {
-  box-sizing: content-box;
-  height: 6;
-}
+    &.watched {
+      border-bottom: $primary-lighten-1;
 
-DashboardBase AccountRow.watched {
-  border-bottom: $primary-lighten-1;
-}
+      &.last {
+        border-bottom: none;
+      }
+    }
 
-DashboardBase AccountRow.watched.last {
-  border-bottom: none;
-}
+    #tables {
+      width: 1fr;
+    }
+  }
 
-DashboardBase AccountRow #tables {
-  width: 1fr;
-}
+  AccountInfo {
+    width: auto;
+  }
 
-/* AccountInfo */
+  BalanceStats {
+    layout: grid;
+    grid-size: 3 1;
+    margin-left: 2;
+    height: 2;
 
-DashboardBase AccountInfo {
-  width: auto;
-}
+    .even-manabar {
+      background: $primary-lighten-1;
+    }
 
-/* BalanceStats */
+    .odd-manabar {
+      background: $primary-lighten-2;
+    }
+  }
 
-DashboardBase BalanceStats {
-  layout: grid;
-  grid-size: 3 1;
-  margin-left: 2;
-  height: 2;
-}
+  ManabarRepresentation {
+    layout: grid;
+    grid-size: 10 2;
+    width: 100%;
+    height: 2;
 
-DashboardBase BalanceStats .even-manabar {
-  background: $primary-lighten-1;
-}
+    DynamicLabel {
+      align: center middle;
+      width: 1fr;
+    }
 
-DashboardBase BalanceStats .odd-manabar {
-  background: $primary-lighten-2;
-}
+    .percentage {
+      column-span: 10;
+    }
 
-DashboardBase ManabarRepresentation {
-  layout: grid;
-  grid-size: 10 2;
-  width: 100%;
-  height: 2;
-}
+    .time {
+      column-span: 6;
+      background: $panel-lighten-2;
+    }
 
-DashboardBase ManabarRepresentation DynamicLabel {
-  align: center middle;
-  width: 1fr;
-}
+    .hivepower-value {
+      column-span: 4;
+      background: $panel-lighten-1;
+    }
+  }
 
-DashboardBase ManabarRepresentation .percentage {
-  column-span: 10;
-}
+  ActivityStats {
+    layout: grid;
+    grid-size: 3;
+    height: 3;
 
-DashboardBase ManabarRepresentation .time {
-  column-span: 6;
-  background: $panel-lighten-2;
-}
+    Static {
+      text-align: center;
+    }
 
-DashboardBase ManabarRepresentation .hivepower-value {
-  column-span: 4;
-  background: $panel-lighten-1;
-}
+    DynamicLabel {
+      align: center middle;
+      width: 1fr;
+    }
 
-/* ActivityStats */
+    .title {
+      background: $accent-lighten-3;
+      color: $text;
+    }
 
-DashboardBase ActivityStats {
-  layout: grid;
-  grid-size: 3;
-  height: 3;
-}
+    .title-variant {
+      background: $accent-lighten-2;
+    }
 
-DashboardBase ActivityStats Static {
-  text-align: center;
-}
+    .token {
+      margin-left: 2;
+      background: $accent-lighten-1;
+    }
 
-DashboardBase ActivityStats DynamicLabel {
-  align: center middle;
-  width: 1fr;
-}
+    .token-variant {
+      background: $accent-lighten-2;
+    }
 
-DashboardBase ActivityStats .title {
-  background: $accent-lighten-3;
-  color: $text;
-}
+    .amount {
+      background: $panel-lighten-1;
+      width: 1fr;
+    }
 
-DashboardBase ActivityStats .title-variant {
-  background: $accent-lighten-2;
-}
-
-DashboardBase ActivityStats .token {
-  margin-left: 2;
-  background: $accent-lighten-1;
-}
-
-DashboardBase ActivityStats .token-variant {
-  background: $accent-lighten-2;
-}
-
-DashboardBase ActivityStats .amount {
-  background: $panel-lighten-1;
-  width: 1fr;
-}
-
-DashboardBase ActivityStats .amount-variant {
-  background: $panel-lighten-2;
+    .amount-variant {
+      background: $panel-lighten-2;
+    }
+  }
 }

@@ -2,8 +2,7 @@ TitledLabel {
   layout: horizontal;
   width: auto;
   height: auto;
-}
-
-TitledLabel #title {
-  background: $foreground 10%;
+  #title {
+    background: $foreground 10%;
+  }
 }

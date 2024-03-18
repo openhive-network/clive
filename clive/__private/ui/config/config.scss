@@ -1,10 +1,11 @@
-DialogContainer {
-  #hint {
-    text-align: center;
-  }
+Config {
+  DialogContainer {
+    #hint {
+      text-align: center;
+    }
 
-  Button {
-    background: $primary;
-    width: 1fr;
+    Button {
+      width: 1fr;
+    }
   }
 }

@@ -28,8 +28,8 @@ class Config(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer():
             yield Static("Please choose which configuration you would like to make:", id="hint")
-            yield CliveButton("Select node", id_="select-node")
-            yield CliveButton("Manage key aliases", id_="manage-key-aliases")
+            yield CliveButton("Select node", variant="primary", id_="select-node")
+            yield CliveButton("Manage key aliases", variant="primary", id_="manage-key-aliases")
 
     @on(CliveButton.Pressed, "#select-node")
     def push_set_node_address_screen(self) -> None:

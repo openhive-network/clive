@@ -1,15 +1,17 @@
-KeyAliasForm SubTitle {
-  text-style: bold;
-  content-align: center middle;
-}
+KeyAliasForm {
+  SubTitle {
+    text-style: bold;
+    content-align: center middle;
+  }
 
-KeyAliasForm Body {
-  grid-rows: auto;
-  grid-gutter: 1;
-  height: auto;
-}
+  Body {
+    grid-rows: auto;
+    grid-gutter: 1;
+    height: auto;
+  }
 
-KeyAliasForm ScrollablePart {
-  padding: 2 4;
-  height: 1fr;
+  ScrollablePart {
+    padding: 2 4;
+    height: 1fr;
+  }
 }

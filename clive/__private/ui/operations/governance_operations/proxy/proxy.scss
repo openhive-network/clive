@@ -3,37 +3,25 @@ $governance-red-color: $error;
 
 Proxy {
   height: auto;
-}
-
-Proxy #set-button-container {
-  align: center middle;
-  height: 4;
-}
-
-Proxy #set-proxy-button {
-  background: $governance-green-color;
-}
-
-Proxy #modify-proxy-buttons {
-  align: center middle;
-  height: 3;
-}
-
-Proxy #change-proxy-button {
-  margin-right: 3;
-  background: $governance-green-color;
-}
-
-Proxy #remove-proxy-button {
-  margin-left: 3;
-  background: $governance-red-color;
-}
-
-ProxyBaseContainer {
-  height: auto;
-
-  CurrentProxy,
-  ProxyInput {
-    margin-bottom: 1;
+  #set-button-container {
+    align: center middle;
+    height: 4;
+  }
+  #modify-proxy-buttons {
+    align: center middle;
+    height: 3;
+  }
+  #change-proxy-button {
+    margin-right: 3;
+  }
+  #remove-proxy-button {
+    margin-left: 3;
+  }
+  ProxyBaseContainer {
+    height: auto;
+    CurrentProxy,
+    ProxyInput {
+      margin-bottom: 1;
+    }
   }
 }

@@ -1,17 +1,18 @@
-FinishFormScreen Description {
-  content-align: center middle;
-  margin: 1;
-}
+FinishFormScreen {
+  Description {
+    content-align: center middle;
+    margin: 1;
+  }
 
-FinishFormScreen ButtonsContainer {
-  height: auto;
-}
+  ButtonsContainer {
+    height: auto;
+  }
 
-FinishFormScreen Button {
-  background: $primary-background-darken-2;
-  width: 1fr;
-}
+  Button {
+    width: 1fr;
+  }
 
-FinishFormScreen #finish-button {
-  margin-right: 1;
+  #finish-button {
+    margin-right: 1;
+  }
 }

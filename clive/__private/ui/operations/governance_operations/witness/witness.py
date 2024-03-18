@@ -236,8 +236,8 @@ class WitnessManualSearch(Grid):
     def compose(self) -> ComposeResult:
         yield self._witness_input
         yield self._limit_input
-        yield CliveButton("Search", id_="witness-search-button")
-        yield CliveButton("Clear", id_="clear-custom-witnesses-button")
+        yield CliveButton("Search", variant="success", id_="witness-search-button")
+        yield CliveButton("Clear", variant="error", id_="clear-custom-witnesses-button")
 
     @on(CliveButton.Pressed, "#witness-search-button")
     def search_witnesses(self) -> None:

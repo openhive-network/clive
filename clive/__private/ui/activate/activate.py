@@ -61,7 +61,7 @@ class Activate(BaseScreen):
             yield self._temporary_active_mode_input
             yield Static()
             with ButtonsContainer():
-                yield CliveButton("Ok", variant="primary", id_="activate-button")
+                yield CliveButton("Ok", variant="success", id_="activate-button")
                 yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
     @on(Checkbox.Changed)
