@@ -30,17 +30,15 @@ CartBasedScreen {
       border: $secondary;
       height: 1fr;
       overflow: hidden;
+
+      &:focus-within {
+        background: $panel-darken-1;
+      }
     }
 
     CartItemsContainer {
       padding: 1;
       height: 8fr;
-    }
-  }
-
-  CartInfoContainer {
-    &:focus-within {
-      background: $panel-darken-1;
     }
   }
 }
