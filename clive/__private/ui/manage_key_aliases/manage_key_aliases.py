@@ -42,8 +42,8 @@ class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 
-odd = "OddColumn"
-even = "EvenColumn"
+odd = "-odd"
+even = "-even"
 
 
 class KeyAlias(ColumnLayout, CliveWidget):
@@ -56,17 +56,17 @@ class KeyAlias(ColumnLayout, CliveWidget):
         super().__init__()
 
     def compose(self) -> ComposeResult:
-        yield StaticColumn(str(self.__index + 1), id="key_alias_row_number", classes=even)
-        yield StaticColumn(self.__public_key.alias, id="key_alias_name", classes=odd)
-        yield StaticColumn(self.__public_key.value, id="key_alias_public_key", classes=even)
-        yield CliveButton("Edit", id_="edit_key_alias_button")
-        yield CliveButton("Remove", variant="error", id_="remove_key_alias_button")
+        yield StaticColumn(str(self.__index + 1), id="key-alias-row-number", classes=even)
+        yield StaticColumn(self.__public_key.alias, id="key-alias-name", classes=odd)
+        yield StaticColumn(self.__public_key.value, id="key-alias-public-key", classes=even)
+        yield CliveButton("Edit", id_="edit-key-alias-button")
+        yield CliveButton("Remove", variant="error", id_="remove-key-alias-button")
 
-    @on(CliveButton.Pressed, "#edit_key_alias_button")
+    @on(CliveButton.Pressed, "#edit-key-alias-button")
     def push_edit_key_alias_screen(self) -> None:
         self.app.push_screen(EditKeyAlias(self.__public_key))
 
-    @on(CliveButton.Pressed, "#remove_key_alias_button")
+    @on(CliveButton.Pressed, "#remove-key-alias-button")
     async def remove_key_alias(self) -> None:
         @CliveScreen.try_again_after_activation(app=self.app)
         async def __on_confirmation_result(result: str) -> None:
@@ -87,9 +87,9 @@ class KeyAlias(ColumnLayout, CliveWidget):
 
 class KeyAliasesHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="key_alias_row_number", classes=even)
-        yield StaticColumn("Alias", id="key_alias_name", classes=odd)
-        yield StaticColumn("Public key", id="key_alias_public_key", classes=even)
+        yield StaticColumn("No.", id="key-alias-row-number", classes=even)
+        yield StaticColumn("Alias", id="key-alias-name", classes=odd)
+        yield StaticColumn("Public key", id="key-alias-public-key", classes=even)
         yield StaticColumn("Actions", id="actions", classes=odd)
 
 

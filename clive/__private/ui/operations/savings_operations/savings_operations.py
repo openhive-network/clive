@@ -40,8 +40,8 @@ if TYPE_CHECKING:
     from clive.models.aliased import SavingsWithdrawals
 
 
-odd = "OddColumn"
-even = "EvenColumn"
+odd = "-odd"
+even = "-even"
 
 
 class ScrollablePart(ScrollableContainer, can_focus=False):

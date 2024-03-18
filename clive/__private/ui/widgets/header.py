@@ -87,7 +87,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
             obj_to_watch=self,
             attribute_name="last_update_trigger",
             callback=self.__get_last_update,
-            id_="last_update",
+            id_="last-update",
         )
 
     async def __get_last_block(self, app_state: AppState) -> str:

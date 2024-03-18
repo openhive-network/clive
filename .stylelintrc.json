@@ -4,6 +4,8 @@
     "alpha-value-notation": null,
     "color-function-notation": "legacy",
     "property-no-unknown": null,
+    "selector-class-pattern": "^[a-z-]+[a-z]$",
+    "selector-id-pattern": "^[a-z-]+[a-z]$",
     "selector-type-case": null,
     "selector-type-no-unknown": null,
     "shorthand-property-no-redundant-values": null
