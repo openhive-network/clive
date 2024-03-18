@@ -123,7 +123,6 @@ class CartItem(ColumnLayout, CliveWidget):
             self.app.world,
             "profile_data",
             get_operation_index,
-            id_="operation_position_in_trx",
             classes="cell cell-middle",
         )
         yield DynamicColumn(
@@ -131,7 +130,6 @@ class CartItem(ColumnLayout, CliveWidget):
             "profile_data",
             get_operation_name,
             shrink=True,
-            id_="operation_type",
             classes="cell cell-variant cell-middle",
         )
         yield DynamicColumn(
@@ -139,7 +137,6 @@ class CartItem(ColumnLayout, CliveWidget):
             "profile_data",
             get_operation_details,
             shrink=True,
-            id_="operation_details",
             classes="cell",
         )
         yield ButtonMoveUp(disabled=self.__is_first)
@@ -209,9 +206,9 @@ class CartItem(ColumnLayout, CliveWidget):
 
 class CartHeader(ColumnLayout):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="operation_position_in_trx", classes="cell cell-middle")
-        yield StaticColumn("Operation type", id="operation_type", classes="cell cell-variant cell-middle")
-        yield StaticColumn("Operation details", id="operation_details", classes="cell cell-middle")
+        yield StaticColumn("No.", classes="cell cell-middle")
+        yield StaticColumn("Operation type", classes="cell cell-variant cell-middle")
+        yield StaticColumn("Operation details", classes="cell cell-middle")
         yield StaticColumn("Actions", id="actions", classes="cell cell-variant cell-middle")
 
 

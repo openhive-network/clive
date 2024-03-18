@@ -80,7 +80,6 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
             obj_to_watch=self.app.world,
             attribute_name="app_state",
             callback=self.__get_last_block,
-            id_="block_num",
         )
         yield TitledLabel(
             "Last update",

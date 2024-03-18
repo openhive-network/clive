@@ -38,14 +38,13 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._profile_name_input = SetProfileNameInput()
-        self._password_input = SetPasswordInput(id="password_input")
+        self._password_input = SetPasswordInput()
         self._repeat_password_input = TextInput(
             "Repeat password",
             password=True,
             validators=[
                 RepeatValidator(input_to_repeat=self._password_input, failure_description="Passwords do not match")
             ],
-            id="repeat_password_input",
         )
         super().__init__(*args, **kwargs)
 

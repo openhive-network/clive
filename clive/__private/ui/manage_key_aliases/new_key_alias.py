@@ -59,7 +59,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
             value=self._default_key(),
             password=True,
             required=self.IS_PRIVATE_KEY_REQUIRED,
-            id="key_input",
+            id="key-input",
         )
         self.__key_file_path: Path | None = None
 
@@ -91,7 +91,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         self.__key_file_path = event.file_path
         self.notify(f"Private key loaded from `{event.file_path}`")
 
-    @on(Input.Changed, "#key_input Input")
+    @on(Input.Changed, "#key-input Input")
     def recalculate_public_key(self) -> None:
         try:
             private_key = self._private_key_aliased

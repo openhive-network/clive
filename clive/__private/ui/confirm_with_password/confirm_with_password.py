@@ -34,7 +34,7 @@ class ConfirmWithPassword(BaseScreen):
     ) -> None:
         self.__result_callback = result_callback
         self.__action_name = action_name
-        self._password_input = TextInput("Password", password=True, id="password_input")
+        self._password_input = TextInput("Password", password=True)
         super().__init__()
 
     def create_main_panel(self) -> ComposeResult:
