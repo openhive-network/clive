@@ -18,7 +18,7 @@ class CliveButton(Button, CliveWidget):
     def __init__(
         self,
         label: TextType | None = None,
-        variant: ButtonVariant = "default",
+        variant: ButtonVariant = "primary",
         *,
         id_: str | None = None,
         classes: str | None = None,

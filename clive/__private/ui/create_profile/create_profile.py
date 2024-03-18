@@ -132,7 +132,7 @@ class CreateProfile(CreateProfileCommon):
     def _additional_content(self) -> ComposeResult:
         yield Static()
         with ButtonsContainer():
-            yield CliveButton("Ok", variant="primary", id_="create-button")
+            yield CliveButton("Ok", id_="create-button")
             yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
 

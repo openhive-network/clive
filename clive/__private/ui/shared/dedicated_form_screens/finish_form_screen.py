@@ -43,7 +43,7 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
             yield Description(self.__end_note)
             with ButtonsContainer():
                 yield CliveButton("Finish!", variant="success", id_="finish-button")
-                yield CliveButton("Forgot something?", variant="primary", id_="forgot-button")
+                yield CliveButton("Forgot something?", id_="forgot-button")
 
     @on(CliveButton.Pressed, "#forgot-button")
     async def previous_screen(self) -> None:

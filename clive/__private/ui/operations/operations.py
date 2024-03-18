@@ -39,7 +39,7 @@ class OperationButton(CliveButton):
             assert operation_screen is not None
             label = self.__humanize_class_name(operation_screen.__name__)
 
-        super().__init__(label, variant="primary")
+        super().__init__(label)
         self.operation_screen = operation_screen
 
     @staticmethod

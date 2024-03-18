@@ -30,7 +30,7 @@ class Quit(BaseScreen):
             yield Static("(You can also confirm by pressing Ctrl+X again)", id="hint")
             with Horizontal(id="buttons"):
                 yield CliveButton("Quit", variant="error", id_="quit")
-                yield CliveButton("Cancel", variant="primary", id_="cancel")
+                yield CliveButton("Cancel", id_="cancel")
 
     @on(CliveButton.Pressed, "#cancel")
     def action_cancel(self) -> None:
