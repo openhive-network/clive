@@ -10,6 +10,7 @@ WithdrawRoutes {
   #input-with-checkbox {
     margin-top: 1;
     height: auto;
+
     Checkbox {
       width: 17;
     }
@@ -24,6 +25,7 @@ WithdrawRoutes {
 
     WithdrawRoutesHeader {
       height: auto;
+
       Static {
         text-style: bold;
         width: 1fr;

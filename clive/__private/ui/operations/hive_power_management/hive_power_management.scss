@@ -1,6 +1,5 @@
 $row-color-1: $accent;
 $row-color-2: $accent-lighten-1;
-
 $table-header-color: $primary-background;
 $table-row-title-color: $background-lighten-2;
 
@@ -39,11 +38,13 @@ HivePowerManagement {
         background: $table-header-color;
         width: 2fr;
       }
+
       .shares-balance-header {
         background: $table-header-color;
         width: 3fr;
       }
     }
+
     RowTitle {
       text-style: bold;
       background: $table-row-title-color;

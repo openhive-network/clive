@@ -2,10 +2,12 @@ CartBasedScreen {
   LeftContainer {
     width: 1fr;
   }
+
   RightContainer {
     background: $panel;
     width: 30;
   }
+
   CartOverview {
     Resources {
       grid-size: 2;
@@ -13,6 +15,7 @@ CartBasedScreen {
       border: $primary;
       height: auto;
     }
+
     CartItemsAmount {
       align: center middle;
       text-style: bold;
@@ -22,16 +25,19 @@ CartBasedScreen {
       height: 3;
       color: $text;
     }
+
     CartInfoContainer {
       border: $secondary;
       height: 1fr;
       overflow: hidden;
     }
+
     CartItemsContainer {
       padding: 1;
       height: 8fr;
     }
   }
+
   CartInfoContainer {
     &:focus-within {
       background: $panel-darken-1;

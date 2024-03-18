@@ -3,22 +3,28 @@ $governance-red-color: $error;
 
 Proxy {
   height: auto;
+
   #set-button-container {
     align: center middle;
     height: 4;
   }
+
   #modify-proxy-buttons {
     align: center middle;
     height: 3;
   }
+
   #change-proxy-button {
     margin-right: 3;
   }
+
   #remove-proxy-button {
     margin-left: 3;
   }
+
   ProxyBaseContainer {
     height: auto;
+
     CurrentProxy,
     ProxyInput {
       margin-bottom: 1;

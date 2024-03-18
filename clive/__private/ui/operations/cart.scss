@@ -2,6 +2,7 @@ Cart {
   StaticPart {
     height: auto;
   }
+
   ColumnLayout {
     layout: grid;
     grid-size: 6 1;
@@ -9,44 +10,57 @@ Cart {
     grid-gutter: 1;
     height: 3;
   }
+
   .cell {
     background: $primary-background-darken-2;
     width: 100%;
     height: 3;
   }
+
   .cell-middle {
     content-align: center middle;
     align: center middle;
   }
+
   .cell-variant {
     background: $primary-background-darken-1;
   }
+
   CartHeader {
     margin: 0 1;
   }
+
   CartItem {
     margin: 1;
+
     &:focus-within {
       background: $primary-background;
     }
   }
+
   #actions {
     column-span: 3;
   }
+
   ButtonMoveUp {
     background: $primary;
+
     &:focus {
       background: $primary-darken-1;
     }
   }
+
   ButtonMoveDown {
     background: $primary;
+
     &:focus {
       background: $primary-darken-1;
     }
   }
+
   ButtonDelete {
     background: $error;
+
     &:focus {
       background: $error-darken-1;
     }

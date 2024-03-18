@@ -2,29 +2,35 @@ GovernanceCheckbox {
   layout: horizontal;
   width: auto;
   height: auto;
+
   Checkbox {
     Label {
       width: 1fr;
       text-align: center;
     }
   }
+
   CheckBoxWithoutFocus {
     border: none;
     background: transparent;
     padding: 0;
     width: auto;
   }
+
   &:disabled {
     background: rgba(0, 0, 0, 0.3);
   }
+
   &:focus {
     Label {
       text-style: bold reverse;
     }
   }
+
   .-voted {
     color: $success-darken-3;
   }
+
   .-unvoted {
     color: $error;
   }
