@@ -16,13 +16,11 @@ Savings {
       height: auto;
     }
 
-    #interest-rate {
-      DynamicLabel {
-        text-style: bold;
-        align: center middle;
-        width: 1fr;
-        height: 1fr;
-      }
+    DynamicLabel {
+      text-style: bold;
+      align: center middle;
+      width: 1fr;
+      height: 1fr;
     }
 
     .interest-rate-date {
@@ -46,14 +44,9 @@ Savings {
     height: auto;
 
     DynamicLabel {
+      text-style: bold;
       align: center middle;
-      text-style: bold;
-      width: 100%;
-    }
-
-    Static {
-      text-style: bold;
-      text-align: center;
+      width: 1fr;
     }
 
     #savings-title {
@@ -65,10 +58,12 @@ Savings {
 
     #savings-token-hbd {
       background: $primary-darken-1;
+      text-align: center;
     }
 
     #savings-token-hive {
       background: $primary-darken-2;
+      text-align: center;
     }
 
     .savings-value-hive {
