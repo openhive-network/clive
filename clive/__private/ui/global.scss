@@ -2,6 +2,11 @@
   display: none;
 }
 
+TabPane {
+  /* We removed the bottom padding to ensure that scroll on tab-panes is displayed correctly */
+  padding: 1 2 0 2;
+}
+
 Tabs {
   &:focus {
     .underline--bar {
