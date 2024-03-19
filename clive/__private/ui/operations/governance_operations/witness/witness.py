@@ -1,19 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar
 
-from textual import on, work
+from textual import on
 from textual.binding import Binding
 from textual.containers import Grid, Horizontal
 from textual.events import Click, Enter
 from textual.message import Message
-from textual.screen import ModalScreen
 from textual.validation import Integer
 from textual.widgets import Label, Static
 
-from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
@@ -31,6 +28,9 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
     GovernanceListWidget,
     GovernanceTable,
     GovernanceTableRow,
+)
+from clive.__private.ui.operations.governance_operations.witness.witness_details_screen import (
+    WitnessDetailsScreen,
 )
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -55,7 +55,7 @@ def convert_witness_name_to_widget_id(witness_name: str) -> str:
     return witness_name.replace(".", "")
 
 
-class DetailsLabel(Label):
+class WitnessDetailsLabel(Label):
     class Clicked(Message):
         """Message send when DetailsLabel is clicked."""
 
@@ -65,61 +65,6 @@ class DetailsLabel(Label):
     @on(Click)
     def clicked(self) -> None:
         self.post_message(self.Clicked())
-
-
-class WitnessDetailsWidget(Static):
-    BORDER_TITLE = "WITNESS DETAILS"
-
-
-class DetailsScreen(ModalScreen[None], CliveWidget):
-    BINDINGS = [Binding("escape,f3", "request_quit", "Close")]
-
-    def __init__(self, witness_name: str) -> None:
-        super().__init__()
-        self.__witness_name = witness_name
-
-    def on_mount(self) -> None:
-        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.refresh_witness_data())
-
-    def compose(self) -> ComposeResult:
-        widget = WitnessDetailsWidget()
-        widget.loading = True
-        yield widget
-
-    @work(name="governance update modal details")
-    async def refresh_witness_data(self) -> None:
-        wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
-
-        if wrapper.error_occurred:
-            new_witness_data = f"Unable to retrieve witness information:\n{wrapper.error}"
-        else:
-            witness = wrapper.result_or_raise
-            url = witness.url
-            created = humanize_datetime(witness.created)
-            missed_blocks = witness.total_missed
-            last_block = witness.last_confirmed_block_num
-            price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate)
-            version = witness.running_version
-            new_witness_data = f"""\
-            === Time of the query: {humanize_datetime(datetime.now().replace(microsecond=0))} ===
-                url: {url}
-                created: {created}
-                missed blocks: {missed_blocks}
-                last block: {last_block}
-                price feed: {price_feed}
-                version: {version}\
-            """
-
-        with self.app.batch_update():
-            await self.query("*").remove()
-            await self.mount(WitnessDetailsWidget(new_witness_data))
-
-    def action_request_quit(self) -> None:
-        self.app.pop_screen()
-
-    @on(Click)
-    def close_screen_by_click(self) -> None:
-        self.app.pop_screen()
 
 
 class WitnessNameLabel(Label, CliveWidget):
@@ -172,11 +117,11 @@ class Witness(GovernanceTableRow[WitnessData]):
             classes=f"witness-name-{self.evenness}",
         )
         yield Label(str(self.row_data.votes), classes=f"witness-votes-{self.evenness}")
-        yield DetailsLabel(classes=f"witness-details-{self.evenness}")
+        yield WitnessDetailsLabel(classes=f"witness-details-{self.evenness}")
 
-    @on(DetailsLabel.Clicked)
+    @on(WitnessDetailsLabel.Clicked)
     async def action_show_details(self) -> None:
-        await self.app.push_screen(DetailsScreen(witness_name=self.row_data.name))
+        await self.app.push_screen(WitnessDetailsScreen(witness_name=self.row_data.name))
 
     @property
     def action_identifier(self) -> str:
