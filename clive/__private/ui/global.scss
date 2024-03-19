@@ -2,17 +2,6 @@
   display: none;
 }
 
-AlarmDisplay {
-  text-style: bold;
-  background: $error-lighten-3;
-  padding: 0 1;
-  color: $text;
-}
-
-.-no-alarm {
-  background: $success-lighten-3;
-}
-
 Tabs:focus .underline--bar {
   background: $foreground 100%;
 }

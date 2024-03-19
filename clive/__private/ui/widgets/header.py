@@ -40,6 +40,19 @@ class HeaderIcon(TextualHeaderIcon):
 
 
 class AlarmDisplay(DynamicLabel):
+    DEFAULT_CSS = """
+    AlarmDisplay {
+        text-style: bold;
+        background: $error-lighten-3;
+        padding: 0 1;
+        color: $text;
+
+        &.-no-alarm {
+            background: $success-lighten-3;
+        }
+    }
+    """
+
     def __init__(
         self,
         account_getter: Callable[[ProfileData], Iterable[Account]],
