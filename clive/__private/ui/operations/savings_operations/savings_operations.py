@@ -123,7 +123,7 @@ class PendingTransfer(CliveWidget):
         yield Label(Asset.to_legacy(self.__transfer.amount), classes=even)
         yield Label(str(self.__realized_on), classes=odd)
         yield Label(self.__transfer.memo, classes=even)
-        yield CliveButton("Cancel", id_="delete-transfer-button")
+        yield CliveButton("Cancel", variant="error", id_="delete-transfer-button")
 
     @property
     def __realized_on(self) -> str:
