@@ -19,6 +19,7 @@ from clive.exceptions import ScreenNotFoundError
 if TYPE_CHECKING:
     from collections.abc import Iterator
     from types import TracebackType
+    from typing import Literal
 
     from typing_extensions import Self
 
@@ -49,8 +50,6 @@ class World:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self.__communication = Communication()
-
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
@@ -59,7 +58,7 @@ class World:
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
 
-        self._node = Node(self._profile_data, self.__communication)
+        self._node = Node(self._profile_data)
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -88,9 +87,20 @@ class World:
         max_attempts: int = Communication.DEFAULT_ATTEMPTS,
         timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
+        target: Literal["beekeeper", "node", "all"] = "all",
     ) -> Iterator[None]:
         """Allows to temporarily change connection details."""
-        with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
+        contexts_to_enter = []
+        if target in ("beekeeper", "all"):
+            contexts_to_enter.append(
+                self.beekeeper.modified_connection_details(max_attempts, timeout_secs, pool_time_secs)
+            )
+        if target in ("node", "all"):
+            contexts_to_enter.append(self.node.modified_connection_details(max_attempts, timeout_secs, pool_time_secs))
+
+        with contextlib.ExitStack() as stack:
+            for context in contexts_to_enter:
+                stack.enter_context(context)
             yield
 
     async def setup(self) -> Self:
@@ -111,7 +121,6 @@ class World:
 
     async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         beekeeper = Beekeeper(
-            communication=self.__communication,
             remote_endpoint=remote_endpoint,
             notify_closing_wallet_name_cb=lambda: self.profile_data.name,
         )

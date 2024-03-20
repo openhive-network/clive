@@ -99,34 +99,31 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     """Doesn't matter if mode is different than search_by_pattern."""
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        # This is due to receiving large json and counting aiohttp await response.json().
-        # In future, the total timeout should be changed to modify the read timeout only.
-        with self.node.modified_connection_details(timeout_secs=6):
-            async with self.node.batch() as node:
-                gdpo = await node.api.database_api.get_dynamic_global_properties()
+        async with self.node.batch() as node:
+            gdpo = await node.api.database_api.get_dynamic_global_properties()
 
-                witness_votes = await node.api.database_api.list_witness_votes(
-                    start=(self.account_name, ""),
-                    limit=self.MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR,
-                    order="by_account_witness",
+            witness_votes = await node.api.database_api.list_witness_votes(
+                start=(self.account_name, ""),
+                limit=self.MAX_POSSIBLE_NUMBER_OF_WITNESSES_VOTED_FOR,
+                order="by_account_witness",
+            )
+
+            top_witnesses = await node.api.database_api.list_witnesses(
+                start=(self.MAX_POSSIBLE_NUMBER_OF_VOTES, ""),
+                limit=self.TOP_WITNESSES_HARD_LIMIT,
+                order="by_vote_name",
+            )
+
+            witnesses_by_name: WitnessesList | None = None
+
+            if self.mode == "search_by_pattern":
+                witnesses_by_name = await node.api.database_api.list_witnesses(
+                    start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
+                    limit=self.search_by_pattern_limit,
+                    order="by_name",
                 )
 
-                top_witnesses = await node.api.database_api.list_witnesses(
-                    start=(self.MAX_POSSIBLE_NUMBER_OF_VOTES, ""),
-                    limit=self.TOP_WITNESSES_HARD_LIMIT,
-                    order="by_vote_name",
-                )
-
-                witnesses_by_name: WitnessesList | None = None
-
-                if self.mode == "search_by_pattern":
-                    witnesses_by_name = await node.api.database_api.list_witnesses(
-                        start=self.witness_name_pattern if self.witness_name_pattern is not None else "",
-                        limit=self.search_by_pattern_limit,
-                        order="by_name",
-                    )
-
-                return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
+            return HarvestedDataRaw(gdpo, witness_votes, top_witnesses, witnesses_by_name)
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         in_search_by_name_mode = self.mode == "search_by_pattern"

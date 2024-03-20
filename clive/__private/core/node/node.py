@@ -3,8 +3,9 @@ from __future__ import annotations
 from abc import abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
+from clive.__private.config import settings
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
@@ -170,9 +171,13 @@ class _BatchNode(BaseNode):
 
 
 class Node(BaseNode):
-    def __init__(self, profile_data: ProfileData, communication: Communication | None = None) -> None:
+    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = settings.get(
+        "node.communication_total_timeout_secs", Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS
+    )
+
+    def __init__(self, profile_data: ProfileData) -> None:
         self.__profile_data = profile_data
-        self.__communication = communication or Communication()
+        self.__communication = Communication(timeout_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.api = Apis(self)
         self.__network_type = ""
 
@@ -194,7 +199,7 @@ class Node(BaseNode):
     def modified_connection_details(
         self,
         max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
     ) -> Iterator[None]:
         """Allows to temporarily change connection details."""

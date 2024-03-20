@@ -77,33 +77,32 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     status: Statuses = DEFAULT_STATUS
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        with self.node.modified_connection_details(timeout_secs=6):
-            async with self.node.batch() as node:
-                gdpo = await node.api.database_api.get_dynamic_global_properties()
-                proposal_votes = await node.api.database_api.list_proposal_votes(
-                    start=[self.account_name],
-                    limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
-                    order="by_voter_proposal",
-                    order_direction=self.order_direction,
-                    status=self.status,
-                )
+        async with self.node.batch() as node:
+            gdpo = await node.api.database_api.get_dynamic_global_properties()
+            proposal_votes = await node.api.database_api.list_proposal_votes(
+                start=[self.account_name],
+                limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
+                order="by_voter_proposal",
+                order_direction=self.order_direction,
+                status=self.status,
+            )
 
-                order: DatabaseApi.SORT_TYPES
-                if self.order == "by_total_votes_with_voted_first":
-                    order = "by_total_votes"
-                elif self.order in self.Orders.__args__:
-                    order = self.order
-                else:
-                    raise ValueError(f"Unknown order: {self.order}")
+            order: DatabaseApi.SORT_TYPES
+            if self.order == "by_total_votes_with_voted_first":
+                order = "by_total_votes"
+            elif self.order in self.Orders.__args__:
+                order = self.order
+            else:
+                raise ValueError(f"Unknown order: {self.order}")
 
-                searched_proposals = await node.api.database_api.list_proposals(
-                    start=[],
-                    limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
-                    order=order,
-                    order_direction=self.order_direction,
-                    status=self.status,
-                )
-                return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
+            searched_proposals = await node.api.database_api.list_proposals(
+                start=[],
+                limit=self.MAX_SEARCHED_PROPOSALS_HARD_LIMIT,
+                order=order,
+                order_direction=self.order_direction,
+                status=self.status,
+            )
+            return HarvestedDataRaw(gdpo, searched_proposals, proposal_votes)
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         return SanitizedData(

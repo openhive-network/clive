@@ -61,6 +61,9 @@ ExportedKeys = list[dict[str, str]]
 class Beekeeper:
     # We have 500ms time period protection on ulocking wallet, so we use 600ms to make sure that wallet is unlocked.
     UNLOCK_INTERVAL: Final[float] = 0.6
+    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = settings.get(
+        "beekeeper.communication_total_timeout_secs", Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS
+    )
 
     class ConnectionFileData(CliveBaseModel):
         type_: str = Field(alias="type")
@@ -75,7 +78,6 @@ class Beekeeper:
     def __init__(
         self,
         *,
-        communication: Communication | None = None,
         remote_endpoint: Url | None = None,
         run_in_background: bool = False,
         notify_closing_wallet_name_cb: Callable[[], str] | None = None,
@@ -86,7 +88,7 @@ class Beekeeper:
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError
 
-        self.__communication = communication or Communication()
+        self.__communication = Communication(timeout_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.__run_in_background = run_in_background
         self.is_running = False
         self.is_starting = False
@@ -187,7 +189,7 @@ class Beekeeper:
     def modified_connection_details(
         self,
         max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
     ) -> Iterator[None]:
         """Allows to temporarily change connection details."""
