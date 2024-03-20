@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, ScrollableContainer, Vertical
+from textual.containers import Horizontal, ScrollableContainer, Vertical, Container, Grid
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -29,8 +29,6 @@ class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
 
 class PowerUp(TabPane, OperationActionBindings):
     """TabPane with all content about power up."""
-
-    DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self, title: TextType):
         """

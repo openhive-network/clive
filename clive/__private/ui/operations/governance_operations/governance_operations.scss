@@ -1,15 +1,7 @@
 Governance {
-  TabbedContent {
-    height: 1fr;
-
     Tab {
       width: 1fr;
     }
-
-    ContentSwitcher {
-      height: 1fr;
-    }
-  }
 
   .vote-actions {
     width: 1fr;

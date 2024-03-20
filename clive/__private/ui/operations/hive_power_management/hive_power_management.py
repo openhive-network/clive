@@ -47,17 +47,6 @@ class HivePowerManagement(OperationBaseScreen):
     def create_left_panel(self) -> ComposeResult:
         with HivePowerDataProvider() as provider:
             yield BigTitle("hive power management")
-            with Horizontal(id="hive-power-info"):
-                yield CliveDataTable(
-                    HpInfoTableHeader(),
-                    HpInfoTableOwnedRow(),
-                    HpInfoTableReceivedRow(),
-                    HpInfoTableDelegatedRow(),
-                    HpInfoTablePowerDownRow(),
-                    HpInfoTableEffectiveRow(),
-                )
-                yield WithdrawalInfo(provider)
-            yield APR(provider)
             with CliveTabbedContent():
                 yield PowerUp(POWER_UP_TAB_LABEL)
                 yield PowerDown(POWER_DOWN_TAB_LABEL)

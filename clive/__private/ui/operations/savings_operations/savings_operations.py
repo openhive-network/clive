@@ -16,6 +16,7 @@ from clive.__private.ui.operations.operation_summary.cancel_transfer_from_saving
 )
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
@@ -44,12 +45,8 @@ odd = "-odd"
 even = "-even"
 
 
-class ScrollablePart(ScrollableContainer, can_focus=False):
+class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
     pass
-
-
-class Body(Grid):
-    """Holds all places using to create transfers from/to savings."""
 
 
 class SavingsBalances(AccountReferencingWidget):
@@ -203,14 +200,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         return self.app.world.profile_data.working_account.name
 
     def compose(self) -> ComposeResult:
-        yield Static("Choose type of operation", id="savings-transfer-header")
-        with RadioSet(id="operation-type-choose"):
-            yield self.__to_button
-            yield self.__from_button
-
-        yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
-        yield self._transfer_time_reminder
-        with ScrollablePart(), Body():
+        with ScrollablePart():
             yield self._to_account_input
             yield self._amount_input
             yield self._memo_input
@@ -266,7 +256,8 @@ class Savings(OperationBaseScreen, CartBinding):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        yield BigTitle("Savings operations")
-        with SavingsDataProvider(), CliveTabbedContent():
-            yield SavingsInfo(title="savings info")
-            yield SavingsTransfers(title="transfer")
+        with SavingsDataProvider():
+            yield BigTitle("Savings operations")
+            with CliveTabbedContent():
+                yield SavingsInfo(title="savings info")
+                yield SavingsTransfers(title="transfer")

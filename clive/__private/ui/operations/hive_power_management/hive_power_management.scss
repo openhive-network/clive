@@ -1,78 +1,17 @@
-$row-color-1: $accent;
-$row-color-2: $accent-lighten-1;
-$table-header-color: $primary-background;
-$table-row-title-color: $background-lighten-2;
-
 HivePowerManagement {
+  ScrollableContainer {
+    border: solid red;
+  }
+
   TabbedContent {
-    height: 1fr;
-
-    Tab {
-      width: 1fr;
-    }
-
-    ContentSwitcher {
-      height: 1fr;
-    }
+    border: solid red;
   }
 
-  #hive-power-info {
-    height: 6;
-  }
-
-  WithdrawalInfo {
+  Tab {
     width: 1fr;
   }
 
-  #loading-static {
-    margin-top: 1;
-    background: $primary;
-  }
-
-  CliveDataTable {
-    margin-right: 2;
-    width: 2fr;
-    height: auto;
-
-    HpInfoTableHeader {
-      height: auto;
-
-      Static {
-        text-style: bold;
-        text-align: center;
-      }
-
-      #shares-name-header {
-        background: $table-header-color;
-        width: 2fr;
-      }
-
-      .shares-balance-header {
-        background: $table-header-color;
-        width: 3fr;
-      }
-    }
-
-    RowTitle {
-      text-style: bold;
-      background: $table-row-title-color;
-      width: 2fr;
-      text-align: center;
-    }
-
-    .shares-balance-cell {
-      text-style: none;
-      text-style: bold;
-      width: 3fr;
-      text-align: right;
-    }
-
-    .odd-row {
-      background: $row-color-1;
-    }
-
-    .even-row {
-      background: $row-color-2;
-    }
+  HivePowerDataProvider {
+    height: 1fr;
   }
 }
