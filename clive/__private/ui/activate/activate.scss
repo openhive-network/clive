@@ -1,9 +1,8 @@
 Activate {
-  DialogContainer {
+  DialogContainer DialogBody {
     layout: grid;
     grid-gutter: 1;
     grid-rows: auto;
-    height: auto;
   }
 
   ButtonsContainer {

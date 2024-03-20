@@ -1,8 +1,12 @@
 DialogContainer {
   align: center middle;
-  margin: 4 8;
-  border: tall $background;
-  background: $panel;
-  padding: 1 2;
-  height: 100%;
+
+  DialogBody {
+    align: center middle;
+    border: tall $background;
+    background: $panel;
+    padding: 1 2;
+    width: 80vw;
+    height: 80vh;
+  }
 }
