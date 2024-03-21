@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Grid, VerticalScroll
+from textual.containers import Container, Grid
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_operation_name
-from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -47,7 +47,7 @@ class CartItemsAmount(DynamicLabel):
         return "CART IS EMPTY"
 
 
-class CartItemsContainer(VerticalScroll, CanFocusWithScrollbarsOnly):
+class CartItemsContainer(ScrollablePartFocusable):
     """A container that holds the cart items."""
 
 

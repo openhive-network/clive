@@ -21,7 +21,6 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 )
 from clive.__private.ui.operations.governance_operations.common_governance.governance_tab_pane import (
     GovernanceTabPane,
-    ScrollablePart,
 )
 from clive.__private.ui.operations.governance_operations.common_governance.governance_table import (
     GovernanceListHeader,
@@ -37,6 +36,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:

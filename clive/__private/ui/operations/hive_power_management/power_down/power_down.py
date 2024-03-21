@@ -4,7 +4,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, ScrollableContainer
+from textual.containers import Horizontal
 from textual.widgets import Pretty, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
@@ -28,6 +28,7 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests imp
 from clive.__private.ui.widgets.generous_button import GenerousButton
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.notice import Notice
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
@@ -40,10 +41,6 @@ if TYPE_CHECKING:
 
 
 class PlaceTaker(Static):
-    pass
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 

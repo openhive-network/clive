@@ -4,13 +4,13 @@ import contextlib
 from abc import abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
-from textual.containers import Horizontal, VerticalScroll
+from textual.containers import Horizontal
 from textual.css.query import NoMatches
 from textual.widgets import Label, Static
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
+from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -58,7 +58,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         pass
 
 
-class GovernanceActions(VerticalScroll, CanFocusWithScrollbarsOnly):
+class GovernanceActions(ScrollablePartFocusable):
     """Contains a table of actions to be performed after confirmation."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)

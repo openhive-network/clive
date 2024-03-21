@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from textual.containers import Grid, ScrollableContainer
+from textual.containers import Grid
 from textual.message import Message
 from textual.widgets import Static
 
@@ -14,6 +14,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -21,10 +22,6 @@ if TYPE_CHECKING:
 
 class Body(Grid):
     """Container for body."""
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class SubTitle(Static):

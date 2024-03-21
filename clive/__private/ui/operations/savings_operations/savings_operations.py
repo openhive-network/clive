@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Container, Grid, Horizontal, ScrollableContainer, Vertical
+from textual.containers import Container, Grid, Horizontal, Vertical
 from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -25,6 +25,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.notice import Notice
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.exceptions import RequestIdError
 from clive.models import Asset
 from schemas.operations import (
@@ -42,10 +43,6 @@ if TYPE_CHECKING:
 
 odd = "-odd"
 even = "-even"
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class Body(Grid):
@@ -202,17 +199,17 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         return self.app.world.profile_data.working_account.name
 
     def compose(self) -> ComposeResult:
-        yield Static("Choose type of operation", id="savings-transfer-header")
-        with RadioSet(id="operation-type-choose"):
-            yield self.__to_button
-            yield self.__from_button
-
-        yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
-        yield self._transfer_time_reminder
-        with ScrollablePart(), Body():
-            yield self._to_account_input
-            yield self._amount_input
-            yield self._memo_input
+        with ScrollablePart():
+            yield Static("Choose type of operation", id="savings-transfer-header")
+            with RadioSet(id="operation-type-choose"):
+                yield self.__to_button
+                yield self.__from_button
+            yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
+            yield self._transfer_time_reminder
+            with Body():
+                yield self._to_account_input
+                yield self._amount_input
+                yield self._memo_input
 
     @on(RadioSet.Changed)
     def visibility_of_transfer_time_reminder(self, event: RadioSet.Changed) -> None:

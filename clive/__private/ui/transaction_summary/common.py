@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
+from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Label, Select, Static
 
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
@@ -16,6 +16,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
 from clive.exceptions import NoItemSelectedError
@@ -31,10 +32,6 @@ if TYPE_CHECKING:
 
 class StaticPart(Container):
     """Static part of the screen."""
-
-
-class ScrollablePart(ScrollableContainer, can_focus=True):
-    """Scrollable part of the screen."""
 
 
 class SubTitle(Label):
@@ -114,7 +111,7 @@ class TransactionSummaryCommon(BaseScreen):
 
         self._transaction = transaction
         self.__transaction_metadata_container = TransactionMetadataContainer()
-        self.__scrollable_part = ScrollablePart()
+        self.__scrollable_part = ScrollablePartFocusable()
         self._select_key = SelectKey()
 
     @property

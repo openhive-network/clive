@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import ScrollableContainer
 from textual.message import Message
 from textual.widgets import Static
 
@@ -19,6 +18,7 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -36,10 +36,6 @@ class StaticColumn(Static):
 
 class ColumnLayout(Static):
     """Holds column order."""
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 odd = "-odd"

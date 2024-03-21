@@ -3,13 +3,14 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING, ClassVar
 
-from textual.containers import Grid, ScrollableContainer
+from textual.containers import Grid
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -30,7 +31,7 @@ class OperationSummary(OperationBaseScreen, OperationActionBindings, AbstractCla
 
     def create_left_panel(self) -> ComposeResult:
         yield BigTitle(self.BIG_TITLE)
-        with ScrollableContainer(), Body():
+        with ScrollablePartFocusable(), Body():
             yield from self.content()
 
     @abstractmethod

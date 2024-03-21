@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, ScrollableContainer, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.hive_vests_conversions import hive_to_vests, vests_to_hive
@@ -24,6 +24,7 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests imp
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.models import Asset
 from schemas.operations import DelegateVestingSharesOperation
@@ -37,10 +38,6 @@ if TYPE_CHECKING:
 
 
 class PlaceTaker(Static):
-    pass
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
     pass
 
 

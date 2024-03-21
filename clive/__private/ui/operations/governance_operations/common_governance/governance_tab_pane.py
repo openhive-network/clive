@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from textual import on
-from textual.containers import ScrollableContainer
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -12,10 +11,6 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.operations.governance_operations.common_governance.governance_table import (
     GovernanceTableRow,
 )
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class GovernanceTabPane(TabPane, OperationActionBindings):

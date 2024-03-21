@@ -2,17 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, ScrollableContainer
+from textual.containers import Container
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
 
-class DialogBody(ScrollableContainer, can_focus=False):
+class DialogBody(ScrollablePart):
     """A container for the body of the dialog. It will be scrollable if needed."""
 
 

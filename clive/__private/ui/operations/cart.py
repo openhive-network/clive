@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, ScrollableContainer
+from textual.containers import Container
 from textual.css.query import NoMatches
 from textual.message import Message
 from textual.widgets import Static
@@ -18,6 +18,7 @@ from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -62,10 +63,6 @@ class ButtonDelete(CliveButton):
 
 class StaticPart(Container):
     """Container for the static part of the screen - title, global buttons and table header."""
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    """Container used for holding operation items."""
 
 
 class CartItem(ColumnLayout, CliveWidget):

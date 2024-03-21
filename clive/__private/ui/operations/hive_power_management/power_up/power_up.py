@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, ScrollableContainer, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -12,6 +12,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hive_asset_amount_input import HiveAssetAmountInput
 from clive.__private.ui.widgets.notice import Notice
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 from schemas.operations import TransferToVestingOperation as TransferToVesting
 
@@ -20,10 +21,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models import Asset
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class PowerUp(TabPane, OperationActionBindings):

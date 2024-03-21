@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 import inflection
 from textual import on
 from textual.binding import Binding
-from textual.containers import VerticalScroll
 from textual.widgets import TabPane
 
 from clive.__private.core.commands.load_transaction import LoadTransactionError
@@ -16,6 +15,7 @@ from clive.__private.ui.operations.cart_based_screen.cart_based_screen import Ca
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select_file import SelectFile
 
 if TYPE_CHECKING:
@@ -45,10 +45,6 @@ class OperationButton(CliveButton):
     @staticmethod
     def __humanize_class_name(class_name: str) -> str:
         return inflection.humanize(inflection.underscore(class_name))
-
-
-class ScrollablePart(VerticalScroll, can_focus=False):
-    pass
 
 
 class Operations(CartBasedScreen, CartBinding):

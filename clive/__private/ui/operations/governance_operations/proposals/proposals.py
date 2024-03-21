@@ -20,7 +20,6 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 )
 from clive.__private.ui.operations.governance_operations.common_governance.governance_tab_pane import (
     GovernanceTabPane,
-    ScrollablePart,
 )
 from clive.__private.ui.operations.governance_operations.common_governance.governance_table import (
     GovernanceListHeader,
@@ -29,6 +28,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
     GovernanceTableRow,
 )
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from schemas.operations.update_proposal_votes_operation import UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
@@ -240,7 +240,6 @@ class Proposals(GovernanceTabPane):
 
     def compose(self) -> ComposeResult:
         self.__proposals_table = ProposalsTable()
-
         with ScrollablePart(), Horizontal(classes="vote-actions"):
             yield self.__proposals_table
             yield ProposalsActions()

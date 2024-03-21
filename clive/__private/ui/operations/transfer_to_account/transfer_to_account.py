@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Callable
 from typing import TYPE_CHECKING
 
-from textual.containers import Grid, ScrollableContainer
+from textual.containers import Grid
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
@@ -14,6 +14,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.models import Asset
 from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation
@@ -23,10 +24,6 @@ if TYPE_CHECKING:
 
 
 LiquidAssetCallableT = Callable[[AssetAmount], Asset.LiquidT]
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    """All the scrollable content of the screen."""
 
 
 class Body(Grid):

@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import ScrollableContainer
 from textual.widgets import Checkbox
 
 from clive.__private.core.commands.find_accounts import AccountNotFoundError
@@ -14,16 +13,13 @@ from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.ui.shared.form import Form
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    """All the content of the screen, excluding the title."""
 
 
 class WorkingAccountCheckbox(Checkbox):

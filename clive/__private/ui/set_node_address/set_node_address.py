@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, Final
 from rich.highlighter import Highlighter
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, ScrollableContainer
+from textual.containers import Container
 from textual.widgets import Select, Static
 from textual.widgets._select import NoSelection
 
@@ -16,9 +16,9 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.can_focus_with_scrollbars_only import CanFocusWithScrollbarsOnly
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
 from schemas.jsonrpc import JSONRPCRequest
@@ -30,10 +30,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.ui.shared.form import Form
-
-
-class ScrollablePart(ScrollableContainer, CanFocusWithScrollbarsOnly):
-    """All the content of the screen, excluding the title."""
 
 
 class NodeSelector(Select[Url], CliveWidget):
@@ -101,7 +97,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
     def create_main_panel(self) -> ComposeResult:
         yield BigTitle("set node address")
-        with ScrollablePart():
+        with ScrollablePartFocusable():
             yield self.__selected_node
             yield Static()
             yield self.__nodes_list

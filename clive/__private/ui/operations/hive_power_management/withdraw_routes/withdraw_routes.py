@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, ScrollableContainer, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
@@ -23,6 +23,7 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
+from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 from schemas.operations import SetWithdrawVestingRouteOperation
 
@@ -32,10 +33,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
     from clive.models.aliased import WithdrawRouteSchema
-
-
-class ScrollablePart(ScrollableContainer, can_focus=False):
-    pass
 
 
 class PlaceTaker(Static):
