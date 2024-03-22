@@ -39,29 +39,24 @@ Savings {
     width: 1fr;
     height: auto;
 
-    DynamicLabel {
+    Static {
       text-style: bold;
       align: center middle;
       width: 1fr;
+      text-align: center;
     }
 
     #savings-title {
-      text-style: bold;
       column-span: 2;
       background: $accent-lighten-1;
-      text-align: center;
     }
 
     #savings-token-hbd {
-      text-style: bold;
       background: $primary-darken-1;
-      text-align: center;
     }
 
     #savings-token-hive {
-      text-style: bold;
       background: $primary-darken-2;
-      text-align: center;
     }
 
     .savings-value-hive {
