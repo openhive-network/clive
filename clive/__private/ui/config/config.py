@@ -6,6 +6,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static
 
+from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
@@ -30,10 +31,15 @@ class Config(BaseScreen):
             yield Static("Please choose which configuration you would like to make:", id="hint")
             yield CliveButton("Select node", id_="select-node")
             yield CliveButton("Manage key aliases", id_="manage-key-aliases")
+            yield CliveButton("Accounts management", id_="account-list-management")
 
     @on(CliveButton.Pressed, "#select-node")
     def push_set_node_address_screen(self) -> None:
         self.app.push_screen(SetNodeAddress())
+
+    @on(CliveButton.Pressed, "#account-list-management")
+    def push_account_list_management_screen(self) -> None:
+        self.app.push_screen(AccountListManagement())
 
     @CliveScreen.try_again_after_activation()
     @on(CliveButton.Pressed, "#manage-key-aliases")
