@@ -13,9 +13,9 @@ from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
@@ -32,17 +32,6 @@ if TYPE_CHECKING:
 
 class StaticPart(Container):
     """Static part of the screen."""
-
-
-class SubTitle(Label):
-    DEFAULT_CSS = """
-    SubTitle {
-        color: $text-muted;
-        text-style: bold;
-        content-align: center middle;
-        width: 1fr;
-    }
-    """
 
 
 class ActionsContainer(Horizontal):
@@ -139,8 +128,7 @@ class TransactionSummaryCommon(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with StaticPart():
-            yield BigTitle("transaction summary")
-            yield SubTitle(self._get_subtitle())
+            yield LocationIndicator("transaction summary", self._get_subtitle())
             yield self.__transaction_metadata_container
             with ActionsContainer():
                 yield from self._actions_container_content()

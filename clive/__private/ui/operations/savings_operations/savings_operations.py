@@ -15,7 +15,6 @@ from clive.__private.ui.operations.operation_summary.cancel_transfer_from_saving
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
@@ -31,6 +30,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
@@ -262,7 +262,7 @@ class Savings(OperationBaseScreen, CartBinding):
     ]
 
     def create_left_panel(self) -> ComposeResult:
-        yield BigTitle("Savings operations")
+        yield LocationIndicator("Savings operations")
         with SavingsDataProvider(), CliveTabbedContent():
             yield SavingsInfo(title="savings info")
             yield SavingsTransfers(title="transfer")

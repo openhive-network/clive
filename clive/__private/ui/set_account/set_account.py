@@ -10,9 +10,9 @@ from clive.__private.storage.accounts import Account
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.exceptions import FormValidationError
 
@@ -39,7 +39,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         self._working_account_checkbox = WorkingAccountCheckbox()
 
     def create_main_panel(self) -> ComposeResult:
-        yield BigTitle("set account name")
+        yield LocationIndicator("set account name")
         with ScrollablePart():
             yield self._account_name_input
             yield self._working_account_checkbox

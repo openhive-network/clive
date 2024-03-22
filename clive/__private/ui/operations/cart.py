@@ -14,10 +14,10 @@ from clive.__private.core.formatters.humanize import humanize_operation_details,
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -224,7 +224,7 @@ class Cart(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with StaticPart():
-            yield BigTitle("operations cart")
+            yield LocationIndicator("operations cart")
             yield CartHeader()
 
         with self.__scrollable_part:

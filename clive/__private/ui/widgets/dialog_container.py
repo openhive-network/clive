@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Container
 
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.widgets.big_title import BigTitle
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 
@@ -40,7 +40,7 @@ class DialogContainer(Container, can_focus=False):
 
     def on_mount(self) -> None:
         if self.__big_title:
-            self.query_one(DialogBody).mount(BigTitle(self.__big_title), before=0)
+            self.query_one(DialogBody).mount(LocationIndicator(self.__big_title), before=0)
 
     def compose_add_child(self, widget: Widget) -> None:
         self._dialog_children.append(widget)

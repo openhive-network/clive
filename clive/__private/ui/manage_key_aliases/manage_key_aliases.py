@@ -13,11 +13,11 @@ from clive.__private.ui.manage_key_aliases.edit_key_alias import EditKeyAlias
 from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAlias
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -102,7 +102,7 @@ class ManageKeyAliases(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
-        yield BigTitle("key aliases")
+        yield LocationIndicator("key aliases")
         yield KeyAliasesHeader()
         with self.__scrollable_part:
             for idx, key in enumerate(self.app.world.profile_data.working_account.keys):

@@ -48,7 +48,7 @@ class TransactionSummaryFromFile(TransactionSummaryCommon):
         self.app.push_screen(SelectFileToSaveTransaction())
 
     def _get_subtitle(self) -> RenderableType:
-        return f"(Loaded from [blue]{self.__file_path}[/])"
+        return f"Loaded from [blue]{self.__file_path}[/]"
 
     def _actions_container_content(self) -> ComposeResult:
         if self.__transaction.is_signed():

@@ -15,7 +15,7 @@ class TransactionSummaryFromCart(TransactionSummaryCommon):
         super().__init__()
 
     def _get_subtitle(self) -> RenderableType:
-        return "(Built from cart)"
+        return "Built from cart"
 
     async def _initialize_transaction(self) -> Transaction:
         return await self.__build_transaction()

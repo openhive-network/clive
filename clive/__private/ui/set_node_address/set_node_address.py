@@ -15,9 +15,9 @@ from clive.__private.core.communication import Communication
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
@@ -96,7 +96,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
         self.__nodes_list = NodesList()
 
     def create_main_panel(self) -> ComposeResult:
-        yield BigTitle("set node address")
+        yield LocationIndicator("set node address")
         with ScrollablePartFocusable():
             yield self.__selected_node
             yield Static()

@@ -11,9 +11,9 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -50,7 +50,7 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
         self._public_key_input = LabelizedInput("Public key", self._default_public_key() or "will be calculated here")
 
     def create_main_panel(self) -> ComposeResult:
-        yield BigTitle(self.BIG_TITLE)
+        yield LocationIndicator(self.BIG_TITLE)
         yield from self._content_after_big_title()
         with ScrollablePart(), Body():
             yield self._key_alias_input
