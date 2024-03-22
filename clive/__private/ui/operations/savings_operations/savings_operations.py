@@ -71,7 +71,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
     def __init__(self) -> None:
         super().__init__(account=self.app.world.profile_data.working_account)
 
-        self.interest_container = Container(id="interest-rate")
+        self.interest_data_container = Container(id="interest-data-container")
 
     @property
     def provider(self) -> SavingsDataProvider:
@@ -80,7 +80,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
     def compose(self) -> ComposeResult:
         with Horizontal():
             yield SavingsBalances(self._account)
-            with self.interest_container:
+            with self.interest_data_container:
                 yield LoadingIndicator()
 
     def on_mount(self) -> None:
@@ -101,12 +101,12 @@ class SavingsInterestInfo(AccountReferencingWidget):
             return f"APR interest rate for HBD($) is {content.hbd_interest_rate / 100}%"
 
         with self.app.batch_update():
-            self.interest_container.query("*").remove()
-            self.interest_container.mount_all(
+            self.interest_data_container.query("*").remove()
+            self.interest_data_container.mount_all(
                 [
-                    self.create_dynamic_label(get_interest_date, "interest-rate-date"),
-                    self.create_dynamic_label(get_estimated_interest, "interest-rate-value"),
-                    self.create_dynamic_label(get_interest_rate_for_hbd, "interest-rate-value-percent"),
+                    self.create_dynamic_label(get_interest_date, "interest-info-row-odd"),
+                    self.create_dynamic_label(get_estimated_interest, "interest-info-row-even"),
+                    self.create_dynamic_label(get_interest_rate_for_hbd, "interest-info-row-odd"),
                 ]
             )
 
@@ -195,11 +195,11 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            yield Static("Choose type of operation", id="savings-transfer-header")
+            yield Static("Choose type of operation", id="savings-transfer-type-header")
             with RadioSet(id="operation-type-choose"):
                 yield self._to_button
                 yield self._from_button
-            yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
+            yield SavingsBalances(self.app.world.profile_data.working_account)
             yield self._transfer_time_reminder
             with Body():
                 yield self._to_account_input
