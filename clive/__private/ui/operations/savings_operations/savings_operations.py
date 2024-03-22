@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Container, Grid, Horizontal, Vertical
+from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime
@@ -17,6 +17,13 @@ from clive.__private.ui.operations.operation_summary.cancel_transfer_from_saving
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_checkerboard_table import (
+    EVEN_CLASS_NAME,
+    ODD_CLASS_NAME,
+    CliveCheckerboardTable,
+    CliveCheckerBoardTableCell,
+    CliveCheckerboardTableRow,
+)
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -39,10 +46,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
     from clive.models.aliased import SavingsWithdrawals
-
-
-odd = "-odd"
-even = "-even"
 
 
 class Body(Grid):
@@ -108,69 +111,61 @@ class SavingsInterestInfo(AccountReferencingWidget):
             )
 
 
-class PendingTransfer(CliveWidget):
-    """class which represents one pending transfer."""
-
-    def __init__(self, transfer: SavingsWithdrawals):
-        super().__init__()
-        self.__transfer = transfer
-
+class PendingTransfersHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Label(self.__transfer.to, classes=odd)
-        yield Label(Asset.to_legacy(self.__transfer.amount), classes=even)
-        yield Label(str(self.__realized_on), classes=odd)
-        yield Label(self.__transfer.memo, classes=even)
-        yield CliveButton("Cancel", variant="error", id_="delete-transfer-button")
-
-    @property
-    def __realized_on(self) -> str:
-        return humanize_datetime(self.__transfer.complete)
-
-    @on(Button.Pressed, "#delete-transfer-button")
-    def move_to_cancel_transfer(self) -> None:
-        self.app.push_screen(CancelTransferFromSavings(self.__transfer))
-
-
-class PendingHeader(Horizontal):
-    def compose(self) -> ComposeResult:
-        yield Label("To", classes=even)
-        yield Label("Amount", classes=odd)
-        yield Label("Realized on (UTC)", classes=even)
-        yield Label("Memo", classes=odd)
+        yield Label("To", classes=ODD_CLASS_NAME)
+        yield Label("Amount", classes=EVEN_CLASS_NAME)
+        yield Label("Realized on (UTC)", classes=ODD_CLASS_NAME)
+        yield Label("Memo", classes=EVEN_CLASS_NAME)
         yield Label()
 
 
-class PendingTransfers(Vertical):
+class PendingTransfer(CliveCheckerboardTableRow):
+    def __init__(self, pending_transfer: SavingsWithdrawals):
+        super().__init__(
+            CliveCheckerBoardTableCell(pending_transfer.to),
+            CliveCheckerBoardTableCell(Asset.to_legacy(pending_transfer.amount)),
+            CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete)),
+            CliveCheckerBoardTableCell(pending_transfer.memo),
+            CliveCheckerBoardTableCell(CliveButton("Cancel", variant="error", id_="delete-transfer-button")),
+        )
+        self._pending_transfer = pending_transfer
+
+    @on(Button.Pressed, "#delete-transfer-button")
+    def push_operation_summary_screen(self) -> None:
+        self.app.push_screen(CancelTransferFromSavings(self._pending_transfer))
+
+
+class PendingTransfers(CliveCheckerboardTable):
+    def __init__(self) -> None:
+        super().__init__(
+            Static("", id="pending-transfers-table-title"),
+            PendingTransfersHeader(),
+            dynamic=True,
+        )
+        self._previous_pending_transfers: list[SavingsWithdrawals] | None = None
+
+    def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:
+        self._previous_pending_transfers = content.pending_transfers
+
+        self._title: Static
+        self._title.update(f"Current pending transfers (amount: {len(content.pending_transfers)})")
+        return [PendingTransfer(pending_transfer) for pending_transfer in content.pending_transfers]
+
+    def get_no_content_available_widget(self) -> Static:
+        return Static("You have no pending transfers", id="no-pending-transfers-info")
+
+    @property
+    def is_anything_to_display(self) -> bool:
+        return len(self.provider.content.pending_transfers) != 0
+
+    @property
+    def check_if_should_be_updated(self) -> bool:
+        return self._previous_pending_transfers != self.provider.content.pending_transfers
+
     @property
     def provider(self) -> SavingsDataProvider:
         return self.screen.query_one(SavingsDataProvider)
-
-    def compose(self) -> ComposeResult:
-        yield LoadingIndicator()
-
-    def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=self.__sync_pending_transfers)
-
-    def __sync_pending_transfers(self, content: SavingsData) -> None:
-        if not self.provider.is_content_set:
-            return
-
-        pending_transfers = content.pending_transfers
-        if not pending_transfers:
-            with self.app.batch_update():
-                self.query("*").remove()
-                self.mount(Static("No transfers from savings now", classes="number-of-transfers"))
-            return
-
-        things_to_mount = [
-            Static(f"Number of transfers from savings now: {len(pending_transfers)}", classes="number-of-transfers"),
-            PendingHeader(),
-            *[PendingTransfer(transfer) for transfer in pending_transfers],
-        ]
-
-        with self.app.batch_update():
-            self.query("*").remove()
-            self.mount_all(things_to_mount)
 
 
 class SavingsInfo(TabPane, CliveWidget):
