@@ -183,8 +183,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self._memo_input = MemoInput()
         self._to_account_input = AccountNameInput("To", value=self.default_receiver)
 
-        self.__to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
-        self.__from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
+        self._to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
+        self._from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
 
         self._transfer_time_reminder = Notice("transfer from savings will take 3 days")
         self._transfer_time_reminder.visible = False
@@ -197,8 +197,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         with ScrollablePart():
             yield Static("Choose type of operation", id="savings-transfer-header")
             with RadioSet(id="operation-type-choose"):
-                yield self.__to_button
-                yield self.__from_button
+                yield self._to_button
+                yield self._from_button
             yield SavingsBalances(self.app.world.profile_data.working_account, classes="transfer-savings-balances")
             yield self._transfer_time_reminder
             with Body():
@@ -227,18 +227,18 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             "memo": self._memo_input.value_or_error,
         }
 
-        if self.__to_button.value:
+        if self._to_button.value:
             return TransferToSavingsOperation(**data)
 
         try:
-            request_id = self.__create_request_id()
+            request_id = self._create_request_id()
         except RequestIdError as error:
             self.notify(str(error), severity="error")
             return None
 
         return TransferFromSavingsOperation(**data, request_id=request_id)
 
-    def __create_request_id(self) -> int:
+    def _create_request_id(self) -> int:
         provider = self.screen.query_one(SavingsDataProvider)
         savings_data = provider.content
 
