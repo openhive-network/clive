@@ -17,20 +17,37 @@ async def open_and_unlock_wallet(beekeeper: Beekeeper, wallet: WalletInfo) -> No
     await beekeeper.api.unlock(wallet_name=wallet.name, password=wallet.password)
 
 
-async def test_api_get_public_keys(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
+@pytest.mark.parametrize("explicit_wallet_name", [False, True])
+async def test_api_get_public_keys(
+    beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT, explicit_wallet_name: bool
+) -> None:
     """Test test_api_get_public_keys will test beekeeper_api.get_public_keys api call."""
     # ARRANGE
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=5)
     wallet = wallets[0]
+
+    explicit_wallet_name_param = {"wallet_name": wallet.name} if explicit_wallet_name else {}
+
     for pair in wallet.keys.pairs:
         await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.private_key.value)
 
     # ACT
-    response = (await beekeeper.api.get_public_keys()).keys
+    response = (await beekeeper.api.get_public_keys(**explicit_wallet_name_param)).keys
     bk_public_keys = [pub.public_key for pub in response]
 
     # ASSERT
     assert bk_public_keys == wallet.keys.get_public_keys(), "All keys should be available."
+
+
+async def test_api_get_public_keys_with_different_wallet_name(
+    beekeeper: Beekeeper, wallet: WalletInfo  # noqa: ARG001
+) -> None:
+    # ARRANGE
+    not_existing_wallet_name = "not-existing"
+
+    # ACT & ASSERT
+    with pytest.raises(CommunicationError, match=f"Wallet {not_existing_wallet_name} is locked"):
+        await beekeeper.api.get_public_keys(wallet_name=not_existing_wallet_name)
 
 
 async def test_api_get_public_keys_with_many_wallets(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
