@@ -15,13 +15,8 @@ from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.core.url import Url
-from clive_local_tools.testnet_block_log import (
-    get_alternate_chain_spec_path,
-    get_block_log,
-    get_config,
-    get_time_offset,
-)
-from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import run_node
+from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
 
@@ -74,14 +69,7 @@ async def world() -> AsyncIterator[TextualWorld]:
 
 @pytest.fixture()
 async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
-    config_lines = get_config().write_to_lines()
-    block_log = get_block_log()
-    alternate_chain_spec_path = get_alternate_chain_spec_path()
-    node = tt.RawNode()
-    node.config.load_from_lines(config_lines)
-    arguments = ["--alternate-chain-spec", str(alternate_chain_spec_path)]
-    time_offset = get_time_offset()
-    node.run(replay_from=block_log, arguments=arguments, time_offset=time_offset)
+    node = run_node(use_faketime=True)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])

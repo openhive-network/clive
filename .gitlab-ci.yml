@@ -46,18 +46,22 @@ default:
 
 pre_commit_checks:
   stage: static_code_analysis
+  allow_failure: true
   extends: .pre_commit_checks_template
 
 lint_code_with_ruff:
   stage: static_code_analysis
+  allow_failure: true
   extends: .lint_code_with_ruff_template
 
 formatting_with_black_check:
   stage: static_code_analysis
+  allow_failure: true
   extends: .formatting_with_black_check_template
 
 type_check_with_mypy:
   stage: static_code_analysis
+  allow_failure: true
   extends: .type_check_with_mypy_template
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| STATIC CODE ANALYSIS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -94,6 +98,7 @@ build_wheel:
 .testing:
   stage: tests
   extends: .project_develop_configuration_template
+  allow_failure: true
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true

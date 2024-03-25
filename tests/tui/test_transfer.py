@@ -8,7 +8,7 @@ from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 from clive.models import Asset
-from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.data.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.activate import activate
 from clive_local_tools.tui.checkers import assert_is_screen_active
 from clive_local_tools.tui.choose_asset_token import choose_asset_token

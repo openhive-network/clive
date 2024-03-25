@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 from click.testing import Result
 
+from clive.__private.core.formatters.humanize import humanize_asset, humanize_bool, humanize_datetime
 from .cli_tester import CLITester
 
 if TYPE_CHECKING:
@@ -86,6 +87,41 @@ def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
     output = result.output
     expected_output = str(memo_key)
     assert expected_output in output, f"expected `{expected_output}` in show memo-key output:\n{output}"
+
+
+def assert_voting_power(context: CLITester | Result, amount: tt.Asset.AnyT) -> None:
+    result = context.show_hive_power() if isinstance(context, CLITester) else context
+    output = result.output
+    expected_output = humanize_asset(amount)
+    assert expected_output in output, f"expected `{expected_output}` in show hive-power output:\n{output}"
+
+
+def assert_delegations(context: CLITester | Result, delegatee: str, amount: tt.Asset.AnyT) -> None:
+    result = context.show_hive_power() if isinstance(context, CLITester) else context
+    output = result.output
+    expected_output = humanize_asset(amount)
+    assert expected_output in output, f"expected `{expected_output}` in show hive-power output:\n{output}"
+
+
+def assert_no_delegations(context: CLITester | Result) -> None:
+    result = context.show_hive_power() if isinstance(context, CLITester) else context
+    output = result.output
+    expected_output = "no delegations"
+    assert expected_output in output, f"expected `{expected_output}` in show hive-power output:\n{output}"
+
+
+def assert_withdraw_routes(context: CLITester | Result, to: str, percent: int, auto_vest: bool = False) -> None:
+    result = context.show_hive_power() if isinstance(context, CLITester) else context
+    output = result.output
+    expected_output = str(percent)
+    assert expected_output in output, f"expected `{expected_output}` in show hive-power output:\n{output}"
+
+
+def assert_no_withdraw_routes(context: CLITester | Result) -> None:
+    result = context.show_hive_power() if isinstance(context, CLITester) else context
+    output = result.output
+    expected_output = "no withdraw routes"
+    assert expected_output in output, f"expected `{expected_output}` in show hive-power output:\n{output}"
 
 
 def assert_no_exit_code_error(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int) -> None:

@@ -7,12 +7,22 @@ from random import uniform
 
 import test_tools as tt
 
-from clive_local_tools.testnet_block_log.constants import (
+from clive_local_tools.data.constants import (
     CREATOR_ACCOUNT,
+    EMPTY_ACCOUNT,
     PROPOSALS,
     WATCHED_ACCOUNTS,
     WITNESSES,
     WORKING_ACCOUNT,
+    WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
+    WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
+    WORKING_ACCOUNT_VEST_BALANCE,
+    WATCHED_ACCOUNT_HIVE_LIQUID_BALANCE,
+    WATCHED_ACCOUNT_HBD_LIQUID_BALANCE,
+    WATCHED_ACCOUNT_VEST_BALANCE,
+    WORKING_ACCOUNT_HIVE_SAVINGS_BALANCE,
+    WORKING_ACCOUNT_HBD_SAVINGS_BALANCE,
+    WORKING_ACCOUNT_HBD_SAVINGS_WITHDRAWAL,
 )
 
 
@@ -104,31 +114,31 @@ def create_working_account(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating working account...")
     wallet.create_account(
         WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(100_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=tt.Asset.Test(100_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=tt.Asset.Tbd(100_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hives=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        vests=WORKING_ACCOUNT_VEST_BALANCE.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hbds=WORKING_ACCOUNT_HBD_LIQUID_BALANCE.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
     )
 
 
 def prepare_savings(wallet: tt.Wallet) -> None:
     tt.logger.info("Preparing savings of working account...")
     wallet.api.transfer_to_savings(
+        CREATOR_ACCOUNT.name,
         WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Test(100).as_nai(),
+        WORKING_ACCOUNT_HIVE_SAVINGS_BALANCE.as_nai(),
         "Supplying HIVE savings",
     )
     wallet.api.transfer_to_savings(
+        CREATOR_ACCOUNT.name,
         WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Tbd(123).as_nai(),
+        WORKING_ACCOUNT_HBD_SAVINGS_BALANCE.as_nai(),
         "Supplying HBD savings",
     )
     wallet.api.transfer_from_savings(
         WORKING_ACCOUNT.name,
         0,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Tbd(23).as_nai(),
+        CREATOR_ACCOUNT.name,
+        WORKING_ACCOUNT_HBD_SAVINGS_WITHDRAWAL.as_nai(),
         "Withdrawing HBD savings",
     )
 
@@ -138,15 +148,15 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
     for account in WATCHED_ACCOUNTS:
         wallet.create_account(
             account.name,
-            hives=tt.Asset.Test(1_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            vests=tt.Asset.Test(1_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            hbds=tt.Asset.Tbd(1_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hives=WATCHED_ACCOUNT_HIVE_LIQUID_BALANCE.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            vests=WATCHED_ACCOUNT_VEST_BALANCE.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hbds=WATCHED_ACCOUNT_HBD_LIQUID_BALANCE.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
         )
 
 
-def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
-    tt.logger.info("Sending test transfer...")
-    wallet.api.transfer(WORKING_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(1).as_nai(), memo="memo")
+def create_empty_account(wallet: tt.Wallet) -> None:
+    tt.logger.info("Creating empty account...")
+    wallet.create_account(EMPTY_ACCOUNT.name)
 
 
 def main() -> None:
@@ -168,7 +178,7 @@ def main() -> None:
     create_working_account(wallet)
     prepare_savings(wallet)
     create_watched_accounts(wallet)
-    send_test_transfer_from_working_account(wallet)
+    create_empty_account(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
     node.wait_number_of_blocks(21)
