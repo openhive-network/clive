@@ -23,6 +23,7 @@ from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
 from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
@@ -104,6 +105,15 @@ class Commands(Generic[WorldT]):
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
                 wallet=self._world.profile_data.name,
+            )
+        )
+
+    async def is_password_valid(self, *, password: str) -> CommandWithResultWrapper[bool]:
+        return await self.__surround_with_exception_handlers(
+            IsPasswordValid(
+                beekeeper=self._world.beekeeper,
+                wallet=self._world.profile_data.name,
+                password=password,
             )
         )
 
