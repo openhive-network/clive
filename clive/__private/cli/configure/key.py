@@ -36,7 +36,7 @@ async def remove_key(
         False,
         help="Remove the key from the Beekeeper as well.",
     ),
-    password: Optional[str] = options.password_optional_option,
+    password: str = options.password_option,
 ) -> None:
     """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
     from clive.__private.cli.commands.configure.key import RemoveKey
