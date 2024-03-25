@@ -107,12 +107,6 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def sign_transaction(
-        self, *, transaction: dict[str, Any], chain_id: str, public_key: str, sig_digest: str
-    ) -> model.SignTransaction:
-        raise NotImplementedError
-
-    @api
     async def get_info(self) -> model.GetInfo:
         raise NotImplementedError
 
