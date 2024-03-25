@@ -101,7 +101,9 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def sign_digest(self, *, sig_digest: str, public_key: str) -> model.SignDigest:
+    async def sign_digest(
+        self, *, sig_digest: str, public_key: str, wallet_name: str | None = None
+    ) -> model.SignDigest:
         raise NotImplementedError
 
     @api

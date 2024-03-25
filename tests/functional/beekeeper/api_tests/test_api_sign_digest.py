@@ -18,16 +18,34 @@ EXPECTED_SIGNATURE: Final[str] = (
 )
 
 
-async def test_api_sign_digest(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
+@pytest.mark.parametrize("explicit_wallet_name", [False, True])
+async def test_api_sign_digest(beekeeper: Beekeeper, wallet_no_keys: WalletInfo, explicit_wallet_name: str) -> None:
     """Test test_api_sign_digest will test beekeeper_api.sign_digest api call."""
     # ARRANGE
+    explicit_wallet_name_param = {"wallet_name": wallet_no_keys.name} if explicit_wallet_name else {}
     await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
 
     # ACT
-    signature = (await beekeeper.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=PUBLIC_KEY)).signature
+    signature = (
+        await beekeeper.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=PUBLIC_KEY, **explicit_wallet_name_param)
+    ).signature
 
     # ASSERT
     assert signature == EXPECTED_SIGNATURE, "Signatures should match."
+
+
+async def test_api_sign_digest_with_different_wallet_name(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
+    # ARRANGE
+    not_existing_wallet_name = "not-existing"
+    await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
+
+    # ACT & ASSERT
+    with pytest.raises(
+        CommunicationError, match=f"Public key {PUBLIC_KEY} not found in {not_existing_wallet_name} wallet"
+    ):
+        await beekeeper.api.sign_digest(
+            sig_digest=DIGEST_TO_SIGN, public_key=PUBLIC_KEY, wallet_name=not_existing_wallet_name
+        )
 
 
 async def test_api_sign_digest_with_deleted_key(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
