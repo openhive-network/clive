@@ -119,3 +119,7 @@ class BeekeeperApi:
     @api
     async def close_session(self, *, token: None | str = None) -> model.EmptyResponse:
         raise NotImplementedError
+
+    @api
+    async def has_matching_private_key(self, *, wallet_name: str, public_key: str) -> model.HasMatchingPrivateKey:
+        raise NotImplementedError
