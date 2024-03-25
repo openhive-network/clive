@@ -97,7 +97,7 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def get_public_keys(self) -> model.GetPublicKeys:
+    async def get_public_keys(self, wallet_name: str | None = None) -> model.GetPublicKeys:
         raise NotImplementedError
 
     @api
