@@ -6,6 +6,7 @@ import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
+from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.keys import (
     KeyAliasAlreadyInUseError,
@@ -68,24 +69,16 @@ class RemoveKey(WorldBasedCommand):
     alias: str
     from_beekeeper: bool = False
     """Indicates whether to remove the key from the Beekeeper as well or just the alias association from the profile."""
-    password: str | None = None
-    """Required only when from_beekeeper is True."""
-
-    @property
-    def password_ensure(self) -> str:
-        assert self.password is not None, "Password is required at this point."
-        return self.password
-
-    async def _configure(self) -> None:
-        self.use_beekeeper = self.from_beekeeper
+    password: str
 
     async def _run(self) -> None:
-        if self.from_beekeeper and not self.password:
-            raise CLIPrettyError("Password is required when removing a key from the Beekeeper.", errno.EINVAL)
-
         profile_data = self.world.profile_data
         if not profile_data.is_working_account_set():
             raise CLIWorkingAccountIsNotSetError(profile_data)
+
+        wrapper = await self.world.commands.is_password_valid(password=self.password)
+        if not wrapper.result_or_raise:
+            raise InvalidPasswordError
 
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
 
@@ -107,7 +100,7 @@ class RemoveKey(WorldBasedCommand):
         self.world.profile_data.working_account.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
-        activate_wrapper = await self.world.commands.activate(password=self.password_ensure)
+        activate_wrapper = await self.world.commands.activate(password=self.password)
         activate_wrapper.raise_if_error_occurred()
-        remove_wrapper = await self.world.commands.remove_key(password=self.password_ensure, key_to_remove=key)
+        remove_wrapper = await self.world.commands.remove_key(password=self.password, key_to_remove=key)
         remove_wrapper.raise_if_error_occurred()
