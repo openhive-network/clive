@@ -111,7 +111,9 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def create_session(self, *, notifications_endpoint: str, salt: str) -> model.CreateSession:
+    async def create_session(
+        self, *, notifications_endpoint: str | None = None, salt: str | None = None
+    ) -> model.CreateSession:
         raise NotImplementedError
 
     @api
