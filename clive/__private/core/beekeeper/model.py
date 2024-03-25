@@ -43,6 +43,10 @@ class ListWallets(BeekeeperResponse):
     wallets: list[ListWallets.WalletDetails]
 
 
+class ListCreatedWallets(ListWallets):
+    pass
+
+
 class BeekeeperPublicKeyType(CliveBaseModel):
     public_key: str
 
