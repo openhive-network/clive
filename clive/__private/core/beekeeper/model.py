@@ -71,3 +71,7 @@ class GetInfo(BeekeeperResponse):
     @classmethod
     def time_validate(cls, v: str) -> datetime:
         return datetime.fromisoformat(v)
+
+
+class HasMatchingPrivateKey(BeekeeperResponse):
+    exists: bool
