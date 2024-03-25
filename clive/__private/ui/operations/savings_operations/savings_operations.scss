@@ -141,7 +141,7 @@ Savings {
   Body {
     grid-rows: auto;
     grid-gutter: 1;
-    margin: 1 2 0 2;
+    margin-top: 1; /* right and left margins are removed because of the: https://github.com/Textualize/textual/issues/4332 */
     background: $panel;
     padding: 2 4;
     height: auto;
