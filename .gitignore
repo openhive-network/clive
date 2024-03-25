@@ -202,6 +202,9 @@ logs/
 # To ignore symbolic link to this binary
 beekeeper
 
+# But don't ignore paths like tests/functional/beekeeper/something or similar
+!*beekeeper/
+
 # Do not display dirty state of the repository during CI
 *.env
 hived-binaries/
