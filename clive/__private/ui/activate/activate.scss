@@ -1,28 +1,22 @@
 Activate {
-  DialogContainer DialogBody {
-    layout: grid;
-    grid-gutter: 1;
-    grid-rows: auto;
+  LabelizedInput {
+    margin-bottom: 1;
+  }
+
+  ActiveModeTimeContainer {
+    margin: 1 0;
+    height: auto;
   }
 
   ButtonsContainer {
     height: auto;
-  }
 
-  Button {
-    width: 1fr;
-  }
+    Button {
+      width: 1fr;
+    }
 
-  #activate-button {
-    margin-right: 1;
-  }
-
-  Checkbox {
-    column-span: 2;
-    margin: 0 1;
-  }
-
-  #active-mode-input--input {
-    width: 25;
+    #activate-button {
+      margin-right: 1;
+    }
   }
 }

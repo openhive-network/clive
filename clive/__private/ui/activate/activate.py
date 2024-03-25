@@ -8,7 +8,7 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.validation import Integer
-from textual.widgets import Checkbox, Static
+from textual.widgets import Checkbox
 
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 
 ActivationResultCallbackT = Callable[[bool], Awaitable[None]]
 ActivationResultCallbackOptionalT = ActivationResultCallbackT | None
+
+
+class ActiveModeTimeContainer(Horizontal):
+    """Container for the active mode time switch and input."""
 
 
 class ButtonsContainer(Horizontal):
@@ -57,9 +61,9 @@ class Activate(BaseScreen):
         with DialogContainer():
             yield self._name_input
             yield self._password_input
-            yield self._permanent_active_mode_switch
-            yield self._temporary_active_mode_input
-            yield Static()
+            with ActiveModeTimeContainer():
+                yield self._permanent_active_mode_switch
+                yield self._temporary_active_mode_input
             with ButtonsContainer():
                 yield CliveButton("Ok", variant="success", id_="activate-button")
                 yield CliveButton("Cancel", variant="error", id_="cancel-button")
