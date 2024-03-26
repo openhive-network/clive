@@ -1,10 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
-
-from textual.validation import Length
+from typing import TYPE_CHECKING
 
 from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.validators.set_password_validator import SetPasswordValidator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -14,9 +13,6 @@ if TYPE_CHECKING:
 
 class SetPasswordInput(TextInput):
     """An input for setting a Clive password."""
-
-    PASSWORD_MIN_LENGTH: Final[int] = 8
-    PASSWORD_MAX_LENGTH: Final[int] = 64
 
     def __init__(
         self,
@@ -43,9 +39,7 @@ class SetPasswordInput(TextInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             password=True,
-            validators=[
-                Length(minimum=self.PASSWORD_MIN_LENGTH, maximum=self.PASSWORD_MAX_LENGTH),
-            ],
+            validators=[SetPasswordValidator()],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
