@@ -64,6 +64,7 @@ class Beekeeper:
     DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = settings.get(
         "beekeeper.communication_total_timeout_secs", Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS
     )
+    DEFAULT_INITIALIZATION_TIMEOUT_SECONDS: Final[float] = settings.get("beekeeper.initialization_timeout_secs", 5.0)
 
     class ConnectionFileData(CliveBaseModel):
         type_: str = Field(alias="type")
@@ -275,7 +276,9 @@ class Beekeeper:
     def detach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:
         self.__notification_server.detach_wallet_closing_listener(listener)
 
-    async def __start(self, *, timeout: float = 5.0, arguments: BeekeeperCLIArguments | None = None) -> None:
+    async def __start(
+        self, *, timeout: float = DEFAULT_INITIALIZATION_TIMEOUT_SECONDS, arguments: BeekeeperCLIArguments | None = None
+    ) -> None:
         logger.info("Starting Beekeeper...")
         self.is_starting = True
         await self.__start_notifications_server()
@@ -297,7 +300,9 @@ class Beekeeper:
         await self.close()
         await self.launch()
 
-    async def __run_beekeeper(self, *, timeout: float = 5.0, arguments: BeekeeperCLIArguments | None = None) -> None:
+    async def __run_beekeeper(
+        self, *, timeout: float = DEFAULT_INITIALIZATION_TIMEOUT_SECONDS, arguments: BeekeeperCLIArguments | None = None
+    ) -> None:
         self.__executable.run(arguments=arguments)
 
         start_task = asyncio.create_task(self.__wait_for_beekeeper_to_start(timeout))

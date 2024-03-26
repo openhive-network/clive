@@ -10,6 +10,7 @@ LOG_DEBUG_PERIOD = 1
 PATH = "./beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper executable
 REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 3
+INITIALIZATION_TIMEOUT_SECS = 5
 
 [default.node]
 # chain_id that will be set as default for all the profiles.
