@@ -26,6 +26,18 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
     async def _run(self) -> None:
         """The actual implementation of the command."""
 
+    async def validate_inside_context_manager(self) -> None:
+        """
+        Validate the command inside the context manager.
+
+        If the command is invalid, raise an CLIPrettyError (or it's derivative) exception.
+
+        Raises
+        ------
+        CLIPrettyError: If the command is invalid.
+        """
+        return
+
     async def _should_run_in_context_manager(self) -> bool:
         """A flag indicating whether the command should be prepared before running."""
         return True
@@ -43,4 +55,6 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
         self.__context_manager_instance = await self._create_context_manager_instance()
 
         async with self._context_manager_instance:
+            if not self._skip_validation:
+                await self.validate_inside_context_manager()
             await self._run()
