@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from textual.widget import Widget
 
 
-class DialogBody(ScrollablePart):
-    """A container for the body of the dialog. It will be scrollable if needed."""
+class DialogBody(Container):
+    """A container for the body of the dialog."""
 
 
 class DialogContainer(Container, can_focus=False):
@@ -28,7 +28,7 @@ class DialogContainer(Container, can_focus=False):
         self._dialog_children: list[Widget] = []
 
     def compose(self) -> ComposeResult:
-        with DialogBody():
+        with ScrollablePart(), DialogBody():
             yield from self._dialog_children
 
     def on_mount(self) -> None:

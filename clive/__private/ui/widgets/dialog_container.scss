@@ -1,6 +1,11 @@
 DialogContainer {
   align: center middle;
 
+  ScrollablePart {
+    align: center middle;
+    height: 1fr;
+  }
+
   DialogBody {
     align: center middle;
     border: tall $background;
