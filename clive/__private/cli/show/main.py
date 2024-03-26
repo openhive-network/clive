@@ -284,3 +284,14 @@ async def show_hive_power(
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowHivePower(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="new-account-token", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_new_account_token(
+    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+) -> None:
+    """Shows number of possessed tokens for account creation. To get account creation fee use command clive show chain."""
+    from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowNewAccountToken(**common.as_dict(), account_name=account_name).run()

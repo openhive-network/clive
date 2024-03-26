@@ -59,7 +59,8 @@ flowchart LR
         ProcessDelegations --> ProcessDelegationsSet[set]
         ProcessDelegations --> ProcessDelegationsRemove[remove]
 
-        Process -->|"Not implemented yet"|ProcessClaimToken[claim-token]
+        Process --> ProcessClaim(claim)
+        ProcessClaim --> ProcessClaimNewAccountToken[new-account-tokentoken]
 
         Process --> ProcessVoteWitness(vote-witness)
         ProcessVoteWitness --> ProcessVoteWitnessAdd[add]
@@ -99,6 +100,8 @@ flowchart LR
         ShowProposal ~~~|"proposal:<br>- show details of chosen proposal"| ShowProposal
 
         Show --> ShowHivePower[hive-power]
+
+        Show --> ShowNewAccountToken[new-account-token]
 
         Show --> ShowPending(pending)
         ShowPending --> ShowPendingPowerDown[power-down]
