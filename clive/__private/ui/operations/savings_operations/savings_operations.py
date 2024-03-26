@@ -138,11 +138,12 @@ class PendingTransfer(CliveCheckerboardTableRow):
 
 
 class PendingTransfers(CliveCheckerboardTable):
+    ATTRIBUTE_TO_WATCH = "_content"
+
     def __init__(self) -> None:
         super().__init__(
             Static("", id="pending-transfers-table-title"),
             PendingTransfersHeader(),
-            dynamic=True,
         )
         self._previous_pending_transfers: list[SavingsWithdrawals] | None = None
 
@@ -158,14 +159,14 @@ class PendingTransfers(CliveCheckerboardTable):
 
     @property
     def is_anything_to_display(self) -> bool:
-        return len(self.provider.content.pending_transfers) != 0
+        return len(self.object_to_watch.content.pending_transfers) != 0
 
     @property
     def check_if_should_be_updated(self) -> bool:
-        return self._previous_pending_transfers != self.provider.content.pending_transfers
+        return self._previous_pending_transfers != self.object_to_watch.content.pending_transfers
 
     @property
-    def provider(self) -> SavingsDataProvider:
+    def object_to_watch(self) -> SavingsDataProvider:
         return self.screen.query_one(SavingsDataProvider)
 
 

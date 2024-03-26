@@ -91,9 +91,12 @@ class PendingPowerDownHeader(Horizontal):
 
 
 class PendingPowerDown(CliveCheckerboardTable):
+    ATTRIBUTE_TO_WATCH = "_content"
+
     def __init__(self) -> None:
         super().__init__(
-            Static("Current power down", id="current-power-down-title"), PendingPowerDownHeader(), dynamic=True
+            Static("Current power down", id="current-power-down-title"),
+            PendingPowerDownHeader(),
         )
         self._previous_next_vesting_withdrawal: datetime = datetime.min
 
@@ -115,20 +118,22 @@ class PendingPowerDown(CliveCheckerboardTable):
     @on(CliveButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(
-            CancelPowerDown(self.provider.content.next_vesting_withdrawal, self.provider.content.next_power_down)
+            CancelPowerDown(
+                self.object_to_watch.content.next_vesting_withdrawal, self.object_to_watch.content.next_power_down
+            )
         )
 
     @property
     def is_anything_to_display(self) -> bool:
-        return humanize_datetime(self.provider.content.next_vesting_withdrawal) != "never"
+        return humanize_datetime(self.object_to_watch.content.next_vesting_withdrawal) != "never"
 
     @property
-    def provider(self) -> HivePowerDataProvider:
+    def object_to_watch(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
 
     @property
     def check_if_should_be_updated(self) -> bool:
-        return self.provider.content.next_vesting_withdrawal != self._previous_next_vesting_withdrawal
+        return self.object_to_watch.content.next_vesting_withdrawal != self._previous_next_vesting_withdrawal
 
 
 class PowerDown(TabPane, OperationActionBindings):

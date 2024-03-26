@@ -78,9 +78,12 @@ class Delegation(CliveCheckerboardTableRow):
 class DelegationsTable(CliveCheckerboardTable):
     """Table with delegations."""
 
+    ATTRIBUTE_TO_WATCH = "_content"
+
     def __init__(self) -> None:
         super().__init__(
-            Static("Current delegations", id="delegations-table-title"), DelegationsTableHeader(), dynamic=True
+            Static("Current delegations", id="delegations-table-title"),
+            DelegationsTableHeader(),
         )
         self._previous_delegations: list[VestingDelegation[Asset.Vests]] | None = None
 
@@ -94,14 +97,14 @@ class DelegationsTable(CliveCheckerboardTable):
 
     @property
     def check_if_should_be_updated(self) -> bool:
-        return self._previous_delegations != self.provider.content.delegations
+        return self._previous_delegations != self.object_to_watch.content.delegations
 
     @property
     def is_anything_to_display(self) -> bool:
-        return len(self.provider.content.delegations) != 0
+        return len(self.object_to_watch.content.delegations) != 0
 
     @property
-    def provider(self) -> HivePowerDataProvider:
+    def object_to_watch(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
 
 

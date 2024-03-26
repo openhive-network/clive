@@ -67,9 +67,12 @@ class WithdrawRoute(CliveCheckerboardTableRow):
 class WithdrawRoutesTable(CliveCheckerboardTable):
     """Table with WithdrawRoutes."""
 
+    ATTRIBUTE_TO_WATCH = "_content"
+
     def __init__(self) -> None:
         super().__init__(
-            Static("Current withdraw routes", id="withdraw-routes-table-title"), WithdrawRoutesHeader(), dynamic=True
+            Static("Current withdraw routes", id="withdraw-routes-table-title"),
+            WithdrawRoutesHeader(),
         )
         self._previous_withdraw_routes: list[WithdrawRouteSchema] | None = None
 
@@ -82,16 +85,16 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
         return Static("You have no withdraw routes", id="no-withdraw-routes-info")
 
     @property
-    def provider(self) -> HivePowerDataProvider:
+    def object_to_watch(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
 
     @property
     def check_if_should_be_updated(self) -> bool:
-        return self.provider.content.withdraw_routes != self._previous_withdraw_routes
+        return self.object_to_watch.content.withdraw_routes != self._previous_withdraw_routes
 
     @property
     def is_anything_to_display(self) -> bool:
-        return len(self.provider.content.withdraw_routes) != 0
+        return len(self.object_to_watch.content.withdraw_routes) != 0
 
     @property
     def working_account(self) -> str:

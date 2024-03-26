@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Final, Sequence
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Sequence
 
 from textual.containers import Container
 from textual.widget import Widget
@@ -12,7 +12,6 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 
 ODD_CLASS_NAME: Final[str] = "-odd-column"
 EVEN_CLASS_NAME: Final[str] = "-even-column"
@@ -25,7 +24,7 @@ class CliveCheckerboardTableError(CliveError):
 class InvalidDynamicDefinedError(CliveCheckerboardTableError):
     _MESSAGE = """
 You are trying to create a dynamic checkerboard table without overriding one of the mandatory properties or methods.
-Override it or set the `dynamic` parameter to False if you want to create a static table.
+Override it or unset the `ATTRIBUTE_TO_WATCH` class-var  if you want to create a static table.
 """
 
     def __init__(self) -> None:
@@ -35,7 +34,7 @@ Override it or set the `dynamic` parameter to False if you want to create a stat
 class InvalidStaticDefinedError(CliveCheckerboardTableError):
     _MESSAGE = """
 You are trying to create a static checkerboard table without overriding the mandatory `create_static_rows` methods.
-Override it or set the `dynamic` parameter to True if you want to create a dynamic table.
+Override it or set the `ATTRIBUTE_TO_WATCH` class-var if you want to create a dynamic table.
 """
 
     def __init__(self) -> None:
@@ -107,8 +106,8 @@ class CliveCheckerboardTable(CliveWidget):
 
     Dynamic usage
     -------------
-    1. Set `dynamic` to True in `__init__`
-    2. Override `provider` property
+    1. Change `ATTRIBUTE_TO_WATCH` class-var.
+    2. Override `object_to_watch` property.
     3. Override `check_if_should_be_updated`
     4. Override (optionally) `is_anything_to_display`
     5. Override `create_dynamic_rows`
@@ -142,31 +141,33 @@ class CliveCheckerboardTable(CliveWidget):
     }
     """
 
-    def __init__(self, title: Widget, header: Widget, dynamic: bool = False):
+    ATTRIBUTE_TO_WATCH: ClassVar[str] = ""
+    """attribute name to trigger an update of the table and to download new data"""
+
+    def __init__(self, title: Widget, header: Widget):
         super().__init__()
         self._title = title
         self._header = header
-        self._dynamic = dynamic
 
     def compose(self) -> ComposeResult:
-        if self._dynamic:
+        if self.should_be_dynamic:
             yield Static("Loading...", id="loading-static")
         else:
             self._mount_static_rows()
 
     def on_mount(self) -> None:
-        if self._dynamic:
-            self.watch(self.provider, "_content", self._mount_dynamic_rows)
+        if self.should_be_dynamic:
+            self.watch(self.object_to_watch, self.ATTRIBUTE_TO_WATCH, self._mount_dynamic_rows)
 
     def _mount_static_rows(self) -> None:
-        """Mount rows created in static mode (dynamic = False)."""
+        """Mount rows created in static mode."""
         rows = self.create_static_rows()
         self._set_evenness_styles(rows)
         self.mount_all([self._title, self._header, *rows])
 
     def _mount_dynamic_rows(self, content: Any) -> None:
-        """New rows are mounted when the data to be displayed has been changed."""
-        if not self._dynamic:
+        """New rows are mounted when the ATTRIBUTE_TO_WATCH has been changed."""
+        if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
         if content is None:  # data not received yet
@@ -188,30 +189,34 @@ class CliveCheckerboardTable(CliveWidget):
 
     def create_dynamic_rows(self, content: Any) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """
-        Override if dynamic is set to True.
+        Override this method when using dynamic table (ATTRIBUTE_TO_WATCH is set).
 
         Raises
         ------
-        InvalidDynamicDefinedError: When dynamic has been set to `True` without overriding the method.
+        InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
         """
-        if self._dynamic:
+        if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
         return [CliveCheckerboardTableRow(CliveCheckerBoardTableCell("Define `create_dynamic_rows` method!"))]
 
     def create_static_rows(self) -> Sequence[CliveCheckerboardTableRow]:
         """
-        Override if dynamic is set to False.
+        Override this method when using static table (ATTRIBUTE_TO_WATCH is not set).
 
         Raises
         ------
-        InvalidStaticDefinedError: When dynamic has been set to `False` without overriding the method.
+        InvalidStaticDefinedError: When ATTRIBUTE_TO_WATCH has not been set without overriding the method.
         """
-        if not self._dynamic:
+        if not self.should_be_dynamic:
             raise InvalidStaticDefinedError
         return [CliveCheckerboardTableRow(CliveCheckerBoardTableCell("Define `create_static_rows` method!"))]
 
     def get_no_content_available_widget(self) -> Widget:
         return Static("No content available")
+
+    @property
+    def should_be_dynamic(self) -> bool:
+        return bool(self.ATTRIBUTE_TO_WATCH)
 
     @property
     def check_if_should_be_updated(self) -> bool:
@@ -224,9 +229,9 @@ class CliveCheckerboardTable(CliveWidget):
 
         Raises
         ------
-        InvalidDynamicDefinedError: When dynamic has been set to `True` without overriding the property.
+        InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
         """
-        if self._dynamic:
+        if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
         return True
 
@@ -245,15 +250,15 @@ class CliveCheckerboardTable(CliveWidget):
                     cell.add_class(ODD_CLASS_NAME)
 
     @property
-    def provider(self) -> DataProvider[Any]:  # type: ignore[return]
+    def object_to_watch(self) -> Any:
         """
         Must be overridden by the child class when using dynamic table.
 
         Raises
         ------
-        InvalidDynamicDefinedError: When dynamic has been set to `True` without overriding the property.
+        InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the property.
         """
-        if self._dynamic:
+        if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
     @property
