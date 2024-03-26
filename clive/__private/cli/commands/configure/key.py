@@ -15,6 +15,7 @@ from clive.__private.core.keys import (
     PrivateKeyInvalidFormatError,
     PublicKeyAliased,
 )
+from clive.__private.validators.private_key_validator import PrivateKeyValidator
 from clive.__private.validators.public_key_alias_validator import PublicKeyAliasValidator
 
 
@@ -51,10 +52,14 @@ class AddKey(WorldBasedCommand):
             return
 
         key_manager = profile_data.working_account.keys
-        result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(self.alias)
+        alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(self.alias)
 
-        if not result.is_valid:
-            raise CLIPrettyError(f"Can't add alias: {result.failure_descriptions}", errno.EINVAL)
+        if not alias_result.is_valid:
+            raise CLIPrettyError(f"Can't add alias: {alias_result.failure_descriptions}", errno.EINVAL)
+
+        private_key_result = PrivateKeyValidator().validate(self.private_key_aliased.value)
+        if not private_key_result.is_valid:
+            raise CLIPrettyError(f"Can't add key: {private_key_result.failure_descriptions}", errno.EINVAL)
 
     async def _run(self) -> None:
         profile_data = self.world.profile_data
