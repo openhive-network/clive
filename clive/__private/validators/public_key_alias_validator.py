@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from textual.validation import Function, ValidationResult, Validator
+from textual.validation import Function, Length, ValidationResult, Validator
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import KeyManager
@@ -10,6 +10,9 @@ if TYPE_CHECKING:
 
 class PublicKeyAliasValidator(Validator):
     ALREADY_IN_USE_FAILURE_DESCRIPTION: Final[str] = "Alias is already in use."
+
+    MIN_LENGTH: Final[int] = 1
+    MAX_LENGTH: Final[int] = 50
 
     def __init__(self, key_manager: KeyManager, *, validate_like_adding_new: bool = False) -> None:
         super().__init__()
@@ -20,6 +23,7 @@ class PublicKeyAliasValidator(Validator):
         result = self.success()
 
         validators = [
+            Length(self.MIN_LENGTH, self.MAX_LENGTH),
             Function(self._validate_is_key_alias_available, self.ALREADY_IN_USE_FAILURE_DESCRIPTION),
         ]
 
