@@ -51,7 +51,7 @@ class AddKey(WorldBasedCommand):
             return
 
         key_manager = profile_data.working_account.keys
-        result = PublicKeyAliasValidator(key_manager, validate_if_already_exists=True).validate(self.alias)
+        result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(self.alias)
 
         if not result.is_valid:
             raise CLIPrettyError(f"Can't add alias: {result.failure_descriptions}", errno.EINVAL)

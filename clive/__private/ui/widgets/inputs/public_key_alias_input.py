@@ -53,7 +53,7 @@ class PublicKeyAliasInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            validators=[PublicKeyAliasValidator(key_manager, validate_if_already_exists=setting_key_alias)],
+            validators=[PublicKeyAliasValidator(key_manager, validate_like_adding_new=setting_key_alias)],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
