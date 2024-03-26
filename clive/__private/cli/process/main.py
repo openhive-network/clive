@@ -7,6 +7,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.hive_power.delegations import delegations
 from clive.__private.cli.process.hive_power.power_down import power_down
 from clive.__private.cli.process.hive_power.power_up import power_up
@@ -19,6 +20,7 @@ from clive.__private.cli.process.vote_witness import vote_witness
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
+process.add_typer(claim)
 process.add_typer(proxy)
 process.add_typer(savings)
 process.add_typer(get_update_authority_typer("owner"))
