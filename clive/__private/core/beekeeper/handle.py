@@ -8,7 +8,7 @@ from contextlib import contextmanager
 from http import HTTPStatus
 from pathlib import Path
 from time import perf_counter
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from pydantic import Field, validator
 
@@ -59,6 +59,9 @@ ExportedKeys = list[dict[str, str]]
 
 
 class Beekeeper:
+    # We have 500ms time period protection on ulocking wallet, so we use 600ms to make sure that wallet is unlocked.
+    UNLOCK_INTERVAL: Final[float] = 0.6
+
     class ConnectionFileData(CliveBaseModel):
         type_: str = Field(alias="type")
         address: str
@@ -231,7 +234,7 @@ class Beekeeper:
         return response_model
 
     async def __delay_on_unlock(self, endpoint: str) -> None:
-        seconds_to_wait = 0.6
+        seconds_to_wait = self.UNLOCK_INTERVAL
         endpoints_to_wait = ("beekeeper_api.unlock", "beekeeper_api.create_session")
 
         if endpoint not in endpoints_to_wait:
