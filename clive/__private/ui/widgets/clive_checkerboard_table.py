@@ -12,7 +12,6 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 
 ODD_CLASS_NAME: Final[str] = "-odd-column"
 EVEN_CLASS_NAME: Final[str] = "-even-column"
@@ -107,11 +106,12 @@ class CliveCheckerboardTable(CliveWidget):
 
     Dynamic usage
     -------------
-    1. Set `dynamic` to True in `__init__`
-    2. Override `provider` property
-    3. Override `check_if_should_be_updated`
-    4. Override (optionally) `is_anything_to_display`
-    5. Override `create_dynamic_rows`
+    1. Set `dynamic` to True in `__init__`.
+    2. Pass `attr_to_watch` to `__init__`.
+    3. Override `object_to_watch` property.
+    4. Override `check_if_should_be_updated`
+    5. Override (optionally) `is_anything_to_display`
+    6. Override `create_dynamic_rows`
 
     Static usage
     ------------
@@ -138,11 +138,12 @@ class CliveCheckerboardTable(CliveWidget):
     }
     """
 
-    def __init__(self, title: Widget, header: Widget, dynamic: bool = False):
+    def __init__(self, title: Widget, header: Widget, dynamic: bool = False, attr_to_watch: str = ""):
         super().__init__()
         self._title = title
         self._header = header
         self._dynamic = dynamic
+        self._attr_to_watch = attr_to_watch
 
     def compose(self) -> ComposeResult:
         if self._dynamic:
@@ -152,7 +153,7 @@ class CliveCheckerboardTable(CliveWidget):
 
     def on_mount(self) -> None:
         if self._dynamic:
-            self.watch(self.provider, "_content", self._mount_dynamic_rows, init=False)
+            self.watch(self.object_to_watch, self._attr_to_watch, self._mount_dynamic_rows, init=False)
 
     def _mount_static_rows(self) -> None:
         """Mount rows created in static mode (dynamic = False)."""
@@ -238,7 +239,7 @@ class CliveCheckerboardTable(CliveWidget):
                     cell.add_class(ODD_CLASS_NAME)
 
     @property
-    def provider(self) -> DataProvider[Any]:  # type: ignore[return]
+    def object_to_watch(self) -> Any:
         """
         Must be overridden by the child class when using dynamic table.
 
