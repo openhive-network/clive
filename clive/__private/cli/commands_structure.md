@@ -49,7 +49,9 @@ flowchart LR
 
         Process -->|"Not implemented yet"|ProcessPowerUp[power-up]
         Process -->|"Not implemented yet"|ProcessPowerDown[power-down]
-        Process -->|"Not implemented yet"|ProcessClaimToken[claim-token]
+
+        Process --> ProcessClaimAccount[claim-account]
+        Process --> ProcessClaimReward[claim-reward]
 
         Process --> ProcessVoteWitness(vote-witness)
         ProcessVoteWitness --> ProcessVoteWitnessAdd[add]

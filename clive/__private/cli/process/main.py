@@ -93,3 +93,41 @@ async def process_update_memo_key(
     operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name, offline=True)
     operation.add_callback(update_memo_key_callback)
     await operation.run()
+
+
+@process.command(name="claim-account", common_options=[OperationCommonOptions])
+async def process_claim_account(
+    ctx: typer.Context,  # noqa: ARG001
+    creator: str = options.account_name_option,
+    fee: str = typer.Option(..., help="idk", show_default=False),
+) -> None:
+    """Claims account creation."""
+    from clive.__private.cli.commands.process.process_claim_account import ProcessClaimAccount
+
+    common = OperationCommonOptions.get_instance()
+    await ProcessClaimAccount(
+        **common.as_dict(),
+        from_file=from_file,
+        force_unsign=force_unsign,
+        already_signed_mode=already_signed_mode,  # type: ignore [arg-type]
+    ).run()
+
+
+@process.command(name="claim-reward", common_options=[OperationCommonOptions])
+async def process_claim_reward(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
+    reward_hive: str = typer.Option("", help="idk", show_default=False),
+    reward_hbd: str = typer.Option("", help="idk", show_default=False),
+    reward_vests: str = typer.Option("", help="idk", show_default=False),
+) -> None:
+    """Claims reward for posts."""
+    from clive.__private.cli.commands.process.process_claim_reward import ProcessClaimReward
+
+    common = OperationCommonOptions.get_instance()
+    await ProcessClaimReward(
+        **common.as_dict(),
+        from_file=from_file,
+        force_unsign=force_unsign,
+        already_signed_mode=already_signed_mode,  # type: ignore [arg-type]
+    ).run()
