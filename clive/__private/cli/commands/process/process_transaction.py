@@ -5,6 +5,7 @@ from pathlib import Path
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.load_transaction import LoadTransaction
+from clive.__private.validators.path_validator import PathValidator
 from clive.models import Transaction
 
 
@@ -54,6 +55,9 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
         transaction = await self.__loaded_transaction
         self.__validate_signed_transaction() if transaction.is_signed() else self.__validate_unsigned_transaction()
+
+        self._validate_from_file_argument()
+
         await super().validate()
 
     def __validate_signed_transaction(self) -> None:
@@ -62,3 +66,8 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
     def __validate_unsigned_transaction(self) -> None:
         self._validate_if_broadcast_is_used_with_sign_and_password()
+
+    def _validate_from_file_argument(self) -> None:
+        result = PathValidator(mode="is_file").validate(str(self.from_file))
+        if not result.is_valid:
+            raise CLIPrettyError(f"Can't load transaction from file: {result.failure_descriptions}", errno.EINVAL)
