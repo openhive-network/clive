@@ -54,6 +54,7 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
 
         transaction = await self.__loaded_transaction
         self.__validate_signed_transaction() if transaction.is_signed() else self.__validate_unsigned_transaction()
+        await super().validate()
 
     def __validate_signed_transaction(self) -> None:
         if self.already_signed_mode == "error" and self.sign:

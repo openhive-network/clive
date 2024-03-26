@@ -17,6 +17,7 @@ from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, Alre
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.validators.path_validator import PathValidator
 from clive.models import Transaction
 
 
@@ -41,6 +42,14 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
+
+    async def validate(self) -> None:
+        if not self.save_file:
+            return
+
+        result = PathValidator(mode="can_be_file").validate(str(self.save_file))
+        if not result.is_valid:
+            raise CLIPrettyError(f"Can't save to file: {result.failure_descriptions}", errno.EINVAL)
 
     async def _configure(self) -> None:
         self.use_beekeeper = self.__is_beekeeper_required()
