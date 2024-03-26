@@ -4,10 +4,10 @@ import contextlib
 from contextlib import contextmanager
 from typing import TYPE_CHECKING, Any
 
+from beekeepy import async_beekeeper_factory, async_beekeeper_remote_factory
 from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
-from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
@@ -20,6 +20,8 @@ if TYPE_CHECKING:
     from collections.abc import Iterator
     from types import TracebackType
 
+    from beekeepy import AsyncBeekeeper
+    from helpy import HttpUrl
     from typing_extensions import Self
 
     from clive.core.url import Url
@@ -48,8 +50,6 @@ class World:
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
-
-        self.__communication = Communication()
 
         self._profile_data = self._load_profile(profile_name)
         self._app_state = AppState(self)
@@ -109,15 +109,10 @@ class World:
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
 
-    async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
-        beekeeper = Beekeeper(
-            communication=self.__communication,
-            remote_endpoint=remote_endpoint,
-            notify_closing_wallet_name_cb=lambda: self.profile_data.name,
-        )
-        beekeeper.attach_wallet_closing_listener(self)
-        await beekeeper.launch()
-        return beekeeper
+    async def __setup_beekeeper(self, *, remote_endpoint: HttpUrl | None = None) -> AsyncBeekeeper:
+        if remote_endpoint is not None:
+            return async_beekeeper_remote_factory(url_or_settings=remote_endpoint)
+        return async_beekeeper_factory()
 
     @property
     def profile_data(self) -> ProfileData:
