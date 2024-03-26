@@ -7,16 +7,22 @@ from clive.__private.cli.exceptions import (
     CLIWorkingAccountIsAlreadySetError,
     CLIWorkingAccountIsNotSetError,
 )
+from clive.__private.validators.account_name_validator import AccountNameValidator
 
 
 @dataclass(kw_only=True)
 class AddWorkingAccount(ProfileBasedCommand):
     account_name: str
 
-    async def _run(self) -> None:
+    async def validate_inside_context_manager(self) -> None:
         if self.profile_data.is_working_account_set():
             raise CLIWorkingAccountIsAlreadySetError(self.profile_data)
 
+        result = AccountNameValidator().validate(self.account_name)
+        if not result.is_valid:
+            raise CLIPrettyError(f"Can't use this account name: {result.failure_descriptions}", errno.EINVAL)
+
+    async def _run(self) -> None:
         self.profile_data.set_working_account(self.account_name)
 
 
