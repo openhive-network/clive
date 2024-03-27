@@ -7,7 +7,7 @@ from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_asset
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
-from clive.__private.ui.widgets.clive_data_table import CliveDataTableRow
+from clive.__private.ui.widgets.clive_data_table import CliveDataTable, CliveDataTableRow
 
 if TYPE_CHECKING:
     from typing import Final
@@ -20,13 +20,12 @@ if TYPE_CHECKING:
 class HpInfoTableRow(CliveDataTableRow):
     BALANCE_CELL_CLASS: Final[str] = "shares-balance-cell"
 
-    def __init__(self, title: str, classes: str | None):
+    def __init__(self, title: str):
         super().__init__(
             title,
             Static("loading...", classes=self.BALANCE_CELL_CLASS),
             Static("loading...", classes=self.BALANCE_CELL_CLASS),
             dynamic=True,
-            classes=classes,
         )
 
     @property
@@ -43,10 +42,7 @@ class HpInfoTableHeader(Horizontal):
 
 class HpInfoTableOwnedRow(HpInfoTableRow):
     def __init__(self) -> None:
-        super().__init__(
-            "Owned",
-            classes="odd-row",
-        )
+        super().__init__("Owned")
 
     def get_new_values(self, content: HivePowerData) -> tuple[str, ...]:
         hp_balance = humanize_asset(content.owned_balance.hp_balance, show_symbol=False)
@@ -57,10 +53,7 @@ class HpInfoTableOwnedRow(HpInfoTableRow):
 
 class HpInfoTableReceivedRow(HpInfoTableRow):
     def __init__(self) -> None:
-        super().__init__(
-            "Received",
-            classes="even-row",
-        )
+        super().__init__("Received")
 
     def get_new_values(self, content: HivePowerData) -> tuple[str, ...]:
         hp_balance = humanize_asset(content.received_balance.hp_balance, show_symbol=False, sign_prefix="+")
@@ -71,10 +64,7 @@ class HpInfoTableReceivedRow(HpInfoTableRow):
 
 class HpInfoTableDelegatedRow(HpInfoTableRow):
     def __init__(self) -> None:
-        super().__init__(
-            "Delegated",
-            classes="odd-row",
-        )
+        super().__init__("Delegated")
 
     def get_new_values(self, content: HivePowerData) -> tuple[str, ...]:
         hp_balance = humanize_asset(content.delegated_balance.hp_balance, show_symbol=False, sign_prefix="-")
@@ -85,10 +75,7 @@ class HpInfoTableDelegatedRow(HpInfoTableRow):
 
 class HpInfoTablePowerDownRow(HpInfoTableRow):
     def __init__(self) -> None:
-        super().__init__(
-            "Power Down",
-            classes="even-row",
-        )
+        super().__init__("Power Down")
 
     def get_new_values(self, content: HivePowerData) -> tuple[str, ...]:
         hp_balance = humanize_asset(content.next_power_down.hp_balance, show_symbol=False, sign_prefix="-")
@@ -99,13 +86,23 @@ class HpInfoTablePowerDownRow(HpInfoTableRow):
 
 class HpInfoTableEffectiveRow(HpInfoTableRow):
     def __init__(self) -> None:
-        super().__init__(
-            "Effective",
-            classes="odd-row",
-        )
+        super().__init__("Effective")
 
     def get_new_values(self, content: HivePowerData) -> tuple[str, ...]:
         hp_balance = humanize_asset(content.total_balance.hp_balance, show_symbol=False)
         vests_balance = humanize_asset(content.total_balance.vests_balance, show_symbol=False)
 
         return hp_balance, vests_balance
+
+
+class HpDataTable(CliveDataTable):
+    def __init__(self) -> None:
+        super().__init__(
+            HpInfoTableHeader(),
+            HpInfoTableOwnedRow(),
+            HpInfoTableReceivedRow(),
+            HpInfoTableDelegatedRow(),
+            HpInfoTablePowerDownRow(),
+            HpInfoTableEffectiveRow(),
+            dynamic=True,
+        )

@@ -1,7 +1,4 @@
-$row-color-1: $accent;
-$row-color-2: $accent-lighten-1;
 $table-header-color: $primary-background;
-$table-row-title-color: $background-lighten-2;
 
 HivePowerManagement {
   Tab {
@@ -46,25 +43,13 @@ HivePowerManagement {
     }
 
     RowTitle {
-      text-style: bold;
-      background: $table-row-title-color;
       width: 2fr;
-      text-align: center;
     }
 
     .shares-balance-cell {
-      text-style: none;
       text-style: bold;
       width: 3fr;
       text-align: right;
-    }
-
-    .odd-row {
-      background: $row-color-1;
-    }
-
-    .even-row {
-      background: $row-color-2;
     }
   }
 }
