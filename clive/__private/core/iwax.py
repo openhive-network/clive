@@ -6,9 +6,12 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 import wax
+from wax import python_json_asset
+
 from clive.__private.core.communication import CustomJSONEncoder
 from clive.exceptions import CliveError
 from clive.models import Transaction
+from schemas.fields.assets import AssetHiveHF26, AssetVestsHF26
 from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
@@ -35,6 +38,13 @@ class WaxJsonAsset:
             precision=result.precision,
             nai=result.nai.decode(),
         )
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "amount": self.amount,
+            "precision": self.precision,
+            "nai": self.nai,
+        }
 
 
 def __validate_wax_response(response: wax.python_result) -> None:
@@ -144,3 +154,14 @@ def vests(amount: int) -> WaxJsonAsset:
 
 def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
     return wax.get_tapos_data(block_id.encode())  # type: ignore[no-any-return]
+
+
+def calculate_vests_to_hp(
+    vests: AssetVestsHF26, total_vesting_fund_hive: AssetHiveHF26, total_vesting_shares: AssetVestsHF26
+) -> AssetHiveHF26:
+    result = wax.calculate_vests_to_hp(
+        vests=wax.vests(amount=int(vests.amount)),
+        total_vesting_fund_hive=wax.hive(amount=int(total_vesting_fund_hive.amount)),
+        total_vesting_shares=wax.vests(amount=int(total_vesting_shares.amount)),
+    )
+    return AssetHiveHF26(**WaxJsonAsset.from_wax_result(result).as_dict())
