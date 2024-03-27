@@ -10,14 +10,17 @@ import inflection
 from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.constants import NULL_ACCOUNT_KEY_VALUE
 from clive.__private.core.formatters.case import underscore
+from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from schemas.fields.assets.hbd import AssetHbdHF26
-    from schemas.fields.assets.hive import AssetHiveHF26
-    from schemas.fields.compound import HbdExchangeRate
+    from schemas.fields.assets.hbd import AssetHbdHF26, AssetHbdT
+    from schemas.fields.assets.hive import AssetHiveHF26, AssetHiveT
+    from schemas.fields.assets.vests import AssetVestsHF26, AssetVestsT
+    from schemas.fields.compound import HbdExchangeRate, Price
+    from schemas.fields.hive_int import HiveInt
 
 
 def _is_null_date(value: datetime) -> bool:
@@ -118,6 +121,16 @@ def humanize_hive_power(value: int) -> str:
     return f"{matched[1]}{matched[2]} HP".upper()
 
 
+def humanize_value_to_format(value: float, alignment_format: str = ">7.2f") -> str:
+    """Return value in given format."""
+    return f"{value:{alignment_format}}"
+
+
+def humanize_string_to_format(string: str, alignment_format: str = ">13") -> str:
+    """Return string in given format."""
+    return f"{string:{alignment_format}}"
+
+
 def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate[AssetHiveHF26, AssetHbdHF26]) -> str:
     """Return pretty formatted hdb exchange rate (price feed)."""
     price_feed = int(hbd_exchange_rate.base.amount) / 10**3
@@ -127,7 +140,69 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate[AssetHiveHF26,
 def humanize_hbd_interest_rate(hbd_interest_rate: int) -> str:
     """Return pretty formatted hdb interese rate (APR)."""
     percent = hbd_interest_rate / 100
-    return f"{round(percent, 2)}%"
+    return f"{humanize_value_to_format(round(percent, 2))} %"
+
+
+def humanize_hbd_print_rate(hbd_print_rate: int) -> str:
+    """Return pretty formatted hdb print rate."""
+    percent = hbd_print_rate / 100
+    good_hbd_print_rate = 100
+    status = "[green]" if percent == good_hbd_print_rate else "[red]"
+    return f"{status}{humanize_value_to_format(round(percent, 2))} %"
+
+
+def humanize_apr(
+    head_block_number: int,
+    vesting_reward_percent: HiveInt,
+    virtual_supply: AssetHiveHF26,
+    total_vesting_fund_hive: AssetHiveHF26,
+) -> str:
+    """Return formatted APR value returned from wax."""
+    apr = float(calculate_hp_apr(head_block_number, vesting_reward_percent, virtual_supply, total_vesting_fund_hive))
+    return f"{humanize_value_to_format(apr)} %"
+
+
+def humanize_median_hive_price(
+    current_price_feed: Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26],
+    current_media_history: Price[AssetHiveT, AssetHbdT, AssetVestsT],
+    market_median_history: Price[AssetHiveT, AssetHbdT, AssetVestsT],
+) -> str:
+    """Return formatted median hbd price."""
+    same_current_and_market_median_history_base = current_media_history.base == market_median_history.base
+    same_current_and_market_median_history_quote = current_media_history.quote == market_median_history.quote
+    if same_current_and_market_median_history_base and same_current_and_market_median_history_quote:
+        status = "[green]"
+    else:
+        status = "[yellow]"
+    hive_price = int(current_price_feed.base.amount) / 10**3
+    return f"{status}{humanize_value_to_format(hive_price, '>8.3f' )} $"
+
+
+def humanize_current_inflation_rate(head_block_number: int) -> str:
+    """Return formatted inflation rate for head block returned from wax."""
+    current_inflation_rate = float(calculate_current_inflation_rate(head_block_number))
+    percent = current_inflation_rate / 100
+    return f"{humanize_value_to_format(percent)} %"
+
+
+def humanize_participation_count(participation_count: int) -> str:
+    """Return pretty formatted participation rate."""
+    participation_count_percent = 100 * participation_count / 128
+    critical_participation_count_percent = 33.0
+    warning_participation_count_percent = 64.0
+    if participation_count_percent <= critical_participation_count_percent:
+        status = "[red]"
+    elif participation_count_percent <= warning_participation_count_percent:
+        status = "[yellow]"
+    else:
+        status = "[green]"
+
+    return f"{status}{humanize_value_to_format(participation_count_percent, '6.2f')} %"
+
+
+def humanize_bytes(bytez: int) -> str:
+    """Return pretty formatted bytes."""
+    return humanize.naturalsize(bytez, binary=True)
 
 
 def humanize_witness_status(signing_key: str) -> str:
