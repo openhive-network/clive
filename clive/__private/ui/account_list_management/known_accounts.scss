@@ -1,0 +1,55 @@
+KnownAccounts {
+  SectionTitle {
+    width: 0.5fr;
+  }
+
+  ScrollablePart {
+    align: center top;
+  }
+
+  KnownAccountsTable {
+    align: center top;
+    margin-top: 1;
+    width: 0.5fr;
+
+    KnownAccountsTableHeader {
+      height: 1;
+
+      Label {
+        width: 1fr;
+      }
+    }
+
+    KnownAccount {
+      CliveButton {
+        width: 1fr;
+      }
+    }
+
+    Static {
+      text-align: center;
+    }
+
+    #no-known-accounts-info {
+      background: $primary;
+    }
+
+    #manage-known-accounts-title {
+      background: $primary;
+      width: 1fr;
+    }
+  }
+
+  #input-with-button {
+    align: center top;
+    background: $panel;
+    padding: 2 2;
+    width: 0.5fr;
+    height: auto;
+
+    CliveButton {
+      width: 18;
+      min-width: 18;
+    }
+  }
+}
