@@ -161,3 +161,9 @@ def calculate_hp_apr(
     )
     __validate_wax_response(result)
     return result.result.decode()
+
+
+def calculate_current_inflation_rate(head_block_num: int) -> str:
+    result = wax.calculate_inflation_rate_for_block(head_block_num)
+    __validate_wax_response(result)
+    return result.result.decode()
