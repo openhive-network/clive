@@ -39,6 +39,11 @@ class Account:
     def __hash__(self) -> int:
         return hash(self.name)
 
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Account):
+            return NotImplemented
+        return other.name == self.name
+
     @staticmethod
     def validate(name: str) -> None:
         """
