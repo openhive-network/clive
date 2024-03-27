@@ -1,0 +1,55 @@
+WatchedAccounts {
+  SectionTitle {
+    width: 0.5fr;
+  }
+
+  ScrollablePart {
+    align: center top;
+  }
+
+  WatchedAccountsTable {
+    align: center top;
+    margin-top: 1;
+    width: 0.5fr;
+
+    WatchedAccountsTableHeader {
+      height: 1;
+
+      Label {
+        width: 1fr;
+      }
+    }
+
+    WatchedAccount {
+      CliveButton {
+        width: 1fr;
+      }
+    }
+
+    Static {
+      text-align: center;
+    }
+
+    #no-watched-accounts-info {
+      background: $primary;
+    }
+
+    #manage-watched-accounts-title {
+      background: $primary;
+      width: 1fr;
+    }
+  }
+
+  #input-with-button {
+    align: center top;
+    background: $panel;
+    padding: 2 2;
+    width: 0.5fr;
+    height: auto;
+
+    CliveButton {
+      width: 10;
+      min-width: 10;
+    }
+  }
+}
