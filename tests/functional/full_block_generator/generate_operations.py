@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import copy
 import json
+import multiprocessing
 import random
 import requests
 from concurrent.futures import ProcessPoolExecutor, Future, as_completed
@@ -162,7 +163,8 @@ def create_comment_options(account_name: str, comment_data_for_current_iteration
 
 def generate_blocks(
         stop_at_block: int, ops_in_one_element: int, elements_number_for_iteration, tokens: list[str],
-        beekeeper_url: str, node: tt.InitNode, max_broadcast_workers: int, public_keys: list,
+        beekeeper_url: str, node: tt.InitNode, max_broadcast_workers: int, public_keys: list, wallets: list,
+        use_request: bool,
 ) -> list:
     """
     :param stop_at_block: The block where the program stops. If `None`, full blocks will be generated indefinitely,
@@ -180,7 +182,10 @@ def generate_blocks(
     comment_data = {f"permlink-{index}": f"account-{index}" for index in
                     range(100_000)}  # comment permlinks with authors
 
-    with ProcessPoolExecutor(max_workers=len(tokens)) as executor:
+    queue = multiprocessing.Queue()
+    tokens = [queue.put(w) for w in wallets]
+
+    with ProcessPoolExecutor(max_workers=63) as executor:
         main_iteration = 0
         while True:
             block = []
@@ -217,7 +222,7 @@ def generate_blocks(
             # sign and create transaction section
             gdpo = node.api.database.get_dynamic_global_properties()
             node_config = node.api.database.get_config()
-            chunks = split_to_chunks(block, len(tokens))
+            chunks = split_to_chunks(block, len(token if use_request else wallets))  # fixme: tutaj wallets/ tokens
             sign_futures: list[Future] = []
             for chunk, token in zip(chunks, tokens):
                 sign_futures.append(executor.submit(sign,
@@ -225,8 +230,9 @@ def generate_blocks(
                                                     node_config,
                                                     beekeeper_url,
                                                     chunk,
-                                                    token,
+                                                    queue,
                                                     public_keys,
+                                                    use_request=True
                                                     ))
             results = [None] * len(chunks)
             for future in as_completed(sign_futures):
@@ -315,11 +321,11 @@ def wrap_in_send_pack(transaction) -> dict:
     return message
 
 
-def sign(gdpo, node_config, url, chunk, token, public_keys):
+def sign(gdpo, node_config, url, chunk, token, public_keys, use_request):
     singed_chunks = []
     for operation in chunk:
         try:
-            trx = create_and_sign_transaction(operation, gdpo, node_config, url, token, public_keys,
+            trx = create_and_sign_transaction(operation, gdpo, node_config, url, token, public_keys, use_request,
                                               binary_transaction=True)
             singed_chunks.append(trx)
         except:
@@ -327,7 +333,7 @@ def sign(gdpo, node_config, url, chunk, token, public_keys):
     return singed_chunks
 
 
-def create_and_sign_transaction(ops: list, gdpo, node_config, url, token, public_keys,
+def create_and_sign_transaction(ops: list, gdpo, node_config, url, token, public_keys, use_request,
                                 binary_transaction: bool = False):
     trx: SimpleTransaction = generate_transaction_template(gdpo)
 
