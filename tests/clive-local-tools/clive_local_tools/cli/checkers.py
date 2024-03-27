@@ -42,9 +42,13 @@ def assert_pending_withrawals(context: CLITester | Result, account_name: str, as
     ), f"no {asset_amount.pretty_amount()} {asset_amount.token()} in pending withdrawals output:\n{output}"
 
 
-def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+def get_authority_output(context: CLITester | Result, authority: AuthorityType) -> str:
     result = context.show_authority(authority) if isinstance(context, CLITester) else context
-    output = result.output
+    return result.output
+
+
+def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
+    output = get_authority_output(context, authority)
     table = output.split("\n")[2:]
     assert any(
         str(entry) in line for line in table
@@ -52,8 +56,7 @@ def assert_is_authority(context: CLITester | Result, entry: str | PublicKey, aut
 
 
 def assert_is_not_authority(context: CLITester | Result, entry: str | PublicKey, authority: AuthorityType) -> None:
-    result = context.show_authority(authority) if isinstance(context, CLITester) else context
-    output = result.output
+    output = get_authority_output(context, authority)
     table = output.split("\n")[2:]
     assert not any(
         str(entry) in line for line in table
@@ -66,24 +69,22 @@ def assert_authority_weight(
     authority: AuthorityType,
     weight: int,
 ) -> None:
-    result = context.show_authority(authority) if isinstance(context, CLITester) else context
-    output = result.output
+    output = get_authority_output(context, authority)
     assert any(
         str(entry) in line and f"{weight}" in line for line in output.split("\n")
     ), f"no {entry} entry with weight {weight} in show {authority}-authority output:\n{output}"
 
 
 def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
-    result = context.show_authority(authority) if isinstance(context, CLITester) else context
+    output = get_authority_output(context, authority)
     expected_output = f"weight threshold is {threshold}"
-    output = result.output
     assert expected_output in output, f"expected `{expected_output}` in show {authority}-authority output:\n{output}"
 
 
 def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
     result = context.show_memo_key() if isinstance(context, CLITester) else context
-    expected_output = str(memo_key)
     output = result.output
+    expected_output = str(memo_key)
     assert expected_output in output, f"expected `{expected_output}` in show memo-key output:\n{output}"
 
 
