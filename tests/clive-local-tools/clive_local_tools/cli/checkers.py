@@ -75,14 +75,16 @@ def assert_authority_weight(
 
 def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
     result = context.show_authority(authority) if isinstance(context, CLITester) else context
+    expected_output = f"weight threshold is {threshold}"
     output = result.output
-    assert f"weight threshold is {threshold}" in output
+    assert expected_output in output, f"expected `{expected_output}` in show {authority}-authority output:\n{output}"
 
 
 def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
     result = context.show_memo_key() if isinstance(context, CLITester) else context
+    expected_output = str(memo_key)
     output = result.output
-    assert str(memo_key) in output
+    assert expected_output in output, f"expected `{expected_output}` in show memo-key output:\n{output}"
 
 
 def assert_no_exit_code_error(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int) -> None:
