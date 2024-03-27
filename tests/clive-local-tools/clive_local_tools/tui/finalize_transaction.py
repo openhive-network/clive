@@ -17,7 +17,7 @@ async def finalize_transaction(pilot: ClivePilot, activated: bool, password: str
     """Finalize transaction with optional activation if 'activated' == False."""
     broadcast_binding_description = "Broadcast"
 
-    await press_and_wait_for_screen(pilot, "f10", TransactionSummaryFromCart)
+    await press_and_wait_for_screen(pilot, "f10", TransactionSummaryFromCart, wait_for_focused=False)
     if activated:
         await press_and_wait_for_screen(pilot, "f10", DashboardActive, key_description=broadcast_binding_description)
     else:

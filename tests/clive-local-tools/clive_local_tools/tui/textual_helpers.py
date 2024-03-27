@@ -22,44 +22,47 @@ async def press_binding(pilot: ClivePilot, key: str, key_description: str | None
     await pilot.press(key)
 
 
-async def press_and_wait_for_screen(
+async def press_and_wait_for_screen(  # noqa: PLR0913
     pilot: ClivePilot,
     key: str,
     expected_screen: type[Screen[Any]],
     *,
     key_description: str | None = None,
+    wait_for_focused: bool = True,
     timeout: float = 3.0,
 ) -> None:
     """Press some binding and ensure screen changed after some action."""
     await press_binding(pilot, key, key_description)
-    await wait_for_screen(pilot, expected_screen, timeout=timeout)
+    await wait_for_screen(pilot, expected_screen, wait_for_focused=wait_for_focused, timeout=timeout)
 
 
-async def press_and_wait_for_screen_focused(
-    pilot: ClivePilot,
-    key: str,
-    expected_screen: type[Screen[Any]],
-    *,
-    key_description: str | None = None,
-    timeout: float = 3.0,
+async def wait_for_screen(
+    pilot: ClivePilot, expected_screen: type[Screen[Any]], *, wait_for_focused: bool = True, timeout: float = 3.0
 ) -> None:
-    """Press some binding and ensure screen changed after some action."""
-    await press_binding(pilot, key, key_description)
-    await wait_for_screen(pilot, expected_screen, timeout=timeout)
-
-
-async def wait_for_screen(pilot: ClivePilot, expected_screen: type[Screen[Any]], *, timeout: float = 3.0) -> None:
     """Wait for the expected screen to be active."""
 
     async def wait_for_screen_change() -> None:
         while not isinstance(app.screen, expected_screen):
-            await pilot.pause(0.1)
+            await pilot.pause(poll_time_secs)
 
+    async def wait_for_something_to_be_focused() -> None:
+        while not app.focused:
+            await pilot.pause(poll_time_secs)
+
+    async def wait_for_everything() -> None:
+        await wait_for_screen_change()
+        if wait_for_focused:
+            await wait_for_something_to_be_focused()
+
+    poll_time_secs = 0.1
     app = pilot.app
 
     try:
-        await asyncio.wait_for(wait_for_screen_change(), timeout=timeout)
+        await asyncio.wait_for(wait_for_everything(), timeout=timeout)
     except asyncio.TimeoutError:
+        wait_for_focused_info = " or nothing was focused " if wait_for_focused else " "
         raise AssertionError(
-            f"Screen didn't changed to '{expected_screen}' in {timeout=}. Current one is: {app.screen}"
+            f"Screen didn't changed to '{expected_screen}'{wait_for_focused_info}in {timeout=}s.\n"
+            f"Current screen is: {app.screen}\n"
+            f"Currently focused: {app.focused}"
         ) from None
