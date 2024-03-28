@@ -40,7 +40,7 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
     method, but could be also done by using the provider methods.
     """
 
-    _content: ProviderContentT = var(None, init=False)  # type: ignore[assignment]
+    _content: ProviderContentT | None = var(None, init=False)  # type: ignore[assignment]
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
     updated: bool = var(False)  # type: ignore[assignment]
