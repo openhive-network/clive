@@ -96,7 +96,7 @@ async def go_to_savings(pilot: ClivePilot) -> None:
 async def get_pending_transfers_from_savings_count(pilot: ClivePilot) -> int:
     await go_to_savings(pilot)
     log_current_view(pilot.app, nodes=True)
-    pending_transfers = pilot.app.query(PendingTransfer)
+    pending_transfers = pilot.app.screen.query(PendingTransfer)
     tt.logger.debug(f"get_pending_transfers_from_savings_count: {len(pending_transfers)}")
     await press_and_wait_for_screen(pilot, "escape", Operations)
     await press_and_wait_for_screen(pilot, "escape", DashboardActive)
