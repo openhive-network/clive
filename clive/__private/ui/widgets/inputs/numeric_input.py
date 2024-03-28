@@ -3,7 +3,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from clive.__private.core.decimal_conventer import DecimalConverter
+from clive.__private.core.decimal_conventer import DecimalConverter, DecimalConvertible
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 
 if TYPE_CHECKING:
@@ -19,7 +19,7 @@ class NumericInput(CliveValidatedInput[Decimal]):
     def __init__(
         self,
         title: str,
-        value: str | float | None = None,
+        value: DecimalConvertible | None = None,
         placeholder: str = "",
         *,
         precision: int = 2,

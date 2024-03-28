@@ -11,6 +11,8 @@ if TYPE_CHECKING:
 
     from textual.widgets._input import InputValidationOn
 
+    from clive.__private.core.decimal_conventer import DecimalConvertible
+
 
 class PercentInput(NumericInput):
     """An input for a values between 0.01 and 100."""
@@ -18,7 +20,7 @@ class PercentInput(NumericInput):
     def __init__(
         self,
         title: str = "Percent",
-        value: str | float | None = None,
+        value: DecimalConvertible | None = None,
         *,
         always_show_title: bool = False,
         include_title_in_placeholder_when_blurred: bool = True,
