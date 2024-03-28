@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import asyncio
 import os
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 from typing import Final, Literal
 import copy
@@ -15,8 +17,10 @@ from clive.__private.core.beekeeper import Beekeeper
 from clive_local_tools.data.models import Keys, WalletInfo
 from tests.functional.full_block_generator.generate_block_log_with_varied_signature_types import CHAIN_ID, WITNESSES
 from generate_operations import generate_blocks
+from shared_tools.complex_networks import generate_free_addresses
 
 SIGNATURE_TYPE: Literal["open_sign", "single_sign", "multi_sign"] = "single_sign"
+P2P_ENDPOINT = generate_free_addresses(1)[0]
 BLOCK_LOG_DIRECTORY: Final[Path] = Path(f"/home/dev/clive/tests/functional/full_block_generator/block_log_{SIGNATURE_TYPE}")
 
 # Node parameters
@@ -50,8 +54,10 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
     block_log = tt.BlockLog(BLOCK_LOG_DIRECTORY / "block_log")
     alternate_chain_spec_path = BLOCK_LOG_DIRECTORY / tt.AlternateChainSpecs.FILENAME
 
-    node = tt.InitNode()
+    network = tt.Network()
 
+    node = tt.InitNode(network=network)
+    node.config.p2p_endpoint = f"{P2P_ENDPOINT}"
     node.config.plugin.remove("account_by_key")
     node.config.plugin.remove("state_snapshot")
     node.config.plugin.remove("account_by_key_api")
@@ -72,12 +78,52 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
 
     node.run(
         replay_from=block_log,
-        time_control=tt.Time.serialize(block_log.get_head_block_time(), format_=tt.TimeFormats.FAKETIME_FORMAT),
         timeout=120,
-        wait_for_live=True,
+        exit_before_synchronization=True,
         alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
-        arguments=[f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}", f"--chain-id={CHAIN_ID}"],
     )
+    # node.run(
+    #     replay_from=block_log,
+    #     time_control=tt.Time.serialize(block_log.get_head_block_time(), format_=tt.TimeFormats.FAKETIME_FORMAT),
+    #     timeout=120,
+    #     wait_for_live=True,
+    #     alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+    #     arguments=[f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}", f"--chain-id={CHAIN_ID}"],
+    # )
+
+    api_node = tt.ApiNode()
+    # api_node.config.p2p_seed_node = node.p2p_endpoint.as_string()
+    api_node.config.p2p_seed_node = P2P_ENDPOINT
+    api_node.config.shared_file_size = f"{SHARED_MEMORY_FILE_SIZE}G"
+    api_node.config.plugin.remove("account_by_key")
+    api_node.config.plugin.remove("state_snapshot")
+    api_node.config.plugin.remove("account_by_key_api")
+
+    # connect_nodes(first_node=node, second_node=api_node)
+
+    api_node.run(
+        replay_from=block_log,
+        timeout=120,
+        exit_before_synchronization=True,
+        alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+    )
+
+    simultaneous_node_startup(
+        [node, api_node],
+        timeout=120,
+        alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+        arguments=["--chain-id=24"],
+        wait_for_live=True,
+        time_control=tt.StartTimeControl(start_time=block_log.get_head_block_time()),)
+
+        # api_node.run(
+    #     alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+    #     replay_from=block_log,
+    #     timeout=120,
+    #     wait_for_live=True,
+    #     time_control=tt.Time.serialize(block_log.get_head_block_time(), format_=tt.TimeFormats.FAKETIME_FORMAT),
+    #     arguments=[f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}", f"--chain-id={CHAIN_ID}"],
+    # )
 
     wallet = WalletInfo(name="my_only_wallet", password="my_password", keys=Keys(count=0))
     async with await Beekeeper().launch() as beekeeper:
@@ -171,6 +217,36 @@ def get_public_keys(authority_type: Literal["open_sign", "multi_sign", "single_s
                 "active": [tt.Account("account", secret=f"active-{num}").public_key[3:] for num in range(6)],
                 "posting": [tt.Account("account", secret=f"posting-{num}").public_key[3:] for num in range(10)],
             }
+
+def simultaneous_node_startup(
+    nodes: list,
+    timeout: int,
+    alternate_chain_specs: tt.AlternateChainSpecs,
+    arguments: list,
+    wait_for_live: bool,
+    time_control: tt.StartTimeControl = None,
+    exit_before_synchronization: bool = False,
+):
+    with ThreadPoolExecutor(max_workers=len(nodes)) as executor:
+        tasks = []
+        for node in nodes:
+            tasks.append(
+                executor.submit(
+                    partial(
+                        lambda _node: _node.run(
+                            timeout=timeout,
+                            alternate_chain_specs=alternate_chain_specs,
+                            arguments=arguments,
+                            wait_for_live=wait_for_live,
+                            time_control=time_control,
+                            exit_before_synchronization=exit_before_synchronization,
+                        ),
+                        node,
+                    )
+                )
+            )
+        for thread_number in tasks:
+            thread_number.result()
 
 
 if __name__ == "__main__":
