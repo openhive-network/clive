@@ -15,9 +15,12 @@ class DecimalConversionNotANumberError(CliveError):
     """Raised when decimal conversion fails because the value is not a number."""
 
 
+DecimalConvertible = int | str | Decimal
+
+
 class DecimalConverter:
     @classmethod
-    def get_precision(cls, amount: float | str | Decimal) -> int:
+    def get_precision(cls, amount: DecimalConvertible) -> int:
         """
         Get precision of given amount.
 
@@ -34,7 +37,7 @@ class DecimalConverter:
         return -1 * exponent
 
     @classmethod
-    def convert(cls, amount: float | str | Decimal, *, precision: int | None = None) -> Decimal:
+    def convert(cls, amount: DecimalConvertible, *, precision: int | None = None) -> Decimal:
         """
         Convert given amount to Decimal.
 
@@ -47,12 +50,6 @@ class DecimalConverter:
         ------
         DecimalConversionNotANumberError: Raised when given amount is in invalid format.
         """
-        # We could not pass float variable directly to Decimal initializer as from the nature of floats it won't result
-        # in the exact decimal value. We need to convert float to string first like https://stackoverflow.com/a/18886013
-        # For example: `str(Decimal(0.1)) == '0.1000000000000000055511151231257827021181583404541015625'` is True
-        if isinstance(amount, float):
-            amount = repr(amount)
-
         try:
             converted = Decimal(amount)
         except decimal.InvalidOperation as error:

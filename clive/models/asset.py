@@ -6,7 +6,11 @@ from typing import Generic, TypeAlias, TypeVar
 
 from pydantic.generics import GenericModel
 
-from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
+from clive.__private.core.decimal_conventer import (
+    DecimalConversionNotANumberError,
+    DecimalConverter,
+    DecimalConvertible,
+)
 from clive.exceptions import CliveError
 from clive.models.base import CliveBaseModel
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
@@ -14,7 +18,7 @@ from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
 AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
 
-AssetAmount = int | float | str
+AssetAmount = DecimalConvertible
 AssetFactory = Callable[[AssetAmount], AssetT]
 
 
