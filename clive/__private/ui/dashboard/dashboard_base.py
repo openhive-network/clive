@@ -34,6 +34,10 @@ class Body(ScrollableContainer, can_focus=True):
     """A body for working/watched accounts container."""
 
 
+class AccountsContainer(Container):
+    pass
+
+
 class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
     def __init__(self, account: Account, manabar: Manabar, name: str, classes: str | None = None) -> None:
         self.__manabar = manabar
@@ -149,13 +153,49 @@ class DashboardBase(BaseScreen):
         Binding("f9", "config", "Config"),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._working_account_checker = (
+            self.app.world.profile_data.working_account if self.__has_working_account() else None
+        )
+        self._watched_accounts_checker = [
+            watched_account.name for watched_account in self.app.world.profile_data.watched_accounts
+        ]
+        # Both attributes are used to check whether working or watched accounts have changed.
+
     def create_main_panel(self) -> ComposeResult:
         with Body() as body:
+            with AccountsContainer():
+                if self.__has_working_account():
+                    yield WorkingAccountContainer()
+                if self.__has_watched_accounts():
+                    yield WatchedAccountContainer()
+            yield CommandLine(focus_on_cancel=body)
+
+    def on_mount(self) -> None:
+        self.watch(self.app.world, "profile_data", self._update_account_containers)
+
+    def _update_account_containers(self) -> None:
+        working_account = self.app.world.profile_data.working_account if self.__has_working_account() else None
+        watched_accounts = [watched_account.name for watched_account in self.app.world.profile_data.watched_accounts]
+
+        if working_account != self._working_account_checker or watched_accounts != self._watched_accounts_checker:
+            self._working_account_checker = working_account
+            self._watched_accounts_checker = watched_accounts
+
+            containers_to_mount: list[WorkingAccountContainer | WatchedAccountContainer] = []
+
             if self.__has_working_account():
-                yield WorkingAccountContainer()
+                containers_to_mount.append(WorkingAccountContainer())
+
             if self.__has_watched_accounts():
-                yield WatchedAccountContainer()
-        yield CommandLine(focus_on_cancel=body)
+                containers_to_mount.append(WatchedAccountContainer())
+
+            with self.app.batch_update():
+                accounts_container = self.query_one(AccountsContainer)
+                accounts_container.query("*").remove()
+                accounts_container.mount_all(containers_to_mount)
+            return
 
     def action_operations(self) -> None:
         if not self.__has_working_account():
