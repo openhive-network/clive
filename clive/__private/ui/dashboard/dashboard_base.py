@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, ClassVar, Final
 
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
@@ -22,16 +22,22 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
+from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from textual.widget import Widget
 
     from clive.__private.storage.mock_database import Manabar
 
 
 class Body(ScrollableContainer, can_focus=True):
     """A body for working/watched accounts container."""
+
+
+class AccountsContainer(Container):
+    """Container with working and watched accounts."""
 
 
 class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
@@ -140,6 +146,7 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class DashboardBase(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
+    NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (go to the Config view to add some)"
 
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),
@@ -149,16 +156,54 @@ class DashboardBase(BaseScreen):
         Binding("f9", "config", "Config"),
     ]
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._previous_working_account = self.working_account
+        self._previous_watched_accounts = self.watched_accounts
+        # Both attributes are used to check whether working or watched accounts have changed.
+
     def create_main_panel(self) -> ComposeResult:
         with Body() as body:
-            if self.__has_working_account():
-                yield WorkingAccountContainer()
-            if self.__has_watched_accounts():
-                yield WatchedAccountContainer()
-        yield CommandLine(focus_on_cancel=body)
+            with AccountsContainer():
+                if self.has_working_account:
+                    yield WorkingAccountContainer()
+                if self.has_watched_accounts:
+                    yield WatchedAccountContainer()
+                if not self.has_tracked_accounts:
+                    yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
+            yield CommandLine(focus_on_cancel=body)
+
+    def on_mount(self) -> None:
+        self.watch(self.app.world, "profile_data", self._update_account_containers)
+
+    async def _update_account_containers(self) -> None:
+        if (
+            self.working_account == self._previous_working_account
+            and self.watched_accounts == self._previous_watched_accounts
+        ):
+            return
+
+        self._previous_working_account = self.working_account
+        self._previous_watched_accounts = self.watched_accounts
+
+        widgets_to_mount: list[Widget] = []
+
+        if self.has_working_account:
+            widgets_to_mount.append(WorkingAccountContainer())
+
+        if self.has_watched_accounts:
+            widgets_to_mount.append(WatchedAccountContainer())
+
+        if not self.has_tracked_accounts:
+            widgets_to_mount.append(NoContentAvailable(self.NO_ACCOUNTS_INFO))
+
+        with self.app.batch_update():
+            accounts_container = self.query_one(AccountsContainer)
+            await accounts_container.query("*").remove()
+            await accounts_container.mount_all(widgets_to_mount)
 
     def action_operations(self) -> None:
-        if not self.__has_working_account():
+        if not self.has_working_account:
             self.notify("Cannot perform operations without working account", severity="error")
             return
 
@@ -167,8 +212,24 @@ class DashboardBase(BaseScreen):
     def action_config(self) -> None:
         self.app.push_screen(Config())
 
-    def __has_working_account(self) -> bool:
+    @property
+    def has_working_account(self) -> bool:
         return self.app.world.profile_data.is_working_account_set()
 
-    def __has_watched_accounts(self) -> bool:
+    @property
+    def has_watched_accounts(self) -> bool:
         return bool(self.app.world.profile_data.watched_accounts)
+
+    @property
+    def working_account(self) -> WorkingAccount | None:
+        if not self.has_working_account:
+            return None
+        return self.app.world.profile_data.working_account
+
+    @property
+    def watched_accounts(self) -> set[Account]:
+        return self.app.world.profile_data.watched_accounts.copy()
+
+    @property
+    def has_tracked_accounts(self) -> bool:
+        return self.has_working_account or self.has_watched_accounts
