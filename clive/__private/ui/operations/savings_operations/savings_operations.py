@@ -83,8 +83,8 @@ class SavingsInterestInfo(AccountReferencingWidget):
     def on_mount(self) -> None:
         self.watch(self.provider, "_content", callback=self.sync_data)
 
-    def sync_data(self, content: SavingsData) -> None:
-        if not self.provider.is_content_set:
+    def sync_data(self, content: SavingsData | None) -> None:
+        if content is None:  # data not received yet
             return
 
         def get_interest_date() -> str:
@@ -151,8 +151,8 @@ class PendingTransfers(Vertical):
     def on_mount(self) -> None:
         self.watch(self.provider, "_content", callback=self.__sync_pending_transfers)
 
-    def __sync_pending_transfers(self, content: SavingsData) -> None:
-        if not self.provider.is_content_set:
+    def __sync_pending_transfers(self, content: SavingsData | None) -> None:
+        if content is None:  # data not received yet
             return
 
         pending_transfers = content.pending_transfers

@@ -57,10 +57,13 @@ class WithdrawRoutesDisplay(CliveWidget):
         yield self._pretty
 
     def on_mount(self) -> None:
-        self.watch(self.provider, "_content", self._update_withdraw_routes, init=False)
+        self.watch(self.provider, "_content", self._update_withdraw_routes)
 
-    def _update_withdraw_routes(self, content: HivePowerData) -> None:
+    def _update_withdraw_routes(self, content: HivePowerData | None) -> None:
         """Update withdraw routes pretty widget."""
+        if content is None:  # data not received yet
+            return
+
         if not content.withdraw_routes:
             self.query_one("#withdraw-routes-header", Static).update("You have no withdraw routes")
             self._pretty.display = False

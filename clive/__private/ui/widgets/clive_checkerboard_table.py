@@ -152,7 +152,7 @@ class CliveCheckerboardTable(CliveWidget):
 
     def on_mount(self) -> None:
         if self._dynamic:
-            self.watch(self.provider, "_content", self._mount_dynamic_rows, init=False)
+            self.watch(self.provider, "_content", self._mount_dynamic_rows)
 
     def _mount_static_rows(self) -> None:
         """Mount rows created in static mode (dynamic = False)."""
@@ -164,6 +164,9 @@ class CliveCheckerboardTable(CliveWidget):
         """New rows are mounted when the data to be displayed has been changed."""
         if not self._dynamic:
             raise InvalidDynamicDefinedError
+
+        if content is None:  # data not received yet
+            return
 
         if not self.check_if_should_be_updated:
             return

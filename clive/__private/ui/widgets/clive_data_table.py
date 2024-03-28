@@ -69,7 +69,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
 
     def on_mount(self) -> None:
         if self._dynamic:
-            self.watch(self.provider, "_content", self._update_row, init=False)
+            self.watch(self.provider, "_content", self._update_row)
 
     def compose(self) -> ComposeResult:
         yield self.RowTitle(self._row_title)
@@ -77,6 +77,9 @@ class CliveDataTableRow(Horizontal, CliveWidget):
 
     def _update_row(self, content: Any) -> None:
         """Iterate through the cells and update each of them."""
+        if content is None:  # data not received yet
+            return
+
         for cell, balance in zip(self.cells, self.get_new_values(content), strict=True):
             cell.update(balance)
 
