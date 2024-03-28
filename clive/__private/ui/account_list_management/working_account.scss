@@ -1,0 +1,40 @@
+WorkingAccount {
+  ScrollablePart {
+    align: center top;
+  }
+
+  ManageWorkingAccountTable {
+    margin-top: 1;
+    width: 50%;
+    height: auto;
+
+    CliveButton {
+      width: 1fr;
+    }
+
+    Static {
+      text-align: center;
+    }
+
+    #manage-working-account-title {
+      text-style: bold;
+      background: $primary;
+    }
+  }
+
+  WorkingAccountChange {
+    width: 50%;
+    height: auto;
+
+    #input-with-button {
+      background: $panel;
+      padding: 2 2;
+      height: auto;
+
+      CliveButton {
+        width: 10;
+        min-width: 10;
+      }
+    }
+  }
+}
