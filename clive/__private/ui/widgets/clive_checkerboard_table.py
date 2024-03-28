@@ -165,7 +165,7 @@ class CliveCheckerboardTable(CliveWidget):
         self._set_evenness_styles(rows)
         self.mount_all([self._title, self._header, *rows])
 
-    def _mount_dynamic_rows(self, content: Any) -> None:
+    async def _mount_dynamic_rows(self, content: Any) -> None:
         """New rows are mounted when the ATTRIBUTE_TO_WATCH has been changed."""
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
@@ -184,8 +184,8 @@ class CliveCheckerboardTable(CliveWidget):
             widgets_to_mount = [self.get_no_content_available_widget()]
 
         with self.app.batch_update():
-            self.query("*").remove()
-            self.mount_all(widgets_to_mount)
+            await self.query("*").remove()
+            await self.mount_all(widgets_to_mount)
 
     def create_dynamic_rows(self, content: Any) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """
