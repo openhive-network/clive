@@ -44,7 +44,7 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
 
         result = wrapper.result_or_raise
 
-        if not self.updated:
+        if not self.is_content_set:
             self._content = result
             return
 
