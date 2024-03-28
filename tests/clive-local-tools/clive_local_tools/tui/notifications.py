@@ -105,7 +105,7 @@ def _extract_message_from_toasts(app: CliveApp, find_message_cb: Callable[[str],
     -------
     The message extracted from the present toast notifications. Will return an empty string if no message was found.
     """
-    toasts = app.query(Toast)
+    toasts = app.screen.query(Toast)
     contents = [str(toast.render()) for toast in toasts]
 
     message = ""
