@@ -1,0 +1,49 @@
+WorkingAccount {
+  RemoveWorkingAccount {
+    CliveButton {
+      width: 1fr;
+    }
+
+    Static {
+      text-align: center;
+    }
+
+    RemoveWorkingAccountHeader {
+      height: 1;
+
+      Label {
+        width: 1fr;
+      }
+    }
+
+    #remove-working-account-title,
+    #no-working-account-info {
+      background: $primary;
+    }
+  }
+
+  WorkingAccountChange {
+    height: auto;
+
+    ScrollablePart {
+      align: center top;
+    }
+
+    SectionTitle {
+      width: 0.5fr;
+    }
+
+    #input-with-button {
+      align: center top;
+      background: $panel;
+      padding: 2 2;
+      width: 0.5fr;
+      height: auto;
+
+      CliveButton {
+        width: 10;
+        min-width: 10;
+      }
+    }
+  }
+}
