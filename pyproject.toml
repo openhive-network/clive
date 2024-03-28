@@ -40,12 +40,11 @@ pydantic = "1.10.11"
 typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
-beekeepy = "1.25.2rc0.dev3819+2de68d28d.dirty"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
-# test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
+test-tools = { path = "hive/tests/python/hive-local-tools/test-tools" }
 pytest = "7.2.0"  # required by test-tools, otherwise they will fail
 
 
