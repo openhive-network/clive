@@ -6,6 +6,7 @@ from textual.containers import Container
 from textual.widget import Widget
 from textual.widgets import Static
 
+from clive.__private.logger import logger
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError
 
@@ -161,7 +162,7 @@ class CliveCheckerboardTable(CliveWidget):
         self._set_evenness_styles(rows)
         self.mount_all([self._title, self._header, *rows])
 
-    def _mount_dynamic_rows(self, content: Any) -> None:
+    async def _mount_dynamic_rows(self, content: Any) -> None:
         """New rows are mounted when the data to be displayed has been changed."""
         if not self._dynamic:
             raise InvalidDynamicDefinedError
@@ -173,12 +174,13 @@ class CliveCheckerboardTable(CliveWidget):
             rows = self.create_dynamic_rows(content)
             self._set_evenness_styles(rows)
             widgets_to_mount = [self._title, self._header, *rows]
+            logger.debug(widgets_to_mount)
         else:
             widgets_to_mount = [self.get_no_content_available_widget()]
 
         with self.app.batch_update():
-            self.query("*").remove()
-            self.mount_all(widgets_to_mount)
+            await self.query("*").remove()
+            await self.mount_all(widgets_to_mount)
 
     def create_dynamic_rows(self, content: Any) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """
