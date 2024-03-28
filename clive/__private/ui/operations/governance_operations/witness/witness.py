@@ -230,7 +230,7 @@ class WitnessesActions(GovernanceActions):
     @property
     def actual_number_of_votes(self) -> int:
         amount = self.actions_votes
-        if self.provider.updated:
+        if self.provider.is_content_set:
             amount += self.provider.content.number_of_votes
         return amount
 

@@ -329,7 +329,7 @@ class GovernanceTable(
 
     @property
     def is_data_available(self) -> bool:
-        return self.provider.updated
+        return self.provider.is_content_set
 
     @property
     def data_chunk(self) -> list[GovernanceDataT] | None:
