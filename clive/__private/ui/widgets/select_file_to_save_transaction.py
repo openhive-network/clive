@@ -24,7 +24,7 @@ class Switches(Horizontal):
 
 
 class SelectFileToSaveTransaction(SelectFile):
-    BIG_TITLE = "Save transaction to file"
+    SECTION_TITLE = "Save transaction to file"
 
     @dataclass
     class Saved(SelectFile.Saved):

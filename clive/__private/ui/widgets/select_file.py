@@ -46,7 +46,7 @@ class SelectFile(BaseScreen):
         Binding("f2", "save", "Ok"),
     ]
 
-    BIG_TITLE: ClassVar[str] = "Select file"
+    SECTION_TITLE: ClassVar[str] = "Select file"
 
     @dataclass
     class Saved(Message):
@@ -64,7 +64,7 @@ class SelectFile(BaseScreen):
         self._file_path_input = PathInput(placeholder=placeholder, validator_mode=validator_mode)
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer(self.BIG_TITLE), Body():
+        with DialogContainer(section_title=self.SECTION_TITLE), Body():
             with FilePathInputContainer():
                 yield self._file_path_input
             yield from self.additional_content_after_input()
