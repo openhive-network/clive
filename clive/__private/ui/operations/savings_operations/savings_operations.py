@@ -33,6 +33,7 @@ from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAs
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import RequestIdError
 from clive.models import Asset
 from schemas.operations import (
@@ -201,17 +202,21 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._from_button
             yield SavingsBalances(self.app.world.profile_data.working_account)
             yield self._transfer_time_reminder
+            yield SectionTitle("Perform a transfer to savings")
             with Body():
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input
 
     @on(RadioSet.Changed)
-    def visibility_of_transfer_time_reminder(self, event: RadioSet.Changed) -> None:
+    def transfer_type_changed(self, event: RadioSet.Changed) -> None:
+        section_title = self.query_one(SectionTitle)
         if event.radio_set.pressed_button.id == "from-savings-choose":  # type: ignore[union-attr]
             self._transfer_time_reminder.visible = True
+            section_title.update("Perform a transfer from savings")
             return
         self._transfer_time_reminder.visible = False
+        section_title.update("Perform a transfer to savings")
 
     def _create_operation(
         self,
