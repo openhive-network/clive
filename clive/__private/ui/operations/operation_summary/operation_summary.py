@@ -9,8 +9,8 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -25,12 +25,12 @@ class OperationSummary(OperationBaseScreen, OperationActionBindings, AbstractCla
 
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BIG_TITLE: ClassVar[str] = "Operation summary"
+    SECTION_TITLE: ClassVar[str] = "Operation summary"
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES = False
 
     def create_left_panel(self) -> ComposeResult:
-        yield BigTitle(self.BIG_TITLE)
+        yield SectionTitle(self.SECTION_TITLE)
         with ScrollablePartFocusable(), Body():
             yield from self.content()
 

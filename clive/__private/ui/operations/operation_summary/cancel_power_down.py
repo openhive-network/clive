@@ -20,7 +20,7 @@ CANCEL_POWER_DOWN_VESTS_VALUE: Final[Asset.Vests] = Asset.vests(0)
 
 
 class CancelPowerDown(OperationSummary):
-    BIG_TITLE: ClassVar[str] = "Cancel power down"
+    SECTION_TITLE: ClassVar[str] = "Cancel power down"
 
     def __init__(self, next_power_down_date: datetime, next_power_down: SharesBalance) -> None:
         super().__init__()

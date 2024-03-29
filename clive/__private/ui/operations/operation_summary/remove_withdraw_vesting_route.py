@@ -20,7 +20,7 @@ WITHDRAW_ROUTE_REMOVE_PERCENT: Final[int] = 0
 class RemoveWithdrawVestingRoute(OperationSummary):
     """Screen to remove withdraw vesting route."""
 
-    BIG_TITLE: ClassVar[str] = "remove withdraw route"
+    SECTION_TITLE: ClassVar[str] = "Remove withdraw vesting route"
 
     def __init__(self, withdraw_route: WithdrawRouteSchema) -> None:
         super().__init__()

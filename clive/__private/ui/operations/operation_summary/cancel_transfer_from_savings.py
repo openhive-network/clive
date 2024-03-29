@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class CancelTransferFromSavings(OperationSummary):
-    BIG_TITLE: ClassVar[str] = "Cancel transfer"
+    SECTION_TITLE: ClassVar[str] = "Cancel transfer from savings"
 
     def __init__(self, transfer: SavingsWithdrawals) -> None:
         super().__init__()

@@ -19,7 +19,7 @@ DELEGATION_REMOVE_VESTS_VALUE: Final[Asset.Vests] = Asset.vests(0)
 class RemoveDelegation(OperationSummary):
     """Screen to remove delegation."""
 
-    BIG_TITLE: ClassVar[str] = "Remove delegation"
+    SECTION_TITLE: ClassVar[str] = "Remove delegation"
 
     def __init__(self, delegation: VestingDelegation[Asset.Vests], amount_in_hp: Asset.Hive) -> None:
         super().__init__()
