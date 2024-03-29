@@ -14,6 +14,7 @@ from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.proxy_input import ProxyInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -38,15 +39,21 @@ class NewProxyInput(ProxyInput):
         )
 
 
+class Body(Container):
+    """The content of the ProxyNotSet and ProxySet container except for the `Notice` and `SectionTitle` widgets."""
+
+
 class ProxyNotSet(ProxyBaseContainer):
     def compose(self) -> ComposeResult:
-        yield CurrentProxy("Proxy not set")
-        yield NewProxyInput(required=True)
-        with Container(id="set-button-container"):
-            yield CliveButton("Set proxy", id_="set-proxy-button", variant="success")
         yield Notice(
             "setting proxy will delete your witnesses votes and deactivate your proposal votes",
         )
+        yield SectionTitle("Set proxy for the account")
+        with Body():
+            yield CurrentProxy("Proxy not set")
+            yield NewProxyInput(required=True)
+            with Container(id="set-button-container"):
+                yield CliveButton("Set proxy", id_="set-proxy-button", variant="success")
 
 
 class ProxySet(ProxyBaseContainer):
@@ -62,11 +69,13 @@ class ProxySet(ProxyBaseContainer):
         self._current_proxy = current_proxy
 
     def compose(self) -> ComposeResult:
-        yield CurrentProxy(self._current_proxy)
-        yield NewProxyInput(required=False)
-        with Horizontal(id="modify-proxy-buttons"):
-            yield CliveButton("Change proxy", variant="success", id_="set-proxy-button")
-            yield CliveButton("Remove proxy", variant="error", id_="remove-proxy-button")
+        yield SectionTitle("Modify proxy for the account")
+        with Body():
+            yield CurrentProxy(self._current_proxy)
+            yield NewProxyInput(required=False)
+            with Horizontal(id="modify-proxy-buttons"):
+                yield CliveButton("Change proxy", variant="success", id_="set-proxy-button")
+                yield CliveButton("Remove proxy", variant="error", id_="remove-proxy-button")
 
 
 class Proxy(TabPane, CliveWidget):

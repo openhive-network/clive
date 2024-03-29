@@ -4,14 +4,21 @@ $governance-red-color: $error;
 Proxy {
   height: auto;
 
+  Body {
+    background: $panel;
+    padding: 2 2;
+    height: auto;
+  }
+
+  /* Due to an error in the textual with margins, align is set to the center top, more info: https://github.com/Textualize/textual/issues/4332 */
   #set-button-container {
-    align: center middle;
-    height: 4;
+    align: center top;
+    height: auto;
   }
 
   #modify-proxy-buttons {
-    align: center middle;
-    height: 3;
+    align: center top;
+    height: auto;
   }
 
   #change-proxy-button {
@@ -27,6 +34,12 @@ Proxy {
 
     CurrentProxy,
     ProxyInput {
+      margin-bottom: 1;
+    }
+  }
+
+  ProxyNotSet {
+    Notice {
       margin-bottom: 1;
     }
   }
