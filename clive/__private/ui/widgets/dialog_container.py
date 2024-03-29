@@ -7,6 +7,7 @@ from textual.containers import Container
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -22,18 +23,24 @@ class DialogContainer(Container, can_focus=False):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: str = "", *, id_: str | None = None, classes: str | None = None) -> None:
-        self.__title = title
+    def __init__(
+        self, big_title: str = "", section_title: str = "", *, id_: str | None = None, classes: str | None = None
+    ) -> None:
+        self.__big_title = big_title
+        self.__section_title = section_title
         super().__init__(id=id_, classes=classes)
         self._dialog_children: list[Widget] = []
 
     def compose(self) -> ComposeResult:
-        with ScrollablePart(), DialogBody():
-            yield from self._dialog_children
+        with ScrollablePart():
+            if self.__section_title:
+                yield SectionTitle(self.__section_title)
+            with DialogBody():
+                yield from self._dialog_children
 
     def on_mount(self) -> None:
-        if self.__title:
-            self.query_one(DialogBody).mount(BigTitle(self.__title), before=0)
+        if self.__big_title:
+            self.query_one(DialogBody).mount(BigTitle(self.__big_title), before=0)
 
     def compose_add_child(self, widget: Widget) -> None:
         self._dialog_children.append(widget)

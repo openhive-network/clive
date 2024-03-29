@@ -6,9 +6,13 @@ DialogContainer {
     height: 1fr;
   }
 
+  SectionTitle {
+    width: 60vw;
+    height: auto;
+  }
+
   DialogBody {
     align: center middle;
-    border: tall $background;
     background: $panel;
     padding: 1 2;
     width: 60vw;
