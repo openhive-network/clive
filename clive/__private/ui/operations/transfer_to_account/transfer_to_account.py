@@ -8,13 +8,13 @@ from textual.containers import Grid
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.widgets.big_title import BigTitle
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.models import Asset
 from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation
@@ -48,7 +48,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
         return self.app.world.profile_data.working_account.name
 
     def create_left_panel(self) -> ComposeResult:
-        yield BigTitle("Transfer to account")
+        yield SectionTitle("Perform a transfer to account")
         with ScrollablePart(), Body():
             yield LabelizedInput("From", self.from_account)
             yield self._to_input
