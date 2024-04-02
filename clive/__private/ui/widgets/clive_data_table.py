@@ -59,7 +59,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         """
         super().__init__(classes=classes, id=id_)
         self._dynamic = dynamic
-        self._row_title = title
+        self._title = title
 
         self.cells = cells
         """Attribute that holds cells to modify in `sync_rows` method"""
@@ -72,7 +72,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
             self.watch(self.provider, "_content", self._update_row)
 
     def compose(self) -> ComposeResult:
-        yield self.RowTitle(self._row_title)
+        yield self.RowTitle(self._title)
         yield from self.cells
 
     def _update_row(self, content: Any) -> None:
@@ -80,8 +80,8 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         if content is None:  # data not received yet
             return
 
-        for cell, balance in zip(self.cells, self.get_new_values(content), strict=True):
-            cell.update(balance)
+        for cell, value in zip(self.cells, self.get_new_values(content), strict=True):
+            cell.update(value)
 
     def get_new_values(self, content: Any) -> tuple[str, ...]:  # type: ignore[return] # noqa: ARG002
         """
@@ -130,9 +130,9 @@ class CliveDataTable(CliveWidget):
         id_: The ID of the widget in the DOM.
         """
         super().__init__(classes=classes, id=id_)
-        self._table_headline = header
-        self._table_rows = rows
+        self._header = header
+        self._rows = rows
 
     def compose(self) -> ComposeResult:
-        yield self._table_headline
-        yield from self._table_rows
+        yield self._header
+        yield from self._rows
