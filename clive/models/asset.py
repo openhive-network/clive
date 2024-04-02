@@ -26,13 +26,13 @@ class AssetError(CliveError):
     """Base class for all asset related errors."""
 
 
-class AssetLegacyInvalidFormatError(CliveError):
+class AssetLegacyInvalidFormatError(AssetError):
     def __init__(self, value: str) -> None:
         self.value = value
         super().__init__(f"Invalid asset format: {value}")
 
 
-class AssetAmountInvalidFormatError(CliveError):
+class AssetAmountInvalidFormatError(AssetError):
     def __init__(self, value: str) -> None:
         self.value = value
         message = f"Invalid asset amount format: '{value}'. Should be a number."
