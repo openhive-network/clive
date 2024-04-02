@@ -1,11 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from textual.validation import Function, ValidationResult, Validator
 
-if TYPE_CHECKING:
-    from clive.models import Asset
+from clive.models import Asset
 
 
 class AssetAmountValidator(Validator):
@@ -30,10 +27,10 @@ class AssetAmountValidator(Validator):
         return self._get_given_precision(value) <= self._get_asset_precision()
 
     def _get_asset_precision(self) -> int:
-        return self.asset_type.get_asset_information().precision
+        return Asset.get_precision(self.asset_type)
 
     def _get_asset_name(self) -> str:
-        return self.asset_type.get_asset_information().symbol[0]
+        return Asset.get_symbol(self.asset_type)
 
     def _get_given_precision(self, value: str) -> int:
         if "." not in value:

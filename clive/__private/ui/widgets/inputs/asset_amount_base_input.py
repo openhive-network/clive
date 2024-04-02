@@ -73,7 +73,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
         """
         self._currency_selector: CurrencySelectorBase[AssetInputT] = self.create_currency_selector()
         default_asset_type = self._currency_selector.default_asset_cls
-        default_asset_precision = default_asset_type.get_asset_information().precision
+        default_asset_precision = Asset.get_precision(default_asset_type)
 
         super().__init__(
             title=title,
@@ -114,7 +114,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
 
     @property
     def selected_asset_precision(self) -> int:
-        return self.selected_asset_type.get_asset_information().precision
+        return Asset.get_precision(self.selected_asset_type)
 
     def compose(self) -> ComposeResult:
         with Vertical():

@@ -156,14 +156,14 @@ class Asset:
 
     @classmethod
     def to_legacy(cls, asset: Asset.AnyT) -> str:
-        return f"{cls.pretty_amount(asset)} {asset.get_asset_information().symbol[0]}"
+        return f"{cls.pretty_amount(asset)} {cls.get_symbol(asset)}"
 
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
         return f"{int(asset.amount) / 10 ** asset.precision :.{asset.precision}f}"
 
-    @staticmethod
-    def __convert_amount_to_internal_representation(amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
+    @classmethod
+    def __convert_amount_to_internal_representation(cls, amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
         """
         Convert given amount to internal representation of integer value.
 
@@ -171,7 +171,7 @@ class Asset:
         ------
         DecimalConversionNotANumberError: If given amount is not a valid number.
         """
-        precision = precision if isinstance(precision, int) else precision.get_asset_information().precision
+        precision = precision if isinstance(precision, int) else cls.get_precision(precision)
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
         return int(amount_decimal * 10**precision)
 

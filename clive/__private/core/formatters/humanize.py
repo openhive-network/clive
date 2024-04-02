@@ -153,7 +153,7 @@ def humanize_votes_with_comma(
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: Literal["", "+", "-"] = "") -> str:
     pretty_asset = Asset.pretty_amount(asset)
-    asset_symbol = asset.get_asset_information().symbol[0]
+    asset_symbol = Asset.get_symbol(asset)
     if sign_prefix and int(asset.amount) != 0:
         # To not allow display + or - if balance is equal to zero.
         return f"{sign_prefix}{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()
