@@ -33,9 +33,11 @@ class AssetLegacyInvalidFormatError(AssetError):
 
 
 class AssetAmountInvalidFormatError(AssetError):
-    def __init__(self, value: str) -> None:
+    def __init__(self, value: str, reason: str = "") -> None:
         self.value = value
-        message = f"Invalid asset amount format: '{value}'. Should be a number."
+        message = f"Invalid asset amount format: '{value}'."
+        if reason:
+            message += f" Reason: {reason}"
         super().__init__(message)
 
 
@@ -126,7 +128,7 @@ class Asset:
         try:
             amount = cls.__convert_amount_to_internal_representation(amount, asset)
         except DecimalConversionNotANumberError as error:
-            raise AssetAmountInvalidFormatError(str(amount)) from error
+            raise AssetAmountInvalidFormatError(str(amount), "Should be a number.") from error
         else:
             return asset(amount=amount)
 
@@ -145,6 +147,8 @@ class Asset:
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
+        from clive.__private.validators.asset_amount_validator import AssetAmountValidator
+
         match = re.match(r"(\d+(?:\.\d+)?)\s*(\w+)", value)
         if not match:
             raise AssetLegacyInvalidFormatError(value)
@@ -152,6 +156,12 @@ class Asset:
         amount, symbol = match.groups()
 
         asset_cls = cls.resolve_symbol(symbol)
+
+        result = AssetAmountValidator(asset_cls).validate(amount)
+        if not result.is_valid:
+            reason = str(result.failure_descriptions)
+            raise AssetAmountInvalidFormatError(amount, reason=reason)
+
         return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
 
     @classmethod
