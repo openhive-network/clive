@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import typer
 
+from clive.__private.cli.common.asset_parsers import liquid_asset
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.constants import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 
@@ -119,5 +120,11 @@ authority_weight_option = typer.Option(
     ...,
     "--weight",
     help="The new weight of account/key authority",
+    show_default=False,
+)
+liquid_amount_option = typer.Option(
+    ...,
+    parser=liquid_asset,
+    help="The liquid asset (HIVE/HBD) amount to transfer. (e.g. 2.500 HIVE)",
     show_default=False,
 )

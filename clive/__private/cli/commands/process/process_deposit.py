@@ -9,13 +9,13 @@ from schemas.operations import TransferToSavingsOperation
 class ProcessDeposit(OperationCommand):
     from_account: str
     to_account: str
-    amount: str
+    amount: Asset.LiquidT
     memo: str
 
     async def _create_operation(self) -> TransferToSavingsOperation:
         return TransferToSavingsOperation(
             from_=self.from_account,
             to=self.to_account,
-            amount=Asset.from_legacy(self.amount.upper()),
+            amount=self.amount,
             memo=self.memo,
         )

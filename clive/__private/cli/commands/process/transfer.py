@@ -9,13 +9,13 @@ from schemas.operations import TransferOperation
 class Transfer(OperationCommand):
     from_account: str
     to: str
-    amount: str
+    amount: Asset.LiquidT
     memo: str
 
     async def _create_operation(self) -> TransferOperation:
         return TransferOperation(
             from_=self.from_account,
             to=self.to,
-            amount=Asset.from_legacy(self.amount.upper()),
+            amount=self.amount,
             memo=self.memo,
         )
