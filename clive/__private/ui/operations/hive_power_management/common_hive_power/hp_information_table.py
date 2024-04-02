@@ -6,8 +6,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_asset
-from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
-from clive.__private.ui.widgets.clive_data_table import CliveDataTableRow
+from clive.__private.ui.widgets.clive_data_table import CliveDataTable, CliveDataTableRow
 
 if TYPE_CHECKING:
     from typing import Final
@@ -28,10 +27,6 @@ class HpInfoTableRow(CliveDataTableRow):
             dynamic=True,
             classes=classes,
         )
-
-    @property
-    def provider(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
 
 
 class HpInfoTableHeader(Horizontal):
@@ -109,3 +104,16 @@ class HpInfoTableEffectiveRow(HpInfoTableRow):
         vests_balance = humanize_asset(content.total_balance.vests_balance, show_symbol=False)
 
         return hp_balance, vests_balance
+
+
+class HpDataTable(CliveDataTable):
+    def __init__(self) -> None:
+        super().__init__(
+            HpInfoTableHeader(),
+            HpInfoTableOwnedRow(),
+            HpInfoTableReceivedRow(),
+            HpInfoTableDelegatedRow(),
+            HpInfoTablePowerDownRow(),
+            HpInfoTableEffectiveRow(),
+            dynamic=True,
+        )

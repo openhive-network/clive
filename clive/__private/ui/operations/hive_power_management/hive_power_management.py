@@ -11,12 +11,7 @@ from clive.__private.ui.operations.hive_power_management.common_hive_power.addit
     WithdrawalInfo,
 )
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_information_table import (
-    HpInfoTableDelegatedRow,
-    HpInfoTableEffectiveRow,
-    HpInfoTableHeader,
-    HpInfoTableOwnedRow,
-    HpInfoTablePowerDownRow,
-    HpInfoTableReceivedRow,
+    HpDataTable,
 )
 from clive.__private.ui.operations.hive_power_management.delegate_hive_power.delegate_hive_power import (
     DelegateHivePower,
@@ -26,7 +21,6 @@ from clive.__private.ui.operations.hive_power_management.power_up.power_up impor
 from clive.__private.ui.operations.hive_power_management.withdraw_routes.withdraw_routes import WithdrawRoutes
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.big_title import BigTitle
-from clive.__private.ui.widgets.clive_data_table import CliveDataTable
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 
 if TYPE_CHECKING:
@@ -48,14 +42,7 @@ class HivePowerManagement(OperationBaseScreen):
         with HivePowerDataProvider() as provider:
             yield BigTitle("hive power management")
             with Horizontal(id="hive-power-info"):
-                yield CliveDataTable(
-                    HpInfoTableHeader(),
-                    HpInfoTableOwnedRow(),
-                    HpInfoTableReceivedRow(),
-                    HpInfoTableDelegatedRow(),
-                    HpInfoTablePowerDownRow(),
-                    HpInfoTableEffectiveRow(),
-                )
+                yield HpDataTable()
                 yield WithdrawalInfo(provider)
             yield APR(provider)
             with CliveTabbedContent():
