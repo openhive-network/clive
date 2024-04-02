@@ -1,13 +1,11 @@
 from __future__ import annotations
 
-import errno
 from copy import deepcopy
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
-from clive.exceptions import CommunicationError
 from schemas.fields.basic import AccountName, PublicKey
 from schemas.fields.compound import Authority
 from schemas.fields.hive_int import HiveInt
@@ -26,37 +24,13 @@ if TYPE_CHECKING:
 @dataclass(kw_only=True)
 class ProcessAccountUpdate(OperationCommand):
     account_name: str
-    offline: bool
     _callbacks: list[AccountUpdateFunction] = field(default_factory=list)
 
     async def _create_operation(self) -> AccountUpdate2Operation:
-        previous_state = AccountUpdate2Operation(
-            account=self.account_name,
-            owner=None,
-            active=None,
-            posting=None,
-            memo_key=None,
-            json_metadata="",
-            posting_json_metadata="",
-            extensions=[],
-        )
+        accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
 
-        if self.offline is False:
-            try:
-                accounts = (await self.world.commands.find_accounts(accounts=[self.account_name])).result_or_raise
-            except CommunicationError as e:
-                raise CLIPrettyError(
-                    (
-                        "Updating authority by default requires access to database_api. Use option --force-offline to"
-                        " prepare transaction offline."
-                    ),
-                    errno.ECOMM,
-                ) from e
-
-            account = accounts[0]
-
-            previous_state = self.__update_stored_state(account)
-
+        account = accounts[0]
+        previous_state = self.__create_operation_from_stored_state(account)
         modified_state = deepcopy(previous_state)
 
         for callback in self._callbacks:
@@ -81,7 +55,7 @@ class ProcessAccountUpdate(OperationCommand):
             extensions=[],
         )
 
-    def __update_stored_state(self, account: SchemasAccount) -> AccountUpdate2Operation:
+    def __create_operation_from_stored_state(self, account: SchemasAccount) -> AccountUpdate2Operation:
         return AccountUpdate2Operation(
             account=account.name,
             owner=account.owner,

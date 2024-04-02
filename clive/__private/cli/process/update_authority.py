@@ -135,13 +135,6 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
             help="Set Threshold",
             show_default=False,
         ),
-        force_offline: bool = typer.Option(
-            False,
-            help=(
-                "By default commands updating authority are performed online. When this flag is enabled transaction"
-                " will be prepared offline and list of authorities of selected type will be built from scratch."
-            ),
-        ),
     ) -> None:
         """Collects common options for add/remove/modify authority, calls chain of commands add/remove/modify at the end of command."""
         from clive.__private.cli.commands.process.process_account_update import (
@@ -151,9 +144,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         )
 
         operation_common = OperationCommonOptions.get_instance()
-        update_command = ProcessAccountUpdate(
-            **operation_common.as_dict(), account_name=account_name, offline=force_offline
-        )
+        update_command = ProcessAccountUpdate(**operation_common.as_dict(), account_name=account_name)
         if threshold:
             set_threshold_function = partial(set_threshold, threshold=threshold)
             update_function = partial(update_authority, attribute=authority, callback=set_threshold_function)

@@ -90,6 +90,6 @@ async def process_update_memo_key(
     update_memo_key_callback = partial(set_memo_key, key=memo_key)
 
     common = OperationCommonOptions.get_instance()
-    operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name, offline=True)
+    operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name)
     operation.add_callback(update_memo_key_callback)
     await operation.run()
