@@ -85,11 +85,11 @@ class CartOverview(CliveWidget):
 
     @staticmethod
     def __get_hive_balance(profile_data: ProfileData) -> str:
-        return Asset.to_legacy(profile_data.working_account.data.hive_balance)
+        return Asset.pretty_amount(profile_data.working_account.data.hive_balance)
 
     @staticmethod
     def __get_hbd_balance(profile_data: ProfileData) -> str:
-        return Asset.to_legacy(profile_data.working_account.data.hbd_balance)
+        return Asset.pretty_amount(profile_data.working_account.data.hbd_balance)
 
     def __create_cart_items(self) -> list[CartItem]:
         return [CartItem(index + 1, operation) for index, operation in enumerate(self.app.world.profile_data.cart)]
