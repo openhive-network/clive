@@ -132,13 +132,23 @@ class Clive(App[int], ManualReactive):
         self,
         *,
         headless: bool = False,
+        inline: bool = False,
+        inline_no_clear: bool = False,
+        mouse: bool = False,
         size: tuple[int, int] | None = None,
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
             async with TextualWorld() as world:
                 self.__class__.world = world
-                return await super().run_async(headless=headless, size=size, auto_pilot=auto_pilot)
+                return await super().run_async(
+                    headless=headless,
+                    inline=inline,
+                    inline_no_clear=inline_no_clear,
+                    mouse=mouse,
+                    size=size,
+                    auto_pilot=auto_pilot,
+                )
         except CancelledError:
             pass
         finally:
