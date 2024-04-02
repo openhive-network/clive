@@ -39,6 +39,13 @@ class AssetAmountInvalidFormatError(AssetError):
         super().__init__(message)
 
 
+class UnknownAssetTypeError(AssetError):
+    def __init__(self, symbol: str) -> None:
+        self.symbol = symbol
+        message = f"Unknown asset type: '{symbol}'."
+        super().__init__(message)
+
+
 class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
     """Holds factory for asset."""
 
@@ -125,7 +132,8 @@ class Asset:
 
     @classmethod
     def resolve_symbol(cls, symbol: str) -> type[Asset.AnyT]:
-        match symbol.upper():
+        symbol = symbol.upper()
+        match symbol:
             case "HIVE" | "TESTS":
                 return Asset.Hive
             case "HBD" | "TBD":
@@ -133,7 +141,7 @@ class Asset:
             case "VESTS":
                 return Asset.Vests
             case _:
-                raise ValueError(f"Unknown asset type: '{symbol}'")
+                raise UnknownAssetTypeError(symbol)
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
