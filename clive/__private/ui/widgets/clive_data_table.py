@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Sequence
 
 from textual.containers import Horizontal
 from textual.widgets import Static
@@ -18,10 +18,29 @@ class CliveDataTableRow(Horizontal, CliveWidget):
     """Class that represent the one line of the clive data table."""
 
     DEFAULT_CSS = """
+    $row-color-odd: $accent;
+    $row-color-even: $accent-lighten-1;
+    $row-title-color: $background-lighten-2;
+
     CliveDataTableRow {
         layout: horizontal;
         width: 1fr;
         height: 1;
+
+        &.-odd {
+          background: $row-color-odd;
+        }
+
+        &.-even {
+          background: $row-color-even;
+        }
+
+        RowTitle {
+          text-style: bold;
+          width: 1fr;
+          background: $row-title-color;
+          text-align: center;
+        }
     }
     """
 
@@ -103,6 +122,8 @@ class CliveDataTable(CliveWidget):
         self._rows = rows
         self._dynamic = dynamic
 
+        self._set_evenness_styles(rows)
+
     def compose(self) -> ComposeResult:
         yield self._header
         yield from self._rows
@@ -119,6 +140,11 @@ class CliveDataTable(CliveWidget):
             for row in self._rows:
                 if row._dynamic:
                     row.refresh_row(content)
+
+    def _set_evenness_styles(self, rows: Sequence[CliveDataTableRow]) -> None:
+        for row_index, row in enumerate(rows):
+            is_even_row = row_index % 2 == 0
+            row.add_class("-even" if is_even_row else "-odd")
 
     @property
     def provider(self) -> DataProvider[Any]:
