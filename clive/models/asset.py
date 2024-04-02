@@ -174,3 +174,15 @@ class Asset:
         precision = precision if isinstance(precision, int) else precision.get_asset_information().precision
         amount_decimal = DecimalConverter.convert(amount, precision=precision)
         return int(amount_decimal * 10**precision)
+
+    @staticmethod
+    def get_symbol(asset: type[Asset.AnyT] | Asset.AnyT) -> str:
+        return asset.get_asset_information().symbol[0]
+
+    @staticmethod
+    def get_precision(asset: type[Asset.AnyT] | Asset.AnyT) -> int:
+        return asset.get_asset_information().precision
+
+    @staticmethod
+    def get_nai(asset: type[Asset.AnyT] | Asset.AnyT) -> str:
+        return asset.get_asset_information().nai
