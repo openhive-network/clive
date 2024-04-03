@@ -4,6 +4,7 @@ import asyncio
 from typing import TYPE_CHECKING, Any
 
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
+from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 
 if TYPE_CHECKING:
     from textual.screen import Screen
@@ -29,7 +30,7 @@ async def press_and_wait_for_screen(  # noqa: PLR0913
     *,
     key_description: str | None = None,
     wait_for_focused: bool = True,
-    timeout: float = 3.0,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
 ) -> None:
     """Press some binding and ensure screen changed after some action."""
     await press_binding(pilot, key, key_description)
@@ -37,7 +38,11 @@ async def press_and_wait_for_screen(  # noqa: PLR0913
 
 
 async def wait_for_screen(
-    pilot: ClivePilot, expected_screen: type[Screen[Any]], *, wait_for_focused: bool = True, timeout: float = 3.0
+    pilot: ClivePilot,
+    expected_screen: type[Screen[Any]],
+    *,
+    wait_for_focused: bool = True,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
 ) -> None:
     """Wait for the expected screen to be active."""
 
@@ -63,6 +68,21 @@ async def wait_for_screen(
         wait_for_focused_info = " or nothing was focused " if wait_for_focused else " "
         raise AssertionError(
             f"Screen didn't changed to '{expected_screen}'{wait_for_focused_info}in {timeout=}s.\n"
+            f"Current screen is: {app.screen}\n"
+            f"Currently focused: {app.focused}"
+        ) from None
+
+
+async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
+    """Change focus to next Widget and wait for something is focused."""
+    await pilot.press("tab")
+    try:
+        task = _wait_for_something_to_be_focused(pilot)
+        await asyncio.wait_for(task, timeout=timeout)
+    except asyncio.TimeoutError:
+        app = pilot.app
+        raise AssertionError(
+            f"Nothing was focused in {timeout=}s.\n"
             f"Current screen is: {app.screen}\n"
             f"Currently focused: {app.focused}"
         ) from None

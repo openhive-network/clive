@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 from textual.widgets._toast import Toast
 
+from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
+
 if TYPE_CHECKING:
     from collections.abc import Callable
 
@@ -31,7 +33,11 @@ async def extract_transaction_id_from_notification(pilot: ClivePilot) -> str:
 
 
 async def extract_message_from_notification(
-    pilot: ClivePilot, find_message_cb: Callable[[str], str], *, search_in_history: bool = True, timeout: float = 3.0
+    pilot: ClivePilot,
+    find_message_cb: Callable[[str], str],
+    *,
+    search_in_history: bool = True,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
 ) -> str:
     """
     Will look for a notification containing the expected message and returns it.
