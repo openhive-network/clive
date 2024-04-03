@@ -28,20 +28,25 @@ class AddKey(WorldBasedCommand):
     alias: str | None = None
 
     @property
-    def private_key_aliased(self) -> PrivateKeyAliased:
+    def private_key(self) -> PrivateKey:
         key_or_path = Path(self.key_or_path)
 
         if key_or_path.is_file():
-            private_key = PrivateKey.from_file(key_or_path)
-        else:
-            try:
-                private_key = PrivateKey(value=str(self.key_or_path))
-            except PrivateKeyInvalidFormatError as error:
-                raise CLIPrettyError(str(error), errno.EINVAL) from None
+            return PrivateKey.from_file(key_or_path)
 
-        alias = self.alias if self.alias else private_key.calculate_public_key().value
+        try:
+            return PrivateKey(value=str(self.key_or_path))
+        except PrivateKeyInvalidFormatError as error:
+            raise CLIPrettyError(str(error), errno.EINVAL) from None
 
-        return private_key.with_alias(alias)
+    @property
+    def private_key_aliased(self) -> PrivateKeyAliased:
+        private_key = self.private_key
+        return private_key.with_alias(self.get_actual_alias(private_key))
+
+    def get_actual_alias(self, private_key: PrivateKey | None = None) -> str:
+        private_key = private_key or self.private_key
+        return self.alias if self.alias else private_key.calculate_public_key().value
 
     async def validate_inside_context_manager(self) -> None:
         profile_data = self.world.profile_data
@@ -52,7 +57,9 @@ class AddKey(WorldBasedCommand):
             return
 
         key_manager = profile_data.working_account.keys
-        alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(self.alias)
+        alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(
+            self.get_actual_alias()
+        )
 
         if not alias_result.is_valid:
             raise CLIPrettyError(f"Can't add alias: {alias_result.failure_descriptions}", errno.EINVAL)
