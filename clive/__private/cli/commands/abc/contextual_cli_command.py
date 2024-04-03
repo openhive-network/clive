@@ -34,15 +34,20 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
         """
         return
 
+    async def _hook_before_entering_context_manager(self) -> None:
+        """Hook called before entering the context manager."""
+        return
+
     async def run(self) -> None:
         if not self._skip_validation:
             await self.validate()
-
+        await self._configure()
         await self._run_in_context_manager()
 
     async def _run_in_context_manager(self) -> None:
         self.__context_manager_instance = await self._create_context_manager_instance()
 
+        await self._hook_before_entering_context_manager()
         async with self._context_manager_instance:
             if not self._skip_validation:
                 await self.validate_inside_context_manager()

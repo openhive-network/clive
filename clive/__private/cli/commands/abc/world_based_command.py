@@ -29,13 +29,6 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
             beekeeper_remote_endpoint=self.beekeeper_remote_url,
         )
 
-    async def run(self) -> None:
-        await self.validate()
-        self._skip_validation = True  # Skip validating again in the super().run()
-
-        await self._configure()
-
+    async def _hook_before_entering_context_manager(self) -> None:
         if self.use_beekeeper:
             self._print_launching_beekeeper()
-
-        await super().run()
