@@ -9,7 +9,7 @@ AsyncContextManagerType = TypeVar("AsyncContextManagerType", bound=Any)
 
 @dataclass(kw_only=True)
 class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand, ABC):
-    """A command that might(!) require some preparation before running."""
+    """A command that has to be run inside some context manager (so has some preparation)."""
 
     __context_manager_instance: AsyncContextManagerType | None = field(default=None, init=False)
 
@@ -21,10 +21,6 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
     @abstractmethod
     async def _create_context_manager_instance(self) -> AsyncContextManagerType:
         """Create the context manager that will be used to run the command."""
-
-    @abstractmethod
-    async def _run(self) -> None:
-        """The actual implementation of the command."""
 
     async def validate_inside_context_manager(self) -> None:
         """
@@ -38,18 +34,11 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
         """
         return
 
-    async def _should_run_in_context_manager(self) -> bool:
-        """A flag indicating whether the command should be prepared before running."""
-        return True
-
     async def run(self) -> None:
         if not self._skip_validation:
             await self.validate()
 
-        if await self._should_run_in_context_manager():
-            await self._run_in_context_manager()
-        else:
-            await self._run()
+        await self._run_in_context_manager()
 
     async def _run_in_context_manager(self) -> None:
         self.__context_manager_instance = await self._create_context_manager_instance()
