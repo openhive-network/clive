@@ -32,4 +32,4 @@ class PublicKeyAliasValidator(Validator):
     def _validate_is_key_alias_available(self, value: str) -> bool:
         if not self.validate_like_adding_new:
             return True
-        return self.key_manager.is_public_alias_available(value)
+        return self.key_manager.is_alias_available(value)
