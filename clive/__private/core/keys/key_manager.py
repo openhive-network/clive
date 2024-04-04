@@ -77,6 +77,8 @@ class KeyManager:
 
     def add_to_import(self, *keys: PrivateKeyAliased) -> None:
         for key in keys:
+            # cannot import a key with an alias that is already in use
+            self.__assert_no_alias_conflict(key.alias, "public")
             self.__assert_no_alias_conflict(key.alias, "to_import")
             self.__keys_to_import.append(key)
 
