@@ -147,7 +147,8 @@ async def test_transfers_finalize_cart(
 
     ### Create 2 transfers
     # Choose transfer operation
-    await pilot.press("f2", "tab")
+    await press_and_wait_for_screen(pilot, "f2", Operations)
+    await pilot.press("tab")
 
     for i in range(TRANSFERS_COUNT):
         # Fill transfer data
