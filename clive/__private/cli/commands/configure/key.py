@@ -9,7 +9,6 @@ from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNo
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.keys import (
-    KeyAliasAlreadyInUseError,
     PrivateKey,
     PrivateKeyAliased,
     PrivateKeyInvalidFormatError,
@@ -69,10 +68,7 @@ class AddKey(WorldBasedCommand):
         profile_data = self.world.profile_data
         typer.echo("Importing key...")
 
-        try:
-            profile_data.working_account.keys.add_to_import(self.private_key_aliased)
-        except KeyAliasAlreadyInUseError as error:
-            raise CLIPrettyError(str(error), errno.EEXIST) from None
+        profile_data.working_account.keys.add_to_import(self.private_key_aliased)
 
         try:
             await self.world.commands.activate(password=self.password)
