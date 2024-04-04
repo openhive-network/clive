@@ -53,9 +53,6 @@ class AddKey(WorldBasedCommand):
         if not profile_data.is_working_account_set():
             raise CLIWorkingAccountIsNotSetError(profile_data)
 
-        if self.alias is None:
-            return
-
         key_manager = profile_data.working_account.keys
         alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(
             self.get_actual_alias()
