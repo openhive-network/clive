@@ -125,6 +125,10 @@ class CliveCheckerboardTable(CliveWidget):
 
         .-odd-column {
             background: $primary-background-darken-2;
+
+            OneLineButton {
+                opacity: 93%;
+            }
         }
 
         .-even-column {
