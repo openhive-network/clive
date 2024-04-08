@@ -7,9 +7,15 @@ from clive_local_tools.tui.checkers import assert_is_key_binding_active
 from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 
 if TYPE_CHECKING:
+    from typing import Final
+
     from textual.screen import Screen
+    from textual.widget import Widget
 
     from clive_local_tools.tui.types import ClivePilot
+
+
+POLL_TIME_SECS: Final[float] = 0.1
 
 
 async def write_text(pilot: ClivePilot, text: str) -> None:
@@ -37,6 +43,32 @@ async def press_and_wait_for_screen(  # noqa: PLR0913
     await wait_for_screen(pilot, expected_screen, wait_for_focused=wait_for_focused, timeout=timeout)
 
 
+async def press_and_wait_for_focus(
+    pilot: ClivePilot,
+    key: str,
+    *,
+    key_description: str | None = None,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+) -> None:
+    """Press some binding and ensure focus changed after some action."""
+    current_focus = pilot.app.focused
+    await press_binding(pilot, key, key_description)
+    await wait_for_focus(pilot, different_than=current_focus, timeout=timeout)
+
+
+async def _wait_for_screen_change(pilot: ClivePilot, expected_screen: type[Screen[Any]]) -> None:
+    app = pilot.app
+    while not isinstance(app.screen, expected_screen):
+        await pilot.pause(POLL_TIME_SECS)
+
+
+async def _wait_for_focus(pilot: ClivePilot, *, different_than: Widget | None = None) -> None:
+    """Wait for focus set to anything if different_than is None or for change if not None."""
+    app = pilot.app
+    while not app.focused or app.focused is different_than:
+        await pilot.pause(POLL_TIME_SECS)
+
+
 async def wait_for_screen(
     pilot: ClivePilot,
     expected_screen: type[Screen[Any]],
@@ -46,20 +78,11 @@ async def wait_for_screen(
 ) -> None:
     """Wait for the expected screen to be active."""
 
-    async def wait_for_screen_change() -> None:
-        while not isinstance(app.screen, expected_screen):
-            await pilot.pause(poll_time_secs)
-
-    async def wait_for_something_to_be_focused() -> None:
-        while not app.focused:
-            await pilot.pause(poll_time_secs)
-
     async def wait_for_everything() -> None:
-        await wait_for_screen_change()
+        await _wait_for_screen_change(pilot, expected_screen)
         if wait_for_focused:
-            await wait_for_something_to_be_focused()
+            await _wait_for_focus(pilot)
 
-    poll_time_secs = 0.1
     app = pilot.app
 
     try:
@@ -73,16 +96,25 @@ async def wait_for_screen(
         ) from None
 
 
-async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
-    """Change focus to next Widget and wait for something is focused."""
-    await pilot.press("tab")
+async def wait_for_focus(
+    pilot: ClivePilot,
+    *,
+    different_than: Widget | None = None,
+    timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
+) -> None:
+    """See _wait_for_focus."""
     try:
-        task = _wait_for_something_to_be_focused(pilot)
+        task = _wait_for_focus(pilot, different_than=different_than)
         await asyncio.wait_for(task, timeout=timeout)
     except asyncio.TimeoutError:
-        app = pilot.app
+        wait_for_focused_info = "or focus not changed " if different_than else " "
         raise AssertionError(
-            f"Nothing was focused in {timeout=}s.\n"
-            f"Current screen is: {app.screen}\n"
-            f"Currently focused: {app.focused}"
+            f"Nothing was focused {wait_for_focused_info}in {timeout=}s.\n"
+            f"Current screen is: {pilot.app.screen}\n"
+            f"Currently focused: {pilot.app.focused}"
         ) from None
+
+
+async def focus_next(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
+    """Change focus to the next Widget (waits until something new is focused)."""
+    await press_and_wait_for_focus(pilot, "tab", timeout=timeout)
