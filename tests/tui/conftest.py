@@ -15,6 +15,7 @@ from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.core.url import Url
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import (
     get_alternate_chain_spec_path,
     get_block_log,
@@ -48,11 +49,11 @@ def _prepare_profile() -> None:
 
 
 async def _prepare_beekeeper_wallet(world: TextualWorld) -> None:
-    password = (await world.commands.create_wallet(password=WORKING_ACCOUNT.name)).result_or_raise
+    password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
     tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
 
     world.profile_data.working_account.keys.add_to_import(
-        PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=f"{WORKING_ACCOUNT.name}_key")
+        PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
     )
     await world.commands.sync_data_with_beekeeper()
 
