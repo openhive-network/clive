@@ -52,7 +52,6 @@ class CliveCheckerBoardTableCell(Container):
     CliveCheckerBoardTableCell {
         height: auto;
         Static {
-            text-style: bold;
             text-align: center;
             width: 1fr;
             height: 3;

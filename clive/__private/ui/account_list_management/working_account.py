@@ -45,7 +45,6 @@ class RemoveWorkingAccount(CliveCheckerboardTableRow, CliveWidget):
     def remove_working_account(self) -> None:
         self.app.world.profile_data.unset_working_account()
         self.app.trigger_profile_data_watchers()
-        self.app.world.profile_data.watched_accounts.clear()
 
 
 class ManageWorkingAccountTable(CliveCheckerboardTable):
@@ -122,7 +121,7 @@ class WorkingAccountChange(Vertical, CliveWidget):
         self.app.world.profile_data.unset_working_account()
         self.app.world.profile_data.set_working_account(self._working_account_input.value_or_error)
         self.app.trigger_profile_data_watchers()
-        self.app.world.profile_data.watched_accounts.clear()
+        self._working_account_input.input.clear()
 
     def change_container_function(self) -> None:
         button = CliveButton(
