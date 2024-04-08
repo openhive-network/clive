@@ -25,6 +25,7 @@ from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
 from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
+    focus_next,
     press_and_wait_for_screen,
     write_text,
 )
@@ -58,20 +59,21 @@ async def fill_savings_data(
     assert_is_screen_active(pilot, Savings)
     amount = str(asset.as_float())
     asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
-    await pilot.press("tab")  # Go to choose operation type
+    await focus_next(pilot)  # Go to choose operation type
     if operation_type is TransferFromSavingsOperation:
         await pilot.press("right", "space")  # Mark 'transfer from savings'
-    await pilot.press("tab")  # Go to choose beneficient account
+    await focus_next(pilot)  # Go to choose beneficient account
     if other_account is not None:
         # clear currently introduced account name and input other_account
         await pilot.press("ctrl+w")
         await write_text(pilot, other_account)
-    await pilot.press("tab", "tab")  # Go to amount input
+    await focus_next(pilot)
+    await focus_next(pilot)  # Go to amount input
     await write_text(pilot, amount)
-    await pilot.press("tab")  # Go to choose token
+    await focus_next(pilot)  # Go to choose token
     await choose_asset_token(pilot, asset_token)
     if memo:
-        await pilot.press("tab")  # Go to choose memo
+        await focus_next(pilot)  # Go to choose memo
         await write_text(pilot, memo)
 
 
@@ -98,7 +100,8 @@ def prepare_expected_operation(
 async def go_to_savings(pilot: ClivePilot) -> None:
     assert_is_screen_active(pilot, DashboardActive)
     await press_and_wait_for_screen(pilot, "f2", Operations)
-    await pilot.press("tab", "tab")
+    await focus_next(pilot)
+    await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", Savings)
 
 
@@ -288,7 +291,7 @@ async def test_canceling_transfer_from_savings(
         # Test canceling first transfer from savings
         # ACT
         await go_to_savings(pilot)
-        await pilot.press("tab")
+        await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
         await fast_broadcast(pilot, True)
         await press_and_wait_for_screen(pilot, "escape", DashboardActive)

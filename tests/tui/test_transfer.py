@@ -15,7 +15,11 @@ from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
 from clive_local_tools.tui.process_operation import process_operation
-from clive_local_tools.tui.textual_helpers import press_and_wait_for_screen, write_text
+from clive_local_tools.tui.textual_helpers import (
+    focus_next,
+    press_and_wait_for_screen,
+    write_text,
+)
 from clive_local_tools.tui.utils import get_mode, log_current_view
 from schemas.operations import TransferOperation
 
@@ -36,12 +40,13 @@ async def fill_transfer_data(
     amount = str(asset.as_float())
     asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
     await write_text(pilot, beneficient)
-    await pilot.press("tab", "tab")
+    await focus_next(pilot)
+    await focus_next(pilot)
     await write_text(pilot, amount)
-    await pilot.press("tab")
+    await focus_next(pilot)
     await choose_asset_token(pilot, asset_token)
     if memo:
-        await pilot.press("tab")
+        await focus_next(pilot)
         await write_text(pilot, memo)
 
 
@@ -91,7 +96,7 @@ async def test_transfers(
 
     ### Create transfer
     await press_and_wait_for_screen(pilot, "f2", Operations)
-    await pilot.press("tab")  # Choose transfer operation
+    await focus_next(pilot)  # Choose transfer operation
     await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     # Fill transfer data
@@ -148,7 +153,7 @@ async def test_transfers_finalize_cart(
     ### Create 2 transfers
     # Choose transfer operation
     await press_and_wait_for_screen(pilot, "f2", Operations)
-    await pilot.press("tab")
+    await focus_next(pilot)
 
     for i in range(TRANSFERS_COUNT):
         # Fill transfer data
