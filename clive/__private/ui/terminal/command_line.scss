@@ -1,21 +1,21 @@
-CommandLinePrompt {
-  dock: left;
-  margin-left: 1;
-  width: auto;
-
-  .--active {
-    color: $success;
-  }
-}
-
 CommandLine {
   dock: bottom;
-  height: 2;
-}
+  height: 1;
 
-CommandLineInput {
-  margin-left: 1;
-  border: none !important;
-  background: $panel;
-  padding: 0;
+  CommandLinePrompt {
+    dock: left;
+    margin-left: 1;
+    width: auto;
+
+    .--active {
+      color: $success;
+    }
+  }
+
+  CommandLineInput {
+    margin-left: 1;
+    border: none !important;
+    background: $panel;
+    padding: 0;
+  }
 }
