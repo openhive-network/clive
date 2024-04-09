@@ -50,11 +50,12 @@ class CliveCheckerBoardTableCell(Container):
 
     DEFAULT_CSS = """
     CliveCheckerBoardTableCell {
-        height: auto;
+        height: 3;
+
         Static {
             text-align: center;
             width: 1fr;
-            height: 3;
+            height: 1fr;
             content-align: center middle;
         }
     }
