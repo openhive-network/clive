@@ -17,6 +17,8 @@ if TYPE_CHECKING:
     from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
+    from clive.__private.core.profile_data import ProfileData
+
 
 class AccountNameInput(TextInput):
     """An input for a Hive account name."""
@@ -67,6 +69,7 @@ class AccountNameInput(TextInput):
         show_invalid_reasons: bool = True,
         required: bool = True,
         ask_known_account: bool = True,
+        accounts_holder: ProfileData | None = None,
         validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
@@ -80,6 +83,7 @@ class AccountNameInput(TextInput):
         New args (compared to `TextInput`):
         ------------------------------------
         ask_known_account: Whether to display the KnownAccount widget which keeps track of know accounts list.
+        accounts_holder: See the docs of `KnownAccount` initializer.
         """
         super().__init__(
             title=title,
@@ -97,7 +101,7 @@ class AccountNameInput(TextInput):
             disabled=disabled,
         )
         self._ask_known_account = ask_known_account
-        self._known_account = KnownAccount(self.input)
+        self._known_account = KnownAccount(self.input, accounts_holder)
 
     def compose(self) -> ComposeResult:
         with Vertical():

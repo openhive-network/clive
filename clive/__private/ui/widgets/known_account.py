@@ -13,6 +13,8 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.profile_data import ProfileData
+
 
 class KnownAccount(CliveWidget):
     @dataclass
@@ -26,8 +28,17 @@ class KnownAccount(CliveWidget):
     class Disabled(Message):
         """Posted when the widget is going to the disabled state. (e.g. account name is invalid so can't be known)."""
 
-    def __init__(self, input: Input):  # noqa: A002
+    def __init__(self, input: Input, accounts_holder: ProfileData | None = None):  # noqa: A002
+        """
+        Initialize the widget.
+
+        Args:
+        ----
+        input: The input widget to get the account name from.
+        accounts_holder: Object that holds known accounts. If not provided, the account holder from app world is used.
+        """
         self.input = input
+        self._account_holder = accounts_holder if accounts_holder is not None else self.app.world.profile_data
 
         self.checkbox = Checkbox("Known?", disabled=True)
         super().__init__()
@@ -70,9 +81,9 @@ class KnownAccount(CliveWidget):
 
         checked = event.value
         if checked:
-            self.app.world.profile_data.known_accounts.add(self.account)
+            self._account_holder.known_accounts.add(self.account)
         else:
-            self.app.world.profile_data.known_accounts.discard(self.account)
+            self._account_holder.known_accounts.discard(self.account)
 
         self.post_message(self.Status(is_account_known=checked, account_name=self.account_name_raw))
 
@@ -94,7 +105,7 @@ class KnownAccount(CliveWidget):
         return Account.is_valid(self.account_name_raw)
 
     def __is_given_account_known(self) -> bool:
-        return self.account in self.app.world.profile_data.known_accounts
+        return self.account in self._account_holder.known_accounts
 
     def __should_check_as_known(self) -> bool:
         return self.__is_account_name_valid() and self.__is_given_account_known()
