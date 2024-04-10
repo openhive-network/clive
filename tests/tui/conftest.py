@@ -81,7 +81,7 @@ async def prepared_env(world: TextualWorld) -> tuple[tt.RawNode, Clive]:
     node.config.load_from_lines(config_lines)
     arguments = ["--alternate-chain-spec", str(alternate_chain_spec_path)]
     time_offset = get_time_offset()
-    node.run(replay_from=block_log, arguments=arguments, time_offset=time_offset)
+    node.run(replay_from=block_log, arguments=arguments, time_control=time_offset)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])
