@@ -23,6 +23,7 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
+from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 from schemas.operations import SetWithdrawVestingRouteOperation
@@ -82,7 +83,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
         return [WithdrawRoute(withdraw_route) for withdraw_route in content.withdraw_routes]
 
     def get_no_content_available_widget(self) -> Static:
-        return Static("You have no withdraw routes", id="no-withdraw-routes-info")
+        return NoContentAvailable("You have no withdraw routes")
 
     @property
     def object_to_watch(self) -> HivePowerDataProvider:

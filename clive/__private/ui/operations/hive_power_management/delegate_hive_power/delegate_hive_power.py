@@ -24,6 +24,7 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests imp
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
+from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.models import Asset
@@ -93,7 +94,7 @@ class DelegationsTable(CliveCheckerboardTable):
         return [Delegation(delegation, content.gdpo) for delegation in content.delegations]
 
     def get_no_content_available_widget(self) -> Static:
-        return Static("You have no delegations", id="no-delegations-info")
+        return NoContentAvailable("You have no delegations")
 
     @property
     def check_if_should_be_updated(self) -> bool:

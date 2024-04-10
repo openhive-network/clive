@@ -27,6 +27,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests import CurrencySelectorHpVests
 from clive.__private.ui.widgets.generous_button import GenerousButton
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
+from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
@@ -113,7 +114,7 @@ class PendingPowerDown(CliveCheckerboardTable):
         ]
 
     def get_no_content_available_widget(self) -> Static:
-        return Static("You have no current power down process", id="no-current-power-down-info")
+        return NoContentAvailable("You have no current power down process")
 
     @on(CliveButton.Pressed)
     def push_operation_summary_screen(self) -> None:

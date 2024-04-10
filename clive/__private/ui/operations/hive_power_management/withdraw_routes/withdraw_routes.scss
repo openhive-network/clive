@@ -33,12 +33,8 @@ WithdrawRoutes {
       }
     }
 
-    #no-withdraw-routes-info {
-      text-style: bold;
+    NoContentAvailable {
       margin-top: 1;
-      background: $primary;
-      height: auto;
-      text-align: center;
     }
 
     #withdraw-routes-table-title {

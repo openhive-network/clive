@@ -45,13 +45,8 @@ PowerDown {
       text-align: center;
     }
 
-    #no-current-power-down-info {
-      text-style: bold;
+    NoContentAvailable {
       margin-top: 1;
-      background: $primary;
-      width: 1fr;
-      height: 1;
-      text-align: center;
     }
 
     PendingPowerDownHeader {

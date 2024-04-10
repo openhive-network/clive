@@ -35,10 +35,8 @@ DelegateHivePower {
       text-align: center;
     }
 
-    #no-delegations-info {
+    NoContentAvailable {
       margin-top: 1;
-      background: $primary;
-      height: 1;
     }
 
     Delegation {
