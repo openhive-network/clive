@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 
 # We have 500ms time period protection on ulocking wallet.
 WALLET_UNLOCK_INTERVAL: Final[float] = 0.5
-AES_DECRYPTION_ERROR: Final[str] = "AES error:error during aes 256 cbc decrypt finalrethrow"
+AES_DECRYPTION_ERROR: Final[str] = "Invalid password for wallet"
 WALLET_UNACCESSIBLE_ERROR: Final[str] = "Assert Exception:false: unlock is not accessible"
 
 
