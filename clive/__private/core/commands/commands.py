@@ -17,6 +17,7 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesDataRetrieval,
 )
 from clive.__private.core.commands.deactivate import Deactivate
+from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
@@ -83,6 +84,11 @@ class Commands(Generic[WorldT]):
                 wallet=self._world.profile_data.name,
                 password=password,
             )
+        )
+
+    async def does_account_exists_in_node(self, *, account_name: str) -> CommandWithResultWrapper[bool]:
+        return await self.__surround_with_exception_handlers(
+            DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
         )
 
     async def activate(
