@@ -10,10 +10,8 @@ class SetPasswordValidator(Validator):
     MAX_LENGTH: Final[int] = 64
 
     def validate(self, value: str) -> ValidationResult:
-        result = self.success()
-
         validators = [
             Length(minimum=self.MIN_LENGTH, maximum=self.MAX_LENGTH),
         ]
 
-        return result.merge([validator.validate(value) for validator in validators])
+        return ValidationResult.merge([validator.validate(value) for validator in validators])

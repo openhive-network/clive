@@ -3,12 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING, Final, Literal, TypeAlias
 
-from textual.validation import Function, Validator
+from textual.validation import Function, ValidationResult, Validator
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-
-    from textual.validation import ValidationResult
 
 
 class PathValidator(Validator):
@@ -64,15 +62,13 @@ class PathValidator(Validator):
             ),
         }
 
-        result = self.success()
-
         validators = [Function(self._validate_path, self.INVALID_FAILURE_DESC)]
 
         method = mode_validators[self.mode][0]
         desc = mode_validators[self.mode][1]
         validators += [Function(method, desc)]
 
-        return result.merge([validator.validate(value) for validator in validators])
+        return ValidationResult.merge([validator.validate(value) for validator in validators])
 
     def _validate_path(self, value: str) -> bool:
         try:

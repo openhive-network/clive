@@ -20,14 +20,12 @@ class PublicKeyAliasValidator(Validator):
         self.validate_like_adding_new = validate_like_adding_new
 
     def validate(self, value: str) -> ValidationResult:
-        result = self.success()
-
         validators = [
             Length(self.MIN_LENGTH, self.MAX_LENGTH),
             Function(self._validate_is_key_alias_available, self.ALREADY_IN_USE_FAILURE_DESCRIPTION),
         ]
 
-        return result.merge([validator.validate(value) for validator in validators])
+        return ValidationResult.merge([validator.validate(value) for validator in validators])
 
     def _validate_is_key_alias_available(self, value: str) -> bool:
         if not self.validate_like_adding_new:

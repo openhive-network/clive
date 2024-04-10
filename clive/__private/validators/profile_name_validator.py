@@ -15,14 +15,12 @@ class ProfileNameValidator(Validator):
     )
 
     def validate(self, value: str) -> ValidationResult:
-        result = self.success()
-
         validators = [
             Length(minimum=self.MIN_LENGTH, maximum=self.MAX_LENGTH),
             Function(self._validate_allowed_characters, self.ALLOWED_CHARACTERS_FAILURE_DESCRIPTION),
         ]
 
-        return result.merge([validator.validate(value) for validator in validators])
+        return ValidationResult.merge([validator.validate(value) for validator in validators])
 
     def _validate_allowed_characters(self, value: str) -> bool:
         return all(char.isalnum() or char in self.ALLOWED_SPECIAL_CHARS for char in value)

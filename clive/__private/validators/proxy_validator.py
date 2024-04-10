@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import Final
+
+from textual.validation import Function, ValidationResult
 
 from clive.__private.validators.account_name_validator import AccountNameValidator
-
-if TYPE_CHECKING:
-    from textual.validation import ValidationResult
 
 
 class ProxyValidator(AccountNameValidator):
@@ -23,9 +22,15 @@ class ProxyValidator(AccountNameValidator):
         self.working_account_name = working_account_name
 
     def validate(self, value: str) -> ValidationResult:
-        result = super().validate(value)
+        super_result = super().validate(value)
 
+        validators = [
+            Function(self._validate_set_proxy_to_self, self.PROXY_SELF_FAILURE_DESCRIPTION),
+        ]
+
+        return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
+
+    def _validate_set_proxy_to_self(self, value: str) -> bool:
         if self.working_account_name is not None and self.working_account_name == value:
-            result = result.merge([self.failure(self.PROXY_SELF_FAILURE_DESCRIPTION, value)])
-
-        return result
+            return False
+        return True
