@@ -143,4 +143,4 @@ def vests(amount: int) -> WaxJsonAsset:
 
 
 def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
-    return wax.get_tapos_data(block_id.encode())  # type: ignore[no-any-return]
+    return wax.get_tapos_data(block_id.encode())
