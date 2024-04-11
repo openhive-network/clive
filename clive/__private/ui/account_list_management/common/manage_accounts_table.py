@@ -84,7 +84,9 @@ class ManageAccountsTable(CliveCheckerboardTable):
     def create_dynamic_rows(self, content: ProfileData) -> list[AccountRow]:
         self._previous_accounts = getattr(content, self._accounts_type).copy()
 
-        return [AccountRow(account, self._accounts_type) for account in getattr(content, self._accounts_type)]
+        return [
+            AccountRow(account, self._accounts_type) for account in getattr(content, f"{self._accounts_type}_sorted")
+        ]
 
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable(

@@ -138,7 +138,7 @@ class WatchedAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WATCHED ACCOUNTS"
 
     def compose(self) -> ComposeResult:
-        account_rows = [AccountRow(account) for account in self.app.world.profile_data.watched_accounts]
+        account_rows = [AccountRow(account) for account in self.app.world.profile_data.watched_accounts_sorted]
         last_account_row = account_rows[-1]
         last_account_row.add_class("last")
         yield from account_rows

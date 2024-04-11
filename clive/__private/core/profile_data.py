@@ -152,6 +152,14 @@ class ProfileData(Context):
         assert self.__working_account is not None
         return self.__working_account
 
+    @property
+    def watched_accounts_sorted(self) -> list[Account]:
+        return sorted(self.watched_accounts, key=lambda account: account.name)
+
+    @property
+    def known_accounts_sorted(self) -> list[Account]:
+        return sorted(self.known_accounts, key=lambda account: account.name)
+
     def set_working_account(self, value: str | WorkingAccount) -> None:
         if isinstance(value, str):
             value = WorkingAccount(value)
