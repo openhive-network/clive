@@ -78,8 +78,6 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
         self._previous_withdraw_routes: list[WithdrawRouteSchema] | None = None
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[WithdrawRoute]:
-        self._previous_withdraw_routes = content.withdraw_routes
-
         return [WithdrawRoute(withdraw_route) for withdraw_route in content.withdraw_routes]
 
     def get_no_content_available_widget(self) -> Static:
@@ -96,6 +94,9 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
     @property
     def is_anything_to_display(self) -> bool:
         return len(self.object_to_watch.content.withdraw_routes) != 0
+
+    def update_previous_state(self, content: HivePowerData) -> None:
+        self._previous_withdraw_routes = content.withdraw_routes
 
     @property
     def working_account(self) -> str:

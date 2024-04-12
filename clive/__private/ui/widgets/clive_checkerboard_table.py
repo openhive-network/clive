@@ -111,6 +111,7 @@ class CliveCheckerboardTable(CliveWidget):
     3. Override `check_if_should_be_updated`
     4. Override (optionally) `is_anything_to_display`
     5. Override `create_dynamic_rows`
+    6. Override `update_previous_state` (with creating your own previous state in the `__init__` method).
 
     Static usage
     ------------
@@ -175,6 +176,8 @@ class CliveCheckerboardTable(CliveWidget):
 
         if not self.check_if_should_be_updated:
             return
+
+        self.update_previous_state(content)
 
         if self.is_anything_to_display:
             rows = self.create_dynamic_rows(content)
@@ -265,3 +268,12 @@ class CliveCheckerboardTable(CliveWidget):
     def is_anything_to_display(self) -> bool:
         """A property that checks whether there are elements to display. Should be overridden to create a custom condition."""
         return True
+
+    def update_previous_state(self, content: Any) -> None:  # noqa: ARG002
+        """
+        Must be overridden if the `ATTRIBUTE_TO_WATCH` class-var is set.
+
+        Notice that you must also create your own previous state in the `__init__` method.
+        """
+        if self.should_be_dynamic:
+            raise InvalidDynamicDefinedError

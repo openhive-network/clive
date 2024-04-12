@@ -82,8 +82,6 @@ class ManageAccountsTable(CliveCheckerboardTable):
         self._accounts_type = accounts_type
 
     def create_dynamic_rows(self, content: ProfileData) -> list[AccountRow]:
-        self._previous_accounts = getattr(content, self._accounts_type).copy()
-
         return [
             AccountRow(account, self._accounts_type) for account in getattr(content, f"{self._accounts_type}_sorted")
         ]
@@ -104,6 +102,9 @@ class ManageAccountsTable(CliveCheckerboardTable):
     @property
     def object_to_watch(self) -> TextualWorld:
         return self.app.world
+
+    def update_previous_state(self, content: ProfileData) -> None:
+        self._previous_accounts = getattr(content, self._accounts_type).copy()
 
     def remove_underscore_from_text(self, text: str) -> str:
         return text.replace("_", " ")

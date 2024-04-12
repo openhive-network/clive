@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from textual import on
 from textual.containers import Horizontal, Vertical
@@ -55,25 +55,23 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
             Static("Your working account", id="manage-working-account-title"),
             AccountsTableHeader(),
         )
-        self._previous_working_account: str | None = ""
+        self._previous_working_account_name: str | None = ""
         # Initialize via empty string to trigger the first update, later when no working account it will be set to None
 
     def create_dynamic_rows(self, content: ProfileData) -> list[RemoveWorkingAccount]:
-        self._previous_working_account = content.working_account.name if _has_working_account(content) else None
-
-        return [RemoveWorkingAccount(self.app.world.profile_data.working_account)]
+        return [RemoveWorkingAccount(content.working_account)]
 
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no working account")
 
     @property
     def check_if_should_be_updated(self) -> bool:
-        working_account = (
+        working_account_name = (
             self.app.world.profile_data.working_account.name
             if _has_working_account(self.app.world.profile_data)
             else None
         )
-        return working_account != self._previous_working_account
+        return working_account_name != self._previous_working_account_name
 
     @property
     def is_anything_to_display(self) -> bool:
@@ -82,6 +80,9 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
     @property
     def object_to_watch(self) -> TextualWorld:
         return self.app.world
+
+    def update_previous_state(self, content: Any) -> None:
+        self._previous_working_account_name = content.working_account.name if _has_working_account(content) else None
 
 
 class WorkingAccountChange(Vertical, CliveWidget):

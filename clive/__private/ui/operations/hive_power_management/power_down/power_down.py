@@ -102,8 +102,6 @@ class PendingPowerDown(CliveCheckerboardTable):
         self._previous_next_vesting_withdrawal: datetime = datetime.min
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[CliveCheckerboardTableRow]:
-        self._previous_next_vesting_withdrawal = content.next_vesting_withdrawal
-
         return [
             CliveCheckerboardTableRow(
                 CliveCheckerBoardTableCell(humanize_datetime(content.next_vesting_withdrawal)),
@@ -135,6 +133,9 @@ class PendingPowerDown(CliveCheckerboardTable):
     @property
     def check_if_should_be_updated(self) -> bool:
         return self.object_to_watch.content.next_vesting_withdrawal != self._previous_next_vesting_withdrawal
+
+    def update_previous_state(self, content: HivePowerData) -> None:
+        self._previous_next_vesting_withdrawal = content.next_vesting_withdrawal
 
 
 class PowerDown(TabPane, OperationActionBindings):

@@ -149,8 +149,6 @@ class PendingTransfers(CliveCheckerboardTable):
         self._previous_pending_transfers: list[SavingsWithdrawals] | None = None
 
     def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:
-        self._previous_pending_transfers = content.pending_transfers
-
         self._title: Static
         self._title.update(f"Current pending transfers (amount: {len(content.pending_transfers)})")
         return [PendingTransfer(pending_transfer) for pending_transfer in content.pending_transfers]
@@ -169,6 +167,9 @@ class PendingTransfers(CliveCheckerboardTable):
     @property
     def object_to_watch(self) -> SavingsDataProvider:
         return self.screen.query_one(SavingsDataProvider)
+
+    def update_previous_state(self, content: SavingsData) -> None:
+        self._previous_pending_transfers = content.pending_transfers
 
 
 class SavingsInfo(TabPane, CliveWidget):

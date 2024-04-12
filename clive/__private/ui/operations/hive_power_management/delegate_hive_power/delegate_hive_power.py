@@ -89,8 +89,6 @@ class DelegationsTable(CliveCheckerboardTable):
         self._previous_delegations: list[VestingDelegation[Asset.Vests]] | None = None
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[Delegation]:
-        self._previous_delegations = content.delegations
-
         return [Delegation(delegation, content.gdpo) for delegation in content.delegations]
 
     def get_no_content_available_widget(self) -> Static:
@@ -107,6 +105,9 @@ class DelegationsTable(CliveCheckerboardTable):
     @property
     def object_to_watch(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
+
+    def update_previous_state(self, content: HivePowerData) -> None:
+        self._previous_delegations = content.delegations
 
 
 class DelegateHivePower(TabPane, OperationActionBindings):
