@@ -12,6 +12,10 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
+class SubTitle(Static):
+    pass
+
+
 class LocationIndicator(Vertical):
     """A widget that can be used to display a user's location in the app with a big title and subtitle."""
 
@@ -19,7 +23,7 @@ class LocationIndicator(Vertical):
     LocationIndicator {
         height: auto;
 
-        Static {
+        SubTitle {
             width: 1fr;
             text-align: center;
         }
@@ -34,4 +38,4 @@ class LocationIndicator(Vertical):
     def compose(self) -> ComposeResult:
         yield BigTitle(self._big_title)
         if self._subtitle:
-            yield Static(f"({self._subtitle})")
+            yield SubTitle(f"({self._subtitle})")
