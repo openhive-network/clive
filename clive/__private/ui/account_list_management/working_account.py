@@ -34,7 +34,7 @@ def _has_working_account(profile_data: ProfileData) -> bool:
     return profile_data.is_working_account_set()
 
 
-class RemoveWorkingAccount(CliveCheckerboardTableRow, CliveWidget):
+class WorkingAccountRow(CliveCheckerboardTableRow, CliveWidget):
     def __init__(self, working_account: Account):
         super().__init__(
             CliveCheckerBoardTableCell(working_account.name),
@@ -58,8 +58,8 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
         self._previous_working_account_name: str | None = ""
         # Initialize via empty string to trigger the first update, later when no working account it will be set to None
 
-    def create_dynamic_rows(self, content: ProfileData) -> list[RemoveWorkingAccount]:
-        return [RemoveWorkingAccount(content.working_account)]
+    def create_dynamic_rows(self, content: ProfileData) -> list[WorkingAccountRow]:
+        return [WorkingAccountRow(content.working_account)]
 
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no working account")
