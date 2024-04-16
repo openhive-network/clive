@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, ClassVar
 
 from textual.validation import Function, ValidationResult
 
@@ -11,8 +11,8 @@ if TYPE_CHECKING:
 
 
 class SetWatchedAccountValidator(AccountNameValidator):
-    ACCOUNT_ALREADY_WATCHED_FAILURE: Final[str] = "This account is already being watched."
-    ACCOUNT_ALREADY_WORKING_FAILURE: Final[str] = "You cannot watch your working account."
+    ACCOUNT_ALREADY_WATCHED_FAILURE: ClassVar[str] = "This account is already being watched."
+    ACCOUNT_ALREADY_WORKING_FAILURE: ClassVar[str] = "You cannot watch your working account."
 
     def __init__(self, profile_data: ProfileData) -> None:
         super().__init__()

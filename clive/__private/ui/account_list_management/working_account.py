@@ -20,6 +20,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.validators.set_working_account_validator import SetWorkingAccountValidator
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -90,7 +91,9 @@ class WorkingAccountChange(Vertical, CliveWidget):
 
     def __init__(self) -> None:
         super().__init__()
-        self._working_account_input = AccountNameInput(required=False)
+        self._working_account_input = AccountNameInput(
+            required=False, validators=SetWorkingAccountValidator(self.app.world.profile_data)
+        )
 
     def compose(self) -> ComposeResult:
         yield SectionTitle(
