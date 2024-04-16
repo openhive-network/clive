@@ -71,7 +71,8 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
         ----
         placeholder: If not provided, placeholder will be dynamically generated based on the asset type.
         """
-        self._currency_selector: CurrencySelectorBase[AssetInputT] = self.create_currency_selector()
+        with self.prevent(CurrencySelectorBase.Changed):
+            self._currency_selector: CurrencySelectorBase[AssetInputT] = self.create_currency_selector()
         default_asset_type = self._currency_selector.default_asset_cls
         default_asset_precision = Asset.get_precision(default_asset_type)
 
