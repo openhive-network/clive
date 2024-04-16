@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 class SetWatchedAccountValidator(AccountNameValidator):
     ACCOUNT_ALREADY_WATCHED_FAILURE: Final[str] = "This account is already being watched."
-    WATCH_SELF_FAILURE: Final[str] = "You cannot watch your own account."
+    ACCOUNT_ALREADY_WORKING_FAILURE: Final[str] = "You cannot watch your working account."
 
     def __init__(self, profile_data: ProfileData) -> None:
         super().__init__()
@@ -23,7 +23,7 @@ class SetWatchedAccountValidator(AccountNameValidator):
 
         validators = [
             Function(self._validate_account_already_watched, self.ACCOUNT_ALREADY_WATCHED_FAILURE),
-            Function(self._validate_self_account_watched, self.WATCH_SELF_FAILURE),
+            Function(self._validate_account_already_working, self.ACCOUNT_ALREADY_WORKING_FAILURE),
         ]
 
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
@@ -31,7 +31,7 @@ class SetWatchedAccountValidator(AccountNameValidator):
     def _validate_account_already_watched(self, value: str) -> bool:
         return value not in [watched_account.name for watched_account in self._profile_data.watched_accounts]
 
-    def _validate_self_account_watched(self, value: str) -> bool:
+    def _validate_account_already_working(self, value: str) -> bool:
         if not self._profile_data.is_working_account_set():
             return True
 
