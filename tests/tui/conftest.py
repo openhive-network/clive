@@ -40,7 +40,8 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Clive, "notify", partialmethod(Clive.notify, timeout=TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT))
 
 
-def _prepare_profile() -> None:
+@pytest.fixture()
+async def prepare_profile() -> None:
     ProfileData(
         WORKING_ACCOUNT.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
@@ -79,13 +80,7 @@ def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not in
 
 
 @pytest.fixture()
-async def _world(  # noqa: PT005 # not intended for direct usage
-    _node_with_wallet: tuple[tt.RawNode, tt.Wallet],
-) -> AsyncIterator[TextualWorld]:
-    node, _ = _node_with_wallet
-
-    _prepare_profile()
-
+async def world(prepare_profile: None) -> AsyncIterator[TextualWorld]:  # noqa: ARG001
     async with TextualWorld() as world:
         await world.node.set_address(Url.parse(node.http_endpoint.as_string()))
         yield world
@@ -93,10 +88,9 @@ async def _world(  # noqa: PT005 # not intended for direct usage
 
 @pytest.fixture()
 async def prepared_env(
-    _world: TextualWorld, _node_with_wallet: tuple[tt.RawNode, tt.Wallet]
+    world: TextualWorld, _node_with_wallet: tuple[tt.RawNode, tt.Wallet]
 ) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = _node_with_wallet
-    world = _world
 
     app = Clive.app_instance()
     Clive.world = world
