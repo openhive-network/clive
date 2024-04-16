@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 import test_tools as tt
 
+from clive.__private.config import settings
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
@@ -14,7 +15,6 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
-from clive.core.url import Url
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import (
     get_alternate_chain_spec_path,
@@ -75,19 +75,16 @@ def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not in
     account = wallet.api.get_account(WORKING_ACCOUNT.name)
     tt.logger.debug(f"working account: {account}")
 
+    settings["secrets.node_address"] = node.http_endpoint.as_string()
+
     return node, wallet
 
 
 @pytest.fixture()
-async def _world(  # noqa: PT005 # not intended for direct usage
-    _node_with_wallet: tuple[tt.RawNode, tt.Wallet],
-) -> AsyncIterator[TextualWorld]:
-    node, _ = _node_with_wallet
-
+async def _world() -> AsyncIterator[TextualWorld]:  # noqa: PT005 # not intended for direct usage
     _prepare_profile()
 
     async with TextualWorld() as world:
-        await world.node.set_address(Url.parse(node.http_endpoint.as_string()))
         yield world
 
 

@@ -14,7 +14,6 @@ from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAliasForm
 from clive.__private.ui.onboarding.onboarding import OnboardingFinishScreen, OnboardingWelcomeScreen
 from clive.__private.ui.set_account.set_account import SetAccount
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
-from clive.core.url import Url
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.checkers import assert_is_screen_active
 from clive_local_tools.tui.clive_quit import clive_quit
@@ -40,13 +39,8 @@ ALT_PASS: Final[str] = ALT_USER + ALT_USER
 
 
 @pytest.fixture()
-async def world(
-    _node_with_wallet: tuple[tt.RawNode, tt.Wallet],
-) -> AsyncIterator[TextualWorld]:
-    node, _ = _node_with_wallet
-
+async def world() -> AsyncIterator[TextualWorld]:
     async with TextualWorld() as world:
-        await world.node.set_address(Url.parse(node.http_endpoint.as_string()))
         yield world
 
 
