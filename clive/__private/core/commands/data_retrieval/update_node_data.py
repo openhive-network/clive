@@ -133,6 +133,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     accounts: list[Account] = field(default_factory=list)
 
     async def _execute(self) -> None:
+        self.__assert_no_duplicate_accounts()
         if not self.accounts:
             # We only need to fetch GDPO if no accounts were provided - otherwise it will be fetched in the same (batch)
             # query with other account-related data. Otherwise, if that would happen in a separate call we might get a
@@ -405,3 +406,8 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __assert_owner_history(self, owner_key_change_in_progress: ListOwnerHistories | None) -> list[OwnerHistory]:
         assert owner_key_change_in_progress is not None, "Owner history info is missing..."
         return owner_key_change_in_progress.owner_auths
+
+    def __assert_no_duplicate_accounts(self) -> None:
+        account_names = [account.name for account in self.accounts]
+        message = f"Incorrect usage. Duplicate accounts provided: {account_names}..."
+        assert len(account_names) == len(set(account_names)), message
