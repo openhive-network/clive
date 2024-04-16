@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.containers import Horizontal
@@ -19,9 +19,6 @@ from clive.__private.validators.set_watched_account_validator import SetWatchedA
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-
-MAX_NUMBER_OF_WATCHED_ACCOUNTS: Final[int] = 5
 
 
 class ManageAccountsTabPane(TabPane, CliveWidget):
@@ -56,16 +53,6 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
 
     @on(CliveButton.Pressed, "#save-account-button")
     async def save_account(self) -> None:
-        if (
-            self._accounts_type == "watched_accounts"
-            and len(self.app.world.profile_data.watched_accounts) >= MAX_NUMBER_OF_WATCHED_ACCOUNTS
-        ):
-            self.notify(
-                f"You can only have {MAX_NUMBER_OF_WATCHED_ACCOUNTS} watched accounts.",
-                severity="warning",
-            )
-            return
-
         if not self._accounts_input.validate_passed():
             return
 

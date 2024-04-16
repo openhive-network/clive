@@ -1,38 +1,29 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import ClassVar, Final
 
 from textual.validation import Function, ValidationResult
 
-from clive.__private.validators.account_name_validator import AccountNameValidator
-
-if TYPE_CHECKING:
-    from clive.__private.core.profile_data import ProfileData
+from clive.__private.validators.set_working_account_validator import SetWorkingAccountValidator
 
 
-class SetWatchedAccountValidator(AccountNameValidator):
+class SetWatchedAccountValidator(SetWorkingAccountValidator):
     ACCOUNT_ALREADY_WATCHED_FAILURE: ClassVar[str] = "This account is already being watched."
     ACCOUNT_ALREADY_WORKING_FAILURE: ClassVar[str] = "You cannot watch your working account."
 
-    def __init__(self, profile_data: ProfileData) -> None:
-        super().__init__()
-        self._profile_data = profile_data
+    MAX_NUMBER_OF_WATCHED_ACCOUNTS: Final[int] = 5
+    MAX_NUMBER_OF_WATCHED_ACCOUNTS_FAILURE: Final[str] = (
+        f"You can only watch {MAX_NUMBER_OF_WATCHED_ACCOUNTS} accounts."
+    )
 
     def validate(self, value: str) -> ValidationResult:
         super_result = super().validate(value)
 
         validators = [
-            Function(self._validate_account_already_watched, self.ACCOUNT_ALREADY_WATCHED_FAILURE),
-            Function(self._validate_account_already_working, self.ACCOUNT_ALREADY_WORKING_FAILURE),
+            Function(self._validate_max_watched_accounts_reached, self.MAX_NUMBER_OF_WATCHED_ACCOUNTS_FAILURE),
         ]
 
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
-    def _validate_account_already_watched(self, value: str) -> bool:
-        return value not in [watched_account.name for watched_account in self._profile_data.watched_accounts]
-
-    def _validate_account_already_working(self, value: str) -> bool:
-        if not self._profile_data.is_working_account_set():
-            return True
-
-        return value != self._profile_data.working_account.name
+    def _validate_max_watched_accounts_reached(self, _: str) -> bool:
+        return len(self._profile_data.watched_accounts) < self.MAX_NUMBER_OF_WATCHED_ACCOUNTS
