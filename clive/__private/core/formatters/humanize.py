@@ -1,27 +1,62 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime
+from datetime import datetime, timezone
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Literal
 
 import humanize
 import inflection
 
 from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
-from clive.__private.core.constants import NULL_ACCOUNT_KEY_VALUE
+from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
+from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
+from clive.__private.core.constants import (
+    HIVE_PERCENT_PRECISION_DOT_PLACES,
+    NULL_ACCOUNT_KEY_VALUE,
+    VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES,
+)
+from clive.__private.core.decimal_conventer import (
+    DecimalConverter,
+)
 from clive.__private.core.formatters.case import underscore
+from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr
+from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from schemas.fields.assets.hbd import AssetHbdHF26
-    from schemas.fields.assets.hive import AssetHiveHF26
-    from schemas.fields.compound import HbdExchangeRate
+    from clive.__private.core.iwax import (
+        HpAPRProtocol,
+        VestsToHpProtocol,
+    )
+    from clive.models.aliased import CurrentPriceFeed, HbdExchangeRate
+
+
+def _round_to_precision(data: Decimal, precision: int) -> Decimal:
+    return DecimalConverter.round_to_precision(data, precision=precision)
 
 
 def _is_null_date(value: datetime) -> bool:
-    return value == datetime(1970, 1, 1, 0, 0, 0) or value == datetime(1969, 12, 31, 23, 59, 59)
+    _value = value.replace(tzinfo=None)
+    return _value == datetime(1970, 1, 1, 0, 0, 0) or _value == datetime(1969, 12, 31, 23, 59, 59)
+
+
+def align_to_dot(*strings: str) -> list[str]:
+    """Aligns values to dot."""
+    max_place_left_from_dot = max(string.find(".") for string in strings)
+
+    aligned_strings = []
+    for string in strings:
+        aligned_string = string
+        place_left_from_dot = string.find(".")
+        if place_left_from_dot < max_place_left_from_dot:
+            spaces_to_enter = max_place_left_from_dot - place_left_from_dot
+            aligned_string = " " * spaces_to_enter + string
+        aligned_strings.append(aligned_string)
+
+    return aligned_strings
 
 
 def humanize_natural_time(value: datetime | timedelta) -> str:
@@ -40,7 +75,7 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     return humanize.naturaltime(value)
 
 
-def humanize_datetime(value: datetime, *, with_time: bool = True) -> str:
+def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_time: bool = False) -> str:
     """
     Return pretty formatted datetime.
 
@@ -48,12 +83,14 @@ def humanize_datetime(value: datetime, *, with_time: bool = True) -> str:
     --------
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
     """
-    value = value.replace(tzinfo=None)
     if _is_null_date(value):
         return "never"
 
     format_ = "%Y-%m-%dT%H:%M:%S" if with_time else "%Y-%m-%d"
-    return value.strftime(format_)
+    formatted = value.strftime(format_)
+    if with_relative_time:
+        return f"{formatted} ({humanize_natural_time(datetime.now(timezone.utc) - value.astimezone(timezone.utc))})"
+    return formatted
 
 
 def humanize_class_name(cls: str | type[Any]) -> str:
@@ -118,16 +155,53 @@ def humanize_hive_power(value: int) -> str:
     return f"{matched[1]}{matched[2]} HP".upper()
 
 
-def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate[AssetHiveHF26, AssetHbdHF26]) -> str:
+def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate) -> str:
     """Return pretty formatted hdb exchange rate (price feed)."""
-    price_feed = int(hbd_exchange_rate.base.amount) / 10**3
-    return f"{price_feed:.3f} $"
+    return f"{hbd_exchange_rate.base.pretty_amount()} $"
 
 
-def humanize_hbd_interest_rate(hbd_interest_rate: int) -> str:
+def humanize_hbd_savings_apr(hbd_savings_apr: int | Decimal) -> str:
     """Return pretty formatted hdb interese rate (APR)."""
-    percent = hbd_interest_rate / 100
-    return f"{round(percent, 2)}%"
+    value = hbd_savings_apr if isinstance(hbd_savings_apr, Decimal) else hive_percent_to_percent(hbd_savings_apr)
+    return f"{_round_to_precision(value, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+
+
+def humanize_hbd_print_rate(hbd_print_rate: int | Decimal) -> str:
+    """Return pretty formatted hdb print rate."""
+    value = hbd_print_rate if isinstance(hbd_print_rate, Decimal) else hive_percent_to_percent(hbd_print_rate)
+    return f"{_round_to_precision(value, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+
+
+def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
+    """Return formatted APR value returned from wax."""
+    calculated = data if isinstance(data, Decimal) else calculate_hp_apr(data)
+    return f"{_round_to_precision(calculated, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+
+
+def humanize_median_hive_price(current_price_feed: CurrentPriceFeed) -> str:
+    """Return formatted median hbd price."""
+    return f"{current_price_feed.base.pretty_amount()} $"
+
+
+def humanize_current_inflation_rate(head_block_number: int) -> str:
+    """Return formatted inflation rate for head block returned from wax."""
+    return f"{calculate_current_inflation_rate(head_block_number)} %"
+
+
+def humanize_participation_count(participation_count: int) -> str:
+    """Return pretty formatted participation rate."""
+    return f"{calculate_participation_count_percent(participation_count)} %"
+
+
+def humanize_vest_to_hive_ratio(data: VestsToHpProtocol | Decimal) -> str:
+    """Return pretty formatted vest to hive ratio."""
+    calculated = data if isinstance(data, Decimal) else calulcate_vests_to_hive_ratio(data)
+    return f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}"
+
+
+def humanize_bytes(value: int) -> str:
+    """Return pretty formatted bytes."""
+    return humanize.naturalsize(value, binary=True)
 
 
 def humanize_witness_status(signing_key: str) -> str:

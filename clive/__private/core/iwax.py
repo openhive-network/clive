@@ -2,39 +2,65 @@ from __future__ import annotations
 
 import datetime
 import json
-from dataclasses import dataclass
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import wax
 from clive.__private.core.communication import CustomJSONEncoder
+from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
+from clive.__private.core.decimal_conventer import DecimalConverter
+from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.exceptions import CliveError
-from clive.models import Transaction
+from clive.models import Asset, Transaction
+from clive.models.asset import UnknownAssetTypeError
 from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
-    from typing_extensions import Self
+    from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.models import Operation
+    from clive.models.aliased import CurrentPriceFeed
+
+
+class HpAPRProtocol(Protocol):
+    """Intention of this class is ability to simply pass gdpo, or object that provides required information needed to calculate Hp APR."""
+
+    @property
+    def head_block_number(self) -> int: ...
+
+    @property
+    def vesting_reward_percent(self) -> int: ...
+
+    virtual_supply: Asset.Hive
+    total_vesting_fund_hive: Asset.Hive
+
+
+class VestsToHpProtocol(Protocol):
+    """Intention of this class is ability to simply pass gdpo, or object that provides required information needed to calculate Vests to Hp."""
+
+    total_vesting_fund_hive: Asset.Hive
+    total_vesting_shares: Asset.Vests
 
 
 class WaxOperationFailedError(CliveError):
     pass
 
 
-@dataclass
-class WaxJsonAsset:
-    amount: str
-    precision: int
-    nai: str
+def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
+    asset_cls = Asset.resolve_nai(result.nai.decode())
+    return asset_cls(amount=int(result.amount.decode()))
 
-    @classmethod
-    def from_wax_result(cls, result: wax.python_json_asset) -> Self:
-        return cls(
-            amount=result.amount.decode(),
-            precision=result.precision,
-            nai=result.nai.decode(),
-        )
+
+def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
+    match Asset.get_symbol(asset):
+        case "HIVE" | "TESTS":
+            return wax.hive(amount=int(asset.amount))
+        case "HBD" | "TBD":
+            return wax.hbd(amount=int(asset.amount))
+        case "VESTS":
+            return wax.vests(amount=int(asset.amount))
+        case _:
+            raise UnknownAssetTypeError(asset.nai)
 
 
 def __validate_wax_response(response: wax.python_result) -> None:
@@ -126,21 +152,56 @@ def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, 
     return int(result.result.decode())
 
 
-def general_asset(asset_num: int, amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.general_asset(asset_num=asset_num, amount=amount))
-
-
-def hive(amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.hive(amount))
-
-
-def hbd(amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.hbd(amount))
-
-
-def vests(amount: int) -> WaxJsonAsset:
-    return WaxJsonAsset.from_wax_result(wax.vests(amount))
+def general_asset(asset_num: int, amount: int) -> Asset.AnyT:
+    return from_python_json_asset(wax.general_asset(asset_num=asset_num, amount=amount))
 
 
 def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
     return wax.get_tapos_data(block_id.encode())
+
+
+def hive(amount: int) -> Asset.Hive:
+    return cast(Asset.Hive, from_python_json_asset(wax.hive(amount)))
+
+
+def hbd(amount: int) -> Asset.Hbd:
+    return cast(Asset.Hbd, from_python_json_asset(wax.hbd(amount)))
+
+
+def vests(amount: int) -> Asset.Vests:
+    return cast(Asset.Vests, from_python_json_asset(wax.vests(amount)))
+
+
+def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
+    result = wax.calculate_hp_apr(
+        head_block_num=data.head_block_number,
+        vesting_reward_percent=data.vesting_reward_percent,
+        virtual_supply=to_python_json_asset(data.virtual_supply),
+        total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
+    )
+    __validate_wax_response(result)
+    return DecimalConverter.convert(result.result.decode(), precision=HIVE_PERCENT_PRECISION_DOT_PLACES)
+
+
+def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: CurrentPriceFeed) -> Asset.Hive:
+    result = wax.calculate_hbd_to_hive(
+        hbd=to_python_json_asset(_hbd),
+        base=to_python_json_asset(current_price_feed.base),
+        quote=to_python_json_asset(current_price_feed.quote),
+    )
+    return cast(Asset.Hive, from_python_json_asset(result))
+
+
+def calculate_vests_to_hp(_vests: Asset.Vests, data: VestsToHpProtocol) -> Asset.Hive:
+    result = wax.calculate_vests_to_hp(
+        vests=to_python_json_asset(_vests),
+        total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
+        total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
+    )
+    return cast(Asset.Hive, from_python_json_asset(result))
+
+
+def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
+    result = wax.calculate_inflation_rate_for_block(head_block_num)
+    __validate_wax_response(result)
+    return hive_percent_to_percent(result.result.decode())
