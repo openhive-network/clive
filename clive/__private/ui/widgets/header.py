@@ -111,7 +111,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
 
     async def __get_last_update(self, _: bool) -> str:
         gdpo = await self.app.world.app_state.get_dynamic_global_properties()
-        return humanize_natural_time(datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc) - gdpo.time)
+        return humanize_natural_time(datetime.datetime.now(datetime.timezone.utc) - gdpo.time)
 
     def __trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
