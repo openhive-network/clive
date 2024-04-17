@@ -146,6 +146,16 @@ class Asset:
                 raise UnknownAssetTypeError(symbol)
 
     @classmethod
+    def resolve_nai(cls, nai: str) -> type[Asset.AnyT]:
+        if nai == cls.get_nai(cls.Hive):
+            return Asset.Hive
+        if nai == cls.get_nai(cls.Hbd):
+            return Asset.Hbd
+        if nai == cls.get_nai(cls.Vests):
+            return Asset.Vests
+        raise ValueError(f"Unknown asset nai: '{nai}'")
+
+    @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
         from clive.__private.validators.asset_amount_validator import AssetAmountValidator
 
