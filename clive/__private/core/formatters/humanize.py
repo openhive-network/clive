@@ -179,8 +179,8 @@ def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
 
 
 def humanize_median_hive_price(current_price_feed: CurrentPriceFeed) -> str:
-    """Return formatted median hbd price."""
-    return f"{current_price_feed.base.pretty_amount()} $"
+    """Return formatted median hive price."""
+    return f"{current_price_feed.base.pretty_amount()} HBD"
 
 
 def humanize_current_inflation_rate(head_block_number: int) -> str:

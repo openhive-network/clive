@@ -8,6 +8,7 @@ from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, HivePowerDataRetrieval
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
@@ -325,6 +326,9 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             HivePowerDataRetrieval(node=self._world.node, account_name=account_name)
         )
+
+    async def retrieve_chain_data(self) -> CommandWithResultWrapper[ChainData]:
+        return await self.__surround_with_exception_handlers(ChainDataRetrieval(node=self._world.node))
 
     async def find_transaction(self, *, transaction_id: str) -> CommandWithResultWrapper[TransactionStatus]:
         return await self.__surround_with_exception_handlers(
