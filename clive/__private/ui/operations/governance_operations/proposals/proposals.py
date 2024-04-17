@@ -208,9 +208,11 @@ class ProposalsOrderChange(Vertical):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__order_by_select = ProposalsOrderSelect()
-        self.__order_direction_select = ProposalsOrderDirectionSelect()
-        self.__proposal_status_select = ProposalsStatusSelect()
+
+        with self.prevent(Select.Changed):
+            self.__order_by_select = ProposalsOrderSelect()
+            self.__order_direction_select = ProposalsOrderDirectionSelect()
+            self.__proposal_status_select = ProposalsStatusSelect()
 
     def compose(self) -> ComposeResult:
         with Horizontal(id="selectors-labels"):
