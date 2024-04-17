@@ -6,7 +6,7 @@ from rich.table import Table
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.core.formatters.humanize import (
     humanize_hbd_exchange_rate,
-    humanize_hbd_interest_rate,
+    humanize_hbd_savings_apr,
     humanize_votes_with_comma,
     humanize_witness_status,
 )
@@ -26,9 +26,9 @@ class ShowWitness(WorldBasedCommand):
         account_creation_fee: str | None = None
         if witness.props.account_creation_fee:
             account_creation_fee = witness.props.account_creation_fee.as_legacy()
-        hbd_interest_rate: str | None = None
+        hbd_savings_apr: str | None = None
         if witness.props.hbd_interest_rate:
-            hbd_interest_rate = humanize_hbd_interest_rate(witness.props.hbd_interest_rate)
+            hbd_savings_apr = humanize_hbd_savings_apr(witness.props.hbd_interest_rate)
         props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"}, deep=True)
 
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)
@@ -47,7 +47,7 @@ class ShowWitness(WorldBasedCommand):
         table.add_row("signing key", f"{witness.signing_key}")
         table.add_row("total missed", f"{witness.total_missed}")
         table.add_row("account creation fee", f"{account_creation_fee}")
-        table.add_row("hbd interest rate", f"{hbd_interest_rate}")
+        table.add_row("Proposed HDB savings APR", f"{hbd_savings_apr}")
         table.add_row("status", f"{humanize_witness_status(witness.signing_key)}")
 
         console = Console()
