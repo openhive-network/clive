@@ -58,9 +58,9 @@ class DecimalConverter:
         if precision is not None:
             cls.__assert_precision_is_positive(precision)
             cls.__warn_if_precision_might_be_lost(converted, precision)
-            converted = cls.__round_to_precision(converted, precision)
+            converted = cls.round_to_precision(converted, precision)
 
-        return converted.normalize()
+        return converted
 
     @staticmethod
     def __assert_precision_is_positive(precision: int) -> None:
@@ -68,13 +68,13 @@ class DecimalConverter:
             raise ValueError("Precision must be a positive integer.")
 
     @staticmethod
-    def __round_to_precision(amount: Decimal, precision: int) -> Decimal:
+    def round_to_precision(amount: Decimal, precision: int) -> Decimal:
         exponent = Decimal(10) ** (-1 * precision)
         return amount.quantize(exponent)
 
     @classmethod
     def __warn_if_precision_might_be_lost(cls, amount: Decimal, precision: int) -> None:
-        rounded_amount = cls.__round_to_precision(amount, precision)
+        rounded_amount = cls.round_to_precision(amount, precision)
         if rounded_amount != amount:
             warnings.warn(
                 (
