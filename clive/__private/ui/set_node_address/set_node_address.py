@@ -53,7 +53,8 @@ class SelectedNodeAddress(Static, CliveWidget):
 class NodesList(Container, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
-        yield NodeSelector()
+        with self.prevent(NodeSelector.Changed):
+            yield NodeSelector()
 
 
 class NodeUrlHighlighter(Highlighter):
@@ -109,7 +110,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
         self.app.trigger_node_watchers()
         self.__selected_node.refresh()
 
-    @on(Select.Changed)
+    @on(NodeSelector.Changed)
     @on(CliveButton.Pressed, "#save-node-address-button")
     async def save_node_address_with_gui_support(self) -> None:
         try:
