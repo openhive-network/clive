@@ -92,6 +92,7 @@ class WorkingAccountChange(Vertical, CliveWidget):
         self._working_account_input = AccountNameInput(
             required=False, validators=SetWorkingAccountValidator(self.app.world.profile_data)
         )
+        self._previous_working_account = self.working_account
 
     def compose(self) -> ComposeResult:
         yield SectionTitle(
@@ -137,21 +138,6 @@ class WorkingAccountChange(Vertical, CliveWidget):
         self.query_one(CliveButton).remove()
         self.query_one("#input-with-button").mount(button)
 
-
-class WorkingAccount(TabPane, CliveWidget):
-    """TabPane used to add and delete working account."""
-
-    DEFAULT_CSS = get_css_from_relative_path(__file__)
-
-    def __init__(self, title: str):
-        super().__init__(title=title)
-        self._previous_working_account = self.working_account
-
-    def compose(self) -> ComposeResult:
-        with ScrollablePart():
-            yield WorkingAccountChange()
-            yield ManageWorkingAccountTable()
-
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", self._working_account_changed)
 
@@ -159,10 +145,21 @@ class WorkingAccount(TabPane, CliveWidget):
         if self.working_account == self._previous_working_account:
             return
         self._previous_working_account = self.working_account
-        self.query_one(WorkingAccountChange).change_container_function()
+        self.change_container_function()
 
     @property
     def working_account(self) -> WorkingAccountType | None:
         if not self.app.world.profile_data.is_working_account_set():
             return None
         return self.app.world.profile_data.working_account
+
+
+class WorkingAccount(TabPane, CliveWidget):
+    """TabPane used to add and delete working account."""
+
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
+    def compose(self) -> ComposeResult:
+        with ScrollablePart():
+            yield WorkingAccountChange()
+            yield ManageWorkingAccountTable()
