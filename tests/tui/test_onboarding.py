@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.core.world import TextualWorld
 from clive.__private.ui.app import Clive
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
@@ -28,6 +27,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
+    from clive.__private.core.world import TextualWorld
     from clive_local_tools.tui.types import ClivePilot
 
 
@@ -39,9 +39,8 @@ ALT_PASS: Final[str] = ALT_USER + ALT_USER
 
 
 @pytest.fixture()
-async def world() -> AsyncIterator[TextualWorld]:
-    async with TextualWorld() as world:
-        yield world
+def prepare_profile() -> None:
+    pass
 
 
 @pytest.fixture()
