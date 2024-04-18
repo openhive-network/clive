@@ -89,20 +89,14 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
     def object_to_watch(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
-        return self.object_to_watch.content.withdraw_routes != self._previous_withdraw_routes
+    def check_if_should_be_updated(self, content: HivePowerData) -> bool:
+        return content.withdraw_routes != self._previous_withdraw_routes
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        return len(self.object_to_watch.content.withdraw_routes) != 0
+    def is_anything_to_display(self, content: HivePowerData) -> bool:
+        return len(content.withdraw_routes) != 0
 
     def update_previous_state(self, content: HivePowerData) -> None:
         self._previous_withdraw_routes = content.withdraw_routes
-
-    @property
-    def working_account(self) -> str:
-        return self.app.world.profile_data.working_account.name
 
 
 class WithdrawRoutes(TabPane, OperationActionBindings):

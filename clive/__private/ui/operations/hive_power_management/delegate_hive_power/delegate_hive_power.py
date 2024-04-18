@@ -95,13 +95,11 @@ class DelegationsTable(CliveCheckerboardTable):
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no delegations")
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
-        return self._previous_delegations != self.object_to_watch.content.delegations
+    def check_if_should_be_updated(self, content: HivePowerData) -> bool:
+        return self._previous_delegations != content.delegations
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        return len(self.object_to_watch.content.delegations) != 0
+    def is_anything_to_display(self, content: HivePowerData) -> bool:
+        return len(content.delegations) != 0
 
     @property
     def object_to_watch(self) -> HivePowerDataProvider:

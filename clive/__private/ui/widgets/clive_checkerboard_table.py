@@ -174,12 +174,12 @@ class CliveCheckerboardTable(CliveWidget):
         if content is None:  # data not received yet
             return
 
-        if not self.check_if_should_be_updated:
+        if not self.check_if_should_be_updated(content):
             return
 
         self.update_previous_state(content)
 
-        if self.is_anything_to_display:
+        if self.is_anything_to_display(content):
             rows = self.create_dynamic_rows(content)
             self._set_evenness_styles(rows)
             widgets_to_mount = [self._title, self._header, *rows]
@@ -221,8 +221,7 @@ class CliveCheckerboardTable(CliveWidget):
     def should_be_dynamic(self) -> bool:
         return bool(self.ATTRIBUTE_TO_WATCH)
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
+    def check_if_should_be_updated(self, content: Any) -> bool:  # noqa: ARG002
         """
         Must be overridden by the child class when using dynamic table.
 
@@ -264,9 +263,8 @@ class CliveCheckerboardTable(CliveWidget):
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        """A property that checks whether there are elements to display. Should be overridden to create a custom condition."""
+    def is_anything_to_display(self, content: Any) -> bool:  # noqa: ARG002
+        """Checks whether there are elements to display. Should be overridden to create a custom condition."""
         return True
 
     def update_previous_state(self, content: Any) -> None:  # noqa: ARG002

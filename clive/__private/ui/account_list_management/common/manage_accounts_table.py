@@ -92,13 +92,11 @@ class ManageAccountsTable(CliveCheckerboardTable):
             f"You have no {self.remove_underscore_from_text(self._accounts_type)}",
         )
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
-        return getattr(self.app.world.profile_data, self._accounts_type) != self._previous_accounts  # type: ignore[no-any-return]
+    def check_if_should_be_updated(self, content: ProfileData) -> bool:
+        return getattr(content, self._accounts_type) != self._previous_accounts  # type: ignore[no-any-return]
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        return len(getattr(self.object_to_watch.profile_data, self._accounts_type)) != 0
+    def is_anything_to_display(self, content: ProfileData) -> bool:
+        return len(getattr(content, self._accounts_type)) != 0
 
     @property
     def object_to_watch(self) -> TextualWorld:

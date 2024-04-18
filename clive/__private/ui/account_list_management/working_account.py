@@ -65,16 +65,12 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no working account")
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
-        working_account = (
-            self.app.world.profile_data.working_account if _has_working_account(self.app.world.profile_data) else None
-        )
+    def check_if_should_be_updated(self, content: ProfileData) -> bool:
+        working_account = content.working_account if _has_working_account(content) else None
         return working_account != self._previous_working_account
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        return _has_working_account(self.app.world.profile_data)
+    def is_anything_to_display(self, content: ProfileData) -> bool:
+        return _has_working_account(content)
 
     @property
     def object_to_watch(self) -> TextualWorld:

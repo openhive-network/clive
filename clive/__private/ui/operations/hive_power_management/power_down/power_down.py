@@ -124,17 +124,15 @@ class PendingPowerDown(CliveCheckerboardTable):
             )
         )
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        return humanize_datetime(self.object_to_watch.content.next_vesting_withdrawal) != "never"
+    def is_anything_to_display(self, content: HivePowerData) -> bool:
+        return humanize_datetime(content.next_vesting_withdrawal) != "never"
 
     @property
     def object_to_watch(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
-        return self.object_to_watch.content.next_vesting_withdrawal != self._previous_next_vesting_withdrawal
+    def check_if_should_be_updated(self, content: HivePowerData) -> bool:
+        return content.next_vesting_withdrawal != self._previous_next_vesting_withdrawal
 
     def update_previous_state(self, content: HivePowerData) -> None:
         self._previous_next_vesting_withdrawal = content.next_vesting_withdrawal

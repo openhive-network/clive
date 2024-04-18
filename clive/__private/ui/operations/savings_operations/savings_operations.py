@@ -157,13 +157,11 @@ class PendingTransfers(CliveCheckerboardTable):
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no pending transfers")
 
-    @property
-    def is_anything_to_display(self) -> bool:
-        return len(self.object_to_watch.content.pending_transfers) != 0
+    def is_anything_to_display(self, content: SavingsData) -> bool:
+        return len(content.pending_transfers) != 0
 
-    @property
-    def check_if_should_be_updated(self) -> bool:
-        return self._previous_pending_transfers != self.object_to_watch.content.pending_transfers
+    def check_if_should_be_updated(self, content: SavingsData) -> bool:
+        return self._previous_pending_transfers != content.pending_transfers
 
     @property
     def object_to_watch(self) -> SavingsDataProvider:
