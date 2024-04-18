@@ -28,14 +28,21 @@ class KnownError(CliveError, AbstractClass):
 class CommunicationError(CliveError):
     """Base class for all communication exceptions."""
 
-    def __init__(
-        self, url: str, request: str, response: CommunicationResponseT | None = None, *, message: str = ""
+    def __init__(  # noqa: PLR0913
+        self,
+        url: str,
+        request: str,
+        response: CommunicationResponseT | None = None,
+        *,
+        message: str = "",
+        log_error: bool = True,
     ) -> None:
         self.url = url
         self.request = request
         self.response = response
         message = message or self.__create_message()
-        logger.error(message)
+        if log_error:
+            logger.error(message)
         super().__init__(message)
 
     def get_response_error_messages(self) -> list[str]:

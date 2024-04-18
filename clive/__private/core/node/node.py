@@ -139,6 +139,7 @@ class _BatchNode(BaseNode):
                         url=error.url,
                         request=self.__batch[request_id].request,
                         response=response,
+                        log_error=False,
                     )
                     self.__get_batch_delayed_result(request_id)._set_exception(new_error)
                 else:
@@ -228,7 +229,10 @@ class Node(BaseNode):
         response_model = get_response_model(expect_type, **data)
         if isinstance(response_model, JSONRPCResult):
             return response_model.result
-        raise CommunicationError(address, serialized_request, data)
+        raise AssertionError("This should never happen")
+
+    def ignore_unavailable_api_error_logging(self, api_name: str) -> None:
+        self.__communication.ignore_unavailable_api_error_logging(api_name)
 
     @property
     async def chain_id(self) -> str:

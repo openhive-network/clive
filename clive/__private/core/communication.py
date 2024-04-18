@@ -51,9 +51,17 @@ class Communication:
         self.__timeout_secs = timeout_secs
         self.__pool_time_secs = pool_time_secs
 
+        self.__ignored_unavailable_apis_error_logging: set[str] = set()
+        self.__should_log_next_communication_error = True
+
         assert self.__max_attempts > 0, "Max attempts must be greater than 0."
         assert self.__timeout_secs > 0, "Timeout must be greater than 0."
         assert self.__pool_time_secs >= 0, "Pool time must be greater or equal to 0."
+
+    def ignore_unavailable_api_error_logging(self, api_name: str) -> None:
+        """Ignore unavailable API."""
+        logger.info(f"Ignoring unavailable API: {api_name}")
+        self.__ignored_unavailable_apis_error_logging.add(api_name)
 
     @contextmanager
     def modified_connection_details(
@@ -147,6 +155,8 @@ class Communication:
         assert _timeout_secs > 0, "Timeout must be greater than 0."
         assert _pool_time_secs >= 0, "Pool time must be greater or equal to 0."
 
+        self.__should_log_next_communication_error = True
+
         result: CommunicationResponseT | None = None
         exception: Exception | None = None
 
@@ -214,22 +224,31 @@ class Communication:
 
             await next_try()
 
-        raise CommunicationError(url, data_serialized, result) from exception
+        raise CommunicationError(
+            url, data_serialized, result, log_error=self.__should_log_next_communication_error
+        ) from exception
 
-    @classmethod
-    def __check_response(cls, url: str, request: str, result: Any) -> None:
+    def __check_response(self, url: str, request: str, result: Any) -> None:
         if isinstance(result, dict):
-            cls.__check_response_item(url=url, request=request, response=result, item=result)
+            self.__check_response_item(url=url, request=request, response=result, item=result)
         elif isinstance(result, list):
             for item in result:
-                cls.__check_response_item(url=url, request=request, response=result, item=item)
+                self.__check_response_item(url=url, request=request, response=result, item=item)
         else:
             raise UnknownResponseFormatError(url, request, result)
 
-    @classmethod
-    def __check_response_item(cls, url: str, request: str, response: Any, item: JsonT) -> None:
+    def __check_response_item(self, url: str, request: str, response: Any, item: JsonT) -> None:
         if "error" in item:
-            logger.debug(f"Error in response from {url=}, request={request}, response={response}")
+            self.__handle_unavailable_api_error(item)
             raise ErrorInResponseJsonError
         if "result" not in item:
             raise UnknownResponseFormatError(url, request, response)
+
+    def __handle_unavailable_api_error(self, item: JsonT) -> None:
+        def get_api_error_message(api_name: str) -> str:
+            return f"Could not find API {api_name}"
+
+        for ignored_api in self.__ignored_unavailable_apis_error_logging:
+            ignored_api_message = get_api_error_message(ignored_api)
+            if ignored_api_message in item["error"]["message"]:
+                self.__should_log_next_communication_error = False

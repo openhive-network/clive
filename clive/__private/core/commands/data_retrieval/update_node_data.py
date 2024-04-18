@@ -366,29 +366,38 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __assert_rc_accounts(self, data: FindRcAccounts | None) -> list[RcAccount]:
         assert data is not None, "Rc account data is missing..."
 
-        with SuppressNotExistingApis("rc_api"):
+        api = "rc_api"
+        with SuppressNotExistingApis(api):
             assert len(data.rc_accounts) == len(self.accounts), "RC accounts are missing some accounts..."
             return data.rc_accounts
+
+        self.node.ignore_unavailable_api_error_logging("rc_api")
         return []
 
     def __assert_reputation_or_none(self, data: GetAccountReputations | None, account_name: str) -> Reputation | None:
         assert data is not None, "Reputation data is missing..."
 
-        with SuppressNotExistingApis("reputation_api"):
+        api = "reputation_api"
+        with SuppressNotExistingApis(api):
             reputations = data.reputations
             assert len(reputations) == 1, "Reputation data malformed. Expected only one entry."
 
             reputation = reputations[0]
             assert reputation.account == account_name, "Reputation data malformed. Account name mismatch."
             return reputation
+
+        self.node.ignore_unavailable_api_error_logging(api)
         return None
 
     def __assert_account_history_or_none(self, data: GetAccountHistory | None) -> GetAccountHistory | None:
         assert data is not None, "Account history info is missing..."
 
-        with SuppressNotExistingApis("account_history_api"):
+        api = "account_history_api"
+        with SuppressNotExistingApis(api):
             assert len(data.history) == 1, "Account history info malformed. Expected only one entry."
             return data
+
+        self.node.ignore_unavailable_api_error_logging(api)
         return None
 
     def __assert_declive_voting_rights(
