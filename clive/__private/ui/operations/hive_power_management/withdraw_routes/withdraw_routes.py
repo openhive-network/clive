@@ -11,6 +11,7 @@ from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_summary.remove_withdraw_vesting_route import RemoveWithdrawVestingRoute
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -76,7 +77,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
             Static("Current withdraw routes", id="withdraw-routes-table-title"),
             WithdrawRoutesHeader(),
         )
-        self._previous_withdraw_routes: list[WithdrawRouteSchema] | None = None
+        self._previous_withdraw_routes: list[WithdrawRouteSchema] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[WithdrawRoute]:
         return [WithdrawRoute(withdraw_route) for withdraw_route in content.withdraw_routes]

@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from datetime import datetime
 from typing import TYPE_CHECKING
 
 from textual import on
@@ -12,6 +11,7 @@ from clive.__private.core.hive_vests_conversions import hive_to_vests
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.operations.operation_summary.cancel_power_down import CancelPowerDown
@@ -35,6 +35,8 @@ from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from rich.text import TextType
     from textual.app import ComposeResult
 
@@ -99,7 +101,7 @@ class PendingPowerDown(CliveCheckerboardTable):
             Static("Current power down", id="current-power-down-title"),
             PendingPowerDownHeader(),
         )
-        self._previous_next_vesting_withdrawal: datetime = datetime.min
+        self._previous_next_vesting_withdrawal: datetime | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[CliveCheckerboardTableRow]:
         return [

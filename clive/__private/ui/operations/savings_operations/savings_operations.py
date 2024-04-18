@@ -9,6 +9,7 @@ from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, T
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.operations.bindings import CartBinding, OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.operations.operation_summary.cancel_transfer_from_savings import (
@@ -146,7 +147,7 @@ class PendingTransfers(CliveCheckerboardTable):
             Static("", id="pending-transfers-table-title"),
             PendingTransfersHeader(),
         )
-        self._previous_pending_transfers: list[SavingsWithdrawals] | None = None
+        self._previous_pending_transfers: list[SavingsWithdrawals] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:
         self._title: Static

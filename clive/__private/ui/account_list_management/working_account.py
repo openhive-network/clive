@@ -8,6 +8,7 @@ from textual.widgets import Static, TabPane
 
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     CliveCheckerboardTable,
@@ -56,8 +57,7 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
             Static("Your working account", id="manage-working-account-title"),
             AccountsTableHeader(),
         )
-        self._previous_working_account_name: str | None = ""
-        # Initialize via empty string to trigger the first update, later when no working account it will be set to None
+        self._previous_working_account: WorkingAccountType | NotUpdatedYet | None = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: ProfileData) -> list[WorkingAccountRow]:
         return [WorkingAccountRow(content.working_account)]
@@ -67,12 +67,10 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
 
     @property
     def check_if_should_be_updated(self) -> bool:
-        working_account_name = (
-            self.app.world.profile_data.working_account.name
-            if _has_working_account(self.app.world.profile_data)
-            else None
+        working_account = (
+            self.app.world.profile_data.working_account if _has_working_account(self.app.world.profile_data) else None
         )
-        return working_account_name != self._previous_working_account_name
+        return working_account != self._previous_working_account
 
     @property
     def is_anything_to_display(self) -> bool:
@@ -83,7 +81,7 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
         return self.app.world
 
     def update_previous_state(self, content: Any) -> None:
-        self._previous_working_account_name = content.working_account.name if _has_working_account(content) else None
+        self._previous_working_account = content.working_account if _has_working_account(content) else None
 
 
 class WorkingAccountChange(Vertical, CliveWidget):

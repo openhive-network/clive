@@ -6,6 +6,7 @@ from textual import on
 from textual.widgets import Static
 
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     CliveCheckerboardTable,
@@ -78,7 +79,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
             ),
             AccountsTableHeader(),
         )
-        self._previous_accounts: set[Account] | None = None
+        self._previous_accounts: set[Account] | NotUpdatedYet = NotUpdatedYet()
         self._accounts_type = accounts_type
 
     def create_dynamic_rows(self, content: ProfileData) -> list[AccountRow]:

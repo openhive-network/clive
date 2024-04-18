@@ -9,6 +9,7 @@ from textual.widgets import Static, TabPane
 from clive.__private.core.hive_vests_conversions import hive_to_vests, vests_to_hive
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
+from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.operations.operation_summary.remove_delegation import RemoveDelegation
@@ -86,7 +87,7 @@ class DelegationsTable(CliveCheckerboardTable):
             Static("Current delegations", id="delegations-table-title"),
             DelegationsTableHeader(),
         )
-        self._previous_delegations: list[VestingDelegation[Asset.Vests]] | None = None
+        self._previous_delegations: list[VestingDelegation[Asset.Vests]] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[Delegation]:
         return [Delegation(delegation, content.gdpo) for delegation in content.delegations]
