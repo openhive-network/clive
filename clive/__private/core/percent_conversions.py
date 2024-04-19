@@ -32,4 +32,5 @@ def percent_to_hive_percent(percent: Decimal) -> int:
     -------
         Decimal("12.34") -> 1234
     """
-    return int(percent * HIVE_PERCENT_PRECISION)
+    _percent = DecimalConverter.round_to_precision(percent, HIVE_PERCENT_PRECISION_DOT_PLACES)
+    return int(_percent * HIVE_PERCENT_PRECISION)
