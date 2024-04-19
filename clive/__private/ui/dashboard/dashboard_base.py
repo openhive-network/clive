@@ -48,17 +48,12 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield self.create_dynamic_label(
-            lambda: f"{self.__manabar.percentage :.2f}% {self.__name}",
-            classes="percentage",
+            lambda: f"{self.__manabar.percentage :.2f}% {self.__name}", classes="percentage", init=False
         )
         yield self.create_dynamic_label(
-            lambda: humanize_hive_power(self.__manabar.value),
-            classes="hivepower-value",
+            lambda: humanize_hive_power(self.__manabar.value), classes="hivepower-value", init=False
         )
-        yield self.create_dynamic_label(
-            self.__get_regeneration_time,
-            classes="time",
-        )
+        yield self.create_dynamic_label(self.__get_regeneration_time, classes="time", init=False)
 
     def __get_regeneration_time(self) -> str:
         natural_time = humanize_natural_time(-self.__manabar.full_regeneration)
@@ -82,19 +77,18 @@ class ActivityStats(AccountReferencingWidget):
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield self.create_dynamic_label(lambda: Asset.pretty_amount(self._account.data.hive_balance), "amount")
         yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hive_savings),
-            "amount amount-variant",
+            lambda: Asset.pretty_amount(self._account.data.hive_balance), "amount", init=False
+        )
+        yield self.create_dynamic_label(
+            lambda: Asset.pretty_amount(self._account.data.hive_savings), "amount amount-variant", init=False
         )
         yield Static("HBD", classes="token token-variant")
         yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hbd_balance),
-            "amount amount-variant",
+            lambda: Asset.pretty_amount(self._account.data.hbd_balance), "amount amount-variant", init=False
         )
         yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hbd_savings),
-            "amount",
+            lambda: Asset.pretty_amount(self._account.data.hbd_savings), "amount", init=False
         )
 
 
@@ -108,11 +102,13 @@ class AccountInfo(Container, AccountReferencingWidget):
             self.app.world,
             "profile_data",
             lambda: f"History entry: {humanize_datetime(self._account.data.last_history_entry)}",
+            init=False,
         )
         yield DynamicLabel(
             self.app.world,
             "profile_data",
             lambda: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
+            init=False,
         )
 
 
