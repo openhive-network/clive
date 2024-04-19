@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 import test_tools as tt
+from textual._context import active_app
 
 from clive.__private.config import settings
 from clive.__private.core.keys.keys import PrivateKeyAliased
@@ -30,6 +31,7 @@ from clive_local_tools.tui.textual_helpers import wait_for_screen
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from clive.__private.core.commands.commands import TextualCommands
     from clive_local_tools.tui.types import ClivePilot
 
     PreparedTuiEnv = tuple[tt.RawNode, tt.Wallet, ClivePilot]
@@ -41,7 +43,7 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture()
-def prepare_profile() -> None:
+async def prepare_profile() -> None:
     ProfileData(
         WORKING_ACCOUNT.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
@@ -83,6 +85,13 @@ def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not in
 
 @pytest.fixture()
 async def world(prepare_profile: None) -> AsyncIterator[TextualWorld]:  # noqa: ARG001
+    try:
+        app = active_app.get()
+    except LookupError:
+        tt.logger.info("dupa no active app")
+    else:
+        tt.logger.info(f"dupa active app {id(app)=}")
+
     async with TextualWorld() as world:
         yield world
 
@@ -115,6 +124,15 @@ async def prepared_env(
 async def prepared_tui_on_dashboard_inactive(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
     await pilot.pause()  # required, otherwise next call to self.app inside Commands will fail with NoActiveAppError
+    tt.logger.info(f"dupa: {pilot.app.screen_stack=}")
+    tt.logger.info(f"dupa: {pilot.app.screen=}")
+    tt.logger.info(f"dupa: {id(pilot.app)=}")
+
+    commands: TextualCommands = pilot.app.world.commands  # type: ignore[assignment]
+    tt.logger.info(f"dupa: {id(commands.app)=}")
+    tt.logger.info(f"dupa: {commands.app.screen_stack=}")
+    tt.logger.info(f"dupa (this crashes): {commands.app.screen=}")
+
     await pilot.app.world.commands.deactivate()  # we have to deactivate because by default we are in active state triggered by create_wallet
     return node, wallet, pilot
 
