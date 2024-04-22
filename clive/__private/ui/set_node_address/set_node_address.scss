@@ -1,6 +1,10 @@
 SetNodeAddressBase {
-  ScrollablePartFocusable {
-    padding: 2 4;
+  SelectedNodeAddress {
+    margin-bottom: 1;
+  }
+
+  SectionScrollable {
+    padding: 1 4 0 4; /* TODO: change to margin after bumping textual to 0.58.0 due to margin bug */
   }
 
   NodesList {
