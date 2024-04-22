@@ -17,8 +17,8 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
+from clive.__private.ui.widgets.selection import Selection
 from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
 from schemas.jsonrpc import JSONRPCRequest
@@ -97,10 +97,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
         self.__nodes_list = NodesList()
 
     def create_main_panel(self) -> ComposeResult:
-        yield LocationIndicator("set node address")
-        with ScrollablePartFocusable():
+        with ScrollablePartFocusable(), Selection("Set node address"):
             yield self.__selected_node
-            yield Static()
             yield self.__nodes_list
 
     async def _valid_and_save_address(self) -> None:
@@ -125,6 +123,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
+    BIG_TITLE = "onboarding"
+
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner=owner)
 
@@ -133,4 +133,5 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
 
 
 class SetNodeAddress(SetNodeAddressBase):
+    BIG_TITLE = "configuration"
     BINDINGS = [Binding("escape", "pop_screen", "Back")]

@@ -1,6 +1,11 @@
 SetNodeAddressBase {
+  SelectedNodeAddress {
+    padding-bottom: 1;
+  }
+
   ScrollablePartFocusable {
-    padding: 2 4;
+    margin-top: 1;
+    padding: 0 4;
   }
 
   NodesList {
