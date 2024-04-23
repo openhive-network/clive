@@ -10,7 +10,6 @@ $table-column-3-even: $primary-background-lighten-2;
 $table-column-4-even: $primary-background-lighten-3;
 $table-header-contrast-column: $warning-darken-2;
 $table-header-column: $primary-darken-2;
-$table-info-headline: $accent-lighten-1;
 
 Witnesses {
   layout: vertical;
@@ -99,10 +98,8 @@ Witnesses {
     width: 7fr;
     height: auto;
 
-    #witnesses-additional-headline {
+    SectionTitle {
       column-span: 5;
-      background: $table-info-headline;
-      height: 1;
     }
   }
 

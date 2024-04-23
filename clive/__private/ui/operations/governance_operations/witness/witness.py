@@ -37,6 +37,7 @@ from clive.__private.ui.widgets.inputs.account_name_pattern_input import Account
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
@@ -251,7 +252,7 @@ class WitnessesListHeader(GovernanceListHeader):
         yield Static("votes", id="votes-column")
 
     def create_additional_headlines(self) -> ComposeResult:
-        yield Static("Modify the votes for witnesses", id="witnesses-additional-headline")
+        yield SectionTitle("Modify the votes for witnesses")
 
 
 class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):

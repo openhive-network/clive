@@ -2,7 +2,6 @@ $table-column-1-odd: $accent;
 $table-column-2-odd: $accent-lighten-1;
 $table-column-1-even: $primary-background;
 $table-column-2-even: $primary-background-lighten-1;
-$table-header-contrast-column: $warning-darken-2;
 $table-header-column: $primary-darken-2;
 
 Proposals {
@@ -40,10 +39,6 @@ Proposals {
     grid-size: 3;
     grid-columns: 1fr 3fr 1fr;
     height: auto;
-
-    #proposals-header-column {
-      background: $table-header-contrast-column;
-    }
   }
 
   ProposalsActions {

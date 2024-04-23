@@ -1,11 +1,14 @@
 $governance-green-color: $success-darken-3;
 $governance-red-color: $error;
-$table-info-headline: $accent-lighten-1;
 $table-header-contrast-column: $warning-darken-2;
 
 GovernanceActions {
   margin-left: 1;
   width: 3fr;
+
+  SectionTitle {
+    padding: 0 1;
+  }
 
   #name-and-action {
     height: auto;
@@ -14,10 +17,6 @@ GovernanceActions {
   #action-row {
     background: $table-header-contrast-column;
     width: 1fr;
-  }
-
-  #actions-header {
-    background: $table-info-headline;
   }
 }
 

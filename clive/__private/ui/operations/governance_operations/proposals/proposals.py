@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
-from textual.widgets import Label, Select, Static
+from textual.widgets import Label, Select
 
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
@@ -29,6 +29,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 )
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 from schemas.operations.update_proposal_votes_operation import UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
@@ -174,7 +175,7 @@ class ProposalsList(GovernanceListWidget[ProposalData]):
 
 class ProposalsListHeader(GovernanceListHeader):
     def create_custom_columns(self) -> ComposeResult:
-        yield Static("Update your proposal votes", id="proposals-header-column")
+        yield SectionTitle("Update your proposal votes")
 
 
 class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):

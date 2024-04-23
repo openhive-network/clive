@@ -11,6 +11,7 @@ from textual.widgets import Label, Static
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -71,7 +72,7 @@ class GovernanceActions(ScrollablePartFocusable):
         self.__actions_votes = 0
 
     def compose(self) -> ComposeResult:
-        yield Static("Actions to be performed:", id="actions-header")
+        yield SectionTitle("Actions to be performed")
         with Horizontal(id="name-and-action"):
             yield Static("Action", id="action-row")
             yield Static(self.NAME_OF_ACTION, id="action-name-row")
