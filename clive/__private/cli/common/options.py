@@ -146,6 +146,6 @@ liquid_amount_option = typer.Option(
 voting_amount_option = typer.Option(
     ...,
     parser=voting_asset,
-    help="The voting asset (HIVE/VESTS). (e.g. 2.500 HIVE)",
+    help="The voting asset (HP/VESTS). (e.g. 2.500 HP)",
     show_default=False,
 )

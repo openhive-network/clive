@@ -44,6 +44,7 @@ def liquid_asset(raw: str) -> Asset.LiquidT:
 
 
 def voting_asset(raw: str) -> Asset.VotingT:
+    raw = raw.upper().replace("HP", "HIVE")
     from clive.models.asset import Asset
 
     return _parse_asset(raw, *get_args(Asset.VotingT))  # type: ignore[no-any-return]
