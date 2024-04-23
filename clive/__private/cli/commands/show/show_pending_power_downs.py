@@ -20,7 +20,7 @@ class ShowPendingPowerDowns(WorldBasedCommand):
         hp_data = wrapper.result_or_raise
 
         if hp_data.to_withdraw.vests_balance == Asset.vests(0):
-            typer.echo(f"There is no pending power down for account `{self.account_name}`.")
+            typer.echo(f"There are no pending power down operations for account `{self.account_name}`.")
             return
 
         console = Console()
