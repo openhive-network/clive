@@ -16,6 +16,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_hive_power,
 )
 from clive.__private.core.hive_vests_conversions import vests_to_hive
+from clive.__private.core.percent_conversions import hive_percent_to_percent
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -96,7 +97,7 @@ class ShowHivePower(WorldBasedCommand):
         for withdraw_route in self.hp_data.withdraw_routes:
             withdraw_routes_table.add_row(
                 withdraw_route.to_account,
-                f"{withdraw_route.percent / 100} %",
+                f"{hive_percent_to_percent(withdraw_route.percent)} %",
                 f"{humanize_bool(withdraw_route.auto_vest)}",
             )
         return withdraw_routes_table
