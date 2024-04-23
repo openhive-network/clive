@@ -8,9 +8,9 @@ from rich.console import Console, Group
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
 from clive.__private.core.formatters.humanize import humanize_asset, humanize_bool, humanize_datetime
-from clive.__private.core.hive_vests_conversions import hive_to_vests, vests_to_hive
-from clive.models import Asset
+from clive.__private.core.hive_vests_conversions import vests_to_hive
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -65,8 +65,8 @@ class ShowHivePower(WorldBasedCommand):
         return f"APR interest for HP/VESTS ≈ {self.hp_data.current_hp_apr} %"
 
     def __conversion_factor(self) -> RenderableType:
-        factor = hive_to_vests(Asset.hive(1), self.hp_data.gdpo)
-        return f"HP is calculated to VESTS with the factor: 1.000 HP -> {Asset.pretty_amount(factor)} VESTS"
+        factor = calulcate_vests_to_hive_ratio(self.hp_data.gdpo)
+        return f"HP is calculated to VESTS with the factor: 1.000 HP -> {factor} VESTS"
 
     def __power_down_info(self) -> RenderableType:
         table_power_down_info = Table(title=f"Power down info for account `{self.account_name}`", expand=True)
