@@ -101,7 +101,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
             return f"Interest since last payment: {self._account.data.hbd_unclaimed.amount} HBD"
 
         def get_interest_rate_for_hbd() -> str:
-            return f"APR interest rate for HBD($) is {content.hbd_interest_rate / 100}%"
+            return f"HBD($) APR is {content.hbd_interest_rate / 100}%"
 
         with self.app.batch_update():
             self.interest_data_container.query("*").remove()

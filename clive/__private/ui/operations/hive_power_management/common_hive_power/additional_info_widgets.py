@@ -91,4 +91,4 @@ class APR(DynamicLabel):
         self._provider = provider
 
     def _get_apr(self, content: HivePowerData) -> str:
-        return f"APR interest for HP/VESTS ≈ {content.current_hp_apr} %"
+        return f"HP/VESTS APR ≈ {content.current_hp_apr} %"

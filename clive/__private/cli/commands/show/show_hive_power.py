@@ -68,7 +68,7 @@ class ShowHivePower(WorldBasedCommand):
         return table_general_info
 
     def __apr(self) -> RenderableType:
-        return f"APR interest for HP/VESTS ≈ {self.hp_data.current_hp_apr} %"
+        return f"HP/VESTS APR ≈ {self.hp_data.current_hp_apr} %"
 
     def __conversion_factor(self) -> RenderableType:
         factor = calulcate_vests_to_hive_ratio(self.hp_data.gdpo)
