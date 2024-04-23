@@ -146,8 +146,10 @@ def humanize_operation_details(operation: Operation) -> str:
     return out[:-2]
 
 
-def humanize_hive_power(value: int) -> str:
+def humanize_hive_power(value: float | str | Asset.Hive) -> str:
     """Return pretty formatted hive power."""
+    if isinstance(value, Asset.Hive):
+        value = value.pretty_amount()
     formatted_string = humanize.naturalsize(value, binary=False)
     if "Byte" in formatted_string:
         return f"{value} HP"

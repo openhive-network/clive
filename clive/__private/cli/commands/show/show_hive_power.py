@@ -9,7 +9,12 @@ from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
-from clive.__private.core.formatters.humanize import humanize_asset, humanize_bool, humanize_datetime
+from clive.__private.core.formatters.humanize import (
+    humanize_asset,
+    humanize_bool,
+    humanize_datetime,
+    humanize_hive_power,
+)
 from clive.__private.core.hive_vests_conversions import vests_to_hive
 
 if TYPE_CHECKING:
@@ -75,8 +80,8 @@ class ShowHivePower(WorldBasedCommand):
 
         table_power_down_info.add_row(
             humanize_datetime(self.hp_data.next_vesting_withdrawal),
-            f"{humanize_asset(self.hp_data.to_withdraw.hp_balance, show_symbol=False)} HP \n"
-            f"{humanize_asset(self.hp_data.to_withdraw.vests_balance, show_symbol=False)} VESTS \n",
+            f"{humanize_hive_power(self.hp_data.to_withdraw.hp_balance)}\n"
+            f"{humanize_asset(self.hp_data.to_withdraw.vests_balance)}",
         )
         return table_power_down_info
 
