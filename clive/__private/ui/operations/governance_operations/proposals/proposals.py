@@ -175,7 +175,11 @@ class ProposalsList(GovernanceListWidget[ProposalData]):
 
 class ProposalsListHeader(GovernanceListHeader):
     def create_custom_columns(self) -> ComposeResult:
-        yield SectionTitle("Update your proposal votes")
+        yield SectionTitle(
+            f"Votes for proposals cast by your proxy ({self.app.world.profile_data.working_account.data.proxy})"
+            if self.is_proxy_set
+            else "Update your proposal votes"
+        )
 
 
 class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):

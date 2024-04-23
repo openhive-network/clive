@@ -252,7 +252,11 @@ class WitnessesListHeader(GovernanceListHeader):
         yield Static("votes", id="votes-column")
 
     def create_additional_headlines(self) -> ComposeResult:
-        yield SectionTitle("Modify the votes for witnesses")
+        yield SectionTitle(
+            f"Votes for witnesses cast by your proxy ({self.app.world.profile_data.working_account.data.proxy})"
+            if self.is_proxy_set
+            else "Modify the votes for witnesses"
+        )
 
 
 class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):

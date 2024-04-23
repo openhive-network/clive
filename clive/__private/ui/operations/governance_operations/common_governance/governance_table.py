@@ -52,7 +52,7 @@ class ArrowDownWidget(Static):
         self.post_message(self.Clicked())
 
 
-class GovernanceListHeader(Grid, AbstractClassMessagePump):
+class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
     """Widget representing the header of a list that allows page switching using PgUp and PgDn."""
 
     def __init__(self) -> None:
@@ -76,6 +76,10 @@ class GovernanceListHeader(Grid, AbstractClassMessagePump):
     def create_additional_headlines(self) -> ComposeResult:
         """Should yield custom headlines that will be placed above the arrows and column names."""
         return []
+
+    @property
+    def is_proxy_set(self) -> bool:
+        return bool(self.app.world.profile_data.working_account.data.proxy)
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
@@ -352,6 +356,10 @@ class GovernanceTable(
     @property
     def header(self) -> GovernanceListHeader:
         return self.__header
+
+    @property
+    def is_proxy_set(self) -> bool:
+        return bool(self.app.world.profile_data.working_account.data.proxy)
 
     @property
     @abstractmethod
