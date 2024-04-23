@@ -21,7 +21,9 @@ class EditKeyAlias(KeyAliasForm):
         Binding("f10", "save", "Save"),
     ]
 
-    BIG_TITLE: ClassVar[str] = "Edit alias"
+    BIG_TITLE: ClassVar[str] = "Configuration"
+    SUBTITLE: ClassVar[str] = "Manage key aliases"
+    SECTION_TITLE: ClassVar[str] = "Edit key alias"
 
     def __init__(self, public_key: PublicKeyAliased) -> None:
         self.public_key = public_key

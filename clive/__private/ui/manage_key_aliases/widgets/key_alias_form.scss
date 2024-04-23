@@ -1,16 +1,26 @@
 KeyAliasForm {
   SubTitle {
-    text-style: bold;
     content-align: center middle;
   }
 
   Body {
     grid-rows: auto;
     grid-gutter: 1;
+    margin-top: 1;
+    background: $panel;
+    padding-bottom: 1;
     height: auto;
   }
 
   ScrollablePart {
-    padding: 2 4;
+    padding: 0 4;
+
+    PublicKeyAliasInput {
+      padding: 0 1 0 1;
+    }
+
+    LabelizedInput {
+      padding: 0 1 0 1;
+    }
   }
 }
