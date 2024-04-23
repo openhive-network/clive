@@ -26,6 +26,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
+from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from clive.models import Asset
@@ -72,7 +73,7 @@ class Delegation(CliveCheckerboardTableRow):
             CliveCheckerBoardTableCell(delegation.delegatee),
             CliveCheckerBoardTableCell(aligned_hp_amount),
             CliveCheckerBoardTableCell(aligned_vests_amount),
-            CliveCheckerBoardTableCell(CliveButton("Remove", id_="remove-delegation-button", variant="error")),
+            CliveCheckerBoardTableCell(OneLineButton("Remove", id_="remove-delegation-button", variant="error")),
         )
         self._delegation = delegation
 

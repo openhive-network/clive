@@ -26,6 +26,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
+from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from schemas.operations import SetWithdrawVestingRouteOperation
@@ -58,7 +59,7 @@ class WithdrawRoute(CliveCheckerboardTableRow):
             CliveCheckerBoardTableCell(withdraw_route.to_account),
             CliveCheckerBoardTableCell(aligned_percent),
             CliveCheckerBoardTableCell(humanize_bool(withdraw_route.auto_vest)),
-            CliveCheckerBoardTableCell(CliveButton("Remove", id_="remove-withdraw-route-button", variant="error")),
+            CliveCheckerBoardTableCell(OneLineButton("Remove", id_="remove-withdraw-route-button", variant="error")),
         )
         self._withdraw_route = withdraw_route
 

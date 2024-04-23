@@ -29,6 +29,7 @@ from clive.__private.ui.widgets.generous_button import GenerousButton
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.notice import Notice
+from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from clive.models import Asset
@@ -109,7 +110,7 @@ class PendingPowerDown(CliveCheckerboardTable):
                 CliveCheckerBoardTableCell(humanize_datetime(content.next_vesting_withdrawal)),
                 CliveCheckerBoardTableCell(Asset.pretty_amount(content.next_power_down.hp_balance)),
                 CliveCheckerBoardTableCell(Asset.pretty_amount(content.next_power_down.vests_balance)),
-                CliveCheckerBoardTableCell(CliveButton("Cancel", variant="error")),
+                CliveCheckerBoardTableCell(OneLineButton("Cancel", variant="error")),
             )
         ]
 
