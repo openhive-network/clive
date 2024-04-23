@@ -68,7 +68,6 @@ class CliveCheckerBoardTableCell(Container):
         Args:
         ----
         content: Text to be displayed in the cell or widget to be yielded.
-        even: Evenness of the cell.
         id_:  The ID of the widget in the DOM.
         classes: The CSS classes for the widget.
         """
