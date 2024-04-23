@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
@@ -70,7 +72,11 @@ async def process_withdraw_routes_set(
 
     common = OperationCommonOptions.get_instance()
     operation = ProcessWithdrawRoutes(
-        **common.as_dict(), from_account=from_account, to_account=to_account, percent=percent, auto_vest=auto_vest
+        **common.as_dict(),
+        from_account=from_account,
+        to_account=to_account,
+        percent=Decimal.from_float(percent),
+        auto_vest=auto_vest
     )
     await operation.run()
 
@@ -86,7 +92,7 @@ async def process_withdraw_routes_remove(
 
     common = OperationCommonOptions.get_instance()
     operation = ProcessWithdrawRoutes(
-        **common.as_dict(), from_account=from_account, to_account=to_account, percent=0, auto_vest=False
+        **common.as_dict(), from_account=from_account, to_account=to_account, percent=Decimal(0), auto_vest=False
     )
     await operation.run()
 
