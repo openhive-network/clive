@@ -286,7 +286,7 @@ class GovernanceTable(
             return
 
         # It is used to prevent the user from switching to an empty page by key binding
-        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index + 1:
+        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
             self.notify("No elements on the next page", severity="warning")
             return
 
