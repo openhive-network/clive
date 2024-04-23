@@ -25,6 +25,7 @@ from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_vesting_delegation_expirations import FindVestingDelegationExpirations
 from clive.__private.core.commands.find_witness import FindWitness
+from clive.__private.core.commands.get_config import GetConfig
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.load_transaction import LoadTransaction
@@ -60,6 +61,7 @@ if TYPE_CHECKING:
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
     from clive.models.aliased import (
+        Config,
         DynamicGlobalProperties,
         ProposalSchema,
         SchemasAccount,
@@ -362,6 +364,9 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             FindVestingDelegationExpirations(node=self._world.node, account=account)
         )
+
+    async def get_config(self) -> CommandWithResultWrapper[Config]:
+        return await self.__surround_with_exception_handlers(GetConfig(node=self._world.node))
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[overload-overlap]
