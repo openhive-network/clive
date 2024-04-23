@@ -58,7 +58,7 @@ class Activate(BaseScreen):
         )
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer():
+        with DialogContainer(section_title="Activate profile"):
             yield self._name_input
             yield self._password_input
             with ActiveModeTimeContainer():
