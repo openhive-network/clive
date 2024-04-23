@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from textual.containers import Grid
 from textual.message import Message
 from textual.widgets import Static
 
@@ -13,15 +12,10 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
-from clive.__private.ui.widgets.location_indicator import LocationIndicator
-from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-
-class Body(Grid):
-    """Container for body."""
 
 
 class SubTitle(Static):
@@ -31,8 +25,8 @@ class SubTitle(Static):
 class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BIG_TITLE: ClassVar[str] = "Change me in subclass"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = True
+    SECTION_TITLE: ClassVar[str] = "Change me in subclass"
 
     class Changed(Message):
         """Emitted when key alias have been changed."""
@@ -47,12 +41,13 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
             key_manager=self.context.working_account.keys,
             required=self.IS_KEY_ALIAS_REQUIRED,
         )
-        self._public_key_input = LabelizedInput("Public key", self._default_public_key() or "will be calculated here")
+        self._public_key_input = LabelizedInput(
+            "Public key", self._default_public_key() or "will be calculated here", id="public-key"
+        )
 
     def create_main_panel(self) -> ComposeResult:
-        yield LocationIndicator(self.BIG_TITLE)
         yield from self._content_after_big_title()
-        with ScrollablePart(), Body():
+        with SectionScrollable(self.SECTION_TITLE):
             yield self._key_alias_input
             yield from self._content_after_alias_input()
             yield self._public_key_input
