@@ -108,8 +108,8 @@ class ShowHivePower(WorldBasedCommand):
 
         delegations_table = Table(expand=True, title=f"Current delegations for account `{self.account_name}`")
         delegations_table.add_column("Delegatee", justify="left", style="cyan", no_wrap=True)
-        delegations_table.add_column("Shares in HP", justify="right", style="green", no_wrap=True)
-        delegations_table.add_column("Shares in VESTS", justify="right", style="green", no_wrap=True)
+        delegations_table.add_column("Shares [HP]", justify="right", style="green", no_wrap=True)
+        delegations_table.add_column("Shares [VESTS]", justify="right", style="green", no_wrap=True)
 
         for delegation in self.hp_data.delegations:
             delegation_amount_hive = vests_to_hive(delegation.vesting_shares, self.hp_data.gdpo)
