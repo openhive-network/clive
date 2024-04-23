@@ -21,10 +21,9 @@ class AccountReferencingWidget(CliveWidget):
         self._account = account
         super().__init__(name=name, classes=classes)
 
-    def create_dynamic_label(self, foo: Callable[[], str], classes: str | None = None) -> DynamicLabel:
+    def create_dynamic_label(
+        self, foo: Callable[[], str], classes: str | None = None, init: bool = True
+    ) -> DynamicLabel:
         return DynamicLabel(
-            self.app.world,
-            "profile_data",
-            lambda: foo() if self._account.name else "NULL",
-            classes=classes,
+            self.app.world, "profile_data", lambda: foo() if self._account.name else "NULL", classes=classes, init=init
         )
