@@ -34,7 +34,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
         delayed_votes_table.add_column("Amount in HP", justify="right", style="green", no_wrap=True)
         delayed_votes_table.add_column("Amount in VESTS", justify="right", style="green", no_wrap=True)
 
-        gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
+        gdpo = await self.world.app_state.get_dynamic_global_properties()
         delayed_voting_interval = await self.__get_delayed_voting_interval_from_api()
 
         for entry in delayed_votes:

@@ -27,7 +27,7 @@ class ProcessPowerDown(OperationCommand):
 
         vesting_shares: Asset.Vests
         if isinstance(self.amount, Asset.Hive):
-            gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
+            gdpo = await self.world.app_state.get_dynamic_global_properties()
             vesting_shares = hive_to_vests(self.amount, gdpo)
         else:
             vesting_shares = self.amount
