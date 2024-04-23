@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.formatters.humanize import align_to_dot
+from clive.models import Asset
 from clive.models.hp_vests_balance import HpVestsBalance
 
 if TYPE_CHECKING:
@@ -12,7 +14,6 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.node import Node
-    from clive.models import Asset
     from clive.models.aliased import DynamicGlobalProperties, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindVestingDelegations, ListWithdrawVestingRoutes
     from schemas.apis.database_api.fundaments_of_reponses import VestingDelegationsFundament as VestingDelegation
@@ -52,6 +53,17 @@ class HivePowerData:
     next_power_down: HpVestsBalance
     current_hp_apr: Decimal
     gdpo: DynamicGlobalProperties
+
+    def get_delegations_aligned_amounts(self) -> tuple[list[str], list[str]]:
+        """Return aligned amounts of delegations in HP and VESTS."""
+        hp_amounts_to_align, vests_amounts_to_align = [], []
+        for delegation in self.delegations:
+            hp_vests_amount = HpVestsBalance.create(delegation.vesting_shares, self.gdpo)
+
+            hp_amounts_to_align.append(Asset.pretty_amount(hp_vests_amount.hp_balance))
+            vests_amounts_to_align.append(Asset.pretty_amount(hp_vests_amount.vests_balance))
+
+        return align_to_dot(*hp_amounts_to_align), align_to_dot(*vests_amounts_to_align)
 
 
 @dataclass(kw_only=True)

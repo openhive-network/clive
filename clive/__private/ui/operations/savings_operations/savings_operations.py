@@ -125,10 +125,10 @@ class PendingTransfersHeader(Horizontal):
 
 
 class PendingTransfer(CliveCheckerboardTableRow):
-    def __init__(self, pending_transfer: SavingsWithdrawals):
+    def __init__(self, pending_transfer: SavingsWithdrawals, aligned_amount: str):
         super().__init__(
             CliveCheckerBoardTableCell(pending_transfer.to),
-            CliveCheckerBoardTableCell(Asset.to_legacy(pending_transfer.amount)),
+            CliveCheckerBoardTableCell(aligned_amount),
             CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete)),
             CliveCheckerBoardTableCell(pending_transfer.memo),
             CliveCheckerBoardTableCell(CliveButton("Cancel", variant="error", id_="delete-transfer-button")),
@@ -153,7 +153,13 @@ class PendingTransfers(CliveCheckerboardTable):
     def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:
         self._title: Static
         self._title.update(f"Current pending transfers (amount: {len(content.pending_transfers)})")
-        return [PendingTransfer(pending_transfer) for pending_transfer in content.pending_transfers]
+
+        aligned_amounts = content.get_pending_transfers_aligned_amounts()
+
+        return [
+            PendingTransfer(pending_transfer, aligned_amount)
+            for pending_transfer, aligned_amount in zip(content.pending_transfers, aligned_amounts, strict=True)
+        ]
 
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no pending transfers")

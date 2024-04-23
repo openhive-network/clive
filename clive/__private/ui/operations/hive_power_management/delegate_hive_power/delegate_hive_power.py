@@ -7,7 +7,6 @@ from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.ensure_vests import ensure_vests
-from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -37,7 +36,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.models.aliased import DynamicGlobalProperties, VestingDelegation
+    from clive.models.aliased import VestingDelegation
 
 
 class PlaceTaker(Static):
@@ -55,27 +54,31 @@ class DelegationsTableHeader(Horizontal):
 class Delegation(CliveCheckerboardTableRow):
     """Row of the `DelegationsTable`."""
 
-    def __init__(self, delegation: VestingDelegation[Asset.Vests], dgpo: DynamicGlobalProperties) -> None:
+    def __init__(
+        self, delegation: VestingDelegation[Asset.Vests], aligned_hp_amount: str, aligned_vests_amount: str
+    ) -> None:
         """
         Initialize the delegation row.
 
         Args:
         ----
         delegation: delegation data to display.
-        dgpo: dynamic global properties.
+        aligned_hp_amount: aligned amount of hp to dots.
+        aligned_vests_amount: aligned amount of vests to dots.
         """
-        self._amount_in_hp = vests_to_hive(delegation.vesting_shares, dgpo)
+        self._aligned_hp_amount = aligned_hp_amount
+
         super().__init__(
             CliveCheckerBoardTableCell(delegation.delegatee),
-            CliveCheckerBoardTableCell(f"{Asset.pretty_amount(self._amount_in_hp)}"),
-            CliveCheckerBoardTableCell(f"{Asset.pretty_amount(delegation.vesting_shares)}"),
+            CliveCheckerBoardTableCell(aligned_hp_amount),
+            CliveCheckerBoardTableCell(aligned_vests_amount),
             CliveCheckerBoardTableCell(CliveButton("Remove", id_="remove-delegation-button", variant="error")),
         )
         self._delegation = delegation
 
     @on(CliveButton.Pressed, "#remove-delegation-button")
     def push_operation_summary_screen(self) -> None:
-        self.app.push_screen(RemoveDelegation(self._delegation, self._amount_in_hp))
+        self.app.push_screen(RemoveDelegation(self._delegation, self._aligned_hp_amount))
 
 
 class DelegationsTable(CliveCheckerboardTable):
@@ -91,7 +94,12 @@ class DelegationsTable(CliveCheckerboardTable):
         self._previous_delegations: list[VestingDelegation[Asset.Vests]] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[Delegation]:
-        return [Delegation(delegation, content.gdpo) for delegation in content.delegations]
+        aligned_hp, aligned_vests = content.get_delegations_aligned_amounts()
+
+        return [
+            Delegation(delegation, hp_value, vests_value)
+            for delegation, hp_value, vests_value in zip(content.delegations, aligned_hp, aligned_vests, strict=True)
+        ]
 
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no delegations")

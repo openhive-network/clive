@@ -21,17 +21,17 @@ class RemoveDelegation(OperationSummary):
 
     SECTION_TITLE: ClassVar[str] = "Remove delegation"
 
-    def __init__(self, delegation: VestingDelegation[Asset.Vests], amount_in_hp: Asset.Hive) -> None:
+    def __init__(self, delegation: VestingDelegation[Asset.Vests], pretty_hp_amount: str) -> None:
         super().__init__()
         self._delegation = delegation
-        self._amount_in_hp = amount_in_hp
+        self._pretty_hp_amount = pretty_hp_amount
 
     def content(self) -> ComposeResult:
         yield LabelizedInput("Delegator", self.working_account)
         yield LabelizedInput("Delegate", self._delegation.delegatee)
         yield LabelizedInput(
             "Shares [HP]",
-            f"{Asset.pretty_amount(self._amount_in_hp)}",
+            self._pretty_hp_amount,
         )
         yield LabelizedInput(
             "Shares [VESTS]",

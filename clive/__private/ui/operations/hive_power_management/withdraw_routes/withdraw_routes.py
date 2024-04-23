@@ -7,7 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
-from clive.__private.core.formatters.humanize import humanize_bool
+from clive.__private.core.formatters.humanize import align_to_dot, humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -53,10 +53,10 @@ class WithdrawRoutesHeader(Horizontal):
 class WithdrawRoute(CliveCheckerboardTableRow):
     """Row of the `WithdrawRoutesTable`."""
 
-    def __init__(self, withdraw_route: WithdrawRouteSchema) -> None:
+    def __init__(self, withdraw_route: WithdrawRouteSchema, aligned_percent: str) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(withdraw_route.to_account),
-            CliveCheckerBoardTableCell(f"{withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %"),
+            CliveCheckerBoardTableCell(aligned_percent),
             CliveCheckerBoardTableCell(humanize_bool(withdraw_route.auto_vest)),
             CliveCheckerBoardTableCell(CliveButton("Remove", id_="remove-withdraw-route-button", variant="error")),
         )
@@ -80,7 +80,15 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
         self._previous_withdraw_routes: list[WithdrawRouteSchema] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[WithdrawRoute]:
-        return [WithdrawRoute(withdraw_route) for withdraw_route in content.withdraw_routes]
+        percents_to_align = [
+            f"{withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %" for withdraw_route in content.withdraw_routes
+        ]
+        aligned_percents = align_to_dot(*percents_to_align)
+
+        return [
+            WithdrawRoute(withdraw_route, aligned_percent)
+            for withdraw_route, aligned_percent in zip(content.withdraw_routes, aligned_percents, strict=True)
+        ]
 
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no withdraw routes")

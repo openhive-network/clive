@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
 )
+from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 from clive.exceptions import RequestIdError
 
 if TYPE_CHECKING:
@@ -61,6 +62,12 @@ class SavingsData:
 
         last_occupied_id = max(all_transfers, key=lambda transfer: transfer.request_id).request_id
         return last_occupied_id + 1
+
+    def get_pending_transfers_aligned_amounts(self) -> list[str]:
+        """Returns dot-aligned amounts of pending transfers."""
+        amounts_to_align = [f"{humanize_asset(transfer.amount)}" for transfer in self.pending_transfers]
+
+        return align_to_dot(*amounts_to_align)
 
 
 @dataclass(kw_only=True)
