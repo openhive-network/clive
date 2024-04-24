@@ -4,6 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.core.formatters.data_labels import HBD_SAVINGS_APR_LABEL
 
 
 @dataclass(kw_only=True)
@@ -28,7 +29,7 @@ class ShowChain(WorldBasedCommand):
         table.add_row("Financial:", end_section=True)
 
         financial_data = data.get_aligned_financial_data()
-        table.add_row("HBD savings APR", financial_data.pretty_hbd_savings_apr)
+        table.add_row(HBD_SAVINGS_APR_LABEL, financial_data.pretty_hbd_savings_apr)
         table.add_row("VESTS APR", financial_data.pretty_vests_apr)
         table.add_row("HBD print rate", data.get_hbd_print_rate())
         table.add_row("current inflation rate", financial_data.pretty_current_inflation_rate)

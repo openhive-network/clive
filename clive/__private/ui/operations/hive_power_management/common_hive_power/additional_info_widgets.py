@@ -5,7 +5,12 @@ from typing import TYPE_CHECKING
 from textual.containers import Vertical
 from textual.widgets import Static
 
-from clive.__private.core.formatters.humanize import humanize_asset, humanize_datetime, humanize_hive_power
+from clive.__private.core.formatters.humanize import (
+    humanize_asset,
+    humanize_datetime,
+    humanize_hive_power,
+    humanize_hp_vests_apr,
+)
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 
@@ -91,4 +96,4 @@ class APR(DynamicLabel):
         self._provider = provider
 
     def _get_apr(self, content: HivePowerData) -> str:
-        return f"APR interest for HP/VESTS ≈ {content.current_hp_apr} %"
+        return humanize_hp_vests_apr(content.current_hp_apr, with_label=True)

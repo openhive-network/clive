@@ -19,6 +19,7 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
 )
 from clive.__private.core.formatters.case import underscore
+from clive.__private.core.formatters.data_labels import HP_VEST_APR_LABEL, HBD_SAVINGS_APR_LABEL
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
 from clive.models import Asset, Operation
 
@@ -174,9 +175,9 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate) -> str:
     return f"{hbd_exchange_rate.base.pretty_amount()} $"
 
 
-def humanize_hbd_savings_apr(hbd_savings_apr: Decimal) -> str:
+def humanize_hbd_savings_apr(hbd_savings_apr: Decimal, *, with_label: bool = False) -> str:
     """Return pretty formatted hdb interese rate (APR)."""
-    return humanize_percent(hbd_savings_apr)
+    return f"{HBD_SAVINGS_APR_LABEL + ':'  if with_label else ''} {humanize_percent(hbd_savings_apr)}".lstrip()
 
 
 def humanize_hbd_print_rate(hbd_print_rate: Decimal) -> str:
@@ -190,9 +191,9 @@ def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
     return humanize_percent(calculated)
 
 
-def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal) -> str:
+def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = False) -> str:
     """Return formatted text describing APR value returned from wax."""
-    return f"HP/VESTS APR ≈ {humanize_apr(data)}"
+    return f"{HP_VEST_APR_LABEL + ':' if with_label  else ''} {humanize_apr(data)}".lstrip()
 
 
 def humanize_median_hive_price(current_price_feed: CurrentPriceFeed) -> str:

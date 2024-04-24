@@ -4,6 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.core.formatters.data_labels import HBD_SAVINGS_APR_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_hbd_exchange_rate,
     humanize_hbd_savings_apr,
@@ -48,7 +49,7 @@ class ShowWitness(WorldBasedCommand):
         table.add_row("signing key", f"{witness.signing_key}")
         table.add_row("total missed", f"{witness.total_missed}")
         table.add_row("account creation fee", f"{account_creation_fee}")
-        table.add_row("Proposed HDB savings APR", f"{hbd_savings_apr}")
+        table.add_row(f"Proposed {HBD_SAVINGS_APR_LABEL}", f"{hbd_savings_apr}")
         table.add_row("status", f"{humanize_witness_status(witness.signing_key)}")
 
         console = Console()

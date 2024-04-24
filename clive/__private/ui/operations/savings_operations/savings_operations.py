@@ -6,7 +6,8 @@ from textual import on
 from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
 
-from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
+from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -102,7 +103,7 @@ class SavingsInterestInfo(AccountReferencingWidget):
             return f"Interest since last payment: {self._account.data.hbd_unclaimed.amount} HBD"
 
         def get_interest_rate_for_hbd() -> str:
-            return f"APR interest rate for HBD($) is {content.hbd_interest_rate / 100}%"
+            return humanize_hbd_savings_apr(hive_percent_to_percent(content.hbd_interest_rate), with_label=True)
 
         with self.app.batch_update():
             self.interest_data_container.query("*").remove()
