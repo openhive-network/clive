@@ -1,12 +1,16 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Literal
+
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.asset_amount_base_input import AssetAmountInput
 
 if TYPE_CHECKING:
     import test_tools as tt
     from textual.screen import Screen
     from textual.widget import Widget
 
+    from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
     from clive_local_tools.tui.types import CliveApp, ClivePilot
     from schemas.operations import AnyOperation
     from schemas.operations.representations import HF26Representation
@@ -19,7 +23,7 @@ def assert_is_screen_active(pilot: ClivePilot, expected_screen: type[Screen[Any]
     ), f"Expected screen '{expected_screen}' is not active. Current screen is '{pilot.app.screen}'."
 
 
-def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context: str | None = None) -> None:
+def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context: str = "") -> None:
     """Assert that the expected widget is focused."""
     context_details = f"\nContext: {context}" if context else ""
     if isinstance(widget, type):
@@ -30,6 +34,31 @@ def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context:
         assert (
             widget.has_focus
         ), f"Required the focus to be on `{widget}`, but is on `{pilot.app.focused}`.{context_details}"
+
+
+def assert_is_clive_composed_input_focused(
+    pilot: ClivePilot,
+    composed_input: type[CliveValidatedInput[Any]] | CliveValidatedInput[Any],
+    *,
+    target: Literal["input", "select", "known"] = "input",
+    context: str = "",
+) -> None:
+    composed_input_instance = (
+        pilot.app.screen.query_one(composed_input) if isinstance(composed_input, type) else composed_input
+    )
+
+    if target == "input":
+        assert_is_focused(pilot, composed_input_instance.input, context)
+    elif target == "select":
+        assert isinstance(
+            composed_input_instance, AssetAmountInput
+        ), f"{composed_input} seems not to be composed of select widget."
+        assert_is_focused(pilot, composed_input_instance._currency_selector, context)
+    elif target == "known":
+        assert isinstance(
+            composed_input_instance, AccountNameInput
+        ), f"{composed_input} seems not to be composed of KnownAccount widget."
+        assert_is_focused(pilot, composed_input_instance._known_account.checkbox, context)
 
 
 def assert_is_key_binding_active(app: CliveApp, key: str, description: str | None = None) -> None:

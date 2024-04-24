@@ -41,6 +41,7 @@ async def fill_transfer_data(
     asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
     await write_text(pilot, beneficient)
     await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, AccountNameInput, target="known")
     await focus_next(pilot)
     await write_text(pilot, amount)
     await focus_next(pilot)
