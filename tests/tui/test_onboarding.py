@@ -14,9 +14,16 @@ from clive.__private.ui.onboarding.onboarding import OnboardingFinishScreen, Onb
 from clive.__private.ui.set_account.set_account import SetAccount, WorkingAccountCheckbox
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
+from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT
-from clive_local_tools.tui.checkers import assert_is_screen_active
+from clive_local_tools.tui.checkers import (
+    assert_is_clive_composed_input_focused,
+    assert_is_focused,
+    assert_is_screen_active,
+)
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.textual_helpers import (
     focus_next,
@@ -62,23 +69,29 @@ async def onboarding_until_set_account(
 ) -> None:
     assert_is_screen_active(pilot, OnboardingWelcomeScreen)
     await press_and_wait_for_screen(pilot, "ctrl+n", CreateProfileForm)
+    assert_is_clive_composed_input_focused(
+        pilot, SetProfileNameInput, context="CreateProfileForm should have initial focus"
+    )
     await write_text(pilot, profile_name)
-    await focus_next(pilot)  # 'Password' is focused
+    await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, SetPasswordInput)
     await write_text(pilot, profile_password)
-    await focus_next(pilot)  # 'Repeat password' is focused
+    await focus_next(pilot)
+    # assert_is_clive_composed_input_focused(pilot, TextInput)  # noqa: ERA001 # TODO: create and use RepeatPasswordInput instead of TextInput
     await write_text(pilot, profile_password)
     await press_and_wait_for_screen(pilot, "ctrl+n", SetNodeAddressForm)
     await press_and_wait_for_screen(pilot, "ctrl+n", SetAccount)
+    assert_is_clive_composed_input_focused(pilot, AccountNameInput)
     await write_text(pilot, account_name)
 
 
 async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
     assert_is_screen_active(pilot, SetAccount)
-    assert pilot.app.screen.query_one(
-        AccountNameInput
-    ).input.has_focus, "Set account should have initial focus"  # TODO: create assert_is_input_focused?
-    await focus_next(pilot)  # 'Known?' is focused
-    await focus_next(pilot)  # 'Working account?' is focused
+    assert_is_clive_composed_input_focused(pilot, AccountNameInput, context="SetAccount should have initial focus")
+    await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, AccountNameInput, target="known")
+    await focus_next(pilot)
+    assert_is_focused(pilot, WorkingAccountCheckbox)
     await pilot.press("space")  # Uncheck 'Working account?'
     assert (
         pilot.app.screen.query_one(WorkingAccountCheckbox).value is False
@@ -87,10 +100,11 @@ async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
 
 async def onboarding_set_key(pilot: ClivePilot, private_key: str) -> None:
     assert_is_screen_active(pilot, NewKeyAliasForm)
-    assert pilot.app.screen.query_one(
-        PublicKeyAliasInput
-    ).input.has_focus, "KeyAliasForm screen should have initial focus"  # TODO: create assert_is_input_focused?
-    await focus_next(pilot)  # 'Private key' is focused
+    assert_is_clive_composed_input_focused(
+        pilot, PublicKeyAliasInput, context="KeyAliasForm screen should have initial focus"
+    )
+    await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, PrivateKeyInput)
     await write_text(pilot, private_key)
 
 
@@ -100,6 +114,7 @@ async def onboarding_finish(pilot: ClivePilot) -> None:
 
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
+    assert_is_screen_active(pilot, DashboardActive)
     await press_and_wait_for_screen(pilot, "f9", Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)

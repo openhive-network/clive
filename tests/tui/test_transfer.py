@@ -4,13 +4,21 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 import test_tools as tt
+from textual.widgets import Checkbox
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
+from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 from clive_local_tools.tui.activate import activate
-from clive_local_tools.tui.checkers import assert_is_screen_active, assert_operations_placed_in_blockchain
+from clive_local_tools.tui.checkers import (
+    assert_is_clive_composed_input_focused,
+    assert_is_screen_active,
+    assert_operations_placed_in_blockchain,
+)
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
@@ -39,15 +47,21 @@ async def fill_transfer_data(
     assert_is_screen_active(pilot, TransferToAccount)
     amount = str(asset.as_float())
     asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
+    assert_is_clive_composed_input_focused(
+        pilot, AccountNameInput, context="TransferToAccount should have initial focus"
+    )
     await write_text(pilot, beneficient)
     await focus_next(pilot)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput, target="known")
     await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, LiquidAssetAmountInput)
     await write_text(pilot, amount)
     await focus_next(pilot)
+    assert_is_clive_composed_input_focused(pilot, LiquidAssetAmountInput, target="select")
     await choose_asset_token(pilot, asset_token)
     if memo:
         await focus_next(pilot)
+        assert_is_clive_composed_input_focused(pilot, MemoInput)
         await write_text(pilot, memo)
 
 
