@@ -41,6 +41,13 @@ Override it or set the `ATTRIBUTE_TO_WATCH` class-var if you want to create a dy
         super().__init__(self._MESSAGE)
 
 
+class RebuildStaticTableWithNoContentError(CliveCheckerboardTableError):
+    _MESSAGE = "You are trying to rebuild static table with no content available."
+
+    def __init__(self) -> None:
+        super().__init__(self._MESSAGE)
+
+
 class PlaceTaker(Static):
     pass
 
@@ -161,9 +168,7 @@ class CliveCheckerboardTable(CliveWidget):
 
     def _mount_static_rows(self) -> None:
         """Mount rows created in static mode."""
-        rows = self.create_static_rows()
-        self._set_evenness_styles(rows)
-        self.mount_all([self._title, self._header, *rows])
+        self.mount_all(self._create_table_content())
 
     async def _mount_dynamic_rows(self, content: Any) -> None:
         """New rows are mounted when the ATTRIBUTE_TO_WATCH has been changed."""
@@ -177,17 +182,32 @@ class CliveCheckerboardTable(CliveWidget):
             return
 
         self.update_previous_state(content)
+        await self.rebuild(content)
 
-        if self.is_anything_to_display(content):
-            rows = self.create_dynamic_rows(content)
-            self._set_evenness_styles(rows)
-            widgets_to_mount = [self._title, self._header, *rows]
-        else:
-            widgets_to_mount = [self.get_no_content_available_widget()]
+    async def rebuild(self, content: Any = None) -> None:
+        """
+        Rebuilds whole table - explicit use available for static and dynamic version.
+
+        Raises
+        ------
+        RebuildStaticTableWithNoContentError: When table is static and has no content to display this method is used.
+        """
+        if self.is_anything_to_display(content) or not self.should_be_dynamic:
+            widgets_to_mount = self._create_table_content(content)
+        elif not self.is_anything_to_display(content):
+            if self.should_be_dynamic:
+                widgets_to_mount = [self.get_no_content_available_widget()]
+            else:
+                raise RebuildStaticTableWithNoContentError
 
         with self.app.batch_update():
             await self.query("*").remove()
             await self.mount_all(widgets_to_mount)
+
+    def _create_table_content(self, content: Any = None) -> list[Widget]:
+        rows = self.create_dynamic_rows(content) if self.should_be_dynamic else self.create_static_rows()
+        self._set_evenness_styles(rows)
+        return [self._title, self._header, *rows]
 
     def create_dynamic_rows(self, content: Any) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """
