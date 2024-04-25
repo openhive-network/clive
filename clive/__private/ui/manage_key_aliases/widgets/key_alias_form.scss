@@ -13,13 +13,9 @@ KeyAliasForm {
   }
 
   ScrollablePart {
-    padding: 0 4;
+    padding: 0 10;
 
-    PublicKeyAliasInput {
-      padding: 0 1 0 1;
-    }
-
-    LabelizedInput {
+    CliveValidatedInput {
       padding: 0 1 0 1;
     }
   }
