@@ -21,7 +21,7 @@ class ShowWitness(WorldBasedCommand):
         witness = wrapper.result_or_raise
 
         gdpo = await self.world.node.api.database_api.get_dynamic_global_properties()
-        votes = humanize_votes_with_comma(witness.votes, gdpo.total_vesting_fund_hive, gdpo.total_vesting_shares)
+        votes = humanize_votes_with_comma(witness.votes, gdpo)
 
         account_creation_fee: str | None = None
         if witness.props.account_creation_fee:

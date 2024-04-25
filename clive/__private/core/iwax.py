@@ -205,3 +205,12 @@ def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
     result = wax.calculate_inflation_rate_for_block(head_block_num)
     __validate_wax_response(result)
     return hive_percent_to_percent(result.result.decode())
+
+
+def calculate_witness_votes_hp(votes: int, data: VestsToHpProtocol) -> Asset.Hive:
+    result = wax.calculate_witness_votes_hp(
+        votes=votes,
+        total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
+        total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
+    )
+    return cast(Asset.Hive, from_python_json_asset(result))

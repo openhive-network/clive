@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING, Any, Literal
 import humanize
 import inflection
 
-from clive.__private.core.calculate_hp_from_votes import calculate_hp_from_votes
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
 from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
 from clive.__private.core.constants import (
@@ -20,7 +19,7 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
 )
 from clive.__private.core.formatters.case import underscore
-from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr
+from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.models import Asset, Operation
 
@@ -143,11 +142,11 @@ def humanize_operation_details(operation: Operation) -> str:
     return out[:-2]
 
 
-def humanize_hive_power(value: int) -> str:
+def humanize_hive_power(value: Asset.Hive) -> str:
     """Return pretty formatted hive power."""
-    formatted_string = humanize.naturalsize(value, binary=False)
+    formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
     if "Byte" in formatted_string:
-        return f"{value} HP"
+        return f"{value.pretty_amount()} HP"
 
     format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
     matched = format_fix_regex.match(formatted_string)
@@ -209,20 +208,16 @@ def humanize_witness_status(signing_key: str) -> str:
     return "active" if signing_key != NULL_ACCOUNT_KEY_VALUE else "inactive"
 
 
-def humanize_votes_with_suffix(
-    votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests
-) -> str:
+def humanize_votes_with_suffix(votes: int, data: VestsToHpProtocol) -> str:
     """Return pretty formatted votes converted to hive power with K, M etc. suffix."""
-    hive_power = calculate_hp_from_votes(votes, total_vesting_fund_hive, total_vesting_shares)
+    hive_power = calculate_witness_votes_hp(votes, data)
     return humanize_hive_power(hive_power)
 
 
-def humanize_votes_with_comma(
-    votes: int, total_vesting_fund_hive: Asset.Hive, total_vesting_shares: Asset.Vests
-) -> str:
+def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
     """Return pretty formatted votes converted to hive power."""
-    hive_power = calculate_hp_from_votes(votes, total_vesting_fund_hive, total_vesting_shares)
-    return f"{humanize.intcomma(hive_power, ndigits=0)} HP"
+    hive_power = calculate_witness_votes_hp(votes, data)
+    return f"{humanize.intcomma(hive_power.as_float(), ndigits=0)} HP"
 
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: Literal["", "+", "-"] = "") -> str:

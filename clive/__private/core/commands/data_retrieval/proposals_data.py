@@ -125,9 +125,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             creator=proposal.creator,
             receiver=proposal.receiver,
             daily_pay=Asset.pretty_amount(proposal.daily_pay),
-            votes=humanize_votes_with_suffix(
-                proposal.total_votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
-            ),
+            votes=humanize_votes_with_suffix(proposal.total_votes, data.gdpo),
             status=proposal.status,
             start_date=proposal.start_date,
             end_date=proposal.end_date,

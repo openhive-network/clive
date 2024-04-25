@@ -197,9 +197,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             witness.owner,
             created=witness.created,
             rank=rank,
-            votes=humanize_votes_with_suffix(
-                witness.votes, data.gdpo.total_vesting_fund_hive, data.gdpo.total_vesting_shares
-            ),
+            votes=humanize_votes_with_suffix(witness.votes, data.gdpo),
             missed_blocks=witness.total_missed,
             voted=witness.owner in data.witnesses_votes,
             last_block=witness.last_confirmed_block_num,
