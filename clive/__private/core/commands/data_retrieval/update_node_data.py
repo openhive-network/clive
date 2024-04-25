@@ -315,17 +315,15 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     ) -> None:
         power_from_api = int(manabar.current_mana)
         last_update = int(manabar.last_update_time)
-        dest.max_value = int(vests_to_hive(max_mana, gdpo).amount)
-        dest.value = int(
-            vests_to_hive(
-                calculate_current_manabar_value(
-                    now=int(gdpo.time.timestamp()),
-                    max_mana=max_mana,
-                    current_mana=power_from_api,
-                    last_update_time=last_update,
-                ),
-                gdpo,
-            ).amount
+        dest.max_value = vests_to_hive(max_mana, gdpo)
+        dest.value = vests_to_hive(
+            calculate_current_manabar_value(
+                now=int(gdpo.time.timestamp()),
+                max_mana=max_mana,
+                current_mana=power_from_api,
+                last_update_time=last_update,
+            ),
+            gdpo,
         )
 
         dest.full_regeneration = self.__get_manabar_regeneration_time(

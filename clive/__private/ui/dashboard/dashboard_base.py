@@ -48,7 +48,7 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield self.create_dynamic_label(
-            lambda: f"{self.__manabar.percentage :.2f}% {self.__name}",
+            lambda: f"{self.__manabar.percentage}% {self.__name}",
             classes="percentage",
         )
         yield self.create_dynamic_label(

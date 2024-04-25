@@ -81,7 +81,7 @@ class CartOverview(CliveWidget):
 
     @staticmethod
     def __get_rc(profile_data: ProfileData) -> str:
-        return f"{profile_data.working_account.data.rc_manabar.percentage:.2f}%"
+        return f"{profile_data.working_account.data.rc_manabar.percentage}%"
 
     @staticmethod
     def __get_hive_balance(profile_data: ProfileData) -> str:
