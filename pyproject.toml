@@ -183,3 +183,13 @@ required-imports = ["from __future__ import annotations"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "--strict-markers"
+filterwarnings = [
+    "error",
+    "ignore:pkg_resources is deprecated as an API.:DeprecationWarning",  # TODO: needs further investigation
+    "ignore:unclosed transport:ResourceWarning",  # TODO: needs further investigation
+    "ignore:unclosed:ResourceWarning",  # TODO: needs further investigation
+    "ignore:Process was force-closed with SIGKILL, because didn't close before timeout:UserWarning",  # test-tools
+    "ignore:coroutine 'DynamicLabel.attribute_changed' was never awaited:RuntimeWarning", # known issue during Textual app shutdown, ignored in production
+    "ignore:coroutine 'RequestHandler._handle_request' was never awaited:RuntimeWarning",  # TODO: probably related to above but needs further investigation
+    'ignore:subprocess \d+ is still running:ResourceWarning',  # TODO: needs further investigation
+]
