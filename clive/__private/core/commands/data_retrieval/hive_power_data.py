@@ -6,13 +6,13 @@ from typing import TYPE_CHECKING, Final
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.hive_vests_conversions import vests_to_hive
-from clive.models import Asset
 
 if TYPE_CHECKING:
     from datetime import datetime
     from decimal import Decimal
 
     from clive.__private.core.node import Node
+    from clive.models import Asset
     from clive.models.aliased import DynamicGlobalProperties, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindVestingDelegations, ListWithdrawVestingRoutes
     from schemas.apis.database_api.fundaments_of_reponses import VestingDelegationsFundament as VestingDelegation
@@ -98,9 +98,7 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             next_vesting_withdrawal=data.core_account.next_vesting_withdrawal,
             withdraw_routes=[route for route in data.withdraw_routes if route.from_account == self.account_name],
             delegations=data.delegations,
-            to_withdraw=self._create_balance_representation(
-                data.gdpo, Asset.vests(data.core_account.to_withdraw / 10**data.gdpo.total_vesting_shares.precision)
-            ),
+            to_withdraw=self._create_balance_representation(data.gdpo, iwax.vests(data.core_account.to_withdraw)),
             next_power_down=self._create_balance_representation(data.gdpo, data.core_account.vesting_withdraw_rate),
             current_hp_apr=iwax.calculate_hp_apr(data.gdpo),
             gdpo=data.gdpo,
