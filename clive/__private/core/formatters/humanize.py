@@ -217,7 +217,7 @@ def humanize_votes_with_suffix(votes: int, data: VestsToHpProtocol) -> str:
 def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
     """Return pretty formatted votes converted to hive power."""
     hive_power = calculate_witness_votes_hp(votes, data)
-    return f"{humanize.intcomma(hive_power.as_float(), ndigits=0)} HP"
+    return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
 
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: Literal["", "+", "-"] = "") -> str:
