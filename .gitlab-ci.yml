@@ -18,6 +18,9 @@ variables:
   GIT_SUBMODULE_STRATEGY: recursive
   # static code analysis:
   PACKAGES_TO_CHECK: "clive/ tests/"
+  # tests:
+  PYTEST_NUMBER_OF_PROCESSES: 16
+  PYTEST_LOG_DURATIONS: 1
   # colors:
   TXT_GREEN: "\e[1;32m"
   TXT_BLUE: "\e[1;34m"
@@ -35,7 +38,7 @@ include:
     ref: 60f81ebd60dfb950361525d4e06b4a3f1d0b525f
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
-    ref: 32073829224f333726bb99e01e4d9787f299b4dd
+    ref: b2ff9f5a48bc8fb379c66ec4e7907ea1e796ff1b
     file: '/templates/python_projects.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
@@ -122,36 +125,52 @@ build_wheel:
 
 testing_beekeeper:
   extends: .testing
+  variables:
+      PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching beekeeper tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/beekeeper
+    - export PYTEST_ARGS=(tests/functional/beekeeper)
+    - !reference [.run-pytest, script]
 
 testing_clive:
   extends: .testing
+  variables:
+    PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching clive concurrent tests...${TXT_CLEAR}"
-    - python3 -m pytest
-      --ignore "tests/functional/beekeeper" --ignore "tests/tui" --ignore "tests/functional/cli"
+    - export PYTEST_ARGS=(
+      --ignore tests/functional/beekeeper --ignore tests/tui --ignore tests/functional/cli
       -k "not test_autocompletion_time"
-      -n auto --durations 0 --junitxml=report.xml tests/
+      )
+    - !reference [.run-pytest, script]
 
 testing_clive_import_times_during_autocompletion:
   extends: .testing
+  variables:
+    PYTEST_NUMBER_OF_PROCESSES: 1
+    PYTEST_TIMEOUT_MINUTES: 3
   script:
     - echo -e "${TXT_BLUE}Launching clive test for autocompletion time...${TXT_CLEAR}"
-    - python3 -m pytest -k "test_autocompletion_time" --durations 0 --junitxml=report.xml tests/
+    - export PYTEST_ARGS=(-k test_autocompletion_time)
+    - !reference [.run-pytest, script]
 
 testing_tui:
   extends: .testing
+  variables:
+    PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching tui tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/tui
+    - export PYTEST_ARGS=(tests/tui)
+    - !reference [.run-pytest, script]
 
 testing_cli:
   extends: .testing
+  variables:
+    PYTEST_TIMEOUT_MINUTES: 10
   script:
     - echo -e "${TXT_BLUE}Launching cli commands tests...${TXT_CLEAR}"
-    - python3 -m pytest -n auto --durations 0 --junitxml=report.xml tests/functional/cli
+    - export PYTEST_ARGS=(tests/functional/cli)
+    - !reference [.run-pytest, script]
 
 testing_password_private_key_logging:
   stage: tests
