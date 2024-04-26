@@ -13,17 +13,19 @@ workflow:
     - if: '$CI_COMMIT_BRANCH || $CI_COMMIT_TAG'
 
 variables:
+  # git:
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
+  # static code analysis:
   PACKAGES_TO_CHECK: "clive/ tests/"
   # colors:
   TXT_GREEN: "\e[1;32m"
   TXT_BLUE: "\e[1;34m"
   TXT_CLEAR: "\e[0m"
-
+  # binaries:
   HIVE_BUILD_ROOT_PATH: "hived-binaries"
   BEEKEEPER_BINARY: "${HIVE_BUILD_ROOT_PATH}/mainnet/beekeeper"
-
+  # ci registry:
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
   CI_BASE_IMAGE_TAG: "@sha256:080b16fd53013aeb9b89b00a8dfc90fecf886173f46448b05f45cee376c43330"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
