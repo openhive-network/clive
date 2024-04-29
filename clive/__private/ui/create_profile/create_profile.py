@@ -19,10 +19,9 @@ from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
+from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
-from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.validators.repeat_validator import RepeatValidator
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
@@ -39,13 +38,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
-        self._repeat_password_input = TextInput(
-            "Repeat password",
-            password=True,
-            validators=[
-                RepeatValidator(input_to_repeat=self._password_input, failure_description="Passwords do not match")
-            ],
-        )
+        self._repeat_password_input = RepeatPasswordInput(self._password_input)
         super().__init__(*args, **kwargs)
 
     def create_main_panel(self) -> ComposeResult:

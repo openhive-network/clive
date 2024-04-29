@@ -16,6 +16,7 @@ from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressF
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
+from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT
@@ -77,7 +78,7 @@ async def onboarding_until_set_account(
     assert_is_clive_composed_input_focused(pilot, SetPasswordInput)
     await write_text(pilot, profile_password)
     await focus_next(pilot)
-    # assert_is_clive_composed_input_focused(pilot, TextInput)  # noqa: ERA001 # TODO: create and use RepeatPasswordInput instead of TextInput
+    assert_is_clive_composed_input_focused(pilot, RepeatPasswordInput)
     await write_text(pilot, profile_password)
     await press_and_wait_for_screen(pilot, "ctrl+n", SetNodeAddressForm)
     await press_and_wait_for_screen(pilot, "ctrl+n", SetAccount)
