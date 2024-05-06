@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
+from textual.containers import Horizontal
 from textual.message import Message
 from textual.widgets import Static
 
@@ -14,11 +15,18 @@ from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAlias
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_checkerboard_table import (
+    EVEN_CLASS_NAME,
+    ODD_CLASS_NAME,
+    CliveCheckerboardTable,
+    CliveCheckerBoardTableCell,
+    CliveCheckerboardTableRow,
+)
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -26,37 +34,26 @@ if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
 
 
-class DynamicColumn(DynamicLabel):
-    """Column with dynamic content."""
+class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
+    """Row of ManageKeyAliasesTable."""
 
-
-class StaticColumn(Static):
-    """Column with static content."""
-
-
-class ColumnLayout(Static):
-    """Holds column order."""
-
-
-odd = "-odd"
-even = "-even"
-
-
-class KeyAlias(ColumnLayout, CliveWidget):
     class Changed(Message):
         """Emitted when key alias have been changed."""
 
     def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
-        self.__index = index
         self.__public_key = public_key
-        super().__init__()
 
-    def compose(self) -> ComposeResult:
-        yield StaticColumn(str(self.__index + 1), id="key-alias-row-number", classes=even)
-        yield StaticColumn(self.__public_key.alias, id="key-alias-name", classes=odd)
-        yield StaticColumn(self.__public_key.value, id="key-alias-public-key", classes=even)
-        yield CliveButton("Edit", id_="edit-key-alias-button")
-        yield CliveButton("Remove", variant="error", id_="remove-key-alias-button")
+        super().__init__(
+            CliveCheckerBoardTableCell(str(index + 1)),
+            CliveCheckerBoardTableCell(self.__public_key.alias),
+            CliveCheckerBoardTableCell(self.__public_key.value, classes="public-key"),
+            CliveCheckerBoardTableCell(
+                Horizontal(
+                    CliveButton("Edit", id_="edit-key-alias-button"),
+                    CliveButton("Remove", variant="error", id_="remove-key-alias-button"),
+                ),
+            ),
+        )
 
     @on(CliveButton.Pressed, "#edit-key-alias-button")
     def push_edit_key_alias_screen(self) -> None:
@@ -81,12 +78,23 @@ class KeyAlias(ColumnLayout, CliveWidget):
         )
 
 
-class KeyAliasesHeader(ColumnLayout):
+class KeyAliasesHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", id="key-alias-row-number", classes=even)
-        yield StaticColumn("Alias", id="key-alias-name", classes=odd)
-        yield StaticColumn("Public key", id="key-alias-public-key", classes=even)
-        yield StaticColumn("Actions", id="actions", classes=odd)
+        yield Static("No.", classes=ODD_CLASS_NAME)
+        yield Static("Alias", classes=EVEN_CLASS_NAME)
+        yield Static("Public key", classes=f"{ODD_CLASS_NAME} public-key")
+        yield Static("Actions", classes=EVEN_CLASS_NAME)
+
+
+class ManageKeyAliasesTable(CliveCheckerboardTable):
+    """Table with KeyAliases."""
+
+    def create_static_rows(self) -> list[KeyAlias]:
+        key_aliases = []
+        for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
+            key_aliases.append(KeyAlias(idx, key))
+
+        return key_aliases
 
 
 class ManageKeyAliases(BaseScreen):
@@ -103,18 +111,13 @@ class ManageKeyAliases(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         yield LocationIndicator("key aliases")
-        yield KeyAliasesHeader()
         with self.__scrollable_part:
-            for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-                yield KeyAlias(idx, key)
+            yield ManageKeyAliasesTable(SectionTitle("Edit key aliases"), KeyAliasesHeader())
 
     def action_new_key_alias(self) -> None:
         self.app.push_screen(NewKeyAlias())
 
     @on(KeyAlias.Changed)
     @on(KeyAliasForm.Changed)
-    def rebuild_key_aliases(self) -> None:
-        self.query(KeyAlias).remove()
-
-        for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
-            self.__scrollable_part.mount(KeyAlias(idx, key))
+    async def rebuild_key_aliases(self) -> None:
+        await self.query_one(ManageKeyAliasesTable).rebuild()
