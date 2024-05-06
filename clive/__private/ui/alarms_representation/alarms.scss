@@ -1,0 +1,34 @@
+Alarms {
+  ScrollablePart {
+    align: center top;
+  }
+
+  AlarmsTable {
+    align: center top;
+    width: 70%;
+
+    AlarmsTableRow {
+      OneLineButton {
+        width: 1fr;
+      }
+
+      .basic-info-cell {
+        width: 3fr;
+      }
+    }
+
+    AlarmsTableHeader {
+      height: 1;
+
+      Static {
+        text-style: bold;
+        width: 1fr;
+        text-align: center;
+      }
+
+      .-odd-column {
+        width: 3fr;
+      }
+    }
+  }
+}

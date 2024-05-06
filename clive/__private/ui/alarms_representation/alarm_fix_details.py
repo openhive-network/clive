@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Final
 from clive.__private.core.alarms.specific_alarms import GovernanceVotingExpiration
 from clive.__private.core.clive_import import get_clive
 from clive.__private.ui.operations import Governance
+from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
@@ -29,6 +30,23 @@ class AlarmFixDetails:
     @property
     def is_fixable(self) -> bool:
         return bool(self.fix_button_text)
+
+
+class DetailedAlarmNotFoundError(CliveDeveloperError):
+    _MESSAGE = """
+The alarm you want to display is not found in ALARM_FIX_DETAILS_MAP.
+You can also refer to the `Alarm` documentation to see how to properly create an alarm to be displayed in TUI.
+    """
+
+    def __init__(self) -> None:
+        super().__init__(self._MESSAGE)
+
+
+def get_detailed_alarm_fix_details(alarm: AnyAlarm) -> AlarmFixDetails:
+    try:
+        return ALARM_FIX_DETAILS_MAP[type(alarm)]
+    except KeyError as error:
+        raise DetailedAlarmNotFoundError from error
 
 
 def push_governance_screen() -> None:
