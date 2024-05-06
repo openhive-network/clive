@@ -1,60 +1,33 @@
 ManageKeyAliases {
-  ColumnLayout {
-    layout: grid;
-    grid-size: 10 1;
-    grid-gutter: 1;
-    content-align: center middle;
+  ManageKeyAliasesTable {
     margin-top: 1;
-    height: 3;
-  }
 
-  .-odd {
-    content-align: center middle;
-    background: $primary-background-darken-1;
-    width: 100%;
-    height: 3;
-  }
-
-  .-even {
-    content-align: center middle;
-    background: $primary-background-darken-2;
-    width: 100%;
-    height: 3;
-  }
-
-  #key-alias-row-number {
-    column-span: 1;
-  }
-
-  #key-alias-name {
-    column-span: 3;
-  }
-
-  #key-alias-public-key {
-    column-span: 4;
-  }
-
-  #actions {
-    column-span: 2;
-  }
-
-  KeyAliasesHeader {
-    margin: 0 1;
-  }
-
-  KeyAlias {
-    margin: 1;
-
-    #remove-key-alias-button {
-      content-align: center middle;
-      column-span: 1;
-      width: 100%;
+    SectionTitle {
+      margin: 0 1 0 1;
     }
 
-    #edit-key-alias-button {
-      content-align: center middle;
-      column-span: 1;
-      width: 100%;
+    KeyAliasesHeader {
+      margin: 0 1;
+      height: 1;
+
+      Static {
+        width: 1fr;
+        text-align: center;
+      }
+    }
+
+    .public-key {
+      width: 3fr;
+    }
+
+    KeyAlias {
+      margin: 0 1 0 1;
+
+      CliveButton {
+        content-align: center middle;
+        width: 50%;
+        min-width: 5;
+      }
     }
   }
 }
