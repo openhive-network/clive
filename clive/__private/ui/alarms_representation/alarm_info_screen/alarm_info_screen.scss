@@ -1,0 +1,31 @@
+AlarmInfoScreen {
+  align: center middle;
+
+  AlarmInfo {
+    border: $primary-lighten-3;
+    width: 70%;
+    height: auto;
+
+    #close-button-container {
+      align: right bottom;
+      height: 1;
+    }
+
+    AlarmData {
+      align: center top;
+      margin-top: 1;
+      margin-bottom: 1;
+      height: auto;
+
+      AlarmDataHeader {
+        height: 1;
+
+        Static {
+          text-style: bold;
+          width: 1fr;
+          text-align: center;
+        }
+      }
+    }
+  }
+}
