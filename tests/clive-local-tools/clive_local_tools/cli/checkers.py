@@ -174,6 +174,11 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
     assert actual_exit_code == expected_exit_code, message
 
 
+def assert_new_account_tokens(context: CLITester | Result, tokens_amount: int) -> None:
+    output = _get_output(context, CLITester.show_new_account_token)
+    assert str(tokens_amount) in output, f"no entry for `{tokens_amount}` in show new-account-token output:\n{output}"
+
+
 def _get_output(context: CLITester | Result, function: Callable[[CLITester], Result] | None = None) -> str:
     if isinstance(context, CLITester):
         assert function, "`function` must be provided when `context` is `CLITester`"

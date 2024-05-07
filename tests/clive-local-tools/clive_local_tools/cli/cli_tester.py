@@ -390,3 +390,23 @@ class CLITester:
         save_file: str | None = None,
     ) -> Result:
         return self.__invoke(["process", "withdraw-routes", "remove"], **extract_params(locals()))
+
+    def show_new_account_token(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "new-account-token"], account_name=account_name, profile_name=profile_name)
+
+    def process_claim_new_account_token(  # noqa: PLR0913
+        self,
+        *,
+        creator: str | None = None,
+        fee: tt.Asset.HiveT | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "claim", "new-account-token"], **extract_params(locals()))
+
+    def show_chain(self, *, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "chain"], profile_name=profile_name)
