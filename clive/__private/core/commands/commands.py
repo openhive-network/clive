@@ -9,6 +9,9 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
+from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expirations import (
+    FindVestingDelegationExpirations,
+)
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, HivePowerDataRetrieval
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
@@ -58,7 +61,14 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
-    from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, SchemasAccount, TransactionStatus, Witness
+    from clive.models.aliased import (
+        DynamicGlobalProperties,
+        ProposalSchema,
+        SchemasAccount,
+        TransactionStatus,
+        VestingDelegationExpiration,
+        Witness,
+    )
 
 WorldT = TypeVar("WorldT", bound="World")
 
@@ -347,6 +357,13 @@ class Commands(Generic[WorldT]):
 
     async def find_accounts(self, *, accounts: list[str]) -> CommandWithResultWrapper[list[SchemasAccount]]:
         return await self.__surround_with_exception_handlers(FindAccounts(node=self._world.node, accounts=accounts))
+
+    async def find_vesting_delegation_expirations(
+        self, *, account: str
+    ) -> CommandWithResultWrapper[list[VestingDelegationExpiration]]:
+        return await self.__surround_with_exception_handlers(
+            FindVestingDelegationExpirations(node=self._world.node, account=account)
+        )
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[overload-overlap]

@@ -30,9 +30,9 @@ class CommandDataRetrieval(
         """Should sanitize the data and return it."""
         return data  # type: ignore[return-value]
 
-    @abstractmethod
     async def _process_data(self, data: SanitizedDataT) -> CommandResultT:
         """Should process the data and return the result."""
+        return data  # type: ignore[return-value]
 
     async def _execute(self) -> None:
         name = self.__class__.__name__
