@@ -41,6 +41,30 @@ DashboardBase {
 
   AccountInfo {
     width: auto;
+
+    #account-alarms-and-details {
+      width: 70%;
+      height: auto;
+
+      AlarmDisplay {
+        align: center middle;
+        width: 1fr;
+      }
+
+      #account-info-container {
+        height: 1;
+
+        EllipsedStatic {
+          width: 1fr;
+          text-align: center;
+        }
+
+        OneLineButton {
+          width: 9;
+          min-width: 9;
+        }
+      }
+    }
   }
 
   BalanceStats {
