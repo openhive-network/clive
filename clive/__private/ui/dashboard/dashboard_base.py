@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar, Final, Literal
 
+from textual import on
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, ScrollableContainer
+from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Label, Static
 
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
@@ -14,6 +15,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
 )
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
+from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
@@ -25,6 +27,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
+from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -145,8 +148,11 @@ class ActivityStats(AccountReferencingWidget):
 
 class AccountInfo(Container, AccountReferencingWidget):
     def compose(self) -> ComposeResult:
-        yield EllipsedStatic(f"{self._account.name}")
-        yield AlarmDisplay(lambda _: [self._account], id_="account-alarms")
+        with Vertical(id="account-alarms-and-details"):
+            with Horizontal(id="account-info-container"):
+                yield EllipsedStatic(f"{self._account.name}")
+                yield OneLineButton("Details", id_="details-button")
+            yield AlarmDisplay(lambda _: [self._account], id_="account-alarms")
         yield Static()
         yield Label("LAST:")
         yield self.create_dynamic_label(
@@ -155,6 +161,10 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield self.create_dynamic_label(
             lambda: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
         )
+
+    @on(OneLineButton.Pressed, "#details-button")
+    def push_account_details_screen(self) -> None:
+        self.app.push_screen(AccountDetails(self._account))
 
 
 class AccountRow(AccountReferencingWidget):
