@@ -17,11 +17,11 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
-from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
+from clive.__private.ui.widgets.section import SectionScrollable
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
@@ -42,7 +42,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         super().__init__(*args, **kwargs)
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer():
+        with SectionScrollable("Enter profile data"):
             yield self._profile_name_input
             yield self._password_input
             yield self._repeat_password_input
@@ -129,6 +129,8 @@ class CreateProfile(CreateProfileCommon):
 
 
 class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
+    BIG_TITLE = "onboarding"
+
     async def apply_and_validate(self) -> None:
         self._owner.clear_post_actions()  # since create profile form is a first form, should clear all previously stored actions
         self._owner.add_post_action(*self._create_profile())
