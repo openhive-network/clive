@@ -13,6 +13,7 @@ from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expira
     FindVestingDelegationExpirations,
 )
 from clive.__private.core.commands.data_retrieval.get_config import GetConfig
+from clive.__private.core.commands.data_retrieval.get_dynamic_global_properties import GetDynamicGlobalProperties
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, HivePowerDataRetrieval
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
@@ -278,6 +279,12 @@ class Commands(Generic[WorldT]):
                 beekeeper=self._world.beekeeper,
             )
         )
+
+    async def get_dynamic_global_properties(self) -> CommandWithResultWrapper[DynamicGlobalProperties]:
+        result = await self.__surround_with_exception_handlers(GetDynamicGlobalProperties(node=self._world.node))
+        if result.success:
+            self._world.app_state._dynamic_global_properties = result.result_or_raise
+        return result
 
     async def update_node_data(
         self, *, accounts: list[Account] | None = None

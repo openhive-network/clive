@@ -20,8 +20,8 @@ class AppState:
 
     async def get_dynamic_global_properties(self) -> DynamicGlobalProperties:
         if self._dynamic_global_properties is None:
-            (await self.world.commands.update_node_data()).raise_if_error_occurred()
-        assert self._dynamic_global_properties is not None
+            (await self.world.commands.get_dynamic_global_properties()).raise_if_error_occurred()
+        assert self._dynamic_global_properties is not None, "could not get dynamic global properties"
         return self._dynamic_global_properties
 
     @property
