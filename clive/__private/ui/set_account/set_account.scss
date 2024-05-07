@@ -1,6 +1,6 @@
 SetAccount {
-  ScrollablePart {
-    padding: 2 4;
+  SectionScrollable {
+    padding: 1 4 0 4; /* TODO: change to margin after bumping textual to 0.58.0 due to margin bug */
   }
 
   AccountNameInput {
@@ -9,5 +9,9 @@ SetAccount {
     InputLabel {
       width: 18;
     }
+  }
+
+  WorkingAccountCheckbox {
+    margin-top: 1;
   }
 }

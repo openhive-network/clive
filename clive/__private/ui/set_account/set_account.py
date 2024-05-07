@@ -11,7 +11,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
-from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section import SectionScrollable
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ class WorkingAccountCheckbox(Checkbox):
 
 class SetAccount(BaseScreen, FormScreen[ProfileData]):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BIG_TITLE = "set account name"
+    BIG_TITLE = "onboarding"
 
     def __init__(self, owner: Form[ProfileData]) -> None:
         super().__init__(owner)
@@ -40,7 +40,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         self._working_account_checkbox = WorkingAccountCheckbox()
 
     def create_main_panel(self) -> ComposeResult:
-        with ScrollablePart():
+        with SectionScrollable("Set account name"):
             yield self._account_name_input
             yield self._working_account_checkbox
 
