@@ -272,3 +272,15 @@ async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowChain(**common.as_dict()).run()
+
+
+@show.command(name="hive-power", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_hive_power(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
+) -> None:
+    """Shows info about hive power related to account including delegations and withdraw routes."""
+    from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowHivePower(**common.as_dict(), account_name=account_name).run()

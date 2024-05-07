@@ -6,8 +6,8 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Pretty, Static, TabPane
 
-from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.core.hive_vests_conversions import hive_to_vests
+from clive.__private.core.ensure_vests import ensure_vests
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_percent
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -73,7 +73,7 @@ class WithdrawRoutesDisplay(CliveWidget):
             return
 
         withdraw_routes = {
-            withdraw_route.to_account: f"{hive_percent_to_percent(withdraw_route.percent)}%"
+            withdraw_route.to_account: humanize_percent(hive_percent_to_percent(withdraw_route.percent))
             for withdraw_route in content.withdraw_routes
         }
         self.query_one("#withdraw-routes-header", Static).update("Your withdraw routes")
@@ -212,9 +212,8 @@ class PowerDown(TabPane, OperationActionBindings):
         if asset is None:
             return None
 
-        if isinstance(asset, Asset.Hive):
-            # If the user has passed an amount in `HP` - convert it to `VESTS`. The operation is performed using VESTS.
-            asset = hive_to_vests(asset, self.provider.content.gdpo)
+        # If the user has passed an amount in `HP` - convert it to `VESTS`. The operation is performed using VESTS.
+        asset = ensure_vests(asset, self.provider.content.gdpo)
 
         return WithdrawVestingOperation(account=self.working_account, vesting_shares=asset)
 

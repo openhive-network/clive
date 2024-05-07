@@ -1,12 +1,16 @@
-import typing
 from enum import Enum
 from functools import partial
+from typing import get_args
 
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.cli.process.hive_power.delegations import delegations
+from clive.__private.cli.process.hive_power.power_down import power_down
+from clive.__private.cli.process.hive_power.power_up import power_up
+from clive.__private.cli.process.hive_power.withdraw_routes import withdraw_routes
 from clive.__private.cli.process.proxy import proxy
 from clive.__private.cli.process.savings import savings
 from clive.__private.cli.process.update_authority import get_update_authority_typer
@@ -22,6 +26,10 @@ process.add_typer(get_update_authority_typer("active"))
 process.add_typer(get_update_authority_typer("posting"))
 process.add_typer(vote_proposal)
 process.add_typer(vote_witness)
+process.add_typer(delegations)
+process.add_typer(power_down)
+process.add_typer(power_up)
+process.add_typer(withdraw_routes)
 
 
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])
@@ -45,7 +53,7 @@ else:
 
     # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
     AlreadySignedModeEnum = Enum(  # type: ignore[misc, no-redef]
-        "AlreadySignedModeEnum", {option: option for option in typing.get_args(AlreadySignedMode)}
+        "AlreadySignedModeEnum", {option: option for option in get_args(AlreadySignedMode)}
     )
 
 

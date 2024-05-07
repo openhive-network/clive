@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING
 from textual.containers import Vertical
 from textual.widgets import Static
 
-from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.core.formatters.humanize import humanize_asset, humanize_datetime, humanize_hive_power
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
-from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -69,10 +68,10 @@ class WithdrawalInfo(Vertical, CliveWidget):
         return humanize_datetime(content.next_vesting_withdrawal)
 
     def _get_to_withdraw_hp(self, content: HivePowerData) -> str:
-        return f"{Asset.pretty_amount(content.to_withdraw.hp_balance)} HP"
+        return humanize_hive_power(content.to_withdraw.hp_balance)
 
     def _get_to_withdraw_vests(self, content: HivePowerData) -> str:
-        return f"{Asset.pretty_amount(content.to_withdraw.vests_balance)} VESTS"
+        return humanize_asset(content.to_withdraw.vests_balance)
 
 
 class APR(DynamicLabel):

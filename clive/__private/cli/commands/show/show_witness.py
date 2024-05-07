@@ -10,6 +10,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_votes_with_comma,
     humanize_witness_status,
 )
+from clive.__private.core.percent_conversions import hive_percent_to_percent
 
 
 @dataclass(kw_only=True)
@@ -28,7 +29,7 @@ class ShowWitness(WorldBasedCommand):
             account_creation_fee = witness.props.account_creation_fee.as_legacy()
         hbd_savings_apr: str | None = None
         if witness.props.hbd_interest_rate:
-            hbd_savings_apr = humanize_hbd_savings_apr(witness.props.hbd_interest_rate)
+            hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate))
         props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"}, deep=True)
 
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)

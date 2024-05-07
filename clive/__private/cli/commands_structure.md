@@ -47,8 +47,18 @@ flowchart LR
 
         Process --> ProcessUpdateMemoKey[update-memo-key]
 
-        Process -->|"Not implemented yet"|ProcessPowerUp[power-up]
-        Process -->|"Not implemented yet"|ProcessPowerDown[power-down]
+        Process --> ProcessPowerUp[power-up]
+        Process --> ProcessPowerDown(power-down)
+        ProcessPowerDown --> ProcessPowerDownStart[start]
+        ProcessPowerDown --> ProcessPowerDownRestart[restart]
+        ProcessPowerDown --> ProcessPowerDownCancel[cancel]
+        Process --> ProcessWithdrawRoutes(withdraw-routes)
+        ProcessWithdrawRoutes --> ProcessWithdrawRoutesSet[set]
+        ProcessWithdrawRoutes --> ProcessWithdrawRoutesRemove[remove]
+        Process --> ProcessDelegations(delegations)
+        ProcessDelegations --> ProcessDelegationsSet[set]
+        ProcessDelegations --> ProcessDelegationsRemove[remove]
+
         Process -->|"Not implemented yet"|ProcessClaimToken[claim-token]
 
         Process --> ProcessVoteWitness(vote-witness)
@@ -88,10 +98,13 @@ flowchart LR
         Show --> ShowProposal[proposal]
         ShowProposal ~~~|"proposal:<br>- show details of chosen proposal"| ShowProposal
 
+        Show --> ShowHivePower[hive-power]
+
         Show --> ShowPending(pending)
+        ShowPending --> ShowPendingPowerDown[power-down]
+        ShowPending --> ShowPendingPowerUps[power-ups]
+        ShowPending --> ShowPendingRemovedDelegations[removed-delegations]
         ShowPending --> ShowPendingTransferFromSavings[withdrawals]
-        ShowPending -->|"Not implemented yet"| ShowPendingPowerUps[power-ups]
-        ShowPending -->|"Not implemented yet"| ShowPendingPowerDowns[power-downs]
         ShowPending -->|"Not implemented yet"| ShowPendingRecurrentTransfers[transfers]
 
         Show --> ShowAuthority["[owner|active|posting]-authority"]

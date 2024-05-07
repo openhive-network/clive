@@ -48,6 +48,13 @@ class UnknownAssetTypeError(AssetError):
         super().__init__(message)
 
 
+class UnknownAssetNaiError(AssetError):
+    def __init__(self, nai: str) -> None:
+        self.nai = nai
+        message = f"Unknown asset nai: '{nai}'"
+        super().__init__(message)
+
+
 class AssetFactoryHolder(CliveBaseModel, GenericModel, Generic[AssetT]):
     """Holds factory for asset."""
 
@@ -153,7 +160,7 @@ class Asset:
             return Asset.Hbd
         if nai == cls.get_nai(cls.Vests):
             return Asset.Vests
-        raise ValueError(f"Unknown asset nai: '{nai}'")
+        raise UnknownAssetNaiError(nai)
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:

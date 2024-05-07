@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 import typer
 
-from clive.__private.cli.common.asset_parsers import liquid_asset
+from clive.__private.cli.common.parsers import decimal_percent, liquid_asset, voting_asset
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.constants import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 
@@ -98,6 +98,19 @@ to_account_name_option = typer.Option(
     show_default=bool(_get_default_working_account_name()),
 )
 
+to_account_name_no_default_option = typer.Option(
+    ...,
+    "--to",
+    help='The account to use as "to" argument.',
+    show_default=False,
+)
+
+delegatee_account_name_option = typer.Option(
+    ...,
+    help='The account to use as "delegatee" argument.',
+    show_default=False,
+)
+
 proposal_id: list[int] = typer.Option(
     ..., help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times."
 )
@@ -122,9 +135,23 @@ authority_weight_option = typer.Option(
     help="The new weight of account/key authority",
     show_default=False,
 )
+
 liquid_amount_option = typer.Option(
     ...,
     parser=liquid_asset,
     help="The liquid asset (HIVE/HBD) amount to transfer. (e.g. 2.500 HIVE)",
     show_default=False,
+)
+
+voting_amount_option = typer.Option(
+    ...,
+    parser=voting_asset,
+    help="The voting asset (HP/VESTS). (e.g. 2.500 HP)",
+    show_default=False,
+)
+
+percent_option = typer.Option(
+    ...,
+    parser=decimal_percent,
+    help="Percent (0.00-100.00)",
 )

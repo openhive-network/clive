@@ -6,7 +6,8 @@ from textual import on
 from textual.containers import Horizontal, Vertical
 from textual.widgets import Static, TabPane
 
-from clive.__private.core.hive_vests_conversions import hive_to_vests, vests_to_hive
+from clive.__private.core.ensure_vests import ensure_vests
+from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -141,9 +142,8 @@ class DelegateHivePower(TabPane, OperationActionBindings):
 
         asset = self._shares_input.value_or_error
 
-        if isinstance(asset, Asset.Hive):
-            # If the user has passed an amount in `HP` - convert it to `VESTS`. The operation is performed using VESTS.
-            asset = hive_to_vests(asset, self.provider.content.gdpo)
+        # If the user has passed an amount in `HP` - convert it to `VESTS`. The operation is performed using VESTS.
+        asset = ensure_vests(asset, self.provider.content.gdpo)
         return DelegateVestingSharesOperation(
             delegator=self.working_account, delegatee=self._delegate_input.value_or_error, vesting_shares=asset
         )

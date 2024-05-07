@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import TYPE_CHECKING, Any, Literal
+from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
 import humanize
 import inflection
@@ -20,7 +20,6 @@ from clive.__private.core.decimal_conventer import (
 )
 from clive.__private.core.formatters.case import underscore
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
-from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
@@ -35,6 +34,9 @@ if TYPE_CHECKING:
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:
     return DecimalConverter.round_to_precision(data, precision=precision)
+
+
+SignPrefixT: TypeAlias = Literal["", "+", "-"]
 
 
 def _is_null_date(value: datetime) -> bool:
@@ -159,22 +161,25 @@ def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate) -> str:
     return f"{hbd_exchange_rate.base.pretty_amount()} $"
 
 
-def humanize_hbd_savings_apr(hbd_savings_apr: int | Decimal) -> str:
+def humanize_hbd_savings_apr(hbd_savings_apr: Decimal) -> str:
     """Return pretty formatted hdb interese rate (APR)."""
-    value = hbd_savings_apr if isinstance(hbd_savings_apr, Decimal) else hive_percent_to_percent(hbd_savings_apr)
-    return f"{_round_to_precision(value, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+    return humanize_percent(hbd_savings_apr)
 
 
-def humanize_hbd_print_rate(hbd_print_rate: int | Decimal) -> str:
+def humanize_hbd_print_rate(hbd_print_rate: Decimal) -> str:
     """Return pretty formatted hdb print rate."""
-    value = hbd_print_rate if isinstance(hbd_print_rate, Decimal) else hive_percent_to_percent(hbd_print_rate)
-    return f"{_round_to_precision(value, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+    return humanize_percent(hbd_print_rate)
 
 
 def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
     """Return formatted APR value returned from wax."""
     calculated = data if isinstance(data, Decimal) else calculate_hp_apr(data)
-    return f"{_round_to_precision(calculated, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+    return humanize_percent(calculated)
+
+
+def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal) -> str:
+    """Return formatted text describing APR value returned from wax."""
+    return f"HP/VESTS APR ≈ {humanize_apr(data)}"
 
 
 def humanize_median_hive_price(current_price_feed: CurrentPriceFeed) -> str:
@@ -184,18 +189,21 @@ def humanize_median_hive_price(current_price_feed: CurrentPriceFeed) -> str:
 
 def humanize_current_inflation_rate(head_block_number: int) -> str:
     """Return formatted inflation rate for head block returned from wax."""
-    return f"{calculate_current_inflation_rate(head_block_number)} %"
+    inflation = calculate_current_inflation_rate(head_block_number)
+    return humanize_percent(inflation)
 
 
 def humanize_participation_count(participation_count: int) -> str:
     """Return pretty formatted participation rate."""
-    return f"{calculate_participation_count_percent(participation_count)} %"
+    participation_count_percent = calculate_participation_count_percent(participation_count)
+    return humanize_percent(participation_count_percent)
 
 
-def humanize_vest_to_hive_ratio(data: VestsToHpProtocol | Decimal) -> str:
+def humanize_vest_to_hive_ratio(data: VestsToHpProtocol | Decimal, show_symbol: bool = False) -> str:
     """Return pretty formatted vest to hive ratio."""
     calculated = data if isinstance(data, Decimal) else calulcate_vests_to_hive_ratio(data)
-    return f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}"
+    symbol = f" {Asset.get_symbol(Asset.Vests)}" if show_symbol else ""
+    return f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}{symbol}"
 
 
 def humanize_bytes(value: int) -> str:
@@ -220,7 +228,7 @@ def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
 
 
-def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: Literal["", "+", "-"] = "") -> str:
+def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
     pretty_asset = Asset.pretty_amount(asset)
     asset_symbol = Asset.get_symbol(asset)
     if sign_prefix and int(asset.amount) != 0:
@@ -234,3 +242,8 @@ def humanize_bool(value: bool) -> str:
     if value:
         return "YES"
     return "NO"
+
+
+def humanize_percent(hive_percent: Decimal) -> str:
+    """Convert percent Decimal to percent string in human-readable format."""
+    return f"{_round_to_precision(hive_percent, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"

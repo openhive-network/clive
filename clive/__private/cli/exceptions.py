@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from click import ClickException
 
 if TYPE_CHECKING:
+
     from clive.__private.core.profile_data import ProfileData
 
 
@@ -90,3 +91,21 @@ class CLIBroadcastCannotBeUsedWithForceUnsignError(CLIPrettyError):
     def __init__(self) -> None:
         message = "You cannot broadcast a transaction and force-unsign it at the same time."
         super().__init__(message, errno.EINVAL)
+
+
+class PowerDownInProgressError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Power-down is already in progress, if you want to discard existing power-down and create new then use command `clive process power-down restart`"
+        super().__init__(message, errno.EPERM)
+
+
+class WithdrawRoutesZeroPercentError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Withdraw routes can't have zero percent, if you want to remove withdraw route then use command `clive process withdraw-routes remove`"
+        super().__init__(message, errno.EPERM)
+
+
+class DelegationsZeroAmountError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Delegation amount can't be zero, if you want to remove delegation then use command `clive process delegations remove`"
+        super().__init__(message, errno.EPERM)

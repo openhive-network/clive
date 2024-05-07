@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from math import floor, log10
 from typing import TYPE_CHECKING
 
@@ -16,3 +17,7 @@ VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES: Final[int] = floor(log10(VESTS_TO_HIVE
 
 NULL_ACCOUNT_KEY_VALUE: Final[str] = "STM1111111111111111111111111111111114T1Anm"
 PARTICIPATION_CALCULATION_SLOTS_COUNT: Final[int] = 128
+
+VESTS_REMOVE_DELEGATION_AMOUNT: Final[int] = 0
+VESTS_REMOVE_POWER_DOWN_AMOUNT: Final[int] = 0
+PERCENT_REMOVE_WITHDRAW_ROUTE_AMOUNT: Final[Decimal] = Decimal(0)
