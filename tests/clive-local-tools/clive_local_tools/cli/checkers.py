@@ -240,3 +240,11 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
 
     assert actual_exit_code == expected_exit_code, message
+
+
+def assert_new_account_tokens(context: CLITester | Result, tokens_amount: int) -> None:
+    result = context.show_new_account_token() if isinstance(context, CLITester) else context
+    output = result.output
+    assert (
+        str(tokens_amount) in result.output
+    ), f"no entry for `{tokens_amount}` in show new-account-token output:\n{output}"
