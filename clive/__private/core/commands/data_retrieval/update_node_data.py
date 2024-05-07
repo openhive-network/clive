@@ -22,24 +22,17 @@ from clive.models.aliased import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
     from types import TracebackType
 
     from clive.__private.core.node.node import Node
     from clive.models.aliased import (
-        ChangeRecoveryAccountRequest,
-        DeclineVotingRightsRequest,
         FindRcAccounts,
-        OwnerHistory,
         RcAccount,
         SchemasAccount,
     )
     from schemas.apis.account_history_api import GetAccountHistory
     from schemas.apis.database_api import (
         FindAccounts,
-        ListChangeRecoveryAccountRequests,
-        ListDeclineVotingRightsRequests,
-        ListOwnerHistories,
     )
     from schemas.fields.compound import Manabar
 
@@ -75,17 +68,11 @@ class _AccountHarvestedDataRaw:
     core: SchemasAccount | None = None
     rc: RcAccount | None = None
     account_history: GetAccountHistory | None = None
-    decline_voting_rights: ListDeclineVotingRightsRequests | None = None
-    change_recovery_account_requests: ListChangeRecoveryAccountRequests | None = None
-    owner_history: ListOwnerHistories | None = None
 
 
 @dataclass
 class _AccountSanitizedData:
     core: SchemasAccount
-    decline_voting_rights: list[DeclineVotingRightsRequest]
-    change_recovery_account_requests: list[ChangeRecoveryAccountRequest]
-    owner_history: list[OwnerHistory]
     account_history: GetAccountHistory | None = None
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
@@ -95,7 +82,6 @@ class _AccountSanitizedData:
 @dataclass
 class _AccountProcessedData:
     core: SchemasAccount
-    warnings: int = 0
     last_history_entry: datetime = field(default_factory=lambda: _get_utc_epoch())
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
@@ -158,20 +144,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                     )
                 )
 
-                account_harvested_data[account].decline_voting_rights = (
-                    await node.api.database_api.list_decline_voting_rights_requests(
-                        start=account.name, limit=1, order="by_account"
-                    )
-                )
-                account_harvested_data[account].change_recovery_account_requests = (
-                    await node.api.database_api.list_change_recovery_account_requests(
-                        start=account.name, limit=1, order="by_account"
-                    )
-                )
-                account_harvested_data[account].owner_history = await node.api.database_api.list_owner_histories(
-                    start=(account.name, _get_utc_epoch()), limit=1
-                )
-
         return harvested_data
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
@@ -189,11 +161,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
                 rc=unsanitized.rc,
                 account_history=self.__assert_account_history_or_none(unsanitized.account_history),
-                decline_voting_rights=self.__assert_declive_voting_rights(unsanitized.decline_voting_rights),
-                change_recovery_account_requests=self.__assert_change_recovery_account_requests(
-                    unsanitized.change_recovery_account_requests
-                ),
-                owner_history=self.__assert_owner_history(unsanitized.owner_history),
             )
         return SanitizedData(gdpo=self.__assert_gpdo(data.gdpo), account_sanitized_data=account_sanitized_data)
 
@@ -209,7 +176,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 core=account_data.core,
                 rc=account_data.rc,
                 last_history_entry=self.__get_account_last_history_entry(account_data.account_history),
-                warnings=self.__calculate_warnings(account_data),
             )
 
         for account, info in accounts_processed_data.items():
@@ -227,7 +193,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 last_history_entry=info.last_history_entry,
                 last_account_update=info.core.last_account_update,
                 recovery_account=info.core.recovery_account,
-                warnings=info.warnings,
                 vote_manabar=self.__update_manabar(
                     gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar
                 ),
@@ -242,42 +207,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             )
 
         return gdpo
-
-    def __calculate_warnings(self, raw: _AccountSanitizedData) -> int:
-        checks: list[Callable[[_AccountSanitizedData], bool]] = [
-            self.__check_for_recurrent_transfers,
-            self.__check_is_governance_is_expiring,
-            self.__check_is_recovery_account_not_warning_listed,
-            self.__check_is_declining_voting_rights_in_progress,
-            self.__check_is_changing_recovery_account_is_in_progress,
-            self.__check_is_owner_key_change_is_in_progress,
-        ]
-        return sum(check(raw) for check in checks)
-
-    def __check_is_recovery_account_not_warning_listed(self, data: _AccountSanitizedData) -> bool:
-        warning_recovery_accounts: Final[set[str]] = {"steem"}
-        return data.core.recovery_account in warning_recovery_accounts
-
-    def __check_is_declining_voting_rights_in_progress(self, data: _AccountSanitizedData) -> bool:
-        requests = data.decline_voting_rights
-        return bool(requests) and requests[0].account == data.core.name
-
-    def __check_is_changing_recovery_account_is_in_progress(self, data: _AccountSanitizedData) -> bool:
-        requests = data.change_recovery_account_requests
-        return bool(requests) and requests[0].account_to_recover == data.core.name
-
-    def __check_is_owner_key_change_is_in_progress(self, data: _AccountSanitizedData) -> bool:
-        history = data.owner_history
-        return bool(history) and history[0].account == data.core.name
-
-    def __check_for_recurrent_transfers(self, data: _AccountSanitizedData) -> bool:
-        return data.core.open_recurrent_transfers > 0
-
-    def __check_is_governance_is_expiring(self, data: _AccountSanitizedData) -> bool:
-        warning_period_in_days: Final[int] = 31
-        expiration: datetime = data.core.governance_vote_expiration_ts
-        current_time = self.__normalize_datetime(datetime.utcnow())
-        return (expiration - current_time).days <= warning_period_in_days
 
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
@@ -360,22 +289,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             assert len(data.history) == 1, "Account history info malformed. Expected only one entry."
             return data
         return None
-
-    def __assert_declive_voting_rights(
-        self, decline_voting_rights: ListDeclineVotingRightsRequests | None
-    ) -> list[DeclineVotingRightsRequest]:
-        assert decline_voting_rights is not None, "Decline voting rights requests info is missing..."
-        return decline_voting_rights.requests
-
-    def __assert_change_recovery_account_requests(
-        self, change_recovery_account_requests: ListChangeRecoveryAccountRequests | None
-    ) -> list[ChangeRecoveryAccountRequest]:
-        assert change_recovery_account_requests is not None, "Change recovery account requests info is missing..."
-        return change_recovery_account_requests.requests
-
-    def __assert_owner_history(self, owner_key_change_in_progress: ListOwnerHistories | None) -> list[OwnerHistory]:
-        assert owner_key_change_in_progress is not None, "Owner history info is missing..."
-        return owner_key_change_in_progress.owner_auths
 
     def __assert_no_duplicate_accounts(self) -> None:
         account_names = [account.name for account in self.accounts]

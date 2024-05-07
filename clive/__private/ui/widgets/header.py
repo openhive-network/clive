@@ -61,7 +61,7 @@ class AlarmDisplay(DynamicLabel):
     ) -> None:
         def update_callback(pd: ProfileData) -> str:
             class_name = "-no-alarm"
-            alarm_count = sum([acc.data.warnings for acc in account_getter(pd)])
+            alarm_count = sum([len(acc.alarms.harmful_alarms) for acc in account_getter(pd)])
             if alarm_count:
                 self.remove_class(class_name)
                 return f"{alarm_count} ALARM{'S' if alarm_count > 1 else ''}"
@@ -73,7 +73,7 @@ class AlarmDisplay(DynamicLabel):
             "profile_data",
             update_callback,
             first_try_callback=lambda: all(
-                acc.is_node_data_available for acc in account_getter(self.app.world.profile_data)
+                acc.is_alarms_data_available for acc in account_getter(self.app.world.profile_data)
             ),
             id_=id_,
             classes=classes,
