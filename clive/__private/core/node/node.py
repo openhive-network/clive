@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.config import settings
+from clive.__private.core.commands.data_retrieval.get_config import GetConfig
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
@@ -19,6 +20,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
+    from clive.models.aliased import Config
 
 
 class BatchRequestError(CliveError):
@@ -180,6 +182,7 @@ class Node(BaseNode):
         self.__communication = Communication(timeout_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.api = Apis(self)
         self.__network_type = ""
+        self._node_config: Config | None = None
 
     def batch(self, *, delay_error_on_data_access: bool = False) -> _BatchNode:
         """
@@ -218,6 +221,7 @@ class Node(BaseNode):
 
     async def set_address(self, address: Url) -> None:
         self.__profile_data._set_node_address(address)
+        self._node_config = None
         await self.__sync_node_version()
 
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
@@ -234,7 +238,7 @@ class Node(BaseNode):
     async def chain_id(self) -> str:
         if chain_id_from_profile := self.__profile_data.chain_id:
             return chain_id_from_profile
-        chain_id_from_node = (await self.api.database_api.get_config()).HIVE_CHAIN_ID
+        chain_id_from_node = (await self.node_config).HIVE_CHAIN_ID
         self.__profile_data.set_chain_id(chain_id_from_node)
         return chain_id_from_node
 
@@ -244,3 +248,10 @@ class Node(BaseNode):
                 self.__network_type = (await self.api.database_api.get_version()).node_type
             except CommunicationError:
                 self.__network_type = "no connection"
+
+    @property
+    async def node_config(self) -> Config:
+        if self._node_config is None:
+            self._node_config = await GetConfig(node=self).execute_with_result()
+        assert self._node_config is not None, "could not get config"
+        return self._node_config

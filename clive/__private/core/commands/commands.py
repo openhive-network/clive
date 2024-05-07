@@ -12,6 +12,7 @@ from clive.__private.core.commands.data_retrieval.chain_data import ChainData, C
 from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expirations import (
     FindVestingDelegationExpirations,
 )
+from clive.__private.core.commands.data_retrieval.get_config import GetConfig
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, HivePowerDataRetrieval
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
@@ -62,6 +63,7 @@ if TYPE_CHECKING:
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
     from clive.models.aliased import (
+        Config,
         DynamicGlobalProperties,
         ProposalSchema,
         SchemasAccount,
@@ -364,6 +366,12 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             FindVestingDelegationExpirations(node=self._world.node, account=account)
         )
+
+    async def get_config(self) -> CommandWithResultWrapper[Config]:
+        result = await self.__surround_with_exception_handlers(GetConfig(node=self._world.node))
+        if result.success:
+            self._world.node._node_config = result.result_or_raise
+        return result
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[overload-overlap]

@@ -6,6 +6,7 @@ from schemas.apis.database_api import FindProposals as SchemasFindProposals
 from schemas.apis.database_api import FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations
 from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
 from schemas.apis.database_api import (
+    GetConfig,
     GetDynamicGlobalProperties,
     GetFeedHistory,
     GetHardforkProperties,
@@ -52,6 +53,7 @@ ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 AssetBase = SchemasAssetBase
 ChainIdSchema = Sha256
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
+Config = GetConfig
 CurrentPriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
 DynamicGlobalProperties = GetDynamicGlobalProperties
