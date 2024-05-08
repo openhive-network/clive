@@ -111,7 +111,7 @@ async def onboarding_set_key(pilot: ClivePilot, private_key: str) -> None:
 
 async def onboarding_finish(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "ctrl+n", OnboardingFinishScreen)
-    await press_and_wait_for_screen(pilot, "f6", DashboardActive)
+    await press_and_wait_for_screen(pilot, "enter", DashboardActive)
 
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:

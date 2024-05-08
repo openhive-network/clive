@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.binding import Binding
 from textual.containers import Horizontal
 from textual.widgets import Static
 
@@ -31,8 +30,6 @@ class ButtonsContainer(Horizontal):
 
 class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
     CSS_PATH = [get_relative_css_path(__file__)]
-
-    BINDINGS = [Binding("f6", "finish", "Ok")]
 
     def __init__(self, owner: Form[ContextT], end_note: str) -> None:
         self.__end_note = end_note
