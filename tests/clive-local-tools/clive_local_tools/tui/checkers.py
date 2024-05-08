@@ -2,8 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Literal
 
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.inputs.asset_amount_base_input import AssetAmountInput
+from textual.css.query import NoMatches, TooManyMatches
+
+from clive.__private.ui.widgets.currency_selector.currency_selector_base import CurrencySelectorBase
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
     import test_tools as tt
@@ -23,7 +25,7 @@ def assert_is_screen_active(pilot: ClivePilot, expected_screen: type[Screen[Any]
     ), f"Expected screen '{expected_screen}' is not active. Current screen is '{pilot.app.screen}'."
 
 
-def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context: str = "") -> None:
+def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context: str | None = None) -> None:
     """Assert that the expected widget is focused."""
     context_details = f"\nContext: {context}" if context else ""
     if isinstance(widget, type):
@@ -41,24 +43,37 @@ def assert_is_clive_composed_input_focused(
     composed_input: type[CliveValidatedInput[Any]] | CliveValidatedInput[Any],
     *,
     target: Literal["input", "select", "known"] = "input",
-    context: str = "",
+    context: str | None = None,
 ) -> None:
     composed_input_instance = (
         pilot.app.screen.query_one(composed_input) if isinstance(composed_input, type) else composed_input
     )
 
+    context_details = f"\nContext: {context}" if context else ""
+
+    def query_one_in_composed_input(query: str | type[Widget]) -> Widget:
+        try:
+            widget = composed_input_instance.query_one(query)
+        except NoMatches as error:
+            raise AssertionError(
+                f"{composed_input_instance}.query_one('{query}') failed. Expected {target=} couldn't be found in such a composed input. Are you sure it consists of it?"
+                f"{context_details}"
+            ) from error
+        except TooManyMatches as error:
+            raise AssertionError(
+                f"{composed_input_instance}.query_one('{query}') with {target=} returns more than one widget. Probably changed structure in such composed input."
+                f"{context_details}"
+            ) from error
+        return widget
+
     if target == "input":
-        assert_is_focused(pilot, composed_input_instance.input, context)
+        widget = query_one_in_composed_input(CliveInput)
     elif target == "select":
-        assert isinstance(
-            composed_input_instance, AssetAmountInput
-        ), f"{composed_input} seems not to be composed of select widget."
-        assert_is_focused(pilot, composed_input_instance._currency_selector, context)
+        widget = query_one_in_composed_input(CurrencySelectorBase)
     elif target == "known":
-        assert isinstance(
-            composed_input_instance, AccountNameInput
-        ), f"{composed_input} seems not to be composed of KnownAccount widget."
-        assert_is_focused(pilot, composed_input_instance._known_account.checkbox, context)
+        widget = query_one_in_composed_input("KnownAccount Checkbox")
+
+    assert_is_focused(pilot, widget, context)
 
 
 def assert_is_key_binding_active(app: CliveApp, key: str, description: str | None = None) -> None:

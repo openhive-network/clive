@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 import test_tools as tt
-from textual.widgets import Checkbox
 
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.operations import Operations
