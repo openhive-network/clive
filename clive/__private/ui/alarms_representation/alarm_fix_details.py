@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Final
 
-from clive.__private.core.alarms.specific_alarms import GovernanceVotingExpiration
+from clive.__private.core.alarms.specific_alarms import GovernanceVotingExpiration, RecoveryAccountWarningListed
 from clive.__private.core.clive_import import get_clive
 from clive.__private.ui.operations import Governance
 from clive.exceptions import CliveDeveloperError
@@ -59,5 +59,6 @@ ALARM_FIX_DETAILS_MAP: Final[dict[type[AnyAlarm], AlarmFixDetails]] = {
         fix_info=f"{GovernanceVotingExpiration.EXTENDED_ALARM_INFO}\n{GOVERNANCE_TUI_ALARM_FIX_TEXT}",
         fix_button_text="Go to governance",
         fix_action_cb=push_governance_screen,
-    )
+    ),
+    RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.EXTENDED_ALARM_INFO),
 }
