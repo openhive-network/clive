@@ -24,7 +24,6 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 )
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 
@@ -105,12 +104,14 @@ class ManageKeyAliases(BaseScreen):
         Binding("f2", "new_key_alias", "New alias"),
     ]
 
+    BIG_TITLE = "configuration"
+    SUBTITLE = "Manage key aliases"
+
     def __init__(self) -> None:
         super().__init__()
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
-        yield LocationIndicator("key aliases")
         with self.__scrollable_part:
             yield ManageKeyAliasesTable(SectionTitle("Edit key aliases"), KeyAliasesHeader())
 
