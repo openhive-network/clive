@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Final
 
-from clive.__private.core.alarms.specific_alarms import GovernanceVotingExpiration, RecoveryAccountWarningListed
+from clive.__private.core.alarms.specific_alarms import (
+    DecliningVotingRightsInProgress,
+    GovernanceVotingExpiration,
+    RecoveryAccountWarningListed,
+)
 from clive.__private.core.clive_import import get_clive
 from clive.__private.ui.alarms_representation.alarm_fix_details import AlarmFixDetails
 from clive.__private.ui.operations import Governance
@@ -25,4 +29,5 @@ DETAILED_ALARM_FIX_DETAILS: Final[dict[type[Alarm[Any, Any]], AlarmFixDetails]] 
         fix_action_cb=push_governance_screen,
     ),
     RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.EXTENDED_ALARM_INFO),
+    DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.EXTENDED_ALARM_INFO),
 }
