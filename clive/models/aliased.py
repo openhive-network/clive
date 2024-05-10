@@ -43,6 +43,7 @@ from schemas.fields.hex import Signature as SchemasSignature
 from schemas.fields.hive_int import HiveInt as SchemasHiveInt
 from schemas.operation import Operation as SchemasBaseOperationType
 from schemas.operations import AnyOperation
+from schemas.operations import CustomJsonOperation as SchemasCustomJsonOperation
 from schemas.operations.recurrent_transfer_operation import (
     RecurrentTransferOperation as SchemasRecurrentTransferOperation,
 )
@@ -57,6 +58,7 @@ ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 AssetBase = SchemasAssetBase
 ChainIdSchema = Sha256
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
+CustomJsonOperation = SchemasCustomJsonOperation
 Config = GetConfig
 CurrentPriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
