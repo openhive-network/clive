@@ -105,3 +105,46 @@ async def process_update_memo_key(
     operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name)
     operation.add_callback(update_memo_key_callback)
     await operation.run()
+
+
+@process.command(name="custom-json", common_options=[OperationCommonOptions])
+async def process_custom_json(
+    ctx: typer.Context,  # noqa: ARG001
+    authorize: list[str] = typer.Option(
+        [],
+        help="Required posting authorities. Option can be added multiple times."
+        " At least one active or posting account authority is required.",
+        show_default=False,
+    ),
+    authorize_by_active: list[str] = typer.Option(
+        [],
+        help="Required active authorities. Option can be added multiple times."
+        " At least one active or posting account authority is required.",
+        show_default=False,
+    ),
+    id_: str = typer.Option(
+        ...,
+        "--id",
+        help="Custom identifier that allows filtering of custom json operations.",
+        show_default=False,
+    ),
+    json_: str = typer.Option(
+        ...,
+        "--json",
+        help="Custom json content. This can be a path to a file or a string itself.",
+        show_default=False,
+    ),
+) -> None:
+    """Send custom json operation, json can be provided as string or file."""
+    from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson
+
+    #  authorize should have default value only in case of this condition
+    if authorize == [] and authorize_by_active == [] and options.account_name_option.default is not None:
+        authorize = [options.account_name_option.default]
+
+    common = OperationCommonOptions.get_instance()
+    operation = ProcessCustomJson(
+        **common.as_dict(), id_=id_, required_auths=authorize_by_active, required_posting_auths=authorize
+    )
+    operation.add_custom_json(json_or_path=json_)
+    await operation.run()

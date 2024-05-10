@@ -198,3 +198,21 @@ percent_option = typer.Option(
     parser=decimal_percent,
     help="Percent (0.00-100.00)",
 )
+
+
+def validate_contains_authority(required_auths: list[str], required_posting_auths: list[str]) -> None:
+    if len(required_auths) + len(required_posting_auths) == 0:
+        raise typer.BadParameter(
+            "At least one account must be specified as authority.",
+            param_hint=["--required-auths", "--required-posting-auths"],  # type: ignore[arg-type]
+        )
+    if len(required_auths) != 0 and len(required_posting_auths) != 0:
+        raise typer.BadParameter(
+            "Active and posting authority can't be used together.",
+            param_hint=["--required-auths", "--required-posting-auths"],  # type: ignore[arg-type]
+        )
+
+
+def validate_contains_json_or_json_file(json_strings: list[str], json_files: list[str]) -> None:
+    if json_strings == [] and json_files == []:
+        raise typer.BadParameter("Either --json or --json-file must be set.", param_hint=["--json", "--json-file"])  # type: ignore[arg-type]
