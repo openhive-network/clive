@@ -44,12 +44,25 @@ def _is_null_date(value: datetime) -> bool:
     return _value == datetime(1970, 1, 1, 0, 0, 0) or _value == datetime(1969, 12, 31, 23, 59, 59)
 
 
-def align_to_dot(*strings: str) -> list[str]:
-    """Aligns values to dot."""
-    max_place_left_from_dot = max(string.find(".") for string in strings)
+def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]:
+    """Aligns values to dot. Optionally center the longest string to the center_to value."""
+    strings_ = list(strings)
+
+    if center_to is not None:
+        if isinstance(center_to, str):
+            center_to = len(center_to)
+
+        longest_string = max(strings_, key=len)
+        longest_string_index = strings_.index(longest_string)
+        strings_.pop(longest_string_index)
+        spaces_to_enter = center_to - len(longest_string)
+        center_aligned_longest_string = " " * (spaces_to_enter // 2) + longest_string + " " * (spaces_to_enter // 2)
+        strings_.insert(longest_string_index, center_aligned_longest_string)
+
+    max_place_left_from_dot = max(string.find(".") for string in strings_)
 
     aligned_strings = []
-    for string in strings:
+    for string in strings_:
         aligned_string = string
         place_left_from_dot = string.find(".")
         if place_left_from_dot < max_place_left_from_dot:
