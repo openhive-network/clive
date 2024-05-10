@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Callable, Final
 
 from clive.__private.core.alarms.specific_alarms import (
+    ChangingRecoveryAccountInProgress,
     DecliningVotingRightsInProgress,
     GovernanceVotingExpiration,
     RecoveryAccountWarningListed,
@@ -66,4 +67,5 @@ ALARM_FIX_DETAILS_MAP: Final[dict[type[AnyAlarm], AlarmFixDetails]] = {
     ),
     RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.EXTENDED_ALARM_INFO),
     DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.EXTENDED_ALARM_INFO),
+    ChangingRecoveryAccountInProgress: AlarmFixDetails(fix_info=ChangingRecoveryAccountInProgress.EXTENDED_ALARM_INFO),
 }
