@@ -8,6 +8,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.claim import claim
+from clive.__private.cli.process.custom_operations.custom_json import custom_json
 from clive.__private.cli.process.hive_power.delegations import delegations
 from clive.__private.cli.process.hive_power.power_down import power_down
 from clive.__private.cli.process.hive_power.power_up import power_up
@@ -34,6 +35,7 @@ process.add_typer(power_down)
 process.add_typer(power_up)
 process.add_typer(withdraw_routes)
 process.add_typer(transfer_schedule)
+process.add_typer(custom_json)
 
 
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])

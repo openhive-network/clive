@@ -55,6 +55,10 @@ def get_default_or_make_required(value: Any) -> Any:  # noqa: ANN401
     return ... if value is None else value
 
 
+def get_default_or_empty_list(value: Any) -> list[Any]:  # noqa: ANN401
+    return [] if value is None else [value]
+
+
 def modified_option(option: OptionInfo, **kwargs: Any) -> Any:  # noqa: ANN401
     """
     Create option based on another option, but with some attributes modified.

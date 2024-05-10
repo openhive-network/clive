@@ -69,6 +69,8 @@ flowchart LR
         Process --> ProcessVoteProposal(vote-proposal)
         ProcessVoteProposal --> ProcessVoteProposalAdd[add]
         ProcessVoteProposal --> ProcessVoteProposalRemove[remove]
+
+        Process --> ProcessCustomJson(custom-json)
     end
 
     subgraph Presentation[Commands related to the presentation of the data]
