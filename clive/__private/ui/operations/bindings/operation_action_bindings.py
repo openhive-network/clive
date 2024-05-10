@@ -37,7 +37,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     ]
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
-    ADD_TO_CART_POP_SCREEN_MODE: Literal["pop", "until_operations"] = "pop"
+    ADD_TO_CART_POP_SCREEN_MODE: Literal["pop", "until_operations_or_dashboard"] = "pop"
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -115,8 +115,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def _pop_screen_on_successfully_added_to_cart(self) -> None:
         if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
             self.app.pop_screen()
-        elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations":
-            self.app.pop_screen_until("Operations")
+        elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations_or_dashboard":
+            self._pop_screen_until_operations_or_dashboard()
 
     async def action_fast_broadcast(self) -> None:
         if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
@@ -147,8 +147,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         transaction = wrapper.result_or_raise
         transaction_id = transaction.calculate_transaction_id()
 
-        self.app.pop_screen_until("Operations")
-
+        self._pop_screen_until_operations_or_dashboard()
         self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
     def _add_to_cart(self) -> bool:
@@ -197,3 +196,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         if sum([create_operation_missing, create_operations_missing]) != 1:
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
+
+    def _pop_screen_until_operations_or_dashboard(self) -> None:
+        from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+        from clive.__private.ui.operations.operations import Operations
+
+        self.app.pop_screen_until(Operations, DashboardBase)
