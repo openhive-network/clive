@@ -253,7 +253,10 @@ class GovernanceTable(
         yield self.header
 
     def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=lambda: self.sync_list())
+        def delegate_work() -> None:
+            self.run_worker(self.sync_list())
+
+        self.watch(self.provider, "_content", callback=delegate_work)
 
     async def sync_list(self, focus_first_element: bool = False) -> None:
         await self.loading_set()
