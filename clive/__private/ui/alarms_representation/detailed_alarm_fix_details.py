@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.core.alarms.specific_alarms import (
+    ChangingRecoveryAccountInProgress,
     DecliningVotingRightsInProgress,
     GovernanceVotingExpiration,
     RecoveryAccountWarningListed,
@@ -30,4 +31,5 @@ DETAILED_ALARM_FIX_DETAILS: Final[dict[type[Alarm[Any, Any]], AlarmFixDetails]] 
     ),
     RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.EXTENDED_ALARM_INFO),
     DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.EXTENDED_ALARM_INFO),
+    ChangingRecoveryAccountInProgress: AlarmFixDetails(fix_info=ChangingRecoveryAccountInProgress.EXTENDED_ALARM_INFO),
 }

@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from clive.__private.core.alarms.specific_alarms.changing_recover_account_in_progress import (
+    ChangingRecoveryAccountInProgress,
+)
 from clive.__private.core.alarms.specific_alarms.declining_voting_rights_in_progress import (
     DecliningVotingRightsInProgress,
 )
@@ -10,4 +13,5 @@ __all__ = [
     "GovernanceVotingExpiration",
     "RecoveryAccountWarningListed",
     "DecliningVotingRightsInProgress",
+    "ChangingRecoveryAccountInProgress",
 ]
