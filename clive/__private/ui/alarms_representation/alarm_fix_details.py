@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable, Final
 from clive.__private.core.alarms.specific_alarms import (
     ChangingRecoveryAccountInProgress,
     DecliningVotingRightsInProgress,
+    GovernanceNoActiveVotes,
     GovernanceVotingExpiration,
     RecoveryAccountWarningListed,
 )
@@ -68,4 +69,9 @@ ALARM_FIX_DETAILS_MAP: Final[dict[type[AnyAlarm], AlarmFixDetails]] = {
     RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.EXTENDED_ALARM_INFO),
     DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.EXTENDED_ALARM_INFO),
     ChangingRecoveryAccountInProgress: AlarmFixDetails(fix_info=ChangingRecoveryAccountInProgress.EXTENDED_ALARM_INFO),
+    GovernanceNoActiveVotes: AlarmFixDetails(
+        fix_info=f"{GovernanceNoActiveVotes.EXTENDED_ALARM_INFO}\n{GOVERNANCE_TUI_ALARM_FIX_TEXT}",
+        fix_button_text="Go to governance",
+        fix_action_cb=push_governance_screen,
+    ),
 }

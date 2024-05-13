@@ -6,6 +6,7 @@ from clive.__private.core.alarms.alarm import Alarm, AnyAlarm
 from clive.__private.core.alarms.specific_alarms import (
     ChangingRecoveryAccountInProgress,
     DecliningVotingRightsInProgress,
+    GovernanceNoActiveVotes,
     GovernanceVotingExpiration,
     RecoveryAccountWarningListed,
 )
@@ -20,6 +21,7 @@ class AlarmsStorage:
         self.recovery_account_warning_listed = RecoveryAccountWarningListed()
         self.declining_voting_rights_in_progress = DecliningVotingRightsInProgress()
         self.changing_recovery_account_in_progress = ChangingRecoveryAccountInProgress()
+        self.governance_no_active_votes = GovernanceNoActiveVotes()
         self._is_updated = False
 
     def update_alarms_status(self, data: AccountAlarmsProcessedData) -> None:
