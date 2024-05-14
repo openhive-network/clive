@@ -10,7 +10,6 @@ from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFil
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from rich.console import RenderableType
     from textual.app import ComposeResult
 
     from clive.models import Transaction
@@ -32,10 +31,12 @@ class AlreadySignedHint(Label):
 
 
 class TransactionSummaryFromFile(TransactionSummaryCommon):
+
     def __init__(self, transaction: Transaction, file_path: Path) -> None:
         super().__init__()
         self.__transaction = transaction
         self.__file_path = file_path
+        self.subtitle = f"Loaded from [blue]{self.__file_path}[/]"
 
     async def _initialize_transaction(self) -> Transaction:
         transaction = self.__transaction
@@ -46,9 +47,6 @@ class TransactionSummaryFromFile(TransactionSummaryCommon):
 
     def action_save(self) -> None:
         self.app.push_screen(SelectFileToSaveTransaction())
-
-    def _get_subtitle(self) -> RenderableType:
-        return f"Loaded from [blue]{self.__file_path}[/]"
 
     def _actions_container_content(self) -> ComposeResult:
         if self.__transaction.is_signed():

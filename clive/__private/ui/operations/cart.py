@@ -17,7 +17,6 @@ from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
-from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -217,6 +216,7 @@ class Cart(BaseScreen):
         Binding("f9", "clear_all", "Clear all"),
         Binding("f10", "summary", "Summary"),
     ]
+    BIG_TITLE = "operations cart"
 
     def __init__(self) -> None:
         super().__init__()
@@ -224,7 +224,6 @@ class Cart(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with StaticPart():
-            yield LocationIndicator("operations cart")
             yield CartHeader()
 
         with self.__scrollable_part:

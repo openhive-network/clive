@@ -5,17 +5,15 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.transaction_summary.common import TransactionSummaryCommon
 
 if TYPE_CHECKING:
-    from rich.console import RenderableType
 
     from clive.models import Transaction
 
 
 class TransactionSummaryFromCart(TransactionSummaryCommon):
+    SUBTITLE = "Built from cart"
+
     def __init__(self) -> None:
         super().__init__()
-
-    def _get_subtitle(self) -> RenderableType:
-        return "Built from cart"
 
     async def _initialize_transaction(self) -> Transaction:
         return await self.__build_transaction()
