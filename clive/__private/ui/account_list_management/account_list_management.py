@@ -10,7 +10,6 @@ from clive.__private.ui.account_list_management.working_account import WorkingAc
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
-from clive.__private.ui.widgets.location_indicator import LocationIndicator
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -24,9 +23,10 @@ class AccountListManagement(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [Binding("escape", "pop_screen", "Back")]
+    BIG_TITLE = "configuration"
+    SUBTITLE = "accounts management"
 
     def create_main_panel(self) -> ComposeResult:
-        yield LocationIndicator("configuration", "accounts management")
         with CliveTabbedContent():
             yield WatchedAccounts(WATCHED_ACCOUNTS_TAB_LABEL)
             yield KnownAccounts(KNOWN_ACCOUNTS_TAB_LABEL)

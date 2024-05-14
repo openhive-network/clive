@@ -15,7 +15,6 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
@@ -94,6 +93,7 @@ class TransactionSummaryCommon(BaseScreen):
         Binding("f3", "dashboard", "Dashboard"),
         Binding("f6", "broadcast", "Broadcast"),
     ]
+    BIG_TITLE = "transaction summary"
 
     def __init__(self, transaction: Transaction | None = None) -> None:
         super().__init__()
@@ -128,7 +128,6 @@ class TransactionSummaryCommon(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with StaticPart():
-            yield LocationIndicator("transaction summary", self._get_subtitle())
             yield self.__transaction_metadata_container
             with ActionsContainer():
                 yield from self._actions_container_content()
