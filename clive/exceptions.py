@@ -15,6 +15,10 @@ class CliveError(Exception):
     """Base class for all clive exceptions."""
 
 
+class CliveDeveloperError(Exception):
+    """Base class for all clive developer exceptions."""
+
+
 class KnownError(CliveError, AbstractClass):
     """
     A CliveError that stores the error message that is known to be raised by some external service.
