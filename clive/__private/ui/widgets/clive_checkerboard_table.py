@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Sequence
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Sequence, TypeVar
 
 from textual.containers import Container
 from textual.widget import Widget
@@ -15,6 +15,8 @@ if TYPE_CHECKING:
 
 ODD_CLASS_NAME: Final[str] = "-odd-column"
 EVEN_CLASS_NAME: Final[str] = "-even-column"
+
+Content = TypeVar("Content", bound=Any)
 
 
 class CliveCheckerboardTableError(CliveError):
@@ -41,8 +43,8 @@ Override it or set the `ATTRIBUTE_TO_WATCH` class-var if you want to create a dy
         super().__init__(self._MESSAGE)
 
 
-class RebuildStaticTableWithNoContentError(CliveCheckerboardTableError):
-    _MESSAGE = "You are trying to rebuild static table with no content available."
+class RebuildStaticTableWithContentError(CliveCheckerboardTableError):
+    _MESSAGE = "Cannot rebuild static table with content param given. Maybe you should use dynamic table?"
 
     def __init__(self) -> None:
         super().__init__(self._MESSAGE)
@@ -170,7 +172,7 @@ class CliveCheckerboardTable(CliveWidget):
         """Mount rows created in static mode."""
         self.mount_all(self._create_table_content())
 
-    async def _mount_dynamic_rows(self, content: Any) -> None:
+    async def _mount_dynamic_rows(self, content: Content) -> None:
         """New rows are mounted when the ATTRIBUTE_TO_WATCH has been changed."""
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
@@ -184,7 +186,7 @@ class CliveCheckerboardTable(CliveWidget):
         self.update_previous_state(content)
         await self.rebuild(content)
 
-    async def rebuild(self, content: Any = None) -> None:
+    async def rebuild(self, content: Content | None = None) -> None:
         """
         Rebuilds whole table - explicit use available for static and dynamic version.
 
@@ -192,24 +194,29 @@ class CliveCheckerboardTable(CliveWidget):
         ------
         RebuildStaticTableWithNoContentError: When table is static and has no content to display this method is used.
         """
-        if self.is_anything_to_display(content) or not self.should_be_dynamic:
-            widgets_to_mount = self._create_table_content(content)
-        elif not self.is_anything_to_display(content):
-            if self.should_be_dynamic:
-                widgets_to_mount = [self.get_no_content_available_widget()]
-            else:
-                raise RebuildStaticTableWithNoContentError
+        if not self.should_be_dynamic and content is not None:  # content is given, but table is static
+            raise RebuildStaticTableWithContentError
 
         with self.app.batch_update():
             await self.query("*").remove()
-            await self.mount_all(widgets_to_mount)
+            await self.mount_all(self._create_table_content(content))
 
-    def _create_table_content(self, content: Any = None) -> list[Widget]:
-        rows = self.create_dynamic_rows(content) if self.should_be_dynamic else self.create_static_rows()
+    def _create_table_content(self, content: Content | None = None) -> list[Widget]:
+        if content is not None and not self.is_anything_to_display(
+            content
+        ):  # if content is given, we can check if there is anything to display and return earlier
+            return [self.get_no_content_available_widget()]
+
+        if self.should_be_dynamic:
+            assert content is not None, "Content must be provided when creating dynamic rows."
+            rows = self.create_dynamic_rows(content)
+        else:
+            rows = self.create_static_rows()
+
         self._set_evenness_styles(rows)
         return [self._title, self._header, *rows]
 
-    def create_dynamic_rows(self, content: Any) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
+    def create_dynamic_rows(self, content: Content) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """
         Override this method when using dynamic table (ATTRIBUTE_TO_WATCH is set).
 
@@ -240,7 +247,7 @@ class CliveCheckerboardTable(CliveWidget):
     def should_be_dynamic(self) -> bool:
         return bool(self.ATTRIBUTE_TO_WATCH)
 
-    def check_if_should_be_updated(self, content: Any) -> bool:  # noqa: ARG002
+    def check_if_should_be_updated(self, content: Content) -> bool:  # noqa: ARG002
         """
         Must be overridden by the child class when using dynamic table.
 
@@ -282,11 +289,11 @@ class CliveCheckerboardTable(CliveWidget):
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
-    def is_anything_to_display(self, content: Any) -> bool:  # noqa: ARG002
+    def is_anything_to_display(self, content: Content) -> bool:  # noqa: ARG002
         """Checks whether there are elements to display. Should be overridden to create a custom condition."""
         return True
 
-    def update_previous_state(self, content: Any) -> None:  # noqa: ARG002
+    def update_previous_state(self, content: Content) -> None:  # noqa: ARG002
         """
         Must be overridden if the `ATTRIBUTE_TO_WATCH` class-var is set.
 
