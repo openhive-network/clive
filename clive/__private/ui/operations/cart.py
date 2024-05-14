@@ -215,7 +215,7 @@ class Cart(BaseScreen):
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f9", "clear_all", "Clear all"),
-        Binding("f10", "summary", "Summary"),
+        Binding("f6", "summary", "Summary"),
     ]
 
     def __init__(self) -> None:

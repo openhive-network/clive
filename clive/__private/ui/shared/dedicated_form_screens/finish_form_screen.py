@@ -32,7 +32,7 @@ class ButtonsContainer(Horizontal):
 class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BINDINGS = [Binding("f10", "finish", "Ok")]
+    BINDINGS = [Binding("f6", "finish", "Ok")]
 
     def __init__(self, owner: Form[ContextT], end_note: str) -> None:
         self.__end_note = end_note

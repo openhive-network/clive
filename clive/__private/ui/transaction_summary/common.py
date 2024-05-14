@@ -92,7 +92,7 @@ class TransactionSummaryCommon(BaseScreen):
         Binding("escape", "pop_screen", "Back"),
         Binding("f2", "save", "Save"),
         Binding("f3", "dashboard", "Dashboard"),
-        Binding("f10", "broadcast", "Broadcast"),
+        Binding("f6", "broadcast", "Broadcast"),
     ]
 
     def __init__(self, transaction: Transaction | None = None) -> None:

@@ -33,7 +33,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     BINDINGS = [
         Binding("f2", "add_to_cart", "Add to cart"),
         Binding("f5", "fast_broadcast", "Fast broadcast"),
-        Binding("f10", "finalize", "Finalize transaction"),
+        Binding("f6", "finalize", "Finalize transaction"),
     ]
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True

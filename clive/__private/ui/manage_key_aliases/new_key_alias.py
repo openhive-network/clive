@@ -139,7 +139,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
 class NewKeyAlias(NewKeyAliasBase):
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
-        Binding("f10", "save", "Save"),
+        Binding("f6", "save", "Save"),
     ]
 
     class FailedValidationAlreadyHandledError(Exception):
