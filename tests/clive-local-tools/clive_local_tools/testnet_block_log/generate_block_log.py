@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from random import uniform
 from typing import Final
@@ -20,6 +20,7 @@ from clive_local_tools.testnet_block_log.constants import (
 
 WORKING_ACCOUNT_INITIAL_BALANCE: Final[int] = 100_000
 WORKING_ACCOUNT_INITIAL_BALANCE_INCREMENT: Final[int] = 10_000
+EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = timedelta(days=1)
 
 
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
@@ -200,17 +201,20 @@ def main() -> None:
 
     tt.logger.info("Wait 21 blocks for future state to become active state")
     node.wait_number_of_blocks(21)
-
     active_witnesses = node.api.database.get_active_witnesses()["witnesses"]
     tt.logger.info(f"Witness state after voting: {active_witnesses}")
 
-    # Reason of this wait is to enable moving forward of irreversible block
-    tt.logger.info("Wait 21 blocks (when every witness sign at least one block)")
-    node.wait_number_of_blocks(21)
+    tt.logger.info("Wait to be sure all generated blocks are in block_log.")
+    node.wait_for_irreversible_block()
 
-    timestamp = node.api.block.get_block(block_num=node.get_last_block_number())["block"]["timestamp"]
-    tt.logger.info(f"Final block_log head block number: {node.get_last_block_number()}")
+    last_block_number = node.get_last_block_number()
+    timestamp = node.api.block.get_block(block_num=last_block_number)["block"]["timestamp"]
+    tt.logger.info(f"Final block_log head block number: {last_block_number}")
     tt.logger.info(f"Final block_log head block timestamp: {timestamp}")
+
+    timestamp += EXTRA_TIME_SHIFT_FOR_GOVERNANCE
+
+    tt.logger.info(f"Final block_log shifted timestamp: {timestamp}")
 
     with (directory / "timestamp").open("w", encoding="utf-8") as file:
         file.write(f"@{timestamp}")
