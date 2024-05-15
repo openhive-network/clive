@@ -5,7 +5,7 @@ from typing import Final
 
 import test_tools as tt
 
-WITNESSES = [f"witness-{i:03d}" for i in range(60)]
+WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [f"witness-{i:03d}" for i in range(60)]]
 PROPOSALS = [f"proposal-{c}" for c in ascii_lowercase]
 
 CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")

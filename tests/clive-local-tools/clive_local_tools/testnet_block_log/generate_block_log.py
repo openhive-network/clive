@@ -40,9 +40,9 @@ def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -
 
 def configure(node: tt.InitNode) -> None:
     tt.logger.info("Creating node config...")
-    for name in WITNESSES:
-        node.config.witness.append(name)
-        node.config.private_key.append(tt.Account(name).private_key)
+    for witness in WITNESSES:
+        node.config.witness.append(witness.name)
+        node.config.private_key.append(witness.private_key)
     node.config.plugin.append("account_history_rocksdb")
     node.config.plugin.append("account_history_api")
     node.config.plugin.append("reputation_api")
@@ -52,26 +52,26 @@ def configure(node: tt.InitNode) -> None:
 
 def create_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating witnesses...")
-    for name in WITNESSES:
-        wallet.api.import_key(tt.PrivateKey(name))
+    for witness in WITNESSES:
+        wallet.api.import_key(witness.private_key)
 
     with wallet.in_single_transaction():
-        for name in WITNESSES:
-            key = tt.PublicKey(name)
-            wallet.api.create_account_with_keys("initminer", name, "{}", key, key, key, key)
+        for witness in WITNESSES:
+            key = witness.public_key
+            wallet.api.create_account_with_keys("initminer", witness.name, "{}", key, key, key, key)
 
     with wallet.in_single_transaction():
-        for name in WITNESSES:
-            wallet.api.transfer("initminer", name, tt.Asset.Test(10_000).as_nai(), "memo")
-            wallet.api.transfer_to_vesting("initminer", name, tt.Asset.Test(10_000).as_nai())
-            wallet.api.transfer("initminer", name, tt.Asset.Tbd(10_000).as_nai(), memo="memo")
+        for witness in WITNESSES:
+            wallet.api.transfer("initminer", witness.name, tt.Asset.Test(10_000).as_nai(), "memo")
+            wallet.api.transfer_to_vesting("initminer", witness.name, tt.Asset.Test(10_000).as_nai())
+            wallet.api.transfer("initminer", witness.name, tt.Asset.Tbd(10_000).as_nai(), memo="memo")
 
     with wallet.in_single_transaction():
-        for name in WITNESSES:
+        for witness in WITNESSES:
             wallet.api.update_witness(
-                name,
-                "https://" + name,
-                tt.Account(name).public_key,
+                witness.name,
+                "https://" + witness.name,
+                witness.public_key,
                 {
                     "account_creation_fee": tt.Asset.Test(3).as_nai(),
                     "maximum_block_size": 65536,
@@ -83,21 +83,21 @@ def create_witnesses(wallet: tt.Wallet) -> None:
 def create_proposals(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating proposals...")
     with wallet.in_single_transaction():
-        for account_name, proposal in zip(WITNESSES, PROPOSALS, strict=False):
+        for witness, proposal in zip(WITNESSES, PROPOSALS, strict=False):
             permlink = proposal
             wallet.api.post_comment(
-                account_name, f"{permlink}", "", f"parent-{permlink}", f"{permlink}-title", f"{permlink}-body", "{}"
+                witness.name, f"{permlink}", "", f"parent-{permlink}", f"{permlink}-title", f"{permlink}-body", "{}"
             )
     with wallet.in_single_transaction():
-        for i, (account_name, proposal) in enumerate(zip(WITNESSES, PROPOSALS, strict=False)):
+        for i, (witness, proposal) in enumerate(zip(WITNESSES, PROPOSALS, strict=False)):
             # create proposal with permlink pointing to comment
             permlink = proposal
             start_month = i - 1
             end_month = i
             daily_pay = round(uniform(1, 10), 3)
             wallet.api.create_proposal(
-                account_name,
-                account_name,
+                witness.name,
+                witness.name,
                 tt.Time.from_now(months=start_month, minutes=1),
                 tt.Time.from_now(months=end_month, minutes=1),
                 tt.Asset.Tbd(daily_pay).as_nai(),
