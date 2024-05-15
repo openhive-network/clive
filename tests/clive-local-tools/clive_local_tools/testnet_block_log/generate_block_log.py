@@ -180,6 +180,7 @@ def main() -> None:
             "--alternate-chain-spec",
             str(directory / "alternate-chain-spec.json"),
         ],
+        time_control="+0h x5",
     )
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
 
