@@ -4,16 +4,22 @@ import json
 from datetime import datetime
 from pathlib import Path
 from random import uniform
+from typing import Final
 
 import test_tools as tt
 
 from clive_local_tools.testnet_block_log.constants import (
+    ALT_WORKING_ACCOUNT1,
+    ALT_WORKING_ACCOUNT2,
     CREATOR_ACCOUNT,
     PROPOSALS,
     WATCHED_ACCOUNTS,
     WITNESSES,
     WORKING_ACCOUNT,
 )
+
+WORKING_ACCOUNT_INITIAL_BALANCE: Final[int] = 100_000
+WORKING_ACCOUNT_INITIAL_BALANCE_INCREMENT: Final[int] = 10_000
 
 
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
@@ -100,14 +106,17 @@ def create_proposals(wallet: tt.Wallet) -> None:
             )
 
 
-def create_working_account(wallet: tt.Wallet) -> None:
-    tt.logger.info("Creating working account...")
-    wallet.create_account(
-        WORKING_ACCOUNT.name,
-        hives=tt.Asset.Test(100_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=tt.Asset.Test(100_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=tt.Asset.Tbd(100_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-    )
+def create_working_accounts(wallet: tt.Wallet) -> None:
+    tt.logger.info("Creating working accounts...")
+    account_balance = WORKING_ACCOUNT_INITIAL_BALANCE
+    for account_name in (WORKING_ACCOUNT.name, ALT_WORKING_ACCOUNT1.name, ALT_WORKING_ACCOUNT2.name):
+        wallet.create_account(
+            account_name,
+            hives=tt.Asset.Test(account_balance).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            vests=tt.Asset.Test(account_balance).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hbds=tt.Asset.Tbd(account_balance).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        )
+        account_balance += WORKING_ACCOUNT_INITIAL_BALANCE_INCREMENT
 
 
 def prepare_savings(wallet: tt.Wallet) -> None:
@@ -166,9 +175,9 @@ def main() -> None:
 
     create_witnesses(wallet)
     create_proposals(wallet)
-    create_working_account(wallet)
-    prepare_savings(wallet)
+    create_working_accounts(wallet)
     create_watched_accounts(wallet)
+    prepare_savings(wallet)
     send_test_transfer_from_working_account(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
