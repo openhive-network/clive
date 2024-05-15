@@ -159,6 +159,16 @@ def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
     wallet.api.transfer(WORKING_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(1).as_nai(), memo="memo")
 
 
+def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
+    tt.logger.info("Prepare votes for witnesses...")
+    with wallet.in_single_transaction():
+        for i in range(2, 4):
+            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1.name, WITNESSES[i].name, True)
+    with wallet.in_single_transaction():
+        for i in range(1, 31):
+            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2.name, WITNESSES[i].name, True)
+
+
 def main() -> None:
     directory = Path(__file__).parent.absolute()
     node = tt.InitNode()
@@ -178,6 +188,7 @@ def main() -> None:
     create_working_accounts(wallet)
     create_watched_accounts(wallet)
     prepare_savings(wallet)
+    prepare_votes_for_witnesses(wallet)
     send_test_transfer_from_working_account(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
