@@ -19,7 +19,16 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
 )
 from clive.__private.core.formatters.case import underscore
-from clive.__private.core.formatters.data_labels import HP_VEST_APR_LABEL, HBD_SAVINGS_APR_LABEL
+from clive.__private.core.formatters.data_labels import (
+    CURRENT_INFLATION_RATE_LABEL,
+    HBD_EXCHANGE_RATE_LABEL,
+    HBD_PRINT_RATE_LABEL,
+    HBD_SAVINGS_APR_LABEL,
+    HP_VEST_APR_LABEL,
+    MEDIAN_HIVE_PRICE_LABEL,
+    PARTICIPATION_COUNT_LABEL,
+    VEST_HIVE_RATIO_LABEL,
+)
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
 from clive.models import Asset, Operation
 
@@ -43,6 +52,11 @@ SignPrefixT: TypeAlias = Literal["", "+", "-"]
 def _is_null_date(value: datetime) -> bool:
     _value = value.replace(tzinfo=None)
     return _value == datetime(1970, 1, 1, 0, 0, 0) or _value == datetime(1969, 12, 31, 23, 59, 59)
+
+
+def _maybe_labelize(label: str, text: str, *, add_label: bool = False) -> str:
+    """Will conditionally labelize some text, when add_label param is set to True."""
+    return f"{label + ':' if add_label else ''} {text}".lstrip()
 
 
 def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]:
@@ -170,19 +184,19 @@ def humanize_hive_power(value: Asset.Hive) -> str:
     return f"{matched[1]}{matched[2]} HP".upper()
 
 
-def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate) -> str:
+def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label: bool = False) -> str:
     """Return pretty formatted hdb exchange rate (price feed)."""
-    return f"{hbd_exchange_rate.base.pretty_amount()} $"
+    return _maybe_labelize(HBD_EXCHANGE_RATE_LABEL, f"{hbd_exchange_rate.base.pretty_amount()} $", add_label=with_label)
 
 
 def humanize_hbd_savings_apr(hbd_savings_apr: Decimal, *, with_label: bool = False) -> str:
     """Return pretty formatted hdb interese rate (APR)."""
-    return f"{HBD_SAVINGS_APR_LABEL + ':'  if with_label else ''} {humanize_percent(hbd_savings_apr)}".lstrip()
+    return _maybe_labelize(HBD_SAVINGS_APR_LABEL, humanize_percent(hbd_savings_apr), add_label=with_label)
 
 
-def humanize_hbd_print_rate(hbd_print_rate: Decimal) -> str:
+def humanize_hbd_print_rate(hbd_print_rate: Decimal, *, with_label: bool = False) -> str:
     """Return pretty formatted hdb print rate."""
-    return humanize_percent(hbd_print_rate)
+    return _maybe_labelize(HBD_PRINT_RATE_LABEL, humanize_percent(hbd_print_rate), add_label=with_label)
 
 
 def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
@@ -193,31 +207,39 @@ def humanize_apr(data: HpAPRProtocol | Decimal) -> str:
 
 def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = False) -> str:
     """Return formatted text describing APR value returned from wax."""
-    return f"{HP_VEST_APR_LABEL + ':' if with_label  else ''} {humanize_apr(data)}".lstrip()
+    return _maybe_labelize(HP_VEST_APR_LABEL, humanize_apr(data), add_label=with_label)
 
 
-def humanize_median_hive_price(current_price_feed: CurrentPriceFeed) -> str:
+def humanize_median_hive_price(current_price_feed: CurrentPriceFeed, *, with_label: bool = False) -> str:
     """Return formatted median hive price."""
-    return f"{current_price_feed.base.pretty_amount()} HBD"
+    return _maybe_labelize(MEDIAN_HIVE_PRICE_LABEL, current_price_feed.base.pretty_amount(), add_label=with_label)
 
 
-def humanize_current_inflation_rate(head_block_number: int) -> str:
+def humanize_current_inflation_rate(head_block_number: int, *, with_label: bool = False) -> str:
     """Return formatted inflation rate for head block returned from wax."""
     inflation = calculate_current_inflation_rate(head_block_number)
-    return humanize_percent(inflation)
+    return _maybe_labelize(CURRENT_INFLATION_RATE_LABEL, humanize_percent(inflation), add_label=with_label)
 
 
-def humanize_participation_count(participation_count: int) -> str:
+def humanize_participation_count(participation_count: int, *, with_label: bool = False) -> str:
     """Return pretty formatted participation rate."""
     participation_count_percent = calculate_participation_count_percent(participation_count)
-    return humanize_percent(participation_count_percent)
+    return _maybe_labelize(
+        PARTICIPATION_COUNT_LABEL, humanize_percent(participation_count_percent), add_label=with_label
+    )
 
 
-def humanize_vest_to_hive_ratio(data: VestsToHpProtocol | Decimal, show_symbol: bool = False) -> str:
+def humanize_vest_to_hive_ratio(
+    data: VestsToHpProtocol | Decimal, *, with_label: bool = False, show_symbol: bool = False
+) -> str:
     """Return pretty formatted vest to hive ratio."""
     calculated = data if isinstance(data, Decimal) else calulcate_vests_to_hive_ratio(data)
     symbol = f" {Asset.get_symbol(Asset.Vests)}" if show_symbol else ""
-    return f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}{symbol}"
+    return _maybe_labelize(
+        VEST_HIVE_RATIO_LABEL,
+        f"{_round_to_precision(calculated, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)}{symbol}",
+        add_label=with_label,
+    )
 
 
 def humanize_bytes(value: int) -> str:

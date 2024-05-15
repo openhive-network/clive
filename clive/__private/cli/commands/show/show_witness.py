@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.core.formatters.data_labels import HBD_SAVINGS_APR_LABEL
+from clive.__private.core.formatters.data_labels import HBD_EXCHANGE_RATE_LABEL, HBD_SAVINGS_APR_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_hbd_exchange_rate,
     humanize_hbd_savings_apr,
@@ -40,7 +40,7 @@ class ShowWitness(WorldBasedCommand):
         table.add_row("total votes", f"{votes}")
         table.add_row("hardfork time vote", f"{witness.hardfork_time_vote}")
         table.add_row("hardfork version vote", f"{witness.hardfork_version_vote}")
-        table.add_row("price feed", f"{humanize_hbd_exchange_rate(witness.hbd_exchange_rate)}")
+        table.add_row(HBD_EXCHANGE_RATE_LABEL, f"{humanize_hbd_exchange_rate(witness.hbd_exchange_rate)}")
         table.add_row("last confirmed block num", f"{witness.last_confirmed_block_num}")
         table.add_row("last hbd exchange update", f"{witness.last_hbd_exchange_update}")
         table.add_row("last work", f"{witness.last_work}")

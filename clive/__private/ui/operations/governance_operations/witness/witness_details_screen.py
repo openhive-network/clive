@@ -51,7 +51,7 @@ class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
             created = humanize_datetime(witness.created)
             missed_blocks = witness.total_missed
             last_block = witness.last_confirmed_block_num
-            price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate)
+            price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate, with_label=True)
             version = witness.running_version
             new_witness_data = f"""\
             === Time of the query: {humanize_datetime(datetime.now().replace(microsecond=0))} ===
@@ -59,7 +59,7 @@ class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
                 created: {created}
                 missed blocks: {missed_blocks}
                 last block: {last_block}
-                price feed: {price_feed}
+                {price_feed}
                 version: {version}\
             """
 
