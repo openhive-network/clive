@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION
@@ -27,7 +27,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.section import Section
 from schemas.operations import SetWithdrawVestingRouteOperation
 
 if TYPE_CHECKING:
@@ -119,8 +119,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            yield SectionTitle("Set withdraw route")
-            with Vertical(id="inputs-container"):
+            with Section("Set withdraw route"):
                 yield self._account_input
                 with Horizontal(id="input-with-checkbox"):
                     yield self._percent_input

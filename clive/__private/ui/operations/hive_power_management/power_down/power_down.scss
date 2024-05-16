@@ -5,10 +5,10 @@ PowerDown {
     margin-bottom: 1;
   }
 
-  #input-with-button {
-    background: $panel;
-    padding: 2 2;
-    height: auto;
+  Section {
+    SectionBody {
+      layout: horizontal;
+    }
   }
 
   WithdrawRoutesDisplay {

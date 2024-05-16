@@ -14,7 +14,7 @@ from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.proxy_input import ProxyInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -39,17 +39,12 @@ class NewProxyInput(ProxyInput):
         )
 
 
-class Body(Container):
-    """The content of the ProxyNotSet and ProxySet container except for the `Notice` and `SectionTitle` widgets."""
-
-
 class ProxyNotSet(ProxyBaseContainer):
     def compose(self) -> ComposeResult:
         yield Notice(
             "setting proxy will delete your witnesses votes and deactivate your proposal votes",
         )
-        yield SectionTitle("Set proxy for the account")
-        with Body():
+        with SectionScrollable("Set proxy for the account"):
             yield CurrentProxy("Proxy not set")
             yield NewProxyInput(required=True)
             with Container(id="set-button-container"):
@@ -69,8 +64,7 @@ class ProxySet(ProxyBaseContainer):
         self._current_proxy = current_proxy
 
     def compose(self) -> ComposeResult:
-        yield SectionTitle("Modify proxy for the account")
-        with Body():
+        with SectionScrollable("Modify proxy for the account"):
             yield CurrentProxy(self._current_proxy)
             yield NewProxyInput(required=False)
             with Horizontal(id="modify-proxy-buttons"):

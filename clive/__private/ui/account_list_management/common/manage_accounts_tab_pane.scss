@@ -1,16 +1,17 @@
 ManageAccountsTabPane {
-  SectionTitle {
-    width: 50%;
-  }
-
   ScrollablePart {
     align: center top;
   }
 
-  #input-with-button {
-    background: $panel;
-    padding: 2 2;
+  Section {
     width: 50%;
-    height: auto;
+
+    SectionBody {
+      layout: horizontal;
+    }
+  }
+
+  ManageAccountsTable {
+    margin-top: 1;
   }
 }

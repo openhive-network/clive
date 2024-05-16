@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -13,7 +13,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.hive_asset_amount_input import HiveAssetAmountInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.section import Section
 from schemas.operations import TransferToVestingOperation as TransferToVesting
 
 if TYPE_CHECKING:
@@ -43,8 +43,7 @@ class PowerUp(TabPane, OperationActionBindings):
     def compose(self) -> ComposeResult:
         with ScrollablePart():
             yield Notice("Your governance voting power will be increased after 30 days")
-            yield SectionTitle("Perform a power up (transfer to vesting)")
-            with Vertical(id="power-up-inputs"):
+            with Section("Perform a power up (transfer to vesting)"):
                 yield self._receiver_input
                 with Horizontal(id="input-with-button"):
                     yield self._asset_input

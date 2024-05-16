@@ -30,7 +30,7 @@ from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmoun
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.section import Section
 from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
 
@@ -164,8 +164,7 @@ class PowerDown(TabPane, OperationActionBindings):
     def compose(self) -> ComposeResult:
         with ScrollablePart():
             yield HpVestsFactor(self.provider)
-            yield SectionTitle("Perform a power down (withdraw vesting)")
-            with Horizontal(id="input-with-button"):
+            with Section("Perform a power down (withdraw vesting)"):
                 yield self._shares_input
                 yield GenerousButton(self._shares_input, self._get_shares_balance)  # type: ignore[arg-type]
             yield self._one_withdrawal_display

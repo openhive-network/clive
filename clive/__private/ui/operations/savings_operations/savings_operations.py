@@ -35,6 +35,7 @@ from clive.__private.ui.widgets.location_indicator import LocationIndicator
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import RequestIdError
 from clive.models import Asset
@@ -204,8 +205,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._from_button
             yield SavingsBalances(self.app.world.profile_data.working_account)
             yield self._transfer_time_reminder
-            yield SectionTitle("Perform a transfer to savings")
-            with Body():
+            with Section("Perform a transfer to savings"), Body():
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input

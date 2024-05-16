@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.ensure_vests import ensure_vests
@@ -28,7 +28,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.section import Section
 from clive.models import Asset
 from schemas.operations import DelegateVestingSharesOperation
 
@@ -130,8 +130,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
     def compose(self) -> ComposeResult:
         with ScrollablePart():
             yield HpVestsFactor(self.provider)
-            yield SectionTitle("Delegate your shares")
-            with Vertical(id="inputs-container"):
+            with Section("Delegate your shares"):
                 yield self._delegate_input
                 yield self._shares_input
             yield DelegationsTable()

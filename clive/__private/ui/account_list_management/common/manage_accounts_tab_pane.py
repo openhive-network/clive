@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal
 from textual.widgets import TabPane
 
 from clive.__private.storage.accounts import Account
@@ -13,7 +12,7 @@ from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.section import Section
 from clive.__private.validators.set_known_account_validator import SetKnownAccountValidator
 from clive.__private.validators.set_watched_account_validator import SetWatchedAccountValidator
 
@@ -41,14 +40,14 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            yield SectionTitle(f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Known'} account")
-            with Horizontal(id="input-with-button"):
+            with Section(f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Known'} account"):
                 yield self._accounts_input
                 yield CliveButton(
                     f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Mark as known'}",
                     variant="success",
                     id_="save-account-button",
                 )
+
             yield ManageAccountsTable(self._accounts_type)
 
     @on(CliveButton.Pressed, "#save-account-button")

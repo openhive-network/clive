@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from textual import on
-from textual.containers import Horizontal, Vertical
+from textual.containers import Vertical
 from textual.widgets import Static, TabPane
 
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
@@ -20,6 +20,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.validators.set_working_account_validator import SetWorkingAccountValidator
 
@@ -91,10 +92,9 @@ class WorkingAccountChange(Vertical, CliveWidget):
         self._previous_working_account = self.working_account
 
     def compose(self) -> ComposeResult:
-        yield SectionTitle(
+        with Section(
             "Change working account" if _has_working_account(self.app.world.profile_data) else "Set working account"
-        )
-        with Horizontal(id="input-with-button"):
+        ):
             yield self._working_account_input
             yield CliveButton(
                 "Change" if _has_working_account(self.app.world.profile_data) else "Set",
