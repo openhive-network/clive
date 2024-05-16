@@ -14,7 +14,7 @@ from clive.__private.config import settings
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
-from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm, SubTitle
+from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
@@ -41,7 +41,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         Binding("f2", "load_from_file", "Load from file"),
     ]
 
-    BIG_TITLE: ClassVar[str] = "Define keys"
+    SECTION_TITLE: ClassVar[str] = "Add key alias"
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = True
 
     class Saved(Message, bubble=True):
@@ -137,6 +137,8 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
 
 
 class NewKeyAlias(NewKeyAliasBase):
+    BIG_TITLE = "Configuration"
+    SUBTITLE = "Manage key aliases"
     BINDINGS = [
         Binding("escape", "pop_screen", "Back"),
         Binding("f6", "save", "Save"),
@@ -189,6 +191,8 @@ class NewKeyAlias(NewKeyAliasBase):
 
 
 class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
+    BIG_TITLE = "Onboarding"
+    SUBTITLE = "Optional step, could be done later"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
 
@@ -218,6 +222,3 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
             super()._validate()
         except FailedManyValidationError as error:
             raise FormValidationError(str(error)) from error
-
-    def _content_after_big_title(self) -> ComposeResult:
-        yield SubTitle("(Optional step, could be done later)")
