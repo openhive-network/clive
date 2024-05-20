@@ -35,6 +35,7 @@ RUN apt-get update && \
 ENV PYTHON_VENV_PATH="/clive/venv"
 RUN python3 -m venv ${PYTHON_VENV_PATH}
 ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
+ENV LIBDIRNAME="/usr/local/bin"
 
 
 FROM common AS instance
@@ -77,6 +78,12 @@ LABEL io.hive.image.commit.date="$GIT_LAST_COMMIT_DATE"
 ENTRYPOINT ["/entrypoint.sh"]
 
 
+# this target should be built using a testnet hived image as a base, same as embedded_testnet_instance
+FROM instance AS faketime_build
+
+ADD ./scripts/build_faketime.sh /clive/scripts/build_faketime.sh
+RUN /clive/scripts/build_faketime.sh
+
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
 FROM instance AS embedded_testnet_instance
 
@@ -85,6 +92,9 @@ ENV HIVED_BINARIES_DIR_DEST=${HIVED_BINARIES_DIR_SOURCE}
 
 # Copy all the required executables from hived image
 COPY --from=hived_image "${HIVED_BINARIES_DIR_SOURCE}" "${HIVED_BINARIES_DIR_DEST}"
+
+# Copy compiled libfaketime from faketime_build
+COPY --from=faketime_build ${LIBDIRNAME}/faketime ${LIBDIRNAME}/faketime
 
 ARG CLIVE_SECRETS__DEFAULT_KEY="5KTNAYSHVzhnVPrwHpKhc5QqNQt6aW8JsrMT7T4hyrKydzYvYik"
 ENV CLIVE_SECRETS__DEFAULT_KEY=${CLIVE_SECRETS__DEFAULT_KEY}
