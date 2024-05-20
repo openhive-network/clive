@@ -57,6 +57,7 @@ class NodeData:
     last_history_entry: datetime
     last_account_update: datetime
     recovery_account: str
+    governance_vote_expiration_ts: datetime
     vote_manabar: Manabar
     downvote_manabar: Manabar
     rc_manabar: Manabar | DisabledAPI

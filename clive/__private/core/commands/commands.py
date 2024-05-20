@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar, overload
+from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
 from clive.__private.core.commands.activate import Activate
@@ -22,6 +22,7 @@ from clive.__private.core.commands.data_retrieval.get_dynamic_global_properties 
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, HivePowerDataRetrieval
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
+from clive.__private.core.commands.data_retrieval.update_alarms_data import UpdateAlarmsData
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
@@ -299,6 +300,11 @@ class Commands(Generic[WorldT]):
         if result.success:
             self._world.app_state._dynamic_global_properties = result.result_or_raise
         return result
+
+    async def update_alarms_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWithResultWrapper[None]:
+        return await self.__surround_with_exception_handlers(
+            UpdateAlarmsData(accounts=list(accounts) if accounts is not None else [], node=self._world.node)
+        )
 
     async def retrieve_savings_data(self, *, account_name: str) -> CommandWithResultWrapper[SavingsData]:
         return await self.__surround_with_exception_handlers(

@@ -183,7 +183,9 @@ class Clive(App[int], ManualReactive):
         self.console.set_window_title("Clive")
 
         self.update_data_from_node()
+        self.update_alarms_data_asap()
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())
+        self.trigger_refresh_alarms_data_interval = self.set_interval(30, lambda: self.update_alarms_data(), pause=True)
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
@@ -192,6 +194,17 @@ class Clive(App[int], ManualReactive):
             self.push_screen(Onboarding())
         else:
             self.push_screen(DashboardInactive())
+
+    def update_alarms_data_asap(self) -> None:
+        """Method updates alarms as soon as possible after node data becomes available."""
+
+        async def _update_alarms_data() -> None:
+            while not self.world.profile_data.is_accounts_node_data_available:
+                await asyncio.sleep(0.1)
+            self.update_alarms_data()
+            self.trigger_refresh_alarms_data_interval.resume()
+
+        self.run_worker(_update_alarms_data())
 
     def replace_screen(
         self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]
@@ -362,6 +375,18 @@ class Clive(App[int], ManualReactive):
     def trigger_app_state_watchers(self) -> None:
         self.world.update_reactive("app_state")
 
+    @work(name="alarms data update worker")
+    async def update_alarms_data(self) -> None:
+        accounts = self.world.profile_data.get_tracked_accounts()
+
+        try:
+            await self.world.commands.update_alarms_data(accounts=accounts)
+        except Exception as error:  # noqa: BLE001
+            logger.warning(f"Update alarms data failed: {error}")
+        else:
+            self.trigger_profile_data_watchers()
+            self.trigger_app_state_watchers()
+
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
         allowed_fails_of_update_node_data = 5
@@ -380,7 +405,6 @@ class Clive(App[int], ManualReactive):
                 raise
         else:
             self.trigger_profile_data_watchers()
-            self.trigger_app_state_watchers()
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
