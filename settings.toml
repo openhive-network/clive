@@ -18,4 +18,5 @@ INITIALIZATION_TIMEOUT_SECS = 5
 # If given, will be used as default for all the profiles, but could be overwritten with CLI commands.
 CHAIN_ID = "beeab0de00000000000000000000000000000000000000000000000000000000"
 REFRESH_RATE = 1.5 # how often information about accounts are fetched from node
+REFRESH_ALARMS_RATE = 30 # how often information about alarms are fetched from node
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 6

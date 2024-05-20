@@ -193,6 +193,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 last_history_entry=info.last_history_entry,
                 last_account_update=info.core.last_account_update,
                 recovery_account=info.core.recovery_account,
+                governance_vote_expiration_ts=info.core.governance_vote_expiration_ts,
                 vote_manabar=self.__update_manabar(
                     gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar
                 ),
