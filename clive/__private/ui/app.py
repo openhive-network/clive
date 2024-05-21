@@ -93,10 +93,10 @@ class Clive(App[int], ManualReactive):
         *,
         title: str = "",
         severity: SeverityLevel = "information",
-        timeout: float = Notification.timeout,
+        timeout: float | None = None,
     ) -> None:
         title = title if title else severity.capitalize()
-        timeout = math.inf if timeout == Notification.timeout and severity == "error" else timeout
+        timeout = math.inf if timeout is None and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
 
     @on(Notify)
@@ -113,7 +113,7 @@ class Clive(App[int], ManualReactive):
             *,
             title: str = "",  # noqa: ARG001
             severity: SeverityLevel = "information",  # noqa: ARG001
-            timeout: float = Notification.timeout,  # noqa: ARG001
+            timeout: float | None = None,  # noqa: ARG001
         ) -> None:
             return
 
