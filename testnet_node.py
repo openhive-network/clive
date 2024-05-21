@@ -18,11 +18,7 @@ from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
-from clive_local_tools.testnet_block_log import (
-    get_alternate_chain_spec_path,
-    get_block_log,
-    get_config,
-)
+from clive_local_tools.testnet_block_log import run_node
 from clive_local_tools.testnet_block_log.constants import CREATOR_ACCOUNT, WATCHED_ACCOUNTS, WORKING_ACCOUNT
 
 if TYPE_CHECKING:
@@ -57,17 +53,8 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
 
 
 def prepare_node() -> tt.RawNode:
-    config_lines = get_config().write_to_lines()
-    block_log = get_block_log()
-    alternate_chain_spec_path = get_alternate_chain_spec_path()
-    node = tt.RawNode()
-    node.config.load_from_lines(config_lines)
-    node.config.webserver_http_endpoint = "0.0.0.0:8090"
-    arguments = ["--alternate-chain-spec", str(alternate_chain_spec_path)]
-    # TODO: time_offset should be used there but faketime is not available in the embedded_testnet docker image yet
-    node.run(replay_from=block_log, arguments=arguments)
-
-    return node
+    # TODO: time_offset/use_faketime option should be used there but faketime is not available in the embedded_testnet docker image yet
+    return run_node(webserver_http_endpoint="0.0.0.0:8090")
 
 
 async def prepare_profile(node: tt.RawNode) -> None:
