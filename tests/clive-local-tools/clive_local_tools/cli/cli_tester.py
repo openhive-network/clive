@@ -262,3 +262,133 @@ class CLITester:
             ["process", "transaction"],
             **extract_params(locals()),
         )
+
+    def show_hive_power(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "hive-power"], account_name=account_name, profile_name=profile_name)
+
+    def show_pending_power_down(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "pending", "power-down"], account_name=account_name, profile_name=profile_name)
+
+    def show_pending_power_ups(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "pending", "power-ups"], account_name=account_name, profile_name=profile_name)
+
+    def show_pending_removed_delegations(
+        self, *, account_name: str | None = None, profile_name: str | None = None
+    ) -> Result:
+        return self.__invoke(
+            ["show", "pending", "removed-delegations"], account_name=account_name, profile_name=profile_name
+        )
+
+    def process_power_up(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str | None = None,
+        amount: tt.Asset.HiveT,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "power-up"], **extract_params(locals()))
+
+    def process_power_down_start(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "power-down", "start"], **extract_params(locals()))
+
+    def process_power_down_restart(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "power-down", "restart"], **extract_params(locals()))
+
+    def process_power_down_cancel(  # noqa: PLR0913
+        self,
+        *,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "power-down", "cancel"], **extract_params(locals()))
+
+    def process_delegations_set(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        delegatee: str | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "delegations", "set"], **extract_params(locals()))
+
+    def process_delegations_remove(  # noqa: PLR0913
+        self,
+        *,
+        account_name: str | None = None,
+        delegatee: str | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "delegations", "remove"], **extract_params(locals()))
+
+    def process_withdraw_routes_set(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str | None,
+        percent: int,
+        auto_vest: bool | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "withdraw-routes", "set"], **extract_params(locals()))
+
+    def process_withdraw_routes_remove(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str | None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+    ) -> Result:
+        return self.__invoke(["process", "withdraw-routes", "remove"], **extract_params(locals()))
