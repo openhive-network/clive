@@ -42,7 +42,7 @@ class SelectFile(BaseScreen):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     BINDINGS = [
-        Binding("escape", "pop_screen", "Back"),
+        Binding("escape", "app.pop_screen", "Back"),
         Binding("f2", "save", "Ok"),
     ]
 

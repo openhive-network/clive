@@ -55,7 +55,7 @@ class Operations(CartBasedScreen, CartBinding):
 
     BINDINGS = [
         *CartBinding.BINDINGS,
-        Binding("escape", "pop_screen", "Back"),
+        Binding("escape", "app.pop_screen", "Back"),
         Binding("f3", "load_transaction_from_file", "Load from file"),
     ]
 

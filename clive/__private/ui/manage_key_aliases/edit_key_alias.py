@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 class EditKeyAlias(KeyAliasForm):
     BINDINGS = [
-        Binding("escape", "pop_screen", "Back"),
+        Binding("escape", "app.pop_screen", "Back"),
         Binding("f6", "save", "Save"),
     ]
 

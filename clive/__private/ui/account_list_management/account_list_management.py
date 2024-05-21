@@ -23,7 +23,7 @@ WORKING_ACCOUNT_TAB_LABEL: Final[str] = "Working account"
 class AccountListManagement(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BINDINGS = [Binding("escape", "pop_screen", "Back")]
+    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
     def create_main_panel(self) -> ComposeResult:
         yield LocationIndicator("configuration", "accounts management")
