@@ -212,7 +212,7 @@ class Cart(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
-        Binding("escape", "pop_screen", "Back"),
+        Binding("escape", "app.pop_screen", "Back"),
         Binding("f9", "clear_all", "Clear all"),
         Binding("f6", "summary", "Summary"),
     ]

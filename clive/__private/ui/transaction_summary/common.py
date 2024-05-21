@@ -88,7 +88,7 @@ class KeyHint(Label):
 class TransactionSummaryCommon(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="common")]
     BINDINGS = [
-        Binding("escape", "pop_screen", "Back"),
+        Binding("escape", "app.pop_screen", "Back"),
         Binding("f2", "save", "Save"),
         Binding("f3", "dashboard", "Dashboard"),
         Binding("f6", "broadcast", "Broadcast"),

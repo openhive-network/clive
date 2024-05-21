@@ -140,7 +140,7 @@ class NewKeyAlias(NewKeyAliasBase):
     BIG_TITLE = "Configuration"
     SUBTITLE = "Manage key aliases"
     BINDINGS = [
-        Binding("escape", "pop_screen", "Back"),
+        Binding("escape", "app.pop_screen", "Back"),
         Binding("f6", "save", "Save"),
     ]
 

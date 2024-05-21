@@ -26,7 +26,7 @@ class WelcomeTitle(Static):
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BINDINGS = [Binding("escape", "pop_screen", "Back")]
+    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
     def __init__(self, owner: Form[ContextT], title: str) -> None:
         self.__title = title

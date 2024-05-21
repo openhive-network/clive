@@ -134,4 +134,4 @@ class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
 
 class SetNodeAddress(SetNodeAddressBase):
     BIG_TITLE = "configuration"
-    BINDINGS = [Binding("escape", "pop_screen", "Back")]
+    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]

@@ -18,8 +18,8 @@ class TerminalScreen(BaseScreen):
 
     BINDINGS = [
         Binding("colon", "focus('command-line-input')", "Command line", show=False),
-        Binding("ctrl+o", "pop_screen", show=False),
-        Binding("escape", "pop_screen", "Back"),
+        Binding("ctrl+o", "app.pop_screen", show=False),
+        Binding("escape", "app.pop_screen", "Back"),
     ]
 
     def __init__(self) -> None:
