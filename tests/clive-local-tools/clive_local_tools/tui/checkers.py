@@ -78,7 +78,7 @@ def assert_is_clive_composed_input_focused(
 
 def assert_is_key_binding_active(app: CliveApp, key: str, description: str | None = None) -> None:
     """Assert if key binding is active."""
-    binding_description_map = {k: v[1].description for k, v in app.namespace_bindings.items()}
+    binding_description_map = {k: v[1].description for k, v in app.active_bindings.items()}
 
     message = f"Key binding for `{key}` is not available, Cannot proceed!\nCurrent ones are: {binding_description_map}"
     assert key in binding_description_map, message
