@@ -9,7 +9,7 @@ from .constants import (
     WITNESSES,
     WORKING_ACCOUNT,
 )
-from .prepared_data import get_alternate_chain_spec_path, get_block_log, get_config, get_time_offset
+from .prepared_data import get_alternate_chain_spec_path, get_block_log, get_config, get_time_offset, run_node
 
 __all__ = [
     "ALT_WORKING_ACCOUNT1",
@@ -23,4 +23,5 @@ __all__ = [
     "get_block_log",
     "get_config",
     "get_time_offset",
+    "run_node",
 ]
