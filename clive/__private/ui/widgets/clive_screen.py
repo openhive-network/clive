@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 
     from textual.widget import Widget
 
+    from clive.__private.ui.types import ActiveBindingsMap
+
 
 P = ParamSpec("P")
 
@@ -38,6 +40,11 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
     class Resumed(Message):
         """Message to notify children widgets that the screen they were mounted on, was resumed."""
+
+    @property
+    def active_bindings(self) -> ActiveBindingsMap:
+        """Provides the ability to control the binding order in the footer."""
+        return self._sort_bindings(super().active_bindings)
 
     @staticmethod
     def prevent_action_when_no_accounts_node_data(func: Callable[P, None]) -> Callable[P, None]:
@@ -94,3 +101,31 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         for child in node.children:
             self._post_to_children(child, message)
             child.post_message(message)
+
+    @staticmethod
+    def _sort_bindings(data: ActiveBindingsMap) -> ActiveBindingsMap:
+        """
+        Sorts bindings by placing the CTRL+X key at first place, then the ESC, then non-fn keys and fn keys at the end of the dictionary.
+
+        This is done so that the bindings in the footer are displayed in a correct, uniform way.
+
+        Args:
+        ----
+        data: The bindings to sort.
+
+        Returns:
+        -------
+        New dictionary holding sorted bindings.
+        """
+        fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
+        non_fn_keys = [key for key in data if key not in fn_keys]
+
+        # place keys stored in container at the beginning of the list
+        container = []
+        for key in ("ctrl+x", "escape"):
+            if key in non_fn_keys:
+                non_fn_keys.remove(key)
+                container.append(key)
+
+        sorted_keys = container + non_fn_keys + fn_keys
+        return {key: data[key] for key in sorted_keys}

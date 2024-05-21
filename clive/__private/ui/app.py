@@ -42,7 +42,6 @@ if TYPE_CHECKING:
 
     from clive.__private.storage.accounts import Account
     from clive.__private.ui.pilot import ClivePilot
-    from clive.__private.ui.types import NamespaceBindingsMapType
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
@@ -87,11 +86,6 @@ class Clive(App[int], ManualReactive):
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
     """A list of all notifications that were displayed."""
-
-    @property
-    def namespace_bindings(self) -> NamespaceBindingsMapType:
-        """Provides the ability to control the binding order in the footer."""
-        return self.__sort_bindings(super().namespace_bindings)
 
     def notify(
         self,
@@ -360,34 +354,6 @@ class Clive(App[int], ManualReactive):
 
     def trigger_app_state_watchers(self) -> None:
         self.world.update_reactive("app_state")
-
-    @staticmethod
-    def __sort_bindings(data: NamespaceBindingsMapType) -> NamespaceBindingsMapType:
-        """
-        Sorts bindings by placing the CTRL+X key at first place, then the ESC, then non-fn keys and fn keys at the end of the dictionary.
-
-        This is done so that the bindings in the footer are displayed in a correct, uniform way.
-
-        Args:
-        ----
-        data: The bindings to sort.
-
-        Returns:
-        -------
-        New dictionary holding sorted bindings.
-        """
-        fn_keys = sorted([key for key in data if key.startswith("f")], key=lambda x: int(x[1:]))
-        non_fn_keys = [key for key in data if key not in fn_keys]
-
-        # place keys stored in container at the beginning of the list
-        container = []
-        for key in ("ctrl+x", "escape"):
-            if key in non_fn_keys:
-                non_fn_keys.remove(key)
-                container.append(key)
-
-        sorted_keys = container + non_fn_keys + fn_keys
-        return {key: data[key] for key in sorted_keys}
 
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:

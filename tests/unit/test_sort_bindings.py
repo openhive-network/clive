@@ -2,12 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any, Final
 
-from clive.__private.ui.app import Clive
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-METHOD_TO_TEST: Final[Callable[[Any], Any]] = Clive._Clive__sort_bindings  # type: ignore[attr-defined]
+METHOD_TO_TEST: Final[Callable[[Any], Any]] = CliveScreen._sort_bindings
 
 
 def create_binding_dict(*bindings: str) -> dict[str, str]:
