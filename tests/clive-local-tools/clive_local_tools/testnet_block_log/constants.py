@@ -12,6 +12,7 @@ CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
 WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
 WATCHED_ACCOUNTS: Final[list[tt.Account]] = [tt.Account(name) for name in ("bob", "timmy", "john")]
 
+EMPTY_ACCOUNT: Final[tt.Account] = tt.Account("carol")
 ALT_WORKING_ACCOUNT1: Final[tt.Account] = tt.Account("mary")
 ALT_WORKING_ACCOUNT2: Final[tt.Account] = tt.Account("jane")
 

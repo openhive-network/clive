@@ -12,6 +12,7 @@ from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1,
     ALT_WORKING_ACCOUNT2,
     CREATOR_ACCOUNT,
+    EMPTY_ACCOUNT,
     PROPOSALS,
     WATCHED_ACCOUNTS,
     WITNESSES,
@@ -155,6 +156,11 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
         )
 
 
+def create_empty_account(wallet: tt.Wallet) -> None:
+    tt.logger.info("Creating empty account...")
+    wallet.create_account(EMPTY_ACCOUNT.name)
+
+
 def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
     tt.logger.info("Sending test transfer...")
     wallet.api.transfer(WORKING_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(1).as_nai(), memo="memo")
@@ -191,6 +197,7 @@ def main() -> None:
     create_watched_accounts(wallet)
     prepare_savings(wallet)
     prepare_votes_for_witnesses(wallet)
+    create_empty_account(wallet)
     send_test_transfer_from_working_account(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
