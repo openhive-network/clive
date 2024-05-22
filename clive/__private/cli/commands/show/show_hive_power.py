@@ -50,7 +50,7 @@ class ShowHivePower(WorldBasedCommand):
 
         left_group = Group(general_info, Padding(""), withdraw_routes, Padding(""), delegations)
         right_group = Group(next_withdrawal, Padding(""), to_withdraw, Padding(""), apr, conversion_factor)
-        columns = Columns([left_group, right_group])
+        columns = Columns([left_group, right_group], title=f"Hive Power defails of `{self.account_name}` account")
 
         console = Console()
         console.print(columns)
@@ -63,7 +63,7 @@ class ShowHivePower(WorldBasedCommand):
                 f"{humanize_asset(shares.vests_balance, show_symbol=False, sign_prefix=sign_prefix)}",
             )
 
-        table_general_info = Table(title=f"Hive Power for account `{self.account_name}`")
+        table_general_info = Table(title="Hive Power balance")
         table_general_info.add_column("Voting Power", justify="left", style="cyan", no_wrap=True)
         table_general_info.add_column("Amount [HP]", justify="right", style="green", no_wrap=True)
         table_general_info.add_column("Amount [VESTS]", justify="right", style="green", no_wrap=True)
@@ -83,31 +83,48 @@ class ShowHivePower(WorldBasedCommand):
         return f"HP is calculated to VESTS with the factor: 1.000 HP -> {factor}"
 
     def __next_withdrawal(self) -> RenderableType:
-        table_next_withdrawal = Table()
-        table_next_withdrawal.add_column(Text("Next withdrawal", justify="center"), style="green", no_wrap=True)
+        hp = humanize_hive_power(self._hp_data.next_power_down.hp_balance)
+        vests = humanize_asset(self._hp_data.next_power_down.vests_balance)
+
+        amount_title = "Amount"
+        hp_aligned, vests_aligned = align_to_dot(hp, vests, center_to=amount_title)
+
+        table_next_withdrawal = Table(title="Next withdrawal of Hive Power")
+        table_next_withdrawal.add_column(Text("Date", justify="center"), style="green", no_wrap=True)
+        table_next_withdrawal.add_column(Text("Amount", justify="center"), style="green", no_wrap=True)
 
         table_next_withdrawal.add_row(
             humanize_datetime(self._hp_data.next_vesting_withdrawal),
+            hp_aligned,
         )
+        table_next_withdrawal.add_row("", vests_aligned)
         return table_next_withdrawal
 
     def __to_withdraw(self) -> RenderableType:
-        table_to_withdraw = Table()
-        table_to_withdraw.add_column(Text("To withdraw", justify="center"), style="green", no_wrap=True)
+        table_to_withdraw = Table(title="Hive Power withdrawals summary")
+        total_title = "Total"
+        remaining_title = "Remains"
+        table_to_withdraw.add_column(Text(total_title, justify="center"), style="green", no_wrap=True)
+        table_to_withdraw.add_column(Text(remaining_title, justify="center"), style="green", no_wrap=True)
 
-        hp = humanize_hive_power(self._hp_data.to_withdraw.hp_balance)
-        vests = humanize_asset(self._hp_data.to_withdraw.vests_balance)
+        total_hp = humanize_hive_power(self._hp_data.to_withdraw.hp_balance)
+        total_vests = humanize_asset(self._hp_data.to_withdraw.vests_balance)
+        total_hp_aligned, total_vests_aligned = align_to_dot(total_hp, total_vests, center_to=total_title)
 
-        hp_aligned, vests_aligned = align_to_dot(hp, vests)
+        remaining_hp = humanize_hive_power(self._hp_data.remaining.hp_balance)
+        remaining_vests = humanize_asset(self._hp_data.remaining.vests_balance)
+        remaining_hp_aligned, remaining_vests_aligned = align_to_dot(
+            remaining_hp, remaining_vests, center_to=remaining_title
+        )
 
-        table_to_withdraw.add_row(hp_aligned)
-        table_to_withdraw.add_row(vests_aligned)
+        table_to_withdraw.add_row(total_hp_aligned, remaining_hp_aligned)
+        table_to_withdraw.add_row(total_vests_aligned, remaining_vests_aligned)
         return table_to_withdraw
 
     def __withdraw_routes(self) -> RenderableType:
         if len(self._hp_data.withdraw_routes) == 0:
-            return colorize_content_not_available(f"There are no withdraw routes for account `{self.account_name}`")
-        withdraw_routes_table = Table(title=f"Current withdraw routes for account `{self.account_name}`")
+            return colorize_content_not_available("There are no withdraw routes set")
+        withdraw_routes_table = Table(title="Current withdraw routes")
         withdraw_routes_table.add_column("To", justify="left", style="cyan", no_wrap=True)
         withdraw_routes_table.add_column("Percent", justify="right", style="green", no_wrap=True)
         withdraw_routes_table.add_column("Auto vest", justify="right", style="green", no_wrap=True)
@@ -123,18 +140,19 @@ class ShowHivePower(WorldBasedCommand):
 
     def __delegations(self) -> RenderableType:
         if len(self._hp_data.delegations) == 0:
-            return colorize_content_not_available(f"There are no delegations for account `{self.account_name}`")
+            return colorize_content_not_available("There are no delegations set")
 
-        delegations_table = Table(title=f"Current delegations for account `{self.account_name}`")
-        delegations_table.add_column("Delegatee", justify="left", style="cyan", no_wrap=True)
-        delegations_table.add_column("Shares [HP]", justify="right", style="green", no_wrap=True)
-        delegations_table.add_column("Shares [VESTS]", justify="right", style="green", no_wrap=True)
+        delegations_title = "Current delegations"
+        delegations_table = Table(title=delegations_title)
+        delegations_table.add_column(Text("Delegatee", justify="center"), style="cyan", no_wrap=True)
+        delegations_table.add_column(Text("Shares", justify="center"), style="green", no_wrap=True)
 
         for delegation in self._hp_data.delegations:
-            delegation_amount_hive = vests_to_hive(delegation.vesting_shares, self._hp_data.gdpo)
-            delegations_table.add_row(
-                delegation.delegatee,
-                f"{humanize_asset(delegation_amount_hive, show_symbol=False)}",
-                f"{humanize_asset(delegation.vesting_shares, show_symbol=False)}",
-            )
+            delegation_hp_raw = vests_to_hive(delegation.vesting_shares, self._hp_data.gdpo)
+            delegation_hp = humanize_hive_power(delegation_hp_raw)
+            delegation_vests = humanize_asset(delegation.vesting_shares)
+            hp_aligned, vests_aligned = align_to_dot(delegation_hp, delegation_vests, center_to=delegations_title)
+
+            delegations_table.add_row(delegation.delegatee, hp_aligned)
+            delegations_table.add_row("", vests_aligned, end_section=True)
         return delegations_table
