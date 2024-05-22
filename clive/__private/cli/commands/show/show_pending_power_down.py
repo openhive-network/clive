@@ -1,14 +1,24 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
 
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
-from clive.__private.core.formatters.humanize import humanize_asset, humanize_datetime
+from clive.__private.core.formatters.humanize import (
+    align_to_dot,
+    humanize_asset,
+    humanize_datetime,
+    humanize_hive_power,
+)
 from clive.models import Asset
+
+if TYPE_CHECKING:
+    from clive.__private.core.commands.data_retrieval.hive_power_data import SharesBalance
 
 
 @dataclass(kw_only=True)
@@ -25,13 +35,27 @@ class ShowPendingPowerDown(WorldBasedCommand):
             console.print(colorize_content_not_available(message))
             return
 
+        def humanize_align_shares_balance(balance: SharesBalance, center_to: str) -> tuple[str, str]:
+            hp = humanize_hive_power(balance.hp_balance)
+            vests = humanize_asset(balance.vests_balance)
+            hp_aligned, vests_aligned = align_to_dot(hp, vests, center_to=center_to)
+            return hp_aligned, vests_aligned
+
+        title_amount = "Next withdrawal amount"
+        title_total = "Total to be withdrawn"
+        title_withdrawn = "Withdrawn"
+        title_remains = "Remains to withdraw"
+        hp_amount, vests_amount = humanize_align_shares_balance(hp_data.next_power_down, center_to=title_amount)
+        hp_total, vests_total = humanize_align_shares_balance(hp_data.to_withdraw, center_to=title_total)
+        hp_withdrawn, vests_withdrawn = humanize_align_shares_balance(hp_data.withdrawn, center_to=title_withdrawn)
+        hp_remains, vests_remains = humanize_align_shares_balance(hp_data.remaining, center_to=title_remains)
+
         table = Table(title=f"Pending power down for account `{self.account_name}`")
-        table.add_column("Next power down", justify="right", style="green", no_wrap=True)
-        table.add_column("Amount [HP]", justify="right", style="green", no_wrap=True)
-        table.add_column("Amount [VESTS]", justify="right", style="green", no_wrap=True)
-        table.add_row(
-            humanize_datetime(hp_data.next_vesting_withdrawal),
-            humanize_asset(hp_data.next_power_down.hp_balance, show_symbol=False),
-            humanize_asset(hp_data.next_power_down.vests_balance, show_symbol=False),
-        )
+        table.add_column(Text("Next withdrawal date", justify="center"), style="green", no_wrap=True)
+        table.add_column(Text(title_amount, justify="center"), style="green", no_wrap=True)
+        table.add_column(Text(title_total, justify="center"), style="green", no_wrap=True)
+        table.add_column(Text(title_withdrawn, justify="center"), style="green", no_wrap=True)
+        table.add_column(Text(title_remains, justify="center"), style="green", no_wrap=True)
+        table.add_row(humanize_datetime(hp_data.next_vesting_withdrawal), hp_amount, hp_total, hp_withdrawn, hp_remains)
+        table.add_row("", vests_amount, vests_total, vests_withdrawn, vests_remains)
         console.print(table)
