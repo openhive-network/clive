@@ -55,6 +55,8 @@ class HivePowerData:
     withdraw_routes: list[WithdrawRoute]
     delegations: list[VestingDelegation[Asset.Vests]]
     to_withdraw: SharesBalance
+    withdrawn: SharesBalance
+    remaining: SharesBalance
     next_power_down: SharesBalance
     current_hp_apr: Decimal
     gdpo: DynamicGlobalProperties
@@ -89,6 +91,9 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         received_shares = data.core_account.received_vesting_shares
         delegated_shares = data.core_account.delegated_vesting_shares
         total_shares = owned_shares + received_shares - delegated_shares - data.core_account.vesting_withdraw_rate
+        to_withdraw_vests = iwax.vests(data.core_account.to_withdraw)
+        withdrawn_vests = iwax.vests(data.core_account.withdrawn)
+        remaining_vests = to_withdraw_vests - withdrawn_vests
 
         return HivePowerData(
             owned_balance=self._create_balance_representation(data.gdpo, owned_shares),
@@ -98,7 +103,9 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             next_vesting_withdrawal=data.core_account.next_vesting_withdrawal,
             withdraw_routes=[route for route in data.withdraw_routes if route.from_account == self.account_name],
             delegations=data.delegations,
-            to_withdraw=self._create_balance_representation(data.gdpo, iwax.vests(data.core_account.to_withdraw)),
+            to_withdraw=self._create_balance_representation(data.gdpo, to_withdraw_vests),
+            withdrawn=self._create_balance_representation(data.gdpo, withdrawn_vests),
+            remaining=self._create_balance_representation(data.gdpo, remaining_vests),
             next_power_down=self._create_balance_representation(data.gdpo, data.core_account.vesting_withdraw_rate),
             current_hp_apr=iwax.calculate_hp_apr(data.gdpo),
             gdpo=data.gdpo,
