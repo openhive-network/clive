@@ -26,15 +26,10 @@ class ShowPendingRemovedDelegations(WorldBasedCommand):
             return
 
         table = Table(title=f"Vesting delegation expirations for account `{self.account_name}`")
-        table.add_column("id", justify="left", style="cyan", no_wrap=True)
-        table.add_column("vesting shares", justify="right", style="green", no_wrap=True)
-        table.add_column("expiration", justify="right", style="green", no_wrap=True)
+        table.add_column("Vesting shares", justify="center", style="green", no_wrap=True)
+        table.add_column("Asset return date", justify="center", style="green", no_wrap=True)
 
         for delegation in delegations:
-            table.add_row(
-                f"{delegation.id_}",
-                humanize_asset(delegation.vesting_shares),
-                humanize_datetime(delegation.expiration),
-            )
+            table.add_row(humanize_asset(delegation.vesting_shares), humanize_datetime(delegation.expiration))
 
         console.print(table)
