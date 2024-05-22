@@ -5,11 +5,17 @@ from datetime import timedelta
 
 from rich.console import Console
 from rich.table import Table
+from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
 from clive.__private.core import iwax
-from clive.__private.core.formatters.humanize import humanize_asset, humanize_datetime
+from clive.__private.core.formatters.humanize import (
+    align_to_dot,
+    humanize_asset,
+    humanize_datetime,
+    humanize_hive_power,
+)
 
 
 @dataclass(kw_only=True)
@@ -28,21 +34,21 @@ class ShowPendingPowerUps(WorldBasedCommand):
             console.print(colorize_content_not_available(message))
             return
 
+        amount_title = "Amount"
         delayed_votes_table = Table(title=f"Current delayed votes for account `{self.account_name}`")
-        delayed_votes_table.add_column("Activation time", justify="right", style="green", no_wrap=True)
-        delayed_votes_table.add_column("Amount [HP]", justify="right", style="green", no_wrap=True)
-        delayed_votes_table.add_column("Amount [VESTS]", justify="right", style="green", no_wrap=True)
+        delayed_votes_table.add_column(Text("Activation time", justify="center"), style="green", no_wrap=True)
+        delayed_votes_table.add_column(Text(amount_title, justify="center"), style="green", no_wrap=True)
 
         gdpo = await self.world.app_state.get_dynamic_global_properties()
         delayed_voting_interval = await self.__get_delayed_voting_interval()
 
         for entry in delayed_votes:
             votes_vests = iwax.vests(entry.val)
-            delayed_votes_table.add_row(
-                humanize_datetime(entry.time + delayed_voting_interval),
-                humanize_asset(iwax.calculate_vests_to_hp(votes_vests, gdpo), show_symbol=False),
-                humanize_asset(votes_vests, show_symbol=False),
-            )
+            hp_humanized = humanize_hive_power(iwax.calculate_vests_to_hp(votes_vests, gdpo))
+            vests_humanized = humanize_asset(votes_vests)
+            hp_aligned, vests_aligned = align_to_dot(hp_humanized, vests_humanized, center_to=amount_title)
+            delayed_votes_table.add_row(humanize_datetime(entry.time + delayed_voting_interval), hp_aligned)
+            delayed_votes_table.add_row("", vests_aligned, end_section=True)
 
         console.print(delayed_votes_table)
 
