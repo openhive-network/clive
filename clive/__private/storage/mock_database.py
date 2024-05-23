@@ -1,31 +1,23 @@
 from __future__ import annotations
 
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
+from dataclasses import dataclass
 from decimal import Decimal
+from typing import TYPE_CHECKING
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
-from clive.models import Asset
 
+if TYPE_CHECKING:
+    from datetime import datetime, timedelta
 
-def default_hive() -> Asset.Hive:
-    return Asset.hive(0)
-
-
-def default_hbd() -> Asset.Hbd:
-    return Asset.hbd(0)
-
-
-def default_vests() -> Asset.Vests:
-    return Asset.vests(0)
+    from clive.models import Asset
 
 
 @dataclass
 class Manabar:
-    value: Asset.Hive = field(default_factory=default_hive)
-    max_value: Asset.Hive = field(default_factory=default_hive)
-    full_regeneration: timedelta = field(default_factory=timedelta)
+    value: Asset.Hive
+    max_value: Asset.Hive
+    full_regeneration: timedelta
 
     @property
     def percentage(self) -> Decimal:
@@ -40,23 +32,23 @@ class Manabar:
         return DecimalConverter.round_to_precision(percentage, precision=precision)
 
 
-@dataclass
+@dataclass(kw_only=True)
 class NodeData:
-    hbd_balance: Asset.Hbd = field(default_factory=default_hbd)
-    hbd_savings: Asset.Hbd = field(default_factory=default_hbd)
-    hbd_unclaimed: Asset.Hbd = field(default_factory=default_hbd)
-    hive_balance: Asset.Hive = field(default_factory=default_hive)
-    hive_savings: Asset.Hive = field(default_factory=default_hive)
-    hive_unclaimed: Asset.Hive = field(default_factory=default_hive)
-    hp_balance: int = 0
-    proxy: str = ""
-    hp_unclaimed: Asset.Vests = field(default_factory=default_vests)
-    last_refresh: datetime = field(default_factory=lambda: datetime.now())
-    last_history_entry: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
-    last_account_update: datetime = field(default_factory=lambda: datetime.utcfromtimestamp(0))
-    recovery_account: str = ""
-    reputation: int = 0
-    warnings: int = 0
+    hbd_balance: Asset.Hbd
+    hbd_savings: Asset.Hbd
+    hbd_unclaimed: Asset.Hbd
+    hive_balance: Asset.Hive
+    hive_savings: Asset.Hive
+    hive_unclaimed: Asset.Hive
+    hp_balance: int
+    proxy: str
+    hp_unclaimed: Asset.Vests
+    last_refresh: datetime
+    last_history_entry: datetime
+    last_account_update: datetime
+    recovery_account: str
+    reputation: int
+    warnings: int
+    vote_manabar: Manabar
+    downvote_manabar: Manabar
     rc_manabar: Manabar = field(default_factory=Manabar)
-    vote_manabar: Manabar = field(default_factory=Manabar)
-    downvote_manabar: Manabar = field(default_factory=Manabar)

@@ -65,10 +65,10 @@ class SavingsBalances(AccountReferencingWidget):
         yield Static("HIVE", id="savings-token-hive")
         yield Static("HBD", id="savings-token-hbd")
         yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hive_savings), "savings-value-hive"
+            lambda: Asset.pretty_amount(self._account.data.hive_savings), classes="savings-value-hive"
         )
         yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hbd_savings), "savings-value-hbd"
+            lambda: Asset.pretty_amount(self._account.data.hbd_savings), classes="savings-value-hbd"
         )
 
 
@@ -109,9 +109,9 @@ class SavingsInterestInfo(AccountReferencingWidget):
             self.interest_data_container.query("*").remove()
             self.interest_data_container.mount_all(
                 [
-                    self.create_dynamic_label(get_interest_date, "interest-info-row-odd"),
-                    self.create_dynamic_label(get_estimated_interest, "interest-info-row-even"),
-                    self.create_dynamic_label(get_interest_rate_for_hbd, "interest-info-row-odd"),
+                    self.create_dynamic_label(get_interest_date, classes="interest-info-row-odd"),
+                    self.create_dynamic_label(get_estimated_interest, classes="interest-info-row-even"),
+                    self.create_dynamic_label(get_interest_rate_for_hbd, classes="interest-info-row-odd"),
                 ]
             )
 

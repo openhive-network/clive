@@ -68,7 +68,16 @@ class AlarmDisplay(DynamicLabel):
             self.add_class(class_name)
             return "No alarms"
 
-        super().__init__(self.app.world, "profile_data", update_callback, id_=id_, classes=classes)
+        super().__init__(
+            self.app.world,
+            "profile_data",
+            update_callback,
+            first_try_callback=lambda: all(
+                acc.is_node_data_available for acc in account_getter(self.app.world.profile_data)
+            ),
+            id_=id_,
+            classes=classes,
+        )
 
 
 class AlarmsSummary(Container, CliveWidget):

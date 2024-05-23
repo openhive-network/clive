@@ -13,7 +13,9 @@ from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
 )
+from clive.__private.storage import mock_database
 from clive.__private.storage.accounts import Account
+from clive.__private.storage.mock_database import NodeData
 from clive.exceptions import CommunicationError
 from clive.models.aliased import (
     DynamicGlobalProperties,
@@ -24,7 +26,6 @@ if TYPE_CHECKING:
     from types import TracebackType
 
     from clive.__private.core.node.node import Node
-    from clive.__private.storage import mock_database
     from clive.models.aliased import (
         ChangeRecoveryAccountRequest,
         DeclineVotingRightsRequest,
@@ -225,38 +226,35 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             )
 
         for account, info in accounts_processed_data.items():
-            account.data.reputation = info.reputation
-            account.data.last_history_entry = info.last_history_entry
-            account.data.last_account_update = info.core.last_account_update
-            account.data.warnings = info.warnings
-
-            account.data.hive_balance = info.core.balance
-            account.data.hbd_balance = info.core.hbd_balance
-            account.data.hive_savings = info.core.savings_balance
-            account.data.hbd_savings = info.core.savings_hbd_balance
-            account.data.hive_unclaimed = info.core.reward_hive_balance
-            account.data.hbd_unclaimed = info.core.reward_hbd_balance
-            account.data.hp_unclaimed = info.core.reward_vesting_balance
-            account.data.recovery_account = info.core.recovery_account
-            account.data.proxy = info.core.proxy
-
-            account.data.hp_balance = calculate_hive_power(gdpo, self._calculate_vests_balance(info.core))
-
-            self.__update_manabar(
-                gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar, account.data.vote_manabar
+            account._data = NodeData(
+                hbd_balance=info.core.hbd_balance,
+                hbd_savings=info.core.savings_hbd_balance,
+                hbd_unclaimed=info.core.reward_hbd_balance,
+                hive_balance=info.core.balance,
+                hive_savings=info.core.savings_balance,
+                hive_unclaimed=info.core.reward_hive_balance,
+                hp_balance=calculate_hive_power(gdpo, self._calculate_vests_balance(info.core)),
+                proxy=info.core.proxy,
+                hp_unclaimed=info.core.reward_vesting_balance,
+                last_refresh=self.__normalize_datetime(datetime.utcnow()),
+                last_history_entry=info.last_history_entry,
+                last_account_update=info.core.last_account_update,
+                recovery_account=info.core.recovery_account,
+                reputation=info.reputation,
+                warnings=info.warnings,
+                vote_manabar=self.__update_manabar(
+                    gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar
+                ),
+                downvote_manabar=self.__update_manabar(
+                    gdpo, int(info.core.post_voting_power.amount) // downvote_vote_ratio, info.core.downvote_manabar
+                ),
+                rc_manabar=(
+                    self.__update_manabar(gdpo, int(info.rc.max_rc), info.rc.rc_manabar)
+                    if info.rc
+                    else mock_database.Manabar()
+                ),
             )
 
-            self.__update_manabar(
-                gdpo,
-                int(info.core.post_voting_power.amount) // downvote_vote_ratio,
-                info.core.downvote_manabar,
-                account.data.downvote_manabar,
-            )
-
-            if info.rc is not None:
-                self.__update_manabar(gdpo, int(info.rc.max_rc), info.rc.rc_manabar, account.data.rc_manabar)
-
-            account.data.last_refresh = self.__normalize_datetime(datetime.utcnow())
         return gdpo
 
     def __calculate_warnings(self, raw: _AccountSanitizedData) -> int:
@@ -310,13 +308,11 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             + int(account.received_vesting_shares.amount)
         )
 
-    def __update_manabar(
-        self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: Manabar, dest: mock_database.Manabar
-    ) -> None:
+    def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: Manabar) -> mock_database.Manabar:
         power_from_api = int(manabar.current_mana)
         last_update = int(manabar.last_update_time)
-        dest.max_value = vests_to_hive(max_mana, gdpo)
-        dest.value = vests_to_hive(
+        max_mana_value = vests_to_hive(max_mana, gdpo)
+        mana_value = vests_to_hive(
             calculate_current_manabar_value(
                 now=int(gdpo.time.timestamp()),
                 max_mana=max_mana,
@@ -325,9 +321,14 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             ),
             gdpo,
         )
-
-        dest.full_regeneration = self.__get_manabar_regeneration_time(
+        full_regeneration = self.__get_manabar_regeneration_time(
             gdpo_time=gdpo.time, max_mana=max_mana, current_mana=power_from_api, last_update_time=last_update
+        )
+
+        return mock_database.Manabar(
+            value=mana_value,
+            max_value=max_mana_value,
+            full_regeneration=full_regeneration,
         )
 
     def __get_manabar_regeneration_time(

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar, Final, Literal
 
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
@@ -19,7 +19,6 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
@@ -28,8 +27,6 @@ from clive.models import Asset
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
-
-    from clive.__private.storage.mock_database import Manabar
 
 
 class Body(ScrollableContainer, can_focus=True):
@@ -41,18 +38,24 @@ class AccountsContainer(Container):
 
 
 class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
-    def __init__(self, account: Account, manabar: Manabar, name: str, classes: str | None = None) -> None:
-        self.__manabar = manabar
+    def __init__(
+        self,
+        account: Account,
+        manabar_type: Literal["rc_manabar", "vote_manabar", "downvote_manabar"],
+        name: str,
+        classes: str | None = None,
+    ) -> None:
+        self._manabar_type = manabar_type
         self.__name = name
         super().__init__(account=account, classes=classes)
 
     def compose(self) -> ComposeResult:
         yield self.create_dynamic_label(
-            lambda: f"{self.__manabar.percentage}% {self.__name}",
+            lambda: f"{getattr(self._account.data, self._manabar_type).percentage}% {self.__name}",
             classes="percentage",
         )
         yield self.create_dynamic_label(
-            lambda: humanize_hive_power(self.__manabar.value),
+            lambda: humanize_hive_power(getattr(self._account.data, self._manabar_type).value),
             classes="hivepower-value",
         )
         yield self.create_dynamic_label(
@@ -61,7 +64,7 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         )
 
     def __get_regeneration_time(self) -> str:
-        natural_time = humanize_natural_time(-self.__manabar.full_regeneration)
+        natural_time = humanize_natural_time(-getattr(self._account.data, self._manabar_type).full_regeneration)
         return natural_time if natural_time != "now" else "Full!"
 
 
@@ -69,11 +72,9 @@ class BalanceStats(AccountReferencingWidget):
     full_caption: Final[str] = "full!"
 
     def compose(self) -> ComposeResult:
-        yield ManabarRepresentation(self._account, self._account.data.rc_manabar, "RC", classes="even-manabar")
-        yield ManabarRepresentation(self._account, self._account.data.vote_manabar, "VOTING", classes="odd-manabar")
-        yield ManabarRepresentation(
-            self._account, self._account.data.downvote_manabar, "DOWNVOTING", classes="even-manabar"
-        )
+        yield ManabarRepresentation(self._account, "rc_manabar", "RC", classes="even-manabar")
+        yield ManabarRepresentation(self._account, "vote_manabar", "VOTING", classes="odd-manabar")
+        yield ManabarRepresentation(self._account, "downvote_manabar", "DOWNVOTING", classes="even-manabar")
 
 
 class ActivityStats(AccountReferencingWidget):
@@ -82,19 +83,22 @@ class ActivityStats(AccountReferencingWidget):
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield self.create_dynamic_label(lambda: Asset.pretty_amount(self._account.data.hive_balance), "amount")
+        yield self.create_dynamic_label(
+            lambda: Asset.pretty_amount(self._account.data.hive_balance),
+            classes="amount",
+        )
         yield self.create_dynamic_label(
             lambda: Asset.pretty_amount(self._account.data.hive_savings),
-            "amount amount-variant",
+            classes="amount amount-variant",
         )
         yield Static("HBD", classes="token token-variant")
         yield self.create_dynamic_label(
             lambda: Asset.pretty_amount(self._account.data.hbd_balance),
-            "amount amount-variant",
+            classes="amount amount-variant",
         )
         yield self.create_dynamic_label(
             lambda: Asset.pretty_amount(self._account.data.hbd_savings),
-            "amount",
+            classes="amount",
         )
 
 
@@ -104,14 +108,10 @@ class AccountInfo(Container, AccountReferencingWidget):
         yield AlarmDisplay(lambda _: [self._account], id_="account-alarms")
         yield Static()
         yield Label("LAST:")
-        yield DynamicLabel(
-            self.app.world,
-            "profile_data",
+        yield self.create_dynamic_label(
             lambda: f"History entry: {humanize_datetime(self._account.data.last_history_entry)}",
         )
-        yield DynamicLabel(
-            self.app.world,
-            "profile_data",
+        yield self.create_dynamic_label(
             lambda: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
         )
 
@@ -206,7 +206,6 @@ class DashboardBase(BaseScreen):
         if not self.has_working_account:
             self.notify("Cannot perform operations without working account", severity="error")
             return
-
         self.app.push_screen(Operations())
 
     def action_config(self) -> None:

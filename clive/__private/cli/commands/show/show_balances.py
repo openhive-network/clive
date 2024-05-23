@@ -14,7 +14,6 @@ class ShowBalances(WorldBasedCommand):
 
     async def _run(self) -> None:
         account = Account(name=self.account_name)
-        data = account.data
 
         (await self.world.commands.update_node_data(accounts=[account])).raise_if_error_occurred()
 
@@ -22,7 +21,7 @@ class ShowBalances(WorldBasedCommand):
 
         table.add_column("Type", justify="left", style="cyan", no_wrap=True)
         table.add_column("Amount", justify="right", style="green", no_wrap=True)
-
+        data = account.data
         table.add_row("HBD Liquid", f"{Asset.pretty_amount(data.hbd_balance)}")
         table.add_row("HBD Savings", f"{Asset.pretty_amount(data.hbd_savings)}")
         table.add_row("HBD Unclaimed", f"{Asset.pretty_amount(data.hbd_unclaimed)}")

@@ -2,14 +2,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from enum import Enum
+from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
 
 from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import validate_schema_field
-from clive.__private.storage.mock_database import NodeData
 from clive.exceptions import CliveError
 from clive.models.aliased import AccountName
+
+if TYPE_CHECKING:
+    from clive.__private.storage.mock_database import NodeData
 
 
 class InvalidAccountNameError(CliveError):
@@ -19,6 +22,16 @@ class InvalidAccountNameError(CliveError):
         self.value = value
         message = f"Given account name is invalid: `{value}`"
         super().__init__(message)
+
+
+class AccountDataTooEarlyAccessError(CliveError):
+    _MESSAGE = """
+You are trying to access account data too early.
+To check if your account data is available, use the `is_node_data_available` property.
+"""
+
+    def __init__(self) -> None:
+        super().__init__(self._MESSAGE)
 
 
 class AccountType(str, Enum):
@@ -31,13 +44,23 @@ class AccountType(str, Enum):
 @dataclass
 class Account:
     name: str
-    data: NodeData = field(init=False, default_factory=NodeData, compare=False)
+    _data: NodeData | None = field(init=False, default=None, compare=False)
 
     def __post_init__(self) -> None:
         self.validate(self.name)
 
     def __hash__(self) -> int:
         return hash(self.name)
+
+    @property
+    def data(self) -> NodeData:
+        if self._data is None:
+            raise AccountDataTooEarlyAccessError
+        return self._data
+
+    @property
+    def is_node_data_available(self) -> bool:
+        return self._data is not None
 
     @staticmethod
     def validate(name: str) -> None:

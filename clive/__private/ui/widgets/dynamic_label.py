@@ -23,6 +23,8 @@ DynamicLabelCallbackType = Union[
     Callable[[Any, Any], str],
 ]
 
+FirstTryCallbackType = Callable[[], bool]
+
 
 class DynamicLabel(CliveWidget):
     """A label that can be updated dynamically when a reactive variable changes."""
@@ -45,6 +47,7 @@ class DynamicLabel(CliveWidget):
         attribute_name: str,
         callback: DynamicLabelCallbackType,
         *,
+        first_try_callback: FirstTryCallbackType = lambda: True,
         prefix: str = "",
         init: bool = True,
         shrink: bool = False,
@@ -59,6 +62,7 @@ class DynamicLabel(CliveWidget):
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__callback = callback
+        self._first_try_callback = first_try_callback
         self.__prefix = prefix
 
     @property
@@ -76,6 +80,9 @@ class DynamicLabel(CliveWidget):
 
     async def attribute_changed(self, old_value: Any, value: Any) -> None:
         callback = self.__callback
+
+        if not self._first_try_callback():
+            return
 
         param_count = count_parameters(callback)
         if param_count == 2:  # noqa: PLR2004
