@@ -11,6 +11,7 @@ from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expirations import (
     FindVestingDelegationExpirations,
+    VestingDelegationExpirationData,
 )
 from clive.__private.core.commands.data_retrieval.get_config import GetConfig
 from clive.__private.core.commands.data_retrieval.get_dynamic_global_properties import GetDynamicGlobalProperties
@@ -69,7 +70,6 @@ if TYPE_CHECKING:
         ProposalSchema,
         SchemasAccount,
         TransactionStatus,
-        VestingDelegationExpiration,
         Witness,
     )
 
@@ -369,7 +369,7 @@ class Commands(Generic[WorldT]):
 
     async def find_vesting_delegation_expirations(
         self, *, account: str
-    ) -> CommandWithResultWrapper[list[VestingDelegationExpiration]]:
+    ) -> CommandWithResultWrapper[list[VestingDelegationExpirationData]]:
         return await self.__surround_with_exception_handlers(
             FindVestingDelegationExpirations(node=self._world.node, account=account)
         )
