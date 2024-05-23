@@ -8,7 +8,12 @@ import test_tools as tt
 from clive_local_tools.data.generates import generate_proposal_name, generate_witness_name
 from clive_local_tools.data.models import AccountData
 
-WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [generate_witness_name(i) for i in range(60)]]
+WITNESS_FIRST_INDEX: Final[int] = 1
+WITNESS_LAST_INDEX: Final[int] = 40
+
+WITNESSES: Final[list[tt.Account]] = [
+    tt.Account(name) for name in [generate_witness_name(i) for i in range(WITNESS_FIRST_INDEX, WITNESS_LAST_INDEX + 1)]
+]
 PROPOSALS: Final[list[str]] = [generate_proposal_name(c) for c in ascii_lowercase]
 
 CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
@@ -37,10 +42,12 @@ ALT_WORKING_ACCOUNT1_DATA: Final[AccountData] = AccountData(
     hives_liquid=tt.Asset.Test(110_000),
     hbds_liquid=tt.Asset.Tbd(111_000),
     vests=tt.Asset.Test(112_000),  # in hive power
+    voted_witnesses=[WITNESSES[i].name for i in range(1, 3)],
 )
 ALT_WORKING_ACCOUNT2_DATA: Final[AccountData] = AccountData(
     account=tt.Account("jane"),
     hives_liquid=tt.Asset.Test(120_000),
     hbds_liquid=tt.Asset.Tbd(121_000),
     vests=tt.Asset.Test(122_000),  # in hive power
+    voted_witnesses=[WITNESSES[i].name for i in range(30)],
 )

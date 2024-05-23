@@ -10,7 +10,7 @@ def generate_wallet_password(number: int = 0) -> str:
 
 
 def generate_witness_name(i: int = 0) -> str:
-    return f"witness-{i:03d}"
+    return f"witness-{i:02d}"
 
 
 def generate_proposal_name(c: str) -> str:

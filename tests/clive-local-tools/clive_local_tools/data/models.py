@@ -86,7 +86,7 @@ class WalletInfo:
         return self.keys.pairs[0]
 
 
-@dataclass
+@dataclass(kw_only=True)
 class AccountData:
     account: tt.Account
     hives_liquid: tt.Asset.TestT
@@ -96,6 +96,7 @@ class AccountData:
     hbds_savings: tt.Asset.TbdT = field(default=tt.Asset.Tbd(0))
     hives_savings_withdrawal: tt.Asset.TestT = field(default=tt.Asset.Test(0))
     hbds_savings_withdrawal: tt.Asset.TbdT = field(default=tt.Asset.Tbd(0))
+    voted_witnesses: list[str] = field(default_factory=list)
 
     @property
     def from_savings_transfer_count(self) -> int:

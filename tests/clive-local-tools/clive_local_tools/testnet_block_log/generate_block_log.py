@@ -184,11 +184,9 @@ def create_empty_account(wallet: tt.Wallet) -> None:
 def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
-        for i in range(2, 4):
-            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1_DATA.account.name, WITNESSES[i].name, approve=True)
-    with wallet.in_single_transaction():
-        for i in range(1, 31):
-            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2_DATA.account.name, WITNESSES[i].name, approve=True)
+        for account_data in (ALT_WORKING_ACCOUNT1_DATA, ALT_WORKING_ACCOUNT2_DATA):
+            for name in account_data.voted_witnesses:
+                wallet.api.vote_for_witness(account_data.account.name, name, approve=True)
 
 
 def main() -> None:
