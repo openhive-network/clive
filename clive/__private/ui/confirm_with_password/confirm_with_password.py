@@ -29,18 +29,16 @@ class ConfirmWithPassword(BaseScreen):
     def __init__(
         self,
         result_callback: PasswordResultCallbackType,
-        action_name: str = "",
+        title: str = "",
     ) -> None:
         self.__result_callback = result_callback
-        self.__action_name = action_name
         self._password_input = TextInput("Password", password=True)
+        self._title = title
         super().__init__()
 
     def create_main_panel(self) -> ComposeResult:
-        with DialogContainer():
+        with DialogContainer(section_title=self._title):
             yield Static("Please enter your password to continue.", id="hint")
-            if self.__action_name:
-                yield Static(f"Action: {self.__action_name}", id="action")
             yield self._password_input
 
     async def action_cancel(self) -> None:

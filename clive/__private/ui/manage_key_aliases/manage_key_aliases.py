@@ -72,7 +72,8 @@ class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
 
         self.app.push_screen(
             ConfirmWithPassword(
-                result_callback=__on_confirmation_result, action_name=f"Remove a `{self.__public_key.alias}` key alias."
+                result_callback=__on_confirmation_result,
+                title=f"Remove a `{self.__public_key.alias}` key alias.",
             )
         )
 
