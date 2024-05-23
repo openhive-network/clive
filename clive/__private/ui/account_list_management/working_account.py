@@ -20,7 +20,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section import Section
+from clive.__private.ui.widgets.section import Section, SectionBody
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.validators.set_working_account_validator import SetWorkingAccountValidator
 
@@ -132,7 +132,7 @@ class WorkingAccountChange(Vertical, CliveWidget):
             "Change working account" if _has_working_account(self.app.world.profile_data) else "Set working account"
         )
         self.query_one(CliveButton).remove()
-        self.query_one("#input-with-button").mount(button)
+        self.query_one(SectionBody).mount(button)
 
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", self._working_account_changed)
