@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from textual.css.query import NoMatches, TooManyMatches
 
+from clive.__private.ui.widgets.clive_tabbed_content import CliveTabs
 from clive.__private.ui.widgets.currency_selector.currency_selector_base import CurrencySelectorBase
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
@@ -11,6 +12,7 @@ if TYPE_CHECKING:
     import test_tools as tt
     from textual.screen import Screen
     from textual.widget import Widget
+    from textual.widgets import Tab
 
     from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
     from clive_local_tools.tui.types import CliveApp, ClivePilot
@@ -116,3 +118,12 @@ def assert_operations_placed_in_blockchain(
         f"{transaction}."
     )
     assert not operations_to_check, message
+
+
+def assert_active_tab(pilot: ClivePilot, expected_label: str) -> None:
+    assert_is_focused(pilot, CliveTabs)
+    tabs: CliveTabs = pilot.app.focused  # type: ignore[assignment]
+    tab: Tab = tabs.active_tab  # type: ignore[assignment]
+    assert (
+        tab.label_text == expected_label
+    ), f"Expected '{expected_label}' tab to be active! Active tab is '{tab.label_text}'."

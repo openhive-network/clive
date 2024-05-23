@@ -16,11 +16,21 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.__private.ui.operations.governance_operations.governance_operations import Governance
+from clive.__private.ui.operations.operations import Operations
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
+from clive_local_tools.tui.checkers import (
+    assert_active_tab,
+    assert_is_screen_active,
+)
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
-from clive_local_tools.tui.textual_helpers import wait_for_screen
+from clive_local_tools.tui.textual_helpers import (
+    focus_next,
+    press_and_wait_for_screen,
+    wait_for_screen,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -108,3 +118,21 @@ async def prepared_tui_on_dashboard_active(prepared_env: PreparedTuiEnv) -> Prep
     await pilot.app.world.commands.activate(password=WORKING_ACCOUNT_PASSWORD)
     await wait_for_screen(pilot, DashboardActive)
     return prepared_env
+
+
+@pytest.fixture()
+async def prepared_tui_on_witnesses_screen(prepared_tui_on_dashboard_active: PreparedTuiEnv) -> PreparedTuiEnv:
+    _, _, pilot = prepared_tui_on_dashboard_active
+    assert_is_screen_active(pilot, DashboardActive)
+    await press_and_wait_for_screen(pilot, "f2", Operations)
+    assert_active_tab(pilot, "Financial")
+    await pilot.press("right")
+    assert_active_tab(pilot, "Social")
+    await pilot.press("right")
+    assert_active_tab(pilot, "Governance")
+    await focus_next(pilot)
+    await press_and_wait_for_screen(pilot, "enter", Governance)
+    assert_active_tab(pilot, "Proxy")
+    await pilot.press("right")
+    assert_active_tab(pilot, "Witnesses")
+    return prepared_tui_on_dashboard_active
