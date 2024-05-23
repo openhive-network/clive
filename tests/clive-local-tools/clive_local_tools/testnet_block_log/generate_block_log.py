@@ -10,7 +10,11 @@ import test_tools as tt
 
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1,
+    ALT_WORKING_ACCOUNT1_WITNESS_VOTES_COUNT,
+    ALT_WORKING_ACCOUNT1_WITNESS_VOTES_START,
     ALT_WORKING_ACCOUNT2,
+    ALT_WORKING_ACCOUNT2_WITNESS_VOTES_COUNT,
+    ALT_WORKING_ACCOUNT2_WITNESS_VOTES_START,
     CREATOR_ACCOUNT,
     PROPOSALS,
     WATCHED_ACCOUNTS,
@@ -163,10 +167,16 @@ def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
 def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
-        for i in range(2, 4):
+        for i in range(
+            ALT_WORKING_ACCOUNT1_WITNESS_VOTES_START,
+            ALT_WORKING_ACCOUNT1_WITNESS_VOTES_COUNT + ALT_WORKING_ACCOUNT1_WITNESS_VOTES_START,
+        ):
             wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1.name, WITNESSES[i].name, True)
     with wallet.in_single_transaction():
-        for i in range(1, 31):
+        for i in range(
+            ALT_WORKING_ACCOUNT2_WITNESS_VOTES_START,
+            ALT_WORKING_ACCOUNT2_WITNESS_VOTES_COUNT + ALT_WORKING_ACCOUNT2_WITNESS_VOTES_START,
+        ):
             wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2.name, WITNESSES[i].name, True)
 
 
