@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any
 
+from clive.__private.ui.dashboard.dashboard_base import DashboardBase
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 
@@ -39,6 +40,8 @@ async def press_and_wait_for_screen(  # noqa: PLR0913
     timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
 ) -> None:
     """Press some binding and ensure screen changed after some action."""
+    if isinstance(pilot.app.screen, DashboardBase):
+        await wait_for_node_data(pilot)
     await press_binding(pilot, key, key_description)
     await wait_for_screen(pilot, expected_screen, wait_for_focused=wait_for_focused, timeout=timeout)
 
@@ -60,6 +63,19 @@ async def _wait_for_screen_change(pilot: ClivePilot, expected_screen: type[Scree
     app = pilot.app
     while not isinstance(app.screen, expected_screen):
         await pilot.pause(POLL_TIME_SECS)
+
+
+async def _wait_for_node_data(pilot: ClivePilot) -> None:
+    while not pilot.app.world.profile_data.is_accounts_node_data_available:
+        await pilot.pause(POLL_TIME_SECS)
+
+
+async def wait_for_node_data(pilot: ClivePilot, timeout: float = TUI_TESTS_GENERAL_TIMEOUT) -> None:
+    try:
+        await asyncio.wait_for(_wait_for_node_data(pilot), timeout=timeout)
+    except asyncio.TimeoutError:
+        wait_for_node_data_info = f"Waited too long for the accounts node data. Hasn't arrived in {timeout:.2f}s."
+        raise AssertionError(wait_for_node_data_info) from None
 
 
 async def _wait_for_focus(pilot: ClivePilot, *, different_than: Widget | None = None) -> None:
