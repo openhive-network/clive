@@ -18,6 +18,7 @@ from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.terminal.command_line import CommandLine
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
@@ -202,12 +203,14 @@ class DashboardBase(BaseScreen):
             await accounts_container.query("*").remove()
             await accounts_container.mount_all(widgets_to_mount)
 
+    @CliveScreen.prevent_action_when_no_accounts_node_data
     def action_operations(self) -> None:
         if not self.has_working_account:
             self.notify("Cannot perform operations without working account", severity="error")
             return
         self.app.push_screen(Operations())
 
+    @CliveScreen.prevent_action_when_no_accounts_node_data
     def action_config(self) -> None:
         self.app.push_screen(Config())
 

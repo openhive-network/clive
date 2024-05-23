@@ -40,6 +40,18 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         """Message to notify children widgets that the screen they were mounted on, was resumed."""
 
     @staticmethod
+    def prevent_action_when_no_accounts_node_data(func: Callable[P, None]) -> Callable[P, None]:
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+            app_ = get_clive().app_instance()
+            if not app_.world.profile_data.is_accounts_node_data_available:
+                app_.notify("Waiting for data...", severity="warning")
+                return
+            func(*args, **kwargs)
+
+        return wrapper
+
+    @staticmethod
     def try_again_after_activation(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
         @wraps(func)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:

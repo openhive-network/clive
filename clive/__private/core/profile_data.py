@@ -209,6 +209,10 @@ class ProfileData(Context):
             accounts.add(self.working_account)
         return accounts
 
+    @property
+    def is_accounts_node_data_available(self) -> bool:
+        return all(account.is_node_data_available for account in self.get_tracked_accounts())
+
     @classmethod
     def _get_file_storage_path(cls) -> Path:
         return Path(config.settings.data_path) / "data/profile"
