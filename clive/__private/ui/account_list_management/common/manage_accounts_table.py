@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
-from textual.widgets import Static
 
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -15,6 +14,7 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 )
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
@@ -60,12 +60,6 @@ class ManageAccountsTable(CliveCheckerboardTable):
         CliveButton {
             width: 1fr;
         }
-
-        #manage-accounts-title {
-            text-style: bold;
-            background: $primary;
-            width: 1fr;
-        }
     }
     """
 
@@ -73,9 +67,8 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def __init__(self, accounts_type: AccountsType) -> None:
         super().__init__(
-            Static(
+            SectionTitle(
                 f"Your {self.remove_underscore_from_text(accounts_type)}",
-                id="manage-accounts-title",
             ),
             AccountsTableHeader(),
         )
@@ -87,7 +80,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
             AccountRow(account, self._accounts_type) for account in getattr(content, f"{self._accounts_type}_sorted")
         ]
 
-    def get_no_content_available_widget(self) -> Static:
+    def get_no_content_available_widget(self) -> NoContentAvailable:
         return NoContentAvailable(
             f"You have no {self.remove_underscore_from_text(self._accounts_type)}",
         )

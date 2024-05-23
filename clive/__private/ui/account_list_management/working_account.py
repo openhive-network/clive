@@ -55,7 +55,7 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(
-            Static("Your working account", id="manage-working-account-title"),
+            SectionTitle("Your working account"),
             AccountsTableHeader(),
         )
         self._previous_working_account: WorkingAccountType | NotUpdatedYet | None = NotUpdatedYet()

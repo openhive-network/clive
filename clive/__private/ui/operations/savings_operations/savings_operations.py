@@ -146,7 +146,7 @@ class PendingTransfers(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(
-            Static("", id="pending-transfers-table-title"),
+            SectionTitle(""),
             PendingTransfersHeader(),
         )
         self._previous_pending_transfers: list[SavingsWithdrawals] | NotUpdatedYet = NotUpdatedYet()

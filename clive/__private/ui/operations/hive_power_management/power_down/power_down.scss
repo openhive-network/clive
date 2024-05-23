@@ -32,17 +32,12 @@ PowerDown {
   PendingPowerDown {
     height: auto;
 
-    CliveButton {
-      width: 1fr;
+    SectionTitle {
+      margin-top: 1;
     }
 
-    #current-power-down-title {
-      text-style: bold;
-      margin-top: 1;
-      background: $primary;
+    CliveButton {
       width: 1fr;
-      height: 1;
-      text-align: center;
     }
 
     NoContentAvailable {

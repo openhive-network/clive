@@ -10,13 +10,8 @@ DelegateHivePower {
   DelegationsTable {
     height: auto;
 
-    #delegations-table-title {
-      text-style: bold;
+    SectionTitle {
       margin-top: 1;
-      background: $primary;
-      width: 1fr;
-      height: 1;
-      text-align: center;
     }
 
     DelegationsTableHeader {

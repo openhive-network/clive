@@ -29,6 +29,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
+from clive.__private.ui.widgets.section_title import SectionTitle
 from schemas.operations import SetWithdrawVestingRouteOperation
 
 if TYPE_CHECKING:
@@ -75,7 +76,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(
-            Static("Current withdraw routes", id="withdraw-routes-table-title"),
+            SectionTitle("Current withdraw routes"),
             WithdrawRoutesHeader(),
         )
         self._previous_withdraw_routes: list[WithdrawRouteSchema] | NotUpdatedYet = NotUpdatedYet()

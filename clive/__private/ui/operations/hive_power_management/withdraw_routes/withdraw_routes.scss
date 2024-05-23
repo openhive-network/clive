@@ -17,6 +17,10 @@ WithdrawRoutes {
   WithdrawRoutesTable {
     height: auto;
 
+    SectionTitle {
+      margin-top: 1;
+    }
+
     WithdrawRoutesHeader {
       height: auto;
 
@@ -29,14 +33,6 @@ WithdrawRoutes {
 
     NoContentAvailable {
       margin-top: 1;
-    }
-
-    #withdraw-routes-table-title {
-      text-style: bold;
-      margin-top: 1;
-      background: $primary;
-      width: 1fr;
-      text-align: center;
     }
 
     WithdrawRoute {
