@@ -13,8 +13,7 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.__private.core.commands.data_retrieval.hive_power_data import SharesBalance
-
+    from clive.models.hp_vests_balance import HpVestsBalance
 
 CANCEL_POWER_DOWN_VESTS_VALUE: Final[Asset.Vests] = Asset.vests(0)
 
@@ -22,7 +21,7 @@ CANCEL_POWER_DOWN_VESTS_VALUE: Final[Asset.Vests] = Asset.vests(0)
 class CancelPowerDown(OperationSummary):
     SECTION_TITLE: ClassVar[str] = "Cancel power down"
 
-    def __init__(self, next_power_down_date: datetime, next_power_down: SharesBalance) -> None:
+    def __init__(self, next_power_down_date: datetime, next_power_down: HpVestsBalance) -> None:
         super().__init__()
         self._next_power_down_date = next_power_down_date
         self._next_power_down = next_power_down

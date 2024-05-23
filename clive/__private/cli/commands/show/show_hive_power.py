@@ -27,8 +27,9 @@ from clive.__private.core.percent_conversions import hive_percent_to_percent
 if TYPE_CHECKING:
     from rich.console import RenderableType
 
-    from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, SharesBalance
+    from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
     from clive.__private.core.formatters.humanize import SignPrefixT
+    from clive.models.hp_vests_balance import HpVestsBalance
 
 
 @dataclass(kw_only=True)
@@ -56,7 +57,7 @@ class ShowHivePower(WorldBasedCommand):
         console.print(columns)
 
     def __general_info(self) -> RenderableType:
-        def add_row(table: Table, title: str, shares: SharesBalance, sign_prefix: SignPrefixT = "") -> None:
+        def add_row(table: Table, title: str, shares: HpVestsBalance, sign_prefix: SignPrefixT = "") -> None:
             table.add_row(
                 title,
                 f"{humanize_asset(shares.hp_balance, show_symbol=False, sign_prefix=sign_prefix)}",

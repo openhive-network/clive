@@ -18,7 +18,7 @@ from clive.__private.core.formatters.humanize import (
 from clive.models import Asset
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.hive_power_data import SharesBalance
+    from clive.models.hp_vests_balance import HpVestsBalance
 
 
 @dataclass(kw_only=True)
@@ -35,7 +35,7 @@ class ShowPendingPowerDown(WorldBasedCommand):
             console.print(colorize_content_not_available(message))
             return
 
-        def humanize_align_shares_balance(balance: SharesBalance, center_to: str) -> tuple[str, str]:
+        def humanize_align_shares_balance(balance: HpVestsBalance, center_to: str) -> tuple[str, str]:
             hp = humanize_hive_power(balance.hp_balance)
             vests = humanize_asset(balance.vests_balance)
             hp_aligned, vests_aligned = align_to_dot(hp, vests, center_to=center_to)

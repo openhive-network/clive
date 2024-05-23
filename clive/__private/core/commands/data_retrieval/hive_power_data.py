@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.hive_vests_conversions import vests_to_hive
+from clive.models.hp_vests_balance import HpVestsBalance
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -38,26 +38,18 @@ class SanitizedData:
 
 
 @dataclass
-class SharesBalance:
-    """Class to store the balance of shares in HP and VESTS."""
-
-    hp_balance: Asset.Hive
-    vests_balance: Asset.Vests
-
-
-@dataclass
 class HivePowerData:
-    owned_balance: SharesBalance
-    total_balance: SharesBalance
-    received_balance: SharesBalance
-    delegated_balance: SharesBalance
+    owned_balance: HpVestsBalance
+    total_balance: HpVestsBalance
+    received_balance: HpVestsBalance
+    delegated_balance: HpVestsBalance
     next_vesting_withdrawal: datetime
     withdraw_routes: list[WithdrawRoute]
     delegations: list[VestingDelegation[Asset.Vests]]
-    to_withdraw: SharesBalance
-    withdrawn: SharesBalance
-    remaining: SharesBalance
-    next_power_down: SharesBalance
+    to_withdraw: HpVestsBalance
+    withdrawn: HpVestsBalance
+    remaining: HpVestsBalance
+    next_power_down: HpVestsBalance
     current_hp_apr: Decimal
     gdpo: DynamicGlobalProperties
 
@@ -96,17 +88,17 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         remaining_vests = to_withdraw_vests - withdrawn_vests
 
         return HivePowerData(
-            owned_balance=self._create_balance_representation(data.gdpo, owned_shares),
-            total_balance=self._create_balance_representation(data.gdpo, total_shares),
-            received_balance=self._create_balance_representation(data.gdpo, received_shares),
-            delegated_balance=self._create_balance_representation(data.gdpo, delegated_shares),
+            owned_balance=HpVestsBalance.create(owned_shares, data.gdpo),
+            total_balance=HpVestsBalance.create(total_shares, data.gdpo),
+            received_balance=HpVestsBalance.create(received_shares, data.gdpo),
+            delegated_balance=HpVestsBalance.create(delegated_shares, data.gdpo),
             next_vesting_withdrawal=data.core_account.next_vesting_withdrawal,
             withdraw_routes=[route for route in data.withdraw_routes if route.from_account == self.account_name],
             delegations=data.delegations,
-            to_withdraw=self._create_balance_representation(data.gdpo, to_withdraw_vests),
-            withdrawn=self._create_balance_representation(data.gdpo, withdrawn_vests),
-            remaining=self._create_balance_representation(data.gdpo, remaining_vests),
-            next_power_down=self._create_balance_representation(data.gdpo, data.core_account.vesting_withdraw_rate),
+            to_withdraw=HpVestsBalance.create(to_withdraw_vests, data.gdpo),
+            withdrawn=HpVestsBalance.create(withdrawn_vests, data.gdpo),
+            remaining=HpVestsBalance.create(remaining_vests, data.gdpo),
+            next_power_down=HpVestsBalance.create(data.core_account.vesting_withdraw_rate, data.gdpo),
             current_hp_apr=iwax.calculate_hp_apr(data.gdpo),
             gdpo=data.gdpo,
         )
@@ -130,6 +122,3 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     def _assert_delegations(self, data: FindVestingDelegations | None) -> list[VestingDelegation[Asset.Vests]]:
         assert data is not None, "FindVestingDelegations data is missing"
         return data.delegations
-
-    def _create_balance_representation(self, gdpo: DynamicGlobalProperties, vests_value: Asset.Vests) -> SharesBalance:
-        return SharesBalance(hp_balance=vests_to_hive(vests_value, gdpo), vests_balance=vests_value)
