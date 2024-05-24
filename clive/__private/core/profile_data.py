@@ -232,11 +232,16 @@ class ProfileData(Context):
             clive.trigger_profile_data_watchers()
 
         with self.__open_database() as db:
+            self._prepare_for_save()
             db[self.name] = self
 
         # set the profile as default if that's not already set (first profile is set always as default)
         if not self.is_default_profile_set():
             self.set_default_profile(self.name)
+
+    def _prepare_for_save(self) -> None:
+        for account in self.get_tracked_accounts():
+            account._prepare_for_save()
 
     @classmethod
     def set_default_profile(cls, name: str) -> None:

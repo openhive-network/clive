@@ -38,6 +38,6 @@ class Quit(BaseScreen):
 
     @on(CliveButton.Pressed, "#quit")
     def action_exit_cleanly(self) -> None:
+        # ProfileData saving is done when exiting World contextmanager
         self.log("Exiting cleanly")
-        self.app.world.profile_data.save()
         self.app.exit(message="CLIVE says goodbye!")

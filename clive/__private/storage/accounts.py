@@ -84,6 +84,9 @@ class Account:
             return False
         return True
 
+    def _prepare_for_save(self) -> None:
+        self._data = None  # do not store old data gathered from the node
+
 
 @dataclass
 class WorkingAccount(Account):
