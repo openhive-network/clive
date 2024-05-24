@@ -41,7 +41,7 @@ class Config(BaseScreen):
     def push_account_list_management_screen(self) -> None:
         self.app.push_screen(AccountListManagement())
 
-    @CliveScreen.try_again_after_activation()
+    @CliveScreen.try_again_after_activation
     @on(CliveButton.Pressed, "#manage-key-aliases")
     async def push_manage_key_aliases_screen(self) -> None:
         if not self._has_working_account():

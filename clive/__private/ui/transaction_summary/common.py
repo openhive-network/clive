@@ -156,7 +156,7 @@ class TransactionSummaryCommon(BaseScreen):
             things_to_mount.append(operation_item)
         await self.__scrollable_part.mount_all(things_to_mount)
 
-    @CliveScreen.try_again_after_activation()
+    @CliveScreen.try_again_after_activation
     @on(SelectFileToSaveTransaction.Saved)
     async def save_to_file(self, event: SelectFileToSaveTransaction.Saved) -> None:
         file_path = event.file_path
@@ -194,7 +194,7 @@ class TransactionSummaryCommon(BaseScreen):
     async def action_broadcast(self) -> None:
         await self.__broadcast()
 
-    @CliveScreen.try_again_after_activation()
+    @CliveScreen.try_again_after_activation
     async def __broadcast(self) -> None:
         transaction = self.transaction
 

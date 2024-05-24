@@ -60,7 +60,7 @@ class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
     async def remove_key_alias(self) -> None:
-        @CliveScreen.try_again_after_activation(app=self.app)
+        @CliveScreen.try_again_after_activation
         async def __on_confirmation_result(result: str) -> None:
             if not result:
                 return

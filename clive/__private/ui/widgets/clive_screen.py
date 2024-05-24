@@ -8,6 +8,7 @@ from textual.events import ScreenResume, ScreenSuspend
 from textual.message import Message
 from textual.screen import Screen, ScreenResultType
 
+from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError
@@ -16,8 +17,6 @@ if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
 
     from textual.widget import Widget
-
-    from clive.__private.ui.app import Clive
 
 
 P = ParamSpec("P")
@@ -41,37 +40,27 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         """Message to notify children widgets that the screen they were mounted on, was resumed."""
 
     @staticmethod
-    def try_again_after_activation(
-        *, app: Clive | None = None
-    ) -> Callable[[Callable[P, Awaitable[None]]], Callable[P, Awaitable[None]]]:
-        def decorator(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
-            @wraps(func)
-            async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-                if not app:
-                    self = args[0]
-                    assert isinstance(self, CliveWidget), f"{type(self)} is not a CliveWidget"
-                    app_ = self.app
-                else:
-                    app_ = app
+    def try_again_after_activation(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
+        @wraps(func)
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+            app_ = get_clive().app_instance()
 
-                try:
+            try:
+                await func(*args, **kwargs)
+            except (CommandRequiresActiveModeError, OnlyInActiveModeError):
+                from clive.__private.ui.activate.activate import Activate
+
+                async def _on_activation_result(value: bool) -> None:
+                    if not value:
+                        app_.notify("Aborted. Active mode was required for this action.", severity="warning")
+                        return
+
                     await func(*args, **kwargs)
-                except (CommandRequiresActiveModeError, OnlyInActiveModeError):
-                    from clive.__private.ui.activate.activate import Activate
 
-                    async def _on_activation_result(value: bool) -> None:
-                        if not value:
-                            app_.notify("Aborted. Active mode was required for this action.", severity="warning")
-                            return
+                app_.notify("This action requires active mode. Please activate...")
+                await app_.push_screen(Activate(activation_result_callback=_on_activation_result))
 
-                        await func(*args, **kwargs)
-
-                    app_.notify("This action requires active mode. Please activate...")
-                    await app_.push_screen(Activate(activation_result_callback=_on_activation_result))
-
-            return wrapper
-
-        return decorator
+        return wrapper
 
     @on(ScreenSuspend)
     def _post_suspended(self) -> None:

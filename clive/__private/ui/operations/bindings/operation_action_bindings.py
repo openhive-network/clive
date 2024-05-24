@@ -124,7 +124,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         await self.__fast_broadcast()
 
-    @CliveScreen.try_again_after_activation()
+    @CliveScreen.try_again_after_activation
     async def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
             try:
