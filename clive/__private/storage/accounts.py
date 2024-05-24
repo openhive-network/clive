@@ -15,7 +15,11 @@ if TYPE_CHECKING:
     from clive.__private.storage.mock_database import NodeData
 
 
-class InvalidAccountNameError(CliveError):
+class AccountError(CliveError):
+    pass
+
+
+class InvalidAccountNameError(AccountError):
     """An account name is invalid."""
 
     def __init__(self, value: str) -> None:
@@ -24,7 +28,7 @@ class InvalidAccountNameError(CliveError):
         super().__init__(message)
 
 
-class AccountDataTooEarlyAccessError(CliveError):
+class AccountDataTooEarlyAccessError(AccountError):
     _MESSAGE = """
 You are trying to access account data too early.
 To check if your account data is available, use the `is_node_data_available` property.
