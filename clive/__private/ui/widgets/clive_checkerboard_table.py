@@ -62,7 +62,6 @@ class CliveCheckerBoardTableCell(Container):
         height: 1;
 
         Static {
-            text-align: center;
             width: 1fr;
             height: 1fr;
             content-align: center middle;
