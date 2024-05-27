@@ -16,7 +16,7 @@ from clive_local_tools.tui.textual_helpers import press_and_wait_for_screen
 from clive_local_tools.tui.witness_votes_utils import (
     USER1,
     find_witness_by_name,
-    vote_for_witness,
+    vote_witness,
 )
 
 if TYPE_CHECKING:
@@ -39,7 +39,7 @@ async def test_user_with_no_votes_has_operations_in_the_cart_and_finalizes_trans
         witness_name = generate_witness_name(4 + i)
         witness = find_witness_by_name(pilot, witness_name)
         pilot.app.screen.set_focus(witness)
-        expected_operations.append(await vote_for_witness(pilot, USER1, witness_name))
+        expected_operations.append(await vote_witness(pilot, USER1.name, witness_name))
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # add 2 operations to cart
     # Back to Witnesses view
@@ -52,7 +52,7 @@ async def test_user_with_no_votes_has_operations_in_the_cart_and_finalizes_trans
     witness_name = generate_witness_name(2)
     witness = find_witness_by_name(pilot, witness_name)
     pilot.app.screen.set_focus(witness)
-    expected_operations.append(await vote_for_witness(pilot, USER1, witness_name))
+    expected_operations.append(await vote_witness(pilot, USER1.name, witness_name))
 
     await process_operation(pilot, "FINALIZE_TRANSACTION")
 

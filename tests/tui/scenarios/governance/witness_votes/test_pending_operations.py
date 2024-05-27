@@ -19,7 +19,7 @@ from clive_local_tools.tui.textual_helpers import (
 )
 from clive_local_tools.tui.witness_votes_utils import (
     USER1,
-    vote_for_witness,
+    vote_witness,
 )
 
 if TYPE_CHECKING:
@@ -39,7 +39,7 @@ async def test_user_with_no_votes_adds_votes_one_by_one(
 
     # ACT
     await focus_next(pilot)  # go to first witness on list
-    expected_operations.append(await vote_for_witness(pilot, USER1))
+    expected_operations.append(await vote_witness(pilot, USER1.name))
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # add 1 operation to cart
     await press_and_wait_for_screen(pilot, "f2", Cart)
@@ -61,7 +61,7 @@ async def test_user_with_no_votes_adds_votes_one_by_one(
     # ACT
     for _ in range(2):
         await focus_next(pilot)  # go to next witness on list
-        expected_operations.append(await vote_for_witness(pilot, USER1))
+        expected_operations.append(await vote_witness(pilot, USER1.name))
 
     # ACT
     await process_operation(pilot, "ADD_TO_CART")

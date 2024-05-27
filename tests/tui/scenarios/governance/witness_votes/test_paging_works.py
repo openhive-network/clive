@@ -19,7 +19,7 @@ from clive_local_tools.tui.textual_helpers import (
 )
 from clive_local_tools.tui.witness_votes_utils import (
     USER1,
-    vote_for_witness,
+    vote_witness,
 )
 
 if TYPE_CHECKING:
@@ -49,7 +49,7 @@ async def test_voting_for_last_witness(
         witness.action_identifier == last_witness_name
     ), f"Expected witness name: '{last_witness_name}', but current is: '{witness.action_identifier}'"
 
-    expected_operation = await vote_for_witness(pilot, USER1)
+    expected_operation = await vote_witness(pilot, USER1.name)
     await process_operation(pilot, "FAST_BROADCAST")
 
     transaction_id = await extract_transaction_id_from_notification(pilot)

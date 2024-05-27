@@ -35,6 +35,8 @@ from clive_local_tools.tui.textual_helpers import (
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from _pytest.fixtures import SubRequest
+
     from clive_local_tools.tui.types import ClivePilot
 
     NodeWithWallet = tuple[tt.RawNode, tt.Wallet]
@@ -47,10 +49,19 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture()
-async def prepare_profile() -> ProfileData:
+def working_account(request: SubRequest) -> tt.Account:
+    if hasattr(request.node, "callspec"):
+        params = request.node.callspec.params
+    else:
+        return WORKING_ACCOUNT_DATA.account
+    return params.get("account", WORKING_ACCOUNT_DATA.account)  # type: ignore[no-any-return]
+
+
+@pytest.fixture()
+async def prepare_profile(working_account: tt.Account) -> ProfileData:
     profile_data = ProfileData(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+        working_account.name,
+        working_account=WorkingAccount(name=working_account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     )
     profile_data.save()
@@ -63,24 +74,24 @@ async def world() -> World:
 
 
 @pytest.fixture()
-async def prepare_beekeeper_wallet(prepare_profile: ProfileData, world: World) -> None:  # noqa: ARG001
+async def prepare_beekeeper_wallet(working_account: tt.Account, prepare_profile: ProfileData, world: World) -> None:  # noqa: ARG001
     async with world:
         (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).raise_if_error_occurred()
 
         world.profile_data.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
+            PrivateKeyAliased(value=working_account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
         await world.commands.sync_data_with_beekeeper()
 
 
 @pytest.fixture()
-def node_with_wallet() -> NodeWithWallet:
+def node_with_wallet(working_account: tt.Account) -> NodeWithWallet:
     node = run_node(use_faketime=True)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])
-    wallet.api.import_key(WORKING_ACCOUNT_DATA.account.private_key)
-    account = wallet.api.get_account(WORKING_ACCOUNT_DATA.account.name)
+    wallet.api.import_key(working_account.private_key)
+    account = wallet.api.get_account(working_account.name)
     tt.logger.debug(f"working account: {account}")
 
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())

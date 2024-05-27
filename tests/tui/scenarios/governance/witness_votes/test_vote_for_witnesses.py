@@ -16,7 +16,7 @@ from clive_local_tools.tui.witness_votes_utils import (
     OPERATION_PROCESSING_TESTDATA,
     USER1,
     WITNESSES_PER_PAGE,
-    vote_for_witness,
+    vote_witness,
 )
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ async def test_user_with_no_votes_votes_for_one_witness(
 
     # ACT
     await focus_next(pilot)  # go to first witness on list
-    expected_operation = await vote_for_witness(pilot, USER1)
+    expected_operation = await vote_witness(pilot, USER1.name)
     await process_operation(pilot, operation_processing)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
@@ -66,7 +66,7 @@ async def test_user_with_no_votes_votes_for_the_max_number_of_allowed_witness(
     # ACT
     for _ in range(VOTED_WITNESSES_COUNT):
         await focus_next(pilot)  # go to next witness on list
-        expected_operations.append(await vote_for_witness(pilot, USER1))
+        expected_operations.append(await vote_witness(pilot, USER1.name))
 
     await process_operation(pilot, operation_processing)
 
