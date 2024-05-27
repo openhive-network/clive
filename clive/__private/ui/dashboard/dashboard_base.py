@@ -11,6 +11,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_hive_power,
     humanize_natural_time,
+    humanize_percent,
 )
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.config.config import Config
@@ -29,6 +30,8 @@ from clive.models import Asset
 if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
+
+    from clive.__private.storage.mock_database import Manabar
 
 
 class Body(ScrollableContainer, can_focus=True):
@@ -71,19 +74,19 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         if self._is_rc_api_missing:
             return MISSING_API_LABEL
 
-        return f"{getattr(self._account.data, self._manabar_type).percentage}% {self.__name}"
+        return f"{humanize_percent(self.manabar.percentage)} {self.__name}"
 
     def _get_hive_power_value_humanized(self) -> str:
         if self._is_rc_api_missing:
             return MISSING_API_LABEL
 
-        return humanize_hive_power(getattr(self._account.data, self._manabar_type).value)
+        return humanize_hive_power(self.manabar.value)
 
     def __get_regeneration_time(self) -> str:
         if self._is_rc_api_missing:
             return MISSING_API_LABEL
 
-        natural_time = humanize_natural_time(-getattr(self._account.data, self._manabar_type).full_regeneration)
+        natural_time = humanize_natural_time(-self.manabar.full_regeneration)
         return natural_time if natural_time != "now" else "Full!"
 
     def _set_rc_api_missing(self) -> None:
@@ -100,6 +103,10 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
     @property
     def _is_rc_current_manabar(self) -> bool:
         return self._manabar_type == "rc_manabar"
+
+    @property
+    def manabar(self) -> Manabar:
+        return getattr(self._account.data, self._manabar_type)  # type: ignore[no-any-return]
 
 
 class BalanceStats(AccountReferencingWidget):
