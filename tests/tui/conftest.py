@@ -30,6 +30,8 @@ from clive_local_tools.tui.textual_helpers import wait_for_screen
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from _pytest.fixtures import SubRequest
+
     from clive_local_tools.tui.types import ClivePilot
 
     PreparedTuiEnv = tuple[tt.RawNode, tt.Wallet, ClivePilot]
@@ -41,26 +43,37 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture()
-async def prepare_profile() -> None:
+def working_account(request: SubRequest) -> tt.Account:
+    if hasattr(request.node, "callspec"):
+        params = request.node.callspec.params
+    else:
+        return WORKING_ACCOUNT
+    return params.get("account", WORKING_ACCOUNT)  # type: ignore[no-any-return]
+
+
+@pytest.fixture()
+async def prepare_profile(working_account: tt.Account) -> None:
     ProfileData(
-        WORKING_ACCOUNT.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
+        working_account.name,
+        working_account=WorkingAccount(name=working_account.name),
         watched_accounts=[WatchedAccount(acc.name) for acc in WATCHED_ACCOUNTS],
     ).save()
 
 
-async def _prepare_beekeeper_wallet(world: TextualWorld) -> None:
+async def _prepare_beekeeper_wallet(working_account: tt.Account, world: TextualWorld) -> None:
     password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
-    tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
+    tt.logger.info(f"password for {working_account.name} is: `{password}`")
 
     world.profile_data.working_account.keys.add_to_import(
-        PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
+        PrivateKeyAliased(value=working_account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
     )
     await world.commands.sync_data_with_beekeeper()
 
 
 @pytest.fixture()
-def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not intended for direct usage
+def _node_with_wallet(  # noqa: PT005
+    working_account: tt.Account,
+) -> tuple[tt.RawNode, tt.Wallet]:  # not intended for direct usage
     config_lines = get_config().write_to_lines()
     block_log = get_block_log()
     alternate_chain_spec_path = get_alternate_chain_spec_path()
@@ -72,8 +85,8 @@ def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not in
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])
-    wallet.api.import_key(WORKING_ACCOUNT.private_key)
-    account = wallet.api.get_account(WORKING_ACCOUNT.name)
+    wallet.api.import_key(working_account.private_key)
+    account = wallet.api.get_account(working_account.name)
     tt.logger.debug(f"working account: {account}")
 
     settings["secrets.node_address"] = node.http_endpoint.as_string()
@@ -89,7 +102,7 @@ async def world(prepare_profile: None) -> AsyncIterator[TextualWorld]:  # noqa: 
 
 @pytest.fixture()
 async def prepared_env(
-    world: TextualWorld, _node_with_wallet: tuple[tt.RawNode, tt.Wallet]
+    working_account: tt.Account, world: TextualWorld, _node_with_wallet: tuple[tt.RawNode, tt.Wallet]
 ) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = _node_with_wallet
 
@@ -98,7 +111,7 @@ async def prepared_env(
 
     pilot: ClivePilot
     async with app.run_test() as pilot:
-        await _prepare_beekeeper_wallet(world)
+        await _prepare_beekeeper_wallet(working_account, world)
 
         if world.app_state.is_active and isinstance(app.screen, DashboardInactive):
             # beekeeper create wallet makes app active, we have to ensure correct dashboard to be displayed

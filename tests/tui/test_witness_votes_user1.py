@@ -26,14 +26,14 @@ from clive_local_tools.tui.textual_helpers import (
     press_and_wait_for_screen,
 )
 
-from .witness_votes_utils import USER1, WITNESSES_PER_PAGE, goto_governance_witness_list, vote_for_witness
+from .witness_votes_utils import USER1, WITNESSES_PER_PAGE, goto_governance_witness_list, vote_witness
 
 if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot, OperationProcessing
     from schemas.operations import AccountWitnessVoteOperation
 
 
-USER: Final[str] = USER1
+USER: Final[str] = USER1.name
 
 TESTDATA: Final[list[OperationProcessing]] = [
     "FAST_BROADCAST",
@@ -58,7 +58,7 @@ async def test_witness_votes_user1_1(
     # ACT
     await goto_governance_witness_list(pilot)
     await focus_next(pilot)  # go to first witness on list
-    expected_operation = await vote_for_witness(pilot, USER)
+    expected_operation = await vote_witness(pilot, USER)
     await process_operation(pilot, operation_processing, True)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
@@ -90,7 +90,7 @@ async def test_witness_votes_user1_2(
     await goto_governance_witness_list(pilot)
     for _ in range(VOTED_WITNESSES_COUNT):
         await focus_next(pilot)  # go to next witness on list
-        expected_operations.append(await vote_for_witness(pilot, USER))
+        expected_operations.append(await vote_witness(pilot, USER))
 
     await process_operation(pilot, operation_processing, True)
 
@@ -118,7 +118,7 @@ async def test_witness_votes_user1_3(
     # ACT
     await goto_governance_witness_list(pilot)
     await focus_next(pilot)  # go to first witness on list
-    expected_operations.append(await vote_for_witness(pilot, USER))
+    expected_operations.append(await vote_witness(pilot, USER))
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # add 1 operation to cart
     await press_and_wait_for_screen(pilot, "f2", Cart)
@@ -140,7 +140,7 @@ async def test_witness_votes_user1_3(
     # ACT
     for _ in range(2):
         await focus_next(pilot)  # go to next witness on list
-        expected_operations.append(await vote_for_witness(pilot, USER))
+        expected_operations.append(await vote_witness(pilot, USER))
 
     # ACT
     await process_operation(pilot, "ADD_TO_CART", True)
@@ -175,7 +175,7 @@ async def test_witness_votes_user1_4(
 
     for i in range(2):
         await focus_next(pilot)  # go to next witness on list
-        expected_operations.append(await vote_for_witness(pilot, USER, f"witness-0{4+i}"))
+        expected_operations.append(await vote_witness(pilot, USER, f"witness-0{4+i}"))
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # add 2 operations to cart
     # Back to Witnesses view
@@ -186,7 +186,7 @@ async def test_witness_votes_user1_4(
     assert_active_tab(pilot, "Witnesses")
 
     await focus_next(pilot)  # go to first witness on list
-    expected_operations.append(await vote_for_witness(pilot, USER, "witness-02"))
+    expected_operations.append(await vote_witness(pilot, USER, "witness-02"))
 
     # ACT
     await process_operation(pilot, "FINALIZE_TRANSACTION", True)
@@ -226,7 +226,7 @@ async def test_witness_votes_user1_5(
         witness.action_identifier == "witness-40"
     ), f"Expected witness name: 'witness-40', but current is: '{witness.action_identifier}'"
 
-    expected_operation = await vote_for_witness(pilot, USER)
+    expected_operation = await vote_witness(pilot, USER)
     await process_operation(pilot, "FAST_BROADCAST", True)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
