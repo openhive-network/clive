@@ -6,6 +6,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer
 from textual.widgets import Label, Static
 
+from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_hive_power,
@@ -52,11 +53,11 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
 
     def compose(self) -> ComposeResult:
         yield self.create_dynamic_label(
-            lambda: f"{getattr(self._account.data, self._manabar_type).percentage}% {self.__name}",
+            self._get_percentage_humanized,
             classes="percentage",
         )
         yield self.create_dynamic_label(
-            lambda: humanize_hive_power(getattr(self._account.data, self._manabar_type).value),
+            self._get_hive_power_value_humanized,
             classes="hivepower-value",
         )
         yield self.create_dynamic_label(
@@ -64,9 +65,41 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
             classes="time",
         )
 
+    def _get_percentage_humanized(self) -> str:
+        self._set_rc_api_missing()
+
+        if self._is_rc_api_missing:
+            return MISSING_API_LABEL
+
+        return f"{getattr(self._account.data, self._manabar_type).percentage}% {self.__name}"
+
+    def _get_hive_power_value_humanized(self) -> str:
+        if self._is_rc_api_missing:
+            return MISSING_API_LABEL
+
+        return humanize_hive_power(getattr(self._account.data, self._manabar_type).value)
+
     def __get_regeneration_time(self) -> str:
+        if self._is_rc_api_missing:
+            return MISSING_API_LABEL
+
         natural_time = humanize_natural_time(-getattr(self._account.data, self._manabar_type).full_regeneration)
         return natural_time if natural_time != "now" else "Full!"
+
+    def _set_rc_api_missing(self) -> None:
+        """Set tooltip if rc api is missing."""
+        if self._is_rc_api_missing:
+            self.tooltip = self._account.data.rc_manabar_ensure_missing_api.missing_api_text
+            return
+        self.tooltip = None
+
+    @property
+    def _is_rc_api_missing(self) -> bool:
+        return self._account.data.is_rc_api_missing and self._is_rc_current_manabar
+
+    @property
+    def _is_rc_current_manabar(self) -> bool:
+        return self._manabar_type == "rc_manabar"
 
 
 class BalanceStats(AccountReferencingWidget):

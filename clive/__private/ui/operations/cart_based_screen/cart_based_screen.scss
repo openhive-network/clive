@@ -14,6 +14,16 @@ CartBasedScreen {
       grid-rows: 1;
       border: $primary;
       height: auto;
+
+      #rc-container {
+        column-span: 2;
+        height: auto;
+
+        Static,
+        DynamicLabel {
+          width: 1fr;
+        }
+      }
     }
 
     CartItemsAmount {

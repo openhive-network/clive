@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Grid
+from textual.containers import Container, Grid, Horizontal
 from textual.widgets import Static
 
-from clive.__private.core.formatters.humanize import humanize_operation_name
+from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
+from clive.__private.core.formatters.humanize import humanize_operation_name, humanize_percent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
@@ -56,11 +57,13 @@ class CartOverview(CliveWidget):
         super().__init__()
 
         self.__cart_items_container = CartItemsContainer()
+        self._rc_container = Horizontal(id="rc-container")
 
     def compose(self) -> ComposeResult:
         with Resources():
-            yield Static("RC:")
-            yield DynamicLabel(self.app.world, "profile_data", self.__get_rc)
+            with self._rc_container:
+                yield Static("RC:")
+                yield DynamicLabel(self.app.world, "profile_data", self.__get_rc)
             yield Static("HIVE balance:")
             yield DynamicLabel(self.app.world, "profile_data", self.__get_hive_balance)
             yield Static("HBD balance:")
@@ -79,9 +82,21 @@ class CartOverview(CliveWidget):
             new_cart_items = self.__create_cart_items()
             self.__cart_items_container.mount(*new_cart_items)
 
-    @staticmethod
-    def __get_rc(profile_data: ProfileData) -> str:
-        return f"{profile_data.working_account.data.rc_manabar.percentage}%"
+    def __get_rc(self) -> str:
+        self._set_rc_api_missing()
+        if self.app.world.profile_data.working_account.data.is_rc_api_missing:
+            return MISSING_API_LABEL
+
+        return humanize_percent(self.app.world.profile_data.working_account.data.rc_manabar_ensure.percentage)
+
+    def _set_rc_api_missing(self) -> None:
+        if self.app.world.profile_data.working_account.data.is_rc_api_missing:
+            self._rc_container.tooltip = (
+                self.app.world.profile_data.working_account.data.rc_manabar_ensure_missing_api.missing_api_text
+            )
+            return
+
+        self._rc_container.tooltip = None
 
     @staticmethod
     def __get_hive_balance(profile_data: ProfileData) -> str:

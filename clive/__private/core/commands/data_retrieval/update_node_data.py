@@ -15,7 +15,7 @@ from clive.__private.core.iwax import (
 )
 from clive.__private.storage import mock_database
 from clive.__private.storage.accounts import Account
-from clive.__private.storage.mock_database import NodeData
+from clive.__private.storage.mock_database import DisabledAPI, NodeData
 from clive.exceptions import CommunicationError
 from clive.models.aliased import (
     DynamicGlobalProperties,
@@ -251,7 +251,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 rc_manabar=(
                     self.__update_manabar(gdpo, int(info.rc.max_rc), info.rc.rc_manabar)
                     if info.rc
-                    else mock_database.Manabar()
+                    else DisabledAPI(missing_api="rc_api")
                 ),
             )
 

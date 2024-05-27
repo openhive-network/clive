@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
+from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
@@ -33,6 +34,15 @@ class Manabar:
 
 
 @dataclass(kw_only=True)
+class DisabledAPI:
+    missing_api: str
+
+    @property
+    def missing_api_text(self) -> str:
+        return f"{MISSING_API_LABEL} (missing {self.missing_api})"
+
+
+@dataclass(kw_only=True)
 class NodeData:
     hbd_balance: Asset.Hbd
     hbd_savings: Asset.Hbd
@@ -51,4 +61,18 @@ class NodeData:
     warnings: int
     vote_manabar: Manabar
     downvote_manabar: Manabar
-    rc_manabar: Manabar = field(default_factory=Manabar)
+    rc_manabar: Manabar | DisabledAPI
+
+    @property
+    def is_rc_api_missing(self) -> bool:
+        return isinstance(self.rc_manabar, DisabledAPI)
+
+    @property
+    def rc_manabar_ensure_missing_api(self) -> DisabledAPI:
+        assert isinstance(self.rc_manabar, DisabledAPI), "Expected RC manabar to be unavailable."
+        return self.rc_manabar
+
+    @property
+    def rc_manabar_ensure(self) -> Manabar:
+        assert isinstance(self.rc_manabar, Manabar), "Expected RC manabar to be available."
+        return self.rc_manabar
