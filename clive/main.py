@@ -17,7 +17,7 @@ def __disable_schemas_extra_fields_check() -> None:
     set_policies(ExtraFields(policy=Extra.allow), MissingFieldsInGetConfig(allow=True))
 
 
-def __any_arguments_given() -> bool:
+def _is_cli_requested() -> bool:
     return len(sys.argv) > 1
 
 
@@ -29,7 +29,7 @@ async def _main() -> None:
 
         __disable_schemas_extra_fields_check()
 
-        if not __any_arguments_given():
+        if not _is_cli_requested():
             await run_tui()
             return
 

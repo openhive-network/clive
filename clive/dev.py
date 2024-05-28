@@ -10,6 +10,25 @@ def is_in_dev_mode() -> bool:
 def main() -> None:
     import os
 
+    from rich.console import Console
+    from rich.style import Style
+
+    from clive.main import _is_cli_requested
+
+    Console().print(
+        "-- Running in development mode (NOT FOR DIRECT USAGE!) --",
+        style=Style(bgcolor="red", blink=True, frame=True),
+    )
+
+    if _is_cli_requested():  # don't run via textual_dev.run_app when CLI is requested (saves around 1s)
+        from clive.__private.config import settings
+        from clive.main import main as production_main
+
+        settings.set("dev", True)
+
+        production_main()
+        return
+
     from textual.features import parse_features
     from textual_dev.tools.run import run_app
 
