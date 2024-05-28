@@ -5,12 +5,15 @@ from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExis
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.activate import WalletDoesNotExistsError
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileDoesNotExistsError
+from clive.dev import is_in_dev_mode
 from clive.exceptions import CommunicationError
 
 
 def register_error_handlers(cli: CliveTyper) -> None:
     @cli.error_handler(Exception)
     def pretty_show_any_error(error: Exception) -> None:
+        if is_in_dev_mode():
+            raise error
         error_message = str(error)
         message = f"Unhandled exception {type(error).__name__}{f': {error_message}' if error_message else ''}"
         raise CLIPrettyError(message, 1)
