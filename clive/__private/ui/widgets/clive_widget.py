@@ -3,9 +3,7 @@ from __future__ import annotations
 import typing
 from typing import TYPE_CHECKING
 
-from textual.css.query import NoMatches
 from textual.widget import Widget
-from textual.widgets import Footer
 
 if TYPE_CHECKING:
     from textual.binding import Binding
@@ -51,18 +49,9 @@ class CliveWidget(Widget):
             add_before()
         else:
             self._bindings.keys[binding.key] = binding
-        self._refresh_footer_bindings()
+        self.refresh_bindings()
 
     def unbind(self, key: str) -> None:
         """Remove a key binding from this widget."""
         self._bindings.keys.pop(key, None)
-        self._refresh_footer_bindings()
-
-    def _refresh_footer_bindings(self) -> None:
-        try:
-            footer = self.app.query_one(Footer)
-        except NoMatches:
-            return
-
-        footer._key_text = None  # needs to be set to None, otherwise the footer won't update bindings on refresh()
-        footer.refresh()
+        self.refresh_bindings()
