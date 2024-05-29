@@ -6,9 +6,18 @@ from typing import TYPE_CHECKING, Any
 
 import typer
 
-from clive.__private.cli.common.parsers import decimal_percent, liquid_asset, voting_asset
+from clive.__private.cli.common.parsers import (
+    decimal_percent,
+    liquid_asset,
+    smart_frequency_parser,
+    voting_asset,
+)
 from clive.__private.cli.completion import is_tab_completion_active
-from clive.__private.core.constants import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
+from clive.__private.core.constants import (
+    MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION,
+    SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
+    SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
+)
 
 if TYPE_CHECKING:
     from typer.models import OptionInfo
@@ -142,6 +151,40 @@ liquid_amount_option = typer.Option(
     help="The liquid asset (HIVE/HBD) amount to transfer. (e.g. 2.500 HIVE)",
     show_default=False,
 )
+
+liquid_amount_optional_option = modified_option(liquid_amount_option, default=None)
+
+frequency_value_option = typer.Option(
+    ...,
+    parser=smart_frequency_parser,
+    help='How often the transfer should be executed (hH - hours, dD - days, wW - weeks e.g. "24h" or "2d 2h")',
+    show_default=False,
+)
+frequency_value_optional_option = modified_option(frequency_value_option, default=None)
+
+memo_value_option = typer.Option("", help="The memo to attach to the transfer.")
+memo_value_optional_option = modified_option(memo_value_option, default=None)
+
+
+pair_id_value_option = typer.Option(
+    0,
+    min=SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
+    help=(
+        "Unique pair id used to differentiate between multiple transfers to the same account \n"
+        "(will be mandatory since HF28)."
+    ),
+    show_default=True,
+)
+pair_id_value_none_option = modified_option(pair_id_value_option, default=None, show_default=False)
+
+repeat_value_option = typer.Option(
+    ...,
+    min=SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
+    help="How many times the recurrent transfer should be executed. (must be greater than 1)",
+    show_default=False,
+)
+repeat_value_optional_option = modified_option(repeat_value_option, default=None)
+
 
 voting_amount_option = typer.Option(
     ...,

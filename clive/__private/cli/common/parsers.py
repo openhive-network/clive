@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, TypeVar, get_args
+from functools import wraps
+from typing import TYPE_CHECKING, Callable, Final, ParamSpec, TypeVar, get_args
 
 import typer
 
 from clive.__private.cli.warnings import typer_echo_warnings
-from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
+from clive.__private.core.constants import (
+    HIVE_PERCENT_PRECISION_DOT_PLACES,
+    SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE,
+)
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
+from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -14,6 +19,22 @@ if TYPE_CHECKING:
     from clive.models import Asset
 
 ParsedAssetT = TypeVar("ParsedAssetT", bound="Asset.AnyT")
+P = ParamSpec("P")
+R = TypeVar("R")
+
+RenamedFuncT = Callable[P, R]
+
+
+def rename(new_name: str) -> Callable[[RenamedFuncT], RenamedFuncT]:  # type: ignore[type-arg]
+    def decorator(func: RenamedFuncT) -> RenamedFuncT:  # type: ignore[type-arg]
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:  # type: ignore[type-var]
+            return func(*args, **kwargs)  # type: ignore[no-any-return]
+
+        wrapper.__name__ = new_name
+        return wrapper
+
+    return decorator
 
 
 def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
@@ -72,3 +93,22 @@ def decimal_percent(raw: str) -> Decimal:
     if parsed < 0 or parsed > 100:  # noqa: PLR2004
         raise typer.BadParameter("Must be between 0 and 100")
     return parsed
+
+
+@rename("text")
+def smart_frequency_parser(raw: str) -> int:
+    """Helper parser function for frequency flag used in transfer-schedule."""
+    try:
+        td = shorthand_timedelta_to_timedelta(raw.lower())
+    except ValueError as err:
+        raise typer.BadParameter(
+            'Incorrect frequency unit must be one of the following hH, dD, wW. (e.g. "24h" or "2d 2h")'
+        ) from err
+
+    hour_in_seconds: Final[int] = 3600
+    frequency_period = int(td.total_seconds() / hour_in_seconds)
+    if frequency_period < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
+        raise typer.BadParameter(
+            f"Value for 'frequency' must be greater than {SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE}h."
+        )
+    return frequency_period
