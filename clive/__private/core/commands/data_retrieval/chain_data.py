@@ -237,15 +237,14 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
     node: Node
 
     async def _harvest_data_from_api(self) -> HarvestedDataRaw:
-        with self.node.modified_connection_details(timeout_secs=6):
-            async with self.node.batch() as node:
-                gdpo = await node.api.database_api.get_dynamic_global_properties()
-                witness_schedule = await node.api.database_api.get_witness_schedule()
-                version = await node.api.database_api.get_version()
-                hardfork_properties = await node.api.database_api.get_hardfork_properties()
-                current_price_feed = await node.api.database_api.get_current_price_feed()
-                feed = await node.api.database_api.get_feed_history()
-                return HarvestedDataRaw(gdpo, witness_schedule, version, hardfork_properties, current_price_feed, feed)
+        async with self.node.batch() as node:
+            gdpo = await node.api.database_api.get_dynamic_global_properties()
+            witness_schedule = await node.api.database_api.get_witness_schedule()
+            version = await node.api.database_api.get_version()
+            hardfork_properties = await node.api.database_api.get_hardfork_properties()
+            current_price_feed = await node.api.database_api.get_current_price_feed()
+            feed = await node.api.database_api.get_feed_history()
+            return HarvestedDataRaw(gdpo, witness_schedule, version, hardfork_properties, current_price_feed, feed)
 
     async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
         witness_schedule = self.__assert_witnesses_schedule(data.witness_schedule)
