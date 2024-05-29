@@ -295,3 +295,15 @@ async def show_new_account_token(
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowNewAccountToken(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="transfer-schedule", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_transfer_schedule(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
+) -> None:
+    """Fetch from blockchain information about recurrent transfers of selected account."""
+    from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowTransferSchedule(**common.as_dict(), account_name=account_name).run()
