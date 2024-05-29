@@ -3,6 +3,7 @@ from __future__ import annotations
 from schemas._operation_objects import Hf26ApiOperationObject, Hf26ApiVirtualOperationObject
 from schemas.apis.database_api import FindAccounts as SchemasFindAccounts
 from schemas.apis.database_api import FindProposals as SchemasFindProposals
+from schemas.apis.database_api import FindRecurrentTransfers as SchemasFindRecurrentTransfers
 from schemas.apis.database_api import FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations
 from schemas.apis.database_api import FindWitnesses as SchemasFindWitnesses
 from schemas.apis.database_api import (
@@ -19,6 +20,7 @@ from schemas.apis.database_api import (
 )
 from schemas.apis.database_api.fundaments_of_reponses import (
     AccountItemFundament,
+    FindRecurrentTransfersFundament,
     ListChangeRecoveryAccountRequestsFundament,
     ListDeclineVotingRightsRequestsFundament,
     OwnerHistoriesFundament,
@@ -42,6 +44,9 @@ from schemas.fields.hex import Signature as SchemasSignature
 from schemas.fields.hive_int import HiveInt as SchemasHiveInt
 from schemas.operation import Operation as SchemasBaseOperationType
 from schemas.operations import AnyOperation
+from schemas.operations.recurrent_transfer_operation import (
+    RecurrentTransferOperation as SchemasRecurrentTransferOperation,
+)
 from schemas.operations.representation_types import Hf26OperationRepresentationType
 from schemas.operations.virtual import AnyVirtualOperation
 from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
@@ -60,6 +65,7 @@ DynamicGlobalProperties = GetDynamicGlobalProperties
 FeedHistory = GetFeedHistory
 FindAccounts = SchemasFindAccounts
 FindProposals = SchemasFindProposals
+FindRecurrentTransfers = SchemasFindRecurrentTransfers
 FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
 FindVestingDelegationExpirations = SchemasFindVestingDelegationExpirations
 FindWitnesses = SchemasFindWitnesses
@@ -75,10 +81,12 @@ ProposalVotes = ListProposalVotes
 ProposalsList = ListProposals
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 Reputation = GetAccountReputationsFundament
+RecurrentTransferOperation = SchemasRecurrentTransferOperation
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Signature = SchemasSignature
 TransactionStatus = SchemasFindTransaction
+TransferSchedule = FindRecurrentTransfersFundament[AssetHiveHF26]
 Version = GetVersion
 VestingDelegation = VestingDelegationsFundament
 VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF26]

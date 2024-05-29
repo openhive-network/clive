@@ -9,6 +9,10 @@ from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
+from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
+    FindScheduledTransfers,
+    ScheduledTransfers,
+)
 from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expirations import (
     FindVestingDelegationExpirations,
     VestingDelegationExpirationData,
@@ -372,6 +376,11 @@ class Commands(Generic[WorldT]):
     ) -> CommandWithResultWrapper[list[VestingDelegationExpirationData]]:
         return await self.__surround_with_exception_handlers(
             FindVestingDelegationExpirations(node=self._world.node, account=account)
+        )
+
+    async def find_scheduled_transfers(self, *, account_name: str) -> CommandWithResultWrapper[ScheduledTransfers]:
+        return await self.__surround_with_exception_handlers(
+            FindScheduledTransfers(node=self._world.node, account_name=account_name)
         )
 
     async def get_config(self) -> CommandWithResultWrapper[Config]:
