@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual import on
-from textual.containers import Container, Grid, Horizontal
-from textual.widgets import Button, Label, LoadingIndicator, RadioSet, Static, TabPane
+from textual.containers import Grid, Horizontal
+from textual.widgets import Button, Label, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
 from clive.__private.core.percent_conversions import hive_percent_to_percent
@@ -17,6 +17,7 @@ from clive.__private.ui.operations.operation_summary.cancel_transfer_from_saving
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
+from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
@@ -25,9 +26,11 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
+from clive.__private.ui.widgets.clive_data_table import CliveDataTable, CliveDataTableRow
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
@@ -46,7 +49,6 @@ from schemas.operations import (
 )
 
 if TYPE_CHECKING:
-    from rich.text import TextType
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
@@ -57,18 +59,35 @@ class Body(Grid):
     """Holds all places using to create transfers from/to savings."""
 
 
-class SavingsBalances(AccountReferencingWidget):
-    """class used to displays HBD/HIVE savings balances."""
-
+class SavingsBalancesHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("SAVINGS BALANCE", id="savings-title")
-        yield Static("HIVE", id="savings-token-hive")
-        yield Static("HBD", id="savings-token-hbd")
-        yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hive_savings), classes="savings-value-hive"
-        )
-        yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hbd_savings), classes="savings-value-hbd"
+        yield Static()
+        yield Static("Savings balance", id="savings-title")
+
+
+class SavingsHiveRow(CliveDataTableRow):
+    def __init__(self) -> None:
+        super().__init__("HIVE", Static("loading..."), dynamic=True)
+
+    def get_new_values(self, content: SavingsData) -> tuple[str]:
+        return (Asset.pretty_amount(content.hive_savings_balance),)
+
+
+class SavingsHbdRow(CliveDataTableRow):
+    def __init__(self) -> None:
+        super().__init__("HBD", Static("loading..."), dynamic=True)
+
+    def get_new_values(self, content: SavingsData) -> tuple[str]:
+        return (Asset.pretty_amount(content.hbd_savings_balance),)
+
+
+class SavingsBalancesTable(CliveDataTable):
+    def __init__(self) -> None:
+        super().__init__(
+            SavingsBalancesHeader(),
+            SavingsHbdRow(),
+            SavingsHiveRow(),
+            dynamic=True,
         )
 
 
@@ -76,44 +95,33 @@ class SavingsInterestInfo(AccountReferencingWidget):
     def __init__(self) -> None:
         super().__init__(account=self.app.world.profile_data.working_account)
 
-        self.interest_data_container = Container(id="interest-data-container")
-
     @property
     def provider(self) -> SavingsDataProvider:
         return self.screen.query_one(SavingsDataProvider)
 
     def compose(self) -> ComposeResult:
-        with Horizontal():
-            yield SavingsBalances(self._account)
-            with self.interest_data_container:
-                yield LoadingIndicator()
+        yield SectionTitle("Interest data", variant="dark")
+        yield DynamicLabel(
+            self.provider,
+            "_content",
+            callback=self._get_unclaimed_hbd,
+            classes="interest-info-row-even",
+            first_try_callback=lambda content: content is not None,
+        )
+        yield DynamicLabel(
+            self.provider,
+            "_content",
+            callback=self._get_last_payment_date,
+            classes="interest-info-row-odd",
+            first_try_callback=lambda content: content is not None,
+        )
 
-    def on_mount(self) -> None:
-        self.watch(self.provider, "_content", callback=self.sync_data)
+    def _get_last_payment_date(self, content: SavingsData) -> str:
+        last_interest_payment = humanize_datetime(content.last_interest_payment)
+        return f"""Last payment: {last_interest_payment} (UTC)"""
 
-    def sync_data(self, content: SavingsData | None) -> None:
-        if content is None:  # data not received yet
-            return
-
-        def get_interest_date() -> str:
-            last_interest_payment = humanize_datetime(content.last_interest_payment)
-            return f"""Last interest payment: {last_interest_payment} (UTC)"""
-
-        def get_estimated_interest() -> str:
-            return f"Interest since last payment: {self._account.data.hbd_unclaimed.amount} HBD"
-
-        def get_interest_rate_for_hbd() -> str:
-            return humanize_hbd_savings_apr(hive_percent_to_percent(content.hbd_interest_rate), with_label=True)
-
-        with self.app.batch_update():
-            self.interest_data_container.query("*").remove()
-            self.interest_data_container.mount_all(
-                [
-                    self.create_dynamic_label(get_interest_date, classes="interest-info-row-odd"),
-                    self.create_dynamic_label(get_estimated_interest, classes="interest-info-row-even"),
-                    self.create_dynamic_label(get_interest_rate_for_hbd, classes="interest-info-row-odd"),
-                ]
-            )
+    def _get_unclaimed_hbd(self, content: SavingsData) -> str:
+        return f"Interest since last payment: {Asset.pretty_amount(content.hbd_unclaimed)} HBD"
 
 
 class PendingTransfersHeader(Horizontal):
@@ -179,16 +187,22 @@ class PendingTransfers(CliveCheckerboardTable):
         self._previous_pending_transfers = content.pending_transfers
 
 
-class SavingsInfo(TabPane, CliveWidget):
+class PendingTransfersPane(TabPane, CliveWidget):
+    TITLE: Final[str] = "pending transfers"
+
+    def __init__(self) -> None:
+        super().__init__(title=self.TITLE)
+
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            yield SavingsInterestInfo()
             yield PendingTransfers()
 
 
 class SavingsTransfers(TabPane, OperationActionBindings):
-    def __init__(self, title: TextType) -> None:
-        super().__init__(title=title)
+    TITLE: Final[str] = "transfer"
+
+    def __init__(self) -> None:
+        super().__init__(title=self.TITLE)
 
         self._amount_input = LiquidAssetAmountInput()
         self._memo_input = MemoInput()
@@ -210,7 +224,6 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             with RadioSet(id="operation-type-choose"):
                 yield self._to_button
                 yield self._from_button
-            yield SavingsBalances(self.app.world.profile_data.working_account)
             yield self._transfer_time_reminder
             with Section("Perform a transfer to savings"), Body():
                 yield self._to_account_input
@@ -264,6 +277,11 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         return savings_data.create_request_id(future_transfers=transfer_from_savings_operations_in_cart)
 
 
+class SavingsAPR(APR):
+    def _get_apr(self, content: SavingsData) -> str:
+        return humanize_hbd_savings_apr(hive_percent_to_percent(content.hbd_interest_rate), with_label=True)
+
+
 class Savings(OperationBaseScreen, CartBinding):
     CSS_PATH = [
         *OperationBaseScreen.CSS_PATH,
@@ -272,6 +290,11 @@ class Savings(OperationBaseScreen, CartBinding):
 
     def create_left_panel(self) -> ComposeResult:
         yield LocationIndicator("Savings operations")
-        with SavingsDataProvider(), CliveTabbedContent():
-            yield SavingsInfo(title="savings info")
-            yield SavingsTransfers(title="transfer")
+        with SavingsDataProvider() as provider:
+            with Horizontal(id="savings-info-container"):
+                yield SavingsBalancesTable()
+                yield SavingsInterestInfo()
+            yield SavingsAPR(provider)
+            with CliveTabbedContent():
+                yield PendingTransfersPane()
+                yield SavingsTransfers()

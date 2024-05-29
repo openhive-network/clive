@@ -11,6 +11,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node import Node
+    from clive.models import Asset
     from clive.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
     from schemas.operations import TransferFromSavingsOperation
@@ -35,6 +36,9 @@ class SavingsData:
     hbd_interest_rate: int
     pending_transfers: list[SavingsWithdrawals]
     last_interest_payment: datetime
+    hive_savings_balance: Asset.Hive
+    hbd_savings_balance: Asset.Hbd
+    hbd_unclaimed: Asset.Hbd
 
     def create_request_id(self, *, future_transfers: list[TransferFromSavingsOperation] | None = None) -> int:
         """
@@ -93,6 +97,9 @@ class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
             hbd_interest_rate=data.dgpo.hbd_interest_rate,
             last_interest_payment=data.core_account.savings_hbd_last_interest_payment,
             pending_transfers=data.pending_transfers,
+            hbd_savings_balance=data.core_account.savings_hbd_balance,
+            hive_savings_balance=data.core_account.savings_balance,
+            hbd_unclaimed=data.core_account.reward_hbd_balance,
         )
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
