@@ -14,6 +14,7 @@ from clive.__private.cli.process.hive_power.power_up import power_up
 from clive.__private.cli.process.hive_power.withdraw_routes import withdraw_routes
 from clive.__private.cli.process.proxy import proxy
 from clive.__private.cli.process.savings import savings
+from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
@@ -32,6 +33,7 @@ process.add_typer(delegations)
 process.add_typer(power_down)
 process.add_typer(power_up)
 process.add_typer(withdraw_routes)
+process.add_typer(transfer_schedule)
 
 
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])
