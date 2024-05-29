@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import json
 from contextlib import contextmanager
 from datetime import datetime
@@ -20,6 +19,8 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
     from clive.exceptions import CommunicationResponseT
 
+MISSING_API_ERROR_MESSAGE: Final[str] = "Could not find API"
+
 
 class CustomJSONEncoder(json.JSONEncoder):
     TIME_FORMAT_WITH_MILLIS: Final[str] = "%Y-%m-%dT%H:%M:%S.%f"
@@ -33,6 +34,23 @@ class CustomJSONEncoder(json.JSONEncoder):
 
 class ErrorInResponseJsonError(CliveError):
     """Raised if "error" field found in response json."""
+
+    def __init__(self, url: str, request: str, response: Any, *, details: str = "") -> None:
+        self.url = url
+        self.request = request
+        self.response = response
+        self.details = details
+        additional_info = f"Details: {details} " if details else ""
+        self.message = f"Error in response from {url=} {additional_info} {request=}, {response=}"
+        super().__init__(self.message)
+
+
+class MissingAPIError(ErrorInResponseJsonError):
+    """Raised if error in response json is due to missing API."""
+
+    def __init__(self, url: str, request: str, response: Any) -> None:
+        details = f"{MISSING_API_ERROR_MESSAGE} found."
+        super().__init__(url, request, response, details=details)
 
 
 class Communication:
@@ -168,6 +186,10 @@ class Communication:
             if timeouts_count >= _max_attempts:
                 raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, timeouts_count) from error_
 
+        async def return_response(response: aiohttp.ClientResponse) -> aiohttp.ClientResponse:
+            await response.read()  # Ensure response is available outside of the context manager.
+            return response
+
         while attempt < _max_attempts:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=_timeout_secs)) as session:
                 try:
@@ -204,10 +226,19 @@ class Communication:
                         handle_timeout_error("reading json response", error)
                         continue
 
-                    with contextlib.suppress(ErrorInResponseJsonError):
+                    try:
                         self.__check_response(url=url, request=data_serialized, result=result)
-                        await response.read()  # Ensure response is available outside of the context manager.
-                        return response
+                    except MissingAPIError:
+                        # in case of missing API, we should not retry, because it can increase time of waiting
+                        # when Clive is operation in non-full API mode
+                        logger.debug(f"Ignoring {MISSING_API_ERROR_MESSAGE} found in the response.")
+                        return await return_response(response)
+                    except ErrorInResponseJsonError as error:
+                        logger.error(f"Trying again because of: {error}")
+                        await next_try()
+                        continue
+                    else:
+                        return await return_response(response)
                 else:
                     logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
                     result = await response.text()
@@ -229,7 +260,13 @@ class Communication:
     @classmethod
     def __check_response_item(cls, url: str, request: str, response: Any, item: JsonT) -> None:
         if "error" in item:
-            logger.debug(f"Error in response from {url=}, request={request}, response={response}")
-            raise ErrorInResponseJsonError
+            cls.__check_for_missing_api_error(url, request, item)
+            raise ErrorInResponseJsonError(url, request, item, details=item["error"])
         if "result" not in item:
             raise UnknownResponseFormatError(url, request, response)
+
+    @staticmethod
+    def __check_for_missing_api_error(url: str, request: str, item: dict[str, Any]) -> None:
+        message = item.get("error", {}).get("message", None)
+        if message is not None and MISSING_API_ERROR_MESSAGE in message:
+            raise MissingAPIError(url, request, item)
