@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
+from clive.__private.cli.styling import colorize_error, colorize_ok, colorize_warning
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
 from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -38,10 +39,6 @@ if TYPE_CHECKING:
         Version,
         WitnessSchedule,
     )
-
-STATUS_OK: Final[str] = "[green]"
-STATUS_ERROR: Final[str] = "[red]"
-STATUS_WARNING: Final[str] = "[yellow]"
 
 
 @dataclass
@@ -200,8 +197,11 @@ class ChainData:
     def __colorize_hbd_print_rate(self, hbd_print_rate: str) -> str:
         """Get status color for hbd print rate."""
         good_hbd_print_rate = 100
-        status = STATUS_OK if self.hbd_print_rate == good_hbd_print_rate else STATUS_ERROR
-        return f"{status}{hbd_print_rate}[/]"
+        if self.hbd_print_rate == good_hbd_print_rate:
+            message = colorize_ok(hbd_print_rate)
+        else:
+            message = colorize_error(hbd_print_rate)
+        return message
 
     def __colorize_median_hive_price(self, median_hive_price: str) -> str:
         """Get status color for median hive price."""
@@ -212,12 +212,11 @@ class ChainData:
             self._current_median_history.quote == self._market_median_history.quote
         )
 
-        status = (
-            STATUS_OK
-            if same_current_and_market_median_history_base and same_current_and_market_median_history_quote
-            else STATUS_ERROR
-        )
-        return f"{status}{median_hive_price}[/]"
+        if same_current_and_market_median_history_base and same_current_and_market_median_history_quote:
+            message = colorize_ok(median_hive_price)
+        else:
+            message = colorize_error(median_hive_price)
+        return message
 
     def __colorize_participation_count(self, participation: str) -> str:
         """Get status color for participation count."""
@@ -225,12 +224,12 @@ class ChainData:
         critical_participation_count_percent = 33.0
         warning_participation_count_percent = 64.0
         if participation_count_percent <= critical_participation_count_percent:
-            status = STATUS_ERROR
+            message = colorize_error(participation)
         elif participation_count_percent <= warning_participation_count_percent:
-            status = STATUS_WARNING
+            message = colorize_warning(participation)
         else:
-            status = STATUS_OK
-        return f"{status}{participation}[/]"
+            message = colorize_ok(participation)
+        return message
 
 
 @dataclass(kw_only=True)
