@@ -77,7 +77,7 @@ class ShowHivePower(WorldBasedCommand):
         return table_general_info
 
     def __apr(self) -> RenderableType:
-        return f"{humanize_hp_vests_apr(self._hp_data.current_hp_apr)}"
+        return f"{humanize_hp_vests_apr(self._hp_data.current_hp_apr, with_label=True)}"
 
     def __conversion_factor(self) -> RenderableType:
         factor = humanize_vest_to_hive_ratio(self._hp_data.gdpo, show_symbol=True)
