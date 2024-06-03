@@ -3,14 +3,6 @@ SelectFile {
     height: auto;
   }
 
-  FilePathLabel {
-    padding: 1 2;
-  }
-
-  Input {
-    width: 1fr;
-  }
-
   DirectoryTreeHint {
     color: $text-muted;
   }

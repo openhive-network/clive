@@ -26,10 +26,6 @@ class FilePathInputContainer(Horizontal):
     """Container for file path input and label."""
 
 
-class FilePathLabel(Label):
-    """Label for file path input."""
-
-
 class DirectoryTreeHint(Label):
     """Hint for DirectoryTree widget."""
 
