@@ -13,8 +13,8 @@ from clive.__private.cli.exceptions import (
     ProcessTransferScheduleNullPairIdError,
     ProcessTransferScheduleTooLongLifetimeError,
 )
-from clive.__private.core.constants import SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME
-from clive.__private.core.shorthand_timedelta import timedelta_to_int_hours, timedelta_to_shorthand_timedelta
+from clive.__private.core.constants import SCHEDULED_TRANSFER_MAX_LIFETIME
+from clive.__private.core.shorthand_timedelta import timedelta_to_int_hours
 from clive.models import Asset
 from clive.models.aliased import RecurrentTransferOperation, TransferSchedule
 
@@ -73,11 +73,9 @@ class ProcessTransferSchedule(OperationCommand):
         if number_of_scheduled_transfers > 1 and pair_id is None:
             raise ProcessTransferScheduleNullPairIdError
 
-    def validate_existance_lifetime(self, scheduled_transfer_lifetime: timedelta) -> None:
-        if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME:
-            raise ProcessTransferScheduleTooLongLifetimeError(
-                requested_lifetime=timedelta_to_shorthand_timedelta(scheduled_transfer_lifetime)
-            )
+    def validate_existence_lifetime(self, scheduled_transfer_lifetime: timedelta) -> None:
+        if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_MAX_LIFETIME:
+            raise ProcessTransferScheduleTooLongLifetimeError(requested_lifetime=scheduled_transfer_lifetime)
 
 
 @dataclass(kw_only=True)

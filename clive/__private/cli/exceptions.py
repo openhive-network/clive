@@ -5,7 +5,13 @@ from typing import TYPE_CHECKING
 
 from click import ClickException
 
+from clive.__private.core.constants import SCHEDULED_TRANSFER_MAX_LIFETIME
+from clive.__private.core.formatters.humanize import humanize_timedelta
+from clive.models.asset import Asset
+
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from clive.__private.core.profile_data import ProfileData
 
 
@@ -151,9 +157,11 @@ class ProcessTransferScheduleNoScheduledTransfersError(CLIPrettyError):
 
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        hive_symbol = Asset.get_symbol(Asset.Hive)
+        hbd_symbol = Asset.get_symbol(Asset.Hbd)
         message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
-            "commands must be greater than 0 HIVE/HBD.\n"
+            f"commands must be greater than 0 {hive_symbol}/{hbd_symbol}.\n"
             "If you want to remove scheduled transfer, please use `clive process transfer-schedule remove` command."
         )
         super().__init__(message, errno.EPERM)
@@ -166,10 +174,10 @@ class ProcessTransferScheduleNullPairIdError(CLIPrettyError):
 
 
 class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
-    def __init__(self, requested_lifetime: str) -> None:
+    def __init__(self, requested_lifetime: timedelta) -> None:
         self.requested_lifetime = requested_lifetime
         message = (
-            f"Requested lifetime of scheduled transfer is too long ({self.requested_lifetime}).\n"
-            "Maximum available lifetime are two years."
+            f"Requested lifetime of scheduled transfer is too long ({humanize_timedelta(self.requested_lifetime)}).\n"
+            f"Maximum available lifetime is {humanize_timedelta(SCHEDULED_TRANSFER_MAX_LIFETIME)}."
         )
         super().__init__(message, errno.EPERM)
