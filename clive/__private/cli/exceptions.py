@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 
 from click import ClickException
 
+from clive.models.asset import Asset
+
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
 
@@ -151,9 +153,11 @@ class ProcessTransferScheduleNoScheduledTransfersError(CLIPrettyError):
 
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
+        hive_symbol = Asset.get_symbol(Asset.Hive)
+        hbd_symbol = Asset.get_symbol(Asset.Hbd)
         message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
-            "commands must be greater than 0 HIVE/HBD.\n"
+            f"commands must be greater than 0 {hive_symbol}/{hbd_symbol}.\n"
             "If you want to remove scheduled transfer, please use `clive process transfer-schedule remove` command."
         )
         super().__init__(message, errno.EPERM)
