@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from functools import wraps
-from typing import TYPE_CHECKING, Callable, Final, ParamSpec, TypeVar, get_args
+from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, get_args
 
 import typer
 
@@ -11,9 +11,10 @@ from clive.__private.core.constants import (
     SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE,
 )
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
-from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
+from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta, timedelta_to_shorthand_timedelta
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from decimal import Decimal
 
     from clive.models import Asset
@@ -102,8 +103,8 @@ def decimal_percent(raw: str) -> Decimal:
 
 
 @rename("text")
-def smart_frequency_parser(raw: str) -> int:
-    """Parser function for frequency flag used in transfer-schedule."""
+def smart_frequency_parser(raw: str) -> timedelta:
+    """Helper parser function for frequency flag used in transfer-schedule."""
     try:
         td = shorthand_timedelta_to_timedelta(raw.lower())
     except ValueError as err:
@@ -111,10 +112,9 @@ def smart_frequency_parser(raw: str) -> int:
             'Incorrect frequency unit must be one of the following hH, dD, wW. (e.g. "24h" or "2d 2h")'
         ) from err
 
-    hour_in_seconds: Final[int] = 3600
-    frequency_period = int(td.total_seconds() / hour_in_seconds)
-    if frequency_period < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
+    if td < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
         raise typer.BadParameter(
-            f"Value for 'frequency' must be greater than {SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE}h."
+            f"Value for 'frequency' must be greater or equal {timedelta_to_shorthand_timedelta(SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE)}."
         )
-    return frequency_period
+
+    return td

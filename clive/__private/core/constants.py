@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from decimal import Decimal
 from math import floor, log10
 from typing import TYPE_CHECKING
@@ -23,10 +24,19 @@ VESTS_REMOVE_POWER_DOWN_AMOUNT: Final[int] = 0
 PERCENT_REMOVE_WITHDRAW_ROUTE_AMOUNT: Final[Decimal] = Decimal(0)
 HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION: Final[int] = 0
 
-SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE: Final[int] = 24
+DAYS_IN_YEAR: Final[int] = 365
+HOURS_IN_DAY: Final[int] = 24
+HOURS_IN_YEAR: Final[int] = DAYS_IN_YEAR * HOURS_IN_DAY
+
+SECONDS_IN_MINUTE: Final[int] = 60
+SECONDS_IN_HOUR: Final[int] = 60 * SECONDS_IN_MINUTE
+SECONDS_IN_DAY: Final[int] = 24 * SECONDS_IN_HOUR
+SECONDS_IN_WEEK: Final[int] = 7 * SECONDS_IN_DAY
+
+SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE: Final[timedelta] = timedelta(days=1)
 SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE: Final[int] = 2
 SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE: Final[int] = 0
-SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME_DURATION_IN_HOURS: Final[int] = 2 * 365 * 24
+SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME: Final[timedelta] = timedelta(days=2 * DAYS_IN_YEAR)
 
 TERMINAL_HEIGHT: Final[int] = 24
 TERMINAL_WIDTH: Final[int] = 132

@@ -3,10 +3,20 @@ from __future__ import annotations
 import re
 from datetime import timedelta
 
-SECONDS_IN_MINUTE = 60
-SECONDS_IN_HOUR = 60 * SECONDS_IN_MINUTE
-SECONDS_IN_DAY = 24 * SECONDS_IN_HOUR
-SECONDS_IN_WEEK = 7 * SECONDS_IN_DAY
+from clive.__private.core.constants import SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE, SECONDS_IN_WEEK
+
+
+def timedelta_to_int_hours(td: timedelta) -> int:
+    """
+    Convert a timedelta to a hours int representation.
+
+    Examples
+    --------
+        timedelta_to_shorthand_date(timedelta(days=7)) -> 168
+        timedelta_to_shorthand_date(timedelta(hours=50)) -> 50
+        timedelta_to_shorthand_date(timedelta(weeks=1, days=2, hours=3)) -> 219
+    """
+    return int(td.total_seconds() / SECONDS_IN_HOUR)
 
 
 def timedelta_to_shorthand_timedelta(td: timedelta) -> str:

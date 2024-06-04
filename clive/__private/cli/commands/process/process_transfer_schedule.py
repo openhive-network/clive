@@ -13,8 +13,8 @@ from clive.__private.cli.exceptions import (
     ProcessTransferScheduleNullPairIdError,
     ProcessTransferScheduleTooLongLifetimeError,
 )
-from clive.__private.core.constants import SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME_DURATION_IN_HOURS
-from clive.__private.core.shorthand_timedelta import timedelta_to_shorthand_timedelta
+from clive.__private.core.constants import SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME
+from clive.__private.core.shorthand_timedelta import timedelta_to_int_hours, timedelta_to_shorthand_timedelta
 from clive.models import Asset
 from clive.models.aliased import RecurrentTransferOperation, TransferSchedule
 
@@ -73,11 +73,10 @@ class ProcessTransferSchedule(OperationCommand):
         if number_of_scheduled_transfers > 1 and pair_id is None:
             raise ProcessTransferScheduleNullPairIdError
 
-    def validate_existance_lifetime(self, repeat: int, frequency: int) -> None:
-        scheduled_transfer_lifetime = repeat * frequency
-        if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME_DURATION_IN_HOURS:
+    def validate_existance_lifetime(self, scheduled_transfer_lifetime: timedelta) -> None:
+        if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME:
             raise ProcessTransferScheduleTooLongLifetimeError(
-                requested_lifetime=timedelta_to_shorthand_timedelta(timedelta(hours=scheduled_transfer_lifetime))
+                requested_lifetime=timedelta_to_shorthand_timedelta(scheduled_transfer_lifetime)
             )
 
 
@@ -85,7 +84,7 @@ class ProcessTransferSchedule(OperationCommand):
 class ProcessTransferScheduleCreate(ProcessTransferSchedule):
     amount: Asset.LiquidT
     memo: str
-    frequency: int
+    frequency: timedelta
     repeat: int
     pair_id: int
 
@@ -95,7 +94,7 @@ class ProcessTransferScheduleCreate(ProcessTransferSchedule):
             to=self.to,
             amount=self.amount,
             memo=self.memo,
-            recurrence=self.frequency,
+            recurrence=timedelta_to_int_hours(self.frequency),
             executions=self.repeat,
             extensions=self._create_recurent_transfer_pair_id_extension(self.pair_id),
         )
@@ -110,7 +109,7 @@ class ProcessTransferScheduleCreate(ProcessTransferSchedule):
 
     async def validate(self) -> None:
         self.validate_amount(self.amount)
-        self.validate_existance_lifetime(self.repeat, self.frequency)
+        self.validate_existance_lifetime(self.repeat * self.frequency)
         await super().validate()
 
 
@@ -119,19 +118,20 @@ class ProcessTransferScheduleModify(ProcessTransferSchedule):
     scheduled_transfer: TransferSchedule | None = field(default=None, init=False)
     amount: Asset.LiquidT | None = None
     memo: str | None = None
-    frequency: int | None = None
+    frequency: timedelta | None = None
     repeat: int | None = None
     pair_id: int | None = None
 
     async def _create_operation(self) -> RecurrentTransferOperation:
         assert self.scheduled_transfer is not None, "Scheduled transfer should be there, validation is done before"
         assert self.pair_id is not None, "Pair id should be there, validation is done before"
+        assert self.frequency is not None, "Frequency should be there, validation is done before"
         return RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=self.amount,
             memo=self.memo,
-            recurrence=self.frequency,
+            recurrence=timedelta_to_int_hours(self.frequency),
             executions=self.repeat,
             extensions=self._create_recurent_transfer_pair_id_extension(self.pair_id),
         )
@@ -140,9 +140,9 @@ class ProcessTransferScheduleModify(ProcessTransferSchedule):
         assert self.scheduled_transfer is not None, "Scheduled transfer should be there, validation is done before"
         self.amount = self.amount if self.amount else self.scheduled_transfer.amount
         self.repeat = self.repeat if self.repeat else self.scheduled_transfer.remaining_executions
-        self.frequency = self.frequency if self.frequency else self.scheduled_transfer.recurrence
+        self.frequency = self.frequency if self.frequency else timedelta(hours=self.scheduled_transfer.recurrence)
         self.memo = self.memo if self.memo else self.scheduled_transfer.memo
-        self.validate_existance_lifetime(self.repeat, self.frequency)
+        self.validate_existance_lifetime(self.repeat * self.frequency)
         await super()._run()
 
     async def validate_inside_context_manager(self) -> None:
@@ -161,7 +161,7 @@ class ProcessTransferScheduleModify(ProcessTransferSchedule):
         if self.amount:
             self.validate_amount(self.amount)
         if self.frequency and self.repeat:
-            self.validate_existance_lifetime(self.repeat, self.frequency)
+            self.validate_existance_lifetime(self.repeat * self.frequency)
         await super().validate()
 
 

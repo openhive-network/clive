@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import TYPE_CHECKING, Optional, cast
 
 import typer
@@ -37,7 +38,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     amount: str = liquid_amount_option,
     repeat: int = repeat_value_option,
-    frequency: int = frequency_value_option,
+    frequency: timedelta = frequency_value_option,
     memo: str = memo_value_option,
     pair_id: int = pair_id_value_option,
 ) -> None:
@@ -61,7 +62,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     amount: str = liquid_amount_optional_option,
     repeat: Optional[int] = repeat_value_optional_option,
-    frequency: Optional[int] = frequency_value_optional_option,
+    frequency: Optional[timedelta] = frequency_value_optional_option,
     memo: Optional[str] = memo_value_optional_option,
     pair_id: Optional[int] = pair_id_value_none_option,
 ) -> None:
