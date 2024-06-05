@@ -6,7 +6,7 @@ import pytest
 
 from clive.__private.cli.types import AuthorityType
 from clive_local_tools.cli.checkers import assert_is_authority
-from clive_local_tools.data.constants import WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester

@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive_local_tools.cli.checkers import assert_memo_key
-from clive_local_tools.data.constants import WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
