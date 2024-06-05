@@ -5,8 +5,10 @@ from typing import Final
 
 import test_tools as tt
 
-WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [f"witness-{i:03d}" for i in range(60)]]
-PROPOSALS = [f"proposal-{c}" for c in ascii_lowercase]
+from clive_local_tools.data.generates import generate_proposal_name, generate_witness_name
+
+WITNESSES: Final[list[tt.Account]] = [tt.Account(name) for name in [generate_witness_name(i) for i in range(60)]]
+PROPOSALS: Final[list[str]] = [generate_proposal_name(c) for c in ascii_lowercase]
 
 CREATOR_ACCOUNT: Final[tt.Account] = tt.Account("initminer")
 WORKING_ACCOUNT: Final[tt.Account] = tt.Account("alice")
