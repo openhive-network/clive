@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
 
+from clive.__private.core.alarms.alarms_storage import AlarmsStorage
 from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import validate_schema_field
 from clive.exceptions import CliveError
@@ -38,6 +39,16 @@ To check if your account data is available, use the `is_node_data_available` pro
         super().__init__(self._MESSAGE)
 
 
+class AccountAlarmsTooEarlyAccessError(AccountError):
+    _MESSAGE = """
+You are trying to access account alarms too early.
+To check if your account alarms are available, use the `is_account_alarms_available` property.
+"""
+
+    def __init__(self) -> None:
+        super().__init__(self._MESSAGE)
+
+
 class AccountType(str, Enum):
     value: str
 
@@ -48,6 +59,7 @@ class AccountType(str, Enum):
 @dataclass
 class Account:
     name: str
+    _alarms: AlarmsStorage = field(default_factory=AlarmsStorage)
     _data: NodeData | None = field(init=False, default=None, compare=False)
 
     def __post_init__(self) -> None:
@@ -63,8 +75,18 @@ class Account:
         return self._data
 
     @property
+    def alarms(self) -> AlarmsStorage:
+        if not self._alarms.is_alarms_data_available:
+            raise AccountDataTooEarlyAccessError
+        return self._alarms
+
+    @property
     def is_node_data_available(self) -> bool:
         return self._data is not None
+
+    @property
+    def is_alarms_data_available(self) -> bool:
+        return self._alarms.is_alarms_data_available
 
     @staticmethod
     def validate(name: str) -> None:
