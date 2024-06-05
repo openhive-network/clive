@@ -17,6 +17,7 @@ from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import reactive, var
 
 from clive.__private.config import settings
+from clive.__private.core.constants import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
@@ -154,7 +155,7 @@ class Clive(App[int], ManualReactive):
         self,
         *,
         headless: bool = True,
-        size: tuple[int, int] | None = (132, 24),
+        size: tuple[int, int] | None = (TERMINAL_WIDTH, TERMINAL_HEIGHT),
         tooltips: bool = False,
         notifications: bool = True,
         message_hook: Callable[[Message], None] | None = None,
