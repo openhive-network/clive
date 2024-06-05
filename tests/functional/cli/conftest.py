@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Final
+
 import pytest
 from typer.testing import CliRunner
 
@@ -13,6 +15,8 @@ from clive.core.url import Url
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
+
+TEST_TERMINAL_WIDTH: Final[str] = "132"
 
 
 @pytest.fixture()
@@ -47,6 +51,7 @@ async def cli_tester(run_testnet: None) -> CLITester:  # noqa: ARG001
     # import cli after default profile is set, default values for --profile-name option are set during loading
     from clive.__private.cli.main import cli
 
-    runner = CliRunner()
+    env = {"COLUMNS": TEST_TERMINAL_WIDTH}
+    runner = CliRunner(env=env)
 
     return CLITester(cli, runner)
