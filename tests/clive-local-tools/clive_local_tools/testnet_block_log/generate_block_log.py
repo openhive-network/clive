@@ -180,11 +180,6 @@ def create_empty_account(wallet: tt.Wallet) -> None:
     wallet.create_account(EMPTY_ACCOUNT.name)
 
 
-def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
-    tt.logger.info("Sending test transfer...")
-    wallet.api.transfer(WORKING_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(1).as_nai(), memo="memo")
-
-
 def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
@@ -217,7 +212,6 @@ def main() -> None:
     prepare_savings(wallet)
     prepare_votes_for_witnesses(wallet)
     create_empty_account(wallet)
-    send_test_transfer_from_working_account(wallet)
 
     tt.logger.info("Wait 21 blocks to schedule newly created witnesses into future state")
     node.wait_number_of_blocks(21)
