@@ -19,7 +19,7 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.testnet_block_log import run_node
-from clive_local_tools.testnet_block_log.constants import CREATOR_ACCOUNT, WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
+from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -108,10 +108,6 @@ def create_proposal(wallet: tt.Wallet) -> None:
             subject=f"test-subject-{discriminator}",
             permlink=f"test-permlink-{discriminator}",
         )
-
-
-def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
-    wallet.api.transfer(WORKING_ACCOUNT.name, CREATOR_ACCOUNT.name, tt.Asset.Test(1).as_nai(), memo="memo")
 
 
 def print_working_account_keys() -> None:
