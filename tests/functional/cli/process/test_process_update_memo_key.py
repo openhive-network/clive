@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING, Final
 
 from clive_local_tools.cli.checkers import assert_memo_key
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
     from schemas.fields.basic import PublicKey
 
 
-ALICE_MEMO_KEY: Final[PublicKey] = WORKING_ACCOUNT.public_key
-OTHER_MEMO_KEY: Final[PublicKey] = WATCHED_ACCOUNTS[0].public_key
+ALICE_MEMO_KEY: Final[PublicKey] = WORKING_ACCOUNT_DATA.account.public_key
+OTHER_MEMO_KEY: Final[PublicKey] = WATCHED_ACCOUNTS_DATA[0].account.public_key
 
 
 async def test_set_memo_key(cli_tester: CLITester) -> None:

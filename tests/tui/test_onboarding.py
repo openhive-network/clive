@@ -19,7 +19,7 @@ from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAl
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
-from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
 from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
     assert_is_focused,
@@ -42,8 +42,8 @@ if TYPE_CHECKING:
 
 PROFILE_NAME: Final[str] = "master"
 PROFILE_PASSWORD: Final[str] = PROFILE_NAME + PROFILE_NAME
-ACCOUNT_NAME: Final[str] = WORKING_ACCOUNT.name
-PRIVATE_KEY: Final[str] = WORKING_ACCOUNT.private_key
+ACCOUNT_NAME: Final[str] = WORKING_ACCOUNT_DATA.account.name
+PRIVATE_KEY: Final[str] = WORKING_ACCOUNT_DATA.account.private_key
 
 
 @pytest.fixture()

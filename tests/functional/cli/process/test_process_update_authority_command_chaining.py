@@ -12,7 +12,7 @@ from clive_local_tools.cli.checkers import (
     assert_weight_threshold,
 )
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     import test_tools as tt
@@ -20,8 +20,8 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS[0]
-OTHER_ACCOUNT2: Final[tt.Account] = WATCHED_ACCOUNTS[1]
+OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS_DATA[0].account
+OTHER_ACCOUNT2: Final[tt.Account] = WATCHED_ACCOUNTS_DATA[1].account
 WEIGHT: Final[int] = 213
 MODIFIED_WEIGHT: Final[int] = 214
 WEIGHT_THRESHOLD: Final[int] = 2
@@ -36,7 +36,7 @@ async def test_chaining(cli_tester: CLITester, authority: AuthorityType) -> None
 
     # ASSERT
     assert_weight_threshold(cli_tester, authority, WEIGHT_THRESHOLD)
-    assert_is_authority(cli_tester, WORKING_ACCOUNT.public_key, authority)
+    assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
     assert_is_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.name, authority, WEIGHT)
@@ -53,7 +53,7 @@ async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> Non
     ).add_key(
         key=OTHER_ACCOUNT.public_key, weight=WEIGHT
     ).remove_key(
-        key=WORKING_ACCOUNT.public_key
+        key=WORKING_ACCOUNT_DATA.account.public_key
     ).fire()
 
     # ASSERT
@@ -63,7 +63,7 @@ async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> Non
     assert_is_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_authority_weight(cli_tester, OTHER_ACCOUNT2.name, authority, WEIGHT)
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.public_key, authority, WEIGHT)
-    assert_is_not_authority(cli_tester, WORKING_ACCOUNT.public_key, authority)
+    assert_is_not_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
 
 
 @pytest.mark.parametrize("authority", get_args(AuthorityType))
@@ -74,13 +74,13 @@ async def test_chaining3(cli_tester: CLITester, authority: AuthorityType) -> Non
     ).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).add_account(
         account=OTHER_ACCOUNT.name, weight=WEIGHT
     ).modify_key(
-        key=WORKING_ACCOUNT.public_key, weight=MODIFIED_WEIGHT
+        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT
     ).fire()
 
     # ASSERT
-    assert_is_authority(cli_tester, WORKING_ACCOUNT.public_key, authority)
+    assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)
     assert_is_authority(cli_tester, OTHER_ACCOUNT.public_key, authority)
     assert_is_authority(cli_tester, OTHER_ACCOUNT.name, authority)
-    assert_authority_weight(cli_tester, WORKING_ACCOUNT.public_key, authority, MODIFIED_WEIGHT)
+    assert_authority_weight(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority, MODIFIED_WEIGHT)
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.public_key, authority, WEIGHT)
     assert_authority_weight(cli_tester, OTHER_ACCOUNT.name, authority, WEIGHT)

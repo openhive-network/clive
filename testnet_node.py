@@ -19,7 +19,7 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.testnet_block_log import run_node
-from clive_local_tools.testnet_block_log.constants import CREATOR_ACCOUNT, WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log.constants import CREATOR_ACCOUNT, WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -63,22 +63,24 @@ async def prepare_profile(node: tt.RawNode) -> None:
     settings["node.chain_id"] = TESTNET_CHAIN_ID
 
     ProfileData(
-        WORKING_ACCOUNT.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
-        watched_accounts=[WatchedAccount(acc.name) for acc in WATCHED_ACCOUNTS],
+        WORKING_ACCOUNT_DATA.account.name,
+        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     ).save()
 
-    async with World(WORKING_ACCOUNT.name) as world:
+    async with World(WORKING_ACCOUNT_DATA.account.name) as world:
         password = await CreateWallet(
             app_state=world.app_state,
             beekeeper=world.beekeeper,
-            wallet=WORKING_ACCOUNT.name,
-            password=WORKING_ACCOUNT.name,
+            wallet=WORKING_ACCOUNT_DATA.account.name,
+            password=WORKING_ACCOUNT_DATA.account.name,
         ).execute_with_result()
 
-        tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
+        tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
         world.profile_data.working_account.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=f"{WORKING_ACCOUNT.name}_key")
+            PrivateKeyAliased(
+                value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_DATA.account.name}_key"
+            )
         )
         await world.commands.sync_data_with_beekeeper()
 
@@ -113,8 +115,8 @@ def send_test_transfer_from_working_account(wallet: tt.Wallet) -> None:
 
 
 def print_working_account_keys() -> None:
-    tt.logger.info(f"{WORKING_ACCOUNT.name} public key: {WORKING_ACCOUNT.public_key}")
-    tt.logger.info(f"{WORKING_ACCOUNT.name} private key: {WORKING_ACCOUNT.private_key}")
+    tt.logger.info(f"{WORKING_ACCOUNT_DATA.account.name} public key: {WORKING_ACCOUNT_DATA.account.public_key}")
+    tt.logger.info(f"{WORKING_ACCOUNT_DATA.account.name} private key: {WORKING_ACCOUNT_DATA.account.private_key}")
 
 
 async def launch_clive() -> None:

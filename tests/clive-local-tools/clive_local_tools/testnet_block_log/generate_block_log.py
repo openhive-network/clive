@@ -9,18 +9,16 @@ from typing import Final
 import test_tools as tt
 
 from clive_local_tools.testnet_block_log.constants import (
-    ALT_WORKING_ACCOUNT1,
-    ALT_WORKING_ACCOUNT2,
+    ALT_WORKING_ACCOUNT1_DATA,
+    ALT_WORKING_ACCOUNT2_DATA,
     CREATOR_ACCOUNT,
     EMPTY_ACCOUNT,
     PROPOSALS,
-    WATCHED_ACCOUNTS,
+    WATCHED_ACCOUNTS_DATA,
     WITNESSES,
-    WORKING_ACCOUNT,
+    WORKING_ACCOUNT_DATA,
 )
 
-WORKING_ACCOUNT_INITIAL_BALANCE: Final[int] = 100_000
-WORKING_ACCOUNT_INITIAL_BALANCE_INCREMENT: Final[int] = 10_000
 EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = timedelta(days=1)
 
 
@@ -110,49 +108,70 @@ def create_proposals(wallet: tt.Wallet) -> None:
 
 def create_working_accounts(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating working accounts...")
-    account_balance = WORKING_ACCOUNT_INITIAL_BALANCE
-    for account_name in (WORKING_ACCOUNT.name, ALT_WORKING_ACCOUNT1.name, ALT_WORKING_ACCOUNT2.name):
-        wallet.create_account(
-            account_name,
-            hives=tt.Asset.Test(account_balance).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            vests=tt.Asset.Test(account_balance).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            hbds=tt.Asset.Tbd(account_balance).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        )
-        account_balance += WORKING_ACCOUNT_INITIAL_BALANCE_INCREMENT
+    wallet.create_account(
+        WORKING_ACCOUNT_DATA.account.name,
+        hives=WORKING_ACCOUNT_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        vests=WORKING_ACCOUNT_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hbds=WORKING_ACCOUNT_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+    )
+    wallet.create_account(
+        ALT_WORKING_ACCOUNT1_DATA.account.name,
+        hives=ALT_WORKING_ACCOUNT1_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        vests=ALT_WORKING_ACCOUNT1_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hbds=ALT_WORKING_ACCOUNT1_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+    )
+    wallet.create_account(
+        ALT_WORKING_ACCOUNT2_DATA.account.name,
+        hives=ALT_WORKING_ACCOUNT2_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        vests=ALT_WORKING_ACCOUNT2_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        hbds=ALT_WORKING_ACCOUNT2_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+    )
 
 
 def prepare_savings(wallet: tt.Wallet) -> None:
-    tt.logger.info("Preparing savings of working account...")
-    wallet.api.transfer_to_savings(
-        WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Test(100).as_nai(),
-        "Supplying HIVE savings",
-    )
-    wallet.api.transfer_to_savings(
-        WORKING_ACCOUNT.name,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Tbd(123).as_nai(),
-        "Supplying HBD savings",
-    )
-    # Number of transfer_from_savings for WORKING_ACCOUNT should be equal to clive_local_tools.testnet_block_log.constants.WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT
-    wallet.api.transfer_from_savings(
-        WORKING_ACCOUNT.name,
-        0,
-        WORKING_ACCOUNT.name,
-        tt.Asset.Tbd(23).as_nai(),
-        "Withdrawing HBD savings",
-    )
+    tt.logger.info("Preparing savings of all accounts...")
+    all_accounts = [WORKING_ACCOUNT_DATA, ALT_WORKING_ACCOUNT1_DATA, ALT_WORKING_ACCOUNT2_DATA, *WATCHED_ACCOUNTS_DATA]
+    for data in all_accounts:
+        if data.hives_savings > 0:
+            wallet.api.transfer_to_savings(
+                CREATOR_ACCOUNT.name,
+                data.account.name,
+                data.hives_savings.as_nai(),
+                "Supplying HIVE savings",
+            )
+        if data.hbds_savings > 0:
+            wallet.api.transfer_to_savings(
+                CREATOR_ACCOUNT.name,
+                data.account.name,
+                data.hbds_savings.as_nai(),
+                "Supplying HBD savings",
+            )
+        if data.hives_savings_withdrawal > 0:
+            wallet.api.transfer_from_savings(
+                data.account.name,
+                0,
+                CREATOR_ACCOUNT.name,
+                data.hives_savings_withdrawal.as_nai(),
+                "Withdrawing HIVE savings",
+            )
+        if data.hbds_savings_withdrawal > 0:
+            wallet.api.transfer_from_savings(
+                data.account.name,
+                0,
+                CREATOR_ACCOUNT.name,
+                data.hbds_savings_withdrawal.as_nai(),
+                "Withdrawing HBD savings",
+            )
 
 
 def create_watched_accounts(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating watched accounts...")
-    for account in WATCHED_ACCOUNTS:
+    for data in WATCHED_ACCOUNTS_DATA:
         wallet.create_account(
-            account.name,
-            hives=tt.Asset.Test(1_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            vests=tt.Asset.Test(1_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-            hbds=tt.Asset.Tbd(1_000).as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            data.account.name,
+            hives=data.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            vests=data.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hbds=data.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
         )
 
 
@@ -170,10 +189,10 @@ def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
         for i in range(2, 4):
-            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1.name, WITNESSES[i].name, True)
+            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1_DATA.account.name, WITNESSES[i].name, True)
     with wallet.in_single_transaction():
         for i in range(1, 31):
-            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2.name, WITNESSES[i].name, True)
+            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2_DATA.account.name, WITNESSES[i].name, True)
 
 
 def main() -> None:
