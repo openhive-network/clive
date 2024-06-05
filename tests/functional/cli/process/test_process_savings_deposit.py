@@ -7,13 +7,12 @@ import test_tools as tt
 
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.data.constants import (
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS,
     WORKING_ACCOUNT,
     WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
     WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
-    WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
 )
 
 if TYPE_CHECKING:

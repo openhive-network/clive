@@ -3,12 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from clive_local_tools.cli.checkers import assert_memo_key
-from clive_local_tools.data.constants import (
-    WATCHED_ACCOUNTS,
-    WORKING_ACCOUNT,
-    WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
-)
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester

@@ -11,12 +11,8 @@ from clive_local_tools.cli.checkers import (
     assert_is_not_authority,
     assert_weight_threshold,
 )
-from clive_local_tools.data.constants import (
-    WATCHED_ACCOUNTS,
-    WORKING_ACCOUNT,
-    WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
-)
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS, WORKING_ACCOUNT
 
 if TYPE_CHECKING:
     import test_tools as tt

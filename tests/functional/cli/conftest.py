@@ -12,14 +12,11 @@ from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.core.url import Url
 from clive_local_tools.cli.cli_tester import CLITester
-from clive_local_tools.data.constants import (
-    CREATOR_ACCOUNT,
-    WATCHED_ACCOUNTS,
-    WORKING_ACCOUNT,
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.testnet_block_log import CREATOR_ACCOUNT, WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log.constants import (
     WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
     WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
-    WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
     WORKING_ACCOUNT_VEST_BALANCE,
 )
 
