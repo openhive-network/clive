@@ -11,7 +11,7 @@ from clive.__private.ui.operations.transfer_to_account.transfer_to_account impor
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
-from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS, WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 from clive_local_tools.tui.activate import activate
 from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
@@ -34,9 +34,9 @@ if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot, LiquidAssetToken, OperationProcessing
 
 
-SENDER: Final[str] = WORKING_ACCOUNT.name
-PASS: Final[str] = WORKING_ACCOUNT.name
-RECEIVER: Final[str] = WATCHED_ACCOUNTS[0].name
+SENDER: Final[str] = WORKING_ACCOUNT_DATA.account.name
+PASS: Final[str] = WORKING_ACCOUNT_DATA.account.name
+RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 
 
 async def fill_transfer_data(

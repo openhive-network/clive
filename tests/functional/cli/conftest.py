@@ -13,13 +13,7 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive.core.url import Url
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import CREATOR_ACCOUNT, WATCHED_ACCOUNTS, WORKING_ACCOUNT
-from clive_local_tools.testnet_block_log.constants import (
-    WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
-    WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
-    WORKING_ACCOUNT_VEST_BALANCE,
-)
-
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 
 @pytest.fixture()
 async def cli_tester() -> CLITester:
@@ -58,22 +52,22 @@ async def cli_tester() -> CLITester:
             )
 
     ProfileData(
-        WORKING_ACCOUNT.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
-        watched_accounts=[WatchedAccount(acc.name) for acc in WATCHED_ACCOUNTS],
+        WORKING_ACCOUNT_DATA.account.name,
+        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     ).save()
 
-    async with World(WORKING_ACCOUNT.name) as world:
+    async with World(WORKING_ACCOUNT_DATA.account.name) as world:
         await CreateWallet(
             app_state=world.app_state,
             beekeeper=world.beekeeper,
-            wallet=WORKING_ACCOUNT.name,
+            wallet=WORKING_ACCOUNT_DATA.account.name,
             password=WORKING_ACCOUNT_PASSWORD,
         ).execute_with_result()
 
         await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
         world.profile_data.working_account.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
+            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world.commands.sync_data_with_beekeeper()
 

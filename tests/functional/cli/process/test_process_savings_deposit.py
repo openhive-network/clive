@@ -8,12 +8,7 @@ import test_tools as tt
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log.constants import (
-    WATCHED_ACCOUNTS,
-    WORKING_ACCOUNT,
-    WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
-    WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
-)
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -28,8 +23,8 @@ DEPOSIT_MEMO: Final[str] = "memo0"
 @pytest.mark.parametrize(
     ("amount_to_deposit", "working_account_balance"),
     [
-        (AMOUNT_TO_DEPOSIT_HIVE, WORKING_ACCOUNT_HIVE_LIQUID_BALANCE),
-        (AMOUNT_TO_DEPOSIT_HBD, WORKING_ACCOUNT_HBD_LIQUID_BALANCE),
+        (AMOUNT_TO_DEPOSIT_HIVE, WORKING_ACCOUNT_DATA.hives_liquid),
+        (AMOUNT_TO_DEPOSIT_HBD, WORKING_ACCOUNT_DATA.hbds_liquid),
     ],
     ids=["hive", "hbd"],
 )
@@ -46,13 +41,13 @@ async def test_deposit_valid(
     # ASSERT
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=amount_to_deposit,
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=working_account_balance - amount_to_deposit.amount,
         balance="Liquid",
     )
@@ -60,7 +55,8 @@ async def test_deposit_valid(
 
 async def test_deposit_to_other_account(cli_tester: CLITester) -> None:
     # ARRANGE
-    other_account = WATCHED_ACCOUNTS[0]
+    other_account_data = WATCHED_ACCOUNTS_DATA[0]
+    other_account = other_account_data.account
 
     # ACT
     cli_tester.process_savings_deposit(
@@ -68,7 +64,7 @@ async def test_deposit_to_other_account(cli_tester: CLITester) -> None:
         to=other_account.name,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
-        from_=WORKING_ACCOUNT.name,
+        from_=WORKING_ACCOUNT_DATA.account.name,
     )
 
     # ASSERT
@@ -80,14 +76,14 @@ async def test_deposit_to_other_account(cli_tester: CLITester) -> None:
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
-        asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE - AMOUNT_TO_DEPOSIT_HIVE.amount,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
+        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT_TO_DEPOSIT_HIVE.amount,
         balance="Liquid",
     )
 
@@ -106,14 +102,14 @@ async def test_deposit_not_enough_hive(cli_tester: CLITester) -> None:
     # ASSERT
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
-        asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
+        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid,
         balance="Liquid",
     )
 
@@ -131,13 +127,13 @@ async def test_deposit_with_memo(cli_tester: CLITester) -> None:
     assert DEPOSIT_MEMO in result.output, f"There should be memo `{DEPOSIT_MEMO}` in transaction."
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=AMOUNT_TO_DEPOSIT_HIVE,
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
-        asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE - AMOUNT_TO_DEPOSIT_HIVE.amount,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
+        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT_TO_DEPOSIT_HIVE.amount,
         balance="Liquid",
     )

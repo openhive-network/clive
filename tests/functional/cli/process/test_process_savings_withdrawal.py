@@ -8,11 +8,7 @@ import test_tools as tt
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log.constants import (
-    WORKING_ACCOUNT,
-    WORKING_ACCOUNT_HBD_LIQUID_BALANCE,
-    WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
-)
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -28,8 +24,8 @@ WITHDRAWAL_MEMO: Final[str] = "memo2"
 @pytest.mark.parametrize(
     ("amount_to_deposit", "working_account_balance"),
     [
-        (AMOUNT_TO_DEPOSIT_HIVE, WORKING_ACCOUNT_HIVE_LIQUID_BALANCE),
-        (AMOUNT_TO_DEPOSIT_HBD, WORKING_ACCOUNT_HBD_LIQUID_BALANCE),
+        (AMOUNT_TO_DEPOSIT_HIVE, WORKING_ACCOUNT_DATA.hives_liquid),
+        (AMOUNT_TO_DEPOSIT_HBD, WORKING_ACCOUNT_DATA.hbds_liquid),
     ],
     ids=["hive", "hbd"],
 )
@@ -51,13 +47,13 @@ async def test_withdrawal_valid(
     # ASSERT
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=working_account_balance - amount_to_deposit.amount,
         balance="Liquid",
     )
@@ -77,14 +73,14 @@ async def test_withdrawal_invalid(cli_tester: CLITester) -> None:
     # ASSERT
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
-        asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
+        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid,
         balance="Liquid",
     )
 
@@ -109,14 +105,14 @@ async def test_withdrawal_with_memo(cli_tester: CLITester) -> None:
     # ASSERT
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=tt.Asset.Hive(0),
         balance="Savings",
     )
     checkers.assert_balances(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
-        asset_amount=WORKING_ACCOUNT_HIVE_LIQUID_BALANCE - AMOUNT_TO_DEPOSIT_HIVE.amount,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
+        asset_amount=WORKING_ACCOUNT_DATA.hives_liquid - AMOUNT_TO_DEPOSIT_HIVE.amount,
         balance="Liquid",
     )
     result = cli_tester.show_pending_withdrawals()

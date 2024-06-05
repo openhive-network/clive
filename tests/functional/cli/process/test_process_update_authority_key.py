@@ -7,7 +7,7 @@ import pytest
 from clive.__private.cli.types import AuthorityType
 from clive_local_tools.cli.checkers import assert_authority_weight, assert_is_authority, assert_is_not_authority
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA
 
 if TYPE_CHECKING:
     import test_tools as tt
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS[0]
+OTHER_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS_DATA[0].account
 WEIGHT: Final[int] = 123
 MODIFIED_WEIGHT: Final[int] = 124
 

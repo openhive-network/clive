@@ -18,9 +18,8 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive_local_tools.testnet_block_log.constants import (
-    WATCHED_ACCOUNTS,
-    WORKING_ACCOUNT,
-    WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT,
+    WATCHED_ACCOUNTS_DATA,
+    WORKING_ACCOUNT_DATA,
 )
 from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
@@ -51,10 +50,10 @@ if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot, LiquidAssetToken, OperationProcessing
 
 
-SENDER: Final[str] = WORKING_ACCOUNT.name
-RECEIVER: Final[str] = WORKING_ACCOUNT.name
-PASS: Final[str] = WORKING_ACCOUNT.name
-OTHER_RECEIVER: Final[str] = WATCHED_ACCOUNTS[0].name
+SENDER: Final[str] = WORKING_ACCOUNT_DATA.account.name
+RECEIVER: Final[str] = WORKING_ACCOUNT_DATA.account.name
+PASS: Final[str] = WORKING_ACCOUNT_DATA.account.name
+OTHER_RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 
 
 async def fill_savings_data(
@@ -170,7 +169,7 @@ async def test_savings(  # noqa: PLR0913
 
     # ARRANGE
     expected_operation = prepare_expected_operation(
-        operation_type, other_account, asset, memo, 0 + WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT
+        operation_type, other_account, asset, memo, 0 + WORKING_ACCOUNT_DATA.from_savings_transfer_count
     )
 
     # TODO: save balances before transfer
@@ -197,7 +196,7 @@ async def test_savings(  # noqa: PLR0913
     if operation_type is TransferFromSavingsOperation:
         if operation_processing == "FAST_BROADCAST":
             await press_and_wait_for_screen(pilot, "escape", DashboardActive)
-        await assert_pending_transfers_from_savings_count(pilot, 1 + WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT)
+        await assert_pending_transfers_from_savings_count(pilot, 1 + WORKING_ACCOUNT_DATA.from_savings_transfer_count)
         # TODO: check if pending transfer is as expected_operation
 
 
@@ -230,7 +229,7 @@ async def test_savings_finalize_cart(
             other_account,
             TRANSFERS_DATA[i][0],
             TRANSFERS_DATA[i][1],
-            i + WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT,
+            i + WORKING_ACCOUNT_DATA.from_savings_transfer_count,
         )
         for i in range(TRANSFERS_COUNT)
     ]
@@ -267,7 +266,7 @@ async def test_savings_finalize_cart(
     if operation_type is TransferFromSavingsOperation:
         assert_is_screen_active(pilot, DashboardActive)
         await assert_pending_transfers_from_savings_count(
-            pilot, TRANSFERS_COUNT + WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT
+            pilot, TRANSFERS_COUNT + WORKING_ACCOUNT_DATA.from_savings_transfer_count
         )
         # TODO: check if pending transfers in TUI are as expected_operation
 
@@ -286,7 +285,7 @@ async def test_canceling_transfer_from_savings(
     for i in range(TRANSFERS_COUNT):
         wallet.api.transfer_from_savings(
             SENDER,
-            i + WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT,
+            i + WORKING_ACCOUNT_DATA.from_savings_transfer_count,
             RECEIVER,
             TRANSFERS_DATA[i][0].as_nai(),
             TRANSFERS_DATA[i][1],
@@ -300,7 +299,7 @@ async def test_canceling_transfer_from_savings(
     for i in range(TRANSFERS_COUNT):
         # ASSERT
         await assert_pending_transfers_from_savings_count(
-            pilot, TRANSFERS_COUNT - i + WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT
+            pilot, TRANSFERS_COUNT - i + WORKING_ACCOUNT_DATA.from_savings_transfer_count
         )
 
         # Test canceling first transfer from savings
@@ -320,4 +319,4 @@ async def test_canceling_transfer_from_savings(
         assert_operations_placed_in_blockchain(node, transaction_id, expected_operations[i])
 
     # ASSERT
-    await assert_pending_transfers_from_savings_count(pilot, WORKING_ACCOUNT_FROM_SAVINGS_TRANSFERS_COUNT)
+    await assert_pending_transfers_from_savings_count(pilot, WORKING_ACCOUNT_DATA.from_savings_transfer_count)

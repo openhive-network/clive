@@ -8,7 +8,7 @@ import test_tools as tt
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import WORKING_ACCOUNT
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -70,6 +70,6 @@ async def test_withdrawal_cancel_invalid(cli_tester: CLITester) -> None:
     # ASSERT
     checkers.assert_pending_withrawals(
         cli_tester,
-        account_name=WORKING_ACCOUNT.name,
+        account_name=WORKING_ACCOUNT_DATA.account.name,
         asset_amount=AMOUNT_TO_DEPOSIT,
     )

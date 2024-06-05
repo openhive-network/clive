@@ -4,6 +4,8 @@ import json
 from dataclasses import dataclass, field
 from pathlib import Path
 
+import test_tools as tt
+
 from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
 
 
@@ -82,3 +84,19 @@ class WalletInfo:
     def key_pair(self) -> Keys.KeysPair:
         """Return the first key pair in the wallet."""
         return self.keys.pairs[0]
+
+
+@dataclass
+class AccountData:
+    account: tt.Account
+    hives_liquid: tt.Asset.TestT
+    hbds_liquid: tt.Asset.TbdT
+    vests: tt.Asset.TestT  # in hive power
+    hives_savings: tt.Asset.TestT = field(default=tt.Asset.Test(0))
+    hbds_savings: tt.Asset.TbdT = field(default=tt.Asset.Tbd(0))
+    hives_savings_withdrawal: tt.Asset.TestT = field(default=tt.Asset.Test(0))
+    hbds_savings_withdrawal: tt.Asset.TbdT = field(default=tt.Asset.Tbd(0))
+
+    @property
+    def from_savings_transfer_count(self) -> int:
+        return sum([self.hives_savings_withdrawal > 0, self.hbds_savings_withdrawal > 0])

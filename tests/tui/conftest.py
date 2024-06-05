@@ -16,7 +16,7 @@ from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS, WORKING_ACCOUNT, run_node
+from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
 from clive_local_tools.tui.textual_helpers import wait_for_screen
@@ -37,18 +37,18 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 @pytest.fixture()
 async def prepare_profile() -> None:
     ProfileData(
-        WORKING_ACCOUNT.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT.name),
-        watched_accounts=[WatchedAccount(acc.name) for acc in WATCHED_ACCOUNTS],
+        WORKING_ACCOUNT_DATA.account.name,
+        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     ).save()
 
 
 async def _prepare_beekeeper_wallet(world: TextualWorld) -> None:
     password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
-    tt.logger.info(f"password for {WORKING_ACCOUNT.name} is: `{password}`")
+    tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
 
     world.profile_data.working_account.keys.add_to_import(
-        PrivateKeyAliased(value=WORKING_ACCOUNT.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
+        PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
     )
     await world.commands.sync_data_with_beekeeper()
 
@@ -59,8 +59,8 @@ def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not in
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
     wallet.api.import_key(node.config.private_key[0])
-    wallet.api.import_key(WORKING_ACCOUNT.private_key)
-    account = wallet.api.get_account(WORKING_ACCOUNT.name)
+    wallet.api.import_key(WORKING_ACCOUNT_DATA.account.private_key)
+    account = wallet.api.get_account(WORKING_ACCOUNT_DATA.account.name)
     tt.logger.debug(f"working account: {account}")
 
     settings["secrets.node_address"] = node.http_endpoint.as_string()
