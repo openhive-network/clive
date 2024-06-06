@@ -115,7 +115,6 @@ class BeekeeperExecutable:
     def run_and_get_output(
         self,
         *,
-        allow_timeout: bool = False,
         allow_empty_notification_server: bool = False,
         timeout: float = 3.0,
         arguments: BeekeeperCLIArguments | None = None,
@@ -124,16 +123,8 @@ class BeekeeperExecutable:
             allow_empty_notification_server=allow_empty_notification_server, arguments=arguments
         )
         logger.info("Executing beekeeper:", command)
-        try:
-            result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=timeout)
-            return result.decode("utf-8").strip()
-        except subprocess.TimeoutExpired as e:
-            # If we set allow_timeout, it means that we only want bk to dump something, like default_config, or export keys
-            # and we don't want to keep it.
-            if allow_timeout:
-                output_t: str = e.output.decode("utf-8")
-                return output_t.strip()
-            raise
+        result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=timeout)
+        return result.decode("utf-8").strip()
 
     def run(
         self, *, allow_empty_notification_server: bool = False, arguments: BeekeeperCLIArguments | None = None
