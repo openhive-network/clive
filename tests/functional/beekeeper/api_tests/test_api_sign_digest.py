@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.core.keys import PrivateKey
 from clive.exceptions import CommunicationError
 from clive_local_tools.beekeeper.constants import DIGEST_TO_SIGN
 
@@ -11,8 +12,9 @@ if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive_local_tools.data.models import WalletInfo
 
-PRIVATE_KEY: Final[str] = "5HwHC7y2WtCL18J9QMqX7awDe1GDsUTg7cfw734m2qFkdMQK92q"
-PUBLIC_KEY: Final[str] = "6jACfK3P5xYFJQvavCwz5M8KR5EW3TcmSesArj9LJVGAq85qor"
+PRIVATE_KEY_MODEL: Final[PrivateKey] = PrivateKey(value="5HwHC7y2WtCL18J9QMqX7awDe1GDsUTg7cfw734m2qFkdMQK92q")
+PRIVATE_KEY: Final[str] = PRIVATE_KEY_MODEL.value
+PUBLIC_KEY: Final[str] = PRIVATE_KEY_MODEL.calculate_public_key().value
 EXPECTED_SIGNATURE: Final[str] = (
     "1f481d8a164af3f4de957aee236ca1f673825839534912d87e638f0695096718e006ae334f21141ee4a7df5170512fde64faa2123bb2cfc4070539e81b4fab9c6e"
 )
