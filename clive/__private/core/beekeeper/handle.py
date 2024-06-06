@@ -397,7 +397,9 @@ class Beekeeper:
             bk = Beekeeper()
             arguments = BeekeeperCLIArguments(
                 export_keys_wallet=ExportKeysWalletParams(wallet_name, wallet_password),
-                data_dir=tmpdirname,
+                # TODO : Workaround: Previously, there was no need to pass notifications_endpoint in order to dump keys.
+                notifications_endpoint=Url(proto="http", host="127.0.0.1", port=-1),
+                data_dir=Path(tmpdirname),
             )
             bk.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
             """Check if keys has been saved in dumped {wallet_name}.keys file."""
