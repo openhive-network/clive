@@ -127,12 +127,6 @@ class BeekeeperExecutable:
         try:
             result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=timeout)
             return result.decode("utf-8").strip()
-        except subprocess.CalledProcessError as e:
-            # I dont know why, but export_keys_wallet have returncode != 0
-            if arguments and (arguments.export_keys_wallet is not None):
-                output: str = e.output.decode("utf-8")
-                return output.strip()
-            raise
         except subprocess.TimeoutExpired as e:
             # If we set allow_timeout, it means that we only want bk to dump something, like default_config, or export keys
             # and we don't want to keep it.
