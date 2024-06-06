@@ -26,6 +26,7 @@ if TYPE_CHECKING:
 
     from clive_local_tools.tui.types import ClivePilot
 
+    NodeWithWallet = tuple[tt.RawNode, tt.Wallet]
     PreparedTuiEnv = tuple[tt.RawNode, tt.Wallet, ClivePilot]
 
 
@@ -54,7 +55,7 @@ async def _prepare_beekeeper_wallet(world: TextualWorld) -> None:
 
 
 @pytest.fixture()
-def _node_with_wallet() -> tuple[tt.RawNode, tt.Wallet]:  # noqa: PT005 # not intended for direct usage
+def _node_with_wallet() -> NodeWithWallet:  # noqa: PT005 # not intended for direct usage
     node = run_node(use_faketime=True)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
@@ -75,9 +76,7 @@ async def world(prepare_profile: None) -> AsyncIterator[TextualWorld]:  # noqa: 
 
 
 @pytest.fixture()
-async def prepared_env(
-    world: TextualWorld, _node_with_wallet: tuple[tt.RawNode, tt.Wallet]
-) -> AsyncIterator[PreparedTuiEnv]:
+async def prepared_env(world: TextualWorld, _node_with_wallet: NodeWithWallet) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = _node_with_wallet
 
     app = Clive.app_instance()

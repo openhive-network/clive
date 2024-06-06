@@ -35,10 +35,10 @@ from clive_local_tools.tui.textual_helpers import (
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-    import test_tools as tt
-
     from clive.__private.core.world import TextualWorld
     from clive_local_tools.tui.types import ClivePilot
+    from tests.tui.conftest import NodeWithWallet
+
 
 PROFILE_NAME: Final[str] = "master"
 PROFILE_PASSWORD: Final[str] = PROFILE_NAME + PROFILE_NAME
@@ -53,7 +53,7 @@ async def prepare_profile() -> None:
 
 @pytest.fixture()
 async def prepared_tui_on_onboarding(
-    world: TextualWorld, _node_with_wallet: tuple[tt.RawNode, tt.Wallet]
+    world: TextualWorld, _node_with_wallet: NodeWithWallet
 ) -> AsyncIterator[ClivePilot]:
     app = Clive.app_instance()
     Clive.world = world
