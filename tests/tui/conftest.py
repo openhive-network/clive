@@ -36,21 +36,23 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture()
-async def prepare_profile() -> None:
-    ProfileData(
+async def prepare_profile() -> ProfileData:
+    profile_data = ProfileData(
         WORKING_ACCOUNT_DATA.account.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
-    ).save()
+    )
+    profile_data.save()
+    return profile_data
 
 
 @pytest.fixture()
 async def world() -> World:
-    return World()
+    return World()  # will load last profile by default
 
 
 @pytest.fixture()
-async def prepare_beekeeper_wallet(prepare_profile: None, world: World) -> None:  # noqa: ARG001
+async def prepare_beekeeper_wallet(prepare_profile: ProfileData, world: World) -> None:  # noqa: ARG001
     async with world:
         password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
         tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
