@@ -32,7 +32,6 @@ from schemas.apis.database_api.fundaments_of_reponses import (
 )
 from schemas.apis.rc_api import FindRcAccounts as SchemasFindRcAccounts
 from schemas.apis.rc_api.fundaments_of_responses import RcAccount as SchemasRcAccount
-from schemas.apis.reputation_api.fundaments_of_responses import GetAccountReputationsFundament
 from schemas.apis.transaction_status_api import FindTransaction as SchemasFindTransaction
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
@@ -80,7 +79,6 @@ ProposalSchema = Proposal[AssetHbdHF26]
 ProposalVotes = ListProposalVotes
 ProposalsList = ListProposals
 RcAccount = SchemasRcAccount[AssetVestsHF26]
-Reputation = GetAccountReputationsFundament
 RecurrentTransferOperation = SchemasRecurrentTransferOperation
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]

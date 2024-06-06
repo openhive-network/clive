@@ -57,7 +57,6 @@ class NodeData:
     last_history_entry: datetime
     last_account_update: datetime
     recovery_account: str
-    reputation: int
     warnings: int
     vote_manabar: Manabar
     downvote_manabar: Manabar

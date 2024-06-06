@@ -32,7 +32,6 @@ if TYPE_CHECKING:
         FindRcAccounts,
         OwnerHistory,
         RcAccount,
-        Reputation,
         SchemasAccount,
     )
     from schemas.apis.account_history_api import GetAccountHistory
@@ -42,7 +41,6 @@ if TYPE_CHECKING:
         ListDeclineVotingRightsRequests,
         ListOwnerHistories,
     )
-    from schemas.apis.reputation_api import GetAccountReputations
     from schemas.fields.compound import Manabar
 
 
@@ -76,7 +74,6 @@ class SuppressNotExistingApis:
 class _AccountHarvestedDataRaw:
     core: SchemasAccount | None = None
     rc: RcAccount | None = None
-    reputations: GetAccountReputations | None = None
     account_history: GetAccountHistory | None = None
     decline_voting_rights: ListDeclineVotingRightsRequests | None = None
     change_recovery_account_requests: ListChangeRecoveryAccountRequests | None = None
@@ -89,8 +86,6 @@ class _AccountSanitizedData:
     decline_voting_rights: list[DeclineVotingRightsRequest]
     change_recovery_account_requests: list[ChangeRecoveryAccountRequest]
     owner_history: list[OwnerHistory]
-    reputation: Reputation | None = None
-    """Could be missing if reputation_api is not available"""
     account_history: GetAccountHistory | None = None
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
@@ -101,8 +96,6 @@ class _AccountSanitizedData:
 class _AccountProcessedData:
     core: SchemasAccount
     warnings: int = 0
-    reputation: int = 0
-    """Could be missing if reputation_api is not available"""
     last_history_entry: datetime = field(default_factory=lambda: _get_utc_epoch())
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
@@ -156,10 +149,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
             account_harvested_data = harvested_data.account_harvested_data
             for account in self.accounts:
-                account_harvested_data[account].reputations = await node.api.reputation_api.get_account_reputations(
-                    account_lower_bound=account.name, limit=1
-                )
-
                 account_harvested_data[account].account_history = (
                     await node.api.account_history_api.get_account_history(
                         account=account.name,
@@ -199,7 +188,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             account_sanitized_data[account] = _AccountSanitizedData(
                 core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
                 rc=unsanitized.rc,
-                reputation=self.__assert_reputation_or_none(unsanitized.reputations, account.name),
                 account_history=self.__assert_account_history_or_none(unsanitized.account_history),
                 decline_voting_rights=self.__assert_declive_voting_rights(unsanitized.decline_voting_rights),
                 change_recovery_account_requests=self.__assert_change_recovery_account_requests(
@@ -222,7 +210,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 rc=account_data.rc,
                 last_history_entry=self.__get_account_last_history_entry(account_data.account_history),
                 warnings=self.__calculate_warnings(account_data),
-                reputation=self.__get_account_reputation(account_data.reputation),
             )
 
         for account, info in accounts_processed_data.items():
@@ -240,7 +227,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 last_history_entry=info.last_history_entry,
                 last_account_update=info.core.last_account_update,
                 recovery_account=info.core.recovery_account,
-                reputation=info.reputation,
                 warnings=info.warnings,
                 vote_manabar=self.__update_manabar(
                     gdpo, int(info.core.post_voting_power.amount), info.core.voting_manabar
@@ -292,9 +278,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         expiration: datetime = data.core.governance_vote_expiration_ts
         current_time = self.__normalize_datetime(datetime.utcnow())
         return (expiration - current_time).days <= warning_period_in_days
-
-    def __get_account_reputation(self, data: Reputation | None) -> int:
-        return 0 if data is None else int(data.reputation)
 
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
@@ -369,18 +352,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             assert len(data.rc_accounts) == len(self.accounts), "RC accounts are missing some accounts..."
             return data.rc_accounts
         return []
-
-    def __assert_reputation_or_none(self, data: GetAccountReputations | None, account_name: str) -> Reputation | None:
-        assert data is not None, "Reputation data is missing..."
-
-        with SuppressNotExistingApis("reputation_api"):
-            reputations = data.reputations
-            assert len(reputations) == 1, "Reputation data malformed. Expected only one entry."
-
-            reputation = reputations[0]
-            assert reputation.account == account_name, "Reputation data malformed. Account name mismatch."
-            return reputation
-        return None
 
     def __assert_account_history_or_none(self, data: GetAccountHistory | None) -> GetAccountHistory | None:
         assert data is not None, "Account history info is missing..."
