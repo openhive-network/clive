@@ -88,13 +88,13 @@ class ShowTransferSchedule(WorldBasedCommand):
             table_definitions.add_row(
                 scheduled_transfer.from_,
                 scheduled_transfer.to,
-                f"{scheduled_transfer.pair_id}",
-                f"{aligned_amounts[idx]}",
+                str(scheduled_transfer.pair_id),
+                str(aligned_amounts[idx]),
                 scheduled_transfer.memo,
                 humanize_datetime(scheduled_transfer.trigger_date),
                 timedelta_to_shorthand_timedelta(timedelta(hours=scheduled_transfer.recurrence)),
-                f"{scheduled_transfer.remaining_executions}",
-                f"{scheduled_transfer.consecutive_failures}",
+                str(scheduled_transfer.remaining_executions),
+                str(scheduled_transfer.consecutive_failures),
             )
         return table_definitions
 
@@ -126,7 +126,7 @@ class ShowTransferSchedule(WorldBasedCommand):
         possible_amount_aligned = align_to_dot(*possible_amount_to_align, center_to=possible_amount_column_name)
 
         for idx, future_scheduled_transfer in enumerate(future_scheduled_transfers):
-            possible_amount = (
+            possible_amount: Text | str = (
                 Text(f"{ERROR_LACK_OF_FUNDS_MESSAGE_RAW}", style="red", justify="center")
                 if future_scheduled_transfer.possible_amount == LACK_OF_FUNDS_AMOUNT
                 else possible_amount_aligned[idx]
@@ -134,11 +134,11 @@ class ShowTransferSchedule(WorldBasedCommand):
             table_upcoming.add_row(
                 future_scheduled_transfer.from_,
                 future_scheduled_transfer.to,
-                f"{future_scheduled_transfer.pair_id}",
+                str(future_scheduled_transfer.pair_id),
                 amount_aligned[idx],
-                possible_amount,  # type: ignore[arg-type]
+                possible_amount,
                 future_scheduled_transfer.memo,
-                f"{future_scheduled_transfer.trigger_date}",
+                str(future_scheduled_transfer.trigger_date),
                 timedelta_to_shorthand_timedelta(timedelta(hours=future_scheduled_transfer.recurrence)),
             )
         return table_upcoming
