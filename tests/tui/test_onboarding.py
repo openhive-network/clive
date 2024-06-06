@@ -35,7 +35,6 @@ from clive_local_tools.tui.textual_helpers import (
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
-    from clive.__private.core.world import TextualWorld
     from clive_local_tools.tui.types import ClivePilot
     from tests.tui.conftest import NodeWithWallet
 
@@ -47,16 +46,10 @@ PRIVATE_KEY: Final[str] = WORKING_ACCOUNT_DATA.account.private_key
 
 
 @pytest.fixture()
-async def prepare_profile() -> None:
-    """Skip profile creation so Clive will enter onboarding."""
-
-
-@pytest.fixture()
 async def prepared_tui_on_onboarding(
-    world: TextualWorld, node_with_wallet: NodeWithWallet  # noqa: ARG001
+    node_with_wallet: NodeWithWallet,  # noqa: ARG001
 ) -> AsyncIterator[ClivePilot]:
     app = Clive.app_instance()
-    Clive.world = world
 
     pilot: ClivePilot
     async with app.run_test() as pilot:

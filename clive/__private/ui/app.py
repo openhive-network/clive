@@ -161,10 +161,16 @@ class Clive(App[int], ManualReactive):
         message_hook: Callable[[Message], None] | None = None,
     ) -> AsyncGenerator[ClivePilot, None]:
         try:
-            async with super().run_test(
-                headless=headless, size=size, tooltips=tooltips, notifications=notifications, message_hook=message_hook
-            ) as pilot:
-                yield pilot  # type: ignore[misc]
+            async with TextualWorld() as world:
+                self.__class__.world = world
+                async with super().run_test(
+                    headless=headless,
+                    size=size,
+                    tooltips=tooltips,
+                    notifications=notifications,
+                    message_hook=message_hook,
+                ) as pilot:
+                    yield pilot  # type: ignore[misc]
         finally:
             self.__cleanup()
 

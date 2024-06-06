@@ -9,7 +9,7 @@ import test_tools as tt
 from clive.__private.config import settings
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.core.world import TextualWorld
+from clive.__private.core.world import World
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive
@@ -44,14 +44,21 @@ async def prepare_profile() -> None:
     ).save()
 
 
-async def prepare_beekeeper_wallet(world: TextualWorld) -> None:
-    password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
-    tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
+@pytest.fixture()
+async def world() -> World:
+    return World()
 
-    world.profile_data.working_account.keys.add_to_import(
-        PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
-    )
-    await world.commands.sync_data_with_beekeeper()
+
+@pytest.fixture()
+async def prepare_beekeeper_wallet(prepare_profile: None, world: World) -> None:  # noqa: ARG001
+    async with world:
+        password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
+        tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
+
+        world.profile_data.working_account.keys.add_to_import(
+            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
+        )
+        await world.commands.sync_data_with_beekeeper()
 
 
 @pytest.fixture()
@@ -70,27 +77,16 @@ def node_with_wallet() -> NodeWithWallet:
 
 
 @pytest.fixture()
-async def world(prepare_profile: None) -> AsyncIterator[TextualWorld]:  # noqa: ARG001
-    async with TextualWorld() as world:
-        yield world
-
-
-@pytest.fixture()
-async def prepared_env(world: TextualWorld, node_with_wallet: NodeWithWallet) -> AsyncIterator[PreparedTuiEnv]:
+async def prepared_env(
+    node_with_wallet: NodeWithWallet, prepare_beekeeper_wallet: None  # noqa: ARG001
+) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = node_with_wallet
 
     app = Clive.app_instance()
-    Clive.world = world
 
     pilot: ClivePilot
     async with app.run_test() as pilot:
-        await prepare_beekeeper_wallet(world)
-
-        if world.app_state.is_active and isinstance(app.screen, DashboardInactive):
-            # beekeeper create wallet makes app active, we have to ensure correct dashboard to be displayed
-            await app.switch_screen("dashboard_active")
-
-        await wait_for_screen(pilot, DashboardActive)
+        await wait_for_screen(pilot, DashboardInactive)
 
         yield node, wallet, pilot
 
@@ -99,12 +95,13 @@ async def prepared_env(world: TextualWorld, node_with_wallet: NodeWithWallet) ->
 
 @pytest.fixture()
 async def prepared_tui_on_dashboard_inactive(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
-    node, wallet, pilot = prepared_env
-    await pilot.pause()  # required, otherwise next call to self.app inside Commands will fail with NoActiveAppError
-    await pilot.app.world.commands.deactivate()  # we have to deactivate because by default we are in active state triggered by create_wallet
-    return node, wallet, pilot
+    return prepared_env
 
 
 @pytest.fixture()
 async def prepared_tui_on_dashboard_active(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
+    node, wallet, pilot = prepared_env
+    await pilot.pause()  # required, otherwise next call to self.app inside Commands will fail with NoActiveAppError
+    await pilot.app.world.commands.activate(password=WORKING_ACCOUNT_PASSWORD)
+    await wait_for_screen(pilot, DashboardActive)
     return prepared_env
