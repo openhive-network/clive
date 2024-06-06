@@ -11,6 +11,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_hive_power,
     humanize_hp_vests_apr,
 )
+from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 
@@ -91,26 +92,6 @@ class WithdrawalInfo(Vertical, CliveWidget):
         return humanize_asset(content.to_withdraw.vests_balance)
 
 
-class APR(DynamicLabel):
-    DEFAULT_CSS = """
-    APR {
-        height: 1;
-        margin-top: 1;
-        background: $primary-background;
-        text-style: bold;
-        align: center middle;
-        width: 1fr;
-    }
-    """
-
-    def __init__(self, provider: HivePowerDataProvider) -> None:
-        super().__init__(
-            obj_to_watch=provider,
-            attribute_name="_content",
-            callback=self._get_apr,
-            first_try_callback=lambda content: content is not None,
-        )
-        self._provider = provider
-
+class HivePowerAPR(APR):
     def _get_apr(self, content: HivePowerData) -> str:
         return humanize_hp_vests_apr(content.current_hp_apr, with_label=True)

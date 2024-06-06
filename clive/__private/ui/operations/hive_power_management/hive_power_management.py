@@ -7,7 +7,7 @@ from textual.containers import Horizontal
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.hive_power_management.common_hive_power.additional_info_widgets import (
-    APR,
+    HivePowerAPR,
     WithdrawalInfo,
 )
 from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_information_table import (
@@ -44,7 +44,7 @@ class HivePowerManagement(OperationBaseScreen):
             with Horizontal(id="hive-power-info"):
                 yield HpDataTable()
                 yield WithdrawalInfo(provider)
-            yield APR(provider)
+            yield HivePowerAPR(provider)
             with CliveTabbedContent():
                 yield PowerUp(POWER_UP_TAB_LABEL)
                 yield PowerDown(POWER_DOWN_TAB_LABEL)
