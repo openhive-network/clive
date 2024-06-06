@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Final, overload
+from typing import Final, TypeVar
 
 from rich.columns import Columns
 from rich.console import Console, Group
@@ -24,6 +24,8 @@ class FutureTransferSchedule(TransferSchedule):
 
 
 FutureScheduledTransfers = list[FutureTransferSchedule]
+
+Sortable = TypeVar("Sortable", ScheduledTransfers, "FutureScheduledTransfers")
 
 ERROR_LACK_OF_FUNDS_MESSAGE_RAW: Final[str] = "Possible lack of funds."
 DEFAULT_FUTURE_DEEPTH: Final[int] = 10
@@ -169,17 +171,7 @@ class ShowTransferSchedule(WorldBasedCommand):
                 future_scheduled_transfers.append(temp)
         return self.get_sorted_by(future_scheduled_transfers, sort_by=[AllowedSorts.trigger_data])
 
-    @overload
-    def get_sorted_by(self, scheduled_transfers: ScheduledTransfers, sort_by: list[str]) -> ScheduledTransfers: ...  # type: ignore[overload-overlap]
-
-    @overload
-    def get_sorted_by(
-        self, scheduled_transfers: FutureScheduledTransfers, sort_by: list[str]
-    ) -> FutureScheduledTransfers: ...
-
-    def get_sorted_by(
-        self, scheduled_transfers: ScheduledTransfers | FutureScheduledTransfers, sort_by: list[str]
-    ) -> ScheduledTransfers | FutureScheduledTransfers:
+    def get_sorted_by(self, scheduled_transfers: Sortable, sort_by: list[str]) -> Sortable:
         import operator
 
         return sorted(scheduled_transfers, key=operator.attrgetter(*sort_by))
