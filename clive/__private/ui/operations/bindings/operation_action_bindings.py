@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal
 
 from pydantic import ValidationError
 from textual.binding import Binding
@@ -21,6 +21,9 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PublicKeyAliased
     from clive.models import Operation
+
+
+INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
 
 
 class _NotImplemented:
@@ -120,6 +123,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     async def action_fast_broadcast(self) -> None:
         if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
+            self.notify(INVALID_OPERATION_WARNING, severity="warning")
             return
 
         await self.__fast_broadcast()
@@ -166,6 +170,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         operations = self.ensure_operations_list()
         if not operations:
+            self.notify(INVALID_OPERATION_WARNING, severity="warning")
             return False
 
         self.app.world.profile_data.cart.extend(operations)
