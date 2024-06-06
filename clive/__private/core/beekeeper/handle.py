@@ -371,22 +371,27 @@ class Beekeeper:
         arguments = BeekeeperCLIArguments(version=True)
         return self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
 
+    def dump_config(self) -> BeekeeperConfig:
+        arguments = BeekeeperCLIArguments(dump_config=True)
+        paths = json.loads(
+            self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
+        )
+        return BeekeeperConfig.load(Path(paths["config"]))
+
     def generate_beekeepers_default_config(self) -> BeekeeperConfig:
         with tempfile.TemporaryDirectory() as tmpdirname:
             arguments = BeekeeperCLIArguments(
                 backtrace=None,
-                data_dir=tmpdirname,
+                data_dir=Path(tmpdirname),
                 log_json_rpc=None,
                 notifications_endpoint=None,
                 unlock_timeout=None,
                 wallet_dir=None,
                 webserver_thread_pool_size=None,
                 webserver_http_endpoint=None,
+                dump_config=True,
             )
-            self.__executable.run_and_get_output(
-                allow_empty_notification_server=True, allow_timeout=True, arguments=arguments
-            )
-
+            self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
             return BeekeeperConfig.load(Path(tmpdirname) / "config.ini")
 
     async def export_keys_wallet(
