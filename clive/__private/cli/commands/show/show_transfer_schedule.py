@@ -41,8 +41,9 @@ class ShowTransferSchedule(WorldBasedCommand):
         (await self.world.commands.update_node_data(accounts=[account])).raise_if_error_occurred()
         data = account.data
 
-        wrapper = await self.world.commands.find_scheduled_transfers(account_name=self.account_name)
-        scheduled_transfers = wrapper.result_or_raise
+        scheduled_transfers = (
+            await self.world.commands.find_scheduled_transfers(account_name=self.account_name)
+        ).result_or_raise
 
         console = Console()
 
