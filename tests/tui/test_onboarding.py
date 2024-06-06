@@ -53,7 +53,7 @@ async def prepare_profile() -> None:
 
 @pytest.fixture()
 async def prepared_tui_on_onboarding(
-    world: TextualWorld, _node_with_wallet: NodeWithWallet
+    world: TextualWorld, node_with_wallet: NodeWithWallet  # noqa: ARG001
 ) -> AsyncIterator[ClivePilot]:
     app = Clive.app_instance()
     Clive.world = world

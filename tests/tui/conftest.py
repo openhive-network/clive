@@ -44,7 +44,7 @@ async def prepare_profile() -> None:
     ).save()
 
 
-async def _prepare_beekeeper_wallet(world: TextualWorld) -> None:
+async def prepare_beekeeper_wallet(world: TextualWorld) -> None:
     password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
     tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
 
@@ -55,7 +55,7 @@ async def _prepare_beekeeper_wallet(world: TextualWorld) -> None:
 
 
 @pytest.fixture()
-def _node_with_wallet() -> NodeWithWallet:  # noqa: PT005 # not intended for direct usage
+def node_with_wallet() -> NodeWithWallet:
     node = run_node(use_faketime=True)
 
     wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
@@ -76,15 +76,15 @@ async def world(prepare_profile: None) -> AsyncIterator[TextualWorld]:  # noqa: 
 
 
 @pytest.fixture()
-async def prepared_env(world: TextualWorld, _node_with_wallet: NodeWithWallet) -> AsyncIterator[PreparedTuiEnv]:
-    node, wallet = _node_with_wallet
+async def prepared_env(world: TextualWorld, node_with_wallet: NodeWithWallet) -> AsyncIterator[PreparedTuiEnv]:
+    node, wallet = node_with_wallet
 
     app = Clive.app_instance()
     Clive.world = world
 
     pilot: ClivePilot
     async with app.run_test() as pilot:
-        await _prepare_beekeeper_wallet(world)
+        await prepare_beekeeper_wallet(world)
 
         if world.app_state.is_active and isinstance(app.screen, DashboardInactive):
             # beekeeper create wallet makes app active, we have to ensure correct dashboard to be displayed
