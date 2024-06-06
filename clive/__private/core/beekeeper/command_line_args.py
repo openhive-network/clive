@@ -18,6 +18,7 @@ class ExportKeysWalletParams:
 class BeekeeperCLIArguments(BaseModel):
     help_: bool = Field(alias="help", default=False)
     version: bool = False
+    dump_config: bool = False
     backtrace: str | None = BeekeeperDefaults.DEFAULT_BACKTRACE
     data_dir: Path = BeekeeperDefaults.DEFAULT_DATA_DIR
     export_keys_wallet: ExportKeysWalletParams | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET
@@ -31,7 +32,9 @@ class BeekeeperCLIArguments(BaseModel):
     def __convert_member_name_to_cli_value(self, member_name: str) -> str:
         return member_name.replace("_", "-")
 
-    def __convert_member_value_to_string(self, member_value: int | str | Path | Url | ExportKeysWalletParams) -> str:
+    def __convert_member_value_to_string(
+        self, member_value: bool | int | str | Path | Url | ExportKeysWalletParams
+    ) -> str:
         if isinstance(member_value, bool):
             return ""
         if isinstance(member_value, str):
