@@ -9,12 +9,12 @@ from clive.__private.cli.warnings import typer_echo_warnings
 from clive.__private.core.constants import (
     HIVE_PERCENT_PRECISION_DOT_PLACES,
     SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE,
-    SECONDS_IN_HOUR,
 )
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
 from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta, timedelta_to_shorthand_timedelta
 
 if TYPE_CHECKING:
+    from datetime import timedelta
     from decimal import Decimal
 
     from clive.models import Asset
@@ -101,8 +101,8 @@ def decimal_percent(raw: str) -> Decimal:
 
 
 @rename("text")
-def smart_frequency_parser(raw: str) -> int:
-    """Parser function for frequency flag used in transfer-schedule."""
+def smart_frequency_parser(raw: str) -> timedelta:
+    """Helper parser function for frequency flag used in transfer-schedule."""
     try:
         td = shorthand_timedelta_to_timedelta(raw.lower())
     except ValueError as err:
@@ -115,4 +115,4 @@ def smart_frequency_parser(raw: str) -> int:
             f"Value for 'frequency' must be greater or equal {timedelta_to_shorthand_timedelta(SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE)}."
         )
 
-    return int(td.total_seconds() / SECONDS_IN_HOUR)
+    return td
