@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import asyncio
-import contextlib
 import math
 import traceback
 from asyncio import CancelledError
@@ -18,7 +17,7 @@ from textual.reactive import reactive, var
 
 from clive.__private.config import settings
 from clive.__private.core.constants import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
@@ -41,7 +40,6 @@ if TYPE_CHECKING:
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
-    from clive.__private.storage.accounts import Account
     from clive.__private.ui.pilot import ClivePilot
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -390,10 +388,9 @@ class Clive(App[int], ManualReactive):
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
         allowed_fails_of_update_node_data = 5
-        accounts: list[Account] = []  # accounts list gonna be empty, but dgpo will be refreshed
-        with contextlib.suppress(NoWorkingAccountError):
-            accounts.append(self.world.profile_data.working_account)
-        accounts.extend(self.world.profile_data.watched_accounts)
+        accounts = (
+            self.world.profile_data.get_tracked_accounts()
+        )  # accounts list gonna be empty, but dgpo will be refreshed
 
         try:
             await self.world.commands.update_node_data(accounts=accounts)
