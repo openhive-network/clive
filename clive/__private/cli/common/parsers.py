@@ -23,14 +23,12 @@ ParsedAssetT = TypeVar("ParsedAssetT", bound="Asset.AnyT")
 P = ParamSpec("P")
 R = TypeVar("R")
 
-RenamedFuncT = Callable[P, R]
 
-
-def rename(new_name: str) -> Callable[[RenamedFuncT], RenamedFuncT]:  # type: ignore[type-arg]
-    def decorator(func: RenamedFuncT) -> RenamedFuncT:  # type: ignore[type-arg]
+def rename(new_name: str) -> Callable[[Callable[P, R]], Callable[P, R]]:
+    def decorator(func: Callable[P, R]) -> Callable[P, R]:
         @wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:  # type: ignore[type-var]
-            return func(*args, **kwargs)  # type: ignore[no-any-return]
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+            return func(*args, **kwargs)
 
         wrapper.__name__ = new_name
         return wrapper
