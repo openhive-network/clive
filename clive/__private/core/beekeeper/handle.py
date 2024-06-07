@@ -125,8 +125,9 @@ class Beekeeper:
         webserver_http_endpoint: Url | None = BeekeeperDefaults.DEFAULT_WEBSERVER_HTTP_ENDPOINT,
     ) -> Self:
         arguments: BeekeeperCLIArguments = BeekeeperCLIArguments(
-            help=False,
-            version=False,
+            help=BeekeeperDefaults.DEFAULT_HELP,
+            version=BeekeeperDefaults.DEFAULT_VERSION,
+            dump_config=BeekeeperDefaults.DEFAULT_DUMP_CONFIG,
             backtrace=backtrace,
             data_dir=data_dir,
             log_json_rpc=log_json_rpc,

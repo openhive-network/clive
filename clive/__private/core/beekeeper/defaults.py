@@ -11,6 +11,9 @@ if TYPE_CHECKING:
 
 
 class BeekeeperDefaults(BaseModel):
+    DEFAULT_HELP: ClassVar[bool] = False
+    DEFAULT_VERSION: ClassVar[bool] = False
+    DEFAULT_DUMP_CONFIG: ClassVar[bool] = False
     DEFAULT_BACKTRACE: ClassVar[str] = "yes"
     DEFAULT_DATA_DIR: ClassVar[Path] = Path.home() / ".beekeeper"
     DEFAULT_EXPORT_KEYS_WALLET: ClassVar[ExportKeysWalletParams | None] = None

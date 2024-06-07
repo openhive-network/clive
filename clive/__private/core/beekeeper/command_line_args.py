@@ -16,9 +16,9 @@ class ExportKeysWalletParams:
 
 
 class BeekeeperCLIArguments(BaseModel):
-    help_: bool = Field(alias="help", default=False)
-    version: bool = False
-    dump_config: bool = False
+    help_: bool = Field(alias="help", default=BeekeeperDefaults.DEFAULT_HELP)
+    version: bool = BeekeeperDefaults.DEFAULT_VERSION
+    dump_config: bool = BeekeeperDefaults.DEFAULT_DUMP_CONFIG
     backtrace: str | None = BeekeeperDefaults.DEFAULT_BACKTRACE
     data_dir: Path = BeekeeperDefaults.DEFAULT_DATA_DIR
     export_keys_wallet: ExportKeysWalletParams | None = BeekeeperDefaults.DEFAULT_EXPORT_KEYS_WALLET
