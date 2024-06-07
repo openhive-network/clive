@@ -292,10 +292,10 @@ class Commands(Generic[WorldT]):
         return result
 
     async def update_node_data(
-        self, *, accounts: list[Account] | None = None
+        self, *, accounts: Iterable[Account] | None = None
     ) -> CommandWithResultWrapper[DynamicGlobalProperties]:
         result = await self.__surround_with_exception_handlers(
-            UpdateNodeData(accounts=accounts or [], node=self._world.node)
+            UpdateNodeData(accounts=list(accounts or []), node=self._world.node)
         )
         if result.success:
             self._world.app_state._dynamic_global_properties = result.result_or_raise
