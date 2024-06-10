@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.commands.abc.command_cached_data_retrieval import CommandCachedDataRetrieval
 from clive.__private.storage.accounts import Account
 
 if TYPE_CHECKING:
@@ -68,7 +68,7 @@ class SanitizedAlarmsData:
 
 
 @dataclass(kw_only=True)
-class UpdateAlarmsData(CommandDataRetrieval[HarvestedAlarmsDataRaw, SanitizedAlarmsData, None]):
+class UpdateAlarmsData(CommandCachedDataRetrieval[HarvestedAlarmsDataRaw, SanitizedAlarmsData]):
     node: Node
     accounts: list[Account]
 
