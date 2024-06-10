@@ -211,12 +211,20 @@ class ProfileData(Context):
         return accounts
 
     @property
-    def is_accounts_node_data_available(self) -> bool:
-        tracked_account = self.get_tracked_accounts()
-        if not tracked_account:
+    def is_accounts_alarms_data_available(self) -> bool:
+        tracked_accounts = self.get_tracked_accounts()
+        if not tracked_accounts:
             return False
 
-        return all(account.is_node_data_available for account in self.get_tracked_accounts())
+        return all(account.is_alarms_data_available for account in tracked_accounts)
+
+    @property
+    def is_accounts_node_data_available(self) -> bool:
+        tracked_accounts = self.get_tracked_accounts()
+        if not tracked_accounts:
+            return False
+
+        return all(account.is_node_data_available for account in tracked_accounts)
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:
