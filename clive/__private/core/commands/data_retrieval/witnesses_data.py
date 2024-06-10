@@ -5,9 +5,7 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
-from clive.__private.core.commands.abc.command_data_retrieval import (
-    CommandDataRetrieval,
-)
+from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_hbd_exchange_rate,

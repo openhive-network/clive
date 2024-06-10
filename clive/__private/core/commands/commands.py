@@ -301,7 +301,7 @@ class Commands(Generic[WorldT]):
             self._world.app_state._dynamic_global_properties = result.result_or_raise
         return result
 
-    async def update_alarms_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWithResultWrapper[None]:
+    async def update_alarms_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             UpdateAlarmsData(accounts=list(accounts) if accounts is not None else [], node=self._world.node)
         )
