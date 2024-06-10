@@ -177,7 +177,6 @@ class Clive(App[int], ManualReactive):
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
 
         self.__class__.is_launched = True
-        self.__amount_of_fails_during_update_node_data = 0
         self.console.set_window_title("Clive")
 
         self.update_data_from_node()
@@ -383,24 +382,15 @@ class Clive(App[int], ManualReactive):
 
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
-        allowed_fails_of_update_node_data = 5
         accounts = (
             self.world.profile_data.get_tracked_accounts()
         )  # accounts list gonna be empty, but dgpo will be refreshed
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
-            self.__amount_of_fails_during_update_node_data += 1
-            logger.warning(
-                f"Update node data failed {self.__amount_of_fails_during_update_node_data} times: {wrapper.error}"
-            )
-
-            if self.__amount_of_fails_during_update_node_data >= allowed_fails_of_update_node_data:
-                wrapper.raise_if_error_occurred()
-
+            logger.warning(f"Update node data failed: {wrapper.error}")
             return
 
-        self.__amount_of_fails_during_update_node_data = 0
         self.trigger_profile_data_watchers()
         self.trigger_app_state_watchers()
 
