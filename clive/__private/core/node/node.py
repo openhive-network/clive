@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.get_config import GetConfig
+from clive.__private.core.commands.data_retrieval.get_dynamic_global_properties import GetDynamicGlobalProperties
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
@@ -20,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
-    from clive.models.aliased import Config
+    from clive.models.aliased import Config, DynamicGlobalProperties
 
 
 class BatchRequestError(CliveError):
@@ -182,6 +183,7 @@ class Node(BaseNode):
         _node: Node
         _config: Config | None = field(init=False, default=None)
         _network_type: str | None = field(init=False, default=None)
+        _dynamic_global_properties: DynamicGlobalProperties | None = field(init=False, default=None)
 
         @property
         async def config(self) -> Config:
@@ -195,6 +197,11 @@ class Node(BaseNode):
                 await self._node._sync_node_version()
             assert self._network_type is not None, "Network type should be set by now"
             return self._network_type
+
+        async def get_dynamic_global_properties(self) -> DynamicGlobalProperties:
+            if self._dynamic_global_properties is None:
+                self._dynamic_global_properties = await GetDynamicGlobalProperties(self._node).execute_with_result()
+            return self._dynamic_global_properties
 
         def clear_config(self) -> None:
             self._config = None

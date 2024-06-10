@@ -23,5 +23,5 @@ async def ensure_vests_async(value: Asset.VotingT, world: World) -> Asset.Vests:
     if isinstance(value, Asset.Vests):
         return value
 
-    gdpo = await world.app_state.get_dynamic_global_properties()
+    gdpo = await world.node.cached.get_dynamic_global_properties()
     return hive_to_vests(value, gdpo)
