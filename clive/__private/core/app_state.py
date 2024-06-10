@@ -7,7 +7,6 @@ from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
-    from clive.models.aliased import DynamicGlobalProperties
 
 
 @dataclass
@@ -16,13 +15,6 @@ class AppState:
 
     world: World
     _is_active: bool = False
-    _dynamic_global_properties: DynamicGlobalProperties | None = None
-
-    async def get_dynamic_global_properties(self) -> DynamicGlobalProperties:
-        if self._dynamic_global_properties is None:
-            (await self.world.commands.get_dynamic_global_properties()).raise_if_error_occurred()
-        assert self._dynamic_global_properties is not None, "could not get dynamic global properties"
-        return self._dynamic_global_properties
 
     @property
     def is_active(self) -> bool:

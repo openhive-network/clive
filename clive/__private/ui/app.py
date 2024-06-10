@@ -385,7 +385,7 @@ class Clive(App[int], ManualReactive):
             return
 
         self.trigger_profile_data_watchers()
-        self.trigger_app_state_watchers()
+        self.trigger_node_watchers()
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")

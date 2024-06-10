@@ -103,7 +103,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         yield TitledLabel(
             "Block",
             obj_to_watch=self.app.world,
-            attribute_name="app_state",
+            attribute_name="node",
             callback=self.__get_last_block,
         )
         yield TitledLabel(
@@ -134,7 +134,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     async def _get_dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
         """Get the dynamic global properties or return None if node is not available."""
         try:
-            return await self.app.world.app_state.get_dynamic_global_properties()
+            return await self.app.world.node.cached.get_dynamic_global_properties()
         except CommunicationError:
             return None
 
