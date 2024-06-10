@@ -43,10 +43,12 @@ from schemas.fields.hex import Signature as SchemasSignature
 from schemas.fields.hive_int import HiveInt as SchemasHiveInt
 from schemas.operation import Operation as SchemasBaseOperationType
 from schemas.operations import AnyOperation
+from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.recurrent_transfer_operation import (
     RecurrentTransferOperation as SchemasRecurrentTransferOperation,
 )
 from schemas.operations.representation_types import Hf26OperationRepresentationType
+from schemas.operations.representations.hf26_representation import HF26Representation
 from schemas.operations.virtual import AnyVirtualOperation
 from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
 from schemas.virtual_operation import VirtualOperation as SchemasBaseVirtualOperationType
@@ -74,12 +76,14 @@ HiveInt = SchemasHiveInt
 Operation = AnyOperation
 OperationBaseClass = SchemasBaseOperationType
 OperationRepresentationType = Hf26OperationRepresentationType
+HF26OperationRepresentation = HF26Representation
 OwnerHistory = OwnerHistoriesFundament
 ProposalSchema = Proposal[AssetHbdHF26]
 ProposalVotes = ListProposalVotes
 ProposalsList = ListProposals
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 RecurrentTransferOperation = SchemasRecurrentTransferOperation
+RecurrentTransferPairIdOperationExtension = RecurrentTransferPairId
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Signature = SchemasSignature

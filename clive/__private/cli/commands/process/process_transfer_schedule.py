@@ -16,7 +16,12 @@ from clive.__private.cli.exceptions import (
 from clive.__private.core.constants import SCHEDULED_TRANSFER_MAX_LIFETIME
 from clive.__private.core.shorthand_timedelta import timedelta_to_int_hours
 from clive.models import Asset
-from clive.models.aliased import RecurrentTransferOperation, TransferSchedule
+from clive.models.aliased import (
+    HF26OperationRepresentation,
+    RecurrentTransferOperation,
+    RecurrentTransferPairIdOperationExtension,
+    TransferSchedule,
+)
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import ScheduledTransfers
@@ -25,6 +30,8 @@ if TYPE_CHECKING:
 REMOVE_VALUE_HIVE: Final[Asset.Hive] = Asset.hive(0)
 REMOVE_VALUE_HBD: Final[Asset.Hbd] = Asset.hbd(0)
 REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [REMOVE_VALUE_HIVE, REMOVE_VALUE_HBD]
+
+RecurrentTransferPairIdRepresentation = HF26OperationRepresentation[RecurrentTransferPairIdOperationExtension]
 
 
 @dataclass(kw_only=True)
@@ -35,8 +42,15 @@ class ProcessTransferSchedule(OperationCommand):
     to: str
 
     def _create_recurent_transfer_pair_id_extension(self, pair_id: int | None) -> list[Any]:
-        pair_id = 0 if pair_id is None else pair_id
-        return [{"type": "recurrent_transfer_pair_id", "value": {"pair_id": pair_id}}] if pair_id > 0 else []
+        # TODO: This will be removed after hf28, because pair_id will be mandatory
+        if pair_id is None or pair_id == 0:
+            return []
+
+        recurent_transfer_extension = RecurrentTransferPairIdOperationExtension(pair_id=pair_id)
+        extension = RecurrentTransferPairIdRepresentation(
+            type=recurent_transfer_extension.get_name(), value=recurent_transfer_extension
+        )
+        return [extension.dict(by_alias=True)]
 
     async def fetch_scheduled_transfers_for_current_account(self) -> ScheduledTransfers:
         """Get all scheduled transfers (recurrent transfers) for current account from blockchain."""
