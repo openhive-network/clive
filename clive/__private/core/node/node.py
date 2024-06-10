@@ -203,8 +203,10 @@ class Node(BaseNode):
                 self._dynamic_global_properties = await GetDynamicGlobalProperties(self._node).execute_with_result()
             return self._dynamic_global_properties
 
-        def clear_config(self) -> None:
+        def clear(self) -> None:
             self._config = None
+            self._network_type = None
+            self._dynamic_global_properties = None
 
     def __init__(self, profile_data: ProfileData) -> None:
         self.__profile_data = profile_data
@@ -244,8 +246,7 @@ class Node(BaseNode):
 
     async def set_address(self, address: Url) -> None:
         self.__profile_data._set_node_address(address)
-        self.cached.clear_config()
-        await self._sync_node_version()
+        self.cached.clear()
 
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         address = str(self.address)
