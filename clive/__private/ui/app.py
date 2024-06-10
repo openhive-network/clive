@@ -376,14 +376,10 @@ class Clive(App[int], ManualReactive):
     @work(name="alarms data update worker")
     async def update_alarms_data(self) -> None:
         accounts = self.world.profile_data.get_tracked_accounts()
+        wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
+        wrapper.raise_if_error_occurred()
 
-        try:
-            await self.world.commands.update_alarms_data(accounts=accounts)
-        except Exception as error:  # noqa: BLE001
-            logger.warning(f"Update alarms data failed: {error}")
-        else:
-            self.trigger_profile_data_watchers()
-            self.trigger_app_state_watchers()
+        self.trigger_profile_data_watchers()
 
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
@@ -392,16 +388,21 @@ class Clive(App[int], ManualReactive):
             self.world.profile_data.get_tracked_accounts()
         )  # accounts list gonna be empty, but dgpo will be refreshed
 
-        try:
-            await self.world.commands.update_node_data(accounts=accounts)
-            self.__amount_of_fails_during_update_node_data = 0
-        except Exception as error:  # noqa: BLE001
+        wrapper = await self.world.commands.update_node_data(accounts=accounts)
+        if wrapper.error_occurred:
             self.__amount_of_fails_during_update_node_data += 1
-            logger.warning(f"Update node data failed {self.__amount_of_fails_during_update_node_data} times: {error}")
+            logger.warning(
+                f"Update node data failed {self.__amount_of_fails_during_update_node_data} times: {wrapper.error}"
+            )
+
             if self.__amount_of_fails_during_update_node_data >= allowed_fails_of_update_node_data:
-                raise
-        else:
-            self.trigger_profile_data_watchers()
+                wrapper.raise_if_error_occurred()
+
+            return
+
+        self.__amount_of_fails_during_update_node_data = 0
+        self.trigger_profile_data_watchers()
+        self.trigger_app_state_watchers()
 
     async def __debug_log(self) -> None:
         logger.debug("===================== DEBUG =====================")
