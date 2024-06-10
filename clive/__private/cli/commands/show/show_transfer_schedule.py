@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from datetime import timedelta
-from typing import Final, TypeVar
+from datetime import datetime, timedelta
+from typing import TYPE_CHECKING, Final, TypeVar
 
 from rich.columns import Columns
 from rich.console import Console, Group
@@ -15,12 +15,23 @@ from clive.__private.core.formatters.humanize import align_to_dot, humanize_asse
 from clive.__private.core.shorthand_timedelta import timedelta_to_shorthand_timedelta
 from clive.__private.storage.accounts import Account
 from clive.__private.storage.mock_database import NodeData
-from clive.models.aliased import TransferSchedule
 from clive.models.asset import Asset
 
+if TYPE_CHECKING:
+    from clive.models.aliased import TransferSchedule
 
-class FutureTransferSchedule(TransferSchedule):
-    possible_amount: Asset.Hive
+
+@dataclass
+class FutureTransferSchedule:
+    trigger_date: datetime
+    to: str
+    amount: Asset.Hive | Asset.Hbd
+    memo: str
+    recurrence: int
+    remaining_executions: int
+    pair_id: int
+    possible_amount: Asset.Hive | Asset.Hbd
+    from_: str
 
 
 FutureScheduledTransfers = list[FutureTransferSchedule]
@@ -154,22 +165,20 @@ class ShowTransferSchedule(WorldBasedCommand):
         for scheduled_transfer in scheduled_transfers:
             for idx, remains in enumerate(range(min(scheduled_transfer.remaining_executions, deepth))):
                 amount = scheduled_transfer.amount * idx
-                temp = FutureTransferSchedule(  # type: ignore[call-arg]
-                    id_=scheduled_transfer.id_,
+                future_scheduled_transfer = FutureTransferSchedule(
                     trigger_date=scheduled_transfer.trigger_date + timedelta(hours=idx * scheduled_transfer.recurrence),
                     from_=scheduled_transfer.from_,
                     to=scheduled_transfer.to,
                     amount=scheduled_transfer.amount,
                     possible_amount=(
                         data.hive_balance - amount if data.hive_balance > amount else LACK_OF_FUNDS_AMOUNT
-                    ),  # type : ignore[call-arg]
+                    ),
                     memo=scheduled_transfer.memo,
                     recurrence=scheduled_transfer.recurrence,
-                    consecutive_failures=scheduled_transfer.consecutive_failures,
                     remaining_executions=remains,
                     pair_id=scheduled_transfer.pair_id,
                 )
-                future_scheduled_transfers.append(temp)
+                future_scheduled_transfers.append(future_scheduled_transfer)
         return self.get_sorted_by(future_scheduled_transfers, sort_by=[AllowedSorts.trigger_data])
 
     def get_sorted_by(self, scheduled_transfers: Sortable, sort_by: list[str]) -> Sortable:
