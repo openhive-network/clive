@@ -162,6 +162,7 @@ class AccountInfo(Container, AccountReferencingWidget):
             lambda: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
         )
 
+    @CliveScreen.prevent_action_when_no_accounts_node_data
     @on(OneLineButton.Pressed, "#details-button")
     def push_account_details_screen(self) -> None:
         self.app.push_screen(AccountDetails(self._account))

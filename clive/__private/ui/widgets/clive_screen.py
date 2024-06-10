@@ -51,7 +51,10 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         @wraps(func)
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
             app_ = get_clive().app_instance()
-            if not app_.world.profile_data.is_accounts_node_data_available:
+            if (
+                not app_.world.profile_data.is_accounts_node_data_available
+                or not app_.world.profile_data.is_alarms_data_available
+            ):
                 app_.notify("Waiting for data...", severity="warning")
                 return
             func(*args, **kwargs)
