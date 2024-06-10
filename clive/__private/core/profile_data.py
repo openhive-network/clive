@@ -212,6 +212,10 @@ class ProfileData(Context):
 
     @property
     def is_accounts_node_data_available(self) -> bool:
+        tracked_account = self.get_tracked_accounts()
+        if not tracked_account:
+            return False
+
         return all(account.is_node_data_available for account in self.get_tracked_accounts())
 
     @classmethod
