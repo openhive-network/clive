@@ -231,11 +231,11 @@ class Header(TextualHeader, CliveWidget):
 
     async def __get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"
-        if await node.network_type == "mainnet":
+        if await node.cached.network_type == "mainnet":
             self.__node_version_label.remove_class(class_to_switch)
         else:
             self.__node_version_label.add_class(class_to_switch)
-        return await node.network_type
+        return await node.cached.network_type
 
     def __is_in_onboarding_mode(self) -> bool:
         return self.app.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME

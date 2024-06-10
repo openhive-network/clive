@@ -392,7 +392,7 @@ class Commands(Generic[WorldT]):
     async def get_config(self) -> CommandWithResultWrapper[Config]:
         result = await self.__surround_with_exception_handlers(GetConfig(node=self._world.node))
         if result.success:
-            self._world.node._node_config = result.result_or_raise
+            self._world.node.cached._config = result.result_or_raise
         return result
 
     @overload

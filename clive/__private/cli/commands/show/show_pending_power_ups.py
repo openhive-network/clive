@@ -53,5 +53,5 @@ class ShowPendingPowerUps(WorldBasedCommand):
         console.print(delayed_votes_table)
 
     async def __get_delayed_voting_interval(self) -> timedelta:
-        node_config = await self.world.node.node_config
+        node_config = await self.world.node.cached.config
         return timedelta(seconds=node_config.HIVE_DELAYED_VOTING_TOTAL_INTERVAL_SECONDS)

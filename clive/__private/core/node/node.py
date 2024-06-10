@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from contextlib import contextmanager
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.config import settings
@@ -177,12 +177,34 @@ class Node(BaseNode):
         "node.communication_total_timeout_secs", Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS
     )
 
+    @dataclass
+    class CachedData:
+        _node: Node
+        _config: Config | None = field(init=False, default=None)
+        _network_type: str | None = field(init=False, default=None)
+
+        @property
+        async def config(self) -> Config:
+            if self._config is None:
+                self._config = await GetConfig(node=self._node).execute_with_result()
+            return self._config
+
+        @property
+        async def network_type(self) -> str:
+            if self._network_type is None:
+                await self._node._sync_node_version()
+            assert self._network_type is not None, "Network type should be set by now"
+            return self._network_type
+
+        def clear_config(self) -> None:
+            self._config = None
+
     def __init__(self, profile_data: ProfileData) -> None:
         self.__profile_data = profile_data
         self.__communication = Communication(timeout_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.api = Apis(self)
+        self.cached = self.CachedData(self)
         self.__network_type = ""
-        self._node_config: Config | None = None
 
     def batch(self, *, delay_error_on_data_access: bool = False) -> _BatchNode:
         """
@@ -210,19 +232,13 @@ class Node(BaseNode):
             yield
 
     @property
-    async def network_type(self) -> str:
-        if not self.__network_type:
-            await self.__sync_node_version()
-        return self.__network_type
-
-    @property
     def address(self) -> Url:
         return self.__profile_data.node_address
 
     async def set_address(self, address: Url) -> None:
         self.__profile_data._set_node_address(address)
-        self._node_config = None
-        await self.__sync_node_version()
+        self.cached.clear_config()
+        await self._sync_node_version()
 
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         address = str(self.address)
@@ -238,20 +254,14 @@ class Node(BaseNode):
     async def chain_id(self) -> str:
         if chain_id_from_profile := self.__profile_data.chain_id:
             return chain_id_from_profile
-        chain_id_from_node = (await self.node_config).HIVE_CHAIN_ID
+        chain_id_from_node = (await self.cached.config).HIVE_CHAIN_ID
         self.__profile_data.set_chain_id(chain_id_from_node)
         return chain_id_from_node
 
-    async def __sync_node_version(self) -> None:
-        if self.address:
-            try:
-                self.__network_type = (await self.api.database_api.get_version()).node_type
-            except CommunicationError:
-                self.__network_type = "no connection"
+    async def _sync_node_version(self) -> None:
+        try:
+            network_type: str = (await self.api.database_api.get_version()).node_type
+        except CommunicationError:
+            network_type = "no connection"
 
-    @property
-    async def node_config(self) -> Config:
-        if self._node_config is None:
-            self._node_config = await GetConfig(node=self).execute_with_result()
-        assert self._node_config is not None, "could not get config"
-        return self._node_config
+        self.cached._network_type = network_type
