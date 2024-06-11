@@ -9,7 +9,7 @@ from clive.__private.core.constants import DECLINE_VOTING_RIGHTS_PENDING_DAYS
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsProcessedData
+    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
@@ -43,13 +43,13 @@ class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInPro
         "After effective date the operation is irreversible."
     )
 
-    def update_alarm_status(self, data: AccountAlarmsProcessedData) -> None:
-        requests = data.decline_voting_rights
-        if not requests:
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:
+        request = data.decline_voting_rights
+        if not request:
             self.disable_alarm()
             return
 
-        effective_date = data.decline_voting_rights[0].effective_date
+        effective_date = request.effective_date
         new_identifier = effective_date
         self.enable_alarm(
             new_identifier,

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 from clive.__private.core.formatters.humanize import humanize_class_name
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsProcessedData
+    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 AlarmIdentifierT = TypeVar("AlarmIdentifierT")
@@ -72,7 +72,7 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
         return self.alarm_data
 
     @abstractmethod
-    def update_alarm_status(self, data: AccountAlarmsProcessedData) -> None:
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:
         """Change alarm status based on data retrieved during `update_alarms_data`."""
 
     @abstractmethod
