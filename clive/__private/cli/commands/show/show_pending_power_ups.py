@@ -39,7 +39,7 @@ class ShowPendingPowerUps(WorldBasedCommand):
         delayed_votes_table.add_column(Text("Activation time", justify="center"), style="green", no_wrap=True)
         delayed_votes_table.add_column(Text(amount_title, justify="center"), style="green", no_wrap=True)
 
-        gdpo = await self.world.node.cached.get_dynamic_global_properties()
+        gdpo = await self.world.node.cached.dynamic_global_properties
         delayed_voting_interval = await self.__get_delayed_voting_interval()
 
         for entry in delayed_votes:

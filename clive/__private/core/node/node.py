@@ -198,7 +198,8 @@ class Node(BaseNode):
             assert self._network_type is not None, "Network type should be set by now"
             return self._network_type
 
-        async def get_dynamic_global_properties(self) -> DynamicGlobalProperties:
+        @property
+        async def dynamic_global_properties(self) -> DynamicGlobalProperties:
             if self._dynamic_global_properties is None:
                 self._dynamic_global_properties = await GetDynamicGlobalProperties(self._node).execute_with_result()
             return self._dynamic_global_properties
