@@ -9,7 +9,7 @@ from clive.__private.core.constants import HIVE_OWNER_AUTH_RECOVERY_PERIOD_DAYS
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsProcessedData
+    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
@@ -39,7 +39,7 @@ class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountI
         "Setting recovery account is in progress.\nYou can cancel it by set recovery account to the old one."
     )
 
-    def update_alarm_status(self, data: AccountAlarmsProcessedData) -> None:
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:
         request = data.change_recovery_account_request
         if request is not None:
             new_identifier = request.effective_on

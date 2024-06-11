@@ -8,7 +8,7 @@ from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsProcessedData
+    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
@@ -35,7 +35,7 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
         "You should cast votes for witnesses and proposals or set a proxy.\n"
     )
 
-    def update_alarm_status(self, data: AccountAlarmsProcessedData) -> None:
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:
         expiration: datetime = data.governance_vote_expiration_ts
         never_voted_date = datetime(1969, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
         if expiration == never_voted_date:

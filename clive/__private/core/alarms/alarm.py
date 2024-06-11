@@ -9,7 +9,7 @@ from clive.__private.core.formatters.case import underscore
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsProcessedData
+    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 class CliveAlarmError(CliveError):
@@ -88,7 +88,7 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], AbstractClassMessagePump):
         return self.alarm_data
 
     @abstractmethod
-    def update_alarm_status(self, data: AccountAlarmsProcessedData) -> None:
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:
         """Change alarm status based on data retrieved during `update_alarms_data`."""
 
     @abstractmethod

@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsProcessedData
+    from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
@@ -30,7 +30,7 @@ class GovernanceNoActiveVotes(Alarm[datetime, GovernanceNoActiveVotesAlarmData])
         "You have no active governance votes.\nYou should cast votes for witnesses and proposals or set a proxy.\n"
     )
 
-    def update_alarm_status(self, data: AccountAlarmsProcessedData) -> None:
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:
         no_votes_date = datetime(1969, 12, 31, 23, 59, 59, tzinfo=timezone.utc)
         expiration = self._normalize_datetime(data.governance_vote_expiration_ts)
         if expiration == no_votes_date:
