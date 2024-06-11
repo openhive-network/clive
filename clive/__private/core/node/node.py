@@ -213,11 +213,25 @@ class Node(BaseNode):
         def clear(self) -> None:
             self._basic_info = None
 
-        async def update_dynamic_global_properties(self, dynamic_global_properties: DynamicGlobalProperties) -> None:
-            (await self.basic_info).dynamic_global_properties = dynamic_global_properties
+        async def update_dynamic_global_properties(
+            self, new_data: DynamicGlobalProperties, *, update_only_when_definitely_newer_data: bool = True
+        ) -> None:
+            def set_data() -> None:
+                basic_info.dynamic_global_properties = new_data
 
-        async def update_config(self, config: Config) -> None:
-            (await self.basic_info).config = config
+            def is_incoming_dgpo_data_newer() -> bool:
+                return current_data.head_block_number < new_data.head_block_number
+
+            basic_info = await self.basic_info
+            current_data = basic_info.dynamic_global_properties
+
+            if update_only_when_definitely_newer_data and not is_incoming_dgpo_data_newer():
+                return
+
+            set_data()
+
+        async def update_config(self, new_data: Config) -> None:
+            (await self.basic_info).config = new_data
 
         async def _ensure_basic_info(self) -> None:
             async with self._lock:
