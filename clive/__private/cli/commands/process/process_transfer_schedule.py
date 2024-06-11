@@ -65,7 +65,7 @@ class ProcessTransferSchedule(OperationCommand):
                     return st
         return None
 
-    def validate_existence(self, pair_id: int | None, should_exists: bool) -> None:
+    def validate_existence(self, pair_id: int | None, *, should_exists: bool) -> None:
         """Validate if scheduled_transfer (recurrent transfer) exists."""
         pair_id = 0 if pair_id is None else pair_id
         exists = self.scheduled_transfer is not None
@@ -123,12 +123,12 @@ class ProcessTransferScheduleCreate(ProcessTransferSchedule):
 
     async def validate_inside_context_manager(self) -> None:
         if self.scheduled_transfers:
-            self.validate_existence(self.pair_id, False)
+            self.validate_existence(self.pair_id, should_exists=False)
         await super().validate_inside_context_manager()
 
     async def validate(self) -> None:
         self.validate_amount(self.amount)
-        self.validate_existance_lifetime(self.repeat * self.frequency)
+        self.validate_existence_lifetime(self.repeat * self.frequency)
         await super().validate()
 
 
@@ -171,17 +171,17 @@ class ProcessTransferScheduleModify(ProcessTransferSchedule):
         self.validate_any_existence()
         assert self.scheduled_transfers is not None, "Value of scheduled_transfers is known at this point."
         self.validate_pair_id(self.pair_id)
-        self.validate_existence(self.pair_id, True)
+        self.validate_existence(self.pair_id, should_exists=True)
         assert self.frequency is not None, "Value of frequency is known at this point."
         assert self.repeat is not None, "Value of repeat is known at this point."
-        self.validate_existance_lifetime(self.repeat * self.frequency)
+        self.validate_existence_lifetime(self.repeat * self.frequency)
         await super().validate_inside_context_manager()
 
     async def validate(self) -> None:
         if self.amount:
             self.validate_amount(self.amount)
         if self.frequency and self.repeat:
-            self.validate_existance_lifetime(self.repeat * self.frequency)
+            self.validate_existence_lifetime(self.repeat * self.frequency)
         await super().validate()
 
 
@@ -211,5 +211,5 @@ class ProcessTransferScheduleRemove(ProcessTransferSchedule):
     async def validate_inside_context_manager(self) -> None:
         self.validate_any_existence()
         self.validate_pair_id(self.pair_id)
-        self.validate_existence(self.pair_id, True)
+        self.validate_existence(self.pair_id, should_exists=True)
         await super().validate_inside_context_manager()
