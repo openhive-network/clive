@@ -52,6 +52,10 @@ class ProcessTransferSchedule(OperationCommand):
         )
         return [extension.dict(by_alias=True)]
 
+    def _identity_check(self, scheduled_transfer: TransferSchedule, pair_id: int) -> bool:
+        """Determine if a scheduled transfer matches destination and the specified pair ID."""
+        return scheduled_transfer.to == self.to and scheduled_transfer.pair_id == pair_id
+
     async def fetch_scheduled_transfers_for_current_account(self) -> ScheduledTransfers:
         """Get all scheduled transfers (recurrent transfers) for current account from blockchain."""
         return (await self.world.commands.find_scheduled_transfers(account_name=self.from_account)).result_or_raise
@@ -61,7 +65,7 @@ class ProcessTransferSchedule(OperationCommand):
         pair_id = 0 if pair_id is None else pair_id
         if self.scheduled_transfers:
             for st in self.scheduled_transfers:
-                if st.to == self.to and st.pair_id == pair_id:
+                if self._identity_check(st, pair_id):
                     return st
         return None
 
