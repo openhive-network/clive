@@ -288,7 +288,7 @@ class Commands(Generic[WorldT]):
     async def get_dynamic_global_properties(self) -> CommandWithResultWrapper[DynamicGlobalProperties]:
         result = await self.__surround_with_exception_handlers(GetDynamicGlobalProperties(node=self._world.node))
         if result.success:
-            self._world.node.cached._dynamic_global_properties = result.result_or_raise
+            await self._world.node.cached.update_dynamic_global_properties(result.result_or_raise)
         return result
 
     async def update_node_data(
@@ -298,7 +298,7 @@ class Commands(Generic[WorldT]):
             UpdateNodeData(accounts=list(accounts or []), node=self._world.node)
         )
         if result.success:
-            self._world.node.cached._dynamic_global_properties = result.result_or_raise
+            await self._world.node.cached.update_dynamic_global_properties(result.result_or_raise)
         return result
 
     async def update_alarms_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWrapper:
@@ -392,7 +392,7 @@ class Commands(Generic[WorldT]):
     async def get_config(self) -> CommandWithResultWrapper[Config]:
         result = await self.__surround_with_exception_handlers(GetConfig(node=self._world.node))
         if result.success:
-            self._world.node.cached._config = result.result_or_raise
+            await self._world.node.cached.update_config(result.result_or_raise)
         return result
 
     @overload

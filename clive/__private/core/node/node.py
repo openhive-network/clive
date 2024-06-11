@@ -1,13 +1,13 @@
 from __future__ import annotations
 
+import asyncio
 from abc import abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.config import settings
-from clive.__private.core.commands.data_retrieval.get_config import GetConfig
-from clive.__private.core.commands.data_retrieval.get_dynamic_global_properties import GetDynamicGlobalProperties
+from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile_data import ProfileData
     from clive.core.url import Url
-    from clive.models.aliased import Config, DynamicGlobalProperties
+    from clive.models.aliased import Config, DynamicGlobalProperties, Version
 
 
 class BatchRequestError(CliveError):
@@ -181,33 +181,48 @@ class Node(BaseNode):
     @dataclass
     class CachedData:
         _node: Node
-        _config: Config | None = field(init=False, default=None)
-        _network_type: str | None = field(init=False, default=None)
-        _dynamic_global_properties: DynamicGlobalProperties | None = field(init=False, default=None)
+        _basic_info: NodeBasicInfoData | None = field(init=False, default=None)
+        _lock: asyncio.Lock = field(init=False, default_factory=asyncio.Lock)
+
+        @property
+        async def basic_info(self) -> NodeBasicInfoData:
+            await self._ensure_basic_info()
+            assert self._basic_info is not None, "basic_info is guaranteed to be set here"
+            return self._basic_info
 
         @property
         async def config(self) -> Config:
-            if self._config is None:
-                self._config = await GetConfig(node=self._node).execute_with_result()
-            return self._config
+            return (await self.basic_info).config
 
         @property
-        async def network_type(self) -> str:
-            if self._network_type is None:
-                await self._node._sync_node_version()
-            assert self._network_type is not None, "Network type should be set by now"
-            return self._network_type
+        async def version(self) -> Version:
+            return (await self.basic_info).version
 
         @property
         async def dynamic_global_properties(self) -> DynamicGlobalProperties:
-            if self._dynamic_global_properties is None:
-                self._dynamic_global_properties = await GetDynamicGlobalProperties(self._node).execute_with_result()
-            return self._dynamic_global_properties
+            return (await self.basic_info).dynamic_global_properties
+
+        @property
+        async def network_type(self) -> str:
+            return (await self.basic_info).network_type
+
+        @property
+        async def chain_id(self) -> str:
+            return (await self.basic_info).chain_id
 
         def clear(self) -> None:
-            self._config = None
-            self._network_type = None
-            self._dynamic_global_properties = None
+            self._basic_info = None
+
+        async def update_dynamic_global_properties(self, dynamic_global_properties: DynamicGlobalProperties) -> None:
+            (await self.basic_info).dynamic_global_properties = dynamic_global_properties
+
+        async def update_config(self, config: Config) -> None:
+            (await self.basic_info).config = config
+
+        async def _ensure_basic_info(self) -> None:
+            async with self._lock:
+                if self._basic_info is None:
+                    await self._node._sync_node_basic_info()
 
     def __init__(self, profile_data: ProfileData) -> None:
         self.__profile_data = profile_data
@@ -263,14 +278,9 @@ class Node(BaseNode):
     async def chain_id(self) -> str:
         if chain_id_from_profile := self.__profile_data.chain_id:
             return chain_id_from_profile
-        chain_id_from_node = (await self.cached.config).HIVE_CHAIN_ID
+        chain_id_from_node = await self.cached.chain_id
         self.__profile_data.set_chain_id(chain_id_from_node)
         return chain_id_from_node
 
-    async def _sync_node_version(self) -> None:
-        try:
-            network_type: str = (await self.api.database_api.get_version()).node_type
-        except CommunicationError:
-            network_type = "no connection"
-
-        self.cached._network_type = network_type
+    async def _sync_node_basic_info(self) -> None:
+        self.cached._basic_info = await GetNodeBasicInfo(self).execute_with_result()
