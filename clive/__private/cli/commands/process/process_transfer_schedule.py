@@ -95,10 +95,7 @@ class ProcessTransferSchedule(OperationCommand):
 
     def validate_existance_lifetime(self, scheduled_transfer_lifetime: timedelta) -> None:
         if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME:
-            raise ProcessTransferScheduleTooLongLifetimeError(
-                requested_lifetime=scheduled_transfer_lifetime,
-                maximum_lifetime=SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME,
-            )
+            raise ProcessTransferScheduleTooLongLifetimeError(requested_lifetime=scheduled_transfer_lifetime)
 
 
 @dataclass(kw_only=True)

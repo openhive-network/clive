@@ -5,15 +5,12 @@ from typing import TYPE_CHECKING
 
 from click import ClickException
 
+from clive.__private.core.constants import SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME
 from clive.__private.core.formatters.humanize import humanize_timedelta
 from clive.models.asset import Asset
 
 if TYPE_CHECKING:
-<<<<<<< HEAD
-=======
     from datetime import timedelta
-
->>>>>>> b1e69737 (Remove hardcoded message from lifetime and add humanize_timedelta.)
     from clive.__private.core.profile_data import ProfileData
 
 
@@ -176,11 +173,10 @@ class ProcessTransferScheduleNullPairIdError(CLIPrettyError):
 
 
 class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
-    def __init__(self, requested_lifetime: timedelta, maximum_lifetime: timedelta) -> None:
+    def __init__(self, requested_lifetime: timedelta) -> None:
         self.requested_lifetime = requested_lifetime
-        self.maximum_lifetime = maximum_lifetime
         message = (
             f"Requested lifetime of scheduled transfer is too long ({humanize_timedelta(self.requested_lifetime)}).\n"
-            f"Maximum available lifetime is {humanize_timedelta(self.maximum_lifetime)}."
+            f"Maximum available lifetime is {humanize_timedelta(SCHEDULED_TRANSFER_TWO_YEARS_MAX_LIFETIME)}."
         )
         super().__init__(message, errno.EPERM)
