@@ -134,7 +134,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     async def _get_dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
         """Get the dynamic global properties or return None if node is not available."""
         try:
-            return await self.app.world.node.cached.get_dynamic_global_properties()
+            return await self.app.world.node.cached.dynamic_global_properties
         except CommunicationError:
             return None
 
