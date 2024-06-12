@@ -20,11 +20,13 @@ from clive.models.aliased import (
     HF26OperationRepresentation,
     RecurrentTransferOperation,
     RecurrentTransferPairIdOperationExtension,
-    TransferSchedule,
 )
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import ScheduledTransfers
+    from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
+        ScheduledTransfer,
+        ScheduledTransfers,
+    )
 
 
 REMOVE_VALUE_HIVE: Final[Asset.Hive] = Asset.hive(0)
@@ -37,7 +39,7 @@ RecurrentTransferPairIdRepresentation = HF26OperationRepresentation[RecurrentTra
 @dataclass(kw_only=True)
 class ProcessTransferSchedule(OperationCommand):
     scheduled_transfers: ScheduledTransfers | None = field(default=None, init=False)
-    scheduled_transfer: TransferSchedule | None = field(default=None, init=False)
+    scheduled_transfer: ScheduledTransfer | None = field(default=None, init=False)
     from_account: str
     to: str
 
@@ -52,7 +54,7 @@ class ProcessTransferSchedule(OperationCommand):
         )
         return [extension.dict(by_alias=True)]
 
-    def _identity_check(self, scheduled_transfer: TransferSchedule, pair_id: int) -> bool:
+    def _identity_check(self, scheduled_transfer: ScheduledTransfer, pair_id: int) -> bool:
         """Determine if a scheduled transfer matches destination and the specified pair ID."""
         return scheduled_transfer.to == self.to and scheduled_transfer.pair_id == pair_id
 
@@ -60,11 +62,11 @@ class ProcessTransferSchedule(OperationCommand):
         """Get all scheduled transfers (recurrent transfers) for current account from blockchain."""
         return (await self.world.commands.find_scheduled_transfers(account_name=self.from_account)).result_or_raise
 
-    def get_scheduled_transfer(self, pair_id: int | None) -> TransferSchedule | None:
+    def get_scheduled_transfer(self, pair_id: int | None) -> ScheduledTransfer | None:
         """Get target `to` scheduled transfer (recurrent transfer) from the fetched collection."""
         pair_id = 0 if pair_id is None else pair_id
         if self.scheduled_transfers:
-            for st in self.scheduled_transfers:
+            for st in self.scheduled_transfers.get_scheduled_transfers():
                 if self._identity_check(st, pair_id):
                     return st
         return None
@@ -93,7 +95,7 @@ class ProcessTransferSchedule(OperationCommand):
     def validate_pair_id(self, pair_id: int | None) -> None:
         """Validate if pair_id is set, when there is more than one recurrent transfers."""
         assert self.scheduled_transfers is not None, "There are no scheduled transfers."
-        number_of_scheduled_transfers = len(self.scheduled_transfers)
+        number_of_scheduled_transfers = len(self.scheduled_transfers.get_scheduled_transfers())
         if number_of_scheduled_transfers > 1 and pair_id is None:
             raise ProcessTransferScheduleNullPairIdError
 
