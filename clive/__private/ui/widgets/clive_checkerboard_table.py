@@ -7,7 +7,7 @@ from textual.widget import Widget
 from textual.widgets import Static
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.exceptions import CliveError
+from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -19,7 +19,7 @@ EVEN_CLASS_NAME: Final[str] = "-even-column"
 Content = TypeVar("Content", bound=Any)
 
 
-class CliveCheckerboardTableError(CliveError):
+class CliveCheckerboardTableError(CliveDeveloperError):
     pass
 
 
