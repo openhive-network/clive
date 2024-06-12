@@ -218,7 +218,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         def try_get_value() -> None:
             try:
                 _ = self._value  # Error might be raised when creating InputReturnT
-            except Exception as error:  # noqa: BLE001
+            except Exception as error:
                 raise InputValueError(str(error), input_name=self.input.title) from error
 
         validation_result = self.input.validate(self.value_raw, treat_as_required=treat_as_required)

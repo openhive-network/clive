@@ -154,7 +154,7 @@ class CliveTyper(typer.Typer):
             # If ClickException was raised in the registered error handler, we need to format it like Typer does.
             rich_utils.rich_format_error(error)
             sys.exit(error.exit_code)
-        except Exception as error:
+        except Exception as error:  # noqa: BLE001
             # See: `typer/mian.py` -> `Typer.__call__` -> `except Exception as e:`
             # If any other exception was raised in the registered error handler, we need to format it like Typer does.
             setattr(
