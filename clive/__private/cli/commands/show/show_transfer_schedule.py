@@ -147,7 +147,6 @@ class ShowTransferSchedule(WorldBasedCommand):
         data: NodeData,
         deepth: int = DEFAULT_FUTURE_DEEPTH,
     ) -> FutureScheduledTransfers:
-
         future_scheduled_transfers: FutureScheduledTransfers = []
         for scheduled_transfer in scheduled_transfers:
             for idx, remains in enumerate(range(min(scheduled_transfer.remaining_executions, deepth))):

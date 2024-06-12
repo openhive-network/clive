@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 from click import ClickException
 
 if TYPE_CHECKING:
-
     from clive.__private.core.profile_data import ProfileData
 
 

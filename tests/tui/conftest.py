@@ -80,7 +80,8 @@ def node_with_wallet() -> NodeWithWallet:
 
 @pytest.fixture()
 async def prepared_env(
-    node_with_wallet: NodeWithWallet, prepare_beekeeper_wallet: None  # noqa: ARG001
+    node_with_wallet: NodeWithWallet,
+    prepare_beekeeper_wallet: None,  # noqa: ARG001
 ) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = node_with_wallet
 

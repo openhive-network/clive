@@ -50,9 +50,7 @@ async def test_chaining2(cli_tester: CLITester, authority: AuthorityType) -> Non
         authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
     ).add_account(account=OTHER_ACCOUNT.name, weight=WEIGHT).add_account(
         account=OTHER_ACCOUNT2.name, weight=WEIGHT
-    ).add_key(
-        key=OTHER_ACCOUNT.public_key, weight=WEIGHT
-    ).remove_key(
+    ).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).remove_key(
         key=WORKING_ACCOUNT_DATA.account.public_key
     ).fire()
 
@@ -73,9 +71,7 @@ async def test_chaining3(cli_tester: CLITester, authority: AuthorityType) -> Non
         authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=WEIGHT_THRESHOLD
     ).add_key(key=OTHER_ACCOUNT.public_key, weight=WEIGHT).add_account(
         account=OTHER_ACCOUNT.name, weight=WEIGHT
-    ).modify_key(
-        key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT
-    ).fire()
+    ).modify_key(key=WORKING_ACCOUNT_DATA.account.public_key, weight=MODIFIED_WEIGHT).fire()
 
     # ASSERT
     assert_is_authority(cli_tester, WORKING_ACCOUNT_DATA.account.public_key, authority)

@@ -14,7 +14,9 @@ if TYPE_CHECKING:
 
 
 async def test_fast_broadcast_smoke_test(
-    world: World, init_node: tt.InitNode, wallet: WalletInfo  # noqa: ARG001
+    world: World,
+    init_node: tt.InitNode,
+    wallet: WalletInfo,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     pubkey = (

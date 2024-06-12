@@ -18,7 +18,9 @@ if TYPE_CHECKING:
 
 
 async def test_transaction_status_in_blockchain(
-    world: World, init_node_extra_apis: tt.InitNode, wallet: WalletInfo  # noqa: ARG001
+    world: World,
+    init_node_extra_apis: tt.InitNode,
+    wallet: WalletInfo,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     pubkey = (

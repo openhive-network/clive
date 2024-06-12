@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.transaction_summary.common import TransactionSummaryCommon
 
 if TYPE_CHECKING:
-
     from clive.models import Transaction
 
 

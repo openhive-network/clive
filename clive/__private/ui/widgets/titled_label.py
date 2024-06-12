@@ -9,7 +9,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel, DynamicLabelCallbackType
 
 if TYPE_CHECKING:
-
     from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable

@@ -12,7 +12,6 @@ class CommandDataRetrieval(
     CommandDataRetrievalBase[HarvestedDataT, SanitizedDataT, CommandResultT],
     CommandWithResult[CommandResultT],
 ):
-
     async def _execute(self) -> None:
         result = await super()._perform_data_operations()
         self._result = result

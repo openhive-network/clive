@@ -31,7 +31,6 @@ class AlreadySignedHint(Label):
 
 
 class TransactionSummaryFromFile(TransactionSummaryCommon):
-
     def __init__(self, transaction: Transaction, file_path: Path) -> None:
         super().__init__()
         self.__transaction = transaction

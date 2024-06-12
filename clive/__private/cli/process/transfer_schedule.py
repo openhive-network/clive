@@ -55,7 +55,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
         repeat=repeat,
         frequency=frequency,
         memo=memo,
-        pair_id=pair_id
+        pair_id=pair_id,
     ).run()
 
 
@@ -80,13 +80,14 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
         repeat=repeat,
         frequency=frequency,
         memo=memo,
-        pair_id=pair_id
+        pair_id=pair_id,
     ).run()
 
 
 @transfer_schedule.command(name="remove", common_options=[TransferScheduleCommonOptions, OperationCommonOptions])
 async def process_transfer_schedule_remove(
-    ctx: typer.Context, pair_id: Optional[int] = pair_id_value_none_option  # noqa: ARG001
+    ctx: typer.Context,  # noqa: ARG001
+    pair_id: Optional[int] = pair_id_value_none_option,
 ) -> None:
     """Remove an existing recurrent transfer."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleRemove

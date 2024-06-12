@@ -225,7 +225,8 @@ async def show_proposal(
 
 @show.command(name="owner-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_owner_authority(
-    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
 ) -> None:
     """Fetch from blockchain and display owner authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -236,7 +237,8 @@ async def show_owner_authority(
 
 @show.command(name="active-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_active_authority(
-    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
 ) -> None:
     """Fetch from blockchain and display active authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -247,7 +249,8 @@ async def show_active_authority(
 
 @show.command(name="posting-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_posting_authority(
-    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
 ) -> None:
     """Fetch from blockchain and display posting authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -288,7 +291,8 @@ async def show_hive_power(
 
 @show.command(name="new-account-token", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_new_account_token(
-    ctx: typer.Context, account_name: str = options.account_name_option  # noqa: ARG001
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
 ) -> None:
     """Shows number of possessed tokens for account creation. To get account creation fee use command clive show chain."""
     from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken

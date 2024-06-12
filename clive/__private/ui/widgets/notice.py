@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
-
     from textual.reactive import Reactable
 
     from clive.__private.ui.widgets.dynamic_label import DynamicLabelCallbackType

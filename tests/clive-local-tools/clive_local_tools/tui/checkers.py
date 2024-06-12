@@ -97,7 +97,8 @@ def assert_operations_placed_in_blockchain(
     node: tt.RawNode, transaction_id: str, *expected_operations: AnyOperation
 ) -> None:
     transaction = node.api.account_history.get_transaction(
-        id=transaction_id, include_reversible=True  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
+        id=transaction_id,
+        include_reversible=True,  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed
     )
     operations_to_check = list(expected_operations)
     for operation_representation in transaction.operations:

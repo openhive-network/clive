@@ -40,7 +40,8 @@ async def test_api_get_public_keys(
 
 
 async def test_api_get_public_keys_with_different_wallet_name(
-    beekeeper: Beekeeper, wallet: WalletInfo  # noqa: ARG001
+    beekeeper: Beekeeper,
+    wallet: WalletInfo,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     not_existing_wallet_name = "not-existing"

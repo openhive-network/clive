@@ -46,7 +46,9 @@ async def test_batch_node_error_response_delayed(init_node: tt.InitNode, world: 
 
 @pytest.mark.parametrize("order", ["first_good", "first_bad"])
 async def test_batch_node_mixed_request_delayed(
-    init_node: tt.InitNode, world: World, order: Literal["first_good", "first_bad"]  # noqa: ARG001
+    init_node: tt.InitNode,  # noqa: ARG001
+    world: World,
+    order: Literal["first_good", "first_bad"],
 ) -> None:
     async with world.node.batch(delay_error_on_data_access=True) as node:
         if order == "first_good":

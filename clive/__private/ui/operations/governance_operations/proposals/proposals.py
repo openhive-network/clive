@@ -269,9 +269,7 @@ class Proposals(GovernanceTabPane):
 
         return self.__create_vote_operations(
             batched_proposals_ids_to_vote, working_account_name, approve=True
-        ) + self.__create_vote_operations(
-            batched_proposals_ids_to_unvote, working_account_name, approve=False
-        )  # type: ignore[return-value]
+        ) + self.__create_vote_operations(batched_proposals_ids_to_unvote, working_account_name, approve=False)  # type: ignore[return-value]
 
     def __create_vote_operations(
         self, batched_proposal_ids: list[list[int]], working_account_name: str, approve: bool

@@ -80,7 +80,9 @@ def test_setting_wrong_chain_id_raises_exception(profile_with_default_chain_id_f
 
 
 async def test_chain_id_is_retrieved_from_api_if_not_set(
-    world: World, wallet: WalletInfo, init_node: tt.InitNode  # noqa: ARG001
+    world: World,
+    wallet: WalletInfo,
+    init_node: tt.InitNode,  # noqa: ARG001
 ) -> None:
     # ARRANGE
     # any transaction so we could sign it, and hope that chain id will be retrieved from the node api
