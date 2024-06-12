@@ -7,8 +7,8 @@ from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.storage.accounts import Account, WorkingAccount
-from clive.__private.ui.alarms_representation.alarm_fix_details import get_detailed_alarm_fix_details
-from clive.__private.ui.alarms_representation.alarm_info_screen.alarm_info_screen import AlarmInfoScreen
+from clive.__private.ui.account_details.alarms.alarm_fix_details import get_detailed_alarm_fix_details
+from clive.__private.ui.account_details.alarms.alarm_info_screen.alarm_info_screen import AlarmInfoScreen
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.clive_checkerboard_table import (
@@ -30,7 +30,7 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.ui.alarms_representation.alarm_fix_details import AlarmFixDetails
+    from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
 class AlarmsTableHeader(Horizontal):

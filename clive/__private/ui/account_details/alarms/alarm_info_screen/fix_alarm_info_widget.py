@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.storage.accounts import Account
-    from clive.__private.ui.alarms_representation.alarm_fix_details import AlarmFixDetails
+    from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
 class FixAlarmInfoWidget(CliveWidget):

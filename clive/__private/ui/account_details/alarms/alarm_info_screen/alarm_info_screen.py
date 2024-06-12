@@ -8,7 +8,7 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Static
 
-from clive.__private.ui.alarms_representation.alarm_info_screen.fix_alarm_info_widget import FixAlarmInfoWidget
+from clive.__private.ui.account_details.alarms.alarm_info_screen.fix_alarm_info_widget import FixAlarmInfoWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.storage.accounts import Account
-    from clive.__private.ui.alarms_representation.alarm_fix_details import AlarmFixDetails
+    from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
 class AlarmInfo(Vertical):
