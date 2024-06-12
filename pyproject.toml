@@ -165,6 +165,8 @@ required-imports = ["from __future__ import annotations"]
     "UP007", # Use X | Y for type annotations; TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
     "B008", # Do not perform function call {name} in argument defaults; in Typer it is common to do that
     "PLR0913", # Too many arguments in function definition; too restrictive
+]
+"clive/__private/cli/common/**" = [
     "RUF009", # Do not perform function call {name} in dataclass defaults; common pattern for common options
 ]
 "clive/__private/ui/**" = [
