@@ -10,4 +10,5 @@ MEDIAN_HIVE_PRICE_LABEL: Final[str] = "median Hive price"
 CURRENT_INFLATION_RATE_LABEL: Final[str] = "current inflation rate"
 PARTICIPATION_COUNT_LABEL: Final[str] = "participation"
 VEST_HIVE_RATIO_LABEL: Final[str] = "VESTS/HIVE ratio"
-MISSING_API_LABEL: Final[str] = "N/A"
+NOT_AVAILABLE_LABEL: Final[str] = "N/A"
+MISSING_API_LABEL: Final[str] = NOT_AVAILABLE_LABEL
