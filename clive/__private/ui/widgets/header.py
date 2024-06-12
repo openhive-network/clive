@@ -9,12 +9,14 @@ from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
+from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.core.formatters.humanize import humanize_natural_time
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
+from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable
@@ -26,6 +28,7 @@ if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
     from clive.__private.storage.accounts import Account
+    from clive.models.aliased import DynamicGlobalProperties
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -111,16 +114,29 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
             id_="last-update",
         )
 
-    async def __get_last_block(self, app_state: AppState) -> str:
-        gdpo = await app_state.get_dynamic_global_properties()
+    async def __get_last_block(self) -> str:
+        gdpo = await self._get_dynamic_global_properties_or_none()
+        if gdpo is None:
+            return NOT_AVAILABLE_LABEL
+
         block_num = gdpo.head_block_number
         block_time = gdpo.time.time()
         self.__trigger_last_update()
         return f"{block_num} ({block_time} UTC)"
 
-    async def __get_last_update(self, _: bool) -> str:
-        gdpo = await self.app.world.app_state.get_dynamic_global_properties()
+    async def __get_last_update(self) -> str:
+        gdpo = await self._get_dynamic_global_properties_or_none()
+        if gdpo is None:
+            return NOT_AVAILABLE_LABEL
+
         return humanize_natural_time(datetime.datetime.now(datetime.timezone.utc) - gdpo.time)
+
+    async def _get_dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
+        """Get the dynamic global properties or return None if node is not available."""
+        try:
+            return await self.app.world.app_state.get_dynamic_global_properties()
+        except CommunicationError:
+            return None
 
     def __trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
