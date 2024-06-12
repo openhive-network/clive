@@ -213,3 +213,15 @@ class Asset:
     @staticmethod
     def get_nai(asset: type[Asset.AnyT] | Asset.AnyT) -> str:
         return asset.get_asset_information().nai
+
+    @staticmethod
+    def is_hive(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
+        return isinstance(asset, Asset.Hive)
+
+    @staticmethod
+    def is_hbd(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
+        return isinstance(asset, Asset.Hbd)
+
+    @staticmethod
+    def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
+        return isinstance(asset, Asset.Vests)
