@@ -132,14 +132,14 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
             account_harvested_data = harvested_data.account_harvested_data
             for account in self.accounts:
-                account_harvested_data[
-                    account
-                ].account_history = await node.api.account_history_api.get_account_history(
+                account_history = await node.api.account_history_api.get_account_history(
                     account=account.name,
                     limit=1,
                     operation_filter_low=non_virtual_operations_filter,
                     include_reversible=True,
                 )
+
+                account_harvested_data[account].account_history = account_history
 
         return harvested_data
 
