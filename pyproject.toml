@@ -51,7 +51,6 @@ pytest = "7.2.0"  # required by test-tools, otherwise they will fail
 
 
 [tool.poetry.group.dev.dependencies]
-black = "24.4.2"
 mypy = "1.10.0"
 pre-commit = "2.21.0"
 pytest = "7.2.0"
@@ -87,12 +86,6 @@ format-jinja = """
 files = [
     "clive/__init__.py",
 ]
-
-
-[tool.black]
-line-length = 120
-preview = true
-enable-unstable-feature = ["multiline_string_handling"]
 
 
 [tool.mypy]
@@ -131,6 +124,7 @@ ignore = [
     "FBT", # TODO: should be enabled
     "S", # TODO might be worth enabling
     "S101",  # Use of assert detected; too restrictive
+    "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
 ]
 
 [tool.ruff.lint.isort]
