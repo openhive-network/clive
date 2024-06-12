@@ -34,7 +34,7 @@ transfer_schedule = CliveTyper(name="transfer-schedule", help="Create, modify or
 
 
 @transfer_schedule.command(name="create", common_options=[TransferScheduleCommonOptions, OperationCommonOptions])
-async def process_transfer_schedule_create(
+async def process_transfer_schedule_create(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     amount: str = liquid_amount_option,
     repeat: int = repeat_value_option,
@@ -60,7 +60,7 @@ async def process_transfer_schedule_create(
 
 
 @transfer_schedule.command(name="modify", common_options=[TransferScheduleCommonOptions, OperationCommonOptions])
-async def process_transfer_schedule_modify(
+async def process_transfer_schedule_modify(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     amount: str = liquid_amount_optional_option,
     repeat: Optional[int] = repeat_value_optional_option,

@@ -164,7 +164,6 @@ required-imports = ["from __future__ import annotations"]
     "I002", # Missing required import: {name}; TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
     "UP007", # Use X | Y for type annotations; TODO: Remove when https://github.com/tiangolo/typer/pull/548 will be merged
     "B008", # Do not perform function call {name} in argument defaults; in Typer it is common to do that
-    "PLR0913", # Too many arguments in function definition; too restrictive
 ]
 "clive/__private/cli/common/**" = [
     "RUF009", # Do not perform function call {name} in dataclass defaults; common pattern for common options

@@ -159,7 +159,7 @@ async def show_witness(
 
 
 @show.command(name="proposals", common_options=[WorldWithoutBeekeeperCommonOptions])
-async def show_proposals(
+async def show_proposals(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
     order_by: OrdersEnum = typer.Option(
