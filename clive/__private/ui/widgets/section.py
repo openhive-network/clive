@@ -33,7 +33,7 @@ class Section(Container):
     }
     """
 
-    def __init__(self, title: str | None = None, id_: str | None = None, classes: str | None = None):
+    def __init__(self, title: str | None = None, id_: str | None = None, classes: str | None = None) -> None:
         super().__init__(id=id_, classes=classes)
         self._title = title
         self._section_children: list[Widget] = []
@@ -59,7 +59,7 @@ class SectionScrollable(Section):
 
     def __init__(
         self, title: str | None = None, id_: str | None = None, classes: str | None = None, focusable: bool = False
-    ):
+    ) -> None:
         super().__init__(title=title, id_=id_, classes=classes)
         self._focusable = focusable
 

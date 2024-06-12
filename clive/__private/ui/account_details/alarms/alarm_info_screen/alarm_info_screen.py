@@ -35,7 +35,7 @@ class AlarmInfo(Vertical):
 
 
 class AlarmDataHeader(Horizontal):
-    def __init__(self, *columns: str):
+    def __init__(self, *columns: str) -> None:
         super().__init__()
         self._columns = columns
 
@@ -45,12 +45,12 @@ class AlarmDataHeader(Horizontal):
 
 
 class AlarmDataRow(CliveCheckerboardTableRow):
-    def __init__(self, cells: Iterable[str]):
+    def __init__(self, cells: Iterable[str]) -> None:
         super().__init__(*[CliveCheckerBoardTableCell(content=cell) for cell in cells])
 
 
 class AlarmData(CliveCheckerboardTable):
-    def __init__(self, alarm: AnyAlarm):
+    def __init__(self, alarm: AnyAlarm) -> None:
         self._alarm_titled_data = alarm.alarm_data_ensure.get_titled_data()
         super().__init__(
             title=SectionTitle(f"{alarm.get_alarm_name_pretty_format()} alarm details"),

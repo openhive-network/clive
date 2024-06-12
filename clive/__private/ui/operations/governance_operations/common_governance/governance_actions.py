@@ -22,7 +22,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, identifier: str, vote: bool, pending: bool = False):
+    def __init__(self, identifier: str, vote: bool, pending: bool = False) -> None:
         """
         Initialize the GovernanceActionRow.
 

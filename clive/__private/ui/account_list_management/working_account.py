@@ -38,7 +38,7 @@ def _has_working_account(profile_data: ProfileData) -> bool:
 
 
 class WorkingAccountRow(CliveCheckerboardTableRow, CliveWidget):
-    def __init__(self, working_account: Account):
+    def __init__(self, working_account: Account) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(working_account.name),
             CliveCheckerBoardTableCell(OneLineButton("Remove", variant="error", id_="remove-working-account-button")),

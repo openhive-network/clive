@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 class HpInfoTableRow(CliveDataTableRow):
     BALANCE_CELL_CLASS: Final[str] = "shares-balance-cell"
 
-    def __init__(self, title: str):
+    def __init__(self, title: str) -> None:
         super().__init__(
             title,
             Static("loading...", classes=self.BALANCE_CELL_CLASS),

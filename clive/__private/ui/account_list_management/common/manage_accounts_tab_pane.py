@@ -25,7 +25,7 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: str, accounts_type: AccountsType):
+    def __init__(self, title: str, accounts_type: AccountsType) -> None:
         super().__init__(title=title)
         self._accounts_input = AccountNameInput(
             required=False,

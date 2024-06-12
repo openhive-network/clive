@@ -57,7 +57,7 @@ class AlarmsTableRow(CliveCheckerboardTableRow):
 class AlarmsTable(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "profile_data"
 
-    def __init__(self, account: Account):
+    def __init__(self, account: Account) -> None:
         super().__init__(title=SectionTitle("Manage alarms"), header=AlarmsTableHeader())
         self._account = account
         self._previous_alarms: list[AnyAlarm] | NotUpdatedYet = NotUpdatedYet()
@@ -121,7 +121,7 @@ class Alarms(TabPane, CliveWidget):
 
     ALARM_TAB_PANE_TITLE: Final[str] = "Alarms"
 
-    def __init__(self, account: Account):
+    def __init__(self, account: Account) -> None:
         super().__init__(title=self.ALARM_TAB_PANE_TITLE)
         self._account = account
 

@@ -146,7 +146,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         add: bool
         """If True, add action to the actions container, if False - remove."""
 
-    def __init__(self, row_data: GovernanceDataT, *, even: bool = False):
+    def __init__(self, row_data: GovernanceDataT, *, even: bool = False) -> None:
         """
         Initialize the GovernanceTableRow.
 

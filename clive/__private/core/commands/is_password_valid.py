@@ -16,7 +16,7 @@ class IsPasswordValidCommandError(CommandError):
 
 
 class WalletNotFoundError(IsPasswordValidCommandError):
-    def __init__(self, command: IsPasswordValid, wallet_name: str):
+    def __init__(self, command: IsPasswordValid, wallet_name: str) -> None:
         super().__init__(command, f"Wallet `{wallet_name}` not found on the beekeeper.")
 
 

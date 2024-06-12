@@ -17,5 +17,5 @@ class WatchedAccounts(ManageAccountsTabPane):
     }
     """
 
-    def __init__(self, title: str):
+    def __init__(self, title: str) -> None:
         super().__init__(title=title, accounts_type="watched_accounts")

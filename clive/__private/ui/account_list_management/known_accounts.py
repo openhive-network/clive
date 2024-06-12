@@ -6,5 +6,5 @@ from clive.__private.ui.account_list_management.common.manage_accounts_tab_pane 
 class KnownAccounts(ManageAccountsTabPane):
     """TabPane used to add and delete known accounts."""
 
-    def __init__(self, title: str):
+    def __init__(self, title: str) -> None:
         super().__init__(title=title, accounts_type="known_accounts")

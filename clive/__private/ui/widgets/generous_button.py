@@ -30,7 +30,7 @@ class GenerousButton(CliveButton):
         *,
         id_: str | None = None,
         classes: str | None = None,
-    ):
+    ) -> None:
         super().__init__(label="All!", variant="success", id_=id_, classes=classes)
         self._related_input = related_input
         self._amount_callback = amount_callback

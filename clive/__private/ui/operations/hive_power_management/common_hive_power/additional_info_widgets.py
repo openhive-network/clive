@@ -52,7 +52,7 @@ class WithdrawalInfo(Vertical, CliveWidget):
     }
     """
 
-    def __init__(self, provider: HivePowerDataProvider):
+    def __init__(self, provider: HivePowerDataProvider) -> None:
         super().__init__()
         self._provider = provider
 
@@ -91,7 +91,7 @@ class APR(DynamicLabel):
     }
     """
 
-    def __init__(self, provider: HivePowerDataProvider):
+    def __init__(self, provider: HivePowerDataProvider) -> None:
         super().__init__(obj_to_watch=provider, attribute_name="_content", callback=self._get_apr, init=False)
         self._provider = provider
 

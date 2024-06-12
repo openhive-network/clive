@@ -25,7 +25,7 @@ class AlreadySignedHint(Label):
     }
     """
 
-    def __init__(self, transaction: Transaction):
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__("(This transaction is already signed)")
         self.display = transaction.is_signed()
 

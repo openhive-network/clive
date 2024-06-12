@@ -20,7 +20,7 @@ R = TypeVar("R")
 
 
 class Api(AbstractClass):
-    def __init__(self, node: BaseNode):
+    def __init__(self, node: BaseNode) -> None:
         self._node = node
 
     @staticmethod

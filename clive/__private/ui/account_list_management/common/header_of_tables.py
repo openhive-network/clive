@@ -23,7 +23,7 @@ class AccountsTableHeader(Horizontal):
     }
     """
 
-    def __init__(self, account_column_name: str = "Name"):
+    def __init__(self, account_column_name: str = "Name") -> None:
         super().__init__()
         self._account_column_name = account_column_name
 

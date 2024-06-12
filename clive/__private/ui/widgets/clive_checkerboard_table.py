@@ -99,7 +99,7 @@ class CliveCheckerboardTableRow(CliveWidget):
     }
     """
 
-    def __init__(self, *cells: CliveCheckerBoardTableCell):
+    def __init__(self, *cells: CliveCheckerBoardTableCell) -> None:
         super().__init__()
         self.cells = cells
 
@@ -152,7 +152,7 @@ class CliveCheckerboardTable(CliveWidget):
     ATTRIBUTE_TO_WATCH: ClassVar[str] = ""
     """attribute name to trigger an update of the table and to download new data"""
 
-    def __init__(self, title: Widget, header: Widget):
+    def __init__(self, title: Widget, header: Widget) -> None:
         super().__init__()
         self._title = title
         self._header = header

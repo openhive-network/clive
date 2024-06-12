@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class HpVestsFactor(Notice):
-    def __init__(self, provider: HivePowerDataProvider):
+    def __init__(self, provider: HivePowerDataProvider) -> None:
         super().__init__(
             obj_to_watch=provider, attribute_name="_content", callback=self._get_hp_vests_factor, init=False
         )

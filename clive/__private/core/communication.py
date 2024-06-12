@@ -46,7 +46,7 @@ class Communication:
         max_attempts: int = DEFAULT_ATTEMPTS,
         timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = DEFAULT_POOL_TIME_SECONDS,
-    ):
+    ) -> None:
         self.__max_attempts = max_attempts
         self.__timeout_secs = timeout_secs
         self.__pool_time_secs = pool_time_secs

@@ -22,7 +22,7 @@ class FindScheduledTransfersFromAccountMismatchError(FindScheduledTransfersError
     account_name: str
     transfer_schedule: TransferSchedule
 
-    def __init__(self, command: Command, account_name: str, transfer_schedule: TransferSchedule):
+    def __init__(self, command: Command, account_name: str, transfer_schedule: TransferSchedule) -> None:
         self.account_name = account_name
         self.transfer_schedule = transfer_schedule
         self.reason = f"Wrong from account '{self.transfer_schedule.from_}' should be '{self.account_name}'."

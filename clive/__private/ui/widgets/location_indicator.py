@@ -30,7 +30,7 @@ class LocationIndicator(Vertical):
     }
     """
 
-    def __init__(self, big_title: str, subtitle: RenderableType = ""):
+    def __init__(self, big_title: str, subtitle: RenderableType = "") -> None:
         super().__init__()
         self._big_title = big_title
         self._subtitle = subtitle

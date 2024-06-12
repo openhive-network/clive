@@ -126,7 +126,7 @@ class PendingTransfersHeader(Horizontal):
 
 
 class PendingTransfer(CliveCheckerboardTableRow):
-    def __init__(self, pending_transfer: SavingsWithdrawals, aligned_amount: str):
+    def __init__(self, pending_transfer: SavingsWithdrawals, aligned_amount: str) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(pending_transfer.to),
             CliveCheckerBoardTableCell(aligned_amount),

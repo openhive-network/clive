@@ -60,7 +60,7 @@ class WitnessDetailsLabel(Label):
     class Clicked(Message):
         """Message send when DetailsLabel is clicked."""
 
-    def __init__(self, *, classes: str | None = None):
+    def __init__(self, *, classes: str | None = None) -> None:
         super().__init__(renderable="details", classes=classes)
 
     @on(Click)

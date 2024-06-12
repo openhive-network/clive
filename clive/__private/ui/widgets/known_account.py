@@ -28,7 +28,7 @@ class KnownAccount(CliveWidget):
     class Disabled(Message):
         """Posted when the widget is going to the disabled state. (e.g. account name is invalid so can't be known)."""
 
-    def __init__(self, input: Input, accounts_holder: ProfileData | None = None):  # noqa: A002
+    def __init__(self, input: Input, accounts_holder: ProfileData | None = None) -> None:  # noqa: A002
         """
         Initialize the widget.
 

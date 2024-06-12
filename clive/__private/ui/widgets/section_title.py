@@ -14,5 +14,5 @@ class SectionTitle(Static):
     }
     """
 
-    def __init__(self, title: str, id_: str | None = None, classes: str | None = None):
+    def __init__(self, title: str, id_: str | None = None, classes: str | None = None) -> None:
         super().__init__(renderable=title, id=id_, classes=classes)
