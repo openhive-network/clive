@@ -23,7 +23,7 @@ class InvalidOptionError(CliveError):
 
 
 def webserver_default() -> Url:
-    return Url("http", "0.0.0.0", 0)
+    return Url("http", "127.0.0.1", 0)
 
 
 def _wallet_dir_default() -> Path:

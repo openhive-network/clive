@@ -314,7 +314,7 @@ class ProfileData(Context):
         # create data directory if it doesn't exist
         path.parent.mkdir(parents=True, exist_ok=True)
 
-        with shelve.open(str(path)) as db:
+        with shelve.open(str(path)) as db:  # noqa: S301; TODO: handle that in the future
             yield db
 
     @classmethod

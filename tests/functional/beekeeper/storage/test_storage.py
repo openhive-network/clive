@@ -83,10 +83,7 @@ async def test_beekeepers_files_generation() -> None:
 
         # because of notifications.py:87
         if bk.http_endpoint.host == "127.0.0.1":
-            assert connection_url.host in [
-                "0.0.0.0",
-                "127.0.0.1",
-            ], "Address should point to localhost or all interfaces."
+            assert connection_url.host == "127.0.0.1", "Address should point to localhost."
         else:
             assert connection_url.host == bk.http_endpoint.host, "Host should be the same."
         assert connection_url.port == bk.http_endpoint.port, "Port should be the same."

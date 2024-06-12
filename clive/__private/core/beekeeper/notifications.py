@@ -85,7 +85,8 @@ class BeekeeperNotificationsServer:
     @classmethod
     def __parse_endpoint_notification(cls, details: dict[str, str]) -> Url:
         return Url.parse(
-            f"{details['address'].replace('0.0.0.0', '127.0.0.1')}:{details['port']}", protocol=details["type"].lower()
+            f"{details['address']}:{details['port']}",
+            protocol=details["type"].lower(),
         )
 
     async def close(self) -> None:

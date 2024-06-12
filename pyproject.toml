@@ -122,8 +122,8 @@ ignore = [
     "EM",  # agreed not to use it in our convention
     "FIX", # can't have that enabled, as we treat ruff result as an error on CI
     "FBT", # TODO: should be enabled
-    "S", # TODO might be worth enabling
     "S101",  # Use of assert detected; too restrictive
+    "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
 ]
 
@@ -144,6 +144,13 @@ required-imports = ["from __future__ import annotations"]
 "clive/__private/ui/**" = [
     "PLR0913", # Too many arguments in function definition; too restrictive; # TODO: could be fixed or disabled in place
     "RUF012", # Mutable class attributes should be annotated with typing.ClassVar; TODO: Check if we can fix it, it's kinda Textual-specific
+]
+"tests/**" = [
+    "S104", # Checks for hardcoded bindings to all network interfaces (0.0.0.0); in tests this is not a security issue
+    "S105", # Possible hardcoded password assigned to: "{}"; in tests this is not a security issue
+    "S106", # Possible hardcoded password assigned to argument: "{}"; in tests this is not a security issue
+    "S602", # Check for method calls that initiate a subprocess with a shell.; in tests this is not a security issue
+    "S605", # Checks for calls that start a process with a shell, providing guidance on whether the usage is safe or not; in tests this is not a security issue
 ]
 
 
