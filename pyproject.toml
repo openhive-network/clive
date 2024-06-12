@@ -58,7 +58,7 @@ pytest = "7.2.0"
 pytest-asyncio = "0.21.0"
 pytest-xdist = "3.1.0"
 pytest-timeout = "2.3.1"
-ruff = "0.2.2"
+ruff = "0.4.8"
 types-pyyaml = "6.0.12.4"
 textual-dev = "1.5.1"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
