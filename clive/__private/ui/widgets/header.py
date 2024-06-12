@@ -28,7 +28,6 @@ if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
     from clive.__private.storage.accounts import Account
-    from clive.models.aliased import DynamicGlobalProperties
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -115,7 +114,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         )
 
     async def __get_last_block(self) -> str:
-        gdpo = await self._get_dynamic_global_properties_or_none()
+        gdpo = await self.app.world.node.cached.dynamic_global_properties_or_none
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
 
@@ -125,18 +124,11 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         return f"{block_num} ({block_time} UTC)"
 
     async def __get_last_update(self) -> str:
-        gdpo = await self._get_dynamic_global_properties_or_none()
+        gdpo = await self.app.world.node.cached.dynamic_global_properties_or_none
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
 
         return humanize_natural_time(utc_now() - gdpo.time)
-
-    async def _get_dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
-        """Get the dynamic global properties or return None if node is not available."""
-        try:
-            return await self.app.world.node.cached.dynamic_global_properties
-        except CommunicationError:
-            return None
 
     def __trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
