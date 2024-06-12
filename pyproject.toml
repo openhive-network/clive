@@ -119,7 +119,6 @@ ignore = [
     "D413", # Missing blank line after last section
     "PT004", # fixture does not return anything, add leading underscore;  issue: pytest seems to ignore (not launch) auto-use fixtures with leading underscode
     "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
-    "ANN002",  # Missing annotation for *args; TODO: should be enabled
     "ANN003",  # Missing annotation for **kwargs; TODO: should be enabled
     "ANN101",  # Missing annotation for self; makes no sense
     "ANN102",  # Missing annotation for cls; makes no sense
