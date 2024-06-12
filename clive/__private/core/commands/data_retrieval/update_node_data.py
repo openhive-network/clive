@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.date_utils import utc_epoch, utc_now
 from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.core.iwax import (
     calculate_current_manabar_value,
@@ -35,10 +36,6 @@ if TYPE_CHECKING:
         FindAccounts,
     )
     from schemas.fields.compound import Manabar
-
-
-def _get_utc_epoch() -> datetime:
-    return datetime.fromtimestamp(0, timezone.utc)
 
 
 class SuppressNotExistingApis:
@@ -82,7 +79,7 @@ class _AccountSanitizedData:
 @dataclass
 class _AccountProcessedData:
     core: SchemasAccount
-    last_history_entry: datetime = field(default_factory=lambda: _get_utc_epoch())
+    last_history_entry: datetime = field(default_factory=lambda: utc_epoch())
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
     """Could be missing if rc_api is not available"""
@@ -189,7 +186,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 hp_balance=calculate_hive_power(gdpo, self._calculate_vests_balance(info.core)),
                 proxy=info.core.proxy,
                 hp_unclaimed=info.core.reward_vesting_balance,
-                last_refresh=self.__normalize_datetime(datetime.utcnow()),
+                last_refresh=utc_now(),
                 last_history_entry=info.last_history_entry,
                 last_account_update=info.core.last_account_update,
                 recovery_account=info.core.recovery_account,
@@ -211,7 +208,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
-            return _get_utc_epoch()
+            return utc_epoch()
         return self.__normalize_datetime(data.history[0][1].timestamp)
 
     def _calculate_vests_balance(self, account: SchemasAccount) -> int:

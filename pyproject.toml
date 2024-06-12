@@ -129,7 +129,6 @@ ignore = [
     "EM",  # agreed not to use it in our convention
     "FIX", # can't have that enabled, as we treat ruff result as an error on CI
     "FBT", # TODO: should be enabled
-    "DTZ", # TODO might be worth enabling
     "S", # TODO might be worth enabling
     "S101",  # Use of assert detected; too restrictive
 ]

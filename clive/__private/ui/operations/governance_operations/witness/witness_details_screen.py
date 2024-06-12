@@ -53,8 +53,9 @@ class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
             last_block = witness.last_confirmed_block_num
             price_feed = humanize_hbd_exchange_rate(witness.hbd_exchange_rate, with_label=True)
             version = witness.running_version
+            now = humanize_datetime(datetime.now().replace(microsecond=0))  # noqa: DTZ005; we want a local time there
             new_witness_data = f"""\
-            === Time of the query: {humanize_datetime(datetime.now().replace(microsecond=0))} ===
+            === Time of the query: {now} ===
                 url: {url}
                 created: {created}
                 missed blocks: {missed_blocks}

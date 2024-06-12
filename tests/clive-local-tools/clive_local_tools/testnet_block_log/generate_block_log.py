@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta
+from datetime import timedelta
 from pathlib import Path
 from random import uniform
 from typing import Final
 
 import test_tools as tt
 
+from clive.__private.core.date_utils import utc_now
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT2_DATA,
@@ -24,7 +25,7 @@ EXTRA_TIME_SHIFT_FOR_GOVERNANCE: Final[timedelta] = timedelta(days=1)
 
 def set_vest_price_by_alternate_chain_spec(node: tt.InitNode, file_path: Path) -> None:
     tt.logger.info("Creating alternate chain spec file...")
-    current_time = datetime.now()
+    current_time = utc_now()
     hardfork_num = int(node.get_version()["version"]["blockchain_version"].split(".")[1])
     alternate_chain_spec_content = {
         "genesis_time": int(current_time.timestamp()),

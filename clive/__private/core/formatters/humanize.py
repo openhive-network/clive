@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from typing import TYPE_CHECKING, Any, Literal, TypeAlias
 
@@ -15,6 +15,7 @@ from clive.__private.core.constants import (
     NULL_ACCOUNT_KEY_VALUE,
     VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES,
 )
+from clive.__private.core.date_utils import is_null_date, utc_now
 from clive.__private.core.decimal_conventer import (
     DecimalConverter,
 )
@@ -33,8 +34,6 @@ from clive.__private.core.iwax import calculate_current_inflation_rate, calculat
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
-    from datetime import timedelta
-
     from clive.__private.core.iwax import (
         HpAPRProtocol,
         VestsToHpProtocol,
@@ -47,11 +46,6 @@ def _round_to_precision(data: Decimal, precision: int) -> Decimal:
 
 
 SignPrefixT: TypeAlias = Literal["", "+", "-"]
-
-
-def _is_null_date(value: datetime) -> bool:
-    _value = value.replace(tzinfo=None)
-    return _value == datetime(1970, 1, 1, 0, 0, 0) or _value == datetime(1969, 12, 31, 23, 59, 59)
 
 
 def _maybe_labelize(label: str, text: str, *, add_label: bool = False) -> str:
@@ -99,7 +93,7 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     now=datetime(1999, 12, 31, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "a day ago"
     now=datetime(2000, 1, 1, 1, 30), value=datetime(2000, 1, 1, 0, 0) -> "an hour from now"
     """
-    if isinstance(value, datetime) and _is_null_date(value):
+    if isinstance(value, datetime) and is_null_date(value):
         return "never"
     return humanize.naturaltime(value)
 
@@ -112,13 +106,13 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
     --------
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
     """
-    if _is_null_date(value):
+    if is_null_date(value):
         return "never"
 
     format_ = "%Y-%m-%dT%H:%M:%S" if with_time else "%Y-%m-%d"
     formatted = value.strftime(format_)
     if with_relative_time:
-        return f"{formatted} ({humanize_natural_time(datetime.now(timezone.utc) - value.astimezone(timezone.utc))})"
+        return f"{formatted} ({humanize_natural_time(utc_now() - value.astimezone(timezone.utc))})"
     return formatted
 
 

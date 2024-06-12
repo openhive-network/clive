@@ -141,7 +141,7 @@ def calculate_manabar_full_regeneration_time(
         now=now, max_mana=max_mana, current_mana=current_mana, last_update_time=last_update_time
     )
     __validate_wax_response(result)
-    return datetime.datetime.utcfromtimestamp(int(result.result.decode())).replace(tzinfo=datetime.timezone.utc)
+    return datetime.datetime.fromtimestamp(int(result.result.decode()), tz=datetime.timezone.utc)
 
 
 def calculate_current_manabar_value(now: int, max_mana: int, current_mana: int, last_update_time: int) -> int:

@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
-from clive.__private.core.formatters.humanize import _is_null_date
+from clive.__private.core.date_utils import is_null_date
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
@@ -35,7 +35,7 @@ class GovernanceNoActiveVotes(Alarm[datetime, GovernanceNoActiveVotesAlarmData])
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         expiration = data.governance_vote_expiration_ts
-        if _is_null_date(expiration):
+        if is_null_date(expiration):
             new_identifier = expiration
             self.enable_alarm(new_identifier, GovernanceNoActiveVotesAlarmData(expiration_date=expiration))
             return

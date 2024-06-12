@@ -2,10 +2,12 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from datetime import datetime
 from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
 
-from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.commands.abc.command_data_retrieval import (
+    CommandDataRetrieval,
+)
+from clive.__private.core.date_utils import utc_epoch
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_hbd_exchange_rate,
@@ -13,6 +15,8 @@ from clive.__private.core.formatters.humanize import (
 )
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from clive.__private.core.node import Node
     from clive.models.aliased import DynamicGlobalProperties, Witness, WitnessesList, WitnessVotes
 
@@ -20,7 +24,7 @@ if TYPE_CHECKING:
 @dataclass
 class WitnessData:
     name: str
-    created: datetime = field(default_factory=lambda: datetime.fromtimestamp(0))
+    created: datetime = field(default_factory=utc_epoch)
     voted: bool = False
     votes: str = "?"
     rank: int | None = None

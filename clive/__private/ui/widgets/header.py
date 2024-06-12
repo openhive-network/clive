@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import datetime
 from typing import TYPE_CHECKING
 
 from textual.containers import Container, Horizontal, Vertical
@@ -9,6 +8,7 @@ from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
+from clive.__private.core.date_utils import utc_now
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.core.formatters.humanize import humanize_natural_time
 from clive.__private.core.profile_data import ProfileData
@@ -129,7 +129,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
 
-        return humanize_natural_time(datetime.datetime.now(datetime.timezone.utc) - gdpo.time)
+        return humanize_natural_time(utc_now() - gdpo.time)
 
     async def _get_dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
         """Get the dynamic global properties or return None if node is not available."""

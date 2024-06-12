@@ -8,7 +8,7 @@ from dynaconf import Dynaconf  # type: ignore[import-untyped]
 
 ROOT_DIRECTORY: Final[Path] = Path(__file__).parent.parent
 TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"
-LAUNCH_TIME: Final[datetime] = datetime.now()
+LAUNCH_TIME: Final[datetime] = datetime.now()  # noqa: DTZ005; we want to use the local timezone
 _DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
 
 # order matters - later paths override earlier values for the same key of earlier paths

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC
-from datetime import datetime
 from typing import TYPE_CHECKING, Any, Final
 
 from rich.highlighter import Highlighter
@@ -12,6 +11,7 @@ from textual.widgets import Select, Static
 from textual.widgets._select import NoSelection
 
 from clive.__private.core.communication import Communication
+from clive.__private.core.date_utils import utc_now
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -58,13 +58,13 @@ class NodesList(Container, CliveWidget):
 
 class NodeUrlHighlighter(Highlighter):
     def __init__(self) -> None:
-        self.__last_highlight_time = datetime.now()
+        self.__last_highlight_time = utc_now()
         self.__last_style = "white"
         super().__init__()
 
     def __check_and_update_highlight_period(self) -> bool:
         highlight_period: Final[int] = 1
-        now = datetime.now()
+        now = utc_now()
         if (now - self.__last_highlight_time).seconds >= highlight_period:
             self.__last_highlight_time = now
             return True
