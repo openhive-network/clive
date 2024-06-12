@@ -32,7 +32,7 @@ class BeekeeperExecutable:
         run_in_background: bool = False,
     ) -> None:
         self.__config = config
-        self.__executable: Path = self.get_path_from_settings()  # type: ignore
+        self.__executable: Path = self.get_path_from_settings()  # type: ignore[assignment]
         if self.__executable is None:
             raise BeekeeperNotConfiguredError
 

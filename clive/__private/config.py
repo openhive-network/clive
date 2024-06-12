@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Final
 
-from dynaconf import Dynaconf  # type: ignore
+from dynaconf import Dynaconf  # type: ignore[import-untyped]
 
 ROOT_DIRECTORY: Final[Path] = Path(__file__).parent.parent
 TESTS_DIRECTORY: Final[Path] = ROOT_DIRECTORY.parent / "tests"

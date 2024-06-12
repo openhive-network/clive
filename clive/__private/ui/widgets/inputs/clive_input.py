@@ -52,7 +52,7 @@ class CliveInput(Input):
         value: str
         result: ValidationResult | None = None
 
-    title: str = var("", init=False)  # type: ignore
+    title: str = var("", init=False)  # type: ignore[assignment]
 
     def __init__(
         self,

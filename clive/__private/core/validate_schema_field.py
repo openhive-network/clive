@@ -17,7 +17,7 @@ def validate_schema_field(schema_field: type[Any], value: Any) -> None:
     """
 
     class Model(BaseModel):
-        value: schema_field  # type: ignore
+        value: schema_field  # type: ignore[valid-type]
 
     Model.update_forward_refs(**locals())
     Model(value=value)

@@ -55,12 +55,12 @@ class InterceptHandler(logging.Handler):
         try:
             level = loguru_logger.level(record.levelname).name
         except ValueError:
-            level = record.levelno  # type: ignore
+            level = record.levelno  # type: ignore[assignment]
 
         # Find caller from where originated the logged message
         frame, depth = logging.currentframe(), 2
         while frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back  # type: ignore
+            frame = frame.f_back  # type: ignore[assignment]
             depth += 1
 
         loguru_logger.opt(depth=depth, exception=record.exc_info).log(level, record.getMessage())

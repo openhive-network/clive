@@ -75,7 +75,7 @@ class Clive(App[int], ManualReactive):
     is_launched: ClassVar[bool] = False
     """Whether the Clive app is currently launched."""
 
-    world: ClassVar[TextualWorld] = None  # type: ignore
+    world: ClassVar[TextualWorld] = None  # type: ignore[assignment]
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
     """A list of all notifications that were displayed."""

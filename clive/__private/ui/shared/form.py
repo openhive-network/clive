@@ -81,7 +81,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         return self.current_screen in self.__skipped_screens
 
     def __push_current_screen(self) -> None:
-        self.app.push_screen(self.current_screen(self))  # type: ignore
+        self.app.push_screen(self.current_screen(self))
 
     def __pop_current_screen(self) -> None:
         self.app.pop_screen().remove()

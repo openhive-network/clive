@@ -18,7 +18,7 @@ class MockCommand(Command):
 
 @dataclass(kw_only=True)
 class MockCommandInActive(CommandInActive):
-    app_state: None = field(init=False, default=None)  # type: ignore
+    app_state: None = field(init=False, default=None)  # type: ignore[assignment]
 
     async def _execute(self) -> None:
         """Just a mock command."""

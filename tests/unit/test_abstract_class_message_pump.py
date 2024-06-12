@@ -53,7 +53,7 @@ def test_instantiating_class_inheriting_from_abstract_class_with_abstract_method
 
     # ACT & ASSERT
     with pytest.raises(TypeError) as exception:
-        MockSubclassWithoutAbstractMethod()  # type: ignore
+        MockSubclassWithoutAbstractMethod()  # type: ignore[abstract]
 
     assert str(exception.value) == expected_error_message
 

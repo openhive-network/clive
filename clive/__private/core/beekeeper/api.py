@@ -29,7 +29,7 @@ def api(foo: FooT) -> FooT:
             )
         ).result
 
-    return impl  # type: ignore
+    return impl  # type: ignore[return-value]
 
 
 class BeekeeperApi:
