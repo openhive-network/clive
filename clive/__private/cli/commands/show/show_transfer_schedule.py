@@ -33,7 +33,6 @@ class ShowTransferSchedule(WorldBasedCommand):
             console.print(colorize_content_not_available(f"Account `{self.account_name}` has no scheduled transfers."))
             return
 
-        console.print(scheduled_transfers)
         table_definitions = self.__create_table_definition(scheduled_transfers)
         table_upcoming = self.__create_table_upcoming(scheduled_transfers)
 
