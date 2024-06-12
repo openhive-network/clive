@@ -152,7 +152,7 @@ ignore = [
     "D401", # first line should be in imperative mood; # TODO: could be fixed
     "D413", # Missing blank line after last section
     "PT004", # fixture does not return anything, add leading underscore;  issue: pytest seems to ignore (not launch) auto-use fixtures with leading underscode
-    "TRY003", # too restrictive
+    "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
     "RUF012", # TODO: Check if we can fix it, it's kinda Textual-specific
 ]
 
