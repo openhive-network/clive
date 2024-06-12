@@ -35,10 +35,10 @@ variables:
 
 include:
   - project: 'hive/hive'
-    ref: a2c01ea7a46878e1b829703788a12c82b9430fc5
+    ref: a9d30609d5a0c8371f3ece5dcd6722619f4be1d9
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
-    ref: b2ff9f5a48bc8fb379c66ec4e7907ea1e796ff1b
+    ref: 5a291802a3fef7ca756bfb3f3c07c23cbe523c48
     file: '/templates/python_projects.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
