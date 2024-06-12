@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from dataclasses import dataclass, field
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
@@ -209,7 +209,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
     def __get_account_last_history_entry(self, data: GetAccountHistory | None) -> datetime:
         if data is None:
             return utc_epoch()
-        return self.__normalize_datetime(data.history[0][1].timestamp)
+        return data.history[0][1].timestamp
 
     def _calculate_vests_balance(self, account: SchemasAccount) -> int:
         return (
@@ -255,10 +255,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             )
             - gdpo_time
         )
-
-    @staticmethod
-    def __normalize_datetime(date: datetime) -> datetime:
-        return date.replace(microsecond=0, tzinfo=timezone.utc)
 
     def __get_account(self, name: str) -> Account:
         return next(filter(lambda account: account.name == name, self.accounts))
