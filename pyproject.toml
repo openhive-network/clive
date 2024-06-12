@@ -153,7 +153,6 @@ ignore = [
     "D413", # Missing blank line after last section
     "PT004", # fixture does not return anything, add leading underscore;  issue: pytest seems to ignore (not launch) auto-use fixtures with leading underscode
     "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
-    "RUF012", # TODO: Check if we can fix it, it's kinda Textual-specific
 ]
 
 [tool.ruff.lint.isort]
@@ -170,6 +169,7 @@ required-imports = ["from __future__ import annotations"]
 ]
 "clive/__private/ui/**" = [
     "PLR0913", # too restrictive
+    "RUF012", # Mutable class attributes should be annotated with typing.ClassVar; TODO: Check if we can fix it, it's kinda Textual-specific
 ]
 
 
