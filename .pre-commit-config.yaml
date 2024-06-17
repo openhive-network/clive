@@ -43,7 +43,7 @@ repos:
           - stylelint-config-standard-scss@13.0.0
         args: [ "--fix" ]
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: 'v0.4.8'
+    rev: 'v0.4.9'
     hooks:
       - id: ruff
         name: linting code with Ruff
