@@ -192,17 +192,6 @@ class Clive(App[int], ManualReactive):
         else:
             self.push_screen(DashboardInactive())
 
-    def update_alarms_data_asap(self) -> None:
-        """Method updates alarms as soon as possible after node data becomes available."""
-
-        async def _update_alarms_data_asap() -> None:
-            while not self.world.profile_data.is_accounts_node_data_available:
-                await asyncio.sleep(0.1)
-            self.update_alarms_data()
-            self.trigger_refresh_alarms_data_interval.resume()
-
-        self.run_worker(_update_alarms_data_asap())
-
     def replace_screen(
         self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]
     ) -> AwaitMount:
@@ -371,6 +360,17 @@ class Clive(App[int], ManualReactive):
 
     def trigger_app_state_watchers(self) -> None:
         self.world.update_reactive("app_state")
+
+    def update_alarms_data_asap(self) -> None:
+        """Method updates alarms as soon as possible after node data becomes available."""
+
+        async def _update_alarms_data_asap() -> None:
+            while not self.world.profile_data.is_accounts_node_data_available:
+                await asyncio.sleep(0.1)
+            self.update_alarms_data()
+            self.trigger_refresh_alarms_data_interval.resume()
+
+        self.run_worker(_update_alarms_data_asap())
 
     @work(name="alarms data update worker")
     async def update_alarms_data(self) -> None:
