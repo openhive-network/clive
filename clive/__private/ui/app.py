@@ -365,6 +365,7 @@ class Clive(App[int], ManualReactive):
         """Method updates alarms as soon as possible after node data becomes available."""
 
         async def _update_alarms_data_asap() -> None:
+            self._refresh_alarms_data_interval.pause()
             while not self.world.profile_data.is_accounts_node_data_available:
                 await asyncio.sleep(0.1)
             self.update_alarms_data()
