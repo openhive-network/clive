@@ -13,6 +13,7 @@ from clive.__private.ui.shared.form_screen import FormScreenBase
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
+PostAction = Command | Callable[[], None]
 
 
 class Form(Contextual[ContextT], CliveScreen[None]):
@@ -28,7 +29,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         self.__skipped_screens: set[ScreenBuilder[ContextT]] = set()
         assert len(self.__screens) > self.AMOUNT_OF_DEFAULT_SCREENS, "no screen given to display"
         self._rebuild_context()
-        self._post_actions = Queue[Command]()
+        self._post_actions = Queue[PostAction]()
 
         super().__init__()
 
@@ -107,13 +108,18 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     def create_finish_screen(self) -> ScreenBuilder[ContextT]:
         return lambda owner: FinishFormScreen(owner, "Hope it didn't take too long")
 
-    def add_post_action(self, *commands: Command) -> None:
-        for command in commands:
-            self._post_actions.put_nowait(command)
+    def add_post_action(self, *actions: PostAction) -> None:
+        for action in actions:
+            self._post_actions.put_nowait(action)
 
     def clear_post_actions(self) -> None:
-        self._post_actions = Queue[Command]()
+        self._post_actions = Queue[PostAction]()
 
     async def execute_post_actions(self) -> None:
         while not self._post_actions.empty():
-            await self._post_actions.get_nowait().execute()
+            action = self._post_actions.get_nowait()
+
+            if isinstance(action, Command):
+                await action.execute()
+            else:
+                action()

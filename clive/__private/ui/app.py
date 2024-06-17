@@ -179,10 +179,13 @@ class Clive(App[int], ManualReactive):
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
 
-        self.update_data_from_node()
-        self.update_alarms_data_asap()
-        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())
+        self._refresh_node_data_interval = self.set_interval(
+            settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node(), pause=True
+        )
         self._refresh_alarms_data_interval = self.set_interval(30, lambda: self.update_alarms_data(), pause=True)
+
+        self.update_data_from_node_asap()
+        self.update_alarms_data_asap()
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
@@ -372,6 +375,11 @@ class Clive(App[int], ManualReactive):
             self._refresh_alarms_data_interval.resume()
 
         self.run_worker(_update_alarms_data_asap())
+
+    def update_data_from_node_asap(self) -> None:
+        self._refresh_node_data_interval.pause()
+        self.update_data_from_node()
+        self._refresh_node_data_interval.resume()
 
     @work(name="alarms data update worker")
     async def update_alarms_data(self) -> None:
