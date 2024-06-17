@@ -57,9 +57,12 @@ lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
 
-formatting_with_black_check:
+formatting_with_ruff_check:
   stage: static_code_analysis
-  extends: .formatting_with_black_check_template
+  extends: .project_develop_configuration_template
+  script:
+    - echo -e "${TXT_BLUE}Checking code formatting with Ruff...${TXT_CLEAR}" &&
+      ruff format --check --diff ${PACKAGES_TO_CHECK}
 
 type_check_with_mypy:
   stage: static_code_analysis
