@@ -20,7 +20,6 @@ from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.terminal.command_line import CommandLine
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -201,8 +200,6 @@ class DashboardBase(BaseScreen):
     NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (go to the Config view to add some)"
 
     BINDINGS = [
-        Binding("colon", "focus('command-line-input')", "Command line", show=False),
-        Binding("ctrl+o", "terminal", "Extend terminal", show=False),
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
         Binding("f2", "operations", "Operations"),
         Binding("f9", "config", "Config"),
@@ -215,15 +212,13 @@ class DashboardBase(BaseScreen):
         # Both attributes are used to check whether working or watched accounts have changed.
 
     def create_main_panel(self) -> ComposeResult:
-        with Body() as body:
-            with AccountsContainer():
-                if self.has_working_account:
-                    yield WorkingAccountContainer()
-                if self.has_watched_accounts:
-                    yield WatchedAccountContainer()
-                if not self.has_tracked_accounts:
-                    yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
-            yield CommandLine(focus_on_cancel=body)
+        with Body(), AccountsContainer():
+            if self.has_working_account:
+                yield WorkingAccountContainer()
+            if self.has_watched_accounts:
+                yield WatchedAccountContainer()
+            if not self.has_tracked_accounts:
+                yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
 
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", self._update_account_containers)

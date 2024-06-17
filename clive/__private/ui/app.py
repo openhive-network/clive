@@ -13,7 +13,7 @@ from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.events import ScreenResume
 from textual.notifications import Notification, Notify, SeverityLevel
-from textual.reactive import reactive, var
+from textual.reactive import var
 
 from clive.__private.config import settings
 from clive.__private.core.constants import TERMINAL_HEIGHT, TERMINAL_WIDTH
@@ -27,15 +27,12 @@ from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.shared.help import Help
-from clive.__private.ui.terminal.command_line import CommandLinePrompt
-from clive.__private.ui.terminal.terminal_screen import TerminalScreen
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Iterator
     from typing import ClassVar, Literal
 
-    from rich.console import RenderableType
     from textual.message import Message
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
@@ -79,9 +76,6 @@ class Clive(App[int], ManualReactive):
     """Whether the Clive app is currently launched."""
 
     world: ClassVar[TextualWorld] = None  # type: ignore
-
-    logs: list[RenderableType | object] = reactive([], repaint=False, init=False, always_update=True)  # type: ignore[assignment]
-    """A list of all log messages. Shared between all Terminal.Logs widgets."""
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
     """A list of all notifications that were displayed."""
@@ -303,9 +297,6 @@ class Clive(App[int], ManualReactive):
         self.title = f"{self.__class__.__name__} ({self.screen.__class__.__name__})"
         return reply
 
-    def action_terminal(self) -> None:
-        self.push_screen(TerminalScreen())
-
     def action_help(self) -> None:
         self.push_screen(Help())
 
@@ -317,17 +308,6 @@ class Clive(App[int], ManualReactive):
 
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
-
-    async def write(
-        self, text: RenderableType, *, message_type: Literal["info", "warning", "input"] | None = None
-    ) -> None:
-        if message_type == "info":
-            text = f"[blue]INFO:[/blue] {text}"
-        elif message_type == "input":
-            prefix = await self.query(CommandLinePrompt).first(CommandLinePrompt).get_current_prompt()
-            text = f"{prefix} {text}"
-
-        self.logs += [text]
 
     def post_message_to_everyone(self, message: Message) -> None:
         """Post a message to all screens in the stack."""
