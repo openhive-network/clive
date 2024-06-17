@@ -163,3 +163,4 @@ class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
             f"Requested lifetime of scheduled transfer is too long ({self.requested_lifetime}).\n"
             "Maximum available lifetime are two years."
         )
+        super().__init__(self.message, errno.EPERM)
