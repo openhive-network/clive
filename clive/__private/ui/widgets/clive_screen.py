@@ -10,6 +10,7 @@ from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
+from clive.__private.logger import logger
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError
 
@@ -55,6 +56,7 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
                 not app_.world.profile_data.is_accounts_node_data_available
                 or not app_.world.profile_data.is_accounts_alarms_data_available
             ):
+                logger.debug(f"action {func.__name__} prevented because no node or alarms data is available yet")
                 app_.notify("Waiting for data...", severity="warning")
                 return
             func(*args, **kwargs)
