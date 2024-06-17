@@ -114,53 +114,53 @@ class ProcessTransferScheduleAlreadyExistsError(CLIPrettyError):
     def __init__(self, to: str, pair_id: int) -> None:
         self.to = to
         self.pair_id = pair_id
-        self.message = (
+        message = (
             f"Scheduled transfer to `{self.to}` with pair_id `{self.pair_id}` already exists.\n"
             "Please use command `clive process transfer-schedule modify` to change it, "
             "or command `clive process transfer-schedule remove` to delete it."
         )
-        super().__init__(self.message, errno.EPERM)
+        super().__init__(message, errno.EPERM)
 
 
 class ProcessTransferScheduleDoesNotExistsError(CLIPrettyError):
     def __init__(self, to: str, pair_id: int) -> None:
         self.to = to
         self.pair_id = pair_id
-        self.message = (
+        message = (
             f"Scheduled transfer to `{self.to}` with pair_id `{self.pair_id}` does not exists.\n"
             f"Please create it first by using `clive process transfer-schedule create` command."
         )
-        super().__init__(self.message, errno.EPERM)
+        super().__init__(message, errno.EPERM)
 
 
 class ProcessTransferScheduleNoScheduledTransfersError(CLIPrettyError):
     def __init__(self, from_account: str) -> None:
         self.from_account = from_account
-        self.message = f"Account `{self.from_account}` has no scheduled transfers."
-        super().__init__(self.message, errno.EPERM)
+        message = f"Account `{self.from_account}` has no scheduled transfers."
+        super().__init__(message, errno.EPERM)
 
 
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
-        self.message = (
+        message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
             "commands must be greater than 0 HIVE/HBD.\n"
             "If you want to remove scheduled transfer, please use `clive process transfer-schedule remove` command."
         )
-        super().__init__(self.message, errno.EPERM)
+        super().__init__(message, errno.EPERM)
 
 
 class ProcessTransferScheduleNullPairIdError(CLIPrettyError):
     def __init__(self) -> None:
-        self.message = "Pair id must be set explicit, when there are multiple scheduled transfers defined."
-        super().__init__(self.message, errno.EPERM)
+        message = "Pair id must be set explicit, when there are multiple scheduled transfers defined."
+        super().__init__(message, errno.EPERM)
 
 
 class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
     def __init__(self, requested_lifetime: str) -> None:
         self.requested_lifetime = requested_lifetime
-        self.message = (
+        message = (
             f"Requested lifetime of scheduled transfer is too long ({self.requested_lifetime}).\n"
             "Maximum available lifetime are two years."
         )
-        super().__init__(self.message, errno.EPERM)
+        super().__init__(message, errno.EPERM)
