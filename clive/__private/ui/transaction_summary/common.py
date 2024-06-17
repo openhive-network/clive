@@ -120,7 +120,7 @@ class TransactionSummaryCommon(BaseScreen):
         await self.__mount_operation_items()
 
     async def _initialize_transaction(self) -> Transaction:
-        """Should return transaction that will be used in further actions."""
+        """Return transaction that will be used in further actions."""
         raise NotImplementedError("Transaction not passed via constructor and _initialize_transaction not implemented!")
 
     def _get_subtitle(self) -> RenderableType:

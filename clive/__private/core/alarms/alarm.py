@@ -48,7 +48,7 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     is_harmless: bool = False
 
     def get_alarm_name_pretty_format(self) -> str:
-        """Returns the alarm name in pretty format e.g: `Alarm example name`."""
+        """Return the alarm name in pretty format e.g: `Alarm example name`."""
         return humanize_class_name(self.__class__.__name__)
 
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
@@ -77,4 +77,4 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
 
     @abstractmethod
     def get_alarm_basic_info(self) -> str:
-        """Returns the simplest possible information about the alarm."""
+        """Return the simplest possible information about the alarm."""

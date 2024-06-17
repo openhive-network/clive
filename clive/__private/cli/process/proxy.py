@@ -12,7 +12,7 @@ async def process_proxy_set(
     account_name: str = options.account_name_option,
     proxy: str = typer.Option(..., help="Name of new proxy account."),
 ) -> None:
-    """Sets proxy or changes existing proxy."""
+    """Set a proxy or change an existing proxy."""
     from clive.__private.cli.commands.process.process_proxy_set import ProcessProxySet
 
     operation_common = OperationCommonOptions.get_instance()
@@ -28,7 +28,7 @@ async def process_proxy_clear(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
 ) -> None:
-    """Removes proxy."""
+    """Remove a proxy."""
     from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear
 
     operation_common = OperationCommonOptions.get_instance()

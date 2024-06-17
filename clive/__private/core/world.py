@@ -89,7 +89,7 @@ class World:
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
         target: Literal["beekeeper", "node", "all"] = "all",
     ) -> Iterator[None]:
-        """Allows to temporarily change connection details."""
+        """Temporarily change connection details."""
         contexts_to_enter = []
         if target in ("beekeeper", "all"):
             contexts_to_enter.append(

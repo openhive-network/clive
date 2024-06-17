@@ -36,4 +36,4 @@ class CartBasedScreen(BaseScreen, AbstractClassMessagePump):
 
     @abstractmethod
     def create_left_panel(self) -> ComposeResult:
-        """Should yield the left panel widgets."""
+        """Yield the left panel widgets."""

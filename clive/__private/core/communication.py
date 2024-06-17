@@ -62,7 +62,7 @@ class Communication:
         timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = DEFAULT_POOL_TIME_SECONDS,
     ) -> Iterator[None]:
-        """Allows to temporarily change connection details."""
+        """Temporarily change connection details."""
         before = {
             "max_attempts": self.__max_attempts,
             "timeout_secs": self.__timeout_secs,

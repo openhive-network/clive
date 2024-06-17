@@ -183,7 +183,7 @@ class PowerDown(TabPane, OperationActionBindings):
         return owned_balance.vests_balance - delegated_balance.vests_balance
 
     def _calculate_one_withdrawal(self) -> str:
-        """The withdrawal is divided into 13 parts - calculate and inform the user of the amount of one of them."""
+        """Calculate and inform the user of the amount of one withdrawal, because it's divided into 13 parts."""
         shares_input = self._shares_input.value_or_none()
 
         if shares_input is None:

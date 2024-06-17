@@ -10,7 +10,7 @@ TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transa
 
 def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     """
-    Ensures that the given content is a transaction.
+    Ensure that the given content is a transaction.
 
     If the content is a transaction, it is returned as-is.
     If the content is a list of operations, they are gathered into a transaction and returned.

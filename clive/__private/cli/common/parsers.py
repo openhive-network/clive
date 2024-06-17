@@ -97,7 +97,7 @@ def decimal_percent(raw: str) -> Decimal:
 
 @rename("text")
 def smart_frequency_parser(raw: str) -> int:
-    """Helper parser function for frequency flag used in transfer-schedule."""
+    """Parser function for frequency flag used in transfer-schedule."""
     try:
         td = shorthand_timedelta_to_timedelta(raw.lower())
     except ValueError as err:

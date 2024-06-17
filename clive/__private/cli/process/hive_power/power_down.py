@@ -46,7 +46,7 @@ async def process_power_down_cancel(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
 ) -> None:
-    """Stops power down by setting amount to 0."""
+    """Stop power down by setting amount to 0."""
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel
 
     common = OperationCommonOptions.get_instance()

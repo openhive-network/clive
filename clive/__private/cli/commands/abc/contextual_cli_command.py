@@ -35,7 +35,7 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
         return
 
     async def _hook_before_entering_context_manager(self) -> None:
-        """Hook called before entering the context manager."""
+        """Additional hook called before entering the context manager."""
         return
 
     async def run(self) -> None:

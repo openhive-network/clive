@@ -96,11 +96,11 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     @abstractmethod
     def _rebuild_context(self) -> None:
-        """Should create brand new fresh context."""
+        """Create brand new fresh context."""
 
     @abstractmethod
     def register_screen_builders(self) -> Iterator[ScreenBuilder[ContextT]]:
-        """Returns screens to display."""
+        """Return screens to display."""
 
     def create_welcome_screen(self) -> ScreenBuilder[ContextT]:
         return lambda owner: WelcomeFormScreen(owner, "Let's fill some fields")

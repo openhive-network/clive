@@ -13,7 +13,7 @@ class Context:
     """A class that could be used as a context."""
 
     def update_from_context(self, context: Self) -> None:
-        """Updates self from other context."""
+        """Update self from other context."""
         for attribute in self.__dict__:
             setattr(self, attribute, getattr(context, attribute))
 

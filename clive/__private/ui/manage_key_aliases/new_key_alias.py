@@ -118,7 +118,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
 
     def _validate(self) -> None:
         """
-        Validates the inputs.
+        Validate the inputs.
 
         Raises
         ------
@@ -179,7 +179,7 @@ class NewKeyAlias(NewKeyAliasBase):
 
     def _validate(self) -> None:
         """
-        Validates the inputs.
+        Validate the inputs.
 
         Shows the validation error to the user. Either by notification when InputValueError occurs or by placing the
         validation failures under the inputs when FailedValidationError occurs.
@@ -210,7 +210,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
 
     def _validate(self) -> None:
         """
-        Validates the inputs.
+        Validate the inputs.
 
         Converts the FailedManyValidationError to FormValidationError which can be handled by form later.
 

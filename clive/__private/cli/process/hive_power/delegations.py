@@ -18,7 +18,7 @@ async def process_delegations_set(
     delegatee: str = options.delegatee_account_name_option,
     amount: str = options.voting_amount_option,
 ) -> None:
-    """Adds or modifies vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
+    """Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegations
 
     common = OperationCommonOptions.get_instance()
@@ -33,7 +33,7 @@ async def process_delegations_remove(
     account_name: str = options.account_name_option,
     delegatee: str = options.delegatee_account_name_option,
 ) -> None:
-    """Clears vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""
+    """Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegationsRemove
 
     common = OperationCommonOptions.get_instance()

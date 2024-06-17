@@ -21,14 +21,14 @@ class CommandDataRetrievalBase(Generic[HarvestedDataT, SanitizedDataT, Processed
 
     @abstractmethod
     async def _harvest_data_from_api(self) -> HarvestedDataT:
-        """Should gather data from an API and return it."""
+        """Gather data from an API and return it."""
 
     async def _sanitize_data(self, data: HarvestedDataT) -> SanitizedDataT:
-        """Should sanitize the data and return it."""
+        """Sanitize the data and return it."""
         return data  # type: ignore[return-value]
 
     async def _process_data(self, data: SanitizedDataT) -> ProcessedDataT:
-        """Should process the data and return the result."""
+        """Process the data and return the result."""
         return data  # type: ignore[return-value]
 
     async def _perform_data_operations(self) -> ProcessedDataT:

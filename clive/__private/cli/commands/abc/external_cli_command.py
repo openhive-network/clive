@@ -12,7 +12,7 @@ class ExternalCLICommand(ABC):
 
     @abstractmethod
     async def _run(self) -> None:
-        """The actual implementation of the command."""
+        """Actual implementation of the command."""
 
     async def run(self) -> None:
         if not self._skip_validation:

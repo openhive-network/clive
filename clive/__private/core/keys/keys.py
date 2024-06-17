@@ -33,12 +33,12 @@ class Key(ABC):
 
     @abstractmethod
     def with_alias(self, alias: str) -> KeyAliased:
-        """Should return a new instance of the key with the given alias."""
+        """Return a new instance of the key with the given alias."""
 
     @staticmethod
     def determine_key_type(key: str) -> type[PublicKey | PrivateKey]:
         """
-        Determines the type of the key from the given key raw string.
+        Determine the type of the key from the given key raw string.
 
         This method requires the key to be in the correct format - because key in the wrong format will be determined as a public key also.
         """
@@ -61,7 +61,7 @@ class KeyAliased(Key, ABC):
 
     @abstractmethod
     def without_alias(self) -> Key:
-        """Should return a new instance of the key without the alias."""
+        """Return a new instance of the key without the alias."""
 
 
 @dataclass(kw_only=True, frozen=True)
@@ -137,7 +137,7 @@ class PrivateKey(Key):
     @staticmethod
     def validate(key: str) -> None:
         """
-        Validates the given key.
+        Validate the given key.
 
         Raises
         ------

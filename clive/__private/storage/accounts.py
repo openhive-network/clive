@@ -91,7 +91,7 @@ class Account:
     @staticmethod
     def validate(name: str) -> None:
         """
-        Validates the given account name.
+        Validate the given account name.
 
         Raises
         ------

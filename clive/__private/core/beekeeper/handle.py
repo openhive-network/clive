@@ -194,7 +194,7 @@ class Beekeeper:
         timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
     ) -> Iterator[None]:
-        """Allows to temporarily change connection details."""
+        """Allow to temporarily change connection details."""
         with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
             yield
 

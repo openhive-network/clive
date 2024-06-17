@@ -91,7 +91,7 @@ async def create_wallets_if_needed(
     wallet: WalletInfo,
     use_existing_wallets: bool,
 ) -> None:
-    """Helper function for creating wallets under specific terms."""
+    """Create wallets under specific terms."""
     # Do not create new wallets, if there is already existing one
     if use_existing_wallets:
         return

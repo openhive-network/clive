@@ -53,7 +53,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         return []
 
     def _get_valid_args(self) -> tuple[str, str]:
-        """Selects all input fields and validates them, if something is invalid throws an exception."""
+        """Select all input fields and validate them, if something is invalid throws an exception."""
         try:
             CliveValidatedInput.validate_many_with_error(
                 self._profile_name_input, self._password_input, self._repeat_password_input
@@ -68,7 +68,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
 
     def _create_profile(self) -> tuple[CreateWallet, SyncDataWithBeekeeper]:
         """
-        Collects the data from the form and creates a profile.
+        Collect the data from the form and create a profile.
 
         Returns
         -------

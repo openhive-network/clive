@@ -44,7 +44,7 @@ class CliveTabbedContent(TabbedContent):
             yield from pane_content
 
     def get_child_by_type(self, expect_type: type[TabbedContent.ExpectType]) -> TabbedContent.ExpectType:
-        """Returns CliveTabs instead of Tabs because get_child_by_type checks for the exact type (not subclasses)."""
+        """Return CliveTabs instead of Tabs because get_child_by_type checks for the exact type (not subclasses)."""
         if expect_type is ContentTabs:
             for child in self._nodes:
                 if isinstance(child, CliveTabs):

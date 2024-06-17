@@ -22,7 +22,7 @@ WALLET_UNACCESSIBLE_ERROR: Final[str] = "Assert Exception:false: unlock is not a
 
 async def call_and_raise_if_error(http_endpoint: Url, data: JSONRPCRequest) -> None:
     """
-    Function will query http_endpoint with given data, and raise AssertError exception if there is an error in response.
+    Query http_endpoint with given data, and raise AssertError exception if there is an error in response.
 
     Example:
     -------

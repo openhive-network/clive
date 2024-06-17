@@ -148,7 +148,7 @@ async def show_witness(
         help="Witness name.",
     ),
 ) -> None:
-    """Shows details of a specified witness."""
+    """Show details of a specified witness."""
     from clive.__private.cli.commands.show.show_witness import ShowWitness
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
@@ -213,7 +213,7 @@ async def show_proposal(
         help="Identifier of chosen proposal.",
     ),
 ) -> None:
-    """Shows details of a specified proposal."""
+    """Show details of a specified proposal."""
     from clive.__private.cli.commands.show.show_proposal import ShowProposal
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
@@ -282,7 +282,7 @@ async def show_hive_power(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
 ) -> None:
-    """Shows info about hive power related to account including delegations and withdraw routes."""
+    """Show info about hive power related to account including delegations and withdraw routes."""
     from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
@@ -294,7 +294,7 @@ async def show_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
 ) -> None:
-    """Shows number of possessed tokens for account creation. To get account creation fee use command clive show chain."""
+    """Show number of possessed tokens for account creation. To get account creation fee use command clive show chain."""
     from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()

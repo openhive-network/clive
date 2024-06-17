@@ -176,7 +176,7 @@ class CliveCheckerboardTable(CliveWidget):
         self.mount_all(self._create_table_content())
 
     async def _mount_dynamic_rows(self, content: Content) -> None:
-        """New rows are mounted when the ATTRIBUTE_TO_WATCH has been changed."""
+        """Mount new rows when the ATTRIBUTE_TO_WATCH has been changed."""
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
@@ -293,7 +293,7 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
 
     def is_anything_to_display(self, content: Content) -> bool:  # noqa: ARG002
-        """Checks whether there are elements to display. Should be overridden to create a custom condition."""
+        """Check whether there are elements to display. Should be overridden to create a custom condition."""
         return True
 
     def update_previous_state(self, content: Content) -> None:  # noqa: ARG002

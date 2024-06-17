@@ -20,7 +20,7 @@ async def process_withdraw_routes_set(
         "With no-auto-vest there is no conversion from Hive into HP.",
     ),
 ) -> None:
-    """Adds new withdraw route/modifies existing route for pair of accounts "from" and "to"."""
+    """Add new withdraw route/modify existing route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutes
 
     common = OperationCommonOptions.get_instance()
@@ -36,7 +36,7 @@ async def process_withdraw_routes_remove(
     from_account: str = options.from_account_name_option,
     to_account: str = options.to_account_name_no_default_option,
 ) -> None:
-    """Clears withdraw route for pair of accounts "from" and "to"."""
+    """Clear withdraw route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutesRemove
 
     common = OperationCommonOptions.get_instance()

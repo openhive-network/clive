@@ -6,7 +6,7 @@ from clive.__private.core.beekeeper import Beekeeper
 
 
 def check_help_output(generated_output: str) -> None:
-    """Function will parse log file in order to search pattern."""
+    """Parse log file in order to search pattern."""
     pattern_file_path = Path(__file__).parent / "patterns/help_pattern.txt"
     with pattern_file_path.open() as pattern_file:
         pattern_file_text = pattern_file.read().strip()

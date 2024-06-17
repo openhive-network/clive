@@ -96,7 +96,7 @@ async def process_update_memo_key(
         show_default=False,
     ),
 ) -> None:
-    """Sets memo key."""
+    """Set memo key."""
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate, set_memo_key
 
     update_memo_key_callback = partial(set_memo_key, key=memo_key)

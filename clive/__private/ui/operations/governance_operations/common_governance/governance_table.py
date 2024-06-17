@@ -71,10 +71,10 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
 
     @abstractmethod
     def create_custom_columns(self) -> ComposeResult:
-        """Should yield custom columns for each table."""
+        """Yield custom columns for each table."""
 
     def create_additional_headlines(self) -> ComposeResult:
-        """Should yield custom headlines that will be placed above the arrows and column names."""
+        """Yield custom headlines that will be placed above the arrows and column names."""
         return []
 
     @property
@@ -98,7 +98,7 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
 
     @abstractmethod
     def _create_row(self, data: GovernanceDataT, *, even: bool = False) -> GovernanceTableRow[GovernanceDataT]:
-        """Should return row widget."""
+        """Return row widget."""
 
     def compose(self) -> ComposeResult:
         if self.is_data_empty:
@@ -204,16 +204,16 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @abstractmethod
     def create_row_content(self) -> ComposeResult:
-        """Should contain all the information that should be displayed about the item."""
+        """Contains all the information that should be displayed about the item."""
 
     @property
     @abstractmethod
     def action_identifier(self) -> str:
-        """Should return witness name or proposal id to mount the action correctly."""
+        """Return witness name or proposal id to mount the action correctly."""
 
     @property
     def is_already_in_actions_container(self) -> bool:
-        """Should check if operation is already in the action container."""
+        """Check if operation is already in the action container."""
         try:
             self.screen.get_widget_by_id(self.get_action_row_id())
         except NoMatches:
@@ -223,12 +223,12 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @abstractmethod
     def get_action_row_id(self) -> str:
-        """Should return an id of the action row."""
+        """Return an id of the action row."""
 
     @property
     @abstractmethod
     def is_operation_in_cart(self) -> bool:
-        """Should check if operation is already in the cart."""
+        """Check if operation is already in the cart."""
 
 
 class GovernanceTable(
@@ -332,7 +332,7 @@ class GovernanceTable(
     @property
     @abstractmethod
     def data(self) -> list[GovernanceDataT]:
-        """Should return data from data provider."""
+        """Return data from data provider."""
 
     @property
     def is_data_available(self) -> bool:
@@ -367,11 +367,11 @@ class GovernanceTable(
     @property
     @abstractmethod
     def provider(self) -> GovernanceDataProviderT:
-        """Should query and return appropriate data provider."""
+        """Query and return appropriate data provider."""
 
     @abstractmethod
     def create_new_list_widget(self) -> GovernanceListWidget[GovernanceDataT]:
-        """Should return the instance of the new witnesses or proposals list."""
+        """Return the instance of the new witnesses or proposals list."""
 
     @abstractmethod
     def create_header(self) -> GovernanceListHeader:

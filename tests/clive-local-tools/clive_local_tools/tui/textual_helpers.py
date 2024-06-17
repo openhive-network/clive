@@ -22,7 +22,7 @@ POLL_TIME_SECS: Final[float] = 0.1
 
 
 async def write_text(pilot: ClivePilot, text: str) -> None:
-    """Useful for place text in any Input widget."""
+    """Place text in any Input widget."""
     await pilot.press(*list(text))
 
 

@@ -127,16 +127,16 @@ class GovernanceActions(ScrollablePartFocusable):
         return self.__actions_to_perform
 
     def hook_on_row_added(self) -> None:
-        """Method to create any action when an action row is added to the action table."""
+        """Create any action when an action row is added to the action table."""
 
     @staticmethod
     @abstractmethod
     def create_action_row_id(identifier: str) -> str:
-        """Should return id of the action row."""
+        """Return id of the action row."""
 
     @abstractmethod
     async def mount_operations_from_cart(self) -> None:
-        """Should check cart and mount all appropriate operations."""
+        """Check cart and mount all appropriate operations."""
 
     @abstractmethod
     def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:

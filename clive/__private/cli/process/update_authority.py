@@ -31,7 +31,7 @@ def send_update(ctx: Context, /, *args: Any, **kwds: Any) -> None:  # noqa: ARG0
 
 
 def add_callback_to_update_command(ctx: typer.Context, callback: AccountUpdateFunction) -> None:
-    """Adds callback modyfying authority to command ProcessAccountUpdate stored in context."""
+    """Add callback modifying authority to command ProcessAccountUpdate stored in context."""
     from clive.__private.cli.commands.process.process_account_update import ProcessAccountUpdate
 
     assert ctx.parent, f"{ctx.command_path} context parent does not exist"
@@ -136,7 +136,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
             show_default=False,
         ),
     ) -> None:
-        """Collects common options for add/remove/modify authority, calls chain of commands add/remove/modify at the end of command."""
+        """Collect common options for add/remove/modify authority, calls chain of commands add/remove/modify at the end of command."""
         from clive.__private.cli.commands.process.process_account_update import (
             ProcessAccountUpdate,
             set_threshold,

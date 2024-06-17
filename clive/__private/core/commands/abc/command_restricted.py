@@ -32,4 +32,4 @@ class CommandRestricted(Command, ABC):
 
     @abstractmethod
     async def _is_execution_possible(self) -> bool:
-        """The condition that must be met for the command to be executed. When execution is not possible, error is raised."""
+        """Condition that must be met for the command to be executed. If execution is not possible, error is raised."""

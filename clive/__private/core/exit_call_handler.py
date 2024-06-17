@@ -10,7 +10,7 @@ T = TypeVar("T")
 
 
 async def dummy(*_: Any) -> None:
-    """This is dummy function to fill default values."""  # noqa: D404
+    """Fill default values with a dummy callback."""
 
 
 class ExitCallHandler(Generic[T]):

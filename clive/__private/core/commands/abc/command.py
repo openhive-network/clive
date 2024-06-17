@@ -29,7 +29,7 @@ class Command(ABC):
         """
 
     async def execute(self) -> None:
-        """Executes the command. The result could be accessed via the `result` property."""
+        """Execute the command. The result could be accessed via the `result` property."""
         self._log_execution_info()
         await self._execute()
 

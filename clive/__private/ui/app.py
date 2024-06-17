@@ -345,7 +345,7 @@ class Clive(App[int], ManualReactive):
         self.world.update_reactive("app_state")
 
     def update_alarms_data_asap(self) -> None:
-        """Method updates alarms as soon as possible after node data becomes available."""
+        """Update alarms as soon as possible after node data becomes available."""
 
         async def _update_alarms_data_asap() -> None:
             self._refresh_alarms_data_interval.pause()

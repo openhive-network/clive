@@ -60,7 +60,7 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
 
     def _validate(self) -> None:
         """
-        Validates the inputs.
+        Validate the inputs.
 
         Raises
         ------

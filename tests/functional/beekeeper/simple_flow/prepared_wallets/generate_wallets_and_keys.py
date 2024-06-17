@@ -15,7 +15,13 @@ from clive_local_tools.data.models import Keys, WalletInfo
 
 
 async def generate_wallets_and_keys(number_of_wallets: int, aliased_format: bool = True) -> None:
-    """Function generate_wallets_and_keys is responsible of creating new wallets and keys needed for test_simple_flow in directories wallets/ and /keys . This function WILL NOT erase any content inside directories wallets/ and keys/."""
+    """
+    Create new wallets and keys needed for test_simple_flow in directories wallets/ and /keys.
+
+    Note:
+    ----
+    WILL NOT erase any content inside directories wallets/ and keys/.
+    """
     wallets = [
         WalletInfo(name=generate_wallet_name(i), password=generate_wallet_password(i), keys=Keys(count=i % 5))
         for i in range(number_of_wallets)
