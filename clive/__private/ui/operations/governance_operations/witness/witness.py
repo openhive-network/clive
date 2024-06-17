@@ -169,11 +169,7 @@ class WitnessManualSearch(Grid):
             "Limit",
             MAX_NUMBER_OF_WITNESSES_IN_TABLE,
             validators=[
-                Integer(
-                    minimum=self.LIMIT_MINIMUM,
-                    maximum=self.LIMIT_MAXIMUM,
-                    failure_description=f"Must be between {self.LIMIT_MINIMUM} and {self.LIMIT_MAXIMUM}.",  # explicit description since textual Integer doesn't have description when NotANumber
-                ),
+                Integer(minimum=self.LIMIT_MINIMUM, maximum=self.LIMIT_MAXIMUM),
             ],
             always_show_title=True,
             required=False,
