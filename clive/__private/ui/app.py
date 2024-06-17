@@ -182,7 +182,7 @@ class Clive(App[int], ManualReactive):
         self.update_data_from_node()
         self.update_alarms_data_asap()
         self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node())
-        self.trigger_refresh_alarms_data_interval = self.set_interval(30, lambda: self.update_alarms_data(), pause=True)
+        self._refresh_alarms_data_interval = self.set_interval(30, lambda: self.update_alarms_data(), pause=True)
 
         if settings.LOG_DEBUG_LOOP:
             self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
@@ -368,7 +368,7 @@ class Clive(App[int], ManualReactive):
             while not self.world.profile_data.is_accounts_node_data_available:
                 await asyncio.sleep(0.1)
             self.update_alarms_data()
-            self.trigger_refresh_alarms_data_interval.resume()
+            self._refresh_alarms_data_interval.resume()
 
         self.run_worker(_update_alarms_data_asap())
 
