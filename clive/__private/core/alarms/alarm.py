@@ -28,12 +28,15 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
 
     How to complete handle an alarm in TUI:
     ---------------------------------------
-    1. Select an alarm identifier - it can be any type, just pass it in a generic way to the `Alarm` model when selecting/creating.
+    1. Select an alarm identifier - it can be any type, just pass it in a generic way to the `Alarm` model when
+       selecting/creating.
     2. Implement a data class to store alarm data (it must inherit from `BaseAlarmData`).
-    3. Create a model of your alarm by creating a class inheriting from `Alarm` (pass the alarm identifier and data in a generic way).
+    3. Create a model of your alarm by creating a class inheriting from `Alarm` (pass the alarm identifier and data in
+       a generic way).
     4. Create a dedicated `AlarmFixDetails` and place it in `DETAILED_ALARM_FIX_DETAILS`.
     5. Place your alarm in `AlarmsStorage`.
-    6. If you need to download additional data to check the presence of an alarm - put it in the `update_alarms_data` command.
+    6. If you need to download additional data to check the presence of an alarm - put it in the `update_alarms_data`
+       command.
 
     How to complete handle an alarm in CLI:
     ---------------------------------------

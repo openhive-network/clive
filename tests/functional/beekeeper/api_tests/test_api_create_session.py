@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 import pytest
@@ -15,7 +16,13 @@ if TYPE_CHECKING:
 async def create_session(beekeeper: Beekeeper, salt: str) -> None:
     # ARRANGE
     notification_endpoint = beekeeper.notification_server_http_endpoint.as_string(with_protocol=False)
-    message_to_check = f'"id":0,"jsonrpc":"2.0","method":"beekeeper_api.create_session","params":{{"notifications_endpoint":"{notification_endpoint}","salt":"{salt}"}}'
+    message_to_check = {
+        "id": 0,
+        "jsonrpc": "2.0",
+        "method": "beekeeper_api.create_session",
+        "params": {"notifications_endpoint": notification_endpoint, "salt": salt},
+    }
+    message_to_check_json = json.dumps(message_to_check).replace(" ", "")
 
     # ACT
     token = (
@@ -28,7 +35,7 @@ async def create_session(beekeeper: Beekeeper, salt: str) -> None:
     # ASSERT
     assert len(token), "Returned token should not be empty"
     assert checkers.check_for_pattern_in_file(
-        beekeeper.get_wallet_dir() / "stderr.log", message_to_check
+        beekeeper.get_wallet_dir() / "stderr.log", message_to_check_json
     ), "Log should have information about create_session call."
 
 

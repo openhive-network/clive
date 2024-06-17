@@ -132,5 +132,5 @@ class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
     BIG_TITLE = "onboarding"
 
     async def apply_and_validate(self) -> None:
-        self._owner.clear_post_actions()  # since create profile form is a first form, should clear all previously stored actions
+        self._owner.clear_post_actions()  # create profile form is a first form, so clear all previously stored actions
         self._owner.add_post_action(*self._create_profile())

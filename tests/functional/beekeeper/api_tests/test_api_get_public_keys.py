@@ -52,7 +52,7 @@ async def test_api_get_public_keys_with_different_wallet_name(
 
 
 async def test_api_get_public_keys_with_many_wallets(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
-    """Test test_api_get_public_keys_with_many_wallets will test beekeeper_api.get_public_keys when wallets are being locked."""
+    """Will test beekeeper_api.get_public_keys when wallets are being locked."""
     # ARRANGE
     # Prepare wallets
     wallets = await setup_wallets(2, import_keys=True, keys_per_wallet=5)
@@ -87,7 +87,7 @@ async def test_api_get_public_keys_with_many_wallets(beekeeper: Beekeeper, setup
 async def test_api_get_public_keys_with_many_wallets_closed(
     beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT
 ) -> None:
-    """Test test_api_get_public_keys_with_many_wallets_closed will test beekeeper_api.get_public_keys when wallets are being closed."""
+    """Will test beekeeper_api.get_public_keys when wallets are being closed."""
     # ARRANGE
     # Prepare wallets
     wallets = await setup_wallets(2, import_keys=True, keys_per_wallet=5)

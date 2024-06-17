@@ -37,11 +37,10 @@ class DecliningVotingRightsInProgressAlarmData(BaseAlarmData):
 
 @dataclass
 class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInProgressAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "The decline voting rights operation is in progress.\n"
-        "You can cancel it by creating a decline operation with the `decline` value set to false before effective date.\n"
-        "After effective date the operation is irreversible."
-    )
+    EXTENDED_ALARM_INFO = """\
+The decline voting rights operation is in progress.
+You can cancel it by creating a decline operation with the `decline` value set to false before effective date.
+After effective date the operation is irreversible."""
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         request = data.decline_voting_rights

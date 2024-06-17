@@ -118,7 +118,7 @@ class ProposalInformation(Vertical):
 
 
 class Proposal(GovernanceTableRow[ProposalData]):
-    """The class first checks if there is a proposal in the action table - if so, move True to the GovernanceCheckbox parameter."""
+    """Check if there is a proposal in the action table - if so, move True to the GovernanceCheckbox parameter."""
 
     def create_row_content(self) -> ComposeResult:
         yield ProposalInformation(self.row_data, self.evenness)

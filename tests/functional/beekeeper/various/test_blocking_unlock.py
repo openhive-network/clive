@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from clive.core.url import Url
     from clive_local_tools.data.models import WalletInfo
 
-
 # We have 500ms time period protection on ulocking wallet.
 WALLET_UNLOCK_INTERVAL: Final[float] = 0.5
 AES_DECRYPTION_ERROR: Final[str] = "Invalid password for wallet"
@@ -21,14 +20,39 @@ WALLET_UNACCESSIBLE_ERROR: Final[str] = "Assert Exception:false: unlock is not a
 
 
 async def call_and_raise_if_error(http_endpoint: Url, data: JSONRPCRequest) -> None:
-    """
-    Query http_endpoint with given data, and raise AssertError exception if there is an error in response.
-
-    Example:
-    -------
-        {'jsonrpc': '2.0', 'error': {'code': -32003, 'message': 'Assert Exception:false: unlock is not accessible', 'data': {'code': 10, 'name': 'assert_exception', 'message': 'Assert Exception', 'stack': [{'context': {'level': 'error', 'file': 'beekeeper_wallet_api.cpp', 'line': 107, 'method': 'unlock', 'hostname': '', 'thread_name': 'th_l', 'timestamp': '2024-02-19T12:24:56'}, 'format': 'unlock is not accessible', 'data': {}}], 'extension': {'assertion_expression': 'false'}}}, 'id': 1}
-    """
+    """Query http_endpoint with given data, and raise AssertError exception if there is an error in response."""
     response = await raw_http_call(http_endpoint=http_endpoint, data=data)
+
+    # example error response:
+    _ = {
+        "jsonrpc": "2.0",
+        "error": {
+            "code": -32003,
+            "message": "Assert Exception:false: unlock is not accessible",
+            "data": {
+                "code": 10,
+                "name": "assert_exception",
+                "message": "Assert Exception",
+                "stack": [
+                    {
+                        "context": {
+                            "level": "error",
+                            "file": "beekeeper_wallet_api.cpp",
+                            "line": 107,
+                            "method": "unlock",
+                            "hostname": "",
+                            "thread_name": "th_l",
+                            "timestamp": "2024-02-19T12:24:56",
+                        },
+                        "format": "unlock is not accessible",
+                        "data": {},
+                    }
+                ],
+                "extension": {"assertion_expression": "false"},
+            },
+        },
+        "id": 1,
+    }
 
     if "error" in response:
         raise AssertionError(response["error"]["message"])

@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 
 class HpAPRProtocol(Protocol):
-    """Intention of this class is ability to simply pass gdpo, or object that provides required information needed to calculate Hp APR."""
+    """Simply pass gdpo, or object that provides required information needed to calculate Hp APR."""
 
     @property
     def head_block_number(self) -> int: ...
@@ -36,7 +36,7 @@ class HpAPRProtocol(Protocol):
 
 
 class VestsToHpProtocol(Protocol):
-    """Intention of this class is ability to simply pass gdpo, or object that provides required information needed to calculate Vests to Hp."""
+    """Simply pass gdpo, or object that provides required information needed to calculate Vests to Hp."""
 
     total_vesting_fund_hive: Asset.Hive
     total_vesting_shares: Asset.Vests

@@ -18,7 +18,11 @@ if TYPE_CHECKING:
 
 
 class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
-    """Class that displays either the name of the witness or the ID of the proposal - chosen generically based on the action to be performed."""
+    """
+    Displays either the name of the witness or the ID of the proposal.
+
+    Chosen generically based on the action to be performed.
+    """
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 

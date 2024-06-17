@@ -9,13 +9,12 @@ if TYPE_CHECKING:
 
 
 async def test_api_list_wallets(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
-    """Test test_api_list_wallets will test beekeeper_api.list_wallets api call."""
     # ARRANGE & ACT & ASSERT
     assert wallet.name == (await beekeeper.api.list_wallets()).wallets[0].name, "There should be only one wallet"
 
 
 async def test_api_list_wallets_dynamic_number(beekeeper: Beekeeper) -> None:
-    """Test test_api_list_wallets_dynamic_number will test beekeeper_api.list_wallets checks if follows number of open/closed wallets."""
+    """Check if follows number of open/closed wallets."""
     # ARRANGE
     wallets = [
         WalletInfo(name="name1", password="pas1"),

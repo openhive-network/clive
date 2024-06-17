@@ -136,7 +136,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
             show_default=False,
         ),
     ) -> None:
-        """Collect common options for add/remove/modify authority, calls chain of commands add/remove/modify at the end of command."""
+        """Collect common options for add/remove/modify authority, calls chain of commands at the end of command."""
         from clive.__private.cli.commands.process.process_account_update import (
             ProcessAccountUpdate,
             set_threshold,

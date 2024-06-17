@@ -123,7 +123,8 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
         await assert_number_of_wallets_opened(bk, len(wallets))
 
         # ACT & ASSERT 2
-        # In this block we will unlock previous locked wallet, get public keys, list walleta, remove key from unlocked wallet and set timeout on it.
+        # In this block we will unlock previous locked wallet, get public keys, list wallets, remove key
+        # from unlocked wallet and set timeout on it.
         for wallet in wallets:
             await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
             await assert_wallet_unlocked(bk, wallet.name)
@@ -138,7 +139,8 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
         await bk.api.set_timeout(seconds=1)
 
         # ACT & ASSERT 3
-        # In this block we will unlock wallet which should be locked by timeout, close it, and lastly close all sessions.
+        # In this block we will unlock wallet which should be locked by timeout, close it
+        # and lastly close all sessions.
         await asyncio.sleep(2)
         for wallet_nr, wallet in enumerate(wallets):
             await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)

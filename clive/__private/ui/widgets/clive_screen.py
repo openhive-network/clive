@@ -110,8 +110,9 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
     @staticmethod
     def _sort_bindings(data: ActiveBindingsMap) -> ActiveBindingsMap:
         """
-        Sorts bindings by placing the CTRL+X key at first place, then the ESC, then non-fn keys and fn keys at the end of the dictionary.
+        Sort bindings in a Clive-way.
 
+        By placing the CTRL+X key first, then the ESC, then non-fn keys and fn keys at the end of the dictionary.
         This is done so that the bindings in the footer are displayed in a correct, uniform way.
 
         Args:

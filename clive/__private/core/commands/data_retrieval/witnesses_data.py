@@ -74,7 +74,8 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
     search_by_pattern:
     ------------------
-    Retrieves witnesses by name pattern. The list is sorted the same way as it comes from list_witnesses (sort by_name) call.
+    Retrieves witnesses by name pattern. The list is sorted the same way as it comes from list_witnesses (sort by_name)
+    call.
     Amount of witnesses is limited to the search_by_name_limit.
 
     search_top_with_unvoted_first:

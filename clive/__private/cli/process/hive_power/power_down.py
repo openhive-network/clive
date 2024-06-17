@@ -17,7 +17,11 @@ async def process_power_down_start(
     account_name: str = options.from_account_name_option,
     amount: str = options.voting_amount_option,
 ) -> None:
-    """Start power down with given amount. If there is power down in progress displays error."""
+    """
+    Start power down with given amount.
+
+    If there is power down in progress displays error.
+    """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownStart
 
     common = OperationCommonOptions.get_instance()
@@ -32,7 +36,11 @@ async def process_power_down_restart(
     account_name: str = options.from_account_name_option,
     amount: str = options.voting_amount_option,
 ) -> None:
-    """Restart power down with given amount. If there is power down in progress overrides it. If there is no power down in progress creates new."""
+    """
+    Restart power down with given amount.
+
+    If there is power down in progress overrides it. If there is no power down in progress creates new.
+    """
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDown
 
     common = OperationCommonOptions.get_instance()

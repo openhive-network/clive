@@ -162,7 +162,8 @@ async def test_savings(  # noqa: PLR0913
 
     Clive is activated. Then:
     1. The user an operation in HBD/HIVE with memo (if possible) to own account/another account and Fast broadcasts it.
-    2. The user an operation in HBD/HIVE without memo (if possible) to own account/another account and finalizes transaction.
+    2. The user an operation in HBD/HIVE without memo (if possible) to own account/another account and finalizes
+       transaction.
     3. The user an operation in HBD/HIVE to own account/another account, adds to the cart and then broadcasts it.
     """
     node, _, pilot = prepared_tui_on_dashboard_active
@@ -218,7 +219,8 @@ async def test_savings_finalize_cart(
     #110: I-II (create transfer to/from savings).
 
     Clive is activated. Then:
-    4. The user makes two operations to own account/another account, the first in HBD, the second in HIVE, adds them to cart and then broadcasts.
+    4. The user makes two operations to own account/another account, the first in HBD, the second in HIVE,
+       adds them to cart and then broadcasts.
     """
     node, _, pilot = prepared_tui_on_dashboard_active
 

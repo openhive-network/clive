@@ -43,9 +43,15 @@ def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
 
     Also provides a nice error message if something is wrong with the asset input.
     E.g. when Asset.LiquidT is allowed:
-    --amount "5.0 notexisting" -> Invalid value for '--amount': Unknown asset type: 'NOTEXISTING'. Only ['HIVE', 'HBD'] are allowed.
-    --amount "5.0 vests" -> Invalid value for '--amount': Only ['HIVE', 'HBD'] are allowed.
-    --amount "5.0000000 hive" -> Invalid value for '--amount': Invalid asset amount format: '5.0000000'. Reason: ['Invalid precision for HIVE. Must be <=3.']
+    --amount "5.0 notexisting"
+        "Invalid value for '--amount': Unknown asset type: 'NOTEXISTING'. Only ['HIVE', 'HBD'] are allowed."
+
+    --amount "5.0 vests"
+        "Invalid value for '--amount': Only ['HIVE', 'HBD'] are allowed."
+
+    --amount "5.0000000 hive"
+        "Invalid value for '--amount': Invalid asset amount format: '5.0000000'. Reason: ['Invalid precision for HIVE.
+          Must be <=3.']"
     """
     from clive.models.asset import Asset, AssetAmountInvalidFormatError, UnknownAssetTypeError
 

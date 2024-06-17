@@ -22,7 +22,6 @@ EXPECTED_SIGNATURE: Final[str] = (
 
 @pytest.mark.parametrize("explicit_wallet_name", [False, True])
 async def test_api_sign_digest(beekeeper: Beekeeper, wallet_no_keys: WalletInfo, explicit_wallet_name: str) -> None:
-    """Test test_api_sign_digest will test beekeeper_api.sign_digest api call."""
     # ARRANGE
     explicit_wallet_name_param = {"wallet_name": wallet_no_keys.name} if explicit_wallet_name else {}
     await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
@@ -51,7 +50,7 @@ async def test_api_sign_digest_with_different_wallet_name(beekeeper: Beekeeper, 
 
 
 async def test_api_sign_digest_with_deleted_key(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
-    """Test test_api_sign_digest will test beekeeper_api.sign_digest will try to sign sigest with key that hase been deleted."""
+    """Will try to sign digest with key that hase been deleted."""
     # ARRANGE
     await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
 
@@ -68,7 +67,7 @@ async def test_api_sign_digest_with_deleted_key(beekeeper: Beekeeper, wallet_no_
 
 
 async def test_api_sign_digest_with_closed_wallet(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
-    """Test test_api_sign_digest will test beekeeper_api.sign_digest will try to sign sigest with key in wallet that hase been closed."""
+    """Will try to sign digest with key in wallet that hase been closed."""
     # ARRANGE
     await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
 
@@ -83,7 +82,7 @@ async def test_api_sign_digest_with_closed_wallet(beekeeper: Beekeeper, wallet_n
 
 
 async def test_api_sign_digest_with_deleted_wallet(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
-    """Test test_api_sign_digest will test beekeeper_api.sign_digest will try to sign digest with key in wallet that has been deleted."""
+    """Will try to sign digest with key in wallet that has been deleted."""
     # ARRANGE
     await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
 
@@ -102,8 +101,8 @@ async def test_api_sign_digest_with_deleted_wallet(beekeeper: Beekeeper, wallet_
 
 
 async def test_api_sign_digest_with_locked_wallet(beekeeper: Beekeeper, wallet_no_keys: WalletInfo) -> None:
+    """Will try to sign digest with key in wallet that has been locked."""
     # ARRANGE
-    """Test test_api_sign_digest will test beekeeper_api.sign_digest will try to sign digest with key in wallet that has been locked."""
     await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=PRIVATE_KEY)
 
     signature = (await beekeeper.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=PUBLIC_KEY)).signature

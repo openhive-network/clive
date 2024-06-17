@@ -40,7 +40,8 @@ class Key(ABC):
         """
         Determine the type of the key from the given key raw string.
 
-        This method requires the key to be in the correct format - because key in the wrong format will be determined as a public key also.
+        This method requires the key to be in the correct format.
+        That's because key in the wrong format will be determined as a public key also.
         """
         try:
             iwax.calculate_public_key(key)

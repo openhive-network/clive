@@ -104,7 +104,7 @@ class WitnessNameLabel(Label, CliveWidget):
 
 
 class Witness(GovernanceTableRow[WitnessData]):
-    """The class first checks if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
+    """Check if there is a witness in the action table - if so, move True to the WitnessCheckbox parameter."""
 
     BINDINGS = [Binding("f3", "show_details", "Details")]
 

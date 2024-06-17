@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 class FixAlarmInfoWidget(CliveWidget):
-    """A widget with information on how to fix the alarm, and possibly a button to mark it as harmless or go to clive-fix."""
+    """Widget with information how to fix the alarm, and possibly a button to mark it as harmless or go to clive-fix."""
 
     DEFAULT_CSS = """
     FixAlarmInfoWidget {
@@ -51,7 +51,8 @@ class FixAlarmInfoWidget(CliveWidget):
 
     def compose(self) -> ComposeResult:
         if isinstance(self._account, WorkingAccount):
-            # It is impossible to perform operations without a working account, so if the account is watched, it is not possible to fix the alarm
+            # It is impossible to perform operations without a working account,
+            # so if the account is watched, it is not possible to fix the alarm
             yield from self._get_how_to_fix_content()
         else:
             yield SectionTitle("This is a watched account so it is not possible to fix the alarm.")

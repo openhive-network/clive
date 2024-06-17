@@ -95,11 +95,17 @@ def assert_no_exit_code_error(result: Result | pytest.ExceptionInfo[CLITestComma
 def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] | int, expected_exit_code: int) -> None:
     if isinstance(result, Result):
         actual_exit_code = result.exit_code
-        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'. Output:\n{result.output}"
+        message = (
+            f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n"
+            f"Output:\n{result.output}"
+        )
     elif isinstance(result, pytest.ExceptionInfo):
         command_result = result.value.result
         actual_exit_code = command_result.exit_code
-        message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'. Output:\n{command_result.output}"
+        message = (
+            f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'.\n"
+            f"Output:\n{command_result.output}"
+        )
     else:
         actual_exit_code = result
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."

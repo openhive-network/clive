@@ -49,19 +49,21 @@ def assert_is_clive_composed_input_focused(
         pilot.app.screen.query_one(composed_input) if isinstance(composed_input, type) else composed_input
     )
 
-    context_details = f"\nContext: {context}" if context else ""
+    context_details = f"Context: {context}" if context else ""
 
     def query_one_in_composed_input(query: str | type[Widget]) -> Widget:
         try:
             widget = composed_input_instance.query_one(query)
         except NoMatches as error:
             raise AssertionError(
-                f"{composed_input_instance}.query_one('{query}') failed. Expected {target=} couldn't be found in such a composed input. Are you sure it consists of it?"
+                f"{composed_input_instance}.query_one('{query}') failed.\n"
+                f"Expected {target=} couldn't be found in such a composed input. Are you sure it consists of it?\n"
                 f"{context_details}"
             ) from error
         except TooManyMatches as error:
             raise AssertionError(
-                f"{composed_input_instance}.query_one('{query}') with {target=} returns more than one widget. Probably changed structure in such composed input."
+                f"{composed_input_instance}.query_one('{query}') with {target=} returns more than one widget.\n"
+                f"Probably changed structure in such composed input.\n"
                 f"{context_details}"
             ) from error
         return widget

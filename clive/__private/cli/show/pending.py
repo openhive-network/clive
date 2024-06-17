@@ -24,7 +24,7 @@ async def show_pending_power_ups(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
 ) -> None:
-    """Vesting account balance is changed immediately after power up but it takes 1 month to affect governance voting power."""
+    """Vesting account balance is changed immediately after power up but it takes 1 month to affect governance voting power."""  # noqa: E501
     from clive.__private.cli.commands.show.show_pending_power_ups import ShowPendingPowerUps
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()

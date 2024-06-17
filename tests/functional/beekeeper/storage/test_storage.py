@@ -8,7 +8,7 @@ from clive_local_tools.beekeeper import checkers
 
 
 async def test_multiply_beekeepeer_same_storage(tmp_path: Path) -> None:
-    """Test test_multiply_beekeepeer_same_storage will check, if it is possible to run multiple instances of beekeepers pointing to the same storage."""
+    """Will check if it is possible to run multiple instances of beekeepers pointing to the same storage."""
     # ARRANGE
     same_storage = tmp_path / "same_storage"
     same_storage.mkdir()
@@ -35,7 +35,7 @@ async def test_multiply_beekeepeer_same_storage(tmp_path: Path) -> None:
 
 
 async def test_multiply_beekeepeer_different_storage(tmp_path: Path) -> None:
-    """Test test_multiply_beekeepeer_different_storage will check, if it is possible to run multiple instances of beekeepers pointing to the different storage."""
+    """Will check if it is possible to run multiple instances of beekeepers pointing to the different storage."""
     # ARRANGE
     bk1_path = tmp_path / "bk1"
     bk1_path.mkdir()

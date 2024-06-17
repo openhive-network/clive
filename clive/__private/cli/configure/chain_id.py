@@ -30,7 +30,11 @@ async def set_chain_id(
 async def unset_chain_id(
     ctx: typer.Context,  # noqa: ARG001
 ) -> None:
-    """Unset the actual chain ID for the profile. Will be dynamically set to the one from node get_config api when needed first time."""
+    """
+    Unset the actual chain ID for the profile.
+
+    Will be dynamically set to the one from node get_config api when needed first time.
+    """
     from clive.__private.cli.commands.configure.chain_id import UnsetChainId
 
     common = ProfileCommonOptions.get_instance()

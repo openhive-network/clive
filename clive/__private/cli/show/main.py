@@ -294,7 +294,11 @@ async def show_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name_option,
 ) -> None:
-    """Show number of possessed tokens for account creation. To get account creation fee use command clive show chain."""
+    """
+    Show number of possessed tokens for account creation.
+
+    To get account creation fee use command `clive show chain`.
+    """
     from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
