@@ -63,7 +63,7 @@ class BeekeeperResponseError(BeekeeperError, CommunicationError):
 
 
 class BeekeeperNotMatchingIdJsonRPCError(BeekeeperError):
-    def __init__(self, given: Any, got: Any) -> None:
+    def __init__(self, given: Any, got: Any) -> None:  # noqa: ANN401
         self.given = given
         self.got = got
         message = f"Given id `{given}` does not match the id of the response `{got}`"

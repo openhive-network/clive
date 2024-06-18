@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Final
+from typing import Final
 
 import pytest
 
@@ -32,7 +32,7 @@ PUBLIC_KEY_ALIAS: Final[PublicKeyAliased] = PUBLIC_KEY.with_alias("my_key")
     [PUBLIC_KEY_RAW, PUBLIC_KEY, PUBLIC_KEY_ALIAS, PRIVATE_KEY_RAW, PRIVATE_KEY, PRIVATE_KEY_ALIAS],
     ids=["public_key_raw", "public_key", "public_key_alias", "private_key_raw", "private_key", "private_key_alias"],
 )
-def test_keys_equal_positive(first: Key, second: Any) -> None:
+def test_keys_equal_positive(first: Key, second: str | Key) -> None:
     # ACT & ASSERT
     assert first == second
 
@@ -46,7 +46,7 @@ def test_keys_equal_positive(first: Key, second: Any) -> None:
     "second",
     [123, None, [], {}, "5K7WfKML9MDVBKGD7cPXNvHy8zM4bqsoTorqFiMecygbHdrcMhF"],
 )
-def test_keys_equal_negative(first: Key, second: Any) -> None:
+def test_keys_equal_negative(first: Key, second: str | Key) -> None:
     # ACT & ASSERT
     assert first != second
 

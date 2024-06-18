@@ -29,7 +29,7 @@ class Transaction(SchemasTransaction):
 
     @validator("operations", pre=True)
     @classmethod
-    def convert_operations(cls, value: Any) -> list[OperationRepresentationType]:
+    def convert_operations(cls, value: Any) -> list[OperationRepresentationType]:  # noqa: ANN401
         assert isinstance(value, list)
         return [convert_to_representation(op) for op in value]
 

@@ -24,7 +24,7 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     The transaction.
     """
 
-    def __ensure_operation(item: Any) -> Operation:
+    def __ensure_operation(item: Any) -> Operation:  # noqa: ANN401
         assert isinstance(item, OperationBaseClass)
         return item  # type: ignore[return-value]
 

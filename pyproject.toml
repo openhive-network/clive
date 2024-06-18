@@ -111,7 +111,6 @@ ignore = [
     "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
     "ANN101",  # Missing annotation for self; makes no sense
     "ANN102",  # Missing annotation for cls; makes no sense
-    "ANN401", # Dynamically typed expressions (typing.Any) are disallowed in {name}; TODO: should be enabled, and eventually noqa in place of usage
     "TD002", # Missing author in to-do; no need for that
     "TD003",  # Missing issue link on the line following this to-do; no need for that
     "SLF001",  # Private member accessed: {access}; too restrictive
@@ -123,6 +122,9 @@ ignore = [
     "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
 ]
+
+[tool.ruff.lint.flake8-annotations]
+allow-star-arg-any = true
 
 [tool.ruff.lint.isort]
 known-first-party = ["clive", "wax", "schemas", "clive_local_tools"]

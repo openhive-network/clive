@@ -70,7 +70,7 @@ class DynamicLabel(CliveWidget):
         return self.__label.renderable
 
     def on_mount(self) -> None:
-        def delegate_work(old_value: Any, value: Any) -> None:
+        def delegate_work(old_value: Any, value: Any) -> None:  # noqa: ANN401
             self.run_worker(self.attribute_changed(old_value, value))
 
         self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work, self._init)
@@ -78,7 +78,7 @@ class DynamicLabel(CliveWidget):
     def compose(self) -> ComposeResult:
         yield self.__label
 
-    async def attribute_changed(self, old_value: Any, value: Any) -> None:
+    async def attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
         callback = self.__callback
 
         if not self._first_try_callback():

@@ -24,7 +24,7 @@ if TYPE_CHECKING:
 class CustomJSONEncoder(json.JSONEncoder):
     TIME_FORMAT_WITH_MILLIS: Final[str] = "%Y-%m-%dT%H:%M:%S.%f"
 
-    def default(self, obj: Any) -> Any:
+    def default(self, obj: Any) -> Any:  # noqa: ANN401
         if isinstance(obj, datetime):
             return obj.strftime(self.TIME_FORMAT_WITH_MILLIS)
 
@@ -82,7 +82,7 @@ class Communication:
         self,
         url: str,
         *,
-        data: Any,
+        data: Any,  # noqa: ANN401
         max_attempts: int | None = None,
         timeout_secs: float | None = None,
         pool_time_secs: float | None = None,
@@ -109,7 +109,7 @@ class Communication:
         self,
         url: str,
         *,
-        data: Any,
+        data: Any,  # noqa: ANN401
         max_attempts: int | None = None,
         timeout_secs: float | None = None,
         pool_time_secs: float | None = None,
@@ -134,7 +134,7 @@ class Communication:
         self,
         url: str,
         *,
-        data: Any,
+        data: Any,  # noqa: ANN401
         max_attempts: int | None = None,
         timeout_secs: float | None = None,
         pool_time_secs: float | None = None,
@@ -217,7 +217,7 @@ class Communication:
         raise CommunicationError(url, data_serialized, result) from exception
 
     @classmethod
-    def __check_response(cls, url: str, request: str, result: Any) -> None:
+    def __check_response(cls, url: str, request: str, result: Any) -> None:  # noqa: ANN401
         if isinstance(result, dict):
             cls.__check_response_item(url=url, request=request, response=result, item=result)
         elif isinstance(result, list):
@@ -227,7 +227,7 @@ class Communication:
             raise UnknownResponseFormatError(url, request, result)
 
     @classmethod
-    def __check_response_item(cls, url: str, request: str, response: Any, item: JsonT) -> None:
+    def __check_response_item(cls, url: str, request: str, response: Any, item: JsonT) -> None:  # noqa: ANN401
         if "error" in item:
             logger.debug(f"Error in response from {url=}, request={request}, response={response}")
             raise ErrorInResponseJsonError

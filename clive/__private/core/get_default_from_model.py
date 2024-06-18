@@ -19,7 +19,7 @@ class NoMatchesError(CliveError):
 
 
 @overload
-def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str) -> Any: ...
+def get_default_from_model(model: type[BaseModel] | BaseModel, field_name: str) -> Any: ...  # noqa: ANN401
 
 
 @overload

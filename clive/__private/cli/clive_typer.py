@@ -65,7 +65,7 @@ class CliveTyper(typer.Typer):
             no_args_is_help=True,
         )
 
-    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         try:
             return super().__call__(*args, **kwargs)
         except Exception as error:  # noqa: BLE001
@@ -90,7 +90,7 @@ class CliveTyper(typer.Typer):
 
         def decorator(f: CommandFunctionType) -> CommandFunctionType:
             @wraps(f)
-            def wrapper(*args: Any, **_kwargs: Any) -> Any:
+            def wrapper(*args: Any, **_kwargs: Any) -> Any:  # noqa: ANN401
                 if len(args) > 0:
                     raise RuntimeError("Positional arguments are not supported")
 
@@ -202,7 +202,7 @@ class CliveTyper(typer.Typer):
         return {"ctx": ctx, **kwargs}
 
     @staticmethod
-    def __patch_command_sig(wrapper: Any, common_option: type[CommonOptionsBase]) -> None:
+    def __patch_command_sig(wrapper: Any, common_option: type[CommonOptionsBase]) -> None:  # noqa: ANN401
         sig = signature(wrapper)
         new_parameters = sig.parameters.copy()
 

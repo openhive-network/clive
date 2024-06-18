@@ -5,7 +5,7 @@ from typing import Any
 from pydantic import BaseModel, ValidationError
 
 
-def validate_schema_field(schema_field: type[Any], value: Any) -> None:
+def validate_schema_field(schema_field: type[Any], value: Any) -> None:  # noqa: ANN401
     """
     Validate the given value against the given schema field e.g. one that inherits from pydantic.ConstrainedStr.
 
@@ -23,7 +23,7 @@ def validate_schema_field(schema_field: type[Any], value: Any) -> None:
     Model(value=value)
 
 
-def is_schema_field_valid(schema_field: type[Any], value: Any) -> bool:
+def is_schema_field_valid(schema_field: type[Any], value: Any) -> bool:  # noqa: ANN401
     try:
         validate_schema_field(schema_field, value)
     except ValidationError:

@@ -281,7 +281,7 @@ class CliveCheckerboardTable(CliveWidget):
                     cell.add_class(ODD_CLASS_NAME)
 
     @property
-    def object_to_watch(self) -> Any:
+    def object_to_watch(self) -> Any:  # noqa: ANN401
         """
         Must be overridden by the child class when using dynamic table.
 

@@ -54,7 +54,7 @@ class _DelayedResponseWrapper:
         if self.__get_data() is None:
             raise ResponseNotReadyError
 
-    def __get_data(self) -> Any:
+    def __get_data(self) -> Any:  # noqa: ANN401
         response = super().__getattribute__("_response")
         if response is None:
             return None
@@ -70,11 +70,11 @@ class _DelayedResponseWrapper:
             response=response,
         )
 
-    def __setattr__(self, __name: str, __value: Any) -> None:
+    def __setattr__(self, __name: str, __value: Any) -> None:  # noqa: ANN401
         self.__check_is_response_available()
         setattr(self.__get_data(), __name, __value)
 
-    def __getattr__(self, __name: str) -> Any:
+    def __getattr__(self, __name: str) -> Any:  # noqa: ANN401
         self.__check_is_response_available()
         return getattr(self.__get_data(), __name)
 

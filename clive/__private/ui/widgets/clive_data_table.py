@@ -75,7 +75,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         yield self.RowTitle(self._title)
         yield from self.cells
 
-    def refresh_row(self, content: Any) -> None:
+    def refresh_row(self, content: Any) -> None:  # noqa: ANN401
         """Iterate through the cells and update each of them."""
         if content is None:  # data not received yet
             return
@@ -83,7 +83,7 @@ class CliveDataTableRow(Horizontal, CliveWidget):
         for cell, value in zip(self.cells, self.get_new_values(content), strict=True):
             cell.update(value)
 
-    def get_new_values(self, content: Any) -> tuple[str, ...]:  # type: ignore[return] # noqa: ARG002
+    def get_new_values(self, content: Any) -> tuple[str, ...]:  # type: ignore[return] # noqa: ARG002, ANN401
         """Must be overridden if the `dynamic` parameter is set to True."""
         if self._dynamic:
             raise CliveError("You must override this method if the row is dynamic.")
@@ -132,7 +132,7 @@ class CliveDataTable(CliveWidget):
         if self._dynamic:
             self.watch(self.provider, "_content", self.refresh_rows)
 
-    def refresh_rows(self, content: Any) -> None:
+    def refresh_rows(self, content: Any) -> None:  # noqa: ANN401
         if content is None:  # data not received yet
             return
 

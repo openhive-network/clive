@@ -13,7 +13,7 @@ class AbstractClass(ABC):  # noqa: B024
     Even when no abstract methods were defined, this class cannot be instantiated. (default ABC allows for that).
     """
 
-    def __new__(cls, abstract_type: type[AbstractClass] | None = None, *args: Any, **kwargs: Any) -> Any:
+    def __new__(cls, abstract_type: type[AbstractClass] | None = None, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         abstract_type = AbstractClass if abstract_type is None else abstract_type
         if abstract_type in cls.__bases__:
             raise TypeError(f"Abstract class `{cls.__name__}` cannot be instantiated.")
@@ -40,5 +40,5 @@ class AbstractClassMessagePump(AbstractClass, metaclass=MessagePumpABCMeta):
     See the :class:`AbstractClass` class for more details.
     """
 
-    def __new__(cls, *args: Any, **kwargs: Any) -> Any:
+    def __new__(cls, *args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         return super().__new__(cls, AbstractClassMessagePump, *args, **kwargs)

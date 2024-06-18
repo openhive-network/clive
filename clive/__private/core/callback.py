@@ -14,7 +14,7 @@ def count_parameters(callback: Callable[..., Any]) -> int:
     return len(signature(callback).parameters)
 
 
-async def invoke(callback: Callable[..., Any], *params: Any) -> Any:
+async def invoke(callback: Callable[..., Any], *params: Any) -> Any:  # noqa: ANN401
     """
     Invoke a callback with an arbitrary number of parameters.
 

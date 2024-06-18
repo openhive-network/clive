@@ -77,7 +77,7 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
     def object_to_watch(self) -> TextualWorld:
         return self.app.world
 
-    def update_previous_state(self, content: Any) -> None:
+    def update_previous_state(self, content: Any) -> None:  # noqa: ANN401
         self._previous_working_account = content.working_account if _has_working_account(content) else None
 
 

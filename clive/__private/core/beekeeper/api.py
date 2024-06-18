@@ -18,7 +18,7 @@ def is_token_already_passed(**kwargs: Any) -> bool:
 
 def api(foo: FooT) -> FooT:
     @wraps(foo)
-    async def impl(this: BeekeeperApi, **kwargs: Any) -> Any:
+    async def impl(this: BeekeeperApi, **kwargs: Any) -> Any:  # noqa: ANN401
         if foo.__name__ not in ["create_session"] and not is_token_already_passed(**kwargs):
             kwargs["token"] = this._owner.token
         return (
