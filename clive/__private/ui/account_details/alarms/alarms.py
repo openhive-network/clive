@@ -6,7 +6,6 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
-from clive.__private.storage.accounts import Account, WorkingAccount
 from clive.__private.ui.account_details.alarms.alarm_fix_details import get_detailed_alarm_fix_details
 from clive.__private.ui.account_details.alarms.alarm_info_screen.alarm_info_screen import AlarmInfoScreen
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -30,6 +29,7 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
+    from clive.__private.storage.accounts import Account
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
@@ -92,26 +92,9 @@ class AlarmsTable(CliveCheckerboardTable):
         account = self._get_actual_account_state(content)
         self._previous_alarms = account.alarms.harmful_alarms
 
-    def _get_account_from_watched_accounts(self, content: ProfileData) -> Account:
-        """Search for the account in the watched account and return matched account."""
-        searched_account = None
-        for account in content.watched_accounts:
-            if account == self._account:
-                searched_account = account
-        assert searched_account is not None, f"Account {self._account} not found in watched accounts"
-        return searched_account
-
     def _get_actual_account_state(self, content: ProfileData) -> Account:
         """Return the account with the actual state."""
-        return (
-            content.working_account
-            if self.is_current_account_working
-            else self._get_account_from_watched_accounts(content)
-        )
-
-    @property
-    def is_current_account_working(self) -> bool:
-        return isinstance(self._account, WorkingAccount)
+        return content.get_account_by_name(self._account)
 
 
 class Alarms(TabPane, CliveWidget):
