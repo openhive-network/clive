@@ -1,8 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Protocol
 
 from textual import on
 from textual.binding import Binding
@@ -20,11 +19,16 @@ from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 
 if TYPE_CHECKING:
+    from collections.abc import Awaitable
+
     from textual.app import ComposeResult
 
 
-ActivationResultCallbackT = Callable[[bool], Awaitable[None]]
-ActivationResultCallbackOptionalT = ActivationResultCallbackT | None
+class ActivationResultCallback(Protocol):
+    def __call__(self, *, activated: bool) -> Awaitable[None]: ...
+
+
+ActivationResultCallbackOptional = ActivationResultCallback | None
 
 
 class ActiveModeTimeContainer(Horizontal):
@@ -43,7 +47,7 @@ class Activate(BaseScreen):
         Binding("f2", "activate", "Ok"),
     ]
 
-    def __init__(self, *, activation_result_callback: ActivationResultCallbackOptionalT = None) -> None:
+    def __init__(self, *, activation_result_callback: ActivationResultCallbackOptional = None) -> None:
         super().__init__()
         self._activation_result_callback = activation_result_callback
         self._name_input = LabelizedInput("Profile name", value=self.app.world.profile_data.name)
@@ -103,12 +107,12 @@ class Activate(BaseScreen):
 
     async def __exit_success(self) -> None:
         self.app.pop_screen()
-        await self.__set_activation_result(True)
+        await self.__set_activation_result(value=True)
 
     async def __exit_cancel(self) -> None:
         self.app.pop_screen()
-        await self.__set_activation_result(False)
+        await self.__set_activation_result(value=False)
 
-    async def __set_activation_result(self, value: bool) -> None:
+    async def __set_activation_result(self, *, value: bool) -> None:
         if self._activation_result_callback is not None:
-            await self._activation_result_callback(value)
+            await self._activation_result_callback(activated=value)

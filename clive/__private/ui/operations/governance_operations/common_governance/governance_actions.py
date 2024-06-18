@@ -26,7 +26,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, identifier: str, vote: bool, pending: bool = False) -> None:
+    def __init__(self, identifier: str, *, vote: bool, pending: bool = False) -> None:
         """
         Initialize the GovernanceActionRow.
 
@@ -84,14 +84,14 @@ class GovernanceActions(ScrollablePartFocusable):
     async def on_mount(self) -> None:  # type: ignore[override]
         await self.mount_operations_from_cart()
 
-    async def add_row(self, identifier: str, vote: bool = False, pending: bool = False) -> None:
+    async def add_row(self, identifier: str, *, vote: bool = False, pending: bool = False) -> None:
         # check if action is already in the list, if so - return
 
         with contextlib.suppress(NoMatches):
             self.get_widget_by_id(self.create_action_row_id(identifier))
             return
 
-        await self.mount(self.create_action_row(identifier, vote, pending))
+        await self.mount(self.create_action_row(identifier, vote=vote, pending=pending))
 
         if vote:
             self.__actions_votes += 1
@@ -99,11 +99,11 @@ class GovernanceActions(ScrollablePartFocusable):
             self.__actions_votes -= 1
 
         if not pending:
-            self.add_to_actions(identifier, vote)
+            self.add_to_actions(identifier, vote=vote)
 
         self.hook_on_row_added()
 
-    async def remove_row(self, identifier: str, vote: bool = False) -> None:
+    async def remove_row(self, identifier: str, *, vote: bool = False) -> None:
         try:
             await self.get_widget_by_id(self.create_action_row_id(identifier)).remove()
         except NoMatches:
@@ -116,7 +116,7 @@ class GovernanceActions(ScrollablePartFocusable):
 
         self.delete_from_actions(identifier)
 
-    def add_to_actions(self, identifier: str, vote: bool) -> None:
+    def add_to_actions(self, identifier: str, *, vote: bool) -> None:
         self.__actions_to_perform[identifier] = vote
 
     def delete_from_actions(self, identifier: str) -> None:
@@ -143,5 +143,5 @@ class GovernanceActions(ScrollablePartFocusable):
         """Check cart and mount all appropriate operations."""
 
     @abstractmethod
-    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
+    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
         pass

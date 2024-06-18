@@ -117,7 +117,6 @@ ignore = [
     "COM812", # Trailing comma missing; handled by ruff formatter
     "EM",  # agreed not to use it in our convention
     "FIX", # can't have that enabled, as we treat ruff result as an error on CI
-    "FBT", # TODO: should be enabled
     "S101",  # Use of assert detected; too restrictive
     "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter

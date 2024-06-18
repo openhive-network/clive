@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from .types import ClivePilot
 
 
-async def finalize_transaction(pilot: ClivePilot, activated: bool, password: str | None = None) -> None:
+async def finalize_transaction(pilot: ClivePilot, *, activated: bool = True, password: str | None = None) -> None:
     """Finalize transaction with optional activation if 'activated' == False."""
     broadcast_binding_description = "Broadcast"
 

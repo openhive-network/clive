@@ -15,13 +15,14 @@ if TYPE_CHECKING:
 async def process_operation(
     pilot: ClivePilot,
     operation_processing: OperationProcessing,
-    activated: bool,
+    *,
+    activated: bool = True,
     password: str | None = None,
 ) -> None:
     if operation_processing == "FAST_BROADCAST":
-        await fast_broadcast(pilot, activated, password)
+        await fast_broadcast(pilot, activated=activated, password=password)
     else:  # "ADD_TO_CART" or "FINALIZE_TRANSACTION"
         if operation_processing == "ADD_TO_CART":
             await press_and_wait_for_screen(pilot, "f2", Operations)  # add to cart
             await press_and_wait_for_screen(pilot, "f2", Cart)  # go to cart
-        await finalize_transaction(pilot, activated, password)
+        await finalize_transaction(pilot, activated=activated, password=password)

@@ -163,7 +163,7 @@ class ChainData:
     def pretty_vests_to_hive_ratio(self) -> str:
         return humanize_vest_to_hive_ratio(self.vests_to_hive_ratio)
 
-    def get_hbd_print_rate(self, colorized: bool = True, aligned: bool = True, pretty: bool = True) -> str:
+    def get_hbd_print_rate(self, *, colorized: bool = True, aligned: bool = True, pretty: bool = True) -> str:
         if aligned:
             if pretty:
                 hbd_print_rate = self._aligned_financial_data.pretty_hbd_print_rate
@@ -177,7 +177,7 @@ class ChainData:
             return self.__colorize_hbd_print_rate(hbd_print_rate)
         return hbd_print_rate
 
-    def get_median_hive_price(self, colorized: bool = True, aligned: bool = True, pretty: bool = True) -> str:
+    def get_median_hive_price(self, *, colorized: bool = True, aligned: bool = True, pretty: bool = True) -> str:
         if aligned:
             median_hive_price = self._aligned_financial_data.pretty_median_hive_price
         elif pretty:
@@ -188,7 +188,7 @@ class ChainData:
             return self.__colorize_median_hive_price(median_hive_price)
         return median_hive_price
 
-    def get_participation_count(self, colorized: bool = True, pretty: bool = True) -> str:
+    def get_participation_count(self, *, colorized: bool = True, pretty: bool = True) -> str:
         participation = self.pretty_participation if pretty else str(self.participation)
         if colorized:
             return self.__colorize_participation_count(participation)

@@ -8,7 +8,7 @@ from schemas.apis import rc_api  # noqa: TCH001
 class RcApi(Api):
     @Api.method
     async def find_rc_accounts(
-        self, accounts: list[str], refresh_mana: bool = False
+        self, *, accounts: list[str], refresh_mana: bool = False
     ) -> rc_api.FindRcAccounts[Asset.Vests]:
         raise NotImplementedError
 
@@ -22,10 +22,10 @@ class RcApi(Api):
 
     @Api.method
     async def list_rc_accounts(
-        self, accounts: list[str], refresh_mana: bool = False
+        self, *, accounts: list[str], refresh_mana: bool = False
     ) -> rc_api.ListRcAccounts[Asset.Vests]:
         raise NotImplementedError
 
     @Api.method
-    async def list_rc_direct_delegations(self, start: tuple[str, str], limit: int) -> rc_api.ListRcDirectDelegations:
+    async def list_rc_direct_delegations(self, *, start: tuple[str, str], limit: int) -> rc_api.ListRcDirectDelegations:
         raise NotImplementedError

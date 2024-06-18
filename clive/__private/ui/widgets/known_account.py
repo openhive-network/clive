@@ -97,7 +97,7 @@ class KnownAccount(CliveWidget):
         if valid:
             self.post_message(self.Status(is_account_known=is_account_known, account_name=self.account_name_raw))
 
-    def __post_disabled(self, disabled: bool) -> None:
+    def __post_disabled(self, disabled: bool) -> None:  # noqa: FBT001
         if disabled:
             self.post_message(self.Disabled())
 

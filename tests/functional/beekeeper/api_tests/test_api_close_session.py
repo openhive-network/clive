@@ -69,7 +69,7 @@ async def test_api_close_session_double(beekeeper: Beekeeper) -> None:
 
 
 @pytest.mark.parametrize("create_session", [False, True], ids=["no_session_before", "in_other_session"])
-async def test_api_close_session_not_existing(create_session: bool, beekeeper: Beekeeper) -> None:
+async def test_api_close_session_not_existing(beekeeper: Beekeeper, *, create_session: bool) -> None:
     """Test test_api_close_session_not_existing will test possibility of closing not existing session."""
     # ARRANGE
     if create_session:

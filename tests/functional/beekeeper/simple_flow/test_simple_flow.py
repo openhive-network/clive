@@ -89,6 +89,7 @@ async def assert_keys_empty(bk: Beekeeper) -> None:
 async def create_wallets_if_needed(
     bk: Beekeeper,
     wallet: WalletInfo,
+    *,
     use_existing_wallets: bool,
 ) -> None:
     """Create wallets under specific terms."""
@@ -107,7 +108,7 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
         # ACT & ASSERT 1
         # In this block we will create new session, and wallet import key to is and sign a digest
         for wallet_nr, wallet in enumerate(wallets):
-            await create_wallets_if_needed(bk, wallet, use_existing_wallets)
+            await create_wallets_if_needed(bk, wallet, use_existing_wallets=use_existing_wallets)
 
             await bk.api.open(wallet_name=wallet.name)
             await bk.api.unlock(wallet_name=wallet.name, password=wallet.password)
@@ -161,7 +162,7 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
         (False, 2),
     ],
 )
-async def test_simple_flow(tmp_path: Path, use_existing_wallets: bool, number_of_beekeeper_instances: int) -> None:
+async def test_simple_flow(tmp_path: Path, number_of_beekeeper_instances: int, *, use_existing_wallets: bool) -> None:
     """
     Test simple flow of one or multiply instance of beekeepers launched parallel.
 

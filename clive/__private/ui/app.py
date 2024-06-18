@@ -66,7 +66,7 @@ class Clive(App[int], ManualReactive):
         "dashboard_active": DashboardActive,
     }
 
-    header_expanded = var(False)
+    header_expanded = var(default=False)
     """Synchronize the expanded header state in all created header objects."""
 
     __app_instance: ClassVar[Clive | None] = None
@@ -216,7 +216,7 @@ class Clive(App[int], ManualReactive):
         self,
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: Literal[False] = False,
+        wait_for_dismiss: Literal[False] = False,  # noqa: FBT002
     ) -> AwaitMount: ...
 
     @overload
@@ -224,14 +224,14 @@ class Clive(App[int], ManualReactive):
         self,
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: Literal[True] = True,
+        wait_for_dismiss: Literal[True] = True,  # noqa: FBT002
     ) -> asyncio.Future[ScreenResultType]: ...
 
     def push_screen(
         self,
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: bool = False,
+        wait_for_dismiss: bool = False,  # noqa: FBT001, FBT002
     ) -> AwaitMount | asyncio.Future[ScreenResultType]:
         fun = super().push_screen
         return self.__update_screen(lambda: fun(screen=screen, callback=callback, wait_for_dismiss=wait_for_dismiss))  # type: ignore[no-any-return, call-overload]

@@ -38,7 +38,7 @@ class HeaderIcon(TextualHeaderIcon):
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
-    def header_expanded_changed(self, expanded: bool) -> None:
+    def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
 
 
@@ -94,7 +94,7 @@ class AlarmsSummary(Container, CliveWidget):
 
 
 class DynamicPropertiesClock(Horizontal, CliveWidget):
-    last_update_trigger = var(False)
+    last_update_trigger = var(default=False)
     """A value that is used to trigger a re-rendering of the last update time."""
 
     def compose(self) -> ComposeResult:
@@ -218,7 +218,7 @@ class Header(TextualHeader, CliveWidget):
         event.prevent_default()
         self.app.header_expanded = not self.app.header_expanded
 
-    def header_expanded_changed(self, expanded: bool) -> None:
+    def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.add_class("-tall") if expanded else self.remove_class("-tall")
 
     @staticmethod

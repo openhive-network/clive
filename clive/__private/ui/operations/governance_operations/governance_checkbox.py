@@ -32,7 +32,7 @@ class GovernanceCheckbox(CliveWidget, can_focus=False):
     class Clicked(Message):
         """Message send when WitnessCheckbox is clicked."""
 
-    def __init__(self, is_voted: bool = False, initial_state: bool = False, disabled: bool = False) -> None:
+    def __init__(self, *, is_voted: bool = False, initial_state: bool = False, disabled: bool = False) -> None:
         super().__init__(disabled=disabled)
         self.__is_voted = is_voted
         self.__checkbox = CheckBoxWithoutFocus(value=initial_state)

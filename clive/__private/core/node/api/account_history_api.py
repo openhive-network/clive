@@ -8,6 +8,7 @@ class AccountHistoryApi(Api):
     @Api.method
     async def get_account_history(  # noqa: PLR0913
         self,
+        *,
         account: str,
         start: int = -1,
         limit: int = 1_000,
@@ -18,12 +19,13 @@ class AccountHistoryApi(Api):
         raise NotImplementedError
 
     @Api.method
-    async def get_transaction(self, id_: str, include_reversible: bool = True) -> account_history_api.GetTransaction:
+    async def get_transaction(self, *, id_: str, include_reversible: bool = True) -> account_history_api.GetTransaction:
         raise NotImplementedError
 
     @Api.method
     async def enum_virtual_ops(  # noqa: PLR0913
         self,
+        *,
         block_range_begin: int,
         block_range_end: int,
         operation_begin: int | None = None,
@@ -35,6 +37,6 @@ class AccountHistoryApi(Api):
         raise NotImplementedError
 
     async def get_ops_in_block(
-        self, block_num: int, only_virtual: bool = False, include_reversible: bool = True
+        self, *, block_num: int, only_virtual: bool = False, include_reversible: bool = True
     ) -> account_history_api.GetOpsInBlock:
         raise NotImplementedError

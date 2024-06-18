@@ -217,8 +217,8 @@ class WitnessesActions(GovernanceActions):
     def create_action_row_id(identifier: str) -> str:
         return WitnessActionRow.create_action_row_id(identifier)
 
-    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
-        return WitnessActionRow(identifier, vote, pending)
+    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
+        return WitnessActionRow(identifier, vote=vote, pending=pending)
 
     def hook_on_row_added(self) -> None:
         if self.actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:

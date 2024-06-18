@@ -267,7 +267,7 @@ def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: 
     return f"{pretty_asset} {asset_symbol if show_symbol else ''}".rstrip()
 
 
-def humanize_bool(value: bool) -> str:
+def humanize_bool(value: bool) -> str:  # noqa: FBT001
     """Convert True/False to a more human-readable format."""
     if value:
         return "YES"

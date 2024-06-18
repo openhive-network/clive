@@ -19,7 +19,7 @@ async def open_and_unlock_wallet(beekeeper: Beekeeper, wallet: WalletInfo) -> No
 
 @pytest.mark.parametrize("explicit_wallet_name", [False, True])
 async def test_api_get_public_keys(
-    beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT, explicit_wallet_name: bool
+    beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT, *, explicit_wallet_name: bool
 ) -> None:
     """Test test_api_get_public_keys will test beekeeper_api.get_public_keys api call."""
     # ARRANGE

@@ -76,10 +76,11 @@ TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
 @pytest.mark.parametrize(("memo", "operation_processing"), TESTDATA)
 async def test_transfers(
     prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot],
-    activated: bool,
     asset: tt.Asset.HbdT | tt.Asset.HiveT,
     memo: str | None,
     operation_processing: OperationProcessing,
+    *,
+    activated: bool,
 ) -> None:
     """
     #103: I.1..3, II.1..3.
@@ -117,7 +118,7 @@ async def test_transfers(
     await fill_transfer_data(pilot, RECEIVER, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
-    await process_operation(pilot, operation_processing, activated)
+    await process_operation(pilot, operation_processing, activated=activated)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
@@ -139,7 +140,7 @@ TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 
 @pytest.mark.parametrize("activated", [True, False])
 async def test_transfers_finalize_cart(
-    prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot], activated: bool
+    prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot], *, activated: bool
 ) -> None:
     """
     #103: I.4, II.4.
@@ -179,7 +180,7 @@ async def test_transfers_finalize_cart(
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to cart
-    await finalize_transaction(pilot, activated, PASS)
+    await finalize_transaction(pilot, activated=activated, password=PASS)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 

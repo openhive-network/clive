@@ -29,7 +29,7 @@ def get_time_offset() -> str:
         return file.read()
 
 
-def run_node(use_faketime: bool = False, webserver_http_endpoint: str | None = None) -> tt.RawNode:
+def run_node(webserver_http_endpoint: str | None = None, *, use_faketime: bool = False) -> tt.RawNode:
     config_lines = get_config().write_to_lines()
     block_log = get_block_log()
     alternate_chain_spec_path = get_alternate_chain_spec_path()

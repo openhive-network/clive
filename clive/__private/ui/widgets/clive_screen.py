@@ -74,8 +74,8 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
             except (CommandRequiresActiveModeError, OnlyInActiveModeError):
                 from clive.__private.ui.activate.activate import Activate
 
-                async def _on_activation_result(value: bool) -> None:
-                    if not value:
+                async def _on_activation_result(*, activated: bool) -> None:
+                    if not activated:
                         app_.notify("Aborted. Active mode was required for this action.", severity="warning")
                         return
 

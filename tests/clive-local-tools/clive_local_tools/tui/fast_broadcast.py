@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .types import ClivePilot
 
 
-async def fast_broadcast(pilot: ClivePilot, activated: bool, password: str | None = None) -> None:
+async def fast_broadcast(pilot: ClivePilot, *, activated: bool = True, password: str | None = None) -> None:
     """Fast broadcast with optional activation if 'activated' == False."""
     if activated:
         await press_and_wait_for_screen(pilot, "f5", Operations)

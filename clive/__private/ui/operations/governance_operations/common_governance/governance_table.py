@@ -175,7 +175,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
     def focus_myself(self) -> None:
         self.focus()
 
-    def dimm_on_disabled_checkbox(self, value: bool) -> None:
+    def dimm_on_disabled_checkbox(self, value: bool) -> None:  # noqa: FBT001
         if value:
             self.add_class("dimmed")
             return
@@ -258,7 +258,7 @@ class GovernanceTable(
 
         self.watch(self.provider, "_content", callback=delegate_work)
 
-    async def sync_list(self, focus_first_element: bool = False) -> None:
+    async def sync_list(self, *, focus_first_element: bool = False) -> None:
         await self.loading_set()
 
         new_list = self.create_new_list_widget()

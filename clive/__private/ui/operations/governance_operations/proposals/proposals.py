@@ -156,8 +156,8 @@ class ProposalsActions(GovernanceActions):
                 for proposal_id in operation.proposal_ids:
                     await self.add_row(identifier=str(proposal_id), pending=True)
 
-    def create_action_row(self, identifier: str, vote: bool, pending: bool) -> GovernanceActionRow:
-        return ProposalActionRow(identifier, vote, pending)
+    def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
+        return ProposalActionRow(identifier, vote=vote, pending=pending)
 
     @staticmethod
     def create_action_row_id(identifier: str) -> str:
@@ -278,7 +278,7 @@ class Proposals(GovernanceTabPane):
         return vote_operations + unvote_operations  # type: ignore[return-value]
 
     def __create_vote_operations(
-        self, batched_proposal_ids: list[list[int]], working_account_name: str, approve: bool
+        self, batched_proposal_ids: list[list[int]], working_account_name: str, *, approve: bool
     ) -> list[UpdateProposalVotesOperation]:
         return [
             UpdateProposalVotesOperation(
@@ -290,7 +290,7 @@ class Proposals(GovernanceTabPane):
             for proposal_ids in batched_proposal_ids
         ]
 
-    def __split_proposals(self, approve: bool = True) -> list[list[int]]:
+    def __split_proposals(self, *, approve: bool = True) -> list[list[int]]:
         operations_to_perform = self.screen.query_one(ProposalsActions).actions_to_perform
         proposals_ids_to_return = [
             int(proposal_id)

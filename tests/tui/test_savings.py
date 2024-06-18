@@ -184,7 +184,7 @@ async def test_savings(  # noqa: PLR0913
     await fill_savings_data(pilot, operation_type, other_account, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
-    await process_operation(pilot, operation_processing, True)
+    await process_operation(pilot, operation_processing, activated=True)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
@@ -255,7 +255,7 @@ async def test_savings_finalize_cart(
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
     await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to Cart
-    await finalize_transaction(pilot, True)
+    await finalize_transaction(pilot)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
@@ -309,7 +309,7 @@ async def test_canceling_transfer_from_savings(
         await go_to_savings(pilot)
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
-        await fast_broadcast(pilot, True)
+        await fast_broadcast(pilot)
         await press_and_wait_for_screen(pilot, "escape", DashboardActive)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)

@@ -32,8 +32,8 @@ async def add_key(
 async def remove_key(
     ctx: typer.Context,  # noqa: ARG001
     alias: str = typer.Option(..., help="The key alias to remove.", show_default=False),
-    from_beekeeper: bool = typer.Option(
-        False,
+    from_beekeeper: bool = typer.Option(  # noqa: FBT001
+        default=False,
         help="Remove the key from the Beekeeper as well.",
     ),
     password: str = options.password_option,

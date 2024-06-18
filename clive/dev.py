@@ -24,7 +24,7 @@ def main() -> None:
         from clive.__private.config import settings
         from clive.main import main as production_main
 
-        settings.set("dev", True)
+        settings.set("dev", True)  # noqa: FBT003
 
         production_main()
         return

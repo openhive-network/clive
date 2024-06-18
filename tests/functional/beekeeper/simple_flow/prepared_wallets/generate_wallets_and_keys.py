@@ -14,7 +14,7 @@ from clive_local_tools.data.generates import generate_wallet_name, generate_wall
 from clive_local_tools.data.models import Keys, WalletInfo
 
 
-async def generate_wallets_and_keys(number_of_wallets: int, aliased_format: bool = True) -> None:
+async def generate_wallets_and_keys(number_of_wallets: int, *, aliased_format: bool = True) -> None:
     """
     Create new wallets and keys needed for test_simple_flow in directories wallets/ and /keys.
 

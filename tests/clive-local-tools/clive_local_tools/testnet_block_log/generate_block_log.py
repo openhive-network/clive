@@ -185,10 +185,10 @@ def prepare_votes_for_witnesses(wallet: tt.Wallet) -> None:
     tt.logger.info("Prepare votes for witnesses...")
     with wallet.in_single_transaction():
         for i in range(2, 4):
-            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1_DATA.account.name, WITNESSES[i].name, True)
+            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT1_DATA.account.name, WITNESSES[i].name, approve=True)
     with wallet.in_single_transaction():
         for i in range(1, 31):
-            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2_DATA.account.name, WITNESSES[i].name, True)
+            wallet.api.vote_for_witness(ALT_WORKING_ACCOUNT2_DATA.account.name, WITNESSES[i].name, approve=True)
 
 
 def main() -> None:

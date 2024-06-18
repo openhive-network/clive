@@ -139,7 +139,7 @@ class CartItem(ColumnLayout, CliveWidget):
         yield ButtonMoveDown(disabled=self.__is_last)
         yield ButtonDelete()
 
-    def focus(self, _: bool = True) -> Self:
+    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
         if focused := self.app.focused:  # Focus the corresponding button as it was before
             assert focused.id, "Previously focused widget has no id!"
             with contextlib.suppress(NoMatches):

@@ -46,7 +46,7 @@ class ProcessTransferSchedule(OperationCommand):
         return None
 
     def validate_existence(
-        self, pair_id: int, scheduled_transfer: TransferSchedule | None, should_exists: bool
+        self, pair_id: int, scheduled_transfer: TransferSchedule | None, *, should_exists: bool
     ) -> None:
         """Validate if scheduled_transfer (recurrent transfer) exists."""
         exists = scheduled_transfer is not None
@@ -105,7 +105,7 @@ class ProcessTransferScheduleCreate(ProcessTransferSchedule):
 
         if scheduled_transfers:
             scheduled_transfer = self.get_scheduled_transfer(self.pair_id, scheduled_transfers)
-            self.validate_existence(self.pair_id, scheduled_transfer, False)
+            self.validate_existence(self.pair_id, scheduled_transfer, should_exists=False)
         await super().validate_inside_context_manager()
 
     async def validate(self) -> None:
@@ -153,7 +153,7 @@ class ProcessTransferScheduleModify(ProcessTransferSchedule):
         self.pair_id = 0 if self.pair_id is None else self.pair_id
         scheduled_transfer = self.get_scheduled_transfer(self.pair_id, scheduled_transfers)
 
-        self.validate_existence(self.pair_id, scheduled_transfer, True)
+        self.validate_existence(self.pair_id, scheduled_transfer, should_exists=True)
         self.scheduled_transfer = scheduled_transfer
         await super().validate_inside_context_manager()
 
@@ -191,6 +191,6 @@ class ProcessTransferScheduleRemove(ProcessTransferSchedule):
         self.pair_id = 0 if self.pair_id is None else self.pair_id
         scheduled_transfer = self.get_scheduled_transfer(self.pair_id, scheduled_transfers)
 
-        self.validate_existence(self.pair_id, scheduled_transfer, True)
+        self.validate_existence(self.pair_id, scheduled_transfer, should_exists=True)
         self.scheduled_transfer = scheduled_transfer
         await super().validate_inside_context_manager()

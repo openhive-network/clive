@@ -7,7 +7,7 @@ import pytest
 from clive.__private.core.beekeeper import Beekeeper
 
 
-async def check_wallet_lock(beekeeper: Beekeeper, required_status: bool) -> None:
+async def check_wallet_lock(beekeeper: Beekeeper, *, required_status: bool) -> None:
     """Check if wallets are have required unlock status."""
     response_list_wallets = await beekeeper.api.list_wallets()
     for wallet in response_list_wallets.wallets:
@@ -20,10 +20,10 @@ async def test_unlock_time(unlock_timeout: int) -> None:
     # ARRANGE
     async with await Beekeeper().launch(unlock_timeout=unlock_timeout) as beekeeper:
         await beekeeper.api.create(wallet_name="wallet_name")
-        await check_wallet_lock(beekeeper, True)
+        await check_wallet_lock(beekeeper, required_status=True)
 
         # ACT
         await asyncio.sleep(int(unlock_timeout))
 
         # ASSERT
-        await check_wallet_lock(beekeeper, False)
+        await check_wallet_lock(beekeeper, required_status=False)

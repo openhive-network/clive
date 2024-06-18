@@ -14,8 +14,8 @@ async def process_withdraw_routes_set(
     from_account: str = options.from_account_name_option,
     to_account: str = options.to_account_name_no_default_option,
     percent: Decimal = options.percent_option,
-    auto_vest: bool = typer.Option(
-        False,
+    auto_vest: bool = typer.Option(  # noqa: FBT001
+        default=False,
         help="If auto-vest is set, then the amount of the Hive is immediately converted into HP on the balance. "
         "With no-auto-vest there is no conversion from Hive into HP.",
     ),

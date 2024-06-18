@@ -31,7 +31,7 @@ class CurrentProxy(LabelizedInput):
 
 
 class NewProxyInput(ProxyInput):
-    def __init__(self, required: bool) -> None:
+    def __init__(self, *, required: bool) -> None:
         super().__init__(
             "New proxy",
             setting_proxy=True,

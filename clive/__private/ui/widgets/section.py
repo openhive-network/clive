@@ -58,7 +58,7 @@ class SectionScrollable(Section):
     """
 
     def __init__(
-        self, title: str | None = None, id_: str | None = None, classes: str | None = None, focusable: bool = False
+        self, title: str | None = None, id_: str | None = None, classes: str | None = None, *, focusable: bool = False
     ) -> None:
         super().__init__(title=title, id_=id_, classes=classes)
         self._focusable = focusable

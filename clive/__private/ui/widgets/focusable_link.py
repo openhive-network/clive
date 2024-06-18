@@ -24,7 +24,7 @@ class FocusableLink(Static, can_focus=True):
         if event.key == "enter":
             self.action_trigger()
 
-    def watch_has_focus(self, value: bool) -> None:
+    def watch_has_focus(self, value: bool) -> None:  # noqa: FBT001
         if value:
             self.update(self.__create_linked_renderable(prefix="> "))
         else:

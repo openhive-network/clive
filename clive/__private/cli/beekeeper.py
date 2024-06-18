@@ -17,7 +17,7 @@ async def info(ctx: typer.Context) -> None:  # noqa: ARG001
 
 @beekeeper.command()
 async def spawn(
-    background: bool = typer.Option(True, help="Run in background."),
+    background: bool = typer.Option(default=True, help="Run in background."),  # noqa: FBT001
 ) -> None:
     """Spawn beekeeper process."""
     from clive.__private.cli.commands.beekeeper import BeekeeperSpawn

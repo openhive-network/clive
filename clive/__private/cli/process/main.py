@@ -65,7 +65,7 @@ else:
 async def process_transaction(
     ctx: typer.Context,  # noqa: ARG001
     from_file: str = typer.Option(..., help="The file to load the transaction from.", show_default=False),
-    force_unsign: bool = typer.Option(False, help="Whether to force unsigning the transaction."),
+    force_unsign: bool = typer.Option(default=False, help="Whether to force unsigning the transaction."),  # noqa: FBT001
     already_signed_mode: AlreadySignedModeEnum = typer.Option(
         ALREADY_SIGNED_MODE_DEFAULT, help="How to handle the situation when transaction is already signed."
     ),

@@ -42,9 +42,9 @@ class World:
     def __init__(
         self,
         profile_name: str | None = None,
-        use_beekeeper: bool = True,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
+        use_beekeeper: bool = True,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.

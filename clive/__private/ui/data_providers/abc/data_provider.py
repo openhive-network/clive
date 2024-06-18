@@ -43,7 +43,7 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
     _content: ProviderContentT | None = var(None, init=False)  # type: ignore[assignment]
     """Should be overridden by subclasses to store the data retrieved by the provider."""
 
-    updated: bool = var(False)  # type: ignore[assignment]
+    updated: bool = var(default=False)  # type: ignore[assignment]
     """
     Set to True when the provider has updated the content for the first time. Can be watched.
 
