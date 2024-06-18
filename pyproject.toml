@@ -60,6 +60,7 @@ pytest-timeout = "2.3.1"
 ruff = "0.4.9"
 types-pyyaml = "6.0.12.4"
 textual-dev = "1.5.1"
+pydoclint = "0.4.1"
 clive-local-tools = { path = "tests/clive-local-tools", develop = true }
 test-tools = { path = "hive/tests/python/hive-local-tools/test-tools", develop = true }
 
@@ -99,6 +100,9 @@ ignore_missing_imports = true
 
 [tool.ruff]
 line-length = 120
+external = [
+   "DOC", # pydoclint
+]
 
 [tool.ruff.lint]
 # https://docs.astral.sh/ruff/rules/
@@ -109,15 +113,15 @@ ignore = [
     "D212", # Multi-line docstring summary should start at the first line; because we re using D213
     "D413", # Missing blank line after last section
     "TRY003", # Avoid specifying long messages outside the exception class; too restrictive
-    "ANN101",  # Missing annotation for self; makes no sense
-    "ANN102",  # Missing annotation for cls; makes no sense
+    "ANN101", # Missing annotation for self; makes no sense
+    "ANN102", # Missing annotation for cls; makes no sense
     "TD002", # Missing author in to-do; no need for that
-    "TD003",  # Missing issue link on the line following this to-do; no need for that
-    "SLF001",  # Private member accessed: {access}; too restrictive
+    "TD003", # Missing issue link on the line following this to-do; no need for that
+    "SLF001", # Private member accessed: {access}; too restrictive
     "COM812", # Trailing comma missing; handled by ruff formatter
-    "EM",  # agreed not to use it in our convention
+    "EM", # agreed not to use it in our convention
     "FIX", # can't have that enabled, as we treat ruff result as an error on CI
-    "S101",  # Use of assert detected; too restrictive
+    "S101", # Use of assert detected; too restrictive
     "S603", # `subprocess` call: check for execution of untrusted input; https://github.com/astral-sh/ruff/issues/4045
     "ISC001", # Implicitly concatenated string literals on one line; disabled because conflicts with ruff formatter
 ]
@@ -160,3 +164,6 @@ convention = "google"
 asyncio_mode = "auto"
 testpaths = ["tests"]
 addopts = "--strict-markers"
+
+[tool.pydoclint]
+style = "google"

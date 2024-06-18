@@ -61,17 +61,14 @@ class CurrencySelectorBase(Select[AssetFactoryHolder[AssetT]], Generic[AssetT], 
         """Return selected asset factory."""
         return self.value_ensure.asset_factory
 
-    def create_asset(self, amount: AssetAmount) -> AssetT:
+    def create_asset(self, amount: AssetAmount) -> AssetT:  # noqa: DOC201
         """
         Create asset from amount.
 
         Args:
-        ----
-        amount: Amount of asset.
+            amount: Amount of asset.
 
-        Raises:
-        ------
-        AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
+
         """
         asset_factory = self.asset_factory
         return asset_factory(amount)

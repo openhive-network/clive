@@ -79,3 +79,9 @@ repos:
     rev: v0.9.0.6
     hooks:
       -  id: shellcheck
+  - repo: https://github.com/jsh9/pydoclint
+    rev: 0.4.1
+    hooks:
+      - id: pydoclint
+        name: check docstrings with pydoclint
+        args: ["--check-return-types=False", "--arg-type-hints-in-docstring=False", "--show-file-names-in-every-violation-message"]
