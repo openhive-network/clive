@@ -22,7 +22,7 @@ class CommandRestricted(Command, ABC):
         """
         Execute the command if the conditions are met.
 
-        Raises
+        Raises:
         ------
             CommandExecutionNotPossibleError: If the command cannot be executed.
         """

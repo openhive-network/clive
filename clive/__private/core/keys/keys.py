@@ -96,7 +96,7 @@ class PrivateKey(Key):
     """
     A container for a private key.
 
-    Raises
+    Raises:
     ------
      PrivateKeyInvalidFormatError: if private key is not in valid format
     """
@@ -140,7 +140,7 @@ class PrivateKey(Key):
         """
         Validate the given key.
 
-        Raises
+        Raises:
         ------
         PrivateKeyInvalidFormatError: if private key is not in valid format.
         """

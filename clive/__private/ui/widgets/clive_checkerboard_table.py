@@ -193,7 +193,7 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Rebuilds whole table - explicit use available for static and dynamic version.
 
-        Raises
+        Raises:
         ------
         RebuildStaticTableWithContentError: When table is static and content arg is provided.
         """
@@ -223,7 +223,7 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Override this method when using dynamic table (ATTRIBUTE_TO_WATCH is set).
 
-        Raises
+        Raises:
         ------
         InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
         """
@@ -235,7 +235,7 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Override this method when using static table (ATTRIBUTE_TO_WATCH is not set).
 
-        Raises
+        Raises:
         ------
         InvalidStaticDefinedError: When ATTRIBUTE_TO_WATCH has not been set without overriding the method.
         """
@@ -254,11 +254,11 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Must be overridden by the child class when using dynamic table.
 
-        Examples
+        Examples:
         --------
         return self.provider.content.actual_value != self.previous_value
 
-        Raises
+        Raises:
         ------
         InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the method.
         """
@@ -285,7 +285,7 @@ class CliveCheckerboardTable(CliveWidget):
         """
         Must be overridden by the child class when using dynamic table.
 
-        Raises
+        Raises:
         ------
         InvalidDynamicDefinedError: When ATTRIBUTE_TO_WATCH has been set without overriding the property.
         """

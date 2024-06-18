@@ -158,7 +158,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         """
         Create a new operation and adds it to the cart.
 
-        Returns
+        Returns:
         -------
         True if the operation was added to the cart successfully, False otherwise.
         """

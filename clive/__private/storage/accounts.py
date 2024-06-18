@@ -93,7 +93,7 @@ class Account:
         """
         Validate the given account name.
 
-        Raises
+        Raises:
         ------
         InvalidAccountNameError: if the given account name is invalid.
         """

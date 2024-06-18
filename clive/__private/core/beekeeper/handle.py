@@ -147,7 +147,7 @@ class Beekeeper:
         """
         Get token for current session.
 
-        Raises
+        Raises:
         ------
         BeekeeperTokenNotAvailableError: If token was not set yet.
         """

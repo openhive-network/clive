@@ -72,7 +72,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         """
         Returns a PrivateKeyAliased instance with the given alias and private key value.
 
-        Raises
+        Raises:
         ------
         FailedManyValidationError: when cannot create a private key from the given inputs.
         """
@@ -109,7 +109,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         """
         Proceeds with saving the form.
 
-        Raises
+        Raises:
         ------
         FailedManyValidationError: when key alias or private key inputs are invalid.
         """
@@ -120,7 +120,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         """
         Validate the inputs.
 
-        Raises
+        Raises:
         ------
         FailedManyValidationError: when key alias or private key inputs are invalid.
         """
@@ -214,7 +214,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
 
         Converts the FailedManyValidationError to FormValidationError which can be handled by form later.
 
-        Raises
+        Raises:
         ------
         FormValidationError: when key alias or private key inputs are invalid.
         """

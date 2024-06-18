@@ -170,7 +170,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         """
         Return the validated value of the input as given InputReturnT or raise an exception if validation fails.
 
-        Raises
+        Raises:
         ------
         FailedCliveInputValidationError: Raised when validation fails.
         CliveInputValueError: Raised when cannot get the value of the input.
@@ -209,7 +209,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         """
         Validate the input and raise an exception if validation fails.
 
-        Raises
+        Raises:
         ------
         InputValidationError: Raised when validation fails.
         InputValueError: Raised when cannot get the value of the input due to an error, which validation doesn't catch.
@@ -292,7 +292,7 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         """
         Validate many inputs and raise an exception if any of them is invalid.
 
-        Raises
+        Raises:
         ------
         FailedManyValidationError: Raised when validation fails.
         """

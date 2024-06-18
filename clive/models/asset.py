@@ -194,7 +194,7 @@ class Asset:
         """
         Convert given amount to internal representation of integer value.
 
-        Raises
+        Raises:
         ------
         DecimalConversionNotANumberError: If given amount is not a valid number.
         """

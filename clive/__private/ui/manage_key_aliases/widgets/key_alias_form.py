@@ -62,7 +62,7 @@ class KeyAliasForm(BaseScreen, Contextual[ProfileData], ABC):
         """
         Validate the inputs.
 
-        Raises
+        Raises:
         ------
         FailedValidationError: when key alias is not valid.
         """

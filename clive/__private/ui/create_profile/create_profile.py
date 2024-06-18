@@ -70,7 +70,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         """
         Collect the data from the form and create a profile.
 
-        Returns
+        Returns:
         -------
         True if the profile was created successfully, False otherwise.
         """

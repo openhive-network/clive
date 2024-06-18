@@ -144,7 +144,7 @@ class ProfileData(Context):
         """
         Returns the working account.
 
-        Raises
+        Raises:
         ------
         NoWorkingAccountError: If no working account is set.
         """
@@ -284,7 +284,7 @@ class ProfileData(Context):
         """
         Get the name of default profile set.
 
-        Raises
+        Raises:
         ------
         NoDefaultProfileToLoadError: If no default profile is set.
         """

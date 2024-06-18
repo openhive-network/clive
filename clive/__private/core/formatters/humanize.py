@@ -86,7 +86,7 @@ def humanize_natural_time(value: datetime | timedelta) -> str:
     """
     Return pretty formatted relative time from now.
 
-    Examples
+    Examples:
     --------
     now=datetime(1971, 1, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "29 years ago"
     now=datetime(1999, 2, 1, 0, 0), value=datetime(2000, 1, 1, 0, 0) -> "10 months ago"
@@ -102,7 +102,7 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
     """
     Return pretty formatted datetime.
 
-    Examples
+    Examples:
     --------
     datetime(1970, 1, 1, 0, 0) -> "1970-01-01T00:00:00"
     """
@@ -136,7 +136,7 @@ def humanize_operation_name(operation: Operation) -> str:
     """
     Return pretty formatted operation name.
 
-    Examples
+    Examples:
     --------
     TransferToVestingOperation -> Transfer to vesting
     """
@@ -147,7 +147,7 @@ def humanize_operation_details(operation: Operation) -> str:
     """
     Return pretty formatted operation details (properties).
 
-    Examples
+    Examples:
     --------
     TransferToVestingOperation -> "from='alice', to='bob', amount='1.000 HIVE'"
     """

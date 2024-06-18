@@ -263,7 +263,7 @@ class Clive(App[int], ManualReactive):
         """
         Pop all screens until one of the given screen is on top of the stack.
 
-        Raises
+        Raises:
         ------
         ScreenNotFoundError:  if no screen was found.
         """

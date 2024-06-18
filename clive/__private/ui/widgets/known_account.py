@@ -52,7 +52,7 @@ class KnownAccount(CliveWidget):
         """
         Get the account from the input.
 
-        Raises
+        Raises:
         ------
         InvalidAccountNameError: if the given account name is invalid.
         """
