@@ -59,14 +59,26 @@ class WithdrawalInfo(Vertical, CliveWidget):
     def compose(self) -> ComposeResult:
         yield Static("Next withdrawal", classes="withdrawal-info-header")
         yield DynamicLabel(
-            self._provider, "_content", self._get_next_withdrawal_date, id_="withdrawal-info-date", init=False
+            self._provider,
+            "_content",
+            self._get_next_withdrawal_date,
+            id_="withdrawal-info-date",
+            first_try_callback=lambda content: content is not None,
         )
         yield Static("To withdraw", classes="withdrawal-info-header", id="to-withdraw-header")
         yield DynamicLabel(
-            self._provider, "_content", self._get_to_withdraw_hp, id_="withdrawal-info-vests-amount", init=False
+            self._provider,
+            "_content",
+            self._get_to_withdraw_hp,
+            id_="withdrawal-info-vests-amount",
+            first_try_callback=lambda content: content is not None,
         )
         yield DynamicLabel(
-            self._provider, "_content", self._get_to_withdraw_vests, id_="withdrawal-info-hp-amount", init=False
+            self._provider,
+            "_content",
+            self._get_to_withdraw_vests,
+            id_="withdrawal-info-hp-amount",
+            first_try_callback=lambda content: content is not None,
         )
 
     def _get_next_withdrawal_date(self, content: HivePowerData) -> str:
@@ -92,7 +104,12 @@ class APR(DynamicLabel):
     """
 
     def __init__(self, provider: HivePowerDataProvider) -> None:
-        super().__init__(obj_to_watch=provider, attribute_name="_content", callback=self._get_apr, init=False)
+        super().__init__(
+            obj_to_watch=provider,
+            attribute_name="_content",
+            callback=self._get_apr,
+            first_try_callback=lambda content: content is not None,
+        )
         self._provider = provider
 
     def _get_apr(self, content: HivePowerData) -> str:

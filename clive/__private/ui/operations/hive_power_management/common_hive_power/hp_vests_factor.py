@@ -13,7 +13,10 @@ if TYPE_CHECKING:
 class HpVestsFactor(Notice):
     def __init__(self, provider: HivePowerDataProvider) -> None:
         super().__init__(
-            obj_to_watch=provider, attribute_name="_content", callback=self._get_hp_vests_factor, init=False
+            obj_to_watch=provider,
+            attribute_name="_content",
+            callback=self._get_hp_vests_factor,
+            first_try_callback=lambda content: content is not None,
         )
 
     def _get_hp_vests_factor(self, content: HivePowerData) -> str:

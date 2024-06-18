@@ -6,7 +6,7 @@ from textual.widgets import Label
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel, DynamicLabelCallbackType
+from clive.__private.ui.widgets.dynamic_label import DynamicLabel, DynamicLabelCallbackType, FirstTryCallbackType
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -32,6 +32,7 @@ class TitledLabel(CliveWidget):
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
         callback: DynamicLabelCallbackType | None = None,
+        first_try_callback: FirstTryCallbackType = lambda: True,
         init: bool = True,
         id_: str | None = None,
     ) -> None:
@@ -41,7 +42,13 @@ class TitledLabel(CliveWidget):
 
         self.__value_label: DynamicLabel | Label = (
             DynamicLabel(
-                obj_to_watch, attribute_name, callback, prefix=self.__formatted_value(), init=init, id_="value"
+                obj_to_watch,
+                attribute_name,
+                callback,
+                prefix=self.__formatted_value(),
+                first_try_callback=first_try_callback,
+                init=init,
+                id_="value",
             )
             if obj_to_watch and attribute_name and callback
             else Label(self.__formatted_value(), id="value")
