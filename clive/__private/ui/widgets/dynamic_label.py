@@ -23,7 +23,14 @@ DynamicLabelCallbackType = Union[
     Callable[[Any, Any], str],
 ]
 
-FirstTryCallbackType = Callable[[], bool]
+FirstTryCallbackType = Union[
+    Callable[[], Awaitable[str]],
+    Callable[[Any], Awaitable[str]],
+    Callable[[Any, Any], Awaitable[str]],
+    Callable[[], bool],
+    Callable[[Any], bool],
+    Callable[[Any, Any], bool],
+]
 
 
 class DynamicLabel(CliveWidget):
@@ -81,18 +88,27 @@ class DynamicLabel(CliveWidget):
     async def attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
         callback = self.__callback
 
-        if not self._first_try_callback():
+        should_update = self._call_with_arbitrary_args(self._first_try_callback, old_value, value)
+        if not should_update:
             return
 
-        param_count = count_parameters(callback)
-        if param_count == 2:  # noqa: PLR2004
-            result = callback(old_value, value)  # type: ignore[call-arg]
-        elif param_count == 1:
-            result = callback(value)  # type: ignore[call-arg]
-        else:
-            result = callback()  # type: ignore[call-arg]
-
+        result = self._call_with_arbitrary_args(callback, old_value, value)
         if isawaitable(result):
             result = await result
         if result != self.__label.renderable:
             self.__label.update(f"{self.__prefix}{result}")
+
+    def _call_with_arbitrary_args(
+        self,
+        callback: DynamicLabelCallbackType | FirstTryCallbackType,
+        old_value: Any,  # noqa: ANN401
+        value: Any,  # noqa: ANN401
+    ) -> Awaitable[str] | str | bool:
+        param_count = count_parameters(callback)
+
+        if param_count == 2:  # noqa: PLR2004
+            return callback(old_value, value)  # type: ignore[call-arg]
+        if param_count == 1:
+            return callback(old_value)  # type: ignore[call-arg]
+
+        return callback()  # type: ignore[call-arg]
