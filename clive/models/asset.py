@@ -164,6 +164,7 @@ class Asset:
 
     @classmethod
     def from_legacy(cls, value: str) -> Asset.AnyT:
+        from clive.__private.core.formatters.humanize import humanize_validation_result
         from clive.__private.validators.asset_amount_validator import AssetAmountValidator
 
         match = re.match(r"(\d+(?:\.\d+)?)\s*(\w+)", value)
@@ -176,8 +177,7 @@ class Asset:
 
         result = AssetAmountValidator(asset_cls).validate(amount)
         if not result.is_valid:
-            reason = str(result.failure_descriptions)
-            raise AssetAmountInvalidFormatError(amount, reason=reason)
+            raise AssetAmountInvalidFormatError(amount, reason=humanize_validation_result(result))
 
         return asset_cls(amount=cls.__convert_amount_to_internal_representation(amount, asset_cls))
 

@@ -8,6 +8,7 @@ from clive.__private.cli.commands.abc.world_based_command import WorldBasedComma
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
     PrivateKey,
     PrivateKeyAliased,
@@ -58,11 +59,11 @@ class AddKey(WorldBasedCommand):
         )
 
         if not alias_result.is_valid:
-            raise CLIPrettyError(f"Can't add alias: {alias_result.failure_descriptions}", errno.EINVAL)
+            raise CLIPrettyError(f"Can't add alias: {humanize_validation_result(alias_result)}", errno.EINVAL)
 
         private_key_result = PrivateKeyValidator().validate(self.private_key_aliased.value)
         if not private_key_result.is_valid:
-            raise CLIPrettyError(f"Can't add key: {private_key_result.failure_descriptions}", errno.EINVAL)
+            raise CLIPrettyError(f"Can't add key: {humanize_validation_result(private_key_result)}", errno.EINVAL)
 
     async def _run(self) -> None:
         profile_data = self.world.profile_data

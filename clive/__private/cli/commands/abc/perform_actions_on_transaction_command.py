@@ -15,6 +15,7 @@ from clive.__private.cli.exceptions import (
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.validators.path_validator import PathValidator
@@ -49,7 +50,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
 
         result = PathValidator(mode="can_be_file").validate(str(self.save_file))
         if not result.is_valid:
-            raise CLIPrettyError(f"Can't save to file: {result.failure_descriptions}", errno.EINVAL)
+            raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     async def _configure(self) -> None:
         self.use_beekeeper = self.__is_beekeeper_required()
