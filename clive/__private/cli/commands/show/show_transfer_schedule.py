@@ -29,7 +29,7 @@ class ShowTransferSchedule(WorldBasedCommand):
 
         console = Console()
 
-        if not scheduled_transfers:
+        if not scheduled_transfers.scheduled_transfers:
             console.print(colorize_content_not_available(f"Account `{self.account_name}` has no scheduled transfers."))
             return
 
@@ -97,20 +97,20 @@ class ShowTransferSchedule(WorldBasedCommand):
             center_to=possible_amount_column_name
         )
 
-        for idx, fst in enumerate(future_scheduled_transfers.future_scheduled_transfers):
+        for idx, future_scheduled_transfer in enumerate(future_scheduled_transfers.future_scheduled_transfers):
             possible_amount: Text | str = (
                 Text(f"{ERROR_LACK_OF_FUNDS_MESSAGE_RAW}", style="red", justify="center")
-                if fst.is_lack_of_funds()
+                if future_scheduled_transfer.is_lack_of_funds()
                 else possible_amount_aligned[idx]
             )
             table_upcoming.add_row(
-                fst.from_,
-                fst.to,
-                str(fst.pair_id),
+                future_scheduled_transfer.from_,
+                future_scheduled_transfer.to,
+                str(future_scheduled_transfer.pair_id),
                 amount_aligned[idx],
                 possible_amount,
-                fst.memo,
-                str(fst.trigger_date),
-                timedelta_to_shorthand_timedelta(timedelta(hours=fst.recurrence)),
+                future_scheduled_transfer.memo,
+                str(future_scheduled_transfer.trigger_date),
+                timedelta_to_shorthand_timedelta(timedelta(hours=future_scheduled_transfer.recurrence)),
             )
         return table_upcoming
