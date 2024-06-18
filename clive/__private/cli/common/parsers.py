@@ -100,8 +100,10 @@ def decimal_percent(raw: str) -> Decimal:
 
 @rename("text")
 def smart_frequency_parser(raw: str) -> timedelta:
-    """Helper parser function for frequency flag used in transfer-schedule."""
+    """Frequency flag parser used in transfer-schedule."""
+    from clive.__private.core.formatters.humanize import humanize_validation_result
+
     status = FrequencyValueValidator().validate(raw)
     if status.is_valid:
         return shorthand_timedelta_to_timedelta(raw.lower())
-    raise typer.BadParameter(status.failure_descriptions[0])
+    raise typer.BadParameter(humanize_validation_result(status))

@@ -8,6 +8,7 @@ from textual.containers import Vertical
 from textual.widgets import Pretty
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.exceptions import CliveError
@@ -42,7 +43,7 @@ class FailedValidationError(CliveValidatedInputError):
         additional = self._get_input_name_details(input_name)
         message = f"""\
 Input validation failed{additional}. Reasons:
-{validation_result.failure_descriptions}"""
+{humanize_validation_result(validation_result)}"""
         super().__init__(message)
 
 
@@ -316,5 +317,5 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         if validation_result.is_valid:
             self.pretty.display = False
         else:
-            self.query_one(Pretty).update(validation_result.failure_descriptions)
+            self.query_one(Pretty).update(humanize_validation_result(validation_result))
             self.pretty.display = True

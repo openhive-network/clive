@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private import config
 from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
@@ -145,7 +146,7 @@ class ProfileData(Context):
         if result.is_valid:
             return
 
-        raise ProfileInvalidNameError(name, reason=str(result.failure_descriptions))
+        raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
 
     def get_account_by_name(self, value: str | Account) -> Account:
         searched_account_name = value if isinstance(value, str) else value.name

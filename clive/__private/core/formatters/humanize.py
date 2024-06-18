@@ -34,6 +34,10 @@ from clive.__private.core.iwax import calculate_current_inflation_rate, calculat
 from clive.models import Asset, Operation
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
+    from textual.validation import ValidationResult
+
     from clive.__private.core.iwax import (
         HpAPRProtocol,
         VestsToHpProtocol,
@@ -80,6 +84,16 @@ def align_to_dot(*strings: str, center_to: int | str | None = None) -> list[str]
         aligned_strings.append(aligned_string)
 
     return aligned_strings
+
+
+def humanize_validation_result(result: ValidationResult) -> str:
+    """Return failure description from ValidationResult if any exists, otherwise returns 'No failures' message."""
+    if result.is_valid:
+        return "No failures"
+
+    if len(result.failure_descriptions) > 1:
+        return str(result.failure_descriptions)
+    return result.failure_descriptions[0]
 
 
 def humanize_natural_time(value: datetime | timedelta) -> str:

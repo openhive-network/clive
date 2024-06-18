@@ -5,6 +5,7 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.__private.validators.set_password_validator import SetPasswordValidator
@@ -21,12 +22,14 @@ class CreateProfile(BeekeeperBasedCommand):
         profile_name_result = ProfileNameValidator().validate(self.profile_name)
         if not profile_name_result.is_valid:
             raise CLIPrettyError(
-                f"Can't use this profile name: {profile_name_result.failure_descriptions}", errno.EINVAL
+                f"Can't use this profile name: {humanize_validation_result(profile_name_result)}", errno.EINVAL
             )
 
         password_result = SetPasswordValidator().validate(self.password)
         if not password_result.is_valid:
-            raise CLIPrettyError(f"Can't use this password: {password_result.failure_descriptions}", errno.EINVAL)
+            raise CLIPrettyError(
+                f"Can't use this password: {humanize_validation_result(password_result)}", errno.EINVAL
+            )
 
     async def _run(self) -> None:
         profile = ProfileData(self.profile_name, self.working_account_name)
