@@ -57,7 +57,7 @@ class AlarmData(CliveCheckerboardTable):
             header=AlarmDataHeader(*self._alarm_titled_data.keys()),
         )
 
-    def create_static_rows(self) -> list[AlarmDataRow]:
+    def create_static_rows(self, start_index: int = 0, end_index: int | None = None) -> list[AlarmDataRow]:  # noqa: ARG002
         return [AlarmDataRow(self._alarm_titled_data.values())]
 
 

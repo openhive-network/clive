@@ -89,7 +89,7 @@ class KeyAliasesHeader(Horizontal):
 class ManageKeyAliasesTable(CliveCheckerboardTable):
     """Table with KeyAliases."""
 
-    def create_static_rows(self) -> list[KeyAlias]:
+    def create_static_rows(self, start_index: int = 0, end_index: int | None = None) -> list[KeyAlias]:  # noqa: ARG002
         key_aliases = []
         for idx, key in enumerate(self.app.world.profile_data.keys):
             key_aliases.append(KeyAlias(idx, key))
