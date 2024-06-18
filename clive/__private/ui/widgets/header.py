@@ -75,8 +75,8 @@ class AlarmDisplay(DynamicLabel):
             self.app.world,
             "profile_data",
             update_callback,
-            first_try_callback=lambda: all(
-                acc.is_alarms_data_available for acc in account_getter(self.app.world.profile_data)
+            first_try_callback=lambda profile_data: all(
+                acc.is_alarms_data_available for acc in account_getter(profile_data)
             ),
             id_=id_,
             classes=classes,
