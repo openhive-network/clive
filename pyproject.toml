@@ -129,6 +129,9 @@ allow-star-arg-any = true
 known-first-party = ["clive", "wax", "schemas", "clive_local_tools"]
 required-imports = ["from __future__ import annotations"]
 
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
 [tool.ruff.lint.per-file-ignores]
 "clive/__private/cli/**" = [
     "I002", # Missing required import: {name}; TODO: Causes error https://github.com/tiangolo/typer/issues/296#issuecomment-1494005853
