@@ -39,9 +39,4 @@ class AccountReferencingWidget(CliveWidget):
         )
 
     def first_try_callback(self, profile_data: ProfileData) -> bool:
-        if profile_data.is_working_account_set() and self._account == profile_data.working_account:
-            return profile_data.working_account.is_node_data_available
-        for account in profile_data.watched_accounts:
-            if account == self._account:
-                return account.is_node_data_available
-        return False
+        return profile_data.get_account_by_name(self._account).is_node_data_available

@@ -11,7 +11,7 @@ from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
-from clive.__private.storage.accounts import WorkingAccount
+from clive.__private.storage.accounts import Account, WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.core.url import Url
@@ -24,8 +24,6 @@ if TYPE_CHECKING:
     from types import TracebackType
 
     from typing_extensions import Self
-
-    from clive.__private.storage.accounts import Account
 
 
 class ProfileDataError(CliveError):
@@ -41,6 +39,13 @@ class InvalidChainIdError(ProfileDataError):
 
 class NoWorkingAccountError(ProfileDataError):
     """No working account is available."""
+
+
+class AccountNotFoundError(ProfileDataError):
+    """Raised when an account is not found in `get_account_by_name` method."""
+
+    def __init__(self, account_name: str) -> None:
+        super().__init__(f"Account {account_name} not found in tracked accounts (working + watched accounts)")
 
 
 class ProfileCouldNotBeLoadedError(ProfileDataError):
@@ -138,6 +143,17 @@ class ProfileData(Context):
             return
 
         raise ProfileInvalidNameError(name, reason=str(result.failure_descriptions))
+
+    def get_account_by_name(self, value: str | Account) -> Account:
+        searched_account = None
+        searched_account_name = value if isinstance(value, str) else value.name
+        for account in self.get_tracked_accounts():
+            if account.name == searched_account_name:
+                searched_account = account
+                break
+
+        assert searched_account is not None, AccountNotFoundError(searched_account_name)
+        return searched_account
 
     @property
     def working_account(self) -> WorkingAccount:

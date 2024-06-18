@@ -92,22 +92,9 @@ class AlarmsTable(CliveCheckerboardTable):
         account = self._get_actual_account_state(content)
         self._previous_alarms = account.alarms.harmful_alarms
 
-    def _get_account_from_watched_accounts(self, content: ProfileData) -> Account:
-        """Search for the account in the watched account and return matched account."""
-        searched_account = None
-        for account in content.watched_accounts:
-            if account == self._account:
-                searched_account = account
-        assert searched_account is not None, f"Account {self._account} not found in watched accounts"
-        return searched_account
-
     def _get_actual_account_state(self, content: ProfileData) -> Account:
         """Return the account with the actual state."""
-        return (
-            content.working_account
-            if self.is_current_account_working
-            else self._get_account_from_watched_accounts(content)
-        )
+        return content.get_account_by_name(self._account)
 
     @property
     def is_current_account_working(self) -> bool:
