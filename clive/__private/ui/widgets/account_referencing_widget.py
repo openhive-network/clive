@@ -8,6 +8,7 @@ from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.accounts import Account
 
 
@@ -32,7 +33,15 @@ class AccountReferencingWidget(CliveWidget):
             self.app.world,
             "profile_data",
             lambda: foo() if self._account.name else "NULL",
-            first_try_callback=lambda: self._account.is_node_data_available,
+            first_try_callback=self._check_if_account_node_data_is_available,
             classes=classes,
             init=init,
         )
+
+    def _check_if_account_node_data_is_available(self, profile_data: ProfileData) -> bool:
+        if profile_data.is_working_account_set() and self._account == profile_data.working_account:
+            return profile_data.working_account.is_node_data_available
+        for account in profile_data.watched_accounts:
+            if account == self._account:
+                return account.is_node_data_available
+        return False
