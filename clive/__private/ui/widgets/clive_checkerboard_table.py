@@ -157,27 +157,39 @@ class CliveCheckerboardTable(CliveWidget):
         super().__init__()
         self._title = title
         self._header = header
+        self._is_after_first_rebuild = False
+        """It is used to inform the dynamic version whether it is the first rebuild, to determine whether the loading...
+        should be removed."""
 
     def compose(self) -> ComposeResult:
         if self.should_be_dynamic:
             yield Static("Loading...", id="loading-static")
         else:
-            self._mount_static_rows()
+            self.mount_all(self._create_table_content())
 
     def on_mount(self) -> None:
         if self.should_be_dynamic:
 
             def delegate_work(content: Content) -> None:
-                self.run_worker(self._mount_dynamic_rows(content))
+                self.run_worker(self._attribute_to_watch_changed(content))
 
             self.watch(self.object_to_watch, self.ATTRIBUTE_TO_WATCH, delegate_work)
 
-    def _mount_static_rows(self) -> None:
+    def _mount_static_rows(self, start_index: int = 0, end_index: int | None = None) -> None:
         """Mount rows created in static mode."""
-        self.mount_all(self._create_table_content())
+        rows = self.create_static_rows(start_index=start_index, end_index=end_index)
+        self._set_evenness_styles(rows, starting_index=start_index)
 
-    async def _mount_dynamic_rows(self, content: Content) -> None:
-        """Mount new rows when the ATTRIBUTE_TO_WATCH has been changed."""
+        if end_index:
+            mount_after: Widget | int = self._header if start_index == 0 else start_index + 1
+            self.mount_all(
+                rows,
+                after=mount_after,
+            )
+        else:
+            self.mount_all(rows)
+
+    async def _attribute_to_watch_changed(self, content: Content) -> None:
         if not self.should_be_dynamic:
             raise InvalidDynamicDefinedError
 
@@ -190,7 +202,47 @@ class CliveCheckerboardTable(CliveWidget):
         self.update_previous_state(content)
         await self.rebuild(content)
 
-    async def rebuild(self, content: Content | None = None) -> None:
+    async def _mount_dynamic_rows(self, content: Content) -> None:
+        """Mount new rows when the ATTRIBUTE_TO_WATCH has been changed."""
+        rows = self.create_dynamic_rows(content)
+        self._set_evenness_styles(rows)
+        await self.mount_all(rows)
+
+    async def _rebuild_header(self) -> None:
+        await self._header.remove()
+        await self.mount(self._header, after=self._title)
+
+    async def _rebuild_rows(
+        self,
+        content: Content | None = None,
+        start_index: int = 0,
+        end_index: int | None = None,
+    ) -> None:
+        rows = self.query(CliveCheckerboardTableRow)
+
+        assert start_index < len(
+            rows
+        ), "Starting_from_element parameter has higher value than number of elements in the table"
+        if end_index:
+            assert (
+                start_index < end_index
+            ), "Starting_from_element parameter has higher value than ending_with_element argument"
+
+        for index in range(start_index, end_index + 1 if end_index else len(rows)):
+            await rows[index].remove()
+        if not self.should_be_dynamic:
+            self._mount_static_rows(start_index, end_index)
+        else:
+            await self._mount_dynamic_rows(content)
+
+    async def rebuild(
+        self,
+        content: Content | None = None,
+        starting_from_element: int = 0,
+        ending_with_element: int | None = None,
+        *,
+        rebuild_header: bool = False,
+    ) -> None:
         """
         Rebuilds whole table - explicit use available for static and dynamic version.
 
@@ -200,10 +252,19 @@ class CliveCheckerboardTable(CliveWidget):
         """
         if not self.should_be_dynamic and content is not None:  # content is given, but table is static
             raise RebuildStaticTableWithContentError
-
         with self.app.batch_update():
-            await self.query("*").remove()
-            await self.mount_all(self._create_table_content(content))
+            if not self._is_after_first_rebuild and self.should_be_dynamic:
+                await self.query("#loading-static").remove()
+                await self.mount_all(self._create_table_content(content))
+                self._is_after_first_rebuild = True
+                return
+
+            if rebuild_header:
+                await self._rebuild_header()
+            if self.should_be_dynamic:
+                await self._rebuild_rows(content)
+            else:
+                await self._rebuild_rows(start_index=starting_from_element, end_index=ending_with_element)
 
     def _create_table_content(self, content: Content | None = None) -> list[Widget]:
         if content is not None and not self.is_anything_to_display(
@@ -216,7 +277,6 @@ class CliveCheckerboardTable(CliveWidget):
             rows = self.create_dynamic_rows(content)
         else:
             rows = self.create_static_rows()
-
         self._set_evenness_styles(rows)
 
         if self._title is None:
@@ -237,7 +297,11 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
         return [CliveCheckerboardTableRow(CliveCheckerBoardTableCell("Define `create_dynamic_rows` method!"))]
 
-    def create_static_rows(self) -> Sequence[CliveCheckerboardTableRow]:
+    def create_static_rows(
+        self,
+        start_index: int = 0,  # noqa: ARG002
+        end_index: int | None = None,  # noqa: ARG002
+    ) -> Sequence[CliveCheckerboardTableRow]:
         """
         Override this method when using static table (ATTRIBUTE_TO_WATCH is not set).
 
@@ -272,13 +336,13 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
         return True
 
-    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow]) -> None:
+    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
         for row_index, row in enumerate(rows):
             for cell_index, cell in enumerate(row.cells):
                 if not isinstance(cell, CliveCheckerBoardTableCell):
                     continue
 
-                is_even_row = row_index % 2 == 0
+                is_even_row = (row_index + starting_index) % 2 == 0
                 is_even_cell = cell_index % 2 == 0
 
                 if (is_even_row and is_even_cell) or (not is_even_row and not is_even_cell):
