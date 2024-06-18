@@ -45,6 +45,9 @@ class ProcessTransferSchedule(OperationCommand):
     def scheduled_transfer(self) -> ScheduledTransfer | None:
         return self.get_scheduled_transfer()
 
+    async def fetch_data(self) -> None:
+        self.scheduled_transfers = await self.fetch_scheduled_transfers_for_current_account()
+
     def _create_recurent_transfer_pair_id_extension(self) -> list[Any]:
         # TODO: This will be removed after hf28, because pair_id will be mandatory
         if self.pair_id is None or self.pair_id == 0:
@@ -89,11 +92,6 @@ class ProcessTransferSchedule(OperationCommand):
             return
         raise ProcessTransferScheduleNoScheduledTransfersError(self.from_account)
 
-    def validate_amount(self, amount: Asset.LiquidT) -> None:
-        """Validate amount for create, and modify calls - it should be different than values from REMOVE_VALUES."""
-        if amount in REMOVE_VALUES:
-            raise ProcessTransferScheduleInvalidAmountError
-
     def validate_pair_id(self) -> None:
         """Validate if pair_id is set, when there is more than one recurrent transfers."""
         assert self.scheduled_transfers is not None, "There are no scheduled transfers."
@@ -101,13 +99,29 @@ class ProcessTransferSchedule(OperationCommand):
         if number_of_scheduled_transfers > 1 and self.pair_id is None:
             raise ProcessTransferScheduleNullPairIdError
 
-    def validate_existence_lifetime(self, scheduled_transfer_lifetime: timedelta) -> None:
+
+@dataclass(kw_only=True)
+class ProcessTransferScheduleWithExtendedValidation(ProcessTransferSchedule):
+    amount: Asset.LiquidT | None
+    memo: str | None
+    frequency: timedelta | None
+    repeat: int | None
+
+    def validate_amount(self) -> None:
+        """Validate amount for create, and modify calls - it should be different than values from REMOVE_VALUES."""
+        if self.amount in REMOVE_VALUES:
+            raise ProcessTransferScheduleInvalidAmountError
+
+    def validate_existence_lifetime(self) -> None:
+        assert self.repeat is not None, "Value of repeat should be known."
+        assert self.frequency is not None, "Value of repeat should be known."
+        scheduled_transfer_lifetime = self.repeat * self.frequency
         if scheduled_transfer_lifetime > SCHEDULED_TRANSFER_MAX_LIFETIME:
             raise ProcessTransferScheduleTooLongLifetimeError(requested_lifetime=scheduled_transfer_lifetime)
 
 
 @dataclass(kw_only=True)
-class ProcessTransferScheduleCreate(ProcessTransferSchedule):
+class ProcessTransferScheduleCreate(ProcessTransferScheduleWithExtendedValidation):
     amount: Asset.LiquidT
     memo: str
     frequency: timedelta
@@ -124,27 +138,19 @@ class ProcessTransferScheduleCreate(ProcessTransferSchedule):
             extensions=self._create_recurent_transfer_pair_id_extension(),
         )
 
-    async def fetch_data(self) -> None:
-        self.scheduled_transfers = await self.fetch_scheduled_transfers_for_current_account()
-
     async def validate_inside_context_manager(self) -> None:
         if self.scheduled_transfers:
             self.validate_existence(should_exists=False)
         await super().validate_inside_context_manager()
 
     async def validate(self) -> None:
-        self.validate_amount(self.amount)
-        self.validate_existence_lifetime(self.repeat * self.frequency)
+        self.validate_amount()
+        self.validate_existence_lifetime()
         await super().validate()
 
 
 @dataclass(kw_only=True)
-class ProcessTransferScheduleModify(ProcessTransferSchedule):
-    amount: Asset.LiquidT | None = None
-    memo: str | None = None
-    frequency: timedelta | None = None
-    repeat: int | None = None
-
+class ProcessTransferScheduleModify(ProcessTransferScheduleWithExtendedValidation):
     async def _create_operation(self) -> RecurrentTransferOperation:
         return RecurrentTransferOperation(
             from_=self.from_account,
@@ -176,16 +182,14 @@ class ProcessTransferScheduleModify(ProcessTransferSchedule):
         assert self.scheduled_transfers is not None, "Value of scheduled_transfers is known at this point."
         self.validate_pair_id()
         self.validate_existence(should_exists=True)
-        assert self.frequency is not None, "Value of frequency is known at this point."
-        assert self.repeat is not None, "Value of repeat is known at this point."
-        self.validate_existence_lifetime(self.repeat * self.frequency)
+        self.validate_existence_lifetime()
         await super().validate_inside_context_manager()
 
     async def validate(self) -> None:
         if self.amount:
-            self.validate_amount(self.amount)
+            self.validate_amount()
         if self.frequency and self.repeat:
-            self.validate_existence_lifetime(self.repeat * self.frequency)
+            self.validate_existence_lifetime()
         await super().validate()
 
 
