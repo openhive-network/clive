@@ -220,7 +220,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: Manabar) -> mock_database.Manabar:
         gdpo_timestamp = int(gdpo.time.timestamp())
-        last_update = manabar.last_update_time
+        last_update_timestamp = manabar.last_update_time
 
         # >>> START WORKAROUND
         # It's possible to get wax assertion error that `now` has to be greater or equal (>=) `last_update` because in
@@ -228,7 +228,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         # E.g `last_update = 1718607156` and `now = 1718607153`
         # Looks like hived is not able to handle batch queries properly and can answer to different API calls
         # requested in batch with different states of the blockchain (state changes between processing API calls)
-        now = max((gdpo_timestamp, last_update))
+        now = max((gdpo_timestamp, last_update_timestamp))
         # <<< END WORKAROUND
 
         power_from_api = manabar.current_mana
@@ -238,12 +238,12 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 now=now,
                 max_mana=max_mana,
                 current_mana=power_from_api,
-                last_update_time=last_update,
+                last_update_time=last_update_timestamp,
             ),
             gdpo,
         )
         full_regeneration = self.__get_manabar_regeneration_time(
-            now=now, max_mana=max_mana, current_mana=power_from_api, last_update_time=last_update
+            now=now, max_mana=max_mana, current_mana=power_from_api, last_update_time=last_update_timestamp
         )
 
         return mock_database.Manabar(
