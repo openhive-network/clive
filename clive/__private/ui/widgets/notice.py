@@ -7,7 +7,7 @@ from clive.__private.ui.widgets.titled_label import TitledLabel
 if TYPE_CHECKING:
     from textual.reactive import Reactable
 
-    from clive.__private.ui.widgets.dynamic_label import DynamicLabelCallbackType, FirstTryCallbackType
+    from clive.__private.ui.widgets.dynamic_label import DynamicLabelCallbackType, DynamicLabelFirstTryCallbackType
 
 
 class Notice(TitledLabel):
@@ -28,7 +28,7 @@ class Notice(TitledLabel):
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
         callback: DynamicLabelCallbackType | None = None,
-        first_try_callback: FirstTryCallbackType = lambda: True,
+        first_try_callback: DynamicLabelFirstTryCallbackType = lambda: True,
         init: bool = True,
     ) -> None:
         super().__init__(

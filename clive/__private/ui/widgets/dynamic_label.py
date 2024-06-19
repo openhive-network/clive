@@ -23,7 +23,7 @@ DynamicLabelCallbackType = Union[
     Callable[[Any, Any], str],
 ]
 
-FirstTryCallbackType = Union[
+DynamicLabelFirstTryCallbackType = Union[
     Callable[[], Awaitable[str]],
     Callable[[Any], Awaitable[str]],
     Callable[[Any, Any], Awaitable[str]],
@@ -54,7 +54,7 @@ class DynamicLabel(CliveWidget):
         attribute_name: str,
         callback: DynamicLabelCallbackType,
         *,
-        first_try_callback: FirstTryCallbackType = lambda: True,
+        first_try_callback: DynamicLabelFirstTryCallbackType = lambda: True,
         prefix: str = "",
         init: bool = True,
         shrink: bool = False,
@@ -100,7 +100,7 @@ class DynamicLabel(CliveWidget):
 
     def _call_with_arbitrary_args(
         self,
-        callback: DynamicLabelCallbackType | FirstTryCallbackType,
+        callback: DynamicLabelCallbackType | DynamicLabelFirstTryCallbackType,
         old_value: Any,  # noqa: ANN401
         value: Any,  # noqa: ANN401
     ) -> Awaitable[str] | str | bool:
