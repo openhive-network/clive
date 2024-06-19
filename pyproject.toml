@@ -7,7 +7,7 @@ build-backend = "poetry_dynamic_versioning.backend"
 
 [tool.poetry]
 name = "clive"
-version = "0.0.0"
+version = "1.27.5.9.dev20+74c5d2f5.dirty"
 description = "CLI application for interacting with the Hive blockchain."
 readme = "README.md"
 repository = "https://gitlab.syncad.com/hive/clive"
@@ -69,7 +69,7 @@ clive-dev = "clive.dev:main"
 
 
 [tool.poetry-dynamic-versioning]
-enable = true
+enable = false
 format-jinja = """
     {%- set dirty_postfix = '.dirty' if dirty else '' -%}
     {%- if distance == 0 and not dirty -%}

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import asyncio
 import os
+import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
@@ -20,11 +21,13 @@ from generate_operations import generate_blocks
 from shared_tools.complex_networks import generate_free_addresses
 
 SIGNATURE_TYPE: Literal["open_sign", "single_sign", "multi_sign"] = "single_sign"
-P2P_ENDPOINT = generate_free_addresses(1)[0]
-BLOCK_LOG_DIRECTORY: Final[Path] = Path(f"/home/dev/clive/tests/functional/full_block_generator/block_log_{SIGNATURE_TYPE}")
+# P2P_ENDPOINT = "172.17.0.1:2000"
+P2P_ENDPOINT = "0.0.0.0:2000"
+# BLOCK_LOG_DIRECTORY: Final[Path] = Path(f"/home/dev/clive/tests/functional/full_block_generator/block_log_{SIGNATURE_TYPE}")
+BLOCK_LOG_DIRECTORY: Final[Path] = Path(f"/sources/clive/tests/functional/full_block_generator/block_log_{SIGNATURE_TYPE}")
 
 # Node parameters
-SHARED_MEMORY_FILE_DIRECTORY: Final[str] = "/home/dev/Documents/full_block_generator/"
+SHARED_MEMORY_FILE_DIRECTORY: Final[str] = "/sources/Documents/full_block_generator/"
 SHARED_MEMORY_FILE_SIZE: Final[int] = 24
 WEBSERVER_THREAD_POOL_SIZE: Final[int] = 16
 
@@ -41,7 +44,7 @@ TRANSACTIONS_IN_ONE_BLOCK: Final[int] = SIGNING_MAX_WORKERS * 60
 
 async def full_block_generator(signature_type: Literal["open_sign", "multi_sign", "single_sign"]) -> None:
     # fixme: delete after repair ( https://gitlab.syncad.com/hive/test-tools/-/issues/44 ). From this
-    clive_path = Path("/home/dev/.clive")
+    clive_path = Path("/sources/.clive")
     if not os.path.exists(clive_path):
         os.makedirs(clive_path)
     if os.path.exists(clive_path / "beekeeper"):
@@ -53,10 +56,9 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
 
     block_log = tt.BlockLog(BLOCK_LOG_DIRECTORY / "block_log")
     alternate_chain_spec_path = BLOCK_LOG_DIRECTORY / tt.AlternateChainSpecs.FILENAME
+    tt.logger.info(f"Alternate chain spec path: {alternate_chain_spec_path}")
 
-    network = tt.Network()
-
-    node = tt.InitNode(network=network)
+    node = tt.InitNode()
     node.config.p2p_endpoint = f"{P2P_ENDPOINT}"
     node.config.plugin.remove("account_by_key")
     node.config.plugin.remove("state_snapshot")
@@ -68,7 +70,7 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
         '{"name":"user","level":"debug","appender":"stderr"} '
         '{"name":"chainlock","level":"error","appender":"p2p"} '
         '{"name":"sync","level":"debug","appender":"p2p"} '
-        '{"name":"p2p","level":"debug","appender":"p2p"}'
+        '{"name":"p2p","level":"info","appender":"p2p"}'
     )
 
     for witness in WITNESSES:
@@ -76,45 +78,40 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
         node.config.witness.append(witness)
         node.config.private_key.append(key)
 
+    time.sleep(6.2)
+
     node.run(
         replay_from=block_log,
         timeout=120,
-        exit_before_synchronization=True,
-        alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
-    )
-    # node.run(
-    #     replay_from=block_log,
-    #     time_control=tt.Time.serialize(block_log.get_head_block_time(), format_=tt.TimeFormats.FAKETIME_FORMAT),
-    #     timeout=120,
-    #     wait_for_live=True,
-    #     alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
-    #     arguments=[f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}", f"--chain-id={CHAIN_ID}"],
-    # )
-
-    api_node = tt.ApiNode()
-    # api_node.config.p2p_seed_node = node.p2p_endpoint.as_string()
-    api_node.config.p2p_seed_node = P2P_ENDPOINT
-    api_node.config.shared_file_size = f"{SHARED_MEMORY_FILE_SIZE}G"
-    api_node.config.plugin.remove("account_by_key")
-    api_node.config.plugin.remove("state_snapshot")
-    api_node.config.plugin.remove("account_by_key_api")
-
-    # connect_nodes(first_node=node, second_node=api_node)
-
-    api_node.run(
-        replay_from=block_log,
-        timeout=120,
-        exit_before_synchronization=True,
-        alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
-    )
-
-    simultaneous_node_startup(
-        [node, api_node],
-        timeout=120,
-        alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
-        arguments=["--chain-id=24"],
+        # exit_before_synchronization=True,
         wait_for_live=True,
-        time_control=tt.StartTimeControl(start_time=block_log.get_head_block_time()),)
+        alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+        # time_control=tt.StartTimeControl(start_time=block_log.get_head_block_time()),
+        arguments=["--chain-id=24"],
+    )
+    print()
+    # api_node = tt.ApiNode()
+    # api_node.config.p2p_seed_node = P2P_ENDPOINT
+    # api_node.config.shared_file_size = f"{SHARED_MEMORY_FILE_SIZE}G"
+    # api_node.config.plugin.remove("account_by_key")
+    # api_node.config.plugin.remove("state_snapshot")
+    # api_node.config.plugin.remove("account_by_key_api")
+
+    # api_node.run(
+    #     replay_from=block_log,
+    #     timeout=120,
+    #     exit_before_synchronization=True,
+    #     alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+    # )
+    # tt.logger.info("START NODE")
+    # simultaneous_node_startup(
+    #     [node],
+    #     timeout=120,
+    #     alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
+    #     arguments=["--chain-id=24"],
+    #     wait_for_live=True,
+    #     time_control=tt.StartTimeControl(start_time=block_log.get_head_block_time())
+    # )
 
         # api_node.run(
     #     alternate_chain_specs=tt.AlternateChainSpecs.parse_file(alternate_chain_spec_path),
@@ -124,7 +121,7 @@ async def full_block_generator(signature_type: Literal["open_sign", "multi_sign"
     #     time_control=tt.Time.serialize(block_log.get_head_block_time(), format_=tt.TimeFormats.FAKETIME_FORMAT),
     #     arguments=[f"--shared-file-dir={SHARED_MEMORY_FILE_DIRECTORY}", f"--chain-id={CHAIN_ID}"],
     # )
-
+    tt.logger.info("START BEEKEEPER")
     wallet = WalletInfo(name="my_only_wallet", password="my_password", keys=Keys(count=0))
     async with await Beekeeper().launch() as beekeeper:
         await beekeeper.api.create(wallet_name=wallet.name, password=wallet.password)

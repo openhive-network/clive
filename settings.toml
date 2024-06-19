@@ -7,7 +7,10 @@ LOG_LEVEL_3RD_PARTY = "WARNING"
 LOG_DEBUG_PERIOD = 1
 
 [default.beekeeper]
-PATH = "/home/dev/hive/build/programs/beekeeper/beekeeper/beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper executable
+#PATH = "/home/dev/hive/build/programs/beekeeper/beekeeper/beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper executable
+PATH = "/sources/hive/build_kudmich_full_block_generator_26_03/programs/beekeeper/beekeeper/beekeeper"
+
+# required if no REMOTE_ADDRESS given, path to beekeeper executable
 REMOTE_ADDRESS = "" # required if not PATH given, url to http beekeeper server
 
 [default.node]
