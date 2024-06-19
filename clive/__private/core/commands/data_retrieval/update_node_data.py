@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.__private.core.date_utils import utc_epoch, utc_now
+from clive.__private.core.date_utils import utc_epoch, utc_from_timestamp, utc_now
 from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.core.iwax import (
     calculate_current_manabar_value,
@@ -219,12 +219,23 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         )
 
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: Manabar) -> mock_database.Manabar:
-        power_from_api = int(manabar.current_mana)
-        last_update = int(manabar.last_update_time)
+        gdpo_timestamp = int(gdpo.time.timestamp())
+        last_update = manabar.last_update_time
+
+        # >>> START WORKAROUND
+        # It's possible to get wax assertion error that `now` has to be greater or equal (>=) `last_update` because in
+        # batch queries we might get stale GDPO data.
+        # E.g `last_update = 1718607156` and `now = 1718607153`
+        # Looks like hived is not able to handle batch queries properly and can answer to different API calls
+        # requested in batch with different states of the blockchain (state changes between processing API calls)
+        now = max((gdpo_timestamp, last_update))
+        # <<< END WORKAROUND
+
+        power_from_api = manabar.current_mana
         max_mana_value = vests_to_hive(max_mana, gdpo)
         mana_value = vests_to_hive(
             calculate_current_manabar_value(
-                now=int(gdpo.time.timestamp()),
+                now=now,
                 max_mana=max_mana,
                 current_mana=power_from_api,
                 last_update_time=last_update,
@@ -232,7 +243,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             gdpo,
         )
         full_regeneration = self.__get_manabar_regeneration_time(
-            gdpo_time=gdpo.time, max_mana=max_mana, current_mana=power_from_api, last_update_time=last_update
+            now=now, max_mana=max_mana, current_mana=power_from_api, last_update_time=last_update
         )
 
         return mock_database.Manabar(
@@ -242,19 +253,16 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         )
 
     def __get_manabar_regeneration_time(
-        self, gdpo_time: datetime, max_mana: int, current_mana: int, last_update_time: int
+        self, now: int, max_mana: int, current_mana: int, last_update_time: int
     ) -> timedelta:
         if max_mana <= 0:
             return timedelta(0)
-        return (
-            calculate_manabar_full_regeneration_time(
-                now=int(gdpo_time.timestamp()),
-                max_mana=max_mana,
-                current_mana=current_mana,
-                last_update_time=last_update_time,
-            )
-            - gdpo_time
-        )
+        return calculate_manabar_full_regeneration_time(
+            now=now,
+            max_mana=max_mana,
+            current_mana=current_mana,
+            last_update_time=last_update_time,
+        ) - utc_from_timestamp(now)
 
     def __get_account(self, name: str) -> Account:
         return next(filter(lambda account: account.name == name, self.accounts))
