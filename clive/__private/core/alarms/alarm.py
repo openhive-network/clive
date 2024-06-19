@@ -4,8 +4,6 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 
-from clive.__private.core.formatters.humanize import humanize_class_name
-
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
@@ -49,10 +47,6 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     alarm_data: AlarmDataT | None = None
     is_active: bool = False
     is_harmless: bool = False
-
-    def get_alarm_name_pretty_format(self) -> str:
-        """Return the alarm name in pretty format e.g: `Alarm example name`."""
-        return humanize_class_name(self.__class__.__name__)
 
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
         if identifier == self.identifier:

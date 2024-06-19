@@ -74,7 +74,7 @@ class FixAlarmInfoWidget(CliveWidget):
         self.app.push_screen(
             ConfirmWithPassword(
                 result_callback=_on_confirmation_result,
-                title=f"Marking alarm `{self._alarm.get_alarm_name_pretty_format()}` as harmless",
+                title=f"Marking alarm `{self._alarm.get_alarm_basic_info()}` as harmless",
             )
         )
 
