@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, Union
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, cast, overload
 
 from textual.widgets import Label
 
@@ -14,23 +14,18 @@ if TYPE_CHECKING:
     from textual.reactive import Reactable
 
 
-DynamicLabelCallbackType = Union[
-    Callable[[], Awaitable[str]],
-    Callable[[Any], Awaitable[str]],
-    Callable[[Any, Any], Awaitable[str]],
-    Callable[[], str],
-    Callable[[Any], str],
-    Callable[[Any, Any], str],
-]
+T = TypeVar("T")
 
-DynamicLabelFirstTryCallbackType = Union[
-    Callable[[], Awaitable[str]],
-    Callable[[Any], Awaitable[str]],
-    Callable[[Any, Any], Awaitable[str]],
-    Callable[[], bool],
-    Callable[[Any], bool],
-    Callable[[Any, Any], bool],
-]
+WatchLikeCallbackBothValuesType = Callable[[Any, Any], Awaitable[T]] | Callable[[Any, Any], T]
+WatchLikeCallbackNewValueType = Callable[[Any], Awaitable[T]] | Callable[[Any], T]
+WatchLikeCallbackNoArgsType = Callable[[], Awaitable[T]] | Callable[[], T]
+
+WatchLikeCallbackType = (
+    WatchLikeCallbackBothValuesType[T] | WatchLikeCallbackNewValueType[T] | WatchLikeCallbackNoArgsType[T]
+)
+
+DynamicLabelCallbackType = WatchLikeCallbackType[str]
+DynamicLabelFirstTryCallbackType = WatchLikeCallbackType[bool]
 
 
 class DynamicLabel(CliveWidget):
@@ -98,17 +93,33 @@ class DynamicLabel(CliveWidget):
         if result != self.__label.renderable:
             self.__label.update(f"{self.__prefix}{result}")
 
+    @overload
+    def _call_with_arbitrary_args(
+        self,
+        callback: DynamicLabelCallbackType,
+        old_value: Any,  # noqa: ANN401
+        value: Any,  # noqa: ANN401
+    ) -> Awaitable[str] | str: ...
+
+    @overload
+    def _call_with_arbitrary_args(
+        self,
+        callback: DynamicLabelFirstTryCallbackType,
+        old_value: Any,  # noqa: ANN401
+        value: Any,  # noqa: ANN401
+    ) -> Awaitable[bool] | bool: ...
+
     def _call_with_arbitrary_args(
         self,
         callback: DynamicLabelCallbackType | DynamicLabelFirstTryCallbackType,
-        old_value: Any,  # noqa: ANN401
-        value: Any,  # noqa: ANN401
-    ) -> Awaitable[str] | str | bool:
+        old_value: Any,
+        value: Any,
+    ) -> Awaitable[str] | str | Awaitable[bool] | bool:
         param_count = count_parameters(callback)
 
         if param_count == 2:  # noqa: PLR2004
-            return callback(old_value, value)  # type: ignore[call-arg]
+            return cast(WatchLikeCallbackBothValuesType[Any], callback)(old_value, value)
         if param_count == 1:
-            return callback(old_value)  # type: ignore[call-arg]
+            return cast(WatchLikeCallbackNewValueType[Any], callback)(old_value)
 
-        return callback()  # type: ignore[call-arg]
+        return cast(WatchLikeCallbackNoArgsType[Any], callback)()
