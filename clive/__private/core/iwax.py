@@ -5,7 +5,9 @@ import json
 from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import wax
+from clive.__private.core.asset_conversions import hbd_to_sbd_prefix
 from clive.__private.core.communication import CustomJSONEncoder
+from clive.__private.core.constants.node import ENCODED_NULL_ACCOUNT_KEY_VALUE, NULL_ACCOUNT_KEY_VALUE
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
@@ -13,13 +15,14 @@ from clive.exceptions import CliveError
 from clive.models import Asset, Transaction
 from clive.models.asset import UnknownAssetTypeError
 from schemas.operations.representations import convert_to_representation
-
 if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.models import Operation
     from clive.models.aliased import CurrentPriceFeed
+    from clive.models.aliased import WitnessPropsSerialized, WitnessProps
+
 
 
 class HpAPRProtocol(Protocol):
@@ -214,3 +217,40 @@ def calculate_witness_votes_hp(votes: int, data: VestsToHpProtocol) -> Asset.Hiv
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
     return cast(Asset.Hive, from_python_json_asset(result))
+
+
+def serialize_witness_set_properties(
+    *,
+    key: str,
+    props: WitnessProps[Asset.Hive, Asset.Hbd],
+) -> WitnessPropsSerialized:
+    value = wax.python_witness_set_properties_data(key.encode())
+    if props.account_creation_fee:
+        value.account_creation_fee = to_python_json_asset(props.account_creation_fee)
+    if props.maximum_block_size:
+        value.maximum_block_size = props.maximum_block_size
+    if props.hbd_interest_rate:
+        value.hbd_interest_rate = props.hbd_interest_rate
+    if props.account_subsidy_budget:
+        value.account_subsidy_budget = props.account_subsidy_budget
+    if props.account_subsidy_decay:
+        value.account_subsidy_decay = props.account_subsidy_decay
+    if props.hbd_exchange_rate:
+        value.hbd_exchange_rate = wax.wax_result.python_price(
+            base=to_python_json_asset(props.hbd_exchange_rate.base),
+            quote=to_python_json_asset(props.hbd_exchange_rate.quote),
+        )
+    if props.url:
+        value.url = props.url.encode()
+    if props.new_signing_key and props.new_signing_key != NULL_ACCOUNT_KEY_VALUE:
+        value.new_signing_key = props.new_signing_key.encode()
+    wax_result = wax.serialize_witness_set_properties(
+        value,
+    )
+    iwax_result: WitnessPropsSerialized = []
+    for key, value in wax_result.items():
+        key_ = hbd_to_sbd_prefix(key.decode())
+        iwax_result.append((key_, value.decode()))
+    if props.new_signing_key == NULL_ACCOUNT_KEY_VALUE:
+        iwax_result.append(("new_signing_key", ENCODED_NULL_ACCOUNT_KEY_VALUE))
+    return iwax_result

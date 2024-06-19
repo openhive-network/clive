@@ -23,3 +23,9 @@ def hive_to_vests(amount: int | Asset.Hive, gdpo: DynamicGlobalProperties) -> As
     return Asset.Vests(
         amount=int(amount * int(gdpo.total_vesting_shares.amount) / int(gdpo.total_vesting_fund_hive.amount))
     )
+
+
+def hbd_to_sbd_prefix(name: str) -> str:
+    if name.startswith("hbd"):
+        return f"sbd{name[3:]}"
+    return name

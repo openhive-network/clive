@@ -6,10 +6,10 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
+from clive.__private.core.asset_conversions import vests_to_hive
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.date_utils import utc_epoch, utc_now
-from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,

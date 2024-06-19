@@ -36,7 +36,10 @@ from schemas.apis.transaction_status_api import FindTransaction as SchemasFindTr
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
 from schemas.fields.basic import AccountName as SchemasAccountName
+from schemas.fields.compound import LegacyChainProperties as SchemasLegacyChainProperties
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
+from schemas.fields.compound import WitnessProps as SchemasWitnessProps
+from schemas.fields.compound import WitnessPropsSerialized as SchemasWitnessPropsSerialized
 from schemas.fields.compound import Price, Proposal
 from schemas.fields.hex import Sha256
 from schemas.fields.hex import Signature as SchemasSignature
@@ -75,6 +78,7 @@ FindWitnesses = SchemasFindWitnesses
 HardforkProperties = GetHardforkProperties
 HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
 HiveInt = SchemasHiveInt
+LegacyChainProperties = SchemasLegacyChainProperties[AssetHiveHF26]
 Operation = AnyOperation
 OperationBaseClass = SchemasBaseOperationType
 OperationRepresentationType = Hf26OperationRepresentationType
@@ -102,3 +106,5 @@ Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
 WitnessSchedule = GetWitnessSchedule
 WitnessVotes = ListWitnessVotes
 WitnessesList = ListWitnesses
+WitnessProps = SchemasWitnessProps[AssetHiveHF26, AssetHbdHF26]
+WitnessPropsSerialized = SchemasWitnessPropsSerialized

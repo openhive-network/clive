@@ -17,7 +17,9 @@ class FindWitness(CommandWithResult[Witness]):
 
     async def _execute(self) -> None:
         response: FindWitnesses = await self.node.api.database_api.find_witnesses(owners=[self.witness_name])
-        assert len(response.witnesses) == 1
+        assert len(response.witnesses) == 1, f"couldn't find witness `{self.witness_name}` on node {self.node.address}"
         first_witness = response.witnesses[0]
-        assert first_witness.owner == self.witness_name
+        assert (
+            first_witness.owner == self.witness_name
+        ), f"expected witness `{self.witness_name}`, got `{first_witness.owner}`"
         self._result = first_witness

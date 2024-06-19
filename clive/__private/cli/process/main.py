@@ -19,6 +19,7 @@ from clive.__private.cli.process.transfer_schedule import transfer_schedule
 from clive.__private.cli.process.update_authority import get_update_authority_typer
 from clive.__private.cli.process.vote_proposal import vote_proposal
 from clive.__private.cli.process.vote_witness import vote_witness
+from clive.__private.cli.process.witness import witness
 
 process = CliveTyper(name="process", help="Process something (e.g. perform a transfer).")
 
@@ -36,6 +37,7 @@ process.add_typer(power_up)
 process.add_typer(withdraw_routes)
 process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
+process.add_typer(witness)
 
 
 @process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])

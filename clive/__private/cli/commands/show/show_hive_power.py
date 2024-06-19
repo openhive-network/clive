@@ -11,6 +11,7 @@ from rich.text import Text
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
+from clive.__private.core.asset_conversions import vests_to_hive
 from clive.__private.core.formatters.humanize import (
     align_to_dot,
     humanize_asset,
@@ -21,7 +22,6 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
     humanize_vest_to_hive_ratio,
 )
-from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 
 if TYPE_CHECKING:

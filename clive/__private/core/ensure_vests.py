@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.hive_vests_conversions import hive_to_vests
+from clive.__private.core.asset_conversions import hive_to_vests
 from clive.models import Asset
 
 if TYPE_CHECKING:

@@ -59,4 +59,3 @@ class ShowWitness(WorldBasedCommand):
 
         console = Console()
         console.print(table)
-

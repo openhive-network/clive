@@ -23,6 +23,7 @@ if TYPE_CHECKING:
     from clive.__private.cli.types import AuthorityType
     from clive.__private.core.commands.sign import AlreadySignedMode
     from clive_local_tools.cli.command_options import CliOptionT
+    from schemas.fields.assets.hive import AssetHiveT
     from schemas.fields.basic import PublicKey
 
 
@@ -260,5 +261,82 @@ class CLITester:
     ) -> Result:
         return self.__invoke(
             ["process", "transaction"],
+            **extract_params(locals()),
+        )
+
+    def process_witness_create(  # noqa: PLR0913
+        self,
+        *,
+        owner: str | None = None,
+        url: str,
+        block_signing_key: str,
+        fee: AssetHiveT,
+        account_creation_fee: AssetHiveT,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "witness", "create"],
+            **extract_params(locals()),
+        )
+
+    def process_witness_disable(  # noqa: PLR0913
+        self,
+        *,
+        owner: str | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "witness", "disable"],
+            **extract_params(locals()),
+        )
+
+    def process_witness_feed_publish(  # noqa: PLR0913
+        self,
+        *,
+        exchange_rate: float,
+        publisher: str | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "witness", "disable"],
+            **extract_params(locals()),
+        )
+
+    def process_witness_update(  # noqa: PLR0913
+        self,
+        *,
+        owner: str | None = None,
+        account_creation_fee: AssetHiveT | None = None,
+        maximum_block_size: int | None = None,
+        hbd_interest_rate: int | None = None,
+        account_subsidy_budget: int | None = None,
+        account_subsidy_decay: int | None = None,
+        hbd_exchange_rate: float | None = None,
+        url: str | None = None,
+        new_signing_key: str | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "witness", "update"],
             **extract_params(locals()),
         )
