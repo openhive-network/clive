@@ -70,3 +70,4 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         getattr(self.app.world.profile_data, self._accounts_type).add(account)
         self.app.trigger_profile_data_watchers()
         self._accounts_input.input.clear()
+        self.app.update_alarms_data_asap()

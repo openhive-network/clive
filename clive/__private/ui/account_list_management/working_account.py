@@ -121,6 +121,7 @@ class WorkingAccountChange(Vertical, CliveWidget):
         self.app.world.profile_data.set_working_account(self._working_account_input.value_or_error)
         self.app.trigger_profile_data_watchers()
         self._working_account_input.input.clear()
+        self.app.update_alarms_data_asap()
 
     def change_container_function(self) -> None:
         button = CliveButton(
