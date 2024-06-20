@@ -53,6 +53,10 @@ pre_commit_checks:
   stage: static_code_analysis
   extends: .pre_commit_checks_template
 
+verify_poetry_lock_sanity:
+  stage: static_code_analysis
+  extends: .verify_poetry_lock_sanity_template
+
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
