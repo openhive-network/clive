@@ -24,7 +24,6 @@ class RecoveryAccountWarningListedAlarmData(BaseAlarmData):
 class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmData]):
     WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}
 
-    EXTENDED_ALARM_INFO = "Your recovery account is listed as a warning account."
     FIX_ALARM_INFO = f"You should change it to account other than {list(WARNING_RECOVERY_ACCOUNTS)}"
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:

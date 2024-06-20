@@ -77,7 +77,8 @@ class AlarmInfoScreen(ModalScreen[None]):
     def compose(self) -> ComposeResult:
         with AlarmInfo():
             yield SectionTitle(f"{self._alarm.get_alarm_basic_info()} alarm details")
-            yield Static(self._alarm.EXTENDED_ALARM_INFO, id="extended-alarm-info")
+            if self._alarm.EXTENDED_ALARM_INFO:
+                yield Static(self._alarm.EXTENDED_ALARM_INFO, id="extended-alarm-info")
             yield AlarmData(alarm=self._alarm)
             yield FixAlarmInfoWidget(
                 alarm=self._alarm, alarm_fix_details=self._alarm_fix_details, account=self._account
