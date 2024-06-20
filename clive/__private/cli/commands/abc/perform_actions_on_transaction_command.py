@@ -85,7 +85,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             return None
 
         try:
-            return self.world.profile_data.working_account.keys.get(self.sign)
+            return self.world.profile_data.keys.get(self.sign)
         except KeyNotFoundError:
             raise CLIPrettyError(
                 f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT

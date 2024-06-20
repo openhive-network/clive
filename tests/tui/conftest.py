@@ -57,7 +57,7 @@ async def prepare_beekeeper_wallet(prepare_profile: ProfileData, world: World) -
         password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
         tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
 
-        world.profile_data.working_account.keys.add_to_import(
+        world.profile_data.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
         await world.commands.sync_data_with_beekeeper()

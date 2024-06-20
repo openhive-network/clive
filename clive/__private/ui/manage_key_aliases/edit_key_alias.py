@@ -47,7 +47,7 @@ class EditKeyAlias(KeyAliasForm):
 
         old_alias = self.public_key.alias
         new_alias = self._key_alias_input.value_or_error
-        self.app.world.profile_data.working_account.keys.rename(old_alias, new_alias)
+        self.app.world.profile_data.keys.rename(old_alias, new_alias)
 
         self.app.trigger_profile_data_watchers()
         self.app.post_message_to_screen("ManageKeyAliases", self.Changed())

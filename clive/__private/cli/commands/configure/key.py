@@ -52,7 +52,7 @@ class AddKey(WorldBasedCommand):
         if not profile_data.is_working_account_set():
             raise CLIWorkingAccountIsNotSetError(profile_data)
 
-        key_manager = profile_data.working_account.keys
+        key_manager = profile_data.keys
         alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(
             self.get_actual_alias()
         )
@@ -68,7 +68,7 @@ class AddKey(WorldBasedCommand):
         profile_data = self.world.profile_data
         typer.echo("Importing key...")
 
-        profile_data.working_account.keys.add_to_import(self.private_key_aliased)
+        profile_data.keys.add_to_import(self.private_key_aliased)
 
         try:
             await self.world.commands.activate(password=self.password)
@@ -99,7 +99,7 @@ class RemoveKey(WorldBasedCommand):
 
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
 
-        public_key = profile_data.working_account.keys.get(self.alias)
+        public_key = profile_data.keys.get(self.alias)
 
         self.__remove_key_association_from_the_profile(public_key)
 
@@ -114,7 +114,7 @@ class RemoveKey(WorldBasedCommand):
         typer.echo(message)
 
     def __remove_key_association_from_the_profile(self, key: PublicKeyAliased) -> None:
-        self.world.profile_data.working_account.keys.remove(key)
+        self.world.profile_data.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
         activate_wrapper = await self.world.commands.activate(password=self.password)

@@ -65,7 +65,7 @@ class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
             if not result:
                 return
 
-            self.app.world.profile_data.working_account.keys.remove(self.__public_key)
+            self.app.world.profile_data.keys.remove(self.__public_key)
 
             self.notify(f"Key alias `{self.__public_key.alias}` was removed.")
             self.app.post_message_to_screen(ManageKeyAliases, self.Changed())
@@ -91,7 +91,7 @@ class ManageKeyAliasesTable(CliveCheckerboardTable):
 
     def create_static_rows(self) -> list[KeyAlias]:
         key_aliases = []
-        for idx, key in enumerate(self.app.world.profile_data.working_account.keys):
+        for idx, key in enumerate(self.app.world.profile_data.keys):
             key_aliases.append(KeyAlias(idx, key))
 
         return key_aliases

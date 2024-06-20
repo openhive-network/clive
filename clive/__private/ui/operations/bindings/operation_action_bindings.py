@@ -132,7 +132,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     async def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
             try:
-                return self.app.world.profile_data.working_account.keys.first
+                return self.app.world.profile_data.keys.first
             except KeyNotFoundError:
                 self.notify("No keys found for the working account.", severity="error")
                 return None

@@ -70,12 +70,12 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
 
     def __init__(self) -> None:
         try:
-            first_value: PublicKey | NoSelection = self.app.world.profile_data.working_account.keys.first
+            first_value: PublicKey | NoSelection = self.app.world.profile_data.keys.first
         except KeyNotFoundError:
             first_value = Select.BLANK
 
         super().__init__(
-            [(key.alias, key) for key in self.app.world.profile_data.working_account.keys],
+            [(key.alias, key) for key in self.app.world.profile_data.keys],
             value=first_value,
             empty_string="no private key found",
         )

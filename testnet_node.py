@@ -78,7 +78,7 @@ async def prepare_profile(node: tt.RawNode) -> None:
         ).execute_with_result()
 
         tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
-        world.profile_data.working_account.keys.add_to_import(
+        world.profile_data.keys.add_to_import(
             PrivateKeyAliased(
                 value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_DATA.account.name}_key"
             )

@@ -33,4 +33,4 @@ class SyncDataWithBeekeeper(CommandInActive, Command):
                 beekeeper=self.beekeeper,
             ).execute_with_result()
 
-        await self.profile_data.working_account.keys.import_pending_to_beekeeper(import_key)
+        await self.profile_data.keys.import_pending_to_beekeeper(import_key)

@@ -161,7 +161,7 @@ class NewKeyAlias(NewKeyAliasBase):
     @CliveScreen.try_again_after_activation
     @on(NewKeyAliasBase.Saved)
     async def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
-        self.context.working_account.keys.set_to_import([event.private_key])
+        self.context.keys.set_to_import([event.private_key])
 
         await self.app.world.commands.sync_data_with_beekeeper()
         self.app.trigger_profile_data_watchers()
@@ -201,7 +201,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
 
     @on(NewKeyAliasBase.Saved)
     def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
-        self.context.working_account.keys.set_to_import([event.private_key])
+        self.context.keys.set_to_import([event.private_key])
         logger.debug("New private key is waiting to be imported...")
 
     async def apply_and_validate(self) -> None:

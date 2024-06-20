@@ -14,5 +14,5 @@ class ShowKeys(ProfileBasedCommand):
         if not self.profile_data.is_working_account_set():
             raise CLIWorkingAccountIsNotSetError(self.profile_data)
 
-        public_keys = list(self.profile_data.working_account.keys)
+        public_keys = list(self.profile_data.keys)
         typer.echo(f"{profile_name}, your keys are:\n{public_keys}")

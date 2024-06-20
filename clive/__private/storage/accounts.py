@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError
 
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
-from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import validate_schema_field
 from clive.exceptions import CliveError
 from clive.models.aliased import AccountName
@@ -116,7 +115,5 @@ class Account:
 
 @dataclass
 class WorkingAccount(Account):
-    keys: KeyManager = field(init=False, default_factory=KeyManager, compare=False)
-
     def __hash__(self) -> int:
         return super().__hash__()
