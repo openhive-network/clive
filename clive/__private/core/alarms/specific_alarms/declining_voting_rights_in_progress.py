@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
 from clive.__private.core.constants import DECLINE_VOTING_RIGHTS_PENDING_DAYS
+from clive.__private.core.date_utils import utc_now
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
@@ -44,21 +45,14 @@ class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInPro
         "You can cancel it by creating a decline operation with the `decline` value set to false before effective date."
     )
 
-    def update_alarm_status(self, data: AccountAlarmsData) -> None:
-        request = data.decline_voting_rights
-        if not request:
-            self.disable_alarm()
-            return
-
-        effective_date = request.effective_date
-        new_identifier = effective_date
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:  # noqa: ARG002
+        effective_date = utc_now()
         self.enable_alarm(
-            new_identifier,
+            effective_date,
             DecliningVotingRightsInProgressAlarmData(
                 start_date=self._calculate_start_process_date(effective_date), effective_date=effective_date
             ),
         )
-        return
 
     def get_alarm_basic_info(self) -> str:
         return "Declining voting rights is underway for the account"

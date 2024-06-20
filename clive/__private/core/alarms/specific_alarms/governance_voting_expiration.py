@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
-from clive.__private.core.date_utils import is_null_date
+from clive.__private.core.date_utils import utc_now
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
@@ -42,21 +42,9 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
 
     WARNING_PERIOD_IN_DAYS: Final[int] = 31
 
-    def update_alarm_status(self, data: AccountAlarmsData) -> None:
-        expiration: datetime = data.governance_vote_expiration_ts
-        if is_null_date(expiration):
-            self.disable_alarm()
-            return
-
-        alarm_data = GovernanceVotingExpirationAlarmData(expiration_date=expiration)
-
-        if alarm_data.days_left > self.WARNING_PERIOD_IN_DAYS:
-            self.disable_alarm()
-            return
-
-        new_identifier = expiration
-        self.enable_alarm(new_identifier, alarm_data)
-        return
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:  # noqa: ARG002
+        expiration = utc_now()
+        self.enable_alarm(expiration, GovernanceVotingExpirationAlarmData(expiration_date=expiration))
 
     def get_alarm_basic_info(self) -> str:
         return f"Governance votes will expire in {self.alarm_data_ensure.days_left} day(s)"

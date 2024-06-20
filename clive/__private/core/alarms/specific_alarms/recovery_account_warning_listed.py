@@ -27,16 +27,11 @@ class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmD
     EXTENDED_ALARM_INFO = "Your recovery account is listed as a warning account."
     FIX_ALARM_INFO = f"You should change it to account other than {list(WARNING_RECOVERY_ACCOUNTS)}"
 
-    def update_alarm_status(self, data: AccountAlarmsData) -> None:
-        if data.recovery_account not in self.WARNING_RECOVERY_ACCOUNTS:
-            self.disable_alarm()
-            return
-
-        new_identifier = data.recovery_account
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:  # noqa: ARG002
+        recovery_account = "steem"
         self.enable_alarm(
-            new_identifier, RecoveryAccountWarningListedAlarmData(warning_recovery_account=data.recovery_account)
+            recovery_account, RecoveryAccountWarningListedAlarmData(warning_recovery_account=recovery_account)
         )
-        return
 
     def get_alarm_basic_info(self) -> str:
         return f"Your recovery account {self.alarm_data_ensure.warning_recovery_account} is listed as a warning account"

@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
 from clive.__private.core.constants import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
+from clive.__private.core.date_utils import utc_now
 from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
@@ -42,23 +43,16 @@ class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountI
     EXTENDED_ALARM_INFO = "Changing recovery account is in progress."
     FIX_ALARM_INFO = "You can cancel it by set recovery account to the previous one."
 
-    def update_alarm_status(self, data: AccountAlarmsData) -> None:
-        request = data.change_recovery_account_request
-
-        if request is None:
-            self.disable_alarm()
-            return
-
-        new_identifier = request.effective_on
+    def update_alarm_status(self, data: AccountAlarmsData) -> None:  # noqa: ARG002
+        effective_on = utc_now()
         self.enable_alarm(
-            new_identifier,
+            effective_on,
             ChangingRecoveryAccountInProgressAlarmData(
-                start_date=self._calculate_start_process_date(request.effective_on),
-                effective_date=request.effective_on,
-                new_recovery_account=request.recovery_account,
+                start_date=self._calculate_start_process_date(effective_on),
+                effective_date=effective_on,
+                new_recovery_account="test",
             ),
         )
-        return
 
     def get_alarm_basic_info(self) -> str:
         return f"Setting the recovery account to {self.alarm_data_ensure.new_recovery_account} is in progress"
