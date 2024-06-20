@@ -37,8 +37,12 @@ class FixAlarmInfoWidget(CliveWidget):
             height: auto;
         }
 
-        #harmless-mark-info {
+        #actions-section-title {
             margin-top: 1;
+        }
+
+        #fix-alarm-button {
+            margin-bottom: 1;
         }
     }
     """
@@ -50,16 +54,8 @@ class FixAlarmInfoWidget(CliveWidget):
         self._account = account
 
     def compose(self) -> ComposeResult:
-        if isinstance(self._account, WorkingAccount):
-            # It is impossible to perform operations without a working account,
-            # so if the account is watched, it is not possible to fix the alarm
-            yield from self._get_how_to_fix_content()
-        else:
-            yield SectionTitle("This is a watched account so it is not possible to fix the alarm.")
-
-        yield Static("You can also mark this alarm as harmless.", id="harmless-mark-info")
-        with Center():
-            yield OneLineButton("Mark as harmless", variant="success", id_="harmless-button")
+        yield from self._get_how_to_fix_content()
+        yield from self._get_actions_content()
 
     @on(OneLineButton.Pressed, "#harmless-button")
     def mark_alarm_as_harmless(self) -> None:
@@ -85,6 +81,15 @@ class FixAlarmInfoWidget(CliveWidget):
     def _get_how_to_fix_content(self) -> Iterable[Widget]:
         yield SectionTitle("How to fix it?")
         yield Static(self._alarm_fix_details.fix_info)
-        if self._alarm_fix_details.is_fixable:
+
+    def _get_actions_content(self) -> Iterable[Widget]:
+        yield SectionTitle("Actions", id_="actions-section-title")
+        if self._alarm_fix_details.is_fixable and isinstance(self._account, WorkingAccount):
+            # It is impossible to perform operations without a working account,
+            # so if the account is watched, it is not possible to go to screen with fix.
+            yield Static(self._alarm_fix_details.fix_action_text)
             with Center():
                 yield OneLineButton(self._alarm_fix_details.fix_button_text, id_="fix-alarm-button")
+        yield Static("You can also mark this alarm as harmless:")
+        with Center():
+            yield OneLineButton("Mark as harmless", variant="success", id_="harmless-button")
