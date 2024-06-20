@@ -25,8 +25,11 @@ GOVERNANCE_TUI_ALARM_FIX_ACTION_TEXT: Final[str] = "You can do it through the go
 @dataclass(kw_only=True)
 class AlarmFixDetails:
     fix_info: str
+    "Explanation for the user on how to fix the alarm."
     fix_action_text: str = ""
+    "Text to be placed above the fix button."
     fix_button_text: str = ""
+    "Text to be placed inside the fix button."
     fix_action_cb: AlarmFixActionT | None = None
 
     @property
