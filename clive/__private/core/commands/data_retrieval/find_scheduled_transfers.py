@@ -151,7 +151,7 @@ class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
     account_name: str
     recurrent_transfer: RecurrentTransfer
 
-    def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer):
+    def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
         self.account_name = account_name
         self.recurrent_transfer = recurrent_transfer
         self.reason = f"Wrong from account '{self.recurrent_transfer.from_}' should be '{self.account_name}'."

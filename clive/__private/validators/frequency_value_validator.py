@@ -19,7 +19,8 @@ class FrequencyValueValidator(Validator):
         'Incorrect frequency unit must be one of the following hH, dD, wW. (e.g. "24h" or "2d 2h")'
     )
     VALUE_TO_SMALL_DESCRIPTION: Final[str] = (
-        f"Value for 'frequency' must be greater or equal {timedelta_to_shorthand_timedelta(SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE)}."
+        "Value for 'frequency' must be greater or equal "
+        f"{timedelta_to_shorthand_timedelta(SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE)}."
     )
 
     def __init__(self) -> None:

@@ -11,6 +11,7 @@ from clive.models.asset import Asset
 
 if TYPE_CHECKING:
     from datetime import timedelta
+
     from clive.__private.core.profile_data import ProfileData
 
 
