@@ -29,9 +29,8 @@ class GovernanceNoActiveVotesAlarmData(BaseAlarmData):
 
 @dataclass
 class GovernanceNoActiveVotes(Alarm[datetime, GovernanceNoActiveVotesAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "You have no active governance votes.\nYou should cast votes for witnesses and proposals or set a proxy."
-    )
+    EXTENDED_ALARM_INFO = "You have no active governance votes."
+    FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         expiration = data.governance_vote_expiration_ts
