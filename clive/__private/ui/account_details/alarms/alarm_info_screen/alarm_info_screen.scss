@@ -11,9 +11,12 @@ AlarmInfoScreen {
       height: 1;
     }
 
+    #extended-alarm-info {
+      text-align: center;
+    }
+
     AlarmData {
       align: center top;
-      margin-top: 1;
       margin-bottom: 1;
       height: auto;
 

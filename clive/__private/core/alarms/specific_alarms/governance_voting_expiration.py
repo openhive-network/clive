@@ -37,11 +37,9 @@ class GovernanceVotingExpirationAlarmData(BaseAlarmData):
 
 @dataclass
 class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "The governance votes are valid one year.\n"
-        "Your governance votes are about to expire.\n"
-        "You should cast votes for witnesses and proposals or set a proxy."
-    )
+    EXTENDED_ALARM_INFO = "The governance votes are valid one year.\nYour governance votes are about to expire."
+    FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
+
     WARNING_PERIOD_IN_DAYS: Final[int] = 31
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:

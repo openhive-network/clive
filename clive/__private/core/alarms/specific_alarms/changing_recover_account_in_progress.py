@@ -39,9 +39,8 @@ class ChangingRecoveryAccountInProgressAlarmData(BaseAlarmData):
 
 
 class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountInProgressAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "Changing recovery account is in progress.\nYou can cancel it by set recovery account to the previous one."
-    )
+    EXTENDED_ALARM_INFO = "Changing recovery account is in progress."
+    FIX_ALARM_INFO = "You can cancel it by set recovery account to the previous one."
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         request = data.change_recovery_account_request

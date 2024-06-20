@@ -66,16 +66,16 @@ def push_governance_screen() -> None:
 
 ALARM_FIX_DETAILS_MAP: Final[dict[type[AnyAlarm], AlarmFixDetails]] = {
     GovernanceVotingExpiration: AlarmFixDetails(
-        fix_info=GovernanceVotingExpiration.EXTENDED_ALARM_INFO,
+        fix_info=GovernanceVotingExpiration.FIX_ALARM_INFO,
         fix_action_text=GOVERNANCE_TUI_ALARM_FIX_ACTION_TEXT,
         fix_button_text="Go to governance",
         fix_action_cb=push_governance_screen,
     ),
-    RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.EXTENDED_ALARM_INFO),
-    DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.EXTENDED_ALARM_INFO),
-    ChangingRecoveryAccountInProgress: AlarmFixDetails(fix_info=ChangingRecoveryAccountInProgress.EXTENDED_ALARM_INFO),
+    RecoveryAccountWarningListed: AlarmFixDetails(fix_info=RecoveryAccountWarningListed.FIX_ALARM_INFO),
+    DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.FIX_ALARM_INFO),
+    ChangingRecoveryAccountInProgress: AlarmFixDetails(fix_info=ChangingRecoveryAccountInProgress.FIX_ALARM_INFO),
     GovernanceNoActiveVotes: AlarmFixDetails(
-        fix_info=GovernanceNoActiveVotes.EXTENDED_ALARM_INFO,
+        fix_info=GovernanceNoActiveVotes.FIX_ALARM_INFO,
         fix_action_text=GOVERNANCE_TUI_ALARM_FIX_ACTION_TEXT,
         fix_button_text="Go to governance",
         fix_action_cb=push_governance_screen,
