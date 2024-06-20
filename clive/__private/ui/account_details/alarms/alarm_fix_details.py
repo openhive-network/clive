@@ -19,12 +19,13 @@ if TYPE_CHECKING:
 
 AlarmFixActionT = Callable[[], Any]
 
-GOVERNANCE_TUI_ALARM_FIX_TEXT: Final[str] = "You can do it through the governance screen:"
+GOVERNANCE_TUI_ALARM_FIX_ACTION_TEXT: Final[str] = "You can do it through the governance screen:"
 
 
 @dataclass(kw_only=True)
 class AlarmFixDetails:
     fix_info: str
+    fix_action_text: str = ""
     fix_button_text: str = ""
     fix_action_cb: AlarmFixActionT | None = None
 
@@ -35,7 +36,7 @@ class AlarmFixDetails:
 
     @property
     def is_fixable(self) -> bool:
-        return bool(self.fix_button_text)
+        return bool(self.fix_button_text and self.fix_action_text)
 
 
 class DetailedAlarmNotFoundError(CliveDeveloperError):
@@ -62,7 +63,8 @@ def push_governance_screen() -> None:
 
 ALARM_FIX_DETAILS_MAP: Final[dict[type[AnyAlarm], AlarmFixDetails]] = {
     GovernanceVotingExpiration: AlarmFixDetails(
-        fix_info=f"{GovernanceVotingExpiration.EXTENDED_ALARM_INFO}\n{GOVERNANCE_TUI_ALARM_FIX_TEXT}",
+        fix_info=GovernanceVotingExpiration.EXTENDED_ALARM_INFO,
+        fix_action_text=GOVERNANCE_TUI_ALARM_FIX_ACTION_TEXT,
         fix_button_text="Go to governance",
         fix_action_cb=push_governance_screen,
     ),
@@ -70,7 +72,8 @@ ALARM_FIX_DETAILS_MAP: Final[dict[type[AnyAlarm], AlarmFixDetails]] = {
     DecliningVotingRightsInProgress: AlarmFixDetails(fix_info=DecliningVotingRightsInProgress.EXTENDED_ALARM_INFO),
     ChangingRecoveryAccountInProgress: AlarmFixDetails(fix_info=ChangingRecoveryAccountInProgress.EXTENDED_ALARM_INFO),
     GovernanceNoActiveVotes: AlarmFixDetails(
-        fix_info=f"{GovernanceNoActiveVotes.EXTENDED_ALARM_INFO}\n{GOVERNANCE_TUI_ALARM_FIX_TEXT}",
+        fix_info=GovernanceNoActiveVotes.EXTENDED_ALARM_INFO,
+        fix_action_text=GOVERNANCE_TUI_ALARM_FIX_ACTION_TEXT,
         fix_button_text="Go to governance",
         fix_action_cb=push_governance_screen,
     ),
