@@ -225,7 +225,7 @@ class Header(TextualHeader, CliveWidget):
         class_to_switch = "-not-mainnet"
 
         try:
-            network_type = await node.cached.network_type
+            network_type: str = await node.cached.network_type
         except CommunicationError:
             network_type = "no connection"
 

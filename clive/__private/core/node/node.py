@@ -7,7 +7,11 @@ from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Final
 
 from clive.__private.config import settings
-from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
+from clive.__private.core.commands.data_retrieval.get_node_basic_info import (
+    GetNodeBasicInfo,
+    NetworkType,
+    NodeBasicInfoData,
+)
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
 from clive.exceptions import CliveError, CommunicationError
@@ -211,7 +215,7 @@ class Node(BaseNode):
                 return None
 
         @property
-        async def network_type(self) -> str:
+        async def network_type(self) -> NetworkType:
             return (await self.basic_info).network_type
 
         @property
