@@ -176,7 +176,9 @@ class Clive(App[int], ManualReactive):
         self._refresh_node_data_interval = self.set_interval(
             settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node(), pause=True
         )
-        self._refresh_alarms_data_interval = self.set_interval(30, lambda: self.update_alarms_data(), pause=True)
+        self._refresh_alarms_data_interval = self.set_interval(
+            settings.get("node.refresh_alarms_rate", 30), lambda: self.update_alarms_data(), pause=True
+        )
 
         self.update_data_from_node_asap()
         self.update_alarms_data_asap()
