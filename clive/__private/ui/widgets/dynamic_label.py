@@ -120,6 +120,6 @@ class DynamicLabel(CliveWidget):
         if param_count == 2:  # noqa: PLR2004
             return cast(WatchLikeCallbackBothValuesType[Any], callback)(old_value, value)
         if param_count == 1:
-            return cast(WatchLikeCallbackNewValueType[Any], callback)(old_value)
+            return cast(WatchLikeCallbackNewValueType[Any], callback)(value)
 
         return cast(WatchLikeCallbackNoArgsType[Any], callback)()
