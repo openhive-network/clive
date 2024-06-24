@@ -45,11 +45,6 @@ class KeyManager:
         return key in self.__keys
 
     @property
-    def every(self) -> list[PublicKeyAliased]:
-        """A *copy* of the keys."""
-        return list(iter(self))
-
-    @property
     def first(self) -> PublicKeyAliased:
         try:
             return next(iter(self))
