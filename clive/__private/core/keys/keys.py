@@ -60,6 +60,9 @@ class KeyAliased(Key, ABC):
             return self.alias == other.alias and super().__eq__(other)
         return super().__eq__(other)
 
+    def __hash__(self) -> int:
+        return hash(self.alias)
+
     @abstractmethod
     def without_alias(self) -> Key:
         """Return a new instance of the key without the alias."""
@@ -86,6 +89,9 @@ class PublicKey(Key):
 class PublicKeyAliased(KeyAliased, PublicKey):
     def __eq__(self, other: object) -> bool:
         return super().__eq__(other)
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
     def without_alias(self) -> PublicKey:
         return PublicKey(value=self.value)
@@ -178,6 +184,9 @@ class PrivateKey(Key):
 class PrivateKeyAliased(KeyAliased, PrivateKey):
     def __eq__(self, other: object) -> bool:
         return super().__eq__(other)
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
     @overload  # type: ignore[override]
     def calculate_public_key(self, *, with_alias: Literal[False]) -> PublicKey: ...
