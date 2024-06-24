@@ -19,17 +19,17 @@ class FailedCommandNotificator(ErrorNotificator):
 
     def __init__(self, message: str | None = None, *, catch_only: type[CommandError] | None = None) -> None:
         super().__init__()
-        self.__message = message
-        self.__catch_only = catch_only
+        self._message = message
+        self._catch_only = catch_only
 
     def _is_exception_to_catch(self, exception: Exception) -> bool:
-        if self.__catch_only:
-            return type(exception) is self.__catch_only
+        if self._catch_only:
+            return type(exception) is self._catch_only
         return isinstance(exception, CommandError)
 
     def _determine_message(self, exception: Exception) -> str:
         assert isinstance(exception, CommandError)
 
-        if self.__message:
-            return self.__message
+        if self._message:
+            return self._message
         return str(exception)

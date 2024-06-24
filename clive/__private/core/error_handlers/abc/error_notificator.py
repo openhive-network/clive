@@ -18,18 +18,18 @@ class ErrorNotificator(ErrorHandlerContextManager, ABC):
         """Return message to be displayed in notification."""
 
     def _handle_error(self, error: Exception) -> ResultNotAvailable:
-        self.__notify(error)
+        self._notify(error)
         return ResultNotAvailable(error)
 
-    def __notify(self, exception: Exception) -> None:
+    def _notify(self, exception: Exception) -> None:
         message = self._determine_message(exception)
 
         if get_clive().is_launched:
-            self.__notify_tui(message)
+            self._notify_tui(message)
             return
 
         logger.warning(f"Command failed and no one was notified. {message=}")
 
     @staticmethod
-    def __notify_tui(message: str) -> None:
+    def _notify_tui(message: str) -> None:
         get_clive().app_instance().notify(message, severity="error")
