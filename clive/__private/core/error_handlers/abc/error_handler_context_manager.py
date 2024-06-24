@@ -42,12 +42,18 @@ class ErrorHandlerContextManager(ABC):
         return False
 
     @abstractmethod
-    def _try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
+    def _is_exception_to_catch(self, error: Exception) -> bool:
+        """Return `True` if the exception should be caught."""
+
+    @abstractmethod
+    def _handle_error(self, error: Exception) -> ResultNotAvailable:
         """Handle all the errors. Reraise if error should not be handled. Return `ResultNotAvailable` otherwise."""
 
     async def try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
         self._error = error
-        return self._try_to_handle_error(error)
+        if self._is_exception_to_catch(error):
+            return self._handle_error(error)
+        raise error
 
     @property
     def error(self) -> Exception | None:
