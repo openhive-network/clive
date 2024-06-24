@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable, Iterator, Sequence
+from collections.abc import Awaitable, Callable, Iterator
+from typing import Iterable
 
 from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 from clive.__private.logger import logger
@@ -31,8 +32,8 @@ class KeyManager:
     """A container-like object, that manages a number of keys, which you iterate over to see all the public keys."""
 
     def __init__(self) -> None:
-        self.__keys: list[PublicKeyAliased] = []
-        self.__keys_to_import: list[PrivateKeyAliased] = []
+        self.__keys: set[PublicKeyAliased] = set()
+        self.__keys_to_import: set[PrivateKeyAliased] = set()
 
     def __iter__(self) -> Iterator[PublicKeyAliased]:
         return iter(sorted(self.__keys, key=lambda key: key.alias))
@@ -69,7 +70,7 @@ class KeyManager:
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
             self._assert_no_alias_conflict(key.alias)
-            self.__keys.append(key)
+            self.__keys.add(key)
 
     def remove(self, *keys: PublicKeyAliased) -> None:
         """Remove a key alias from the Clive's key manager. Still remains in the beekeeper."""
@@ -80,23 +81,24 @@ class KeyManager:
         """Rename a key alias."""
         self._assert_no_alias_conflict(new_alias)
 
-        for i, key in enumerate(self.__keys):
+        for key in self.__keys:
             if key.alias == old_alias:
-                self.__keys[i] = key.with_alias(new_alias)
+                self.__keys.remove(key)
+                self.__keys.add(key.with_alias(new_alias))
                 return
         raise KeyNotFoundError(old_alias)
 
     def add_to_import(self, *keys: PrivateKeyAliased) -> None:
         for key in keys:
             self._assert_no_alias_conflict(key.alias)
-            self.__keys_to_import.append(key)
+            self.__keys_to_import.add(key)
 
-    def set_to_import(self, keys: Sequence[PrivateKeyAliased]) -> None:
+    def set_to_import(self, keys: Iterable[PrivateKeyAliased]) -> None:
         keys_to_import = list(keys)
         for key in keys_to_import:
             # since "keys to import" will be new (replaced), we should check for conflicts with the public keys only
             self._assert_no_public_alias_conflict(key.alias)
-        self.__keys_to_import = keys_to_import
+        self.__keys_to_import = set(keys_to_import)
 
     async def import_pending_to_beekeeper(self, import_callback: ImportCallbackT) -> None:
         imported_keys = [await import_callback(key) for key in self.__keys_to_import]
@@ -110,7 +112,7 @@ class KeyManager:
     def _is_key_to_import_alias_available(self, alias: str) -> bool:
         return self._is_alias_available(alias, self.__keys_to_import)
 
-    def _is_alias_available(self, alias: str, keys: Sequence[KeyAliased]) -> bool:
+    def _is_alias_available(self, alias: str, keys: Iterable[KeyAliased]) -> bool:
         known_aliases = [key.alias for key in keys]
         return alias not in known_aliases
 
