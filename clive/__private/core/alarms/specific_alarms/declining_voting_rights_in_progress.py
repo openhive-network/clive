@@ -38,7 +38,9 @@ class DecliningVotingRightsInProgressAlarmData(BaseAlarmData):
 @dataclass
 class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInProgressAlarmData]):
     EXTENDED_ALARM_INFO = (
-        """The decline voting rights operation is in progress.\nAfter effective date the operation is irreversible."""
+        "The decline voting rights operation is in progress.\n"
+        "After effective date the operation is irreversible.\n"
+        "The operation prevents voting on witnesses, proposals, posts and comments."
     )
     FIX_ALARM_INFO = (
         "You can cancel it by creating a decline operation with the `decline` value set to false before effective date."

@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
 from clive.__private.core.date_utils import is_null_date, utc_now
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_natural_time
+from clive.__private.ui.operations.governance_operations.witness.witness import MAX_NUMBER_OF_WITNESSES_VOTES
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
@@ -40,7 +41,12 @@ class GovernanceVotingExpirationAlarmData(BaseAlarmData):
 
 @dataclass
 class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarmData]):
-    EXTENDED_ALARM_INFO = "The governance votes are valid one year.\nYour governance votes are about to expire."
+    EXTENDED_ALARM_INFO = (
+        "The governance votes are valid one year.\n"
+        "Governance votes are votes on proposals and witnesses.\n"
+        f"You can vote for {MAX_NUMBER_OF_WITNESSES_VOTES} witnesses and an unlimited number of proposals.\n"
+        "Alarm applies to the expiration of the last vote (no matter whether it is a vote for a witness or a proposal)."
+    )
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
 
     WARNING_PERIOD_IN_DAYS: Final[int] = 31

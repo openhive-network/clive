@@ -24,6 +24,10 @@ class RecoveryAccountWarningListedAlarmData(BaseAlarmData):
 class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmData]):
     WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}
 
+    EXTENDED_ALARM_INFO = (
+        "It is important to keep the recovery account up to date.\n"
+        "If you lose your owner key, you will not be able to recover your account."
+    )
     FIX_ALARM_INFO = f"You should change it to account other than {list(WARNING_RECOVERY_ACCOUNTS)}"
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:

@@ -39,7 +39,11 @@ class ChangingRecoveryAccountInProgressAlarmData(BaseAlarmData):
 
 
 class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountInProgressAlarmData]):
-    FIX_ALARM_INFO = "You can cancel it by set recovery account to the previous one."
+    EXTENDED_ALARM_INFO = (
+        "`change_recovery_account_operation` allows a user to update their recovery account.\n"
+        "Only a recovery account may create a request account recovery in case of compromised the owner authority."
+    )
+    FIX_ALARM_INFO = "You can cancel it by setting a recovery account to the previous one."
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
         request = data.change_recovery_account_request
