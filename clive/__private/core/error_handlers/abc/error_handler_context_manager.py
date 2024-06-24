@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, TypeVar
+from typing import TYPE_CHECKING, Any, Generic, TypeAlias, TypeGuard, TypeVar
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable
@@ -11,6 +11,8 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
 ExecuteResultT = TypeVar("ExecuteResultT")
+ExceptionT = TypeVar("ExceptionT", bound=Exception)
+AnyErrorHandlerContextManager: TypeAlias = "ErrorHandlerContextManager[Any]"
 
 
 @dataclass
@@ -18,7 +20,7 @@ class ResultNotAvailable:
     exception: Exception
 
 
-class ErrorHandlerContextManager(ABC):
+class ErrorHandlerContextManager(Generic[ExceptionT], ABC):
     def __init__(self) -> None:
         self._error: Exception | None = None
 
@@ -42,11 +44,11 @@ class ErrorHandlerContextManager(ABC):
         return False
 
     @abstractmethod
-    def _is_exception_to_catch(self, error: Exception) -> bool:
+    def _is_exception_to_catch(self, error: Exception) -> TypeGuard[ExceptionT]:
         """Return `True` if the exception should be caught."""
 
     @abstractmethod
-    def _handle_error(self, error: Exception) -> ResultNotAvailable:
+    def _handle_error(self, error: ExceptionT) -> ResultNotAvailable:
         """Handle all the errors. Reraise if error should not be handled. Return `ResultNotAvailable` otherwise."""
 
     async def try_to_handle_error(self, error: Exception) -> ResultNotAvailable:
