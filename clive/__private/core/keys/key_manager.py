@@ -36,10 +36,10 @@ class KeyManager:
         self.__keys_to_import: set[PrivateKeyAliased] = set()
 
     def __iter__(self) -> Iterator[PublicKeyAliased]:
-        return iter(sorted(self.__keys, key=lambda key: key.alias))
+        return iter(self._sorted_keys())
 
     def __reversed__(self) -> Iterator[PublicKeyAliased]:
-        return iter(sorted(self.__keys, key=lambda key: key.alias, reverse=True))
+        return iter(self._sorted_keys(reverse=True))
 
     def __len__(self) -> int:
         return len(self.__keys)
@@ -105,6 +105,9 @@ class KeyManager:
         self.__keys_to_import.clear()
         self.add(*imported_keys)
         logger.debug("Imported all pending keys to beekeeper.")
+
+    def _sorted_keys(self, *, reverse: bool = False) -> list[PublicKeyAliased]:
+        return sorted(self.__keys, key=lambda key: key.alias, reverse=reverse)
 
     def _is_public_alias_available(self, alias: str) -> bool:
         return self._is_alias_available(alias, self.__keys)
