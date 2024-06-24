@@ -9,11 +9,15 @@ from clive.exceptions import CliveError
 ImportCallbackT = Callable[[PrivateKeyAliased], Awaitable[PublicKeyAliased]]
 
 
-class KeyAliasAlreadyInUseError(CliveError):
+class KeyManagerError(CliveError):
     pass
 
 
-class KeyNotFoundError(CliveError):
+class KeyAliasAlreadyInUseError(KeyManagerError):
+    pass
+
+
+class KeyNotFoundError(KeyManagerError):
     pass
 
 
