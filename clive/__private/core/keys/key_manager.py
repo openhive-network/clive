@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Awaitable, Callable, Iterator, Sequence
 
-from clive.__private.core.keys.keys import PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
+from clive.__private.core.keys.keys import KeyAliased, PrivateKey, PrivateKeyAliased, PublicKey, PublicKeyAliased
 from clive.__private.logger import logger
 from clive.exceptions import CliveError
 
@@ -58,9 +58,7 @@ class KeyManager:
             raise KeyNotFoundError from error
 
     def is_alias_available(self, alias: str) -> bool:
-        keys_to_check = self.__keys + self.__keys_to_import
-        known_aliases = [key.alias for key in keys_to_check]
-        return alias not in known_aliases
+        return self._is_public_alias_available(alias) and self._is_key_to_import_alias_available(alias)
 
     def get(self, alias: str) -> PublicKeyAliased:
         for key in self.__keys:
@@ -94,7 +92,11 @@ class KeyManager:
             self.__keys_to_import.append(key)
 
     def set_to_import(self, keys: Sequence[PrivateKeyAliased]) -> None:
-        self.__keys_to_import = list(keys)
+        keys_to_import = list(keys)
+        for key in keys_to_import:
+            # since "keys to import" will be new (replaced), we should check for conflicts with the public keys only
+            self._assert_no_public_alias_conflict(key.alias)
+        self.__keys_to_import = keys_to_import
 
     async def import_pending_to_beekeeper(self, import_callback: ImportCallbackT) -> None:
         imported_keys = [await import_callback(key) for key in self.__keys_to_import]
@@ -102,6 +104,20 @@ class KeyManager:
         self.add(*imported_keys)
         logger.debug("Imported all pending keys to beekeeper.")
 
+    def _is_public_alias_available(self, alias: str) -> bool:
+        return self._is_alias_available(alias, self.__keys)
+
+    def _is_key_to_import_alias_available(self, alias: str) -> bool:
+        return self._is_alias_available(alias, self.__keys_to_import)
+
+    def _is_alias_available(self, alias: str, keys: Sequence[KeyAliased]) -> bool:
+        known_aliases = [key.alias for key in keys]
+        return alias not in known_aliases
+
     def _assert_no_alias_conflict(self, alias: str) -> None:
         if not self.is_alias_available(alias):
+            raise KeyAliasAlreadyInUseError(alias)
+
+    def _assert_no_public_alias_conflict(self, alias: str) -> None:
+        if not self._is_public_alias_available(alias):
             raise KeyAliasAlreadyInUseError(alias)
