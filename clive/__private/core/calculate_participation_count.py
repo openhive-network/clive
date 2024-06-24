@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES, PARTICIPATION_CALCULATION_SLOTS_COUNT
+from clive.__private.core.constants.node import PARTICIPATION_CALCULATION_SLOTS_COUNT
+from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 
 if TYPE_CHECKING:

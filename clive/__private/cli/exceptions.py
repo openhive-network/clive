@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from click import ClickException
 
-from clive.__private.core.constants import SCHEDULED_TRANSFER_MAX_LIFETIME
+from clive.__private.core.constants.node import SCHEDULED_TRANSFER_MAX_LIFETIME
 from clive.__private.core.formatters.humanize import humanize_timedelta
 from clive.models.asset import Asset
 

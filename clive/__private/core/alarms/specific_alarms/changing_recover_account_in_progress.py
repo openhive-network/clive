@@ -11,7 +11,7 @@ from clive.__private.core.alarms.alarm_data import (
 from clive.__private.core.alarms.specific_alarms.alarm_descriptions import (
     CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION,
 )
-from clive.__private.core.constants import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
+from clive.__private.core.constants.node import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData

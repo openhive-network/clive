@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar
 
+from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.models import Asset
@@ -11,9 +12,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models.aliased import VestingDelegation
-
-
-DELEGATION_REMOVE_VESTS_VALUE: Final[Asset.Vests] = Asset.vests(0)
 
 
 class RemoveDelegation(OperationSummary):
@@ -42,7 +40,7 @@ class RemoveDelegation(OperationSummary):
         return DelegateVestingSharesOperation(
             delegator=self.working_account,
             delegatee=self._delegation.delegatee,
-            vesting_shares=DELEGATION_REMOVE_VESTS_VALUE,
+            vesting_shares=VESTS_TO_REMOVE_DELEGATION,
         )
 
     @property

@@ -1,20 +1,21 @@
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import TYPE_CHECKING, Final
 
 from textual.validation import Validator
 
+from clive.__private.core.constants.node import SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE
 from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta, timedelta_to_shorthand_timedelta
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from textual.validation import ValidationResult
 
 
 class FrequencyValueValidator(Validator):
     """Validates given frequency value for transfer-schedule command."""
 
-    SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE: Final[timedelta] = timedelta(days=1)
     INVALID_INPUT_DESCRIPTION: Final[str] = (
         'Incorrect frequency unit must be one of the following hH, dD, wW. (e.g. "24h" or "2d 2h")'
     )
@@ -41,7 +42,7 @@ class FrequencyValueValidator(Validator):
         return None
 
     def _validate_calculated_value(self, calculated_frequency: timedelta) -> bool:
-        if calculated_frequency < self.SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
+        if calculated_frequency < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
             self.failure_description = self.VALUE_TO_SMALL_DESCRIPTION
             return False
         return True

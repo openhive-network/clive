@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Protocol, cast
 
 import wax
 from clive.__private.core.communication import CustomJSONEncoder
-from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
+from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.exceptions import CliveError

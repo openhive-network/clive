@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar
 
+from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
@@ -14,8 +15,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models.hp_vests_balance import HpVestsBalance
-
-CANCEL_POWER_DOWN_VESTS_VALUE: Final[Asset.Vests] = Asset.vests(0)
 
 
 class CancelPowerDown(OperationSummary):
@@ -34,7 +33,7 @@ class CancelPowerDown(OperationSummary):
     def _create_operation(self) -> WithdrawVestingOperation:
         return WithdrawVestingOperation(
             account=self.working_account,
-            vesting_shares=CANCEL_POWER_DOWN_VESTS_VALUE,
+            vesting_shares=VESTS_TO_REMOVE_POWER_DOWN,
         )
 
     @property

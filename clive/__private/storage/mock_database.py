@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants import HIVE_PERCENT_PRECISION_DOT_PLACES
+from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 

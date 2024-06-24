@@ -1,8 +1,9 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final
+from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.constants import HIVE_PERCENT_PRECISION
+from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
+from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import humanize_bool
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
@@ -12,9 +13,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.models.aliased import WithdrawRouteSchema
-
-
-WITHDRAW_ROUTE_REMOVE_PERCENT: Final[int] = 0
 
 
 class RemoveWithdrawVestingRoute(OperationSummary):
@@ -37,7 +35,7 @@ class RemoveWithdrawVestingRoute(OperationSummary):
             from_account=self.working_account,
             to_account=self._withdraw_route.to_account,
             auto_vest=self._withdraw_route.auto_vest,
-            percent=WITHDRAW_ROUTE_REMOVE_PERCENT,
+            percent=PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
         )
 
     @property

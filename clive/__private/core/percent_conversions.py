@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants import (
+from clive.__private.core.constants.precision import (
     HIVE_PERCENT_PRECISION,
     HIVE_PERCENT_PRECISION_DOT_PLACES,
 )
