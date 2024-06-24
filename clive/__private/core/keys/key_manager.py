@@ -72,6 +72,16 @@ class KeyManager:
         for key in keys:
             self.__keys.remove(key)
 
+    def rename(self, old_alias: str, new_alias: str) -> None:
+        """Rename a key alias."""
+        self.__assert_no_alias_conflict(new_alias)
+
+        for i, key in enumerate(self.__keys):
+            if key.alias == old_alias:
+                self.__keys[i] = key.with_alias(new_alias)
+                return
+        raise KeyNotFoundError(f"Key with alias '{old_alias}' not found.")
+
     def add_to_import(self, *keys: PrivateKeyAliased) -> None:
         for key in keys:
             self.__assert_no_alias_conflict(key.alias)
@@ -89,13 +99,3 @@ class KeyManager:
     def __assert_no_alias_conflict(self, alias: str) -> None:
         if not self.is_alias_available(alias):
             raise KeyAliasAlreadyInUseError(f"Alias '{alias}' is already in use.")
-
-    def rename(self, old_alias: str, new_alias: str) -> None:
-        """Rename a key alias."""
-        self.__assert_no_alias_conflict(new_alias)
-
-        for i, key in enumerate(self.__keys):
-            if key.alias == old_alias:
-                self.__keys[i] = key.with_alias(new_alias)
-                return
-        raise KeyNotFoundError(f"Key with alias '{old_alias}' not found.")
