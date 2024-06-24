@@ -14,11 +14,17 @@ class KeyManagerError(CliveError):
 
 
 class KeyAliasAlreadyInUseError(KeyManagerError):
-    pass
+    def __init__(self, alias: str) -> None:
+        self.alias = alias
+        self.message = f"Alias is already in use: {alias}"
+        super().__init__(self.message)
 
 
 class KeyNotFoundError(KeyManagerError):
-    pass
+    def __init__(self, alias: str | None = None) -> None:
+        self.alias = alias
+        self.message = f"Key with alias '{alias}' not found." if alias is not None else "Key not found."
+        super().__init__(self.message)
 
 
 class KeyManager:
@@ -48,8 +54,8 @@ class KeyManager:
     def first(self) -> PublicKeyAliased:
         try:
             return next(iter(self))
-        except StopIteration:
-            raise KeyNotFoundError("No keys found.") from None
+        except StopIteration as error:
+            raise KeyNotFoundError from error
 
     def is_alias_available(self, alias: str) -> bool:
         keys_to_check = self.__keys + self.__keys_to_import
@@ -60,7 +66,7 @@ class KeyManager:
         for key in self.__keys:
             if key.alias == alias:
                 return key
-        raise KeyNotFoundError(f"Key with alias `{alias}` not found.")
+        raise KeyNotFoundError(alias)
 
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
@@ -80,7 +86,7 @@ class KeyManager:
             if key.alias == old_alias:
                 self.__keys[i] = key.with_alias(new_alias)
                 return
-        raise KeyNotFoundError(f"Key with alias '{old_alias}' not found.")
+        raise KeyNotFoundError(old_alias)
 
     def add_to_import(self, *keys: PrivateKeyAliased) -> None:
         for key in keys:
@@ -98,4 +104,4 @@ class KeyManager:
 
     def _assert_no_alias_conflict(self, alias: str) -> None:
         if not self.is_alias_available(alias):
-            raise KeyAliasAlreadyInUseError(f"Alias '{alias}' is already in use.")
+            raise KeyAliasAlreadyInUseError(alias)
