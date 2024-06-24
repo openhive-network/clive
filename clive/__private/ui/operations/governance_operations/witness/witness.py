@@ -12,6 +12,7 @@ from textual.validation import Integer
 from textual.widgets import Label, Static
 
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesDataRetrieval
+from clive.__private.core.constants.node import MAX_NUMBER_OF_WITNESSES_VOTES
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -48,7 +49,6 @@ if TYPE_CHECKING:
 
     from clive.models import Operation
 
-MAX_NUMBER_OF_WITNESSES_VOTES: Final[int] = 30
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
 
 

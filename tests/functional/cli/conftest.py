@@ -6,7 +6,7 @@ import pytest
 from typer.testing import CliRunner
 
 from clive.__private.config import settings
-from clive.__private.core.constants import TERMINAL_WIDTH
+from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World

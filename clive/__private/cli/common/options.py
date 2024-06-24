@@ -13,7 +13,7 @@ from clive.__private.cli.common.parsers import (
     voting_asset,
 )
 from clive.__private.cli.completion import is_tab_completion_active
-from clive.__private.core.constants import (
+from clive.__private.core.constants.node import (
     MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION,
     SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
     SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,

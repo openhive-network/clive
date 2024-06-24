@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
-from clive.__private.core.constants import HIVE_PERCENT_PRECISION
+from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider

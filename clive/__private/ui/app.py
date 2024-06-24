@@ -16,7 +16,7 @@ from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
 from clive.__private.config import settings
-from clive.__private.core.constants import TERMINAL_HEIGHT, TERMINAL_WIDTH
+from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger

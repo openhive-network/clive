@@ -5,9 +5,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataNeverExpiresWithoutAction
-from clive.__private.core.alarms.specific_alarms.alarm_descriptions import (
-    RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION,
-)
+from clive.__private.core.constants.alarm_descriptions import RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData

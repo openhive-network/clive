@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataNeverExpiresWithoutAction
-from clive.__private.core.alarms.specific_alarms.alarm_descriptions import GOVERNANCE_COMMON_ALARM_DESCRIPTION
+from clive.__private.core.constants.alarm_descriptions import GOVERNANCE_COMMON_ALARM_DESCRIPTION
 from clive.__private.core.date_utils import is_null_date
 
 if TYPE_CHECKING:

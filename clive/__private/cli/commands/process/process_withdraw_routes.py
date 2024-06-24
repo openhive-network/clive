@@ -5,7 +5,7 @@ from decimal import Decimal
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import WithdrawRoutesZeroPercentError
-from clive.__private.core.constants import PERCENT_REMOVE_WITHDRAW_ROUTE_AMOUNT
+from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.percent_conversions import percent_to_hive_percent
 from schemas.operations import SetWithdrawVestingRouteOperation
 
@@ -30,13 +30,13 @@ class ProcessWithdrawRoutes(OperationCommand):
         await super().validate()
 
     async def _validate_percent(self) -> None:
-        if self.percent == 0:
+        if self.percent == PERCENT_TO_REMOVE_WITHDRAW_ROUTE:
             raise WithdrawRoutesZeroPercentError
 
 
 @dataclass(kw_only=True)
 class ProcessWithdrawRoutesRemove(ProcessWithdrawRoutes):
-    percent: Decimal = field(init=False, default_factory=lambda: Decimal(PERCENT_REMOVE_WITHDRAW_ROUTE_AMOUNT))
+    percent: Decimal = field(init=False, default_factory=lambda: Decimal(PERCENT_TO_REMOVE_WITHDRAW_ROUTE))
     auto_vest: bool = field(init=False, default=False)
 
     async def _validate_percent(self) -> None:

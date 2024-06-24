@@ -10,9 +10,10 @@ import inflection
 
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
 from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
-from clive.__private.core.constants import (
+from clive.__private.core.constants.date import TIME_FORMAT_DAYS, TIME_FORMAT_WITH_SECONDS
+from clive.__private.core.constants.node import NULL_ACCOUNT_KEY_VALUE
+from clive.__private.core.constants.precision import (
     HIVE_PERCENT_PRECISION_DOT_PLACES,
-    NULL_ACCOUNT_KEY_VALUE,
     VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES,
 )
 from clive.__private.core.date_utils import is_null_date, utc_now
@@ -123,7 +124,7 @@ def humanize_datetime(value: datetime, *, with_time: bool = True, with_relative_
     if is_null_date(value):
         return "never"
 
-    format_ = "%Y-%m-%dT%H:%M:%S" if with_time else "%Y-%m-%d"
+    format_ = TIME_FORMAT_WITH_SECONDS if with_time else TIME_FORMAT_DAYS
     formatted = value.strftime(format_)
     if with_relative_time:
         return f"{formatted} ({humanize_natural_time(utc_now() - value.astimezone(timezone.utc))})"

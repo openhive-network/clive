@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import DelegationsZeroAmountError
-from clive.__private.core.constants import VESTS_REMOVE_DELEGATION_AMOUNT
+from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.__private.core.ensure_vests import ensure_vests_async
 from clive.models.asset import Asset
 from schemas.operations import DelegateVestingSharesOperation
@@ -30,15 +30,13 @@ class ProcessDelegations(OperationCommand):
         await super().validate()
 
     async def _validate_amount(self) -> None:
-        if self.amount == Asset.vests(VESTS_REMOVE_DELEGATION_AMOUNT) or self.amount == Asset.hive(
-            VESTS_REMOVE_DELEGATION_AMOUNT
-        ):
+        if self.amount in (Asset.vests(VESTS_TO_REMOVE_DELEGATION), Asset.hive(VESTS_TO_REMOVE_DELEGATION)):
             raise DelegationsZeroAmountError
 
 
 @dataclass(kw_only=True)
 class ProcessDelegationsRemove(ProcessDelegations):
-    amount: Asset.VotingT = field(init=False, default_factory=lambda: Asset.vests(VESTS_REMOVE_DELEGATION_AMOUNT))
+    amount: Asset.VotingT = field(init=False, default_factory=lambda: Asset.vests(VESTS_TO_REMOVE_DELEGATION))
 
     async def _validate_amount(self) -> None:
         """Skip the amount validation as it is already set."""

@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Final
 import aiohttp
 
 from clive.__private.core._async import asyncio_run
+from clive.__private.core.constants.date import TIME_FORMAT_WITH_MILLIS
 from clive.__private.logger import logger
 from clive.exceptions import CliveError, CommunicationError, CommunicationTimeoutError, UnknownResponseFormatError
 
@@ -22,11 +23,9 @@ if TYPE_CHECKING:
 
 
 class CustomJSONEncoder(json.JSONEncoder):
-    TIME_FORMAT_WITH_MILLIS: Final[str] = "%Y-%m-%dT%H:%M:%S.%f"
-
     def default(self, obj: Any) -> Any:  # noqa: ANN401
         if isinstance(obj, datetime):
-            return obj.strftime(self.TIME_FORMAT_WITH_MILLIS)
+            return obj.strftime(TIME_FORMAT_WITH_MILLIS)
 
         return super().default(obj)
 

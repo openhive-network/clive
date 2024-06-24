@@ -13,7 +13,10 @@ from clive.__private.cli.exceptions import (
     ProcessTransferScheduleNullPairIdError,
     ProcessTransferScheduleTooLongLifetimeError,
 )
-from clive.__private.core.constants import SCHEDULED_TRANSFER_MAX_LIFETIME
+from clive.__private.core.constants.node import (
+    SCHEDULED_TRANSFER_MAX_LIFETIME,
+    VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
+)
 from clive.__private.core.shorthand_timedelta import timedelta_to_int_hours
 from clive.models import Asset
 from clive.models.aliased import (
@@ -28,10 +31,10 @@ if TYPE_CHECKING:
         ScheduledTransfers,
     )
 
-
-REMOVE_VALUE_HIVE: Final[Asset.Hive] = Asset.hive(0)
-REMOVE_VALUE_HBD: Final[Asset.Hbd] = Asset.hbd(0)
-REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [REMOVE_VALUE_HIVE, REMOVE_VALUE_HBD]
+SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
+    Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
+    Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
+]
 
 
 @dataclass(kw_only=True)
@@ -108,8 +111,12 @@ class ProcessTransferScheduleWithExtendedValidation(ProcessTransferSchedule):
     repeat: int | None
 
     def validate_amount(self) -> None:
-        """Validate amount for create, and modify calls - it should be different than values from REMOVE_VALUES."""
-        if self.amount in REMOVE_VALUES:
+        """
+        Validate amount for create, and modify calls.
+
+        It should be different than values from SCHEDULED_TRANSFER_REMOVE_VALUES.
+        """
+        if self.amount in SCHEDULED_TRANSFER_REMOVE_VALUES:
             raise ProcessTransferScheduleInvalidAmountError
 
     def validate_existence_lifetime(self) -> None:
@@ -200,7 +207,7 @@ class ProcessTransferScheduleRemove(ProcessTransferSchedule):
         return RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
-            amount=REMOVE_VALUE_HIVE,
+            amount=Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
             memo=self.scheduled_transfer.memo,
             recurrence=self.scheduled_transfer.recurrence,
             executions=self.scheduled_transfer.remaining_executions,

@@ -1,12 +1,9 @@
 from __future__ import annotations
 
-from datetime import timedelta
 from typing import Final
 
+from clive.__private.core.constants.node import GOVERNANCE_VOTES_VALIDITY_PERIOD
 from clive.__private.core.formatters.humanize import humanize_timedelta
-
-HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS: Final[int] = 365
-GOVERNANCE_VOTES_VALIDITY_PERIOD: Final[timedelta] = timedelta(days=HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS)
 
 GOVERNANCE_COMMON_ALARM_DESCRIPTION: Final[str] = (
     "Governance votes are votes on proposals and witnesses.\n"

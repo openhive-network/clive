@@ -5,7 +5,12 @@ from typing import TYPE_CHECKING
 
 from click import ClickException
 
-from clive.__private.core.constants import SCHEDULED_TRANSFER_MAX_LIFETIME
+from clive.__private.core.constants.node import (
+    PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
+    SCHEDULED_TRANSFER_MAX_LIFETIME,
+    VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
+    VESTS_TO_REMOVE_DELEGATION,
+)
 from clive.__private.core.formatters.humanize import humanize_timedelta
 from clive.models.asset import Asset
 
@@ -110,8 +115,8 @@ class PowerDownInProgressError(CLIPrettyError):
 class WithdrawRoutesZeroPercentError(CLIPrettyError):
     def __init__(self) -> None:
         message = (
-            "Withdraw routes can't have zero percent, if you want to remove withdraw route then use command"
-            " `clive process withdraw-routes remove`"
+            f"Withdraw routes can't have {PERCENT_TO_REMOVE_WITHDRAW_ROUTE} percent, "
+            "if you want to remove withdraw route then use command `clive process withdraw-routes remove`"
         )
         super().__init__(message, errno.EPERM)
 
@@ -119,8 +124,8 @@ class WithdrawRoutesZeroPercentError(CLIPrettyError):
 class DelegationsZeroAmountError(CLIPrettyError):
     def __init__(self) -> None:
         message = (
-            "Delegation amount can't be zero, if you want to remove delegation then use command"
-            " `clive process delegations remove`"
+            f"Delegation amount can't be {VESTS_TO_REMOVE_DELEGATION}, "
+            "if you want to remove delegation then use command `clive process delegations remove`"
         )
         super().__init__(message, errno.EPERM)
 
@@ -161,7 +166,7 @@ class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
         hbd_symbol = Asset.get_symbol(Asset.Hbd)
         message = (
             "Amount for `clive process transfer-schedule create` or `clive process transfer-schedule modify` "
-            f"commands must be greater than 0 {hive_symbol}/{hbd_symbol}.\n"
+            f"commands must be greater than {VALUE_TO_REMOVE_SCHEDULED_TRANSFER} {hive_symbol}/{hbd_symbol}.\n"
             "If you want to remove scheduled transfer, please use `clive process transfer-schedule remove` command."
         )
         super().__init__(message, errno.EPERM)

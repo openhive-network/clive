@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants import VESTS_TO_HIVE_RATIO_PRECISION, VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES
+from clive.__private.core.constants.precision import (
+    VESTS_TO_HIVE_RATIO_PRECISION,
+    VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES,
+)
 from clive.__private.core.decimal_conventer import DecimalConverter
 
 if TYPE_CHECKING:
