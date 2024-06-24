@@ -2,7 +2,10 @@ from __future__ import annotations
 
 from typing import Final, TypeGuard
 
+from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
+from clive.__private.logger import logger
+from clive.dev import is_in_dev_mode
 from clive.exceptions import CommunicationError
 
 
@@ -27,3 +30,39 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
             printed for searched, printed in cls.SEARCHED_AND_PRINTED_MESSAGES.items() if searched in error_messages
         ]
         return str(replaced) if replaced else str(error_messages)
+
+    def _notify(self, exception: CommunicationError) -> None:
+        if get_clive().is_launched:
+            self._maybe_notify_tui(exception)
+            return
+
+        logger.warning(f"Command failed and no one was notified. {exception._get_reply()=}")
+
+    def _maybe_notify_tui(self, exception: CommunicationError) -> None:
+        """
+        Notify about the error in TUI if it's necessary.
+
+        Presents explicit error message always in dev mode for debugging purposes
+        or if response is available because if there is no response, it indicates general connection issue
+        and no need to notify user about it multiple times and show request details because that causes a lot of long
+        and unreadable notifications.
+        """
+
+        def should_notify_with_explicit_error() -> bool:
+            return is_in_dev_mode() or exception.is_response_available
+
+        if should_notify_with_explicit_error():
+            message = self._determine_message(exception)
+            super()._notify_tui(message)
+            return
+
+        clive_app = get_clive().app_instance()
+        notification_content = self._get_general_communication_issue_message(exception.url)
+        if clive_app.is_notification_present(notification_content):
+            return
+
+        super()._notify_tui(notification_content)
+
+    @staticmethod
+    def _get_general_communication_issue_message(url: str) -> str:
+        return f"Detected issue in communication with: {url}"

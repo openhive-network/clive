@@ -42,6 +42,10 @@ class CommunicationError(CliveError):
         logger.error(message)
         super().__init__(message)
 
+    @property
+    def is_response_available(self) -> bool:
+        return self.get_response() is not None
+
     def get_response_error_messages(self) -> list[str]:
         result = self.get_response()
         if result is None:
