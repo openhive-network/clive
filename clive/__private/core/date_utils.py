@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 
+from clive.__private.core.constants.date import SECONDS_IN_HOUR
+
 
 def is_null_date(value: datetime) -> bool:
     _value = value.replace(tzinfo=None)
@@ -20,3 +22,16 @@ def utc_from_timestamp(timestamp: float) -> datetime:
 
 def utc_epoch() -> datetime:
     return utc_from_timestamp(0)
+
+
+def timedelta_to_int_hours(td: timedelta) -> int:
+    """
+    Convert a timedelta to a hours int representation.
+
+    Examples
+    --------
+        timedelta_to_int_hours(((timedelta(days=7)) -> 168
+        timedelta_to_int_hours(((timedelta(hours=50)) -> 50
+        timedelta_to_int_hours(((timedelta(weeks=1, days=2, hours=3)) -> 219
+    """
+    return int(td.total_seconds() / SECONDS_IN_HOUR)

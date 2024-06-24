@@ -17,7 +17,7 @@ from clive.__private.core.constants.node import (
     SCHEDULED_TRANSFER_MAX_LIFETIME,
     VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
 )
-from clive.__private.core.shorthand_timedelta import timedelta_to_int_hours
+from clive.__private.core.date_utils import timedelta_to_int_hours
 from clive.models import Asset
 from clive.models.aliased import (
     RecurrentTransferOperation,
