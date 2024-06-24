@@ -1,42 +1,36 @@
 from __future__ import annotations
 
-import contextlib
-from typing import TYPE_CHECKING
+from dataclasses import dataclass
+from typing import TYPE_CHECKING, Literal
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container
-from textual.css.query import NoMatches
+from textual.containers import Horizontal
+from textual.css.query import DOMQuery, NoMatches
 from textual.message import Message
+from textual.reactive import reactive
 from textual.widgets import Static
+from typing_extensions import Self
 
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_checkerboard_table import (
+    EVEN_CLASS_NAME,
+    ODD_CLASS_NAME,
+    CliveCheckerboardTable,
+    CliveCheckerBoardTableCell,
+    CliveCheckerboardTableRow,
+)
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from typing_extensions import Self
 
-    from clive.__private.core.profile import Profile
     from clive.__private.models.schemas import OperationBase
-
-
-class DynamicColumn(DynamicLabel):
-    """Column with dynamic content."""
-
-
-class StaticColumn(Static):
-    """Column with static content."""
-
-
-class ColumnLayout(Static):
-    """Holds column order."""
 
 
 class ButtonMoveUp(CliveButton):
@@ -57,160 +51,306 @@ class ButtonDelete(CliveButton):
     """Button used for removing the operation from cart."""
 
     def __init__(self) -> None:
-        super().__init__("Remove", id_="delete-button")
+        super().__init__("Remove", id_="delete-button", variant="error")
 
 
-class StaticPart(Container):
-    """Container for the static part of the screen - title, global buttons and table header."""
+class CartItem(CliveCheckerboardTableRow, CliveWidget):
+    """Row of CartTable."""
 
-
-class CartItem(ColumnLayout, CliveWidget):
     BINDINGS = [
         Binding("ctrl+up", "select_previous", "Prev"),
         Binding("ctrl+down", "select_next", "Next"),
     ]
 
+    operation_index: int = reactive(0, init=False)  # type: ignore[assignment]
+
+    @dataclass
     class Delete(Message):
-        def __init__(self, widget: CartItem) -> None:
-            self.widget = widget
-            super().__init__()
+        widget: CartItem
 
+    @dataclass
     class Move(Message):
-        def __init__(self, from_idx: int, to_idx: int) -> None:
-            self.from_idx = from_idx
-            self.to_idx = to_idx
-            super().__init__()
+        from_index: int
+        to_index: int
 
+    @dataclass
     class Focus(Message):
         """Message sent when other CartItem should be focused."""
 
-        def __init__(self, target_idx: int) -> None:
-            self.target_idx = target_idx
-            super().__init__()
+        target_index: int
 
-    def __init__(self, operation_idx: int) -> None:
-        self.__idx = operation_idx
-        assert self.is_valid(), "During construction, index has to be valid"
-        super().__init__()
+    def __init__(self, operation_index: int) -> None:
+        assert self._is_operation_index_valid(operation_index), "During construction, operation index has to be valid"
+        self._operation_index = operation_index
+
+        self._is_already_deleted = False
+        """This could be a situation where the user is trying to delete an operation that is already deleted
+        (textual has not yet deleted the widget visually). This situation is possible if the user clicks so quickly
+        to remove an operation and there are a large number of operations in the shopping basket."""
+
+        self._is_already_moving = False
+        """Used to prevent user from moving item when the previous move is not finished yet."""
+
+        super().__init__(*self._create_cells())
 
     def __repr__(self) -> str:
-        return f"{self.__class__.__name__}(idx={self.__idx})"
-
-    def on_mount(self) -> None:
-        if self.__is_first:
-            self.unbind("ctrl+up")
-        elif self.__is_last:
-            self.unbind("ctrl+down")
-
-    def is_valid(self) -> bool:
-        return self.__idx < self.__operations_count
-
-    def compose(self) -> ComposeResult:
-        def get_operation_index(_: Profile) -> str:
-            return f"{self.__idx + 1}." if self.is_valid() else "?"
-
-        def get_operation_name(_: Profile) -> str:
-            return humanize_operation_name(self.operation) if self.is_valid() else "?"
-
-        def get_operation_details(_: Profile) -> str:
-            return humanize_operation_details(self.operation) if self.is_valid() else "?"
-
-        yield DynamicColumn(
-            self.world,
-            "profile",
-            get_operation_index,
-            classes="cell cell-middle",
-        )
-        yield DynamicColumn(
-            self.world,
-            "profile",
-            get_operation_name,
-            shrink=True,
-            classes="cell cell-variant cell-middle",
-        )
-        yield DynamicColumn(
-            self.world,
-            "profile",
-            get_operation_details,
-            shrink=True,
-            classes="cell",
-        )
-        yield ButtonMoveUp(disabled=self.__is_first)
-        yield ButtonMoveDown(disabled=self.__is_last)
-        yield ButtonDelete()
-
-    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
-        if focused := self.app.focused:  # Focus the corresponding button as it was before
-            assert focused.id, "Previously focused widget has no id!"
-            with contextlib.suppress(NoMatches):
-                previous = self.get_child_by_id(focused.id)
-                if previous.focusable:
-                    previous.focus()
-                    return self
-
-        for child in reversed(self.children):  # Focus first focusable
-            if child.focusable:
-                child.focus()
-
-        return self
-
-    def action_select_previous(self) -> None:
-        self.post_message(self.Focus(target_idx=self.__idx - 1))
-
-    def action_select_next(self) -> None:
-        self.post_message(self.Focus(target_idx=self.__idx + 1))
+        return f"{self.__class__.__name__}(operation_index={self._operation_index})"
 
     @property
-    def idx(self) -> int:
-        return self.__idx
+    def operation_number_cell(self) -> CliveCheckerBoardTableCell:
+        return self.query(CliveCheckerBoardTableCell).first()
+
+    @property
+    def button_move_up(self) -> ButtonMoveUp:
+        return self.query_one(ButtonMoveUp)
+
+    @property
+    def button_move_down(self) -> ButtonMoveDown:
+        return self.query_one(ButtonMoveDown)
+
+    @property
+    def button_delete(self) -> ButtonDelete:
+        return self.query_one(ButtonDelete)
 
     @property
     def operation(self) -> OperationBase:
-        assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.profile.cart[self.__idx]
+        assert self._is_operation_index_valid(self._operation_index), "Cannot get operation, position is invalid."
+        return self.profile.cart[self._operation_index]
 
     @property
-    def __operations_count(self) -> int:
+    def operations_amount(self) -> int:
         return len(self.profile.cart)
 
     @property
-    def __is_first(self) -> bool:
-        return self.__idx == 0
+    def is_first(self) -> bool:
+        return self._operation_index == 0
 
     @property
-    def __is_last(self) -> bool:
-        return self.__idx == self.__operations_count - 1
+    def is_last(self) -> bool:
+        return self._operation_index == self.operations_amount - 1
+
+    def on_mount(self) -> None:
+        self.operation_index = self._operation_index
+
+        if self.is_first:
+            self.unbind("ctrl+up")
+        elif self.is_last:
+            self.unbind("ctrl+down")
+
+    def watch_operation_index(self, value: int) -> None:
+        assert self._is_operation_index_valid(value), "Operation index is invalid when trying to update."
+        self._operation_index = value
+        self.operation_number_cell.update_content(self.humanize_operation_number())
+
+    def humanize_operation_number(self) -> str:
+        return f"{self._operation_index + 1}."
+
+    def humanize_operation_name(self) -> str:
+        return humanize_operation_name(self.operation)
+
+    def humanize_operation_details(self) -> str:
+        return humanize_operation_details(self.operation)
+
+    def action_select_previous(self) -> None:
+        self.post_message(self.Focus(target_index=self._operation_index - 1))
+
+    def action_select_next(self) -> None:
+        self.post_message(self.Focus(target_index=self._operation_index + 1))
+
+    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
+        def focus_first_focusable_button() -> None:
+            buttons = self.query(CliveButton)
+            for button in buttons:
+                if button.focusable:
+                    button.focus()
+                    break
+
+        focused = self.app.focused
+        if not focused:
+            return self
+
+        assert focused.id, "Previously focused widget has no id!"
+        try:
+            previous = self.get_widget_by_id(focused.id, CliveButton)
+        except NoMatches:
+            focus_first_focusable_button()
+            return self
+
+        if previous.focusable:
+            # Focus button that was focused before
+            previous.focus()
+        else:
+            focus_first_focusable_button()
+        return self
+
+    def unset_moving_flag(self) -> None:
+        self._is_already_moving = False
 
     @on(CliveButton.Pressed, "#move-up-button")
     def move_up(self) -> None:
-        self.post_message(self.Move(from_idx=self.__idx, to_idx=self.__idx - 1))
+        self._move("up")
 
     @on(CliveButton.Pressed, "#move-down-button")
     def move_down(self) -> None:
-        self.post_message(self.Move(from_idx=self.__idx, to_idx=self.__idx + 1))
+        self._move("down")
 
     @on(CliveButton.Pressed, "#delete-button")
     def delete(self) -> None:
+        if self._is_already_deleted:
+            return
+
+        self._is_already_deleted = True
         self.post_message(self.Delete(self))
 
-    @on(Move)
-    def move_item(self, event: CartItem.Move) -> None:
-        if event.to_idx == self.__idx:
-            self.__idx = event.from_idx
+    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
+        return [
+            CliveCheckerBoardTableCell(self.humanize_operation_number()),
+            CliveCheckerBoardTableCell(self.humanize_operation_name(), classes="operation-name"),
+            CliveCheckerBoardTableCell(self.humanize_operation_details(), classes="operation-details"),
+            CliveCheckerBoardTableCell(self._create_buttons_container(), classes="actions"),
+        ]
+
+    def _create_buttons_container(self) -> Horizontal:
+        button_move_up = ButtonMoveUp(disabled=self.is_first)
+        button_move_down = ButtonMoveDown(disabled=self.is_last)
+        button_delete = ButtonDelete()
+        return Horizontal(button_move_up, button_move_down, button_delete)
+
+    def _is_operation_index_valid(self, value: int) -> bool:
+        return value < self.operations_amount
+
+    def _move(self, direction: Literal["up", "down"]) -> None:
+        if self._is_already_moving:
+            return
+        self._is_already_moving = True
+        index_change = -1 if direction == "up" else 1
+        self.post_message(self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change))
+
+
+class CartHeader(Horizontal):
+    def compose(self) -> ComposeResult:
+        yield Static("No.", classes=ODD_CLASS_NAME)
+        yield Static("Operation type", classes=f"{EVEN_CLASS_NAME} operation-name")
+        yield Static("Operation details", classes=f"{ODD_CLASS_NAME} operation-details")
+        yield Static("Actions", classes=f"{EVEN_CLASS_NAME} actions")
+
+
+class CartTable(CliveCheckerboardTable):
+    """Table with CartItems."""
+
+    def __init__(self) -> None:
+        super().__init__(header=CartHeader())
+
+    @property
+    def _cart_items(self) -> DOMQuery[CartItem]:
+        return self.query(CartItem)
+
+    @property
+    def _has_cart_items(self) -> bool:
+        return bool(self._cart_items)
+
+    def create_static_rows(self) -> list[CartItem]:
+        return [CartItem(index) for index in range(len(self.profile.cart))]
+
+    @on(CartItem.Delete)
+    async def remove_item(self, event: CartItem.Delete) -> None:
+        item_to_remove = event.widget
+        with self.app.batch_update():
+            self._focus_appropriate_item_on_deletion(item_to_remove)
+            await item_to_remove.remove()
+            if self._has_cart_items:
+                self._update_cart_items_on_deletion(removed_item=item_to_remove)
+                self._disable_appropriate_button_on_deletion(removed_item=item_to_remove)
+        self.profile.cart.remove(item_to_remove.operation)
         self.app.trigger_profile_watchers()
 
+    @on(CartItem.Move)
+    async def move_item(self, event: CartItem.Move) -> None:
+        from_index = event.from_index
+        to_index = event.to_index
 
-class CartHeader(ColumnLayout):
-    def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", classes="cell cell-middle")
-        yield StaticColumn("Operation type", classes="cell cell-variant cell-middle")
-        yield StaticColumn("Operation details", classes="cell cell-middle")
-        yield StaticColumn("Actions", id="actions", classes="cell cell-variant cell-middle")
+        assert to_index >= 0, "Item cannot be moved to id lower than 0."
+        assert to_index < len(self.profile.cart), "Item cannot be moved to id greater than cart length."
+
+        with self.app.batch_update():
+            self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
+            self._focus_item_on_move(to_index)
+            self._unset_moving_flags()
+
+        self.profile.cart.swap(from_index, to_index)
+        self.app.trigger_profile_watchers()
+
+    @on(CartItem.Focus)
+    def focus_item(self, event: CartItem.Focus) -> None:
+        for cart_item in self._cart_items:
+            if event.target_index == cart_item.operation_index:
+                cart_item.focus()
+
+    def _update_cart_items_on_deletion(self, removed_item: CartItem) -> None:
+        def update_indexes() -> None:
+            for cart_item in cart_items_to_update:
+                cart_item.operation_index = cart_item.operation_index - 1
+
+        start_index = removed_item.operation_index
+        cart_items_to_update = self._cart_items[start_index:]
+        update_indexes()
+        self._set_evenness_styles(cart_items_to_update, starting_index=start_index)
+
+    def _disable_appropriate_button_on_deletion(self, removed_item: CartItem) -> None:
+        if removed_item.is_first:
+            self._cart_items.first().button_move_up.disabled = True
+        elif removed_item.is_last:
+            self._cart_items.last().button_move_down.disabled = True
+
+    def _focus_appropriate_item_on_deletion(self, item_to_remove: CartItem) -> None:
+        cart_items = self._cart_items
+        if len(cart_items) < 2:  # noqa: PLR2004
+            # There is no need for special handling, last one will be focused
+            return
+
+        if item_to_remove.is_last:
+            second_last_cart_item_index = -2
+            cart_item_to_focus = cart_items[second_last_cart_item_index]
+        else:
+            next_cart_item_index = item_to_remove.operation_index + 1
+            cart_item_to_focus = cart_items[next_cart_item_index]
+
+        cart_item_to_focus.focus()
+
+    def _update_values_of_swapped_rows(self, from_index: int, to_index: int) -> None:
+        def extract_cells_and_data(row_index: int) -> tuple[list[CliveCheckerBoardTableCell], list[str]]:
+            row = self._cart_items[row_index]
+            cells = row.query(CliveCheckerBoardTableCell)[1:-1]  # Skip "operation number" and "buttons container" cells
+            data: list[str] = []
+            for cell in cells:
+                content = cell.content
+                assert isinstance(content, str), f"Cell content is not a string: {content}"
+                data.append(content)
+            return list(cells), data
+
+        def swap_cell_data(source_cells: list[CliveCheckerBoardTableCell], target_data: list[str]) -> None:
+            for cell, value in zip(source_cells, target_data):
+                cell.update_content(value)
+
+        from_cells, from_data = extract_cells_and_data(from_index)
+        to_cells, to_data = extract_cells_and_data(to_index)
+
+        swap_cell_data(to_cells, from_data)
+        swap_cell_data(from_cells, to_data)
+
+    def _focus_item_on_move(self, target_index: int) -> None:
+        for cart_item in self._cart_items:
+            if target_index == cart_item.operation_index:
+                cart_item.focus()
+                break
+
+    def _unset_moving_flags(self) -> None:
+        for cart_item in self._cart_items:
+            cart_item.unset_moving_flag()
 
 
 class Cart(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
-
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         Binding("f9", "clear_all", "Clear all"),
@@ -218,46 +358,17 @@ class Cart(BaseScreen):
     ]
     BIG_TITLE = "operations cart"
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.__scrollable_part = ScrollablePart()
-
     def create_main_panel(self) -> ComposeResult:
-        with StaticPart():
-            yield CartHeader()
+        with ScrollablePart():
+            yield CartTable()
 
-        with self.__scrollable_part:
-            yield from self.__rebuild_items()
-
-    def __rebuild_items(self) -> ComposeResult:
-        for idx in range(len(self.profile.cart)):
-            yield CartItem(idx)
-
-    @on(CartItem.Delete)
-    def remove_item(self, event: CartItem.Delete) -> None:
-        self.profile.cart.remove(event.widget.operation)
-        self.app.trigger_profile_watchers()
-        self.__scrollable_part.query(CartItem).remove()
-        self.__scrollable_part.mount(*self.__rebuild_items())
-
-    @on(CartItem.Move)
-    def move_item(self, event: CartItem.Move) -> None:
-        assert event.to_idx >= 0
-        assert event.to_idx < len(self.profile.cart)
-
-        self.profile.cart.swap(event.from_idx, event.to_idx)
-        self.app.trigger_profile_watchers()
-
-    @on(CartItem.Focus)
-    def focus_item(self, event: CartItem.Focus) -> None:
-        for cart_item in self.query(CartItem):
-            if event.target_idx == cart_item.idx:
-                cart_item.focus()
+    async def __rebuild_items(self, from_index: int = 0, to_index: int | None = None) -> None:
+        await self._cart_table.rebuild(starting_from_element=from_index, ending_with_element=to_index)
 
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummaryFromCart())
 
-    def action_clear_all(self) -> None:
+    async def action_clear_all(self) -> None:
         self.profile.cart.clear()
         self.app.trigger_profile_watchers()
-        self.__scrollable_part.add_class("-hidden")
+        await self.__rebuild_items()

@@ -3,66 +3,62 @@ Cart {
     height: auto;
   }
 
-  ColumnLayout {
-    layout: grid;
-    grid-size: 6 1;
-    grid-columns: 5 1fr 2fr 10 10 10;
-    grid-gutter: 1;
-    height: 3;
-  }
-
-  .cell {
-    background: $primary-background-darken-2;
-    width: 100%;
-    height: 3;
-  }
-
-  .cell-middle {
-    content-align: center middle;
-    align: center middle;
-  }
-
-  .cell-variant {
-    background: $primary-background-darken-1;
-  }
-
-  CartHeader {
-    margin: 0 1;
-  }
-
-  CartItem {
-    margin: 1;
-
-    &:focus-within {
-      background: $primary-background;
+  CartTable {
+    CliveCheckerBoardTableCell {
+      height: 3;
     }
-  }
 
-  #actions {
-    column-span: 3;
-  }
+    CartHeader {
+      height: 1;
 
-  ButtonMoveUp {
-    background: $primary;
-
-    &:focus {
-      background: $primary-darken-1;
+      Static {
+        width: 1fr;
+        text-align: center;
+      }
     }
-  }
 
-  ButtonMoveDown {
-    background: $primary;
-
-    &:focus {
-      background: $primary-darken-1;
+    CartItem {
+      &:focus-within {
+        opacity: 93%;
+        background: $accent;
+      }
     }
-  }
 
-  ButtonDelete {
-    background: $error;
+    .operation-name {
+      width: 3fr;
+    }
 
-    &:focus {
-      background: $error-darken-1;
+    .operation-details {
+      width: 5fr;
+    }
+
+    .actions {
+      width: 3fr;
+    }
+
+    ButtonMoveDown {
+      margin: 0 1;
+
+      &:focus {
+        background: $primary-darken-1;
+      }
+    }
+
+    ButtonMoveUp {
+      &:focus {
+        background: $primary-darken-1;
+      }
+    }
+
+    ButtonDelete {
+      &:focus {
+        background: $error-darken-1;
+      }
+    }
+
+    CliveButton {
+      width: 33%; /* solution described here: https://gitlab.syncad.com/hive/clive/-/merge_requests/388#note_169849 */
+      min-width: 1;
     }
   }
 }
