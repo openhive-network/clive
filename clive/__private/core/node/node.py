@@ -238,9 +238,6 @@ class Node(BaseNode):
 
             set_data()
 
-        async def update_config(self, new_data: Config) -> None:
-            (await self.basic_info).config = new_data
-
         async def _ensure_basic_info(self) -> None:
             async with self._lock:
                 if self._basic_info is None:

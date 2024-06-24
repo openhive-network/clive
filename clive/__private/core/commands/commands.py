@@ -17,7 +17,6 @@ from clive.__private.core.commands.data_retrieval.find_vesting_delegation_expira
     FindVestingDelegationExpirations,
     VestingDelegationExpirationData,
 )
-from clive.__private.core.commands.data_retrieval.get_config import GetConfig
 from clive.__private.core.commands.data_retrieval.get_dynamic_global_properties import GetDynamicGlobalProperties
 from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData, HivePowerDataRetrieval
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
@@ -70,7 +69,6 @@ if TYPE_CHECKING:
     from clive.__private.storage.accounts import Account
     from clive.models import Transaction
     from clive.models.aliased import (
-        Config,
         DynamicGlobalProperties,
         ProposalSchema,
         SchemasAccount,
@@ -388,12 +386,6 @@ class Commands(Generic[WorldT]):
         return await self.__surround_with_exception_handlers(
             FindScheduledTransfers(node=self._world.node, account_name=account_name)
         )
-
-    async def get_config(self) -> CommandWithResultWrapper[Config]:
-        result = await self.__surround_with_exception_handlers(GetConfig(node=self._world.node))
-        if result.success:
-            await self._world.node.cached.update_config(result.result_or_raise)
-        return result
 
     @overload
     async def __surround_with_exception_handlers(  # type: ignore[overload-overlap]
