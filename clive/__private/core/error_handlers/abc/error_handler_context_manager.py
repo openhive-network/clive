@@ -62,6 +62,13 @@ class ErrorHandlerContextManager(Generic[ExceptionT], ABC):
         return self._error
 
     @property
+    def error_ensure(self) -> ExceptionT:
+        error = self.error
+        assert error is not None, "Error is not available"
+        assert self._is_exception_to_catch(error), f"Error {error} is not the expected one"
+        return error
+
+    @property
     def error_occurred(self) -> bool:
         return self.error is not None
 

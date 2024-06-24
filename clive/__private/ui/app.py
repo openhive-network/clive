@@ -92,6 +92,10 @@ class Clive(App[int], ManualReactive):
         timeout = math.inf if timeout is None and severity == "error" else timeout
         return super().notify(message, title=title, severity=severity, timeout=timeout)
 
+    def is_notification_present(self, message: str) -> bool:
+        current_notifications = self._notifications
+        return any(notification.message == message for notification in current_notifications)
+
     @on(Notify)
     def _store_notification(self, event: Notify) -> None:
         self.notification_history.append(event.notification)

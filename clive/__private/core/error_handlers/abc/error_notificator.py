@@ -31,6 +31,5 @@ class ErrorNotificator(ErrorHandlerContextManager[ExceptionT], ABC):
 
         logger.warning(f"Command failed and no one was notified. {message=}")
 
-    @staticmethod
-    def _notify_tui(message: str) -> None:
+    def _notify_tui(self, message: str) -> None:
         get_clive().app_instance().notify(message, severity="error")
