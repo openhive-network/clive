@@ -1,12 +1,10 @@
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container
-from textual.css.query import NoMatches
+from textual.containers import Horizontal
 from textual.message import Message
 from textual.widgets import Static
 
@@ -15,28 +13,20 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.clive_checkerboard_table import (
+    EVEN_CLASS_NAME,
+    ODD_CLASS_NAME,
+    CliveCheckerboardTable,
+    CliveCheckerBoardTableCell,
+    CliveCheckerboardTableRow,
+)
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-    from typing_extensions import Self
 
-    from clive.__private.core.profile_data import ProfileData
     from clive.models import Operation
-
-
-class DynamicColumn(DynamicLabel):
-    """Column with dynamic content."""
-
-
-class StaticColumn(Static):
-    """Column with static content."""
-
-
-class ColumnLayout(Static):
-    """Holds column order."""
 
 
 class ButtonMoveUp(CliveButton):
@@ -57,14 +47,12 @@ class ButtonDelete(CliveButton):
     """Button used for removing the operation from cart."""
 
     def __init__(self) -> None:
-        super().__init__("Remove", id_="delete-button")
+        super().__init__("Remove", id_="delete-button", variant="error")
 
 
-class StaticPart(Container):
-    """Container for the static part of the screen - title, global buttons and table header."""
+class CartItem(CliveCheckerboardTableRow, CliveWidget, can_focus=True):
+    """Row of CartTable."""
 
-
-class CartItem(ColumnLayout, CliveWidget):
     BINDINGS = [
         Binding("ctrl+up", "select_previous", "Prev"),
         Binding("ctrl+down", "select_next", "Next"),
@@ -91,7 +79,17 @@ class CartItem(ColumnLayout, CliveWidget):
     def __init__(self, operation_idx: int) -> None:
         self.__idx = operation_idx
         assert self.is_valid(), "During construction, index has to be valid"
-        super().__init__()
+        super().__init__(
+            CliveCheckerBoardTableCell(self.get_operation_index(), classes="index"),
+            CliveCheckerBoardTableCell(self.get_operation_name(), classes="operation-type"),
+            CliveCheckerBoardTableCell(self.get_operation_details(), classes="operation-details"),
+            CliveCheckerBoardTableCell(
+                Horizontal(
+                    ButtonMoveUp(disabled=self.__is_first), ButtonMoveDown(disabled=self.__is_last), ButtonDelete()
+                ),
+                classes="actions",
+            ),
+        )
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(idx={self.__idx})"
@@ -105,60 +103,20 @@ class CartItem(ColumnLayout, CliveWidget):
     def is_valid(self) -> bool:
         return self.__idx < self.__operations_count
 
-    def compose(self) -> ComposeResult:
-        def get_operation_index(_: ProfileData) -> str:
-            return f"{self.__idx + 1}." if self.is_valid() else "?"
+    def get_operation_index(self) -> str:
+        return f"{self.__idx + 1}." if self.is_valid() else "?"
 
-        def get_operation_name(_: ProfileData) -> str:
-            return humanize_operation_name(self.operation) if self.is_valid() else "?"
-
-        def get_operation_details(_: ProfileData) -> str:
-            return humanize_operation_details(self.operation) if self.is_valid() else "?"
-
-        yield DynamicColumn(
-            self.app.world,
-            "profile_data",
-            get_operation_index,
-            classes="cell cell-middle",
-        )
-        yield DynamicColumn(
-            self.app.world,
-            "profile_data",
-            get_operation_name,
-            shrink=True,
-            classes="cell cell-variant cell-middle",
-        )
-        yield DynamicColumn(
-            self.app.world,
-            "profile_data",
-            get_operation_details,
-            shrink=True,
-            classes="cell",
-        )
-        yield ButtonMoveUp(disabled=self.__is_first)
-        yield ButtonMoveDown(disabled=self.__is_last)
-        yield ButtonDelete()
-
-    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
-        if focused := self.app.focused:  # Focus the corresponding button as it was before
-            assert focused.id, "Previously focused widget has no id!"
-            with contextlib.suppress(NoMatches):
-                previous = self.get_child_by_id(focused.id)
-                if previous.focusable:
-                    previous.focus()
-                    return self
-
-        for child in reversed(self.children):  # Focus first focusable
-            if child.focusable:
-                child.focus()
-
-        return self
+    def get_operation_name(self) -> str:
+        return humanize_operation_name(self.operation) if self.is_valid() else "?"
 
     def action_select_previous(self) -> None:
         self.post_message(self.Focus(target_idx=self.__idx - 1))
 
     def action_select_next(self) -> None:
         self.post_message(self.Focus(target_idx=self.__idx + 1))
+
+    def get_operation_details(self) -> str:
+        return humanize_operation_details(self.operation) if self.is_valid() else "?"
 
     @property
     def idx(self) -> int:
@@ -200,12 +158,29 @@ class CartItem(ColumnLayout, CliveWidget):
         self.app.trigger_profile_data_watchers()
 
 
-class CartHeader(ColumnLayout):
+class CartHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield StaticColumn("No.", classes="cell cell-middle")
-        yield StaticColumn("Operation type", classes="cell cell-variant cell-middle")
-        yield StaticColumn("Operation details", classes="cell cell-middle")
-        yield StaticColumn("Actions", id="actions", classes="cell cell-variant cell-middle")
+        yield Static("No.", classes=f"{ODD_CLASS_NAME} index")
+        yield Static("Operation type", classes=f"{EVEN_CLASS_NAME} operation-type")
+        yield Static("Operation details", classes=f"{ODD_CLASS_NAME} operation-details")
+        yield Static("Actions", classes=f"{EVEN_CLASS_NAME} actions")
+
+
+class CartTable(CliveCheckerboardTable):
+    """Table with CartItems."""
+
+    def __init__(self) -> None:
+        super().__init__(Static(""), CartHeader())
+
+    def create_static_rows(self, start_index: int = 0, end_index: int | None = None) -> list[CartItem]:
+        if end_index:
+            assert (
+                end_index <= len(self.app.world.profile_data.cart) - 1
+            ), "End index is greater than cart's last item index"
+        return [
+            CartItem(idx)
+            for idx in range(start_index, len(self.app.world.profile_data.cart) if end_index is None else end_index + 1)
+        ]
 
 
 class Cart(BaseScreen):
@@ -223,41 +198,46 @@ class Cart(BaseScreen):
         self.__scrollable_part = ScrollablePart()
 
     def create_main_panel(self) -> ComposeResult:
-        with StaticPart():
-            yield CartHeader()
-
         with self.__scrollable_part:
-            yield from self.__rebuild_items()
+            yield CartTable()
 
-    def __rebuild_items(self) -> ComposeResult:
-        for idx in range(len(self.app.world.profile_data.cart)):
-            yield CartItem(idx)
+    async def __rebuild_items(self, from_index: int = 0, to_index: int | None = None) -> None:
+        await self.query_one(CartTable).rebuild(starting_from_element=from_index, ending_with_element=to_index)
 
     @on(CartItem.Delete)
-    def remove_item(self, event: CartItem.Delete) -> None:
+    async def remove_item(self, event: CartItem.Delete) -> None:
         self.app.world.profile_data.cart.remove(event.widget.operation)
         self.app.trigger_profile_data_watchers()
-        self.__scrollable_part.query(CartItem).remove()
-        self.__scrollable_part.mount(*self.__rebuild_items())
+        await self.__rebuild_items(from_index=event.widget.idx)
+        if event.widget.idx == len(self.app.world.profile_data.cart):
+            # disable last ButtonMoveDown if only last element was removed
+            self.query(ButtonMoveDown)[-1].disabled = True
 
     @on(CartItem.Move)
-    def move_item(self, event: CartItem.Move) -> None:
+    async def move_item(self, event: CartItem.Move) -> None:
         assert event.to_idx >= 0
         assert event.to_idx < len(self.app.world.profile_data.cart)
 
         self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
         self.app.trigger_profile_data_watchers()
+        start, end = (event.from_idx, event.to_idx) if event.from_idx < event.to_idx else (event.to_idx, event.from_idx)
+        await self.__rebuild_items(from_index=start, to_index=end)
+
+        # focus item that was moved
+        for cart_item in self.query(CartItem):
+            if event.to_idx == cart_item.idx:
+                self.app.set_focus(cart_item)
 
     @on(CartItem.Focus)
     def focus_item(self, event: CartItem.Focus) -> None:
         for cart_item in self.query(CartItem):
             if event.target_idx == cart_item.idx:
-                cart_item.focus()
+                self.app.set_focus(cart_item)
 
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummaryFromCart())
 
-    def action_clear_all(self) -> None:
+    async def action_clear_all(self) -> None:
         self.app.world.profile_data.cart.clear()
         self.app.trigger_profile_data_watchers()
-        self.__scrollable_part.add_class("-hidden")
+        await self.__rebuild_items()
