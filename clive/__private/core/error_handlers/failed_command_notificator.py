@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+from typing import TypeGuard
+
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 
 
-class FailedCommandNotificator(ErrorNotificator):
+class FailedCommandNotificator(ErrorNotificator[CommandError]):
     """
     A context manager that notifies about failed commands (by default resulted with `CommandError` or its subclasses).
 
@@ -22,14 +24,12 @@ class FailedCommandNotificator(ErrorNotificator):
         self._message = message
         self._catch_only = catch_only
 
-    def _is_exception_to_catch(self, exception: Exception) -> bool:
+    def _is_exception_to_catch(self, exception: Exception) -> TypeGuard[CommandError]:
         if self._catch_only:
             return type(exception) is self._catch_only
         return isinstance(exception, CommandError)
 
-    def _determine_message(self, exception: Exception) -> str:
-        assert isinstance(exception, CommandError)
-
+    def _determine_message(self, exception: CommandError) -> str:
         if self._message:
             return self._message
         return str(exception)

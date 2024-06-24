@@ -62,7 +62,7 @@ if TYPE_CHECKING:
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
-        ErrorHandlerContextManager,
+        AnyErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import TextualWorld, World
@@ -83,7 +83,7 @@ class Commands(Generic[WorldT]):
     def __init__(
         self,
         world: WorldT,
-        exception_handlers: list[type[ErrorHandlerContextManager]] | None = None,
+        exception_handlers: list[type[AnyErrorHandlerContextManager]] | None = None,
         *args: Any,
         **kwargs: Any,
     ) -> None:
@@ -412,7 +412,7 @@ class Commands(Generic[WorldT]):
     async def __surround_with_exception_handler(  # type: ignore[overload-overlap]
         self,
         command: CommandWithResult[CommandResultT],
-        exception_handlers: list[type[ErrorHandlerContextManager]],
+        exception_handlers: list[type[AnyErrorHandlerContextManager]],
         error: Exception | None = None,
     ) -> CommandWithResultWrapper[CommandResultT]: ...
 
@@ -420,14 +420,14 @@ class Commands(Generic[WorldT]):
     async def __surround_with_exception_handler(
         self,
         command: Command,
-        exception_handlers: list[type[ErrorHandlerContextManager]],
+        exception_handlers: list[type[AnyErrorHandlerContextManager]],
         error: Exception | None = None,
     ) -> CommandWrapper: ...
 
     async def __surround_with_exception_handler(
         self,
         command: Command | CommandWithResult[CommandResultT],
-        exception_handlers: list[type[ErrorHandlerContextManager]],
+        exception_handlers: list[type[AnyErrorHandlerContextManager]],
         error: Exception | None = None,
     ) -> CommandWrapper | CommandWithResultWrapper[CommandResultT]:
         try:
