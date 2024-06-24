@@ -64,7 +64,7 @@ class KeyManager:
 
     def add(self, *keys: PublicKeyAliased) -> None:
         for key in keys:
-            self.__assert_no_alias_conflict(key.alias)
+            self._assert_no_alias_conflict(key.alias)
             self.__keys.append(key)
 
     def remove(self, *keys: PublicKeyAliased) -> None:
@@ -74,7 +74,7 @@ class KeyManager:
 
     def rename(self, old_alias: str, new_alias: str) -> None:
         """Rename a key alias."""
-        self.__assert_no_alias_conflict(new_alias)
+        self._assert_no_alias_conflict(new_alias)
 
         for i, key in enumerate(self.__keys):
             if key.alias == old_alias:
@@ -84,7 +84,7 @@ class KeyManager:
 
     def add_to_import(self, *keys: PrivateKeyAliased) -> None:
         for key in keys:
-            self.__assert_no_alias_conflict(key.alias)
+            self._assert_no_alias_conflict(key.alias)
             self.__keys_to_import.append(key)
 
     def set_to_import(self, keys: Sequence[PrivateKeyAliased]) -> None:
@@ -96,6 +96,6 @@ class KeyManager:
         self.add(*imported_keys)
         logger.debug("Imported all pending keys to beekeeper.")
 
-    def __assert_no_alias_conflict(self, alias: str) -> None:
+    def _assert_no_alias_conflict(self, alias: str) -> None:
         if not self.is_alias_available(alias):
             raise KeyAliasAlreadyInUseError(f"Alias '{alias}' is already in use.")
