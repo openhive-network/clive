@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
-from clive.__private.core.date_utils import is_null_date
-from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.core.date_utils import is_null_date, utc_now
+from clive.__private.core.formatters.humanize import humanize_datetime, humanize_natural_time
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 @dataclass
 class GovernanceVotingExpirationAlarmData(BaseAlarmData):
     EXPIRATION_DATE_LABEL: ClassVar[str] = "Expiration date"
-    DAYS_LEFT_LABEL: ClassVar[str] = "Days left"
+    TIME_LEFT_LABEL: ClassVar[str] = "Time left"
 
     expiration_date: datetime
 
@@ -24,14 +24,17 @@ class GovernanceVotingExpirationAlarmData(BaseAlarmData):
         return humanize_datetime(self.expiration_date)
 
     @property
-    def days_left(self) -> int:
-        current_time = datetime.now(timezone.utc)
-        return (self.expiration_date - current_time).days
+    def pretty_time_left(self) -> str:
+        return humanize_natural_time(-self.time_left)
+
+    @property
+    def time_left(self) -> timedelta:
+        return self.expiration_date - utc_now()
 
     def get_titled_data(self) -> dict[str, str]:
         return {
             self.EXPIRATION_DATE_LABEL: self.pretty_expiration_date,
-            self.DAYS_LEFT_LABEL: str(self.days_left),
+            self.TIME_LEFT_LABEL: self.pretty_time_left,
         }
 
 
@@ -49,8 +52,7 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
             return
 
         alarm_data = GovernanceVotingExpirationAlarmData(expiration_date=expiration)
-
-        if alarm_data.days_left > self.WARNING_PERIOD_IN_DAYS:
+        if alarm_data.time_left > timedelta(days=self.WARNING_PERIOD_IN_DAYS):
             self.disable_alarm()
             return
 
@@ -59,4 +61,4 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
         return
 
     def get_alarm_basic_info(self) -> str:
-        return f"Governance votes will expire in {self.alarm_data_ensure.days_left} day(s)"
+        return f"Governance votes will expire in {self.alarm_data_ensure.pretty_time_left}"
