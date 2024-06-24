@@ -15,14 +15,14 @@ class GeneralErrorNotificator(ErrorNotificator):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__message_to_print = "Something went wrong. Please try again."
+        self._message_to_print = "Something went wrong. Please try again."
 
     def _is_exception_to_catch(self, error: Exception) -> bool:
         for searched, printed in self.SEARCHED_AND_PRINTED_MESSAGES.items():
             if searched in str(error):
-                self.__message_to_print = printed
+                self._message_to_print = printed
                 return True
         return False
 
     def _determine_message(self, _: Exception) -> str:
-        return self.__message_to_print
+        return self._message_to_print
