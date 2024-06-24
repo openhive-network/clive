@@ -4,7 +4,7 @@ from textual.reactive import reactive
 from textual.widgets import Static
 from typing_extensions import Literal
 
-SectionTitleVariant = Literal["default", "dark"]
+SectionTitleVariant = Literal["default", "dark", "red"]
 """The names of the valid section title variants."""
 
 
@@ -19,6 +19,10 @@ class SectionTitle(Static):
 
         &.-dark {
             background: $primary-background;
+        }
+
+        &.-red {
+            background: $error-darken-3;
         }
     }
     """
@@ -39,6 +43,15 @@ class SectionTitle(Static):
         return SectionTitle(
             title=title,
             variant="dark",
+            id_=id_,
+            classes=classes,
+        )
+
+    @classmethod
+    def red(cls, title: str, id_: str | None = None, classes: str | None = None) -> SectionTitle:
+        return SectionTitle(
+            title=title,
+            variant="red",
             id_=id_,
             classes=classes,
         )
