@@ -8,6 +8,9 @@ from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import (
     AlarmDataWithStartAndEndDate,
 )
+from clive.__private.core.alarms.specific_alarms.alarm_descriptions import (
+    CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION,
+)
 from clive.__private.core.constants import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
 
 if TYPE_CHECKING:
@@ -26,10 +29,7 @@ class ChangingRecoveryAccountInProgressAlarmData(AlarmDataWithStartAndEndDate):
 
 
 class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountInProgressAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "`change_recovery_account_operation` allows a user to update their recovery account.\n"
-        "Only a recovery account may create a request account recovery in case of compromised the owner authority."
-    )
+    ALARM_DESCRIPTION = CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You can cancel it by setting a recovery account to the previous one."
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
