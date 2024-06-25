@@ -14,7 +14,11 @@ if TYPE_CHECKING:
 
 
 class FrequencyValueValidator(Validator):
-    """Validates given frequency value for transfer-schedule command."""
+    """
+    Validates given frequency value.
+
+    Used e.g. in transfer-schedule commands, in the recurrent transfer operation as "recurrence".
+    """
 
     INVALID_INPUT_DESCRIPTION: Final[str] = (
         'Incorrect frequency unit must be one of the following hH, dD, wW. (e.g. "24h" or "2d 2h")'
