@@ -9,7 +9,7 @@ import typer
 from clive.__private.cli.common.parsers import (
     decimal_percent,
     liquid_asset,
-    smart_frequency_parser,
+    scheduled_transfer_frequency_parser,
     voting_asset,
 )
 from clive.__private.cli.completion import is_tab_completion_active
@@ -157,7 +157,7 @@ liquid_amount_optional_option = modified_option(liquid_amount_option, default=No
 
 frequency_value_option = typer.Option(
     ...,
-    parser=smart_frequency_parser,
+    parser=scheduled_transfer_frequency_parser,
     help=(
         "How often the transfer should be executed "
         f"(hH - hours, dD - days, wW - weeks {SHORTHAND_TIMEDELTA_EXAMPLE})"

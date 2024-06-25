@@ -9,7 +9,7 @@ from clive.__private.cli.warnings import typer_echo_warnings
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
 from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
-from clive.__private.validators.frequency_value_validator import FrequencyValueValidator
+from clive.__private.validators.scheduled_transfer_frequency_value_validator import ScheduledTransferFrequencyValidator
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -99,11 +99,11 @@ def decimal_percent(raw: str) -> Decimal:
 
 
 @rename("text")
-def smart_frequency_parser(raw: str) -> timedelta:
+def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
     """Frequency flag parser used in transfer-schedule."""
     from clive.__private.core.formatters.humanize import humanize_validation_result
 
-    status = FrequencyValueValidator().validate(raw)
+    status = ScheduledTransferFrequencyValidator().validate(raw)
     if status.is_valid:
-        return shorthand_timedelta_to_timedelta(raw.lower())
+        return shorthand_timedelta_to_timedelta(raw)
     raise typer.BadParameter(humanize_validation_result(status))

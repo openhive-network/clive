@@ -56,7 +56,7 @@ def shorthand_timedelta_to_timedelta(shorthand: str) -> timedelta:
     """
     time_units = {"w": "weeks", "d": "days", "h": "hours", "m": "minutes", "s": "seconds"}
     pattern = re.compile(rf"(\d+)([{time_units}])")
-    matches = pattern.findall(shorthand)
+    matches = pattern.findall(shorthand.lower())
 
     if not matches:
         raise ValueError("Invalid shorthand date format")
