@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Vertical
-from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import (
     humanize_asset,
@@ -14,6 +13,7 @@ from clive.__private.core.formatters.humanize import (
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -36,10 +36,6 @@ class WithdrawalInfo(Vertical, CliveWidget):
         text-style: bold;
     }
 
-    .withdrawal-info-header {
-        background: $primary-background;
-    }
-
     #to-withdraw-header {
         margin-top: 1;
     }
@@ -58,7 +54,7 @@ class WithdrawalInfo(Vertical, CliveWidget):
         self._provider = provider
 
     def compose(self) -> ComposeResult:
-        yield Static("Next withdrawal", classes="withdrawal-info-header")
+        yield SectionTitle("Next withdrawal", variant="dark")
         yield DynamicLabel(
             self._provider,
             "_content",
@@ -66,7 +62,7 @@ class WithdrawalInfo(Vertical, CliveWidget):
             id_="withdrawal-info-date",
             first_try_callback=lambda content: content is not None,
         )
-        yield Static("To withdraw", classes="withdrawal-info-header", id="to-withdraw-header")
+        yield SectionTitle("To withdraw", variant="dark", id_="to-withdraw-header")
         yield DynamicLabel(
             self._provider,
             "_content",
