@@ -18,6 +18,7 @@ from clive.__private.core.constants.node import (
     SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
     SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
 )
+from clive.__private.core.shorthand_timedelta import SHORTHAND_TIMEDELTA_EXAMPLE
 
 if TYPE_CHECKING:
     from typer.models import OptionInfo
@@ -157,7 +158,10 @@ liquid_amount_optional_option = modified_option(liquid_amount_option, default=No
 frequency_value_option = typer.Option(
     ...,
     parser=smart_frequency_parser,
-    help='How often the transfer should be executed (hH - hours, dD - days, wW - weeks e.g. "24h" or "2d 2h")',
+    help=(
+        "How often the transfer should be executed "
+        f"(hH - hours, dD - days, wW - weeks {SHORTHAND_TIMEDELTA_EXAMPLE})"
+    ),
     show_default=False,
 )
 frequency_value_optional_option = modified_option(frequency_value_option, default=None)
