@@ -20,9 +20,9 @@ from clive.__private.core.constants.node import (
 from clive.__private.core.date_utils import timedelta_to_int_hours
 from clive.models import Asset
 from clive.models.aliased import (
-    HF26OperationRepresentation,
     RecurrentTransferOperation,
     RecurrentTransferPairIdOperationExtension,
+    RecurrentTransferPairIdRepresentation,
 )
 
 if TYPE_CHECKING:
@@ -35,8 +35,6 @@ SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
     Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
     Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
 ]
-
-RecurrentTransferPairIdRepresentation = HF26OperationRepresentation[RecurrentTransferPairIdOperationExtension]
 
 
 @dataclass(kw_only=True)
