@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final, Literal
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.constants.node import VALUE_TO_REMOVE_SCHEDULED_TRANSFER
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 
 if TYPE_CHECKING:
@@ -39,8 +40,8 @@ AllowedFutureSorts = Literal[
     "trigger_date",
 ]
 
-LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(0)
-LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(0)
+LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
+LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
 LACK_OF_FUNDS: Final[list[Asset.Hbd | Asset.Hive]] = [LACK_OF_FUNDS_HBD_AMOUNT, LACK_OF_FUNDS_HIVE_AMOUNT]
 
 
@@ -159,37 +160,36 @@ class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
 
 
 @dataclass
-class HarvestedDataRaw:
-    recurrent_transfers: SchemasFindRecurrentTransfers | None
-    account_data: FindAccounts | None = None
+class _HarvestedDataRaw:
+    recurrent_transfers: SchemasFindRecurrentTransfers
+    account_data: FindAccounts
 
 
 @dataclass
-class SanitizedData:
+class _SanitizedData:
     recurrent_transfers: SchemasFindRecurrentTransfers
     account_data: SchemasAccount
 
 
 @dataclass(kw_only=True)
-class FindScheduledTransfers(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, ScheduledTransfers]):
+class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedData, ScheduledTransfers]):
     node: Node
     account_name: str
 
-    async def _harvest_data_from_api(self) -> HarvestedDataRaw:
+    async def _harvest_data_from_api(self) -> _HarvestedDataRaw:
         async with self.node.batch() as node:
-            return HarvestedDataRaw(
+            return _HarvestedDataRaw(
                 recurrent_transfers=await node.api.database_api.find_recurrent_transfers(from_=self.account_name),
                 account_data=await node.api.database_api.find_accounts(accounts=[self.account_name]),
             )
 
-    async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
-        data.recurrent_transfers = self._assert_data(data.recurrent_transfers)
-        self._assert_from_account(data.recurrent_transfers)
-        return SanitizedData(
-            recurrent_transfers=data.recurrent_transfers, account_data=self._assert_account_data(data.account_data)
+    async def _sanitize_data(self, data: _HarvestedDataRaw) -> _SanitizedData:
+        return _SanitizedData(
+            recurrent_transfers=self._sanitize_recurrent_trasfers(data.recurrent_transfers),
+            account_data=self._sanitize_account_data(data.account_data),
         )
 
-    async def _process_data(self, data: SanitizedData) -> ScheduledTransfers:
+    async def _process_data(self, data: _SanitizedData) -> ScheduledTransfers:
         scheduled_transfers = [
             ScheduledTransfer(
                 from_=rt.from_,
@@ -210,14 +210,18 @@ class FindScheduledTransfers(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             scheduled_transfers=scheduled_transfers,
         )
 
+    def _sanitize_recurrent_trasfers(self, data: SchemasFindRecurrentTransfers) -> SchemasFindRecurrentTransfers:
+        self._assert_from_account(data)
+        return data
+
+    def _sanitize_account_data(self, data: FindAccounts) -> SchemasAccount:
+        assert self._assert_account_data(data)
+        return data.accounts[0]
+
     def _assert_account_data(self, data: FindAccounts | None) -> SchemasAccount:
         assert data, "FindAccounts is missing."
         assert len(data.accounts) == 1, "Account is missing."
         return data.accounts[0]
-
-    def _assert_data(self, data: SchemasFindRecurrentTransfers | None) -> SchemasFindRecurrentTransfers:
-        assert data, "FindRecurrenceTransfers are missing"
-        return data
 
     def _assert_from_account(self, data: SchemasFindRecurrentTransfers) -> None:
         for recurrent_transfer in data.recurrent_transfers:
