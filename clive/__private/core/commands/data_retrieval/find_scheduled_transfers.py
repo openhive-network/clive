@@ -104,8 +104,8 @@ class FutureScheduledTransfer:
 @dataclass
 class ScheduledTransfers:
     scheduled_transfers: list[ScheduledTransfer]
-    hive_balance: Asset.Hive
-    hbd_balance: Asset.Hbd
+    account_hive_balance: Asset.Hive
+    account_hbd_balance: Asset.Hbd
 
     def sort_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> None:
         import operator
@@ -130,7 +130,7 @@ class ScheduledTransfers:
             lack_of_funds = LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(st.amount) else LACK_OF_FUNDS_HBD_AMOUNT
             for idx, remains in enumerate(range(min(st.remaining_executions, deepth))):
                 amount = st.amount * (idx + 1)
-                current_balance = self.hive_balance if Asset.is_hive(st.amount) else self.hbd_balance
+                current_balance = self.account_hive_balance if Asset.is_hive(st.amount) else self.account_hbd_balance
                 possible_amount = current_balance - amount if current_balance > amount else lack_of_funds
                 future_scheduled_transfer = FutureScheduledTransfer(
                     amount=st.amount,
@@ -205,8 +205,8 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
             for rt in data.recurrent_transfers.recurrent_transfers
         ]
         return ScheduledTransfers(
-            hive_balance=data.account_data.balance,
-            hbd_balance=data.account_data.hbd_balance,
+            account_hive_balance=data.account_data.balance,
+            account_hbd_balance=data.account_data.hbd_balance,
             scheduled_transfers=scheduled_transfers,
         )
 
