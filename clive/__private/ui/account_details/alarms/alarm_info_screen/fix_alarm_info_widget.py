@@ -40,7 +40,7 @@ class FixAlarmInfoWidget(CliveWidget):
             margin-top: 1;
         }
 
-        #fix-alarm-button {
+        #fix-alarm-button, #change-to-working-info {
             margin-bottom: 1;
         }
     }
@@ -81,14 +81,30 @@ class FixAlarmInfoWidget(CliveWidget):
         yield SectionTitle("How to fix it?")
         yield Static(self._alarm_fix_details.fix_info)
 
+    def _get_mark_as_harmless_content(self) -> ComposeResult:
+        yield Static("You can mark this alarm as harmless:")
+        with Center():
+            yield OneLineButton("Mark as harmless", variant="success", id_="harmless-button")
+
     def _get_actions_content(self) -> ComposeResult:
         yield SectionTitle("Actions", id_="actions-section-title")
-        if self._alarm_fix_details.is_fixable and isinstance(self._account, WorkingAccount):
-            # It is impossible to perform operations without a working account,
+        if not self._alarm_fix_details.is_fixable:
+            yield from self._get_mark_as_harmless_content()
+            return
+
+        if self._is_account_working:
+            # It is impossible to perform operations when account is not working,
             # so if the account is watched, it is not possible to go to screen with fix.
             yield Static(self._alarm_fix_details.fix_action_text)
             with Center():
                 yield OneLineButton(self._alarm_fix_details.fix_button_text, id_="fix-alarm-button")
-        yield Static("You can mark this alarm as harmless:")
-        with Center():
-            yield OneLineButton("Mark as harmless", variant="success", id_="harmless-button")
+        else:
+            yield Static(
+                "You can change this account to a working one and fix the alarm with clive.",
+                id="change-to-working-info",
+            )
+        yield from self._get_mark_as_harmless_content()
+
+    @property
+    def _is_account_working(self) -> bool:
+        return isinstance(self._account, WorkingAccount)
