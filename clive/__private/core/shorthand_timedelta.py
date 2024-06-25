@@ -2,8 +2,11 @@ from __future__ import annotations
 
 import re
 from datetime import timedelta
+from typing import Final
 
 from clive.__private.core.constants.date import SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE, SECONDS_IN_WEEK
+
+SHORTHAND_TIMEDELTA_EXAMPLE: Final[str] = 'e.g. "24h" or "2d 2h"'
 
 
 def timedelta_to_shorthand_timedelta(td: timedelta) -> str:

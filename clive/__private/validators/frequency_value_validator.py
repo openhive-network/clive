@@ -5,7 +5,11 @@ from typing import TYPE_CHECKING, Final
 from textual.validation import Validator
 
 from clive.__private.core.constants.node import SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE
-from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta, timedelta_to_shorthand_timedelta
+from clive.__private.core.shorthand_timedelta import (
+    SHORTHAND_TIMEDELTA_EXAMPLE,
+    shorthand_timedelta_to_timedelta,
+    timedelta_to_shorthand_timedelta,
+)
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -21,15 +25,12 @@ class FrequencyValueValidator(Validator):
     """
 
     INVALID_INPUT_DESCRIPTION: Final[str] = (
-        'Incorrect frequency unit must be one of the following hH, dD, wW. (e.g. "24h" or "2d 2h")'
+        "Incorrect frequency unit must be one of the following hH, dD, wW. " f"({SHORTHAND_TIMEDELTA_EXAMPLE})"
     )
     VALUE_TO_SMALL_DESCRIPTION: Final[str] = (
         "Value for 'frequency' must be greater or equal "
         f"{timedelta_to_shorthand_timedelta(SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE)}."
     )
-
-    def __init__(self) -> None:
-        super().__init__()
 
     def validate(self, value: str) -> ValidationResult:
         td = self._validate_raw_input(value)
