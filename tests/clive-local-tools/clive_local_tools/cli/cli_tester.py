@@ -14,11 +14,14 @@ from .command_options import extract_params, kwargs_to_cli_options
 from .exceptions import CLITestCommandError
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from click.testing import Result
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
     from clive.__private.cli.types import AuthorityType
+    from clive.__private.core.commands.sign import AlreadySignedMode
     from clive_local_tools.cli.command_options import CliOptionT
     from schemas.fields.basic import PublicKey
 
@@ -220,5 +223,42 @@ class CLITester:
     ) -> Result:
         return self.__invoke(
             ["process", "savings", "withdrawal-cancel"],
+            **extract_params(locals()),
+        )
+
+    def process_custom_json(  # noqa: PLR0913
+        self,
+        *,
+        authorize: str | list[str] | None = None,
+        authorize_by_active: str | list[str] | None = None,
+        id_: str,
+        json_: str | Path,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "custom-json"],
+            **extract_params(locals()),
+        )
+
+    def process_transaction(  # noqa: PLR0913
+        self,
+        *,
+        from_file: Path,
+        force_unsign: bool | None = None,
+        already_signed_mode: AlreadySignedMode | None = None,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: Path | None = None,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "transaction"],
             **extract_params(locals()),
         )
