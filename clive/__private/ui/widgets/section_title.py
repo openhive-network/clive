@@ -1,6 +1,11 @@
 from __future__ import annotations
 
+from textual.reactive import reactive
 from textual.widgets import Static
+from typing_extensions import Literal
+
+SectionTitleVariant = Literal["default", "dark"]
+"""The names of the valid section title variants."""
 
 
 class SectionTitle(Static):
@@ -11,8 +16,29 @@ class SectionTitle(Static):
         width: 1fr;
         height: 1;
         text-align: center;
+
+        &.-dark {
+            background: $primary-background;
+        }
     }
     """
+    variant: SectionTitleVariant = reactive("default", init=False)  # type: ignore[assignment]
 
-    def __init__(self, title: str, id_: str | None = None, classes: str | None = None) -> None:
+    def __init__(
+        self, title: str, variant: SectionTitleVariant = "default", id_: str | None = None, classes: str | None = None
+    ) -> None:
         super().__init__(renderable=title, id=id_, classes=classes)
+        self.variant = variant
+
+    def watch_variant(self, old_variant: str, variant: str) -> None:
+        self.remove_class(f"-{old_variant}")
+        self.add_class(f"-{variant}")
+
+    @classmethod
+    def dark(cls, title: str, id_: str | None = None, classes: str | None = None) -> SectionTitle:
+        return SectionTitle(
+            title=title,
+            variant="dark",
+            id_=id_,
+            classes=classes,
+        )
