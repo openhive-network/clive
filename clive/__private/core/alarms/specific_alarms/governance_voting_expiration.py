@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarm_descriptions import (
+    GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION,
+)
 from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import (
     AlarmDataWithEndDate,
 )
@@ -21,12 +24,7 @@ class GovernanceVotingExpirationAlarmData(AlarmDataWithEndDate):
 
 @dataclass
 class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "The governance votes are valid one year.\n"
-        "Governance votes are votes on proposals and witnesses.\n"
-        "You can vote for 30 witnesses and an unlimited number of proposals.\n"
-        "Alarm applies to the expiration of the last vote (no matter whether it is a vote for a witness or a proposal)."
-    )
+    ALARM_DESCRIPTION = GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
 
     WARNING_PERIOD_IN_DAYS: Final[int] = 31

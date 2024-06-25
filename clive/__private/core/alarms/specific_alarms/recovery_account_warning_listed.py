@@ -4,6 +4,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarm_descriptions import (
+    RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION,
+)
 from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import AlarmDataNeverExpiresWithoutAction
 
 if TYPE_CHECKING:
@@ -23,10 +26,7 @@ class RecoveryAccountWarningListedAlarmData(AlarmDataNeverExpiresWithoutAction):
 class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmData]):
     WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}
 
-    EXTENDED_ALARM_INFO = (
-        "It is important to keep the recovery account up to date.\n"
-        "If you lose your owner key, you will not be able to recover your account."
-    )
+    ALARM_DESCRIPTION = RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
     FIX_ALARM_INFO = f"You should change it to account other than {list(WARNING_RECOVERY_ACCOUNTS)}"
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:

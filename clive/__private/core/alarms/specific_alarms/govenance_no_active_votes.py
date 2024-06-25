@@ -5,9 +5,9 @@ from datetime import datetime
 from typing import TYPE_CHECKING
 
 from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarm_descriptions import GOVERNANCE_COMMON_ALARM_DESCRIPTION
 from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import AlarmDataNeverExpiresWithoutAction
 from clive.__private.core.date_utils import is_null_date
-from clive.__private.ui.operations.governance_operations.witness.witness import MAX_NUMBER_OF_WITNESSES_VOTES
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
@@ -20,10 +20,7 @@ class GovernanceNoActiveVotesAlarmData(AlarmDataNeverExpiresWithoutAction):
 
 @dataclass
 class GovernanceNoActiveVotes(Alarm[datetime, GovernanceNoActiveVotesAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "Governance votes are votes on proposals and witnesses.\n"
-        f"You can vote for {MAX_NUMBER_OF_WITNESSES_VOTES} witnesses and an unlimited number of proposals."
-    )
+    ALARM_DESCRIPTION = GOVERNANCE_COMMON_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
 
     def update_alarm_status(self, data: AccountAlarmsData) -> None:

@@ -41,7 +41,7 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     Soon...
     """
 
-    EXTENDED_ALARM_INFO: ClassVar[str] = ""
+    ALARM_DESCRIPTION: ClassVar[str] = ""
     FIX_ALARM_INFO: ClassVar[str] = "Override me"
 
     identifier: AlarmIdentifierT | None = None

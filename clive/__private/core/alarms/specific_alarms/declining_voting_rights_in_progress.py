@@ -5,6 +5,9 @@ from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarm_descriptions import (
+    DECLINING_VOTING_RIGHTS_IN_PROGRESS_ALARM_DESCRIPTION,
+)
 from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import (
     AlarmDataWithStartAndEndDate,
 )
@@ -21,11 +24,7 @@ class DecliningVotingRightsInProgressAlarmData(AlarmDataWithStartAndEndDate):
 
 @dataclass
 class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInProgressAlarmData]):
-    EXTENDED_ALARM_INFO = (
-        "The decline voting rights operation is in progress.\n"
-        "After effective date the operation is irreversible.\n"
-        "The operation prevents voting on witnesses, proposals, posts and comments."
-    )
+    ALARM_DESCRIPTION = DECLINING_VOTING_RIGHTS_IN_PROGRESS_ALARM_DESCRIPTION
     FIX_ALARM_INFO = (
         "You can cancel it by creating a decline operation with the `decline` value set to false before effective date."
     )
