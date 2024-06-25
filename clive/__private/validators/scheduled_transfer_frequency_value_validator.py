@@ -37,14 +37,14 @@ class ScheduledTransferFrequencyValidator(Validator):
 
     def _validate_raw_input(self, value: str) -> bool:
         try:
-            shorthand_timedelta_to_timedelta(value.lower())
+            shorthand_timedelta_to_timedelta(value)
         except ValueError:
             return False
         return True
 
     def _validate_calculated_value(self, value: str) -> bool:
         try:
-            calculated_value = shorthand_timedelta_to_timedelta(value.lower())
+            calculated_value = shorthand_timedelta_to_timedelta(value)
             if calculated_value < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
                 return False
         except ValueError:
