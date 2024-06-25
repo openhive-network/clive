@@ -45,6 +45,33 @@ LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(VALUE_TO_REMOVE_SCHEDU
 LACK_OF_FUNDS: Final[list[Asset.Hbd | Asset.Hive]] = [LACK_OF_FUNDS_HBD_AMOUNT, LACK_OF_FUNDS_HIVE_AMOUNT]
 
 
+class FindRecurrentTransferError(CommandError):
+    pass
+
+
+class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
+    account_name: str
+    recurrent_transfer: RecurrentTransfer
+
+    def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
+        self.account_name = account_name
+        self.recurrent_transfer = recurrent_transfer
+        self.reason = f"Wrong from account '{self.recurrent_transfer.from_}' should be '{self.account_name}'."
+        super().__init__(command=command, reason=self.reason)
+
+
+@dataclass
+class _HarvestedDataRaw:
+    recurrent_transfers: SchemasFindRecurrentTransfers
+    account_data: FindAccounts
+
+
+@dataclass
+class _SanitizedData:
+    recurrent_transfers: SchemasFindRecurrentTransfers
+    account_data: SchemasAccount
+
+
 @dataclass
 class ScheduledTransfer:
     amount: Asset.Hive | Asset.Hbd
@@ -142,33 +169,6 @@ class FutureScheduledTransfers:
     def get_possibly_amount_aligned_to_dot(self, center_to: int | str | None = None) -> list[str]:
         possible_amount_to_align = [humanize_asset(ft.possible_amount) for ft in self.future_scheduled_transfers]
         return align_to_dot(*possible_amount_to_align, center_to=center_to)
-
-
-class FindRecurrentTransferError(CommandError):
-    pass
-
-
-class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
-    account_name: str
-    recurrent_transfer: RecurrentTransfer
-
-    def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
-        self.account_name = account_name
-        self.recurrent_transfer = recurrent_transfer
-        self.reason = f"Wrong from account '{self.recurrent_transfer.from_}' should be '{self.account_name}'."
-        super().__init__(command=command, reason=self.reason)
-
-
-@dataclass
-class _HarvestedDataRaw:
-    recurrent_transfers: SchemasFindRecurrentTransfers
-    account_data: FindAccounts
-
-
-@dataclass
-class _SanitizedData:
-    recurrent_transfers: SchemasFindRecurrentTransfers
-    account_data: SchemasAccount
 
 
 @dataclass(kw_only=True)
