@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final, Literal
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.constants.node import VALUE_TO_REMOVE_SCHEDULED_TRANSFER
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 
 if TYPE_CHECKING:
@@ -39,9 +40,36 @@ AllowedFutureSorts = Literal[
     "trigger_date",
 ]
 
-LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(0)
-LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(0)
+LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
+LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
 LACK_OF_FUNDS: Final[list[Asset.Hbd | Asset.Hive]] = [LACK_OF_FUNDS_HBD_AMOUNT, LACK_OF_FUNDS_HIVE_AMOUNT]
+
+
+class FindRecurrentTransferError(CommandError):
+    pass
+
+
+class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
+    account_name: str
+    recurrent_transfer: RecurrentTransfer
+
+    def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
+        self.account_name = account_name
+        self.recurrent_transfer = recurrent_transfer
+        self.reason = f"Wrong from account '{self.recurrent_transfer.from_}' should be '{self.account_name}'."
+        super().__init__(command=command, reason=self.reason)
+
+
+@dataclass
+class _HarvestedDataRaw:
+    recurrent_transfers: SchemasFindRecurrentTransfers
+    account_data: FindAccounts
+
+
+@dataclass
+class _SanitizedData:
+    recurrent_transfers: list[RecurrentTransfer]
+    account_data: SchemasAccount
 
 
 @dataclass
@@ -143,53 +171,25 @@ class FutureScheduledTransfers:
         return align_to_dot(*possible_amount_to_align, center_to=center_to)
 
 
-class FindRecurrentTransferError(CommandError):
-    pass
-
-
-class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
-    account_name: str
-    recurrent_transfer: RecurrentTransfer
-
-    def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
-        self.account_name = account_name
-        self.recurrent_transfer = recurrent_transfer
-        self.reason = f"Wrong from account '{self.recurrent_transfer.from_}' should be '{self.account_name}'."
-        super().__init__(command=command, reason=self.reason)
-
-
-@dataclass
-class HarvestedDataRaw:
-    recurrent_transfers: SchemasFindRecurrentTransfers | None
-    account_data: FindAccounts | None = None
-
-
-@dataclass
-class SanitizedData:
-    recurrent_transfers: SchemasFindRecurrentTransfers
-    account_data: SchemasAccount
-
-
 @dataclass(kw_only=True)
-class FindScheduledTransfers(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, ScheduledTransfers]):
+class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedData, ScheduledTransfers]):
     node: Node
     account_name: str
 
-    async def _harvest_data_from_api(self) -> HarvestedDataRaw:
+    async def _harvest_data_from_api(self) -> _HarvestedDataRaw:
         async with self.node.batch() as node:
-            return HarvestedDataRaw(
+            return _HarvestedDataRaw(
                 recurrent_transfers=await node.api.database_api.find_recurrent_transfers(from_=self.account_name),
                 account_data=await node.api.database_api.find_accounts(accounts=[self.account_name]),
             )
 
-    async def _sanitize_data(self, data: HarvestedDataRaw) -> SanitizedData:
-        data.recurrent_transfers = self._assert_data(data.recurrent_transfers)
-        self._assert_from_account(data.recurrent_transfers)
-        return SanitizedData(
-            recurrent_transfers=data.recurrent_transfers, account_data=self._assert_account_data(data.account_data)
+    async def _sanitize_data(self, data: _HarvestedDataRaw) -> _SanitizedData:
+        return _SanitizedData(
+            recurrent_transfers=self._sanitize_recurrent_transfers(data.recurrent_transfers),
+            account_data=self._sanitize_account_data(data.account_data),
         )
 
-    async def _process_data(self, data: SanitizedData) -> ScheduledTransfers:
+    async def _process_data(self, data: _SanitizedData) -> ScheduledTransfers:
         scheduled_transfers = [
             ScheduledTransfer(
                 from_=rt.from_,
@@ -202,7 +202,7 @@ class FindScheduledTransfers(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 pair_id=rt.pair_id,
                 consecutive_failures=rt.consecutive_failures,
             )
-            for rt in data.recurrent_transfers.recurrent_transfers
+            for rt in data.recurrent_transfers
         ]
         return ScheduledTransfers(
             account_hive_balance=data.account_data.balance,
@@ -210,14 +210,19 @@ class FindScheduledTransfers(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             scheduled_transfers=scheduled_transfers,
         )
 
-    def _assert_account_data(self, data: FindAccounts | None) -> SchemasAccount:
-        assert data, "FindAccounts is missing."
-        assert len(data.accounts) == 1, "Account is missing."
+    def _sanitize_recurrent_transfers(self, data: SchemasFindRecurrentTransfers) -> list[RecurrentTransfer]:
+        self._assert_from_account(data)
+        return data.recurrent_transfers
+
+    def _sanitize_account_data(self, data: FindAccounts) -> SchemasAccount:
+        self._assert_account_data(data)
         return data.accounts[0]
 
-    def _assert_data(self, data: SchemasFindRecurrentTransfers | None) -> SchemasFindRecurrentTransfers:
-        assert data, "FindRecurrenceTransfers are missing"
-        return data
+    def _assert_account_data(self, data: FindAccounts) -> None:
+        assert len(data.accounts) == 1, "Invalid amount of accounts."
+
+        account = data.accounts[0]
+        assert account.name == self.account_name, "Invalid account name"
 
     def _assert_from_account(self, data: SchemasFindRecurrentTransfers) -> None:
         for recurrent_transfer in data.recurrent_transfers:
