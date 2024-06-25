@@ -4,39 +4,19 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar, Final
 
-from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
-from clive.__private.core.date_utils import is_null_date, utc_now
-from clive.__private.core.formatters.humanize import humanize_datetime, humanize_natural_time
-from clive.__private.ui.operations.governance_operations.witness.witness import MAX_NUMBER_OF_WITNESSES_VOTES
+from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import (
+    AlarmDataWithEndDate,
+)
+from clive.__private.core.date_utils import is_null_date
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
-class GovernanceVotingExpirationAlarmData(BaseAlarmData):
-    EXPIRATION_DATE_LABEL: ClassVar[str] = "Expiration date"
-    TIME_LEFT_LABEL: ClassVar[str] = "Time left"
-
-    expiration_date: datetime
-
-    @property
-    def pretty_expiration_date(self) -> str:
-        return humanize_datetime(self.expiration_date)
-
-    @property
-    def pretty_time_left(self) -> str:
-        return humanize_natural_time(-self.time_left)
-
-    @property
-    def time_left(self) -> timedelta:
-        return self.expiration_date - utc_now()
-
-    def get_titled_data(self) -> dict[str, str]:
-        return {
-            self.EXPIRATION_DATE_LABEL: self.pretty_expiration_date,
-            self.TIME_LEFT_LABEL: self.pretty_time_left,
-        }
+class GovernanceVotingExpirationAlarmData(AlarmDataWithEndDate):
+    END_DATE_LABEL: ClassVar[str] = "Expiration date"
 
 
 @dataclass
@@ -44,7 +24,7 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
     EXTENDED_ALARM_INFO = (
         "The governance votes are valid one year.\n"
         "Governance votes are votes on proposals and witnesses.\n"
-        f"You can vote for {MAX_NUMBER_OF_WITNESSES_VOTES} witnesses and an unlimited number of proposals.\n"
+        "You can vote for 30 witnesses and an unlimited number of proposals.\n"
         "Alarm applies to the expiration of the last vote (no matter whether it is a vote for a witness or a proposal)."
     )
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
@@ -57,7 +37,7 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
             self.disable_alarm()
             return
 
-        alarm_data = GovernanceVotingExpirationAlarmData(expiration_date=expiration)
+        alarm_data = GovernanceVotingExpirationAlarmData(end_date=expiration)
         if alarm_data.time_left > timedelta(days=self.WARNING_PERIOD_IN_DAYS):
             self.disable_alarm()
             return

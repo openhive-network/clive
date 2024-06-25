@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING
 
-from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
+from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import AlarmDataNeverExpiresWithoutAction
 from clive.__private.core.date_utils import is_null_date
 from clive.__private.ui.operations.governance_operations.witness.witness import MAX_NUMBER_OF_WITNESSES_VOTES
 
@@ -13,19 +14,8 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class GovernanceNoActiveVotesAlarmData(BaseAlarmData):
-    EXPIRATION_DATE_LABEL: ClassVar[str] = "Expiration date"
-
+class GovernanceNoActiveVotesAlarmData(AlarmDataNeverExpiresWithoutAction):
     expiration_date: datetime
-
-    @property
-    def pretty_expiration_date(self) -> str:
-        return "Never (no active votes)"
-
-    def get_titled_data(self) -> dict[str, str]:
-        return {
-            self.EXPIRATION_DATE_LABEL: self.pretty_expiration_date,
-        }
 
 
 @dataclass

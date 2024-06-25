@@ -3,22 +3,21 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, ClassVar, Final
 
-from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
+from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import AlarmDataNeverExpiresWithoutAction
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
-class RecoveryAccountWarningListedAlarmData(BaseAlarmData):
+class RecoveryAccountWarningListedAlarmData(AlarmDataNeverExpiresWithoutAction):
     WARNING_LISTED_ACCOUNT_LABEL: ClassVar[str] = "Warning listed recovery account"
 
     warning_recovery_account: str
 
     def get_titled_data(self) -> dict[str, str]:
-        return {
-            self.WARNING_LISTED_ACCOUNT_LABEL: self.warning_recovery_account,
-        }
+        return {self.WARNING_LISTED_ACCOUNT_LABEL: self.warning_recovery_account} | super().get_titled_data()
 
 
 class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmData]):

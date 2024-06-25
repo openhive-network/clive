@@ -4,35 +4,19 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
+from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.specific_alarms.alarms_with_date_ranges import (
+    AlarmDataWithStartAndEndDate,
+)
 from clive.__private.core.constants import DECLINE_VOTING_RIGHTS_PENDING_DAYS
-from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
-class DecliningVotingRightsInProgressAlarmData(BaseAlarmData):
-    START_DATE_LABEL: ClassVar[str] = "Start date"
-    EFFECTIVE_DATE_LABEL: ClassVar[str] = "Effective date"
-
-    start_date: datetime
-    effective_date: datetime
-
-    @property
-    def pretty_start_date(self) -> str:
-        return humanize_datetime(self.start_date)
-
-    @property
-    def pretty_effective_date(self) -> str:
-        return humanize_datetime(self.effective_date)
-
-    def get_titled_data(self) -> dict[str, str]:
-        return {
-            self.START_DATE_LABEL: self.pretty_start_date,
-            self.EFFECTIVE_DATE_LABEL: self.pretty_effective_date,
-        }
+class DecliningVotingRightsInProgressAlarmData(AlarmDataWithStartAndEndDate):
+    END_DATE_LABEL: ClassVar[str] = "Effective date"
 
 
 @dataclass
@@ -57,7 +41,7 @@ class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInPro
         self.enable_alarm(
             new_identifier,
             DecliningVotingRightsInProgressAlarmData(
-                start_date=self._calculate_start_process_date(effective_date), effective_date=effective_date
+                start_date=self._calculate_start_process_date(effective_date), end_date=effective_date
             ),
         )
         return
