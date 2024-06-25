@@ -13,12 +13,6 @@ AlarmDataT = TypeVar("AlarmDataT")
 AnyAlarm: TypeAlias = "Alarm[Any, Any]"
 
 
-class BaseAlarmData(ABC):
-    @abstractmethod
-    def get_titled_data(self) -> dict[str, str]:
-        pass
-
-
 @dataclass
 class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     """

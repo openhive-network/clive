@@ -4,38 +4,25 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, ClassVar
 
-from clive.__private.core.alarms.alarm import Alarm, BaseAlarmData
+from clive.__private.core.alarms.alarm import Alarm
+from clive.__private.core.alarms.alarm_data import (
+    AlarmDataWithStartAndEndDate,
+)
 from clive.__private.core.constants import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
-from clive.__private.core.formatters.humanize import humanize_datetime
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
 @dataclass
-class ChangingRecoveryAccountInProgressAlarmData(BaseAlarmData):
-    START_DATE_LABEL: ClassVar[str] = "Start date"
-    EFFECTIVE_DATE_LABEL: ClassVar[str] = "Effective date"
+class ChangingRecoveryAccountInProgressAlarmData(AlarmDataWithStartAndEndDate):
+    END_DATE_LABEL: ClassVar[str] = "Effective date"
     NEW_RECOVERY_ACCOUNT_LABEL: ClassVar[str] = "New recovery account"
 
-    start_date: datetime
-    effective_date: datetime
     new_recovery_account: str
 
-    @property
-    def pretty_start_date(self) -> str:
-        return humanize_datetime(self.start_date)
-
-    @property
-    def pretty_effective_date(self) -> str:
-        return humanize_datetime(self.effective_date)
-
     def get_titled_data(self) -> dict[str, str]:
-        return {
-            self.START_DATE_LABEL: self.pretty_start_date,
-            self.EFFECTIVE_DATE_LABEL: self.pretty_effective_date,
-            self.NEW_RECOVERY_ACCOUNT_LABEL: self.new_recovery_account,
-        }
+        return super().get_titled_data() | {self.NEW_RECOVERY_ACCOUNT_LABEL: self.new_recovery_account}
 
 
 class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountInProgressAlarmData]):
@@ -57,7 +44,7 @@ class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountI
             new_identifier,
             ChangingRecoveryAccountInProgressAlarmData(
                 start_date=self._calculate_start_process_date(request.effective_on),
-                effective_date=request.effective_on,
+                end_date=request.effective_on,
                 new_recovery_account=request.recovery_account,
             ),
         )
