@@ -216,12 +216,12 @@ class Asset:
 
     @staticmethod
     def is_hive(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
-        return Asset.get_symbol(asset) in ["HIVE", "TESTS"]
+        return isinstance(asset, Asset.Hive)
 
     @staticmethod
     def is_hbd(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
-        return Asset.get_symbol(asset) in ["HBD", "TBD"]
+        return isinstance(asset, Asset.Hbd)
 
     @staticmethod
     def is_vests(asset: type[Asset.AnyT] | Asset.AnyT) -> bool:
-        return Asset.get_symbol(asset) in ["VESTS"]
+        return isinstance(asset, Asset.Vests)
