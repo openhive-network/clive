@@ -54,10 +54,7 @@ class ManageWorkingAccountTable(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "profile_data"
 
     def __init__(self) -> None:
-        super().__init__(
-            SectionTitle("Your working account"),
-            AccountsTableHeader(),
-        )
+        super().__init__(header=AccountsTableHeader(), title="Your working account")
         self._previous_working_account: WorkingAccountType | NotUpdatedYet | None = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: ProfileData) -> list[WorkingAccountRow]:

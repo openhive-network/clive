@@ -29,7 +29,6 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
-from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.models import Asset
 from schemas.operations import DelegateVestingSharesOperation
 
@@ -89,10 +88,7 @@ class DelegationsTable(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "_content"
 
     def __init__(self) -> None:
-        super().__init__(
-            SectionTitle("Current delegations"),
-            DelegationsTableHeader(),
-        )
+        super().__init__(header=DelegationsTableHeader(), title="Current delegations")
         self._previous_delegations: list[VestingDelegation[Asset.Vests]] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[Delegation]:

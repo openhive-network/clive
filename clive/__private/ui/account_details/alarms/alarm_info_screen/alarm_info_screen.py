@@ -53,7 +53,6 @@ class AlarmData(CliveCheckerboardTable):
     def __init__(self, alarm: AnyAlarm) -> None:
         self._alarm_titled_data = alarm.alarm_data_ensure.get_titled_data()
         super().__init__(
-            title=Static(""),
             header=AlarmDataHeader(*self._alarm_titled_data.keys()),
         )
 

@@ -32,7 +32,6 @@ from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
-from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
 
@@ -99,10 +98,7 @@ class PendingPowerDown(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "_content"
 
     def __init__(self) -> None:
-        super().__init__(
-            SectionTitle("Current power down"),
-            PendingPowerDownHeader(),
-        )
+        super().__init__(header=PendingPowerDownHeader(), title="Current power down")
         self._previous_next_vesting_withdrawal: datetime | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[CliveCheckerboardTableRow]:
