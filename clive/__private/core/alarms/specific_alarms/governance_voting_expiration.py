@@ -22,7 +22,6 @@ class GovernanceVotingExpirationAlarmData(AlarmDataWithEndDate):
     END_DATE_LABEL: ClassVar[str] = "Expiration date"
 
 
-@dataclass
 class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarmData]):
     ALARM_DESCRIPTION = GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
