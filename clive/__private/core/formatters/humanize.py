@@ -277,3 +277,16 @@ def humanize_bool(value: bool) -> str:  # noqa: FBT001
 def humanize_percent(hive_percent: Decimal) -> str:
     """Convert percent Decimal to percent string in human-readable format."""
     return f"{_round_to_precision(hive_percent, precision=HIVE_PERCENT_PRECISION_DOT_PLACES)} %"
+
+
+def humanize_timedelta(value: timedelta) -> str:
+    """
+    Return pretty formatted timedelta.
+
+    Examples
+    --------
+    timedelta(days=730) -> 2 years
+    timedelta(days=2016) -> 5 years, 6 months and 8 days
+    timedelta(days=6720) -> 18 years, 4 months and 28 days
+    """
+    return humanize.precisedelta(value)
