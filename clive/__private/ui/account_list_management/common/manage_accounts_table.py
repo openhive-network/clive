@@ -14,7 +14,6 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 )
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
-from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
@@ -67,10 +66,8 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def __init__(self, accounts_type: AccountsType) -> None:
         super().__init__(
-            SectionTitle(
-                f"Your {self.remove_underscore_from_text(accounts_type)}",
-            ),
-            AccountsTableHeader(),
+            header=AccountsTableHeader(),
+            title=f"Your {self.remove_underscore_from_text(accounts_type)}",
         )
         self._previous_accounts: set[Account] | NotUpdatedYet = NotUpdatedYet()
         self._accounts_type = accounts_type

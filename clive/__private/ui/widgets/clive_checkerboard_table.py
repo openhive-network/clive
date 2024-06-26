@@ -7,6 +7,7 @@ from textual.widget import Widget
 from textual.widgets import Static
 
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
@@ -152,7 +153,7 @@ class CliveCheckerboardTable(CliveWidget):
     ATTRIBUTE_TO_WATCH: ClassVar[str] = ""
     """attribute name to trigger an update of the table and to download new data"""
 
-    def __init__(self, title: Widget, header: Widget) -> None:
+    def __init__(self, *, header: Widget, title: Widget | str | None = None) -> None:
         super().__init__()
         self._title = title
         self._header = header
@@ -217,7 +218,12 @@ class CliveCheckerboardTable(CliveWidget):
             rows = self.create_static_rows()
 
         self._set_evenness_styles(rows)
-        return [self._title, self._header, *rows]
+
+        if self._title is None:
+            return [self._header, *rows]
+
+        title = self._title if isinstance(self._title, Widget) else SectionTitle(self._title)
+        return [title, self._header, *rows]
 
     def create_dynamic_rows(self, content: Content) -> Sequence[CliveCheckerboardTableRow]:  # noqa: ARG002
         """

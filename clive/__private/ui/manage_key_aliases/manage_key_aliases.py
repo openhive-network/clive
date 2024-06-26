@@ -25,7 +25,6 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -89,6 +88,9 @@ class KeyAliasesHeader(Horizontal):
 class ManageKeyAliasesTable(CliveCheckerboardTable):
     """Table with KeyAliases."""
 
+    def __init__(self) -> None:
+        super().__init__(header=KeyAliasesHeader(), title="Edit key aliases")
+
     def create_static_rows(self) -> list[KeyAlias]:
         key_aliases = []
         for idx, key in enumerate(self.app.world.profile_data.keys):
@@ -114,7 +116,7 @@ class ManageKeyAliases(BaseScreen):
 
     def create_main_panel(self) -> ComposeResult:
         with self.__scrollable_part:
-            yield ManageKeyAliasesTable(SectionTitle("Edit key aliases"), KeyAliasesHeader())
+            yield ManageKeyAliasesTable()
 
     def action_new_key_alias(self) -> None:
         self.app.push_screen(NewKeyAlias())

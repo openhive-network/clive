@@ -153,10 +153,7 @@ class PendingTransfers(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "_content"
 
     def __init__(self) -> None:
-        super().__init__(
-            SectionTitle(""),
-            PendingTransfersHeader(),
-        )
+        super().__init__(header=PendingTransfersHeader(), title=SectionTitle(""))
         self._previous_pending_transfers: list[SavingsWithdrawals] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:

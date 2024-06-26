@@ -21,7 +21,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -58,7 +57,7 @@ class AlarmsTable(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "profile_data"
 
     def __init__(self, account: Account) -> None:
-        super().__init__(title=SectionTitle("Manage alarms"), header=AlarmsTableHeader())
+        super().__init__(header=AlarmsTableHeader(), title="Manage alarms")
         self._account = account
         self._previous_alarms: list[AnyAlarm] | NotUpdatedYet = NotUpdatedYet()
 
