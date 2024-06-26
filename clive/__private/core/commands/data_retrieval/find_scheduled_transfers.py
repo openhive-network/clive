@@ -122,9 +122,6 @@ class AccountScheduledTransferData:
             center_to=center_to,
         )
 
-    def get_scheduled_transfers(self) -> list[ScheduledTransfer]:
-        return self.scheduled_transfers
-
     def get_future_scheduled_transfers(self, deepth: int) -> AccountFutureScheduledTransferData:
         future_scheduled_transfers: list[FutureScheduledTransfer] = []
         for st in self.scheduled_transfers:
@@ -162,9 +159,6 @@ class AccountFutureScheduledTransferData:
                 self.future_scheduled_transfers, key=operator.attrgetter(*sort_by), reverse=descending
             )
         )
-
-    def get_future_scheduled_transfers(self) -> list[FutureScheduledTransfer]:
-        return self.future_scheduled_transfers
 
     def get_amount_aligned_to_dot(self, center_to: int | str | None = None) -> list[str]:
         amount_to_align = [humanize_asset(ft.amount) for ft in self.future_scheduled_transfers]
