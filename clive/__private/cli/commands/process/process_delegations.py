@@ -30,9 +30,7 @@ class ProcessDelegations(OperationCommand):
         await super().validate()
 
     async def _validate_amount(self) -> None:
-        if self.amount == Asset.vests(VESTS_TO_REMOVE_DELEGATION) or self.amount == Asset.hive(
-            VESTS_TO_REMOVE_DELEGATION
-        ):
+        if self.amount in (Asset.vests(VESTS_TO_REMOVE_DELEGATION), Asset.hive(VESTS_TO_REMOVE_DELEGATION)):
             raise DelegationsZeroAmountError
 
 

@@ -30,7 +30,7 @@ class ProcessWithdrawRoutes(OperationCommand):
         await super().validate()
 
     async def _validate_percent(self) -> None:
-        if self.percent == 0:
+        if self.percent == PERCENT_TO_REMOVE_WITHDRAW_ROUTE:
             raise WithdrawRoutesZeroPercentError
 
 
