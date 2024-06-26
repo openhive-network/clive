@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Iterable
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical, Center, VerticalScroll
 from textual.screen import ModalScreen
 from textual.widgets import Static
 
@@ -19,6 +19,7 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 )
 from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -79,7 +80,10 @@ class AlarmInfoScreen(ModalScreen[None]):
             yield SectionTitle("Details")
             if self._alarm.ALARM_DESCRIPTION:
                 yield Static(self._alarm.ALARM_DESCRIPTION, id="alarm-description")
-            yield AlarmData(alarm=self._alarm)
+            yield SectionTitle("Parameters", variant="dark", id_="parameters")
+            with VerticalScroll(), Center():
+                for title, value in self._alarm.alarm_data_ensure.get_titled_data().items():
+                    yield from [TitledLabel(f"{title}{i}", value) for i in range(10)]
             yield FixAlarmInfoWidget(
                 alarm=self._alarm, alarm_fix_details=self._alarm_fix_details, account=self._account
             )

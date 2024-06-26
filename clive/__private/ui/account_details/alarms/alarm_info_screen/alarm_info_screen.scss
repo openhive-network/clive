@@ -1,6 +1,22 @@
 AlarmInfoScreen {
   align: center middle;
 
+  VerticalScroll {
+    margin: 0 2 1 2;
+    max-height: 5;
+    height: auto;
+
+  }
+
+  SectionTitle {
+    width: 100%;
+  }
+
+
+  #parameters {
+    margin: 1 2 0 2;
+  }
+
   AlarmInfo {
     border: $primary-lighten-3;
     width: 70%;
