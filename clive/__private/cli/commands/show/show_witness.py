@@ -32,6 +32,7 @@ class ShowWitness(WorldBasedCommand):
         if witness.props.hbd_interest_rate:
             hbd_savings_apr = humanize_hbd_savings_apr(hive_percent_to_percent(witness.props.hbd_interest_rate))
         props_as_legacy = witness.props.copy(exclude={"account_creation_fee", "hbd_interest_rate"}, deep=True)
+        props_dict = props_as_legacy.dict()
 
         table = Table(title=f"Details of `{self.name}` witness", show_header=False)
 
@@ -44,7 +45,8 @@ class ShowWitness(WorldBasedCommand):
         table.add_row("last confirmed block num", f"{witness.last_confirmed_block_num}")
         table.add_row("last hbd exchange update", f"{witness.last_hbd_exchange_update}")
         table.add_row("last work", f"{witness.last_work}")
-        table.add_row("props", f"{props_as_legacy}")
+        for key in props_dict:
+            table.add_row(key.replace("_", " "), f"{props_dict[key]}")
         table.add_row("running version", f"{witness.running_version}")
         table.add_row("signing key", f"{witness.signing_key}")
         table.add_row("total missed", f"{witness.total_missed}")
@@ -54,3 +56,4 @@ class ShowWitness(WorldBasedCommand):
 
         console = Console()
         console.print(table)
+
