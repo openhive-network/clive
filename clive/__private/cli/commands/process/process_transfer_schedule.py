@@ -27,8 +27,8 @@ from clive.models.aliased import (
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
+        AccountScheduledTransferData,
         ScheduledTransfer,
-        ScheduledTransfers,
     )
 
 SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
@@ -39,17 +39,21 @@ SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
 
 @dataclass(kw_only=True)
 class ProcessTransferSchedule(OperationCommand):
-    scheduled_transfers: ScheduledTransfers | None = field(default=None, init=False)
+    account_scheduled_transfers_data: AccountScheduledTransferData | None = field(default=None, init=False)
     from_account: str
     to: str
     pair_id: int | None = None
 
     @property
     def scheduled_transfer(self) -> ScheduledTransfer | None:
-        return self.get_scheduled_transfer()
+        if self.account_scheduled_transfers_data:
+            for st in self.account_scheduled_transfers_data.scheduled_transfers:
+                if self._identity_check(st):
+                    return st
+        return None
 
     async def fetch_data(self) -> None:
-        self.scheduled_transfers = await self.fetch_scheduled_transfers_for_current_account()
+        self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
 
     def _create_recurent_transfer_pair_id_extension(self) -> list[Any]:
         # TODO: This will be removed after hf28, because pair_id will be mandatory
@@ -67,17 +71,9 @@ class ProcessTransferSchedule(OperationCommand):
         pair_id = 0 if self.pair_id is None else self.pair_id
         return scheduled_transfer.to == self.to and scheduled_transfer.pair_id == pair_id
 
-    async def fetch_scheduled_transfers_for_current_account(self) -> ScheduledTransfers:
+    async def fetch_scheduled_transfers_for_current_account(self) -> AccountScheduledTransferData:
         """Get all scheduled transfers (recurrent transfers) for current account from blockchain."""
         return (await self.world.commands.find_scheduled_transfers(account_name=self.from_account)).result_or_raise
-
-    def get_scheduled_transfer(self) -> ScheduledTransfer | None:
-        """Get target `to` scheduled transfer (recurrent transfer) from the fetched collection."""
-        if self.scheduled_transfers:
-            for st in self.scheduled_transfers.get_scheduled_transfers():
-                if self._identity_check(st):
-                    return st
-        return None
 
     def validate_existence(self, *, should_exists: bool) -> None:
         """Validate if scheduled_transfer (recurrent transfer) exists."""
@@ -91,14 +87,14 @@ class ProcessTransferSchedule(OperationCommand):
 
     def validate_any_existence(self) -> None:
         """Validate if there are any scheduled transfers (recurrent transfers) from current account."""
-        if self.scheduled_transfers:
+        if self.account_scheduled_transfers_data:
             return
         raise ProcessTransferScheduleNoScheduledTransfersError(self.from_account)
 
     def validate_pair_id(self) -> None:
         """Validate if pair_id is set, when there is more than one recurrent transfers."""
-        assert self.scheduled_transfers is not None, "There are no scheduled transfers."
-        number_of_scheduled_transfers = len(self.scheduled_transfers.get_scheduled_transfers())
+        assert self.account_scheduled_transfers_data is not None, "There are no scheduled transfers."
+        number_of_scheduled_transfers = len(self.account_scheduled_transfers_data.scheduled_transfers)
         if number_of_scheduled_transfers > 1 and self.pair_id is None:
             raise ProcessTransferScheduleNullPairIdError
 
@@ -146,7 +142,7 @@ class ProcessTransferScheduleCreate(ProcessTransferScheduleWithExtendedValidatio
         )
 
     async def validate_inside_context_manager(self) -> None:
-        if self.scheduled_transfers:
+        if self.account_scheduled_transfers_data:
             self.validate_existence(should_exists=False)
         await super().validate_inside_context_manager()
 
@@ -175,7 +171,7 @@ class ProcessTransferScheduleModify(ProcessTransferScheduleWithExtendedValidatio
         self.configured_extensions = self._create_recurent_transfer_pair_id_extension()
 
     async def fetch_data(self) -> None:
-        self.scheduled_transfers = await self.fetch_scheduled_transfers_for_current_account()
+        self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
         if self.scheduled_transfer:
             self.amount = self.amount if self.amount is not None else self.scheduled_transfer.amount
             self.repeat = self.repeat if self.repeat is not None else self.scheduled_transfer.remaining_executions
@@ -186,7 +182,7 @@ class ProcessTransferScheduleModify(ProcessTransferScheduleWithExtendedValidatio
 
     async def validate_inside_context_manager(self) -> None:
         self.validate_any_existence()
-        assert self.scheduled_transfers is not None, "Value of scheduled_transfers is known at this point."
+        assert self.account_scheduled_transfers_data is not None, "Value of scheduled_transfers is known at this point."
         self.validate_pair_id()
         self.validate_existence(should_exists=True)
         self.validate_existence_lifetime()
@@ -215,7 +211,7 @@ class ProcessTransferScheduleRemove(ProcessTransferSchedule):
         )
 
     async def fetch_data(self) -> None:
-        self.scheduled_transfers = await self.fetch_scheduled_transfers_for_current_account()
+        self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
 
     async def _configure_inside_context_manager(self) -> None:
         self.configured_extensions = self._create_recurent_transfer_pair_id_extension()

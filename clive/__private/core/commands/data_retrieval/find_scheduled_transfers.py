@@ -102,18 +102,19 @@ class FutureScheduledTransfer:
 
 
 @dataclass
-class ScheduledTransfers:
+class AccountScheduledTransferData:
     scheduled_transfers: list[ScheduledTransfer]
     account_hive_balance: Asset.Hive
     account_hbd_balance: Asset.Hbd
 
-    def sort_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> None:
+    def sorted_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> AccountScheduledTransferData:
         import operator
 
-        if self.scheduled_transfers:
-            self.scheduled_transfers = sorted(
-                self.scheduled_transfers, key=operator.attrgetter(*sort_by), reverse=descending
-            )
+        return AccountScheduledTransferData(
+            scheduled_transfers=sorted(self.scheduled_transfers, key=operator.attrgetter(*sort_by), reverse=descending),
+            account_hive_balance=self.account_hive_balance,
+            account_hbd_balance=self.account_hbd_balance,
+        )
 
     def get_amount_aligned_to_dot(self, center_to: int | str | None = None) -> list[str]:
         return align_to_dot(
@@ -121,10 +122,7 @@ class ScheduledTransfers:
             center_to=center_to,
         )
 
-    def get_scheduled_transfers(self) -> list[ScheduledTransfer]:
-        return self.scheduled_transfers
-
-    def get_future_scheduled_transfers(self, deepth: int) -> FutureScheduledTransfers:
+    def get_future_scheduled_transfers(self, deepth: int) -> AccountFutureScheduledTransferData:
         future_scheduled_transfers: list[FutureScheduledTransfer] = []
         for st in self.scheduled_transfers:
             lack_of_funds = LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(st.amount) else LACK_OF_FUNDS_HBD_AMOUNT
@@ -144,23 +142,23 @@ class ScheduledTransfers:
                     trigger_date=st.trigger_date + timedelta(hours=idx * st.recurrence),
                 )
                 future_scheduled_transfers.append(future_scheduled_transfer)
-        return FutureScheduledTransfers(future_scheduled_transfers=future_scheduled_transfers)
+        return AccountFutureScheduledTransferData(future_scheduled_transfers=future_scheduled_transfers)
 
 
 @dataclass
-class FutureScheduledTransfers:
+class AccountFutureScheduledTransferData:
     future_scheduled_transfers: list[FutureScheduledTransfer]
 
-    def sort_by(self, sort_by: list[AllowedFutureSorts], *, descending: bool = False) -> None:
+    def sorted_by(
+        self, sort_by: list[AllowedFutureSorts], *, descending: bool = False
+    ) -> AccountFutureScheduledTransferData:
         import operator
 
-        if self.future_scheduled_transfers:
-            self.future_scheduled_transfers = sorted(
+        return AccountFutureScheduledTransferData(
+            future_scheduled_transfers=sorted(
                 self.future_scheduled_transfers, key=operator.attrgetter(*sort_by), reverse=descending
             )
-
-    def get_future_scheduled_transfers(self) -> list[FutureScheduledTransfer]:
-        return self.future_scheduled_transfers
+        )
 
     def get_amount_aligned_to_dot(self, center_to: int | str | None = None) -> list[str]:
         amount_to_align = [humanize_asset(ft.amount) for ft in self.future_scheduled_transfers]
@@ -172,7 +170,7 @@ class FutureScheduledTransfers:
 
 
 @dataclass(kw_only=True)
-class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedData, ScheduledTransfers]):
+class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedData, AccountScheduledTransferData]):
     node: Node
     account_name: str
 
@@ -189,7 +187,7 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
             account_data=self._sanitize_account_data(data.account_data),
         )
 
-    async def _process_data(self, data: _SanitizedData) -> ScheduledTransfers:
+    async def _process_data(self, data: _SanitizedData) -> AccountScheduledTransferData:
         scheduled_transfers = [
             ScheduledTransfer(
                 from_=rt.from_,
@@ -204,7 +202,7 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
             )
             for rt in data.recurrent_transfers
         ]
-        return ScheduledTransfers(
+        return AccountScheduledTransferData(
             account_hive_balance=data.account_data.balance,
             account_hbd_balance=data.account_data.hbd_balance,
             scheduled_transfers=scheduled_transfers,
