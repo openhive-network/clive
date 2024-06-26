@@ -27,8 +27,8 @@ from clive.models.aliased import (
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
+        AccountScheduledTransferData,
         ScheduledTransfer,
-        ScheduledTransfers,
     )
 
 SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
@@ -39,7 +39,7 @@ SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
 
 @dataclass(kw_only=True)
 class ProcessTransferSchedule(OperationCommand):
-    scheduled_transfers: ScheduledTransfers | None = field(default=None, init=False)
+    scheduled_transfers: AccountScheduledTransferData | None = field(default=None, init=False)
     from_account: str
     to: str
     pair_id: int | None = None
@@ -67,7 +67,7 @@ class ProcessTransferSchedule(OperationCommand):
         pair_id = 0 if self.pair_id is None else self.pair_id
         return scheduled_transfer.to == self.to and scheduled_transfer.pair_id == pair_id
 
-    async def fetch_scheduled_transfers_for_current_account(self) -> ScheduledTransfers:
+    async def fetch_scheduled_transfers_for_current_account(self) -> AccountScheduledTransferData:
         """Get all scheduled transfers (recurrent transfers) for current account from blockchain."""
         return (await self.world.commands.find_scheduled_transfers(account_name=self.from_account)).result_or_raise
 
