@@ -68,7 +68,7 @@ class _HarvestedDataRaw:
 
 @dataclass
 class _SanitizedData:
-    recurrent_transfers: SchemasFindRecurrentTransfers
+    recurrent_transfers: list[RecurrentTransfer]
     account_data: SchemasAccount
 
 
@@ -200,7 +200,7 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
                 pair_id=rt.pair_id,
                 consecutive_failures=rt.consecutive_failures,
             )
-            for rt in data.recurrent_transfers.recurrent_transfers
+            for rt in data.recurrent_transfers
         ]
         return AccountScheduledTransferData(
             account_hive_balance=data.account_data.balance,
@@ -208,9 +208,9 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
             scheduled_transfers=scheduled_transfers,
         )
 
-    def _sanitize_recurrent_trasfers(self, data: SchemasFindRecurrentTransfers) -> SchemasFindRecurrentTransfers:
+    def _sanitize_recurrent_trasfers(self, data: SchemasFindRecurrentTransfers) -> list[RecurrentTransfer]:
         self._assert_from_account(data)
-        return data
+        return data.recurrent_transfers
 
     def _sanitize_account_data(self, data: FindAccounts) -> SchemasAccount:
         assert self._assert_account_data(data)
