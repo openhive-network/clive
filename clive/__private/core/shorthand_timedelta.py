@@ -7,7 +7,7 @@ from typing import Final
 from clive.__private.core.constants.date import SECONDS_IN_DAY, SECONDS_IN_HOUR, SECONDS_IN_MINUTE, SECONDS_IN_WEEK
 from clive.exceptions import CliveError
 
-SHORTHAND_TIMEDELTA_EXAMPLE: Final[str] = 'e.g. "24h" or "2d 2h"'
+SHORTHAND_TIMEDELTA_EXAMPLE: Final[str] = 'hH - hours, dD - days, wW - weeks e.g. "24h" or "2d 2h"'
 TIMEDELTA_EXAMPLE: Final[str] = 'e.g. "timedelta(weeks=1, days=2, hours=3)"'
 
 

@@ -21,7 +21,7 @@ class ScheduledTransferFrequencyValidator(Validator):
     """
 
     INVALID_INPUT_DESCRIPTION: Final[str] = (
-        "Incorrect frequency unit must be one of the following hH, dD, wW. " f"({SHORTHAND_TIMEDELTA_EXAMPLE})"
+        f"Incorrect frequency unit must be one of the following {SHORTHAND_TIMEDELTA_EXAMPLE}"
     )
     VALUE_TO_SMALL_DESCRIPTION: Final[str] = (
         "Value for 'frequency' must be greater or equal "
