@@ -106,7 +106,7 @@ class ProcessTransferScheduleWithExtendedValidation(ProcessTransferSchedule):
     frequency: timedelta | None
     repeat: int | None
 
-    def validate_amount(self) -> None:
+    def validate_amount_not_a_removal_value(self) -> None:
         """
         Validate amount for create, and modify calls.
 
@@ -147,7 +147,7 @@ class ProcessTransferScheduleCreate(ProcessTransferScheduleWithExtendedValidatio
         await super().validate_inside_context_manager()
 
     async def validate(self) -> None:
-        self.validate_amount()
+        self.validate_amount_not_a_removal_value()
         self.validate_existence_lifetime()
         await super().validate()
 
@@ -190,7 +190,7 @@ class ProcessTransferScheduleModify(ProcessTransferScheduleWithExtendedValidatio
 
     async def validate(self) -> None:
         if self.amount:
-            self.validate_amount()
+            self.validate_amount_not_a_removal_value()
         if self.frequency and self.repeat:
             self.validate_existence_lifetime()
         await super().validate()
