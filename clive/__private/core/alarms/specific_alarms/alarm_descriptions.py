@@ -1,11 +1,17 @@
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Final
+
+from clive.__private.core.formatters.humanize import humanize_timedelta
+
+HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS: Final[int] = 365
+GOVERNANCE_VOTES_VALIDITY_PERIOD: Final[timedelta] = timedelta(days=HIVE_GOVERNANCE_VOTE_EXPIRATION_PERIOD_DAYS)
 
 GOVERNANCE_COMMON_ALARM_DESCRIPTION: Final[str] = (
     "Governance votes are votes on proposals and witnesses.\n"
     "You can vote for 30 witnesses and an unlimited number of proposals.\n"  # TODO: change 30 to const after merging: https://gitlab.syncad.com/hive/clive/-/merge_requests/387
-    "The governance votes are valid one year."
+    f"The governance votes are valid {humanize_timedelta(GOVERNANCE_VOTES_VALIDITY_PERIOD)}."
 )
 GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION: Final[str] = (
     f"{GOVERNANCE_COMMON_ALARM_DESCRIPTION}\n"
