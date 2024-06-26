@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 
 if TYPE_CHECKING:
@@ -13,7 +12,6 @@ AlarmDataT = TypeVar("AlarmDataT")
 AnyAlarm: TypeAlias = "Alarm[Any, Any]"
 
 
-@dataclass
 class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     """
     Alarm model to store alarm data and provide basic information about the alarm.
@@ -38,15 +36,16 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     ALARM_DESCRIPTION: ClassVar[str] = ""
     FIX_ALARM_INFO: ClassVar[str] = "Override me"
 
-    identifier: AlarmIdentifierT | None = None
-    alarm_data: AlarmDataT | None = None
-    is_active: bool = False
-    is_harmless: bool = False
+    def __init__(self, identifier: AlarmIdentifierT | None = None, alarm_data: AlarmDataT | None = None) -> None:
+        super().__init__()
+        self.identifier = identifier
+        self.alarm_data = alarm_data
+        self.is_active = False
+        self.is_harmless = False
 
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
         if identifier == self.identifier:
             return
-
         self.is_active = True
         self.is_harmless = False
         self.identifier = identifier

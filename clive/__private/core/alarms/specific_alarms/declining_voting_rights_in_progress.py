@@ -22,7 +22,6 @@ class DecliningVotingRightsInProgressAlarmData(AlarmDataWithStartAndEndDate):
     END_DATE_LABEL: ClassVar[str] = "Effective date"
 
 
-@dataclass
 class DecliningVotingRightsInProgress(Alarm[datetime, DecliningVotingRightsInProgressAlarmData]):
     ALARM_DESCRIPTION = DECLINING_VOTING_RIGHTS_IN_PROGRESS_ALARM_DESCRIPTION
     FIX_ALARM_INFO = (

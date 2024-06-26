@@ -18,7 +18,6 @@ class GovernanceNoActiveVotesAlarmData(AlarmDataNeverExpiresWithoutAction):
     expiration_date: datetime
 
 
-@dataclass
 class GovernanceNoActiveVotes(Alarm[datetime, GovernanceNoActiveVotesAlarmData]):
     ALARM_DESCRIPTION = GOVERNANCE_COMMON_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
