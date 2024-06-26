@@ -37,21 +37,3 @@ class SectionTitle(Static):
     def watch_variant(self, old_variant: str, variant: str) -> None:
         self.remove_class(f"-{old_variant}")
         self.add_class(f"-{variant}")
-
-    @classmethod
-    def dark(cls, title: str, id_: str | None = None, classes: str | None = None) -> SectionTitle:
-        return SectionTitle(
-            title=title,
-            variant="dark",
-            id_=id_,
-            classes=classes,
-        )
-
-    @classmethod
-    def red(cls, title: str, id_: str | None = None, classes: str | None = None) -> SectionTitle:
-        return SectionTitle(
-            title=title,
-            variant="red",
-            id_=id_,
-            classes=classes,
-        )
