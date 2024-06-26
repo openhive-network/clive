@@ -7,6 +7,7 @@ from textual.validation import Function, ValidationResult, Validator
 from clive.__private.core.constants.node import SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE
 from clive.__private.core.shorthand_timedelta import (
     SHORTHAND_TIMEDELTA_EXAMPLE,
+    InvalidShorthandToTimedeltaError,
     shorthand_timedelta_to_timedelta,
     timedelta_to_shorthand_timedelta,
 )
@@ -38,7 +39,7 @@ class ScheduledTransferFrequencyValidator(Validator):
     def _validate_raw_input(self, value: str) -> bool:
         try:
             shorthand_timedelta_to_timedelta(value)
-        except ValueError:
+        except InvalidShorthandToTimedeltaError:
             return False
         return True
 
@@ -47,7 +48,7 @@ class ScheduledTransferFrequencyValidator(Validator):
             calculated_value = shorthand_timedelta_to_timedelta(value)
             if calculated_value < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
                 return False
-        except ValueError:
+        except InvalidShorthandToTimedeltaError:
             # Why True after this line?
             # Because this function is only to validate calculated value.
             # If input was wrong, then _validate_raw_input, returns proper message.

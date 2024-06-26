@@ -5,6 +5,8 @@ from datetime import timedelta
 import pytest
 
 from clive.__private.core.shorthand_timedelta import (
+    InvalidShorthandToTimedeltaError,
+    InvalidTimedeltaToShorthandError,
     shorthand_timedelta_to_timedelta,
     timedelta_to_shorthand_timedelta,
 )
@@ -20,3 +22,13 @@ from clive.__private.core.shorthand_timedelta import (
 )
 def test_valid_shorthand_timedelta_conversion(td: timedelta) -> None:
     assert shorthand_timedelta_to_timedelta(timedelta_to_shorthand_timedelta(td)) == td
+
+
+def test_input_validation_shorthand_to_timedelta() -> None:
+    with pytest.raises(InvalidShorthandToTimedeltaError):
+        shorthand_timedelta_to_timedelta("4f")
+
+
+def test_input_validation_timedelta_to_shorthand() -> None:
+    with pytest.raises(InvalidTimedeltaToShorthandError):
+        timedelta_to_shorthand_timedelta(timedelta(weeks=0, days=0, hours=0, minutes=0, seconds=0))
