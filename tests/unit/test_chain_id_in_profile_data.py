@@ -6,6 +6,7 @@ import pytest
 
 from clive.__private.config import settings
 from clive.__private.core.profile_data import InvalidChainIdError, ProfileData
+from clive.__private.safe_settings import safe_settings
 from clive.models import Asset, Transaction
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from schemas.operations import TransferOperation
@@ -24,7 +25,7 @@ DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 @pytest.fixture()
 def profile_with_default_chain_id_from_settings() -> Iterator[ProfileData]:
     chain_id_identifier = "NODE.CHAIN_ID"
-    chain_id_before = settings.get(chain_id_identifier, "")
+    chain_id_before = safe_settings.node_chain_id
     settings.set(chain_id_identifier, DEFAULT_CHAIN_ID)
     yield ProfileData(name="test")
     settings.set(chain_id_identifier, chain_id_before)

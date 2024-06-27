@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, get_args
 
 from pydantic import Field
 
-from clive.__private.config import settings
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
+from clive.__private.safe_settings import safe_settings
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.base import CliveBaseModel
@@ -27,7 +27,7 @@ def webserver_default() -> Url:
 
 
 def _wallet_dir_default() -> Path:
-    return Path(settings.data_path) / "beekeeper"
+    return Path(safe_settings.data_path) / "beekeeper"
 
 
 class BeekeeperConfig(CliveBaseModel):

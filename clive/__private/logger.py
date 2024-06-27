@@ -12,12 +12,14 @@ if not is_tab_completion_active():
     from loguru import logger as loguru_logger
     from textual import log as textual_logger
 
-    from clive.__private.config import LAUNCH_TIME, ROOT_DIRECTORY, settings
+    from clive.__private.config import LAUNCH_TIME, ROOT_DIRECTORY
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from loguru._logger import Core
+
+    from clive.__private.safe_settings import SafeSettings
 
 LogFilePaths = tuple[Path, ...]
 GroupLogFilePaths = dict[str, LogFilePaths]
@@ -50,13 +52,6 @@ class InterceptHandler(logging.Handler):
 class Logger:
     """Logger used to log into both Textual (textual console) and Loguru (file located in logs/)."""
 
-    AVAILABLE_LOG_LEVELS: Final[list[str]] = [
-        "DEBUG",
-        "INFO",
-        "WARNING",
-        "ERROR",
-    ]
-
     def __init__(self) -> None:
         self.__enabled_loguru = True
         self.__enabled_textual = True
@@ -69,7 +64,7 @@ class Logger:
         if not callable(loguru_attr) or not callable(textual_log_attr):
             raise TypeError(
                 f"Callable `{item}` not found in either Textual or Loguru loggers.\n"
-                f"Try one of: {self.AVAILABLE_LOG_LEVELS}"
+                f"Try one of: {self.safe_settings_delayed.AVAILABLE_LOG_LEVELS}"
             )
 
         def _hooked(*args: Any, **kwargs: Any) -> None:
@@ -79,6 +74,12 @@ class Logger:
                 textual_log_attr(*args, **kwargs)
 
         return _hooked
+
+    @property
+    def safe_settings_delayed(self) -> SafeSettings:
+        from clive.__private.safe_settings import safe_settings
+
+        return safe_settings
 
     def setup(
         self, *, enable_loguru: bool = True, enable_textual: bool = True, enable_stream_handlers: bool = False
@@ -108,13 +109,14 @@ class Logger:
 
     def _create_log_files(self) -> GroupLogFilePaths:
         log_paths: GroupLogFilePaths = {}
-        log_levels = settings.get("LOG_LEVELS", ["INFO"])
+        log_levels = self.safe_settings_delayed.log_levels
         for log_level in log_levels:
             log_level_lower = log_level.lower()
             log_level_upper = log_level.upper()
 
-            if log_level_upper not in self.AVAILABLE_LOG_LEVELS:
-                raise RuntimeError(f"Invalid log level: {log_level}, expected one of {self.AVAILABLE_LOG_LEVELS}.")
+            available_log_levels = self.safe_settings_delayed.AVAILABLE_LOG_LEVELS
+            if log_level_upper not in available_log_levels:
+                raise RuntimeError(f"Invalid log level: {log_level}, expected one of {available_log_levels}.")
 
             log_paths[log_level_upper] = self._create_log_files_per_group(group_name=log_level_lower)
         return log_paths
@@ -126,13 +128,13 @@ class Logger:
                 """We just need to create an empty file to which we will log later"""
             return empty_file_path
 
-        log_group_directory = Path(settings.get("LOG_PATH", ".")) / group_name
+        log_group_directory = self.safe_settings_delayed.log_path / group_name
         log_group_directory.mkdir(parents=True, exist_ok=True)
 
         latest_log_file_name = "latest.log"
         latest_log_path = create_empty_file(latest_log_file_name)
 
-        keep_history = settings.get("LOG_KEEP_HISTORY", True)
+        keep_history = self.safe_settings_delayed.log_keep_history
         if not keep_history:
             return (latest_log_path,)
 
@@ -167,7 +169,7 @@ class Logger:
         for 3rd party modules when clive is in higher log levels than DEBUG.
 
         """
-        log_level_3rd_party = str(settings.get("LOG_LEVEL_3RD_PARTY", "DEBUG")).upper()
+        log_level_3rd_party = self.safe_settings_delayed.log_level_3rd_party.upper()
         return "DEBUG" if log_level == "DEBUG" else log_level_3rd_party
 
     def _make_filter(self, *, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:

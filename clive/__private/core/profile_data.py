@@ -6,13 +6,12 @@ from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
-from clive.__private import config
-from clive.__private.config import settings
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
+from clive.__private.safe_settings import safe_settings
 from clive.__private.storage.accounts import Account, WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
@@ -345,7 +344,7 @@ class ProfileData(Context):
 
     @classmethod
     def _get_file_storage_path(cls) -> Path:
-        return Path(config.settings.data_path) / "data/profile"
+        return Path(safe_settings.data_path) / "data/profile"
 
     def save(self) -> None:
         if self.__skip_save:
@@ -485,7 +484,7 @@ class ProfileData(Context):
 
     @staticmethod
     def __default_chain_id() -> str | None:
-        chain_id = settings.get("node.chain_id", "") or None
+        chain_id = safe_settings.node_chain_id
         logger.info(f"Setting default chain_id to: {chain_id}")
         return chain_id
 
@@ -498,5 +497,4 @@ class ProfileData(Context):
 
     @staticmethod
     def __get_secret_node_address() -> Url | None:
-        node_address = settings.get("SECRETS.NODE_ADDRESS", "")
-        return Url.parse(node_address) if node_address else None
+        return safe_settings.secrets_node_address

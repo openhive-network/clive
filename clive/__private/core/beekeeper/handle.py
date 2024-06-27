@@ -38,6 +38,7 @@ from clive.__private.core.beekeeper.notifications import (
 )
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
+from clive.__private.safe_settings import safe_settings
 from clive.core.url import Url
 from clive.dev import is_in_dev_mode
 from clive.models.base import CliveBaseModel
@@ -61,10 +62,8 @@ ExportedKeys = list[dict[str, str]]
 class Beekeeper:
     # We have 500ms time period protection on ulocking wallet, so we use 600ms to make sure that wallet is unlocked.
     UNLOCK_INTERVAL: Final[float] = 0.6
-    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = settings.get(
-        "beekeeper.communication_total_timeout_secs", Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS
-    )
-    DEFAULT_INITIALIZATION_TIMEOUT_SECONDS: Final[float] = settings.get("beekeeper.initialization_timeout_secs", 5.0)
+    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = safe_settings.beekeeper_communication_total_timeout_secs
+    DEFAULT_INITIALIZATION_TIMEOUT_SECONDS: Final[float] = safe_settings.beekeeper_initialization_timeout_secs
 
     class ConnectionFileData(CliveBaseModel):
         type_: str = Field(alias="type")
@@ -351,8 +350,7 @@ class Beekeeper:
 
     @classmethod
     def get_remote_address_from_settings(cls) -> Url | None:
-        raw_address = settings.get("BEEKEEPER.REMOTE_ADDRESS", "")
-        return Url.parse(raw_address) if raw_address else None
+        return safe_settings.beekeeper_remote_address
 
     @classmethod
     def get_remote_address_from_connection_file(cls) -> Url | None:

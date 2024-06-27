@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import contextlib
-import typing
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar
 
@@ -10,10 +9,10 @@ from textual.binding import Binding
 from textual.message import Message
 from textual.widgets import Input
 
-from clive.__private.config import settings
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
+from clive.__private.safe_settings import safe_settings
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
@@ -130,7 +129,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         yield self._key_input
 
     def _default_key(self) -> str:
-        return typing.cast(str, settings.get("secrets.default_key", ""))
+        return safe_settings.secrets_default_key or ""
 
 
 class NewKeyAlias(NewKeyAliasBase):

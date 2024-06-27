@@ -10,7 +10,6 @@ from pathlib import Path
 from subprocess import Popen
 from typing import TextIO
 
-from clive.__private.config import settings
 from clive.__private.core.beekeeper.command_line_args import BeekeeperCLIArguments
 from clive.__private.core.beekeeper.config import BeekeeperConfig
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
@@ -22,6 +21,7 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperTimeoutError,
 )
 from clive.__private.logger import logger
+from clive.__private.safe_settings import safe_settings
 
 
 class BeekeeperExecutable:
@@ -173,8 +173,7 @@ class BeekeeperExecutable:
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
-        path_raw = settings.get("BEEKEEPER.PATH", "")
-        return Path(path_raw) if path_raw else None
+        return safe_settings.beekeeper_path
 
     def __prepare_files_for_streams(self, directory: Path) -> None:
         for name in self.__files:

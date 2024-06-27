@@ -9,7 +9,7 @@ from textual.reactive import var
 from textual.worker import Worker, WorkerState
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.config import settings
+from clive.__private.safe_settings import safe_settings
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError
@@ -63,7 +63,7 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
         if not paused and init_update:
             self.update()
 
-        self.interval = self.set_interval(settings.get("node.refresh_rate_secs", 1.5), self.update, pause=paused)
+        self.interval = self.set_interval(safe_settings.node_refresh_rate_secs, self.update, pause=paused)
 
     @abstractmethod
     @work

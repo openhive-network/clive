@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from textual.validation import Function, ValidationResult
 
-from clive.__private.config import settings
+from clive.__private.safe_settings import safe_settings
 from clive.__private.validators.account_name_validator import AccountNameValidator
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class SetTrackedAccountValidator(AccountNameValidator):
-    MAX_NUMBER_OF_TRACKED_ACCOUNTS: Final[int] = settings.get("MAX_NUMBER_OF_TRACKED_ACCOUNTS", 6)
+    MAX_NUMBER_OF_TRACKED_ACCOUNTS: Final[int] = safe_settings.max_number_of_tracked_accounts
     MAX_NUMBER_OF_TRACKED_ACCOUNTS_FAILURE: Final[str] = (
         f"You can only track {MAX_NUMBER_OF_TRACKED_ACCOUNTS} accounts."
     )

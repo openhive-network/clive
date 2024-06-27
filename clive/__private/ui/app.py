@@ -15,11 +15,11 @@ from textual.events import ScreenResume
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
-from clive.__private.config import settings
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
+from clive.__private.safe_settings import safe_settings
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.get_css import get_relative_css_path
@@ -172,26 +172,26 @@ class Clive(App[int], ManualReactive):
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
-            force_onboarding = settings.get("FORCE_ONBOARDING", False)
+            force_onboarding = safe_settings.force_onboarding
             return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
 
         self._refresh_node_data_interval = self.set_interval(
-            settings.get("node.refresh_rate_secs", 1.5), lambda: self.update_data_from_node(), pause=True
+            safe_settings.node_refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
         )
         self._refresh_alarms_data_interval = self.set_interval(
-            settings.get("node.refresh_alarms_rate_secs", 30), lambda: self.update_alarms_data(), pause=True
+            safe_settings.node_refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
 
         self.update_data_from_node_asap()
         self.update_alarms_data_asap()
 
-        log_debug_loop = settings.get("LOG_DEBUG_LOOP", False)
+        log_debug_loop = safe_settings.log_debug_loop
         if log_debug_loop:
-            log_debug_period = settings.get("LOG_DEBUG_PERIOD_SECS", 1)
-            self.set_interval(log_debug_period, self.__debug_log)
+            log_debug_period_secs = safe_settings.log_debug_loop_period_secs
+            self.set_interval(log_debug_period_secs, self.__debug_log)
 
         if __should_enter_onboarding():
             self.push_screen(Onboarding())

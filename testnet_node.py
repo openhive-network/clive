@@ -14,6 +14,7 @@ from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
+from clive.__private.safe_settings import safe_settings
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main
@@ -137,7 +138,7 @@ async def main() -> None:
     print_working_account_keys()
 
     if not enable_clive_onboarding:
-        shutil.rmtree(settings.data_path, ignore_errors=True)
+        shutil.rmtree(safe_settings.data_path, ignore_errors=True)
         await prepare_profile(node)
 
     if disable_tui:

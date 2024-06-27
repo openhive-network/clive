@@ -9,8 +9,8 @@ from textual.events import Click
 from textual.screen import ModalScreen
 from textual.widgets import Static
 
-from clive.__private.config import settings
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
+from clive.__private.safe_settings import safe_settings
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
@@ -32,7 +32,7 @@ class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
         self.__witness_name = witness_name
 
     def on_mount(self) -> None:
-        self.set_interval(settings.get("node.refresh_rate_secs", 1.5), lambda: self.refresh_witness_data())
+        self.set_interval(safe_settings.node_refresh_rate_secs, lambda: self.refresh_witness_data())
 
     def compose(self) -> ComposeResult:
         widget = WitnessDetailsWidget()

@@ -6,10 +6,10 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any, Final
 
-from clive.__private.config import settings
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
+from clive.__private.safe_settings import safe_settings
 from clive.exceptions import CliveError, CommunicationError
 from schemas.jsonrpc import ExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 
@@ -199,9 +199,7 @@ class _BatchNode(BaseNode):
 
 
 class Node(BaseNode):
-    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = settings.get(
-        "node.communication_total_timeout_secs", Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS
-    )
+    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = safe_settings.node_communication_timeout_total_secs
 
     @dataclass
     class CachedData:
