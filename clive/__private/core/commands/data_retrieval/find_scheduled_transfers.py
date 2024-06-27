@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, Sequence, TypeVar, cast
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -19,9 +19,7 @@ if TYPE_CHECKING:
 
 AllowedBaseSorts = Literal[
     "amount",
-    "consecutive_failures",
     "from",
-    "memo",
     "pair_id",
     "recurrence",
     "remaining_executions",
@@ -30,15 +28,11 @@ AllowedBaseSorts = Literal[
 ]
 
 AllowedFutureSorts = Literal[
-    "amount",
-    "from",
-    "memo",
-    "pair_id",
-    "possible_amountrecurrence",
-    "remaining_executions",
-    "to",
-    "trigger_date",
+    AllowedBaseSorts,
+    "possible_amount",
 ]
+
+AllowedSorts = TypeVar("AllowedSorts", AllowedBaseSorts, AllowedFutureSorts)
 
 LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
 LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
@@ -50,8 +44,7 @@ class FindRecurrentTransferError(CommandError):
 
 
 class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
-    account_name: str
-    recurrent_transfer: RecurrentTransfer
+    """Exception raised when there is account mismatch."""
 
     def __init__(self, command: Command, account_name: str, recurrent_transfer: RecurrentTransfer) -> None:
         self.account_name = account_name
@@ -101,6 +94,17 @@ class FutureScheduledTransfer:
         return self.possible_amount in LACK_OF_FUNDS
 
 
+TypeOfTransfers = ScheduledTransfer | FutureScheduledTransfer
+
+
+def _assert_sort_by_members_in_class_members(sort_by: Sequence[str], of_class: type[TypeOfTransfers]) -> None:
+    all_members = [field.name for field in fields(of_class)]
+    assert all(member in all_members for member in sort_by), (
+        f"Invalid sort_by member: `{sort_by}`. "
+        f"Perhaps there is a bug in AllowedSorts literal? Allowed are `{all_members}`"
+    )
+
+
 @dataclass
 class AccountScheduledTransferData:
     scheduled_transfers: list[ScheduledTransfer]
@@ -112,6 +116,8 @@ class AccountScheduledTransferData:
 
     def sorted_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> AccountScheduledTransferData:
         import operator
+
+        _assert_sort_by_members_in_class_members(sort_by, ScheduledTransfer)
 
         return AccountScheduledTransferData(
             scheduled_transfers=sorted(self.scheduled_transfers, key=operator.attrgetter(*sort_by), reverse=descending),
@@ -156,6 +162,8 @@ class AccountFutureScheduledTransferData:
         self, sort_by: list[AllowedFutureSorts], *, descending: bool = False
     ) -> AccountFutureScheduledTransferData:
         import operator
+
+        _assert_sort_by_members_in_class_members(sort_by, FutureScheduledTransfer)
 
         return AccountFutureScheduledTransferData(
             future_scheduled_transfers=sorted(
