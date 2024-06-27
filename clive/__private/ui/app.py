@@ -172,7 +172,8 @@ class Clive(App[int], ManualReactive):
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
-            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or settings.FORCE_ONBOARDING
+            force_onboarding = settings.get("FORCE_ONBOARDING", False)
+            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
@@ -187,8 +188,10 @@ class Clive(App[int], ManualReactive):
         self.update_data_from_node_asap()
         self.update_alarms_data_asap()
 
-        if settings.LOG_DEBUG_LOOP:
-            self.set_interval(settings.get("LOG_DEBUG_PERIOD", 1), self.__debug_log)
+        log_debug_loop = settings.get("LOG_DEBUG_LOOP", False)
+        if log_debug_loop:
+            log_debug_period = settings.get("LOG_DEBUG_PERIOD", 1)
+            self.set_interval(log_debug_period, self.__debug_log)
 
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
