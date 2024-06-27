@@ -38,4 +38,4 @@ class Command(ABC):
         asyncio.gather(*[command.execute() for command in commands])
 
     def _log_execution_info(self) -> None:
-        logger.info(f"Executing command: {self.__class__.__name__}")
+        logger.debug(f"Executing command: {self.__class__.__name__}")
