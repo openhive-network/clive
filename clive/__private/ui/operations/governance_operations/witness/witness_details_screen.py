@@ -32,7 +32,7 @@ class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
         self.__witness_name = witness_name
 
     def on_mount(self) -> None:
-        self.set_interval(settings.get("node.refresh_rate", 1.5), lambda: self.refresh_witness_data())
+        self.set_interval(settings.get("node.refresh_rate_secs", 1.5), lambda: self.refresh_witness_data())
 
     def compose(self) -> ComposeResult:
         widget = WitnessDetailsWidget()
