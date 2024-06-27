@@ -351,7 +351,7 @@ class Beekeeper:
 
     @classmethod
     def get_remote_address_from_settings(cls) -> Url | None:
-        raw_address = settings.get("beekeeper.remote_address")
+        raw_address = settings.get("BEEKEEPER.REMOTE_ADDRESS", "")
         return Url.parse(raw_address) if raw_address else None
 
     @classmethod

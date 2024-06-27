@@ -23,8 +23,8 @@ DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 
 @pytest.fixture()
 def profile_with_default_chain_id_from_settings() -> Iterator[ProfileData]:
-    chain_id_identifier = "node.chain_id"
-    chain_id_before = settings.get(chain_id_identifier)
+    chain_id_identifier = "NODE.CHAIN_ID"
+    chain_id_before = settings.get(chain_id_identifier, "")
     settings.set(chain_id_identifier, DEFAULT_CHAIN_ID)
     yield ProfileData(name="test")
     settings.set(chain_id_identifier, chain_id_before)

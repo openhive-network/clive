@@ -23,5 +23,6 @@ settings = Dynaconf(
     data_path=_DATA_DIRECTORY,
 )
 
-settings.LOG_PATH = _DATA_DIRECTORY if not settings.LOG_DIRECTORY else Path(settings.LOG_DIRECTORY)
+log_directory = settings.get("LOG_DIRECTORY", "")
+settings.LOG_PATH = _DATA_DIRECTORY if not log_directory else Path(log_directory)
 settings.LOG_PATH /= "logs/"
