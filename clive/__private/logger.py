@@ -133,11 +133,15 @@ class Logger:
             log_directory = log_directory / log_group
         log_directory.mkdir(parents=True, exist_ok=True)
 
-        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{log_name}.log"
-        dated_log_path = create_empty_file(dated_log_file_name)
-
         latest_log_file_name = "latest.log"
         latest_log_path = create_empty_file(latest_log_file_name)
+
+        keep_history = settings.get("LOG_KEEP_HISTORY", True)
+        if not keep_history:
+            return (latest_log_path,)
+
+        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{log_name}.log"
+        dated_log_path = create_empty_file(dated_log_file_name)
 
         return dated_log_path, latest_log_path
 
