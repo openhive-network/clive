@@ -107,6 +107,9 @@ class AccountScheduledTransferData:
     account_hive_balance: Asset.Hive
     account_hbd_balance: Asset.Hbd
 
+    def has_any_scheduled_transfers(self) -> bool:
+        return bool(self.scheduled_transfers)
+
     def sorted_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> AccountScheduledTransferData:
         import operator
 
