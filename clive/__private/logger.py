@@ -69,6 +69,13 @@ class InterceptHandler(logging.Handler):
 class Logger:
     """Logger used to log into both Textual (textual console) and Loguru (file located in logs/)."""
 
+    AVAILABLE_LOG_LEVELS: Final[list[str]] = [
+        "DEBUG",
+        "INFO",
+        "WARNING",
+        "ERROR",
+    ]
+
     def __init__(self) -> None:
         self.__enabled_loguru = True
         self.__enabled_textual = True
@@ -79,15 +86,18 @@ class Logger:
         textual_log_attr = getattr(textual_logger, item, None)
 
         if not callable(loguru_attr) or not callable(textual_log_attr):
-            raise TypeError(f"Callable `{item}` not found in either Textual or Loguru loggers.")
+            raise TypeError(
+                f"Callable `{item}` not found in either Textual or Loguru loggers.\n"
+                f"Try one of: {self.AVAILABLE_LOG_LEVELS}"
+            )
 
-        def __hooked(*args: Any, **kwargs: Any) -> None:
+        def _hooked(*args: Any, **kwargs: Any) -> None:
             if self.__enabled_loguru:
                 loguru_attr(*args, **kwargs)
             if self.__enabled_textual:
                 textual_log_attr(*args, **kwargs)
 
-        return __hooked
+        return _hooked
 
     def setup(
         self, *, enable_loguru: bool = True, enable_textual: bool = True, enable_stream_handlers: bool = False
@@ -96,31 +106,9 @@ class Logger:
         self.__enabled_textual = enable_textual
 
         if enable_loguru:
-            self.__configure_loguru(enable_stream_handlers=enable_stream_handlers)
+            self._configure_loguru(enable_stream_handlers=enable_stream_handlers)
 
-    @staticmethod
-    def __configure_loguru(*, enable_stream_handlers: bool = False) -> None:
-        def make_filter(*, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
-            level_no = getattr(logging, level) if isinstance(level, str) else level
-            level_no_3rd_party = (
-                getattr(logging, level_3rd_party) if isinstance(level_3rd_party, str) else level_3rd_party
-            )
-
-            def __filter(record: dict[str, Any]) -> bool:
-                is_3rd_party = ROOT_DIRECTORY not in Path(record["file"].path).parents
-                if level_no_3rd_party is not None and is_3rd_party:
-                    return bool(record["level"].no >= level_no_3rd_party)
-                return bool(record["level"].no >= level_no)
-
-            return __filter
-
-        def remove_stream_handlers() -> None:
-            """Remove all handlers that log to stdout and stderr."""
-            core: Core = loguru_logger._core  # type: ignore[attr-defined]
-            for handler in core.handlers.values():
-                if isinstance(handler._sink, StreamSink):
-                    loguru_logger.remove(handler._id)
-
+    def _configure_loguru(self, *, enable_stream_handlers: bool = False) -> None:
         log_file_path, latest_log_file_path = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
         log_file_path_debug, latest_log_file_path_debug = create_log_file(log_name="debug", log_group="debug")
 
@@ -134,28 +122,47 @@ class Logger:
             logging.getLogger(name).setLevel(logging.DEBUG)
 
         if not enable_stream_handlers:
-            remove_stream_handlers()
+            self._remove_stream_handlers()
 
         loguru_logger.add(
             sink=log_file_path,
             format=LOG_FORMAT,
-            filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
+            filter=self._make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
         )
         loguru_logger.add(
             sink=latest_log_file_path,
             format=LOG_FORMAT,
-            filter=make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
+            filter=self._make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
         )
         loguru_logger.add(
             sink=log_file_path_debug,
             format=LOG_FORMAT,
-            filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
+            filter=self._make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
         )
         loguru_logger.add(
             sink=latest_log_file_path_debug,
             format=LOG_FORMAT,
-            filter=make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
+            filter=self._make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
         )
+
+    def _make_filter(self, *, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
+        level_no = getattr(logging, level) if isinstance(level, str) else level
+        level_no_3rd_party = getattr(logging, level_3rd_party) if isinstance(level_3rd_party, str) else level_3rd_party
+
+        def _filter(record: dict[str, Any]) -> bool:
+            is_3rd_party = ROOT_DIRECTORY not in Path(record["file"].path).parents
+            if level_no_3rd_party is not None and is_3rd_party:
+                return bool(record["level"].no >= level_no_3rd_party)
+            return bool(record["level"].no >= level_no)
+
+        return _filter
+
+    def _remove_stream_handlers(self) -> None:
+        """Remove all handlers that log to stdout and stderr."""
+        core: Core = loguru_logger._core  # type: ignore[attr-defined]
+        for handler in core.handlers.values():
+            if isinstance(handler._sink, StreamSink):
+                loguru_logger.remove(handler._id)
 
 
 logger = Logger()
