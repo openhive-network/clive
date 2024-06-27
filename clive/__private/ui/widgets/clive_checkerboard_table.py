@@ -89,6 +89,10 @@ class CliveCheckerBoardTableCell(Container):
         else:
             yield Static(self._content)
 
+    def update_content(self, content: str) -> None:
+        self._content = content
+        self.query_one(Static).update(self._content)
+
 
 class CliveCheckerboardTableRow(CliveWidget):
     """Row with checkerboard columns."""
