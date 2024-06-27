@@ -20,7 +20,7 @@ REFRESH_ALARMS_RATE_SECS = 30 # how often information about alarms are fetched f
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 6
 
 [dev]
-IS_DEV = 1
+IS_DEV = true
 FORCE_ONBOARDING = false
 LOG_LEVELS = ["DEBUG"]
 LOG_KEEP_HISTORY = true

@@ -2,9 +2,9 @@ from __future__ import annotations
 
 
 def is_in_dev_mode() -> bool:
-    from clive.__private.config import settings
+    from clive.__private.safe_settings import safe_settings
 
-    return settings.get("IS_DEV", False)  # type: ignore[no-any-return]
+    return safe_settings.is_dev
 
 
 def main() -> None:
