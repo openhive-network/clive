@@ -122,7 +122,7 @@ class BeekeeperExecutable:
         command = self.pre_run_preparation(
             allow_empty_notification_server=allow_empty_notification_server, arguments=arguments
         )
-        logger.info(f"Executing beekeeper: {command}")
+        logger.debug(f"Executing beekeeper: {command}")
         result = subprocess.check_output(command, stderr=subprocess.STDOUT, timeout=timeout)
         return result.decode("utf-8").strip()
 
@@ -133,7 +133,7 @@ class BeekeeperExecutable:
             allow_empty_notification_server=allow_empty_notification_server, arguments=arguments
         )
         self.__prepare_files_for_streams(self.__config.wallet_dir)
-        logger.info(f"Executing beekeeper: {command}")
+        logger.debug(f"Executing beekeeper: {command}")
         try:
             self.__process = Popen(
                 command,
