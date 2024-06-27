@@ -4,7 +4,7 @@ from __future__ import annotations
 def is_in_dev_mode() -> bool:
     from clive.__private.config import settings
 
-    return settings.get("dev", False)  # type: ignore[no-any-return]
+    return settings.get("IS_DEV", False)  # type: ignore[no-any-return]
 
 
 def main() -> None:
@@ -13,7 +13,10 @@ def main() -> None:
     from rich.console import Console
     from rich.style import Style
 
+    from clive.__private.config import settings
     from clive.main import _is_cli_requested
+
+    settings.setenv("dev")
 
     Console().print(
         "-- Running in development mode (NOT FOR DIRECT USAGE!) --",
@@ -21,10 +24,7 @@ def main() -> None:
     )
 
     if _is_cli_requested():  # don't run via textual_dev.run_app when CLI is requested (saves around 1s)
-        from clive.__private.config import settings
         from clive.main import main as production_main
-
-        settings.set("dev", True)  # noqa: FBT003
 
         production_main()
         return
@@ -39,7 +39,6 @@ def main() -> None:
     features.add("devtools")
 
     environment["TEXTUAL"] = ",".join(sorted(features))
-    environment["CLIVE_DEV"] = "1"
 
     run_app("clive/main.py", [], environment)
 
