@@ -179,10 +179,10 @@ class Clive(App[int], ManualReactive):
         self.console.set_window_title("Clive")
 
         self._refresh_node_data_interval = self.set_interval(
-            settings.get("node.refresh_rate", 1.5), lambda: self.update_data_from_node(), pause=True
+            settings.get("node.refresh_rate_secs", 1.5), lambda: self.update_data_from_node(), pause=True
         )
         self._refresh_alarms_data_interval = self.set_interval(
-            settings.get("node.refresh_alarms_rate", 30), lambda: self.update_alarms_data(), pause=True
+            settings.get("node.refresh_alarms_rate_secs", 30), lambda: self.update_alarms_data(), pause=True
         )
 
         self.update_data_from_node_asap()
@@ -190,7 +190,7 @@ class Clive(App[int], ManualReactive):
 
         log_debug_loop = settings.get("LOG_DEBUG_LOOP", False)
         if log_debug_loop:
-            log_debug_period = settings.get("LOG_DEBUG_PERIOD", 1)
+            log_debug_period = settings.get("LOG_DEBUG_PERIOD_SECS", 1)
             self.set_interval(log_debug_period, self.__debug_log)
 
         if __should_enter_onboarding():

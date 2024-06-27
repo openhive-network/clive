@@ -63,7 +63,7 @@ class DataProvider(Container, CliveWidget, Generic[ProviderContentT], AbstractCl
         if not paused and init_update:
             self.update()
 
-        self.interval = self.set_interval(settings.get("node.refresh_rate", 1.5), self.update, pause=paused)
+        self.interval = self.set_interval(settings.get("node.refresh_rate_secs", 1.5), self.update, pause=paused)
 
     @abstractmethod
     @work
