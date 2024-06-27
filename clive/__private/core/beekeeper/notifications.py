@@ -50,7 +50,7 @@ class BeekeeperNotificationsServer:
         return self.http_endpoint
 
     def notify(self, message: JsonT) -> None:
-        logger.info(f"Got notification: {message}")
+        logger.debug(f"Got notification: {message}")
         name = message["name"]
         details = message["value"]
 
