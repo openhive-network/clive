@@ -24,6 +24,13 @@ class CliveCheckerboardTableError(CliveDeveloperError):
     pass
 
 
+class InvalidContentUpdateError(CliveCheckerboardTableError):
+    _MESSAGE = "Cannot update cell with widget type. Use string only."
+
+    def __init__(self) -> None:
+        super().__init__(self._MESSAGE)
+
+
 class InvalidDynamicDefinedError(CliveCheckerboardTableError):
     _MESSAGE = """
 You are trying to create a dynamic checkerboard table without overriding one of the mandatory properties or methods.
@@ -83,11 +90,21 @@ class CliveCheckerBoardTableCell(Container):
         super().__init__(id=id_, classes=classes)
         self._content = content
 
+    @property
+    def content(self) -> str | Widget:
+        return self._content
+
     def compose(self) -> ComposeResult:
         if isinstance(self._content, Widget):
             yield self._content
         else:
             yield Static(self._content)
+
+    def update_content(self, content: str) -> None:
+        if isinstance(content, Widget):
+            raise InvalidContentUpdateError
+        self._content = content
+        self.query_one(Static).update(self._content)
 
 
 class CliveCheckerboardTableRow(CliveWidget):
