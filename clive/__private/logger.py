@@ -19,6 +19,9 @@ if TYPE_CHECKING:
 
     from loguru._logger import Core
 
+LogFilePaths = tuple[Path, ...]
+GroupLogFilePaths = dict[str, LogFilePaths]
+
 LOG_FORMAT: Final[str] = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>"
     " | <level>{level.icon} {level: <8}</level>"
@@ -87,12 +90,7 @@ class Logger:
             self._configure_loguru(enable_stream_handlers=enable_stream_handlers)
 
     def _configure_loguru(self, *, enable_stream_handlers: bool = False) -> None:
-        dated_log_path_defined, latest_log_path_defined = self._create_dated_and_latest_log_files(
-            log_name="defined", log_group=settings.LOG_LEVEL.lower()
-        )
-        dated_log_path_debug, latest_log_path_debug = self._create_dated_and_latest_log_files(
-            log_name="debug", log_group="debug"
-        )
+        log_paths = self._create_log_files()
 
         logging.root.handlers = [InterceptHandler()]
         logging.root.setLevel(logging.DEBUG)
@@ -106,35 +104,31 @@ class Logger:
         if not enable_stream_handlers:
             self._remove_stream_handlers()
 
-        loguru_logger.add(
-            sink=dated_log_path_defined,
-            format=LOG_FORMAT,
-            filter=self._make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
-        )
-        loguru_logger.add(
-            sink=latest_log_path_defined,
-            format=LOG_FORMAT,
-            filter=self._make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
-        )
-        loguru_logger.add(
-            sink=dated_log_path_debug,
-            format=LOG_FORMAT,
-            filter=self._make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
-        )
-        loguru_logger.add(
-            sink=latest_log_path_debug,
-            format=LOG_FORMAT,
-            filter=self._make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
-        )
+        self._add_file_handlers(log_paths)
 
-    def _create_dated_and_latest_log_files(self, log_name: str, log_group: str | None = None) -> tuple[Path, Path]:
+    def _create_log_files(self) -> GroupLogFilePaths:
+        log_paths: GroupLogFilePaths = {}
+        log_levels = settings.get("LOG_LEVELS", ["INFO"])
+        for log_level in log_levels:
+            log_level_lower = log_level.lower()
+            log_level_upper = log_level.upper()
+
+            if log_level_upper not in self.AVAILABLE_LOG_LEVELS:
+                raise RuntimeError(f"Invalid log level: {log_level}, expected one of {self.AVAILABLE_LOG_LEVELS}.")
+
+            log_paths[log_level_upper] = self._create_dated_and_latest_log_files(
+                log_name=log_level_lower, log_group=log_level_lower
+            )
+        return log_paths
+
+    def _create_dated_and_latest_log_files(self, log_name: str, log_group: str | None = None) -> LogFilePaths:
         def create_empty_file(file_name: str) -> Path:
             empty_file_path = log_directory / file_name
             with empty_file_path.open("w", encoding="utf-8"):
                 """We just need to create an empty file to which we will log later"""
             return empty_file_path
 
-        log_directory = Path(settings.log_path)
+        log_directory = Path(settings.get("LOG_PATH", "."))
         if log_group:
             log_directory = log_directory / log_group
         log_directory.mkdir(parents=True, exist_ok=True)
@@ -147,6 +141,35 @@ class Logger:
 
         return dated_log_path, latest_log_path
 
+    def _remove_stream_handlers(self) -> None:
+        """Remove all handlers that log to stdout and stderr."""
+        core: Core = loguru_logger._core  # type: ignore[attr-defined]
+        for handler in core.handlers.values():
+            if isinstance(handler._sink, StreamSink):
+                loguru_logger.remove(handler._id)
+
+    def _add_file_handlers(self, log_paths: GroupLogFilePaths) -> None:
+        for log_level, paths in log_paths.items():
+            log_level_3rd_party = self._get_3rd_party_log_level(log_level)
+
+            for path in paths:
+                loguru_logger.add(
+                    sink=path,
+                    format=LOG_FORMAT,
+                    filter=self._make_filter(level=log_level, level_3rd_party=log_level_3rd_party),
+                )
+
+    def _get_3rd_party_log_level(self, log_level: str) -> str:
+        """
+        Return the log level for 3rd party modules based on given log_level for clive.
+
+        We want to include everything when clive is in DEBUG mode, but also leave the option to set a different log lvl
+        for 3rd party modules when clive is in higher log levels than DEBUG.
+
+        """
+        log_level_3rd_party = str(settings.get("LOG_LEVEL_3RD_PARTY", "DEBUG")).upper()
+        return "DEBUG" if log_level == "DEBUG" else log_level_3rd_party
+
     def _make_filter(self, *, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
         level_no = getattr(logging, level) if isinstance(level, str) else level
         level_no_3rd_party = getattr(logging, level_3rd_party) if isinstance(level_3rd_party, str) else level_3rd_party
@@ -158,13 +181,6 @@ class Logger:
             return bool(record["level"].no >= level_no)
 
         return _filter
-
-    def _remove_stream_handlers(self) -> None:
-        """Remove all handlers that log to stdout and stderr."""
-        core: Core = loguru_logger._core  # type: ignore[attr-defined]
-        for handler in core.handlers.values():
-            if isinstance(handler._sink, StreamSink):
-                loguru_logger.remove(handler._id)
 
 
 logger = Logger()
