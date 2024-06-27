@@ -182,7 +182,7 @@ class CliveCheckerboardTable(CliveWidget):
     def _mount_static_rows(self, start_index: int = 0, end_index: int | None = None) -> None:
         """Mount rows created in static mode."""
         rows = self.create_static_rows(start_index=start_index, end_index=end_index)
-        self._set_evenness_styles(rows, starting_index=start_index)
+        self.set_evenness_styles(rows, starting_index=start_index)
 
         if end_index:
             mount_after: Widget | int = self._header if start_index == 0 else start_index + 1
@@ -209,7 +209,7 @@ class CliveCheckerboardTable(CliveWidget):
     async def _mount_dynamic_rows(self, content: Content) -> None:
         """Mount new rows when the ATTRIBUTE_TO_WATCH has been changed."""
         rows = self.create_dynamic_rows(content)
-        self._set_evenness_styles(rows)
+        self.set_evenness_styles(rows)
         await self.mount_all(rows)
 
     async def _rebuild_header(self) -> None:
@@ -281,7 +281,7 @@ class CliveCheckerboardTable(CliveWidget):
             rows = self.create_dynamic_rows(content)
         else:
             rows = self.create_static_rows()
-        self._set_evenness_styles(rows)
+        self.set_evenness_styles(rows)
 
         if self._title is None:
             return [self._header, *rows]
@@ -340,7 +340,7 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
         return True
 
-    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
+    def set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
         for row_index, row in enumerate(rows):
             for cell_index, cell in enumerate(row.cells):
                 if not isinstance(cell, CliveCheckerBoardTableCell):
@@ -348,6 +348,11 @@ class CliveCheckerboardTable(CliveWidget):
 
                 is_even_row = (row_index + starting_index) % 2 == 0
                 is_even_cell = cell_index % 2 == 0
+
+                if EVEN_CLASS_NAME in cell.classes:
+                    cell.remove_class(EVEN_CLASS_NAME)
+                elif ODD_CLASS_NAME in cell.classes:
+                    cell.remove_class(ODD_CLASS_NAME)
 
                 if (is_even_row and is_even_cell) or (not is_even_row and not is_even_cell):
                     cell.add_class(EVEN_CLASS_NAME)
