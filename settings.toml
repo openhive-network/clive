@@ -1,11 +1,8 @@
 [default]
-FORCE_ONBOARDING = false
-LOG_DEBUG_LOOP = false
 LOG_DIRECTORY = "" # if not given, logs will be placed in data directory
 LOG_LEVELS = ["INFO"]  # possible values: ["DEBUG", "INFO", "WARNING", "ERROR"], multiple values could be given and logs from and up that level will be saved also in corresponding directories
 LOG_LEVEL_3RD_PARTY = "WARNING"  # matters only for directories containing LOG_LEVEL higher than DEBUG, in DEBUG 3rd party logs are always DEBUG
 LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only logs of latest run will be kept
-LOG_DEBUG_PERIOD_SECS = 1
 MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
 
 [default.beekeeper]
@@ -22,3 +19,11 @@ CHAIN_ID = "beeab0de00000000000000000000000000000000000000000000000000000000"
 REFRESH_RATE_SECS = 1.5 # how often information about accounts are fetched from node
 REFRESH_ALARMS_RATE_SECS = 30 # how often information about alarms are fetched from node
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 6
+
+[dev]
+IS_DEV = true
+FORCE_ONBOARDING = false
+LOG_LEVELS = ["DEBUG"]
+LOG_KEEP_HISTORY = true
+LOG_DEBUG_LOOP = false
+LOG_DEBUG_PERIOD_SECS = 1
