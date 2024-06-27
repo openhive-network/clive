@@ -4,7 +4,7 @@ LOG_DEBUG_LOOP = false
 LOG_DIRECTORY = "" # if not given, logs will be placed in data directory
 LOG_LEVELS = ["INFO"]  # possible values: ["DEBUG", "INFO", "WARNING", "ERROR"], multiple values could be given and logs from and up that level will be saved also in corresponding directories
 LOG_LEVEL_3RD_PARTY = "WARNING"  # matters only for directories containing LOG_LEVEL higher than DEBUG, in DEBUG 3rd party logs are always DEBUG
-LOG_KEEP_HISTORY = true  # whether to keep history of logs, if false - only logs of latest run will be kept
+LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only logs of latest run will be kept
 LOG_DEBUG_PERIOD = 1
 
 [default.beekeeper]
