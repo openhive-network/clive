@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from typing import TYPE_CHECKING, Final, Literal
+from typing import TYPE_CHECKING, Final, Literal, TypeVar, get_args
 
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
@@ -12,6 +12,7 @@ from clive.__private.core.formatters.humanize import align_to_dot, humanize_asse
 if TYPE_CHECKING:
     from clive.models.aliased import FindAccounts, RecurrentTransfer, SchemasAccount
     from clive.models.aliased import FindRecurrentTransfers as SchemasFindRecurrentTransfers
+from clive.exceptions import CliveError
 from clive.models.asset import Asset
 
 if TYPE_CHECKING:
@@ -19,9 +20,7 @@ if TYPE_CHECKING:
 
 AllowedBaseSorts = Literal[
     "amount",
-    "consecutive_failures",
     "from",
-    "memo",
     "pair_id",
     "recurrence",
     "remaining_executions",
@@ -30,15 +29,11 @@ AllowedBaseSorts = Literal[
 ]
 
 AllowedFutureSorts = Literal[
-    "amount",
-    "from",
-    "memo",
-    "pair_id",
-    "possible_amountrecurrence",
-    "remaining_executions",
-    "to",
-    "trigger_date",
+    AllowedBaseSorts,
+    "possible_amount",
 ]
+
+AllowedSorts = TypeVar("AllowedSorts", AllowedBaseSorts, AllowedFutureSorts)
 
 LACK_OF_FUNDS_HBD_AMOUNT: Final[Asset.Hbd] = Asset.hbd(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
 LACK_OF_FUNDS_HIVE_AMOUNT: Final[Asset.Hive] = Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER)
@@ -58,6 +53,14 @@ class FindRecurrentTransferFromAccountMismatchError(FindRecurrentTransferError):
         self.recurrent_transfer = recurrent_transfer
         self.reason = f"Wrong from account '{self.recurrent_transfer.from_}' should be '{self.account_name}'."
         super().__init__(command=command, reason=self.reason)
+
+
+class InvalidSortParameterError(CliveError):
+    """Exception raised when invalid sort parameters are used."""
+
+    def __init__(self, invalid_sorts: set[AllowedSorts], allowed_sorts: set[AllowedSorts]) -> None:
+        message = f"Unknown sort types: {invalid_sorts}, allowed ones are: {allowed_sorts}"
+        super().__init__(message)
 
 
 @dataclass
@@ -110,6 +113,12 @@ class AccountScheduledTransferData:
     def sorted_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> AccountScheduledTransferData:
         import operator
 
+        allowed_sorts = set(get_args(AllowedBaseSorts))
+        invalid_sorts = set(sort_by) - allowed_sorts
+
+        if invalid_sorts:
+            raise InvalidSortParameterError(invalid_sorts, allowed_sorts)
+
         return AccountScheduledTransferData(
             scheduled_transfers=sorted(self.scheduled_transfers, key=operator.attrgetter(*sort_by), reverse=descending),
             account_hive_balance=self.account_hive_balance,
@@ -153,6 +162,12 @@ class AccountFutureScheduledTransferData:
         self, sort_by: list[AllowedFutureSorts], *, descending: bool = False
     ) -> AccountFutureScheduledTransferData:
         import operator
+
+        allowed_sorts = set(get_args(AllowedFutureSorts))
+        invalid_sorts = set(sort_by) - allowed_sorts
+
+        if invalid_sorts:
+            raise InvalidSortParameterError(invalid_sorts, allowed_sorts)
 
         return AccountFutureScheduledTransferData(
             future_scheduled_transfers=sorted(
