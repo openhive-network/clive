@@ -27,28 +27,6 @@ LOG_FORMAT: Final[str] = (
 )
 
 
-def create_log_file(log_name: str, log_group: str | None = None) -> tuple[Path, Path]:
-    log_directory = Path(settings.log_path)
-    if log_group:
-        log_directory = log_directory / log_group
-    log_directory.mkdir(parents=True, exist_ok=True)
-
-    log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{log_name}.log"
-    log_file_path = log_directory / log_file_name
-    with log_file_path.open("a", encoding="utf-8"):
-        # We just need to create an empty file to which we will log later
-        pass
-
-    latest_log_file_name = "latest.log"
-    latest_log_file_path = log_directory / latest_log_file_name
-
-    with latest_log_file_path.open("w", encoding="utf-8"):
-        # We just need to create an empty file to which we will log later
-        pass
-
-    return log_file_path, latest_log_file_path
-
-
 class InterceptHandler(logging.Handler):
     def emit(self, record: logging.LogRecord) -> None:
         # Get corresponding Loguru level if it exists
@@ -109,8 +87,12 @@ class Logger:
             self._configure_loguru(enable_stream_handlers=enable_stream_handlers)
 
     def _configure_loguru(self, *, enable_stream_handlers: bool = False) -> None:
-        log_file_path, latest_log_file_path = create_log_file(log_name="defined", log_group=settings.LOG_LEVEL.lower())
-        log_file_path_debug, latest_log_file_path_debug = create_log_file(log_name="debug", log_group="debug")
+        dated_log_path_defined, latest_log_path_defined = self._create_dated_and_latest_log_files(
+            log_name="defined", log_group=settings.LOG_LEVEL.lower()
+        )
+        dated_log_path_debug, latest_log_path_debug = self._create_dated_and_latest_log_files(
+            log_name="debug", log_group="debug"
+        )
 
         logging.root.handlers = [InterceptHandler()]
         logging.root.setLevel(logging.DEBUG)
@@ -125,25 +107,45 @@ class Logger:
             self._remove_stream_handlers()
 
         loguru_logger.add(
-            sink=log_file_path,
+            sink=dated_log_path_defined,
             format=LOG_FORMAT,
             filter=self._make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
         )
         loguru_logger.add(
-            sink=latest_log_file_path,
+            sink=latest_log_path_defined,
             format=LOG_FORMAT,
             filter=self._make_filter(level=settings.LOG_LEVEL, level_3rd_party=settings.LOG_LEVEL_3RD_PARTY),
         )
         loguru_logger.add(
-            sink=log_file_path_debug,
+            sink=dated_log_path_debug,
             format=LOG_FORMAT,
             filter=self._make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
         )
         loguru_logger.add(
-            sink=latest_log_file_path_debug,
+            sink=latest_log_path_debug,
             format=LOG_FORMAT,
             filter=self._make_filter(level=logging.DEBUG, level_3rd_party=logging.DEBUG),
         )
+
+    def _create_dated_and_latest_log_files(self, log_name: str, log_group: str | None = None) -> tuple[Path, Path]:
+        def create_empty_file(file_name: str) -> Path:
+            empty_file_path = log_directory / file_name
+            with empty_file_path.open("w", encoding="utf-8"):
+                """We just need to create an empty file to which we will log later"""
+            return empty_file_path
+
+        log_directory = Path(settings.log_path)
+        if log_group:
+            log_directory = log_directory / log_group
+        log_directory.mkdir(parents=True, exist_ok=True)
+
+        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{log_name}.log"
+        dated_log_path = create_empty_file(dated_log_file_name)
+
+        latest_log_file_name = "latest.log"
+        latest_log_path = create_empty_file(latest_log_file_name)
+
+        return dated_log_path, latest_log_path
 
     def _make_filter(self, *, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:
         level_no = getattr(logging, level) if isinstance(level, str) else level
