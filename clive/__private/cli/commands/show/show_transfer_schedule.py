@@ -23,18 +23,18 @@ class ShowTransferSchedule(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        scheduled_transfers = (
+        account_scheduled_transfers_data = (
             await self.world.commands.find_scheduled_transfers(account_name=self.account_name)
         ).result_or_raise
 
         console = Console()
 
-        if not scheduled_transfers.scheduled_transfers:
+        if not account_scheduled_transfers_data.scheduled_transfers:
             console.print(colorize_content_not_available(f"Account `{self.account_name}` has no scheduled transfers."))
             return
 
-        table_definitions = self.__create_table_definition(scheduled_transfers)
-        table_upcoming = self.__create_table_upcoming(scheduled_transfers)
+        table_definitions = self.__create_table_definition(account_scheduled_transfers_data)
+        table_upcoming = self.__create_table_upcoming(account_scheduled_transfers_data)
 
         table_definitions_group = Group(table_definitions, Padding(""))
         table_upcoming_group = Group(table_upcoming, Padding(""))
@@ -42,7 +42,7 @@ class ShowTransferSchedule(WorldBasedCommand):
         show_transfer_schedule = Columns([table_definitions_group, table_upcoming_group])
         console.print(show_transfer_schedule)
 
-    def __create_table_definition(self, scheduled_transfers: AccountScheduledTransferData) -> Table:
+    def __create_table_definition(self, account_scheduled_transfers_data: AccountScheduledTransferData) -> Table:
         """Create table with definitions."""
         table_definitions = Table(title=f"Transfer schedule definitions for `{self.account_name}` account")
 
@@ -57,7 +57,7 @@ class ShowTransferSchedule(WorldBasedCommand):
         table_definitions.add_column("Remaining", justify="center", style="green", no_wrap=True)
         table_definitions.add_column("Failures", justify="center", style="green", no_wrap=True)
 
-        sorted_scheduled_transfers = scheduled_transfers.sorted_by(sort_by=["to", "pair_id"])
+        sorted_scheduled_transfers = account_scheduled_transfers_data.sorted_by(sort_by=["to", "pair_id"])
         aligned_amounts = sorted_scheduled_transfers.get_amount_aligned_to_dot()
         for idx, scheduled_transfer in enumerate(sorted_scheduled_transfers.scheduled_transfers):
             table_definitions.add_row(
@@ -73,7 +73,7 @@ class ShowTransferSchedule(WorldBasedCommand):
             )
         return table_definitions
 
-    def __create_table_upcoming(self, scheduled_transfers: AccountScheduledTransferData) -> Table:
+    def __create_table_upcoming(self, account_scheduled_transfers_data: AccountScheduledTransferData) -> Table:
         """Create table with upcoming scheduled transfers."""
         table_upcoming = Table(
             title=f"Next {DEFAULT_FUTURE_DEEPTH} upcoming recurrent transfers for `{self.account_name}` account"
@@ -90,7 +90,9 @@ class ShowTransferSchedule(WorldBasedCommand):
         table_upcoming.add_column("Next", justify="center", style="green", no_wrap=True)
         table_upcoming.add_column("Frequency", justify="center", style="green", no_wrap=True)
 
-        future_scheduled_transfers = scheduled_transfers.get_future_scheduled_transfers(deepth=DEFAULT_FUTURE_DEEPTH)
+        future_scheduled_transfers = account_scheduled_transfers_data.get_future_scheduled_transfers(
+            deepth=DEFAULT_FUTURE_DEEPTH
+        )
         sorted_future_scheduled_transfers = future_scheduled_transfers.sorted_by(["trigger_date"])
         amount_aligned = sorted_future_scheduled_transfers.get_amount_aligned_to_dot(center_to=amount_column_name)
         possible_amount_aligned = sorted_future_scheduled_transfers.get_possibly_amount_aligned_to_dot(
