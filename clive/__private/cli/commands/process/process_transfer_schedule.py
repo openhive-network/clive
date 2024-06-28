@@ -38,7 +38,7 @@ SCHEDULED_TRANSFER_REMOVE_VALUES: Final[list[Asset.Hive | Asset.Hbd]] = [
 
 
 @dataclass(kw_only=True)
-class ProcessTransferSchedule(OperationCommand):
+class _ProcessTransferScheduleCommon(OperationCommand):
     account_scheduled_transfers_data: AccountScheduledTransferData = field(init=False)
     from_account: str
     to: str
@@ -46,10 +46,16 @@ class ProcessTransferSchedule(OperationCommand):
 
     @property
     def scheduled_transfer(self) -> ScheduledTransfer | None:
-        for st in self.account_scheduled_transfers_data.scheduled_transfers:
-            if self._identity_check(st):
-                return st
+        if self.account_scheduled_transfers_data.has_any_scheduled_transfers():
+            for st in self.account_scheduled_transfers_data.scheduled_transfers:
+                if self._identity_check(st):
+                    return st
         return None
+
+    @property
+    def scheduled_transfer_ensure(self) -> ScheduledTransfer:
+        assert self.scheduled_transfer is not None, "Scheduled transfer should be there, validation is done before"
+        return self.scheduled_transfer
 
     async def fetch_data(self) -> None:
         self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
@@ -86,24 +92,40 @@ class ProcessTransferSchedule(OperationCommand):
 
     def validate_any_existence(self) -> None:
         """Validate if there are any scheduled transfers (recurrent transfers) from current account."""
-        if self.account_scheduled_transfers_data:
+        if self.account_scheduled_transfers_data.has_any_scheduled_transfers():
             return
         raise ProcessTransferScheduleNoScheduledTransfersError(self.from_account)
 
     def validate_pair_id(self) -> None:
         """Validate if pair_id is set, when there is more than one recurrent transfers."""
-        assert self.account_scheduled_transfers_data is not None, "There are no scheduled transfers."
-        number_of_scheduled_transfers = len(self.account_scheduled_transfers_data.scheduled_transfers)
-        if number_of_scheduled_transfers > 1 and self.pair_id is None:
-            raise ProcessTransferScheduleNullPairIdError
+        if self.account_scheduled_transfers_data.has_any_scheduled_transfers():
+            number_of_scheduled_transfers = len(self.account_scheduled_transfers_data.scheduled_transfers)
+            if number_of_scheduled_transfers > 1 and self.pair_id is None:
+                raise ProcessTransferScheduleNullPairIdError
 
 
 @dataclass(kw_only=True)
-class ProcessTransferScheduleWithExtendedValidation(ProcessTransferSchedule):
+class _ProcessTransferScheduleCreateModifyCommon(_ProcessTransferScheduleCommon):
     amount: Asset.LiquidT | None
     memo: str | None
     frequency: timedelta | None
     repeat: int | None
+
+    @property
+    def frequency_ensure(self) -> int:
+        assert self.frequency is not None, "Value of frequency is known at this point."
+        return timedelta_to_int_hours(self.frequency)
+
+    async def _create_operation(self) -> RecurrentTransferOperation:
+        return RecurrentTransferOperation(
+            from_=self.from_account,
+            to=self.to,
+            amount=self.amount,
+            memo=self.memo,
+            recurrence=self.frequency_ensure,
+            executions=self.repeat,
+            extensions=self._create_recurent_transfer_pair_id_extension(),
+        )
 
     def validate_amount_not_a_removal_value(self) -> None:
         """
@@ -123,22 +145,11 @@ class ProcessTransferScheduleWithExtendedValidation(ProcessTransferSchedule):
 
 
 @dataclass(kw_only=True)
-class ProcessTransferScheduleCreate(ProcessTransferScheduleWithExtendedValidation):
+class ProcessTransferScheduleCreate(_ProcessTransferScheduleCreateModifyCommon):
     amount: Asset.LiquidT
     memo: str
     frequency: timedelta
     repeat: int
-
-    async def _create_operation(self) -> RecurrentTransferOperation:
-        return RecurrentTransferOperation(
-            from_=self.from_account,
-            to=self.to,
-            amount=self.amount,
-            memo=self.memo,
-            recurrence=timedelta_to_int_hours(self.frequency),
-            executions=self.repeat,
-            extensions=self._create_recurent_transfer_pair_id_extension(),
-        )
 
     async def validate_inside_context_manager(self) -> None:
         self.validate_existence(should_exists=False)
@@ -151,26 +162,7 @@ class ProcessTransferScheduleCreate(ProcessTransferScheduleWithExtendedValidatio
 
 
 @dataclass(kw_only=True)
-class ProcessTransferScheduleModify(ProcessTransferScheduleWithExtendedValidation):
-    configured_frequency: int = field(init=False)
-    configured_extensions: list[Any] = field(init=False)
-
-    async def _create_operation(self) -> RecurrentTransferOperation:
-        return RecurrentTransferOperation(
-            from_=self.from_account,
-            to=self.to,
-            amount=self.amount,
-            memo=self.memo,
-            recurrence=self.configured_frequency,
-            executions=self.repeat,
-            extensions=self.configured_extensions,
-        )
-
-    async def _configure_inside_context_manager(self) -> None:
-        assert self.frequency is not None, "Value of frequency is known at this point."
-        self.configured_frequency = timedelta_to_int_hours(self.frequency)
-        self.configured_extensions = self._create_recurent_transfer_pair_id_extension()
-
+class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
     async def fetch_data(self) -> None:
         self.account_scheduled_transfers_data = await self.fetch_scheduled_transfers_for_current_account()
         if self.scheduled_transfer:
@@ -195,16 +187,15 @@ class ProcessTransferScheduleModify(ProcessTransferScheduleWithExtendedValidatio
 
 
 @dataclass(kw_only=True)
-class ProcessTransferScheduleRemove(ProcessTransferSchedule):
+class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
     async def _create_operation(self) -> RecurrentTransferOperation:
-        assert self.scheduled_transfer is not None, "Scheduled transfer should be there, validation is done before"
         return RecurrentTransferOperation(
             from_=self.from_account,
             to=self.to,
             amount=Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
-            memo=self.scheduled_transfer.memo,
-            recurrence=self.scheduled_transfer.recurrence,
-            executions=self.scheduled_transfer.remaining_executions,
+            memo=self.scheduled_transfer_ensure.memo,
+            recurrence=self.scheduled_transfer_ensure.recurrence,
+            executions=self.scheduled_transfer_ensure.remaining_executions,
             extensions=self._create_recurent_transfer_pair_id_extension(),
         )
 
