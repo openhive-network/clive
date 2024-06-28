@@ -116,22 +116,18 @@ class Logger:
             if log_level_upper not in self.AVAILABLE_LOG_LEVELS:
                 raise RuntimeError(f"Invalid log level: {log_level}, expected one of {self.AVAILABLE_LOG_LEVELS}.")
 
-            log_paths[log_level_upper] = self._create_dated_and_latest_log_files(
-                log_name=log_level_lower, log_group=log_level_lower
-            )
+            log_paths[log_level_upper] = self._create_log_files_per_group(group_name=log_level_lower)
         return log_paths
 
-    def _create_dated_and_latest_log_files(self, log_name: str, log_group: str | None = None) -> LogFilePaths:
+    def _create_log_files_per_group(self, group_name: str) -> LogFilePaths:
         def create_empty_file(file_name: str) -> Path:
-            empty_file_path = log_directory / file_name
+            empty_file_path = log_group_directory / file_name
             with empty_file_path.open("w", encoding="utf-8"):
                 """We just need to create an empty file to which we will log later"""
             return empty_file_path
 
-        log_directory = Path(settings.get("LOG_PATH", "."))
-        if log_group:
-            log_directory = log_directory / log_group
-        log_directory.mkdir(parents=True, exist_ok=True)
+        log_group_directory = Path(settings.get("LOG_PATH", ".")) / group_name
+        log_group_directory.mkdir(parents=True, exist_ok=True)
 
         latest_log_file_name = "latest.log"
         latest_log_path = create_empty_file(latest_log_file_name)
@@ -140,7 +136,7 @@ class Logger:
         if not keep_history:
             return (latest_log_path,)
 
-        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{log_name}.log"
+        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{group_name}.log"
         dated_log_path = create_empty_file(dated_log_file_name)
 
         return dated_log_path, latest_log_path
