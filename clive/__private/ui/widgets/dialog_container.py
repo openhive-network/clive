@@ -32,11 +32,10 @@ class DialogContainer(Container, can_focus=False):
         self._dialog_children: list[Widget] = []
 
     def compose(self) -> ComposeResult:
-        with ScrollablePart():
-            if self.__section_title:
-                yield SectionTitle(self.__section_title)
-            with DialogBody():
-                yield from self._dialog_children
+        if self.__section_title:
+            yield SectionTitle(self.__section_title)
+        with DialogBody(), ScrollablePart():
+            yield from self._dialog_children
 
     def on_mount(self) -> None:
         if self.__big_title:
