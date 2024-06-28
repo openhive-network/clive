@@ -8,4 +8,10 @@ WelcomeFormScreen {
   Button {
     width: 1fr;
   }
+
+  SectionBody {
+    margin-bottom: 1;
+    background: $panel-lighten-1;
+    padding: 0;
+  }
 }
