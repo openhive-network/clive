@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.widgets import Static
+from textual.widgets import Collapsible, Static
 
 from clive.__private.storage.contextual import ContextT
 from clive.__private.ui.get_css import get_relative_css_path
@@ -12,7 +12,6 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FirstFormScreen
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -37,7 +36,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
         system_color = "cyan"
         shortcut_styling = "yellow italic"
 
-        title = "Select text, copy and paste inside Terminal"
+        title = "How to select, copy and paste text inside TUI app like Clive?"
         select_desc = f"To select some text hold [{shortcut_styling}]Shift[/] while you click and drag."
 
         copy_paste_desc = "Copy/Paste action shortcuts depend on the environment and you may check:"
@@ -57,7 +56,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
 
         with DialogContainer("welcome"):
             yield WelcomeTitle(self.__title)
-            with Section(title):
+            with Collapsible(title=title):
                 yield Static(select_desc)
                 yield Static()
                 yield Static(copy_paste_desc)

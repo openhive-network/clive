@@ -9,9 +9,19 @@ WelcomeFormScreen {
     width: 1fr;
   }
 
-  SectionBody {
+  Collapsible {
     margin-bottom: 1;
-    background: $panel-lighten-1;
-    padding: 0;
+
+    CollapsibleTitle {
+      background: $primary;
+
+      &:focus {
+        background: white;
+      }
+
+      &:hover {
+        background: $primary-darken-1;
+      }
+    }
   }
 }
