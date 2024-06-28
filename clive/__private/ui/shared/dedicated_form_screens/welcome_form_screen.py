@@ -40,10 +40,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
         title = "Select text, copy and paste inside Terminal"
         select_desc = f"To select some text hold [{shortcut_styling}]Shift[/] while you click and drag."
 
-        copy_paste_desc = (
-            "Copy/Paste action shortcuts depend on the environment (mainly terminal)"
-            " in which Clive was launched. You may check:"
-        )
+        copy_paste_desc = "Copy/Paste action shortcuts depend on the environment and you may check:"
 
         on_windows_text = (
             f"  > On [{system_color}]Linux[/]:"
@@ -56,10 +53,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
             f"If none of the above works, you may also try"
             f" [{shortcut_styling}]Ctrl+Insert[/] / [{shortcut_styling}]Shift+Insert[/]."
         )
-        otherwise_text = (
-            "Otherwise, you should check this for your environment/terminal as it is often quite specific"
-            " or configurable and we're unable to indicate a universal solution."
-        )
+        help_text = "More info can be found on the Help page."
 
         with DialogContainer("welcome"):
             yield WelcomeTitle(self.__title)
@@ -70,7 +64,7 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
                 yield Static(on_llinux_text)
                 yield Static(on_windows_text)
                 yield Static(last_hope_text)
-                yield Static(otherwise_text)
+                yield Static(help_text)
             yield CliveButton("Start!", id_="welcome-button-start")
 
     @on(CliveButton.Pressed, "#welcome-button-start")
