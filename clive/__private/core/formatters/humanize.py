@@ -97,19 +97,6 @@ def humanize_validation_result(result: ValidationResult) -> str:
     return result.failure_descriptions[0]
 
 
-def humanize_timedelta(value: timedelta) -> str:
-    """
-    Return pretty formatted timedelta.
-
-    Examples
-    --------
-    timedelta(days=730) -> 2 years
-    timedelta(days=2016) -> 5 years, 6 months and 8 days
-    timedelta(days=6720) -> 18 years, 4 months and 28 days
-    """
-    return humanize.precisedelta(value)
-
-
 def humanize_natural_time(value: datetime | timedelta) -> str:
     """
     Return pretty formatted relative time from now.
