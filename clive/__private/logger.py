@@ -136,7 +136,7 @@ class Logger:
         if not keep_history:
             return (latest_log_path,)
 
-        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}_{group_name}.log"
+        dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}.log"
         dated_log_path = create_empty_file(dated_log_file_name)
 
         return dated_log_path, latest_log_path
