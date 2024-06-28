@@ -67,7 +67,7 @@ class _SanitizedData:
 
 @dataclass
 class ScheduledTransfer:
-    amount: Asset.Hive | Asset.Hbd
+    amount: Asset.LiquidT
     consecutive_failures: int
     from_: str
     memo: str
@@ -80,11 +80,11 @@ class ScheduledTransfer:
 
 @dataclass
 class FutureScheduledTransfer:
-    amount: Asset.Hive | Asset.Hbd
+    amount: Asset.LiquidT
     from_: str
     memo: str
     pair_id: int
-    possible_amount: Asset.Hive | Asset.Hbd
+    possible_amount: Asset.LiquidT
     recurrence: int
     remaining_executions: int
     to: str
@@ -131,27 +131,52 @@ class AccountScheduledTransferData:
             center_to=center_to,
         )
 
-    def get_future_scheduled_transfers(self, deepth: int) -> AccountFutureScheduledTransferData:
+    def calculate_possible_amount(self, balance: Asset.LiquidT, amount: Asset.LiquidT) -> Asset.LiquidT:
+        lack_of_funds: Asset.LiquidT = LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(amount) else LACK_OF_FUNDS_HBD_AMOUNT
+        return balance - amount if balance > amount else lack_of_funds
+
+    def get_next_upcoming_future_scheduled_transfers(self, next_upcoming: int) -> AccountFutureScheduledTransferData:
         future_scheduled_transfers: list[FutureScheduledTransfer] = []
+        # Create all future scheduled transfers
         for st in self.scheduled_transfers:
-            lack_of_funds = LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(st.amount) else LACK_OF_FUNDS_HBD_AMOUNT
-            for idx, remains in enumerate(range(min(st.remaining_executions, deepth))):
-                amount = st.amount * (idx + 1)
-                current_balance = self.account_hive_balance if Asset.is_hive(st.amount) else self.account_hbd_balance
-                possible_amount = current_balance - amount if current_balance > amount else lack_of_funds
-                future_scheduled_transfer = FutureScheduledTransfer(
+            number_of_calculated_future_scheduled_transfers = min(st.remaining_executions, next_upcoming)
+            future_scheduled_transfers.extend(
+                FutureScheduledTransfer(
                     amount=st.amount,
                     from_=st.from_,
                     memo=st.memo,
                     pair_id=st.pair_id,
-                    possible_amount=possible_amount,  # type: ignore[arg-type]
+                    possible_amount=LACK_OF_FUNDS_HIVE_AMOUNT if Asset.is_hive(st.amount) else LACK_OF_FUNDS_HBD_AMOUNT,
                     recurrence=st.recurrence,
                     remaining_executions=remains,
                     to=st.to,
                     trigger_date=st.trigger_date + timedelta(hours=idx * st.recurrence),
                 )
-                future_scheduled_transfers.append(future_scheduled_transfer)
-        return AccountFutureScheduledTransferData(future_scheduled_transfers=future_scheduled_transfers)
+                for idx, remains in enumerate(range(number_of_calculated_future_scheduled_transfers))
+            )
+
+        # Sort future transfer list, and slice it to next_upcoming value
+        future_scheduled_transfers.sort(key=lambda x: x.trigger_date)
+        upcoming_future_transfers = future_scheduled_transfers[:next_upcoming]
+        upcoming_future_transfers_data = AccountFutureScheduledTransferData(
+            future_scheduled_transfers=upcoming_future_transfers
+        )
+
+        # Calculate possible amounts
+        account_hive_balance = self.account_hive_balance
+        account_hbd_balance = self.account_hbd_balance
+        for future_transfer in upcoming_future_transfers_data.future_scheduled_transfers:
+            if Asset.is_hive(future_transfer.amount):
+                account_hive_balance = cast(
+                    Asset.Hive, self.calculate_possible_amount(account_hive_balance, future_transfer.amount)
+                )
+                future_transfer.possible_amount = account_hive_balance
+            else:
+                account_hbd_balance = cast(
+                    Asset.Hbd, self.calculate_possible_amount(account_hbd_balance, future_transfer.amount)
+                )
+                future_transfer.possible_amount = account_hbd_balance
+        return upcoming_future_transfers_data
 
 
 @dataclass
@@ -175,7 +200,7 @@ class AccountFutureScheduledTransferData:
         amount_to_align = [humanize_asset(ft.amount) for ft in self.future_scheduled_transfers]
         return align_to_dot(*amount_to_align, center_to=center_to)
 
-    def get_possibly_amount_aligned_to_dot(self, center_to: int | str | None = None) -> list[str]:
+    def get_possible_amount_aligned_to_dot(self, center_to: int | str | None = None) -> list[str]:
         possible_amount_to_align = [humanize_asset(ft.possible_amount) for ft in self.future_scheduled_transfers]
         return align_to_dot(*possible_amount_to_align, center_to=center_to)
 
