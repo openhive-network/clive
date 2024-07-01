@@ -32,9 +32,14 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
         self.__title = title
         super().__init__(owner)
 
+    def _content_after_title(self) -> ComposeResult:
+        """Override this method to add content after title."""
+        return []
+
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):
             yield WelcomeTitle(self.__title)
+            yield from self._content_after_title()
             yield CliveButton("Start!", id_="welcome-button-start")
 
     @on(CliveButton.Pressed, "#welcome-button-start")
