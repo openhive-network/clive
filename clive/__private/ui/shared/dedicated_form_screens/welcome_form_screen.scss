@@ -1,4 +1,8 @@
 WelcomeFormScreen {
+  DialogBody {
+    max-height: 26;
+  }
+
   WelcomeTitle {
     content-align: center middle;
     margin: 1;
@@ -7,5 +11,9 @@ WelcomeFormScreen {
 
   Button {
     width: 1fr;
+  }
+
+  CliveCollapsible {
+    margin-bottom: 1;
   }
 }
