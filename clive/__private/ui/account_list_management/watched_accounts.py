@@ -1,9 +1,16 @@
 from __future__ import annotations
 
-from clive.__private.ui.account_list_management.common.manage_accounts_tab_pane import ManageAccountsTabPane
+from typing import TYPE_CHECKING
+
+from textual.widgets import TabPane
+
+from clive.__private.ui.account_list_management.common.manage_accounts_container import ManageAccountsContainer
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
 
 
-class WatchedAccounts(ManageAccountsTabPane):
+class WatchedAccounts(TabPane):
     """TabPane used to add and delete watched accounts."""
 
     DEFAULT_CSS = """
@@ -18,4 +25,7 @@ class WatchedAccounts(ManageAccountsTabPane):
     """
 
     def __init__(self, title: str) -> None:
-        super().__init__(title=title, accounts_type="watched_accounts")
+        super().__init__(title=title)
+
+    def compose(self) -> ComposeResult:
+        yield ManageAccountsContainer(accounts_type="watched_accounts")

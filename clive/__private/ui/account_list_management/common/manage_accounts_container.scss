@@ -1,7 +1,6 @@
-ManageAccountsTabPane {
-  ScrollablePart {
-    align: center top;
-  }
+ManageAccountsContainer {
+  align-horizontal: center;
+  height: auto;
 
   Section {
     width: 50%;

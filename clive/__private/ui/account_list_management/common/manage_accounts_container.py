@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.widgets import TabPane
+from textual.containers import Container
 
 from clive.__private.storage.accounts import Account
 from clive.__private.ui.account_list_management.common.manage_accounts_table import AccountsType, ManageAccountsTable
@@ -11,7 +11,6 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from clive.__private.validators.set_known_account_validator import SetKnownAccountValidator
 from clive.__private.validators.set_watched_account_validator import SetWatchedAccountValidator
@@ -20,13 +19,13 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class ManageAccountsTabPane(TabPane, CliveWidget):
-    """TabPane used to add and delete watched or known accounts."""
+class ManageAccountsContainer(Container, CliveWidget):
+    """Container used to add and delete watched or known accounts."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self, title: str, accounts_type: AccountsType) -> None:
-        super().__init__(title=title)
+    def __init__(self, accounts_type: AccountsType) -> None:
+        super().__init__()
         self._accounts_input = AccountNameInput(
             required=False,
             validators=(
@@ -39,16 +38,15 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         self._accounts_type = accounts_type
 
     def compose(self) -> ComposeResult:
-        with ScrollablePart():
-            with Section(f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Known'} account"):
-                yield self._accounts_input
-                yield CliveButton(
-                    f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Mark as known'}",
-                    variant="success",
-                    id_="save-account-button",
-                )
+        with Section(f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Known'} account"):
+            yield self._accounts_input
+            yield CliveButton(
+                f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Mark as known'}",
+                variant="success",
+                id_="save-account-button",
+            )
 
-            yield ManageAccountsTable(self._accounts_type)
+        yield ManageAccountsTable(self._accounts_type)
 
     @on(CliveButton.Pressed, "#save-account-button")
     async def save_account(self) -> None:
