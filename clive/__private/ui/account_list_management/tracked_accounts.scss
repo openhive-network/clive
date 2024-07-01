@@ -1,10 +1,6 @@
-WorkingAccount {
-  ScrollablePart {
-    align: center top;
-  }
-
+TrackedAccounts {
   ManageWorkingAccountTable {
-    margin-top: 1;
+    margin: 1 0 1 0;
     width: 50%;
     height: auto;
 
@@ -18,10 +14,12 @@ WorkingAccount {
   }
 
   WorkingAccountChange {
-    width: 50%;
+    align-horizontal: center;
     height: auto;
 
     Section {
+      width: 50%;
+
       SectionBody {
         layout: horizontal;
       }

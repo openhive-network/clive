@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from textual import on
-from textual.containers import Vertical
+from textual.containers import Center, Vertical
 from textual.widgets import Static, TabPane
 
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
+from clive.__private.ui.account_list_management.common.manage_accounts_container import ManageAccountsContainer
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -148,12 +149,14 @@ class WorkingAccountChange(Vertical, CliveWidget):
         return self.app.world.profile_data.working_account
 
 
-class WorkingAccount(TabPane, CliveWidget):
-    """TabPane used to add and delete working account."""
+class TrackedAccounts(TabPane, CliveWidget):
+    """TabPane used to add and delete working / watched account."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
             yield WorkingAccountChange()
-            yield ManageWorkingAccountTable()
+            with Center():
+                yield ManageWorkingAccountTable()
+            yield ManageAccountsContainer(accounts_type="watched_accounts")
