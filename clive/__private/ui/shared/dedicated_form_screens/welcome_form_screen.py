@@ -19,8 +19,8 @@ if TYPE_CHECKING:
     from clive.__private.ui.shared.form import Form
 
 
-class WelcomeTitle(Static):
-    """Title of the welcome screen."""
+class Description(Static):
+    """Description of the welcome screen."""
 
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
@@ -28,13 +28,18 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
 
     BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
-    def __init__(self, owner: Form[ContextT], title: str) -> None:
-        self.__title = title
+    def __init__(self, owner: Form[ContextT], description: str) -> None:
+        self.__description = description
         super().__init__(owner)
+
+    def _content_after_description(self) -> ComposeResult:
+        """Override this method to add content after title."""
+        return []
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):
-            yield WelcomeTitle(self.__title)
+            yield Description(self.__description)
+            yield from self._content_after_description()
             yield CliveButton("Start!", id_="welcome-button-start")
 
     @on(CliveButton.Pressed, "#welcome-button-start")

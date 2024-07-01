@@ -12,9 +12,13 @@ from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressF
 from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.shared.form import Form, ScreenBuilder
+from clive.__private.ui.styling import colorize_shortcut
+from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+
+    from textual.app import ComposeResult
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
@@ -22,6 +26,16 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[ProfileData]):
         Binding("escape", "dummy", show=False),
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
     ]
+
+    def __init__(self, owner: Form[ProfileData]) -> None:
+        super().__init__(
+            owner,
+            f"Let's start onboarding!\n"
+            f"In any moment you can press the {colorize_shortcut('F1')} button to see the Help page.",
+        )
+
+    def _content_after_description(self) -> ComposeResult:
+        yield SelectCopyPasteHint()
 
 
 class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
@@ -45,11 +59,7 @@ class Onboarding(Form[ProfileData]):
         yield NewKeyAliasForm
 
     def create_welcome_screen(self) -> ScreenBuilder[ProfileData]:
-        return lambda owner: OnboardingWelcomeScreen(
-            owner,
-            """Let's start onboarding!
-In any moment you can press the `[blue]F1[/]` button to see the help page.""",
-        )
+        return lambda owner: OnboardingWelcomeScreen(owner)
 
     def create_finish_screen(self) -> ScreenBuilder[ProfileData]:
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
