@@ -3,7 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 from textual import on
+from textual.containers import Horizontal
 
+from clive.__private.storage.accounts import Account
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.clive_button import CliveButton
@@ -18,22 +20,35 @@ from clive.__private.ui.widgets.one_line_button import OneLineButton
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.storage.accounts import Account
 
 AccountsType = Literal["known_accounts", "watched_accounts"]
 
 
 class AccountRow(CliveCheckerboardTableRow):
     def __init__(self, account: Account, account_type: AccountsType) -> None:
-        super().__init__(
-            CliveCheckerBoardTableCell(account.name),
-            CliveCheckerBoardTableCell(
+        buttons_content = (
+            OneLineButton(
+                "Mark as unknown",
+                variant="error",
+                id_="discard-account-button",
+            )
+            if account_type == "known_accounts"
+            else Horizontal(
                 OneLineButton(
-                    "Mark as unknown" if account_type == "known_accounts" else "Unwatch",
+                    "Unwatch",
                     variant="error",
                     id_="discard-account-button",
-                )
-            ),
+                ),
+                OneLineButton(
+                    "Set as working",
+                    variant="success",
+                    id_="set-account-as-working-button",
+                ),
+            )
+        )
+        super().__init__(
+            CliveCheckerBoardTableCell(account.name),
+            CliveCheckerBoardTableCell(buttons_content),
         )
         self._account = account
         self._account_type = account_type
@@ -42,6 +57,27 @@ class AccountRow(CliveCheckerboardTableRow):
     def discard_account(self) -> None:
         getattr(self.app.world.profile_data, self._account_type).discard(self._account)
         self.app.trigger_profile_data_watchers()
+
+    @on(CliveButton.Pressed, "#set-account-as-working-button")
+    def set_account_as_working(self) -> None:
+        if not self.app.world.profile_data.is_working_account_set():
+            self._set_watched_account_as_working()
+            self.app.trigger_profile_data_watchers()
+            return
+
+        self._remove_working_account()
+        self._set_watched_account_as_working()
+        self.app.trigger_profile_data_watchers()
+
+    def _set_watched_account_as_working(self) -> None:
+        self.app.world.profile_data.watched_accounts.discard(self._account)
+        self.app.world.profile_data.set_working_account(self._account.name)
+
+    def _remove_working_account(self) -> None:
+        """When working account is removed we automatically set it as watched account."""
+        working_account_name = self.app.world.profile_data.working_account.name
+        self.app.world.profile_data.unset_working_account()
+        self.app.world.profile_data.watched_accounts.add(Account(name=working_account_name))
 
 
 class ManageAccountsTable(CliveCheckerboardTable):
