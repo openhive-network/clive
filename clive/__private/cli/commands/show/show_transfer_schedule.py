@@ -99,7 +99,9 @@ class ShowTransferSchedule(WorldBasedCommand):
             center_to=possible_amount_column_name
         )
 
-        for idx, future_scheduled_transfer in enumerate(sorted_future_scheduled_transfers.future_scheduled_transfers):
+        for idx, future_scheduled_transfer in enumerate(
+            sorted_future_scheduled_transfers.future_scheduled_transfers[:DEFAULT_FUTURE_DEEPTH]
+        ):
             possible_amount: Text | str = (
                 Text(f"{ERROR_LACK_OF_FUNDS_MESSAGE_RAW}", style="red", justify="center")
                 if future_scheduled_transfer.is_lack_of_funds()
