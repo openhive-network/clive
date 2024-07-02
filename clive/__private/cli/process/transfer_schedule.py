@@ -42,7 +42,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     memo: str = memo_value_option,
     pair_id: int = pair_id_value_option,
 ) -> None:
-    """Create a new recurrent transfer. First recurrent transfer will be send immediately."""
+    """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
 
     transfer_schedule_common = TransferScheduleCommonOptions.get_instance()
