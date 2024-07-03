@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, cast, get_args, overload
 
+from inflection import underscore
+
 from clive.__private.config import settings
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -253,6 +255,23 @@ class SafeSettings:
     @property
     def max_number_of_tracked_accounts(self) -> int:
         return self._get_max_number_of_tracked_accounts()
+
+    def validate(self) -> None:
+        def find_property_names(cls: type[object]) -> list[str]:
+            return [k for k, v in vars(cls).items() if isinstance(v, property)]
+
+        namespaces = [self._Dev, self._Log, self._Secrets, self._Beekeeper, self._Node]
+        for namespace in namespaces:
+            my_member_name = underscore(namespace.__name__).replace("_", "")
+            my_member = getattr(self, my_member_name)
+
+            for prop_name in find_property_names(namespace):
+                # call property to run setting validation
+                getattr(my_member, prop_name)
+
+        for my_prop_name in find_property_names(self.__class__):
+            # call property to run setting validation
+            getattr(self, my_prop_name)
 
     def _get_data_path(self) -> Path:
         setting_name = "DATA_PATH"

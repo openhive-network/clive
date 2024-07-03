@@ -22,6 +22,8 @@ def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_h
         # logger also refers to settings, so we need to set it before logger setup
         settings.setenv("dev")
 
+    safe_settings.validate()
+
     logger.setup(enable_textual=enable_textual_logger, enable_stream_handlers=enable_stream_handlers)
 
     _create_clive_data_directory()
