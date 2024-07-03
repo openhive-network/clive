@@ -54,8 +54,8 @@ class SafeSettings:
         return self._get_secrets_node_address()
 
     @property
-    def secrets_default_key(self) -> str | None:
-        return self._get_secrets_default_key()
+    def secrets_default_private_key(self) -> str | None:
+        return self._get_secrets_default_private_key()
 
     @property
     def force_onboarding(self) -> bool:
@@ -131,10 +131,10 @@ class SafeSettings:
         setting_name = "SECRETS.NODE_ADDRESS"
         return self._get_url(setting_name)
 
-    def _get_secrets_default_key(self) -> str | None:
+    def _get_secrets_default_private_key(self) -> str | None:
         from clive.__private.core.keys import PrivateKey
 
-        setting_name = "SECRETS.DEFAULT_KEY"
+        setting_name = "SECRETS.DEFAULT_PRIVATE_KEY"
         value = settings.get(setting_name, "")
         if not value:
             return None

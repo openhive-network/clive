@@ -55,7 +55,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         super().__init__(*args, **kwargs)
 
         self._key_input = PrivateKeyInput(
-            value=self._default_key(),
+            value=self._default_private_key(),
             password=True,
             required=self.IS_PRIVATE_KEY_REQUIRED,
             id="key-input",
@@ -128,8 +128,8 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
     def _content_after_alias_input(self) -> ComposeResult:
         yield self._key_input
 
-    def _default_key(self) -> str:
-        return safe_settings.secrets_default_key or ""
+    def _default_private_key(self) -> str:
+        return safe_settings.secrets_default_private_key or ""
 
 
 class NewKeyAlias(NewKeyAliasBase):
