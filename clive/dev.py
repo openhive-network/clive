@@ -4,7 +4,7 @@ from __future__ import annotations
 def is_in_dev_mode() -> bool:
     from clive.__private.safe_settings import safe_settings
 
-    return safe_settings.is_dev
+    return safe_settings.dev.is_set
 
 
 def main() -> None:

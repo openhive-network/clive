@@ -109,16 +109,13 @@ class Logger:
 
     def _create_log_files(self) -> GroupLogFilePaths:
         log_paths: GroupLogFilePaths = {}
-        log_levels = self.safe_settings_delayed.log_levels
+        log_levels = self.safe_settings_delayed.log.levels
         for log_level in log_levels:
-            log_level_lower = log_level.lower()
-            log_level_upper = log_level.upper()
-
             available_log_levels = self.safe_settings_delayed.AVAILABLE_LOG_LEVELS
-            if log_level_upper not in available_log_levels:
+            if log_level not in available_log_levels:
                 raise RuntimeError(f"Invalid log level: {log_level}, expected one of {available_log_levels}.")
 
-            log_paths[log_level_upper] = self._create_log_files_per_group(group_name=log_level_lower)
+            log_paths[log_level] = self._create_log_files_per_group(group_name=log_level.lower())
         return log_paths
 
     def _create_log_files_per_group(self, group_name: str) -> LogFilePaths:
@@ -128,14 +125,14 @@ class Logger:
                 """We just need to create an empty file to which we will log later"""
             return empty_file_path
 
-        log_group_directory = self.safe_settings_delayed.log_path / group_name
+        log_group_directory: Path = self.safe_settings_delayed.log.path / group_name
         log_group_directory.mkdir(parents=True, exist_ok=True)
 
         latest_log_file_name = "latest.log"
         latest_log_path = create_empty_file(latest_log_file_name)
 
-        keep_history = self.safe_settings_delayed.log_keep_history
-        if not keep_history:
+        should_keep_history = self.safe_settings_delayed.log.should_keep_history
+        if not should_keep_history:
             return (latest_log_path,)
 
         dated_log_file_name = f"{LAUNCH_TIME.strftime('%Y-%m-%d_%H-%M-%S')}.log"
@@ -169,7 +166,7 @@ class Logger:
         for 3rd party modules when clive is in higher log levels than DEBUG.
 
         """
-        log_level_3rd_party = self.safe_settings_delayed.log_level_3rd_party.upper()
+        log_level_3rd_party = self.safe_settings_delayed.log.level_3rd_party
         return "DEBUG" if log_level == "DEBUG" else log_level_3rd_party
 
     def _make_filter(self, *, level: int | str, level_3rd_party: int | str) -> Callable[..., bool]:

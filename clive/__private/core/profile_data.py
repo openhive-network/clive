@@ -484,7 +484,7 @@ class ProfileData(Context):
 
     @staticmethod
     def __default_chain_id() -> str | None:
-        chain_id = safe_settings.node_chain_id
+        chain_id = safe_settings.node.chain_id
         logger.info(f"Setting default chain_id to: {chain_id}")
         return chain_id
 
@@ -497,4 +497,4 @@ class ProfileData(Context):
 
     @staticmethod
     def __get_secret_node_address() -> Url | None:
-        return safe_settings.secrets_node_address
+        return safe_settings.secrets.node_address

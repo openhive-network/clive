@@ -173,7 +173,7 @@ class BeekeeperExecutable:
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
-        return safe_settings.beekeeper_path
+        return safe_settings.beekeeper.path
 
     def __prepare_files_for_streams(self, directory: Path) -> None:
         for name in self.__files:

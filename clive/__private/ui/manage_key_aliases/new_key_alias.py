@@ -129,7 +129,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         yield self._key_input
 
     def _default_private_key(self) -> str:
-        return safe_settings.secrets_default_private_key or ""
+        return safe_settings.secrets.default_private_key or ""
 
 
 class NewKeyAlias(NewKeyAliasBase):

@@ -199,7 +199,7 @@ class _BatchNode(BaseNode):
 
 
 class Node(BaseNode):
-    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = safe_settings.node_communication_timeout_total_secs
+    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = safe_settings.node.communication_timeout_total_secs
 
     @dataclass
     class CachedData:

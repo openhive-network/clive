@@ -62,8 +62,8 @@ ExportedKeys = list[dict[str, str]]
 class Beekeeper:
     # We have 500ms time period protection on ulocking wallet, so we use 600ms to make sure that wallet is unlocked.
     UNLOCK_INTERVAL: Final[float] = 0.6
-    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = safe_settings.beekeeper_communication_total_timeout_secs
-    DEFAULT_INITIALIZATION_TIMEOUT_SECONDS: Final[float] = safe_settings.beekeeper_initialization_timeout_secs
+    DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = safe_settings.beekeeper.communication_total_timeout_secs
+    DEFAULT_INITIALIZATION_TIMEOUT_SECONDS: Final[float] = safe_settings.beekeeper.initialization_timeout_secs
 
     class ConnectionFileData(CliveBaseModel):
         type_: str = Field(alias="type")
@@ -350,7 +350,7 @@ class Beekeeper:
 
     @classmethod
     def get_remote_address_from_settings(cls) -> Url | None:
-        return safe_settings.beekeeper_remote_address
+        return safe_settings.beekeeper.remote_address
 
     @classmethod
     def get_remote_address_from_connection_file(cls) -> Url | None:

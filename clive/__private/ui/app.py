@@ -172,26 +172,26 @@ class Clive(App[int], ManualReactive):
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
-            force_onboarding = safe_settings.force_onboarding
-            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or force_onboarding
+            should_force_onboarding = safe_settings.dev.should_force_onboarding
+            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or should_force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
 
         self._refresh_node_data_interval = self.set_interval(
-            safe_settings.node_refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
+            safe_settings.node.refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
         )
         self._refresh_alarms_data_interval = self.set_interval(
-            safe_settings.node_refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
+            safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
 
         self.update_data_from_node_asap()
         self.update_alarms_data_asap()
 
-        log_debug_loop = safe_settings.log_debug_loop
-        if log_debug_loop:
-            log_debug_period_secs = safe_settings.log_debug_loop_period_secs
-            self.set_interval(log_debug_period_secs, self.__debug_log)
+        should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
+        if should_enable_debug_loop:
+            debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
+            self.set_interval(debug_loop_period_secs, self.__debug_log)
 
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
