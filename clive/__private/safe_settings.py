@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import ast
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal, cast, get_args, overload
@@ -88,27 +89,25 @@ class SafeSettings:
 
         def _get_log_levels(self) -> _AvailableLogLevelsContainer:
             setting_name = "LOG_LEVELS"
-            value = settings.get(setting_name, ["INFO"])
+            value = self._parent._get_list(setting_name, ["INFO"])
             self._assert_log_levels(setting_name, value=value)
             return cast(_AvailableLogLevelsContainer, value)
 
         def _get_log_level_3rd_party(self) -> _AvailableLogLevels:
             setting_name = "LOG_LEVEL_3RD_PARTY"
-            value = settings.get(setting_name, "WARNING")
+            value = self._parent._get_value_from_settings(setting_name, "WARNING")
             self._assert_log_level(setting_name, value=value)
             return cast(_AvailableLogLevels, value)
 
         def _get_log_path(self) -> Path:
             setting_name = "LOG_PATH"
-            value = settings.get(setting_name)
+            value = self._parent._get_value_from_settings(setting_name)
             message = "log path is set dynamically and always ensured, so should be available now"
             assert isinstance(value, Path), message
             return value
 
-        def _assert_log_levels(self, setting_name: str, *, value: object) -> None:
-            self._parent._assert_is_list(setting_name, value=value)
-            log_levels = cast(list[object], value)
-            for log_level in log_levels:
+        def _assert_log_levels(self, setting_name: str, *, value: list[object]) -> None:
+            for log_level in value:
                 self._assert_log_level(setting_name, value=log_level)
 
         def _assert_log_level(self, setting_name: str, *, value: object) -> None:
@@ -137,7 +136,7 @@ class SafeSettings:
             from clive.__private.core.keys import PrivateKey
 
             setting_name = "SECRETS.DEFAULT_PRIVATE_KEY"
-            value = settings.get(setting_name, "")
+            value = self._parent._get_value_from_settings(setting_name, "")
             if not value:
                 return None
 
@@ -170,11 +169,12 @@ class SafeSettings:
 
         def _get_beekeeper_path(self) -> Path | None:
             setting_name = "BEEKEEPER.PATH"
-            value = settings.get(setting_name, "")
+            value = self._parent._get_value_from_settings(setting_name, "")
             if not value:
                 return None
 
-            value_ = Path(value)
+            self._parent._assert_is_string(setting_name, value=value)
+            value_ = Path(cast(str, value))
             self._parent._assert_path_is_file(setting_name, value=value_)
             return value_
 
@@ -215,7 +215,7 @@ class SafeSettings:
             from clive.models.aliased import ChainIdSchema
 
             setting_name = "NODE.CHAIN_ID"
-            value = settings.get(setting_name, "")
+            value = self._parent._get_value_from_settings(setting_name, "")
             if not value:
                 return None
 
@@ -265,14 +265,39 @@ class SafeSettings:
         return int(self._get_number(setting_name, default=6))
 
     def _get_or_default_false(self, setting_name: str) -> bool:
-        value = settings.get(setting_name, False)
-        self._assert_is_bool(setting_name, value=value)
-        return cast(bool, value)
+        return self._get_bool(setting_name, default=False)
 
-    def _get_number(self, setting_name: str, *, default: float) -> float:
-        value = settings.get(setting_name, default)
-        self._assert_is_number(setting_name, value=value)
-        return float(value)
+    def _get_bool(self, setting_name: str, *, default: bool | None = None) -> bool:
+        value = self._get_value_from_settings(setting_name, default=default)
+
+        try:
+            return bool(value)
+        except Exception as error:
+            raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
+
+    def _get_number(self, setting_name: str, *, default: float | None = None) -> float:
+        from textual.validation import Number
+
+        value = self._get_value_from_settings(setting_name, default=default)
+        value_ = str(value)
+        result = Number().validate(value_)
+        if not result.is_valid:
+            raise SettingsValueError(setting_name=setting_name, value=value, details=str(result.failure_descriptions))
+
+        return float(value_)
+
+    def _get_list(self, setting_name: str, default: object | None = None) -> list[object]:
+        value = self._get_value_from_settings(setting_name, default=default)
+        if isinstance(value, str):
+            # try to parse string as list
+            try:
+                value_ = ast.literal_eval(value)
+            except Exception as error:
+                raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
+        else:
+            value_ = value
+        self._assert_is_list(setting_name, value=value_)
+        return cast(list[object], value_)
 
     @overload
     def _get_url(self, setting_name: str, *, optionally: Literal[False]) -> Url: ...
@@ -281,25 +306,24 @@ class SafeSettings:
     def _get_url(self, setting_name: str, *, optionally: Literal[True] = True) -> Url | None: ...
 
     def _get_url(self, setting_name: str, *, optionally: bool = True) -> Url | None:
-        value = settings.get(setting_name, "")
+        value = self._get_value_from_settings(setting_name, "")
         if not value:
             if optionally:
                 return None
             raise SettingsValueError(setting_name=setting_name, value=value, details="URL is required.")
 
+        self._assert_is_string(setting_name, value=value)
+        value_ = cast(str, value)
         try:
-            return Url.parse(value)
+            return Url.parse(value_)
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
-    def _assert_is_bool(self, setting_name: str, *, value: object) -> None:
-        self._assert_is_type(setting_name=setting_name, value=value, expected_type=bool)
+    def _get_value_from_settings(self, setting_name: str, default: object | None = None) -> object:
+        return settings.get(setting_name) if default is None else settings.get(setting_name, default)
 
     def _assert_is_string(self, setting_name: str, *, value: object) -> None:
         self._assert_is_type(setting_name=setting_name, value=value, expected_type=str)
-
-    def _assert_is_number(self, setting_name: str, *, value: object) -> None:
-        self._assert_is_type(setting_name=setting_name, value=value, expected_type=(int, float))
 
     def _assert_is_list(self, setting_name: str, *, value: object) -> None:
         self._assert_is_type(setting_name=setting_name, value=value, expected_type=list)
