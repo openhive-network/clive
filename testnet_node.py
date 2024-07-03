@@ -60,8 +60,8 @@ def prepare_node() -> tt.RawNode:
 
 async def prepare_profile(node: tt.RawNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
-    settings["secrets.node_address"] = node.http_endpoint.as_string()
-    settings["node.chain_id"] = TESTNET_CHAIN_ID
+    settings.set("SECRETS.NODE_ADDRESS", node.http_endpoint.as_string())
+    settings.set("NODE.CHAIN_ID", TESTNET_CHAIN_ID)
 
     ProfileData(
         WORKING_ACCOUNT_DATA.account.name,

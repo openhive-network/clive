@@ -50,7 +50,7 @@ async def prepare_beekeeper_wallet(world: World) -> None:
 @pytest.fixture()
 async def node() -> tt.RawNode:
     node = run_node()
-    settings["secrets.node_address"] = node.http_endpoint.as_string()
+    settings.set("SECRETS.NODE_ADDRESS", node.http_endpoint.as_string())
     return node
 
 

@@ -72,7 +72,7 @@ def node_with_wallet() -> NodeWithWallet:
     account = wallet.api.get_account(WORKING_ACCOUNT_DATA.account.name)
     tt.logger.debug(f"working account: {account}")
 
-    settings["secrets.node_address"] = node.http_endpoint.as_string()
+    settings.set("SECRETS.NODE_ADDRESS", node.http_endpoint.as_string())
 
     return node, wallet
 
