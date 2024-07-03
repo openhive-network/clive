@@ -46,8 +46,9 @@ def run_prepare_before_launch() -> None:
     if profile_data_directory.exists():
         shutil.rmtree(profile_data_directory)
 
-    settings.data_path = working_directory
-    settings.log_path = working_directory / "logs"
+    settings.set("DATA_PATH", working_directory)
+    log_path = working_directory / "logs"
+    settings.set("LOG_PATH", log_path)
 
     # set chain id to the testnet one
     settings.set("node.chain_id", TESTNET_CHAIN_ID)
