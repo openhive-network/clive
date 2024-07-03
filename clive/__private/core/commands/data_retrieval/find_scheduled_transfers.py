@@ -111,8 +111,20 @@ class AccountScheduledTransferData:
     account_hive_balance: Asset.Hive
     account_hbd_balance: Asset.Hbd
 
+    def _receiver_check(self, scheduled_transfer: ScheduledTransfer, receiver: str) -> bool:
+        """Determine if a scheduled transfer matches receiver."""
+        return scheduled_transfer.to == receiver
+
+    def filter_by_receiver(self, receiver: str) -> list[ScheduledTransfer]:
+        if self.has_any_scheduled_transfers():
+            return [st for st in self.scheduled_transfers if self._receiver_check(st, receiver)]
+        return []
+
     def has_any_scheduled_transfers(self) -> bool:
         return bool(self.scheduled_transfers)
+
+    def has_mutiple_scheduled_transfers_to_receiver(self, receiver: str) -> bool:
+        return len(self.filter_by_receiver(receiver)) > 1
 
     def sorted_by(self, sort_by: list[AllowedBaseSorts], *, descending: bool = False) -> AccountScheduledTransferData:
         import operator
