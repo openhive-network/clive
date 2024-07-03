@@ -65,7 +65,7 @@ class SafeSettings:
 
         def _get_log_debug_period_secs(self) -> float:
             setting_name = "LOG_DEBUG_PERIOD_SECS"
-            return self._parent._get_number(setting_name, default=1)
+            return self._parent._get_number(setting_name, default=1, minimum=1)
 
     @dataclass
     class _Log:
@@ -184,11 +184,11 @@ class SafeSettings:
 
         def _get_beekeeper_communication_total_timeout_secs(self) -> float:
             setting_name = "BEEKEEPER.COMMUNICATION_TOTAL_TIMEOUT_SECS"
-            return self._parent._get_number(setting_name, default=3)
+            return self._parent._get_number(setting_name, default=3, minimum=1)
 
         def _get_beekeeper_initialization_timeout_secs(self) -> float:
             setting_name = "BEEKEEPER.INITIALIZATION_TIMEOUT_SECS"
-            return self._parent._get_number(setting_name, default=5)
+            return self._parent._get_number(setting_name, default=5, minimum=1)
 
     @dataclass
     class _Node:
@@ -229,15 +229,15 @@ class SafeSettings:
 
         def _get_node_refresh_rate_secs(self) -> float:
             setting_name = "NODE.REFRESH_RATE_SECS"
-            return self._parent._get_number(setting_name, default=1.5)
+            return self._parent._get_number(setting_name, default=1.5, minimum=1)
 
         def _get_node_refresh_alarms_rate_secs(self) -> float:
             setting_name = "NODE.REFRESH_ALARMS_RATE_SECS"
-            return self._parent._get_number(setting_name, default=30)
+            return self._parent._get_number(setting_name, default=30, minimum=5)
 
         def _get_node_communication_timeout_total_secs(self) -> float:
             setting_name = "NODE.COMMUNICATION_TOTAL_TIMEOUT_SECS"
-            return self._parent._get_number(setting_name, default=6)
+            return self._parent._get_number(setting_name, default=6, minimum=1)
 
     def __init__(self) -> None:
         self.dev = self._Dev(self)
@@ -262,7 +262,7 @@ class SafeSettings:
 
     def _get_max_number_of_tracked_accounts(self) -> int:
         setting_name = "MAX_NUMBER_OF_TRACKED_ACCOUNTS"
-        return int(self._get_number(setting_name, default=6))
+        return int(self._get_number(setting_name, default=6, minimum=1))
 
     def _get_or_default_false(self, setting_name: str) -> bool:
         return self._get_bool(setting_name, default=False)
@@ -275,14 +275,14 @@ class SafeSettings:
         except Exception as error:
             raise SettingsValueError(setting_name=setting_name, value=value, details=str(error)) from error
 
-    def _get_number(self, setting_name: str, *, default: float | None = None) -> float:
+    def _get_number(self, setting_name: str, *, default: float | None = None, minimum: float | None = None) -> float:
         from textual.validation import Number
 
         value = self._get_value_from_settings(setting_name, default=default)
         value_ = str(value)
-        result = Number().validate(value_)
+        result = Number(minimum=minimum).validate(value_)
         if not result.is_valid:
-            raise SettingsValueError(setting_name=setting_name, value=value, details=str(result.failure_descriptions))
+            raise SettingsValueError(setting_name=setting_name, value=value_, details=str(result.failure_descriptions))
 
         return float(value_)
 
