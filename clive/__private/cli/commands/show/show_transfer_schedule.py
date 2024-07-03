@@ -51,7 +51,7 @@ class ShowTransferSchedule(WorldBasedCommand):
         table_definitions.add_column("To", justify="center", style="cyan", no_wrap=True)
         table_definitions.add_column("Pair id", justify="center", style="cyan", no_wrap=True)
         table_definitions.add_column(Text(amount_column_name, justify="center"), style="green", no_wrap=True)
-        table_definitions.add_column("Memo", justify="center", style="green", no_wrap=True)
+        table_definitions.add_column("Memo", justify="center", style="green", no_wrap=False)
         table_definitions.add_column("Next", justify="center", style="green", no_wrap=True)
         table_definitions.add_column("Frequency", justify="center", style="green", no_wrap=True)
         table_definitions.add_column("Remaining", justify="center", style="green", no_wrap=True)
@@ -91,7 +91,6 @@ class ShowTransferSchedule(WorldBasedCommand):
         table_upcoming.add_column("Pair id", justify="center", style="cyan", no_wrap=True)
         table_upcoming.add_column(Text(amount_column_name, justify="center"), style="green", no_wrap=True)
         table_upcoming.add_column(Text(possible_amount_column_name, justify="center"), style="green", no_wrap=True)
-        table_upcoming.add_column("Memo", justify="center", style="green", no_wrap=True)
         table_upcoming.add_column("Next", justify="center", style="green", no_wrap=True)
         table_upcoming.add_column("Frequency", justify="center", style="green", no_wrap=True)
 
@@ -117,8 +116,7 @@ class ShowTransferSchedule(WorldBasedCommand):
                 str(future_scheduled_transfer.pair_id),
                 amount_aligned[idx],
                 possible_amount,
-                future_scheduled_transfer.memo,
-                str(future_scheduled_transfer.trigger_date),
+                humanize_datetime(future_scheduled_transfer.trigger_date),
                 timedelta_to_shorthand_timedelta(timedelta(hours=future_scheduled_transfer.recurrence)),
             )
         return table_upcoming
