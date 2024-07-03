@@ -173,8 +173,8 @@ class BeekeeperExecutable:
 
     @classmethod
     def get_path_from_settings(cls) -> Path | None:
-        path_raw = settings.get("beekeeper.path")
-        return Path(path_raw) if path_raw is not None else None
+        path_raw = settings.get("BEEKEEPER.PATH", "")
+        return Path(path_raw) if path_raw else None
 
     def __prepare_files_for_streams(self, directory: Path) -> None:
         for name in self.__files:
