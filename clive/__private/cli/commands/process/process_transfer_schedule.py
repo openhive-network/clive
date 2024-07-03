@@ -10,7 +10,6 @@ from clive.__private.cli.exceptions import (
     ProcessTransferScheduleAlreadyExistsError,
     ProcessTransferScheduleDoesNotExistsError,
     ProcessTransferScheduleInvalidAmountError,
-    ProcessTransferScheduleNoScheduledTransfersError,
     ProcessTransferScheduleNullPairIdError,
     ProcessTransferScheduleTooLongLifetimeError,
 )
@@ -91,12 +90,6 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
             raise ProcessTransferScheduleAlreadyExistsError(self.to, pair_id)
         raise ProcessTransferScheduleDoesNotExistsError(self.to, pair_id)
 
-    def validate_any_existence(self) -> None:
-        """Validate if there are any scheduled transfers (recurrent transfers) from current account."""
-        if self.account_scheduled_transfers_data.has_any_scheduled_transfers():
-            return
-        raise ProcessTransferScheduleNoScheduledTransfersError(self.from_account)
-
     def validate_pair_id(self) -> None:
         """Validate if pair_id is set, when there is more than one recurrent transfers."""
         if self.account_scheduled_transfers_data.has_any_scheduled_transfers():
@@ -175,9 +168,8 @@ class ProcessTransferScheduleModify(_ProcessTransferScheduleCreateModifyCommon):
             self.memo = self.memo if self.memo is not None else self.scheduled_transfer.memo
 
     async def validate_inside_context_manager(self) -> None:
-        self.validate_any_existence()
-        self.validate_pair_id()
         self.validate_existence(should_exists=True)
+        self.validate_pair_id()
         self.validate_existence_lifetime()
         await super().validate_inside_context_manager()
 
@@ -203,7 +195,6 @@ class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
         )
 
     async def validate_inside_context_manager(self) -> None:
-        self.validate_any_existence()
-        self.validate_pair_id()
         self.validate_existence(should_exists=True)
+        self.validate_pair_id()
         await super().validate_inside_context_manager()

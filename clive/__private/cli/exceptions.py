@@ -153,13 +153,6 @@ class ProcessTransferScheduleDoesNotExistsError(CLIPrettyError):
         super().__init__(message, errno.EPERM)
 
 
-class ProcessTransferScheduleNoScheduledTransfersError(CLIPrettyError):
-    def __init__(self, from_account: str) -> None:
-        self.from_account = from_account
-        message = f"Account `{self.from_account}` has no scheduled transfers."
-        super().__init__(message, errno.EPERM)
-
-
 class ProcessTransferScheduleInvalidAmountError(CLIPrettyError):
     def __init__(self) -> None:
         hive_symbol = Asset.get_symbol(Asset.Hive)
