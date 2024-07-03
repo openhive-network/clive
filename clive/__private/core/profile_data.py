@@ -498,5 +498,5 @@ class ProfileData(Context):
 
     @staticmethod
     def __get_secret_node_address() -> Url | None:
-        node_address = settings.get("secrets.node_address", None)
+        node_address = settings.get("SECRETS.NODE_ADDRESS", "")
         return Url.parse(node_address) if node_address else None
