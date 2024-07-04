@@ -149,7 +149,7 @@ class ProfileData(Context):
         raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
 
     def get_account_by_name(self, value: str | Account) -> Account:
-        searched_account_name = value if isinstance(value, str) else value.name
+        searched_account_name = self._get_account_name(value)
         for account in self.get_tracked_accounts():
             if account.name == searched_account_name:
                 return account
@@ -177,6 +177,18 @@ class ProfileData(Context):
     @property
     def known_accounts_sorted(self) -> list[Account]:
         return sorted(self.known_accounts, key=lambda account: account.name)
+
+    @property
+    def tracked_accounts_sorted(self) -> list[Account]:
+        """Working account is always first then watched accounts sorted alphabetically."""
+        return sorted(
+            self.get_tracked_accounts(),
+            key=lambda account: (not isinstance(account, WorkingAccount), account.name),
+        )
+
+    @staticmethod
+    def _get_account_name(account: str | Account) -> str:
+        return account if isinstance(account, str) else account.name
 
     def set_working_account(self, value: str | WorkingAccount) -> None:
         if isinstance(value, str):
@@ -221,11 +233,34 @@ class ProfileData(Context):
     def is_working_account_set(self) -> bool:
         return self.__working_account is not None
 
+    def is_account_tracked(self, account: str | Account) -> bool:
+        account_name = self._get_account_name(account)
+        return account_name not in [tracked_account.name for tracked_account in self.get_tracked_accounts()]
+
     def get_tracked_accounts(self) -> set[Account]:
         accounts = self.watched_accounts.copy()
         if self.is_working_account_set():
             accounts.add(self.working_account)
         return accounts
+
+    def has_known_accounts(self) -> bool:
+        return bool(self.known_accounts)
+
+    def has_tracked_accounts(self) -> bool:
+        return bool(self.get_tracked_accounts())
+
+    def remove_tracked_account(self, to_remove: str | Account) -> None:
+        account_name = self._get_account_name(to_remove)
+        if self.is_working_account_set() and account_name == self.working_account.name:
+            self.unset_working_account()
+        else:
+            self.remove_watched_account(to_remove)
+
+    def remove_watched_account(self, to_remove: str | Account) -> None:
+        account_name = self._get_account_name(to_remove)
+        account = next((account for account in self.watched_accounts if account.name == account_name), None)
+        if account is not None:
+            self.watched_accounts.discard(account)
 
     @property
     def is_accounts_alarms_data_available(self) -> bool:
