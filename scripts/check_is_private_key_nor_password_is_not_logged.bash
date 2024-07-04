@@ -3,6 +3,7 @@
 function find_password_private_keys() {
     grep \
         --include="latest.log*" \
+        --exclude-dir="*Node[0-9]" \
         -r -i -w  -E '(pass(word)?|[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{51})' |
         grep "$@" -v -E '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)'
 }
