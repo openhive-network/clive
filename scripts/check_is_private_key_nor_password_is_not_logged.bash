@@ -9,9 +9,9 @@ function find_password_private_keys() {
         '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)'
 }
 
-amount_of_occurences=$(find_password_private_keys --count)
-if [[ $amount_of_occurences -ne 0 ]]; then
-    echo "Error! Found $amount_of_occurences occurrences of private key or password"
+amount_of_occurrences=$(find_password_private_keys --count)
+if [[ $amount_of_occurrences -ne 0 ]]; then
+    echo "Error! Found $amount_of_occurrences occurrences of private key or password"
     find_password_private_keys 2>&1
 fi;
-exit "$amount_of_occurences"
+exit "$amount_of_occurrences"
