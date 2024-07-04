@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Final
 
 from textual import on
 from textual.containers import Vertical
@@ -152,6 +152,10 @@ class WorkingAccount(TabPane, CliveWidget):
     """TabPane used to add and delete working account."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
+    TITLE: Final[str] = "Working account"
+
+    def __init__(self) -> None:
+        super().__init__(self.TITLE)
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
