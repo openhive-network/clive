@@ -4,15 +4,11 @@ import logging
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+from loguru import logger as loguru_logger
 from loguru._simple_sinks import StreamSink
+from textual import log as textual_logger
 
-from clive.__private.cli.completion import is_tab_completion_active
-
-if not is_tab_completion_active():
-    from loguru import logger as loguru_logger
-    from textual import log as textual_logger
-
-    from clive.__private.core.constants.env import LAUNCH_TIME, ROOT_DIRECTORY
+from clive.__private.core.constants.env import LAUNCH_TIME, ROOT_DIRECTORY
 
 if TYPE_CHECKING:
     from collections.abc import Callable

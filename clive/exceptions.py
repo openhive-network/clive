@@ -3,7 +3,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar, TypeAlias
 
 from clive.__private.abstract_class import AbstractClass
-from clive.__private.logger import logger
+from clive.__private.cli.completion import is_tab_completion_active
+
+if not is_tab_completion_active():
+    from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.notification_http_server import JsonT
