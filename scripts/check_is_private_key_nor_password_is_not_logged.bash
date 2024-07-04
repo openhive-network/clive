@@ -3,12 +3,13 @@
 function find_password_private_keys() {
     find . -path "*/clive/*/latest.log" -print0 |
     xargs -0 \
-    grep \
-        -Hn -i -w  -E '(pass(word)?|[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{51})' |
-        grep "$@" -v -E '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)'
+    grep --with-filename --line-number --ignore-case --word-regexp  --extended-regexp \
+        '(pass(word)?|[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{51})' |
+    grep "$@" --invert-match --extended-regexp \
+        '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)'
 }
 
-amount_of_occurences=$(find_password_private_keys -c)
+amount_of_occurences=$(find_password_private_keys --count)
 if [[ $amount_of_occurences -ne 0 ]]; then
     echo "Error! Found $amount_of_occurences occurrences of private key or password"
     find_password_private_keys 2>&1
