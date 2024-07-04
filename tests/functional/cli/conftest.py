@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
-import test_tools as tt
 from typer.testing import CliRunner
 
 from clive.__private.config import settings
@@ -14,6 +15,9 @@ from clive.__private.storage.accounts import WorkingAccount
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
+
+if TYPE_CHECKING:
+    import test_tools as tt
 
 
 @pytest.fixture()
@@ -35,8 +39,7 @@ async def world(prepare_profile: ProfileData) -> World:  # noqa: ARG001
 @pytest.fixture()
 async def prepare_beekeeper_wallet(world: World) -> None:
     async with world:
-        password = (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).result_or_raise
-        tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
+        (await world.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).raise_if_error_occurred()
 
         world.profile_data.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
