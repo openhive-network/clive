@@ -42,7 +42,7 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
     memo: str = memo_value_option,
     pair_id: int = pair_id_value_option,
 ) -> None:
-    """Create a new recurrent transfer. First recurrent transfer will be send immediately."""
+    """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
 
     transfer_schedule_common = TransferScheduleCommonOptions.get_instance()
@@ -66,7 +66,11 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
     memo: Optional[str] = memo_value_optional_option,
     pair_id: Optional[int] = pair_id_value_none_option,
 ) -> None:
-    """Modify an existing recurrent transfer."""
+    """
+    Modify an existing recurrent transfer.
+
+    If you change the frequency, the first execution after modification is update date + frequency.
+    """
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleModify
 
     transfer_schedule_common = TransferScheduleCommonOptions.get_instance()
