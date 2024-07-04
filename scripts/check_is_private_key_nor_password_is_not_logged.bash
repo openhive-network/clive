@@ -1,10 +1,10 @@
 #!/bin/bash
 
 function find_password_private_keys() {
+    find . -path "*/clive/*/latest.log" -print0 |
+    xargs -0 \
     grep \
-        --include="latest.log*" \
-        --exclude-dir="*Node[0-9]" \
-        -r -i -w  -E '(pass(word)?|[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{51})' |
+        -Hn -i -w  -E '(pass(word)?|[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{51})' |
         grep "$@" -v -E '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)'
 }
 
