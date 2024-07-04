@@ -1,9 +1,9 @@
 from __future__ import annotations
 
+from abc import ABC
 from functools import wraps
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
 
-from clive.__private.abstract_class import AbstractClass
 from clive.__private.core.formatters.case import underscore
 from schemas.jsonrpc import JSONRPCRequest
 
@@ -19,7 +19,7 @@ P = ParamSpec("P")
 R = TypeVar("R")
 
 
-class Api(AbstractClass):
+class Api(ABC):  # noqa: B024
     def __init__(self, node: BaseNode) -> None:
         self._node = node
 

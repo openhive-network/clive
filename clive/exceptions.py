@@ -1,8 +1,8 @@
 from __future__ import annotations
 
+from abc import ABC
 from typing import TYPE_CHECKING, ClassVar, TypeAlias
 
-from clive.__private.abstract_class import AbstractClass
 from clive.__private.cli.completion import is_tab_completion_active
 
 if not is_tab_completion_active():
@@ -22,7 +22,7 @@ class CliveDeveloperError(Exception):
     """Base class for all clive developer exceptions."""
 
 
-class KnownError(CliveError, AbstractClass):
+class KnownError(CliveError, ABC):
     """
     A CliveError that stores the error message that is known to be raised by some external service.
 

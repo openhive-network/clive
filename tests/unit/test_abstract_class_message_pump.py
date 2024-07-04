@@ -1,20 +1,13 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Generic, TypeVar
 
 import pytest
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 
-T = TypeVar("T")
-
 
 class MockPlainAbstract(AbstractClassMessagePump):
-    pass
-
-
-class MockAbstractWithGenerics(Generic[T], AbstractClassMessagePump):
     pass
 
 
@@ -35,14 +28,6 @@ class MockValidPlainSubclass(MockPlainAbstract):
 class MockValidSubclassWithAbstractMethod(MockAbstractWithAbstractMethod):
     def abstract_method(self) -> None:
         pass
-
-
-@pytest.mark.parametrize("cls", [MockPlainAbstract, MockAbstractWithGenerics])
-def test_instantiating_class_inheriting_from_abstract_class(cls: type) -> None:
-    with pytest.raises(TypeError) as exception:
-        cls()
-
-    assert str(exception.value) == f"Abstract class `{cls.__name__}` cannot be instantiated."
 
 
 def test_instantiating_class_inheriting_from_abstract_class_with_abstract_method() -> None:
