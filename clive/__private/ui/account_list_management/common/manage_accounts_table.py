@@ -19,28 +19,41 @@ if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
     from clive.__private.storage.accounts import Account
+from clive.__private.storage.accounts import WorkingAccount
 
-AccountsType = Literal["known_accounts", "watched_accounts"]
+AccountsType = Literal["known_accounts", "tracked_accounts"]
 
 
 class AccountRow(CliveCheckerboardTableRow):
     def __init__(self, account: Account, account_type: AccountsType) -> None:
-        super().__init__(
-            CliveCheckerBoardTableCell(account.name),
+        self._is_working_account = isinstance(account, WorkingAccount)
+        self._account = account
+        self._account_type = account_type
+        super().__init__(*self._create_cells())
+
+    def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
+        cells_unfiltered = [
+            CliveCheckerBoardTableCell(self._account.name),
+            self._create_account_type_column() if self._account_type == "tracked_accounts" else None,
             CliveCheckerBoardTableCell(
                 OneLineButton(
-                    "Mark as unknown" if account_type == "known_accounts" else "Unwatch",
+                    "Remove",
                     variant="error",
                     id_="discard-account-button",
                 )
             ),
-        )
-        self._account = account
-        self._account_type = account_type
+        ]
+        return list(filter(None, cells_unfiltered))
+
+    def _create_account_type_column(self) -> CliveCheckerBoardTableCell:
+        return CliveCheckerBoardTableCell("working" if self._is_working_account else "watched")
 
     @on(CliveButton.Pressed, "#discard-account-button")
     def discard_account(self) -> None:
-        getattr(self.app.world.profile_data, self._account_type).discard(self._account)
+        if self._account_type == "known_accounts":
+            self.app.world.profile_data.known_accounts.discard(self._account)
+        else:
+            self.app.world.profile_data.remove_tracked_account(self._account)
         self.app.trigger_profile_data_watchers()
 
 
@@ -66,7 +79,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def __init__(self, accounts_type: AccountsType) -> None:
         super().__init__(
-            header=AccountsTableHeader(),
+            header=AccountsTableHeader(show_type_column=accounts_type == "tracked_accounts"),
             title=f"Your {self.remove_underscore_from_text(accounts_type)}",
         )
         self._previous_accounts: set[Account] | NotUpdatedYet = NotUpdatedYet()
@@ -83,17 +96,27 @@ class ManageAccountsTable(CliveCheckerboardTable):
         )
 
     def check_if_should_be_updated(self, content: ProfileData) -> bool:
-        return getattr(content, self._accounts_type) != self._previous_accounts  # type: ignore[no-any-return]
+        actual_accounts = self._get_accounts_from_new_content(content)
+        return actual_accounts != self._previous_accounts
 
     def is_anything_to_display(self, content: ProfileData) -> bool:
-        return len(getattr(content, self._accounts_type)) != 0
+        return (
+            content.has_known_accounts() if self._accounts_type == "known_accounts" else content.has_tracked_accounts()
+        )
 
     @property
     def object_to_watch(self) -> TextualWorld:
         return self.app.world
 
     def update_previous_state(self, content: ProfileData) -> None:
-        self._previous_accounts = getattr(content, self._accounts_type).copy()
+        self._previous_accounts = self._get_accounts_from_new_content(content)
+
+    def _get_accounts_from_new_content(self, content: ProfileData) -> set[Account]:
+        return (
+            content.known_accounts.copy()
+            if self._accounts_type == "known_accounts"
+            else content.get_tracked_accounts().copy()
+        )
 
     def remove_underscore_from_text(self, text: str) -> str:
         return text.replace("_", " ")

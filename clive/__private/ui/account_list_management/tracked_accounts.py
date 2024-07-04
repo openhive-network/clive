@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from typing import Final
+
 from clive.__private.ui.account_list_management.common.manage_accounts_tab_pane import ManageAccountsTabPane
 
 
-class WatchedAccounts(ManageAccountsTabPane):
-    """TabPane used to add and delete watched accounts."""
+class TrackedAccounts(ManageAccountsTabPane):
+    """TabPane used to add and delete tracked accounts."""
 
     DEFAULT_CSS = """
-    WatchedAccounts {
+    TrackedAccounts {
         #input-with-button {
             CliveButton {
                 width: 10;
@@ -16,6 +18,7 @@ class WatchedAccounts(ManageAccountsTabPane):
         }
     }
     """
+    TITLE: Final[str] = "Tracked accounts"
 
-    def __init__(self, title: str) -> None:
-        super().__init__(title=title, accounts_type="watched_accounts")
+    def __init__(self) -> None:
+        super().__init__(title=self.TITLE, accounts_type="tracked_accounts")

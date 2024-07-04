@@ -14,7 +14,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from clive.__private.validators.set_known_account_validator import SetKnownAccountValidator
-from clive.__private.validators.set_watched_account_validator import SetWatchedAccountValidator
+from clive.__private.validators.set_tracked_account_validator import SetTrackedAccountValidator
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -30,8 +30,8 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         self._accounts_input = AccountNameInput(
             required=False,
             validators=(
-                SetWatchedAccountValidator(self.app.world.profile_data)
-                if accounts_type == "watched_accounts"
+                SetTrackedAccountValidator(self.app.world.profile_data)
+                if accounts_type == "tracked_accounts"
                 else SetKnownAccountValidator(self.app.world.profile_data)
             ),
             ask_known_account=accounts_type != "known_accounts",
@@ -40,10 +40,10 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            with Section(f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Known'} account"):
+            with Section(f"{'Track' if self._accounts_type == 'tracked_accounts' else 'Known'} account"):
                 yield self._accounts_input
                 yield CliveButton(
-                    f"{'Watch' if self._accounts_type == 'watched_accounts' else 'Mark as known'}",
+                    f"{'Add' if self._accounts_type == 'tracked_accounts' else 'Mark as known'}",
                     variant="success",
                     id_="save-account-button",
                 )
@@ -67,7 +67,10 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
 
         account = Account(name=self._accounts_input.value_or_error)
 
-        getattr(self.app.world.profile_data, self._accounts_type).add(account)
+        if self._accounts_type == "tracked_accounts":
+            self.app.world.profile_data.watched_accounts.add(account)
+        else:
+            self.app.world.profile_data.known_accounts.add(account)
         self.app.trigger_profile_data_watchers()
         self._accounts_input.input.clear()
         self.app.update_alarms_data_asap()
