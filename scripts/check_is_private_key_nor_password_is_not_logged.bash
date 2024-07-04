@@ -1,12 +1,14 @@
 #!/bin/bash
 
+set -euo pipefail
+
 function find_password_private_keys() {
     find . -path "*/clive/*/latest.log" -print0 |
     xargs -0 \
     grep --with-filename --line-number --ignore-case --word-regexp  --extended-regexp \
         '(pass(word)?|[123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz]{51})' |
     grep "$@" --invert-match --extended-regexp \
-        '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)'
+        '(Error in response from url|Problem occurred during communication with|test_tools.__private.logger)' || true
 }
 
 amount_of_occurrences=$(find_password_private_keys --count)
