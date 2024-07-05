@@ -1,35 +1,9 @@
 WorkingAccount {
   ScrollablePart {
     align: center top;
-  }
 
-  ManageWorkingAccountTable {
-    margin-top: 1;
-    width: 50%;
-    height: auto;
-
-    CliveButton {
-      width: 1fr;
-    }
-
-    Static {
-      text-align: center;
-    }
-  }
-
-  WorkingAccountChange {
-    width: 50%;
-    height: auto;
-
-    Section {
-      SectionBody {
-        layout: horizontal;
-      }
-
-      CliveButton {
-        width: 10;
-        min-width: 10;
-      }
+    SwitchWorkingAccountContainer {
+      height: auto;
     }
   }
 }
