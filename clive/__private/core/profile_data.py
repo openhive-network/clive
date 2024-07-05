@@ -195,6 +195,22 @@ class ProfileData(Context):
             value = WorkingAccount(value)
         self.__working_account = value
 
+    def move_working_account_to_watched(self) -> None:
+        name, data, alarms = self.working_account.name, self.working_account._data, self.working_account._alarms
+
+        new_account_object = Account(name, alarms)
+        new_account_object._data = data
+
+        self.unset_working_account()
+        self.watched_accounts.add(new_account_object)
+
+    def set_watched_account_as_working(self, account: Account) -> None:
+        self.watched_accounts.discard(account)
+        new_working_account = WorkingAccount(account.name, account._alarms)
+        new_working_account._data = account._data
+
+        self.set_working_account(new_working_account)
+
     def unset_working_account(self) -> None:
         self.__working_account = None
 

@@ -1,0 +1,19 @@
+SwitchWorkingAccountContainer {
+  align: center top;
+
+  Section {
+    width: 50%;
+
+    #no-working-account-button {
+      color: $accent-lighten-3;
+    }
+
+    RadioSet {
+      width: 1fr;
+
+      NoContentAvailable {
+        margin-left: 1;
+      }
+    }
+  }
+}
