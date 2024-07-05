@@ -7,6 +7,7 @@ from textual.validation import Function, ValidationResult, Validator
 from clive.__private.core.constants.node import SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE
 from clive.__private.core.shorthand_timedelta import (
     SHORTHAND_TIMEDELTA_EXAMPLE,
+    InvalidShorthandToTimedeltaError,
     shorthand_timedelta_to_timedelta,
     timedelta_to_shorthand_timedelta,
 )
@@ -20,7 +21,7 @@ class ScheduledTransferFrequencyValidator(Validator):
     """
 
     INVALID_INPUT_DESCRIPTION: Final[str] = (
-        "Incorrect frequency unit must be one of the following hH, dD, wW. " f"({SHORTHAND_TIMEDELTA_EXAMPLE})"
+        f"Incorrect frequency unit must be one of the following {SHORTHAND_TIMEDELTA_EXAMPLE}"
     )
     VALUE_TO_SMALL_DESCRIPTION: Final[str] = (
         "Value for 'frequency' must be greater or equal "
@@ -38,16 +39,16 @@ class ScheduledTransferFrequencyValidator(Validator):
     def _validate_raw_input(self, value: str) -> bool:
         try:
             shorthand_timedelta_to_timedelta(value)
-        except ValueError:
+        except InvalidShorthandToTimedeltaError:
             return False
         return True
 
     def _validate_calculated_value(self, value: str) -> bool:
         try:
-            calculated_value = shorthand_timedelta_to_timedelta(value)
+            calculated_value = shorthand_timedelta_to_timedelta(value.lower())
             if calculated_value < SCHEDULED_TRANSFER_MINIMUM_FREQUENCY_VALUE:
                 return False
-        except ValueError:
+        except InvalidShorthandToTimedeltaError:
             # Why True after this line?
             # Because this function is only to validate calculated value.
             # If input was wrong, then _validate_raw_input, returns proper message.

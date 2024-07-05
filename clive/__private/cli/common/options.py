@@ -158,10 +158,7 @@ liquid_amount_optional_option = modified_option(liquid_amount_option, default=No
 frequency_value_option = typer.Option(
     ...,
     parser=scheduled_transfer_frequency_parser,
-    help=(
-        "How often the transfer should be executed "
-        f"(hH - hours, dD - days, wW - weeks {SHORTHAND_TIMEDELTA_EXAMPLE})"
-    ),
+    help=f"How often the transfer should be executed ({SHORTHAND_TIMEDELTA_EXAMPLE})",
     show_default=False,
 )
 frequency_value_optional_option = modified_option(frequency_value_option, default=None)
