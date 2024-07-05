@@ -130,7 +130,7 @@ build_wheel:
     when: always
     expire_in: 7 days
   after_script:
-    - (bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash" && echo $?) || (echo $? && false)
+    - bash "${CI_PROJECT_DIR}/scripts/check_for_dangling_beekeeper.bash"
 
 testing_beekeeper:
   extends: .testing
@@ -194,7 +194,7 @@ testing_password_private_key_logging:
       artifacts: true
   script:
     - cd "${CI_PROJECT_DIR}/tests"
-    - (bash "${CI_PROJECT_DIR}/scripts/check_is_private_key_nor_password_is_not_logged.bash" && echo $?) || (echo $? && false)
+    - bash "${CI_PROJECT_DIR}/scripts/check_is_private_key_nor_password_is_not_logged.bash"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| TESTS |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
