@@ -32,6 +32,8 @@ variables:
   # uses registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10
   CI_BASE_IMAGE_TAG: "@sha256:080b16fd53013aeb9b89b00a8dfc90fecf886173f46448b05f45cee376c43330"
   CI_BASE_IMAGE: "registry.gitlab.syncad.com/hive/hive/ci-base-image${CI_BASE_IMAGE_TAG}"
+  # other:
+  AFTER_SCRIPT_IGNORE_ERRORS: 'false'  # without this errors in after_script will be ignored and just "WARNING: after_script failed, but job will continue unaffected: exit code 1" will be shown
 
 include:
   - project: 'hive/hive'
