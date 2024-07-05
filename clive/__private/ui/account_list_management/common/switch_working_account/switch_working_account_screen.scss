@@ -1,0 +1,32 @@
+SwitchWorkingAccountScreen {
+  align: center middle;
+
+  SwitchWorkingAccountScreenContent {
+    border-title-style: bold;
+    border-title-color: $text;
+    border-title-background: $primary;
+    border: $primary;
+    width: 50%;
+    height: auto;
+
+    #buttons-container {
+      align: center top;
+      margin-top: 1;
+      height: auto;
+
+      OneLineButton {
+        margin-right: 2;
+        margin-left: 2;
+      }
+    }
+
+    Notice {
+      margin-top: 1;
+    }
+
+    SwitchWorkingAccountContainer {
+      margin-top: 1;
+      height: auto;
+    }
+  }
+}

@@ -16,6 +16,9 @@ from clive.__private.core.formatters.humanize import (
 )
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.account_details.account_details import AccountDetails
+from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
+    SwitchWorkingAccountScreen,
+)
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
@@ -202,6 +205,7 @@ class DashboardBase(BaseScreen):
     BINDINGS = [
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
         Binding("f2", "operations", "Operations"),
+        Binding("f3", "switch_working_account", "Switch working account"),
         Binding("f9", "config", "Config"),
     ]
 
@@ -258,6 +262,12 @@ class DashboardBase(BaseScreen):
 
     def action_config(self) -> None:
         self.app.push_screen(Config())
+
+    def action_switch_working_account(self) -> None:
+        if not self.app.world.profile_data.get_tracked_accounts():
+            self.notify("Cannot switch a working account without any account", severity="error")
+            return
+        self.app.push_screen(SwitchWorkingAccountScreen())
 
     @property
     def has_working_account(self) -> bool:

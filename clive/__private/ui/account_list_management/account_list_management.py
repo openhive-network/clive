@@ -6,7 +6,7 @@ from textual import on
 from textual.binding import Binding
 from textual.events import ScreenSuspend
 
-from clive.__private.ui.account_list_management.common.switch_working_account_container import (
+from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_container import (
     SwitchWorkingAccountContainer,
 )
 from clive.__private.ui.account_list_management.known_accounts import KnownAccounts
