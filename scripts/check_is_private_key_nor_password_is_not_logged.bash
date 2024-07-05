@@ -13,7 +13,10 @@ function find_password_private_keys() {
 
 amount_of_occurrences=$(find_password_private_keys --count)
 if [[ $amount_of_occurrences -ne 0 ]]; then
-    echo "Error! Found $amount_of_occurrences occurrences of private key or password"
+    echo "Error: Found ${amount_of_occurrences} occurrences of private key or password"
     find_password_private_keys 2>&1
+    exit "${amount_of_occurrences}"
 fi;
-exit "$amount_of_occurrences"
+
+echo "Ok: No sensitive data found in clive logs."
+exit 0
