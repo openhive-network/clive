@@ -15,6 +15,7 @@ from clive.__private.cli.exceptions import (
 )
 from clive.__private.core.constants.node import (
     SCHEDULED_TRANSFER_MAX_LIFETIME,
+    SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
     VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
 )
 from clive.__private.core.date_utils import timedelta_to_int_hours
@@ -191,7 +192,10 @@ class ProcessTransferScheduleRemove(_ProcessTransferScheduleCommon):
             amount=Asset.hive(VALUE_TO_REMOVE_SCHEDULED_TRANSFER),
             memo=self.scheduled_transfer_ensure.memo,
             recurrence=self.scheduled_transfer_ensure.recurrence,
-            executions=self.scheduled_transfer_ensure.remaining_executions,
+            # We can't rewrite the executions value.
+            # In case when remaining_executions will be less than SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
+            # broadcast will fail.
+            executions=SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
             extensions=self._create_recurrent_transfer_pair_id_extension(),
         )
 
