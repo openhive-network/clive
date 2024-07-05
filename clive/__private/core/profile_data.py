@@ -43,6 +43,14 @@ class NoWorkingAccountError(ProfileDataError):
     """No working account is available."""
 
 
+class WatchedAccountNotFoundError(ProfileDataError):
+    """Raised when an account is not found in `get_watched_account` method."""
+
+    def __init__(self, account_name: str) -> None:
+        super().__init__(f"Account {account_name} not found in watched accounts")
+        self.account_name = account_name
+
+
 class AccountNotFoundError(ProfileDataError):
     """Raised when an account is not found in `get_account_by_name` method."""
 
@@ -198,6 +206,52 @@ class ProfileData(Context):
             value = WorkingAccount(value)
         self.__working_account = value
 
+    def switch_working_account(self, new_working_account: str | Account | None = None) -> None:
+        """
+        Switch the working account to the one of watched accounts and move the old one to the watched accounts.
+
+        Working account can be deleted and moved to watched accounts if `new_working_account` is None.
+        """
+
+        def is_given_account_already_working() -> bool:
+            return new_working_account is not None and self.is_account_working(new_working_account)
+
+        if is_given_account_already_working():
+            return
+
+        if self.is_working_account_set():
+            # we allow for switching from no working account to watched account
+            self.move_working_account_to_watched()
+
+        if new_working_account is not None:
+            # we allow for only moving the current working account to watched accounts
+            self.set_watched_account_as_working(new_working_account)
+
+    def is_account_working(self, account: Account | str) -> bool:
+        if not self.is_working_account_set():
+            return False
+
+        account_name = self._get_account_name(account)
+        return self.working_account.name == account_name
+
+    def move_working_account_to_watched(self) -> None:
+        name, data, alarms = self.working_account.name, self.working_account._data, self.working_account._alarms
+
+        new_account_object = Account(name, alarms)
+        new_account_object._data = data
+
+        self.unset_working_account()
+        self.watched_accounts.add(new_account_object)
+
+    def set_watched_account_as_working(self, account: Account | str) -> None:
+        account = self.get_watched_account(account)
+
+        self.remove_watched_account(account)
+        new_working_account = WorkingAccount(account.name, account._alarms)
+        new_working_account._data = account._data
+
+        self.set_working_account(new_working_account)
+
     def unset_working_account(self) -> None:
         self.__working_account = None
 
@@ -245,6 +299,14 @@ class ProfileData(Context):
         if self.is_working_account_set():
             accounts.add(self.working_account)
         return accounts
+
+    def get_watched_account(self, account: str | Account) -> Account:
+        account_to_find: Account = self.get_account_by_name(account) if isinstance(account, str) else account
+
+        if account_to_find in self.watched_accounts:
+            return account_to_find
+
+        raise WatchedAccountNotFoundError(account_to_find.name)
 
     def has_known_accounts(self) -> bool:
         return bool(self.known_accounts)
