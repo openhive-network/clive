@@ -40,10 +40,10 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
-            with Section(f"{'Track' if self._accounts_type == 'tracked_accounts' else 'Known'} account"):
+            with Section(f"{'Track' if self._accounts_type == 'tracked_accounts' else 'Add known'} account"):
                 yield self._accounts_input
                 yield CliveButton(
-                    f"{'Add' if self._accounts_type == 'tracked_accounts' else 'Mark as known'}",
+                    "Add",
                     variant="success",
                     id_="save-account-button",
                 )
