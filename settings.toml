@@ -6,6 +6,7 @@ LOG_LEVELS = ["INFO"]  # possible values: ["DEBUG", "INFO", "WARNING", "ERROR"],
 LOG_LEVEL_3RD_PARTY = "WARNING"  # matters only for directories containing LOG_LEVEL higher than DEBUG, in DEBUG 3rd party logs are always DEBUG
 LOG_KEEP_HISTORY = false  # whether to keep history of logs, if false - only logs of latest run will be kept
 LOG_DEBUG_PERIOD = 1
+MAX_NUMBER_OF_TRACKED_ACCOUNTS = 6
 
 [default.beekeeper]
 PATH = "./beekeeper" # required if no REMOTE_ADDRESS given, path to beekeeper executable
