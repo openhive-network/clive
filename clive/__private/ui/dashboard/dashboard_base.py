@@ -256,7 +256,6 @@ class DashboardBase(BaseScreen):
             return
         self.app.push_screen(Operations())
 
-    @CliveScreen.prevent_action_when_no_accounts_node_data
     def action_config(self) -> None:
         self.app.push_screen(Config())
 
