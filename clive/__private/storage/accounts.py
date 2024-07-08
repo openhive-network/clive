@@ -58,7 +58,7 @@ class AccountType(str, Enum):
 @dataclass
 class Account:
     name: str
-    _alarms: AlarmsStorage = field(default_factory=AlarmsStorage)
+    _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
     _data: NodeData | None = field(init=False, default=None, compare=False)
 
     def __post_init__(self) -> None:
