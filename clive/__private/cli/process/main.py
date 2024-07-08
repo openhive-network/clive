@@ -111,9 +111,10 @@ async def process_update_memo_key(
 async def process_custom_json(
     ctx: typer.Context,  # noqa: ARG001
     authorize: list[str] = typer.Option(
-        [options._get_default_profile_name()] if options._get_default_profile_name() else [],
+        [],
         help="Posting authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
         " used, then posting authority of working account is used for authorization.",
+        show_default=options._get_default_working_account_name() or False,  # type: ignore[arg-type]
     ),
     authorize_by_active: list[str] = typer.Option(
         [],

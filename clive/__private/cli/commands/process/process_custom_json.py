@@ -28,15 +28,26 @@ class ProcessCustomJson(OperationCommand):
         )
 
     async def validate(self) -> None:
-        self._validate_no_posting_and_active_auths()
+        self._validate_no_both_posting_and_active_auths()
+        self._validate_at_least_one_active_or_posting_auth()
         await super().validate()
 
-    def _validate_no_posting_and_active_auths(self) -> None:
-        active_auths_number = len(self.required_auths)
-        posting_auths_number = len(self.required_posting_auths)
-        if active_auths_number != 0 and posting_auths_number != 0:
+    def _validate_no_both_posting_and_active_auths(self) -> None:
+        is_required_auths_given = bool(self.required_auths)
+        is_required_posting_auths_given = bool(self.required_posting_auths)
+        if is_required_auths_given and is_required_posting_auths_given:
             raise CLIPrettyError(
                 "Transaction can't be signed by posting and active authority at the same time.", errno.EINVAL
+            )
+
+    def _validate_at_least_one_active_or_posting_auth(self) -> None:
+        is_required_auths_given = bool(self.required_auths)
+        is_required_posting_auths_given = bool(self.required_posting_auths)
+        if not is_required_auths_given and not is_required_posting_auths_given:
+            raise CLIPrettyError(
+                "At least one active or posting account authority is required. Can't use working account name"
+                " as default. Perhaps you don't have a working account set?",
+                errno.EINVAL,
             )
 
     @staticmethod

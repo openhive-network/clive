@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import errno
 from typing import TYPE_CHECKING, Final
-from uuid import uuid4
 
 import pytest
 
@@ -26,17 +25,14 @@ INVALID_JSON: Final[str] = '{"foo":'
 EXAMPLE_FILE_RELATIVE_PATH: Final[str] = "test_file.json"
 TRANSACTION_RELATIVE_PATH: Final[str] = "full_trx.json"
 OTHER_ACCOUNT: Final[tt.Account] = EMPTY_ACCOUNT
-
-
-def generate_random_id() -> str:
-    return uuid4().hex
+EXAMPLE_ID: Final[str] = "some_id"
 
 
 @pytest.mark.parametrize("json_", [EXAMPLE_OBJECT, EXAMPLE_STRING, EXAMPLE_NUMBER])
 async def test_authorize_default(cli_tester: CLITester, json_: str) -> None:
     # ACT
     cli_tester.process_custom_json(
-        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, id_=generate_random_id(), json_=json_
+        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, id_=EXAMPLE_ID, json_=json_
     )
 
 
@@ -46,7 +42,7 @@ async def test_authorize_posting(cli_tester: CLITester) -> None:
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         authorize=WORKING_ACCOUNT_DATA.account.name,
-        id_=generate_random_id(),
+        id_=EXAMPLE_ID,
         json_=EXAMPLE_OBJECT,
     )
 
@@ -56,7 +52,7 @@ async def test_authorize_multiple_posting(cli_tester: CLITester) -> None:
     cli_tester.process_custom_json(
         broadcast=False,
         authorize=[WORKING_ACCOUNT_DATA.account.name, OTHER_ACCOUNT.name],
-        id_=generate_random_id(),
+        id_=EXAMPLE_ID,
         json_=EXAMPLE_OBJECT,
     )
 
@@ -67,7 +63,7 @@ async def test_authorize_active(cli_tester: CLITester) -> None:
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         authorize_by_active=WORKING_ACCOUNT_DATA.account.name,
-        id_=generate_random_id(),
+        id_=EXAMPLE_ID,
         json_=EXAMPLE_OBJECT,
     )
 
@@ -82,7 +78,7 @@ async def test_json_as_file(cli_tester: CLITester, tmp_path: Path) -> None:
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         authorize=WORKING_ACCOUNT_DATA.account.name,
-        id_=generate_random_id(),
+        id_=EXAMPLE_ID,
         json_=json_file,
     )
 
@@ -97,7 +93,7 @@ async def test_negative_invalid_json_format(cli_tester: CLITester) -> None:
             password=WORKING_ACCOUNT_PASSWORD,
             sign=WORKING_ACCOUNT_KEY_ALIAS,
             authorize=WORKING_ACCOUNT_DATA.account.name,
-            id_=generate_random_id(),
+            id_=EXAMPLE_ID,
             json_=INVALID_JSON,
         )
 
@@ -111,14 +107,12 @@ async def test_negative_active_and_posting_auths(cli_tester: CLITester) -> None:
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as exception_info:
-        (
-            cli_tester.process_custom_json(
-                broadcast=False,
-                authorize_by_active=OTHER_ACCOUNT.name,
-                authorize=WORKING_ACCOUNT_DATA.account.name,
-                id_=generate_random_id(),
-                json_=EXAMPLE_OBJECT,
-            )
+        cli_tester.process_custom_json(
+            broadcast=False,
+            authorize_by_active=OTHER_ACCOUNT.name,
+            authorize=WORKING_ACCOUNT_DATA.account.name,
+            id_=EXAMPLE_ID,
+            json_=EXAMPLE_OBJECT,
         )
 
     # ASSERT
@@ -131,16 +125,15 @@ async def test_negative_invalid_json_file_path(cli_tester: CLITester, tmp_path: 
     invalid_path = tmp_path / EXAMPLE_FILE_RELATIVE_PATH
     assert not invalid_path.exists()
 
+    # ASSERT
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as exception_info:
         cli_tester.process_custom_json(
             password=WORKING_ACCOUNT_PASSWORD,
             sign=WORKING_ACCOUNT_KEY_ALIAS,
-            id_=generate_random_id(),
+            id_=EXAMPLE_ID,
             json_=invalid_path,
         )
-
-    # ASSERT
     checkers.assert_exit_code(exception_info, errno.EINVAL)
 
 
@@ -150,7 +143,7 @@ async def test_load_transaction_from_file(cli_tester: CLITester, tmp_path: Path,
     trx_file = tmp_path / TRANSACTION_RELATIVE_PATH
     cli_tester.process_custom_json(
         authorize=WORKING_ACCOUNT_DATA.account.name,
-        id_=generate_random_id(),
+        id_=EXAMPLE_ID,
         json_=json_,
         broadcast=False,
         save_file=trx_file,
