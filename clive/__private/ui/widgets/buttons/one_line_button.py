@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 
 
 class OneLineButton(CliveButton):

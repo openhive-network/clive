@@ -10,6 +10,7 @@ from textual.widgets import Static
 
 from clive.__private.ui.account_details.alarms.alarm_info_screen.fix_alarm_info_widget import FixAlarmInfoWidget
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.widgets.buttons.close_button import CloseButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
     ODD_CLASS_NAME,
@@ -17,7 +18,6 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
@@ -84,8 +84,8 @@ class AlarmInfoScreen(ModalScreen[None]):
                 alarm=self._alarm, alarm_fix_details=self._alarm_fix_details, account=self._account
             )
             with Container(id="close-button-container"):
-                yield OneLineButton("Close", variant="error", id_="close-button")
+                yield CloseButton()
 
-    @on(OneLineButton.Pressed, "#close-button")
+    @on(CloseButton.Pressed, "#close-button")
     def action_request_close(self) -> None:
         self.app.pop_screen()

@@ -8,7 +8,7 @@ from textual.widgets import Button, TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.operation_summary.account_witness_proxy import AccountWitnessProxy
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.proxy_input import ProxyInput

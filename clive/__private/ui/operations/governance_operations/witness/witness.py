@@ -32,7 +32,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
 from clive.__private.ui.operations.governance_operations.witness.witness_details_screen import (
     WitnessDetailsScreen,
 )
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput

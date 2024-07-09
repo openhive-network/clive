@@ -18,7 +18,7 @@ from clive.__private.ui.operations.operation_summary.cancel_transfer_from_saving
 )
 from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     EVEN_CLASS_NAME,
     ODD_CLASS_NAME,

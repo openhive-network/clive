@@ -9,7 +9,8 @@ from textual.widgets import Static, TabPane
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -18,7 +19,6 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
-from clive.__private.ui.widgets.one_line_button import OneLineButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section, SectionBody
 from clive.__private.ui.widgets.section_title import SectionTitle

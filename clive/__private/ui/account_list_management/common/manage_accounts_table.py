@@ -6,14 +6,14 @@ from textual import on
 
 from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
-from clive.__private.ui.widgets.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
-from clive.__private.ui.widgets.one_line_button import OneLineButton
 
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
