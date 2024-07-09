@@ -111,3 +111,11 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
 
     assert actual_exit_code == expected_exit_code, message
+
+
+def assert_transaction_in_blockchain(node: tt.RawNode, transaction_id: str) -> None:
+    node.wait_number_of_blocks(1)
+    node.api.account_history.get_transaction(
+        id_=transaction_id,
+        include_reversible=True,
+    )
