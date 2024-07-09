@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import contextlib
 import errno
-import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -11,6 +9,7 @@ from click.core import ParameterSource
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.validators.json_validator import JsonValidator
 from clive.models.aliased import CustomJsonOperation
 
 if TYPE_CHECKING:
@@ -64,10 +63,13 @@ class ProcessCustomJson(OperationCommand):
 
     @staticmethod
     def ensure_json_from_json_string_or_path(json_or_path: str) -> str:
+        validator = JsonValidator()
+
         # Try to parse the string as JSON
-        with contextlib.suppress(json.JSONDecodeError):
-            json.loads(json_or_path)
+        result_from_string = validator.validate(json_or_path)
+        if result_from_string.is_valid:
             return json_or_path
+
         # Otherwise ensure that the input is a valid file path
         json_path = Path(json_or_path)
         if not json_path.is_file():
@@ -76,12 +78,11 @@ class ProcessCustomJson(OperationCommand):
         # Read the file contents
         with json_path.open() as file:
             json_string = file.read()
-            try:
-                json.loads(json_string)
-            except json.JSONDecodeError as err:
-                raise CLIPrettyError(f"The {json_path} file does not contain a valid JSON.", errno.EINVAL) from err
-            else:
-                return json_string
+            result_from_file = validator.validate(json_string)
+            if not result_from_file.is_valid:
+                raise CLIPrettyError(f"The {json_path} file does not contain a valid JSON.", errno.EINVAL)
+
+            return json_string
 
     @property
     def authorize_has_default_value(self) -> bool:
