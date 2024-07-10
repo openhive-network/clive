@@ -27,6 +27,12 @@ flowchart LR
 
    subgraph Processing[Commands related to performing certain actions]
         Process(process) --> ProcessTransfer[transfer]
+
+        Process --> ProcessTransferSchedule[transfer-schedule]
+        ProcessTransferSchedule --> ProcessTransferScheduleCreate[create]
+        ProcessTransferSchedule --> ProcessTransferScheduleModify[modify]
+        ProcessTransferSchedule --> ProcessTransferScheduleRemove[remove]
+
         Process --> ProcessTransaction[transaction]
 
         Process --> ProcessSavings(savings)
@@ -110,7 +116,8 @@ flowchart LR
         ShowPending --> ShowPendingPowerUps[power-ups]
         ShowPending --> ShowPendingRemovedDelegations[removed-delegations]
         ShowPending --> ShowPendingTransferFromSavings[withdrawals]
-        ShowPending -->|"Not implemented yet"| ShowPendingRecurrentTransfers[transfers]
+
+        Show --> ShowTransferSchedule[transfer-schedule]
 
         Show --> ShowAuthority["[owner|active|posting]-authority"]
         Show --> ShowMemoKey[memo-key]
