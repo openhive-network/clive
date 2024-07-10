@@ -136,5 +136,9 @@ flowchart LR
 
         Configure --> ConfigureNode(node)
         ConfigureNode --> SetNode[set]
+
+        Configure --> ConfigureChainId(chain-id)
+        ConfigureChainId --> SetChainId[set]
+        ConfigureChainId --> UnsetChainId[unset]
     end
 ```
