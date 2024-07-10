@@ -66,7 +66,7 @@ flowchart LR
         ProcessDelegations --> ProcessDelegationsRemove[remove]
 
         Process --> ProcessClaim(claim)
-        ProcessClaim --> ProcessClaimNewAccountToken[new-account-tokentoken]
+        ProcessClaim --> ProcessClaimNewAccountToken[new-account-token]
 
         Process --> ProcessVoteWitness(vote-witness)
         ProcessVoteWitness --> ProcessVoteWitnessAdd[add]
