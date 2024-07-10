@@ -105,5 +105,5 @@ def scheduled_transfer_frequency_parser(raw: str) -> timedelta:
 
     status = ScheduledTransferFrequencyValidator().validate(raw)
     if status.is_valid:
-        return shorthand_timedelta_to_timedelta(raw.lower())
+        return shorthand_timedelta_to_timedelta(raw)
     raise typer.BadParameter(humanize_validation_result(status))
