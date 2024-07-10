@@ -94,6 +94,8 @@ flowchart LR
 
         Show --> ShowTransactionStatus[transaction-status]
 
+        Show --> ShowChain[chain]
+
         Show --> ShowProxy[proxy]
 
         Show --> ShowWitnesses[witnesses]
