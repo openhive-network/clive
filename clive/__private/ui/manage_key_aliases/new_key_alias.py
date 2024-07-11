@@ -133,7 +133,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         return typing.cast(str, settings.get("secrets.default_key", ""))
 
     def _default_key_alias_name(self) -> str:
-        return f"{self.context.working_account.name}@active"
+        return ""
 
 
 class NewKeyAlias(NewKeyAliasBase):
