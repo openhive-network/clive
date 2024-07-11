@@ -132,9 +132,6 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
     def _default_key(self) -> str:
         return typing.cast(str, settings.get("secrets.default_key", ""))
 
-    def _default_key_alias_name(self) -> str:
-        return ""
-
 
 class NewKeyAlias(NewKeyAliasBase):
     BIG_TITLE = "Configuration"

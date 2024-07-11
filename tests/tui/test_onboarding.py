@@ -43,6 +43,7 @@ PROFILE_NAME: Final[str] = "master"
 PROFILE_PASSWORD: Final[str] = PROFILE_NAME + PROFILE_NAME
 ACCOUNT_NAME: Final[str] = WORKING_ACCOUNT_DATA.account.name
 PRIVATE_KEY: Final[str] = WORKING_ACCOUNT_DATA.account.private_key
+KEY_ALIAS_NAME: Final[str] = "master@active"
 
 
 @pytest.fixture()
@@ -92,11 +93,12 @@ async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
     ), "Expected 'Working account?' to be unchecked!"
 
 
-async def onboarding_set_key(pilot: ClivePilot, private_key: str) -> None:
+async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:
     assert_is_screen_active(pilot, NewKeyAliasForm)
     assert_is_clive_composed_input_focused(
         pilot, PublicKeyAliasInput, context="KeyAliasForm screen should have initial focus"
     )
+    await write_text(pilot, alias_name)
     await focus_next(pilot)
     assert_is_clive_composed_input_focused(pilot, PrivateKeyInput)
     await write_text(pilot, private_key)
@@ -155,7 +157,7 @@ async def test_onboarding_working_account_creation(prepared_tui_on_onboarding: C
     # ACT
     await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await press_and_wait_for_screen(pilot, "ctrl+n", NewKeyAliasForm)
-    await onboarding_set_key(pilot, PRIVATE_KEY)
+    await onboarding_set_key_and_alias_name(pilot, KEY_ALIAS_NAME, PRIVATE_KEY)
     await onboarding_finish(pilot)
 
     # ASSERT
