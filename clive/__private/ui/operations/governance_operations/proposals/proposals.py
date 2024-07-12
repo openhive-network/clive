@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 from textual.containers import Horizontal, Vertical
 from textual.message import Message
-from textual.widgets import Label, Select
+from textual.widgets import Label
 
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
@@ -27,6 +27,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
     GovernanceTable,
     GovernanceTableRow,
 )
+from clive.__private.ui.widgets.clive_select import CliveSelect
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
@@ -41,7 +42,7 @@ if TYPE_CHECKING:
     from clive.models import Operation
 
 
-class ProposalsOrderSelect(Select[ProposalsDataRetrieval.Orders]):
+class ProposalsOrderSelect(CliveSelect[ProposalsDataRetrieval.Orders]):
     SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Orders]]] = [
         ("Total votes, mine first", "by_total_votes_with_voted_first"),
         ("Total votes", "by_total_votes"),
@@ -58,7 +59,7 @@ class ProposalsOrderSelect(Select[ProposalsDataRetrieval.Orders]):
         )
 
 
-class ProposalsOrderDirectionSelect(Select[ProposalsDataRetrieval.OrderDirections]):
+class ProposalsOrderDirectionSelect(CliveSelect[ProposalsDataRetrieval.OrderDirections]):
     SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.OrderDirections]]] = [
         (value.capitalize(), value) for value in ProposalsDataRetrieval.ORDER_DIRECTIONS
     ]
@@ -71,7 +72,7 @@ class ProposalsOrderDirectionSelect(Select[ProposalsDataRetrieval.OrderDirection
         )
 
 
-class ProposalsStatusSelect(Select[ProposalsDataRetrieval.Statuses]):
+class ProposalsStatusSelect(CliveSelect[ProposalsDataRetrieval.Statuses]):
     SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Statuses]]] = [
         (value.capitalize(), value) for value in ProposalsDataRetrieval.STATUSES
     ]
@@ -214,7 +215,7 @@ class ProposalsOrderChange(Vertical):
     def __init__(self) -> None:
         super().__init__()
 
-        with self.prevent(Select.Changed):
+        with self.prevent(CliveSelect.Changed):
             self.__order_by_select = ProposalsOrderSelect()
             self.__order_direction_select = ProposalsOrderDirectionSelect()
             self.__proposal_status_select = ProposalsStatusSelect()
@@ -229,11 +230,11 @@ class ProposalsOrderChange(Vertical):
             yield self.__order_direction_select
             yield self.__proposal_status_select
 
-    @on(Select.Changed)
+    @on(CliveSelect.Changed)
     def search_witnesses(self) -> None:
-        order_by = self.__order_by_select.value
-        order_direction = self.__order_direction_select.value
-        status = self.__proposal_status_select.value
+        order_by = self.__order_by_select.value_ensure
+        order_direction = self.__order_direction_select.value_ensure
+        status = self.__proposal_status_select.value_ensure
         self.post_message(self.Search(order_by, order_direction, status))
 
 

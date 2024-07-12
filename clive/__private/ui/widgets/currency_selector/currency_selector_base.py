@@ -3,10 +3,8 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import Generic
 
-from textual.widgets import Select
-from textual.widgets._select import NoSelection
-
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.widgets.clive_select import CliveSelect
 from clive.models.asset import (
     AssetAmount,
     AssetFactory,
@@ -15,7 +13,7 @@ from clive.models.asset import (
 )
 
 
-class CurrencySelectorBase(Select[AssetFactoryHolder[AssetT]], Generic[AssetT], AbstractClassMessagePump):
+class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[AssetT], AbstractClassMessagePump):
     """Base Currency Selector for operations, which require to choose type of Assets."""
 
     def __init__(self) -> None:
@@ -43,13 +41,6 @@ class CurrencySelectorBase(Select[AssetFactoryHolder[AssetT]], Generic[AssetT], 
     def get_selectable(self, asset: str) -> AssetFactoryHolder[AssetT]:
         """Return selectable item for given asset."""
         return self._selectable[asset]
-
-    @property
-    def value_ensure(self) -> AssetFactoryHolder[AssetT]:
-        """Returns selected asset factory."""
-        value = self.value
-        assert not isinstance(value, NoSelection), "Value should be set."
-        return value
 
     @property
     def asset_cls(self) -> type[AssetT]:
