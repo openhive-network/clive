@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import cast
 
 import typer
 
@@ -185,20 +186,21 @@ async def show_proposals(  # noqa: PLR0913
     """List proposals filtered by status."""
     from clive.__private.cli.commands.show.show_proposals import ShowProposals
 
-    if isinstance(order_by, Enum):
-        order_by = order_by.value
-    if isinstance(order_direction, Enum):
-        order_direction = order_direction.value
-    if isinstance(status, Enum):
-        status = status.value
+    assert isinstance(order_by, Enum), f"Expected Enum type, but got: {type(order_by)}"
+    assert isinstance(order_direction, Enum), f"Expected Enum type, but got: {type(order_by)}"
+    assert isinstance(status, Enum), f"Expected Enum type, but got: {type(order_by)}"
+
+    order_by_ = cast(ProposalsDataRetrieval.Orders, order_by.value)
+    order_direction_ = cast(ProposalsDataRetrieval.OrderDirections, order_direction.value)
+    status_ = cast(ProposalsDataRetrieval.Statuses, status.value)
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowProposals(
         **common.as_dict(),
         account_name=account_name,
-        order_by=order_by,
-        order_direction=order_direction,
-        status=status,
+        order_by=order_by_,
+        order_direction=order_direction_,
+        status=status_,
         page_size=page_size,
         page_no=page_no,
     ).run()
