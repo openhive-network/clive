@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 AMOUNT_TO_DELEGATE: Final[tt.Asset.VestT] = tt.Asset.Vest(123_456.789)
 
 
-async def test_pending_removed_delegations_none(cli_tester: CLITester) -> None:
+async def test_no_pending_removed_delegations(cli_tester: CLITester) -> None:
     # ACT
     # ASSERT
     assert_no_removed_delegations(cli_tester)

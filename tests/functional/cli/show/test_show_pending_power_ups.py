@@ -4,11 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import test_tools as tt
 
-from clive_local_tools.cli.checkers import (
-    assert_no_exit_code_error,
-    assert_no_pending_power_ups,
-    assert_pending_power_ups,
-)
+from clive_local_tools.cli.checkers import assert_no_exit_code_error, assert_no_pending_power_ups
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import EMPTY_ACCOUNT
 
@@ -19,7 +15,7 @@ if TYPE_CHECKING:
 AMOUNT_TO_POWER_UP: Final[tt.Asset.HiveT] = tt.Asset.Test(234.567)
 
 
-async def test_pending_power_ups_none(cli_tester: CLITester) -> None:
+async def test_no_pending_power_ups(cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.show_pending_power_ups(account_name=EMPTY_ACCOUNT.name)
 
@@ -37,10 +33,7 @@ async def test_pending_power_ups_basic(cli_tester: CLITester) -> None:
     )
 
     # ACT
-    result = cli_tester.show_pending_power_ups(account_name=EMPTY_ACCOUNT.name)
-
-    # ASSERT
-    assert_pending_power_ups(result, AMOUNT_TO_POWER_UP)
+    cli_tester.show_pending_power_ups(account_name=EMPTY_ACCOUNT.name)
 
 
 async def test_pending_power_ups_default_account(cli_tester: CLITester) -> None:

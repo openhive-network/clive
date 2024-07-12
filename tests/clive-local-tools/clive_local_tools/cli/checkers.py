@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import re
-from typing import TYPE_CHECKING, Callable, Final
+from itertools import pairwise
+from typing import TYPE_CHECKING, Callable
 
 import pytest
 from click.testing import Result
 
 from clive.__private.core.formatters.humanize import humanize_bool
-from clive.models import Asset
 
 from .cli_tester import CLITester
 
@@ -20,36 +19,6 @@ if TYPE_CHECKING:
     from schemas.fields.basic import PublicKey
 
     from .exceptions import CLITestCommandError
-
-
-INFLATION_INCREASE_TOLERANCE_PERCENT: Final[float] = 1.0
-
-
-def in_range(ref: float, amount: float, tolerance: float) -> bool:
-    """
-    Check if `amount` is equal to `ref` with error tolerance given as percent.
-
-    Example:
-    -------
-    in_range(21.0, 22.0, 1) returns true
-    in_range(21.0, 22.0, 0.1) returns false.
-    """
-    abs_tolerance = ref * tolerance / 100
-    return ref - abs_tolerance <= amount <= ref + abs_tolerance
-
-
-def decimal_suffix_to_float(number: str) -> float:
-    if number.endswith("K"):
-        return float(number[:-1]) * 1000
-    if number.endswith("M"):
-        return float(number[:-1]) * 1000
-    return float(number)
-
-
-def contains(line: str, asset: tt.Asset.AnyT, *, tolerance: float = INFLATION_INCREASE_TOLERANCE_PERCENT) -> bool:
-    numbers = re.findall(r"\d+\.?\d*[KM]?", line)
-    amount = Asset.pretty_amount(asset)
-    return any(in_range(decimal_suffix_to_float(number), float(amount), tolerance) for number in numbers)
 
 
 def assert_balances(
@@ -133,33 +102,33 @@ def assert_output_contains(expected_output: str, output: str, command: str) -> N
     assert expected_output in output, f"expected `{expected_output}` in command `{command}` output:\n{output}"
 
 
-def assert_effective_voting_power(context: CLITester | Result, asset: tt.Asset.HiveT) -> None:
+def assert_effective_voting_power(context: CLITester | Result, asset: str) -> None:
     output = get_output(context, CLITester.show_hive_power)
     hive_power_type = "Effective"
+    """contains"""
     assert any(
-        hive_power_type in line and contains(line, asset) for line in output.split("\n")
-    ), f"no entry for `{hive_power_type}` voting power"
-    f" with amount `{asset.as_legacy()}` in show hive-power output:\n{output}"
+        hive_power_type in line and asset in line for line in output.split("\n")
+    ), f"no entry for `{hive_power_type}` voting power with amount `{asset}` in show hive-power output:\n{output}"
 
 
-def assert_power_down(context: CLITester | Result, asset: tt.Asset.VestT) -> None:
-    output = get_output(context, CLITester.show_pending_power_down)
+def assert_power_down(context: CLITester | Result, asset: str) -> None:
+    output = get_output(context, CLITester.show_hive_power)
+    """contains"""
     assert any(
-        contains(line, asset) for line in output.split("\n")
-    ), f"no entry for `{asset.as_legacy()}` in show pending power-downs output:\n{output}"
+        asset in line for line in output.split("\n")
+    ), f"no entry for `{asset}` in show pending power-downs output:\n{output}"
 
 
-def assert_delegations(context: CLITester | Result, delegatee: str, asset: tt.Asset.HiveT | tt.Asset.VestT) -> None:
+def assert_delegations(context: CLITester | Result, delegatee: str, asset: str) -> None:
     output = get_output(context, CLITester.show_hive_power)
     is_delegation = False
     lines = output.split("\n")
-    for i in range(len(lines) - 1):
-        if delegatee in lines[i] and (contains(lines[i], asset) or contains(lines[i + 1], asset)):
+    """contains"""
+    for this_line, next_line in pairwise(lines):
+        if delegatee in this_line and (asset in this_line or asset in next_line):
             is_delegation = True
             break
-    assert (
-        is_delegation
-    ), f"no delegation for `{delegatee}` with asset `{Asset.pretty_amount(asset)}` in show hive-power output:\n{output}"
+    assert is_delegation, f"no delegation for `{delegatee}` with asset `{asset}` in show hive-power output:\n{output}"
 
 
 def assert_no_delegations(context: CLITester | Result) -> None:
@@ -185,12 +154,13 @@ def assert_no_withdraw_routes(context: CLITester | Result) -> None:
     assert_output_contains(expected_output, output, command)
 
 
-def assert_pending_power_down(context: CLITester | Result, asset: tt.Asset.HiveT | tt.Asset.VestsT) -> None:
+def assert_pending_power_down(context: CLITester | Result, asset: str) -> None:
     result = context.show_pending_power_down() if isinstance(context, CLITester) else context
     output = result.output
+    """contains"""
     assert any(
-        contains(line, asset) for line in output.split("\n")
-    ), f"no entry for `{Asset.pretty_amount(asset)}` in show pending power-downs output:\n{output}"
+        asset in line for line in output.split("\n")
+    ), f"no entry for `{asset}` in show pending power-downs output:\n{output}"
 
 
 def assert_no_pending_power_down(context: CLITester | Result) -> None:
@@ -200,12 +170,13 @@ def assert_no_pending_power_down(context: CLITester | Result) -> None:
     assert_output_contains(expected_output, output, command)
 
 
-def assert_pending_power_ups(context: CLITester | Result, asset: tt.Asset.HiveT) -> None:
+def assert_pending_power_ups(context: CLITester | Result, asset: str) -> None:
     result = context.show_pending_power_ups() if isinstance(context, CLITester) else context
     output = result.output
+    """contains"""
     assert any(
-        contains(line, asset) for line in output.split("\n")
-    ), f"no entry for `{Asset.pretty_amount(asset)}` in show pending power-ups output:\n{output}"
+        asset in line for line in output.split("\n")
+    ), f"no entry for `{asset}` in show pending power-ups output:\n{output}"
 
 
 def assert_no_pending_power_ups(context: CLITester | Result) -> None:

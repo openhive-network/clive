@@ -264,20 +264,18 @@ class CLITester:
         )
 
     def show_hive_power(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "hive-power"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke(["show", "hive-power"], **extract_params(locals()))
 
     def show_pending_power_down(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "pending", "power-down"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke(["show", "pending", "power-down"], **extract_params(locals()))
 
     def show_pending_power_ups(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "pending", "power-ups"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke(["show", "pending", "power-ups"], **extract_params(locals()))
 
     def show_pending_removed_delegations(
         self, *, account_name: str | None = None, profile_name: str | None = None
     ) -> Result:
-        return self.__invoke(
-            ["show", "pending", "removed-delegations"], account_name=account_name, profile_name=profile_name
-        )
+        return self.__invoke(["show", "pending", "removed-delegations"], **extract_params(locals()))
 
     def process_power_up(  # noqa: PLR0913
         self,
