@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from collections import OrderedDict
 from dataclasses import dataclass, field
-from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, Literal
+
+from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import (
     CommandDataRetrieval,
@@ -68,7 +70,7 @@ class WitnessesData:
 
 @dataclass(kw_only=True)
 class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, WitnessesData]):
-    Modes: ClassVar[TypeAlias] = Literal["search_by_pattern", "search_top_with_unvoted_first"]
+    Modes = TypeAliasType("Modes", Literal["search_by_pattern", "search_top_with_unvoted_first"])
     """
     Available modes for retrieving witnesses data.
 

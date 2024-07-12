@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, ClassVar, Literal, TypeAlias
+from typing import TYPE_CHECKING, ClassVar, Literal, get_args
+
+from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
@@ -56,13 +58,20 @@ class ProposalsData:
     proposals: list[Proposal]
 
 
+_Orders = Literal["by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"]
+_OrderDirections = Literal["ascending", "descending"]
+_Statuses = Literal["all", "active", "inactive", "votable", "expired", "inactive"]
+
+
 @dataclass(kw_only=True)
 class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, ProposalsData]):
-    Orders: ClassVar[TypeAlias] = Literal[
-        "by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"
-    ]
-    OrderDirections: ClassVar[TypeAlias] = Literal["ascending", "descending"]
-    Statuses: ClassVar[TypeAlias] = Literal["all", "active", "inactive", "votable", "expired", "inactive"]
+    Orders = TypeAliasType("Orders", _Orders)
+    OrderDirections = TypeAliasType("OrderDirections", _OrderDirections)
+    Statuses = TypeAliasType("Statuses", _Statuses)
+
+    ORDERS: ClassVar[tuple[Orders, ...]] = get_args(_Orders)
+    ORDER_DIRECTIONS: ClassVar[tuple[OrderDirections, ...]] = get_args(_OrderDirections)
+    STATUSES: ClassVar[tuple[Statuses, ...]] = get_args(_Statuses)
 
     MAX_POSSIBLE_NUMBER_OF_VOTES: ClassVar[int] = 2**63 - 1
     MAX_SEARCHED_PROPOSALS_HARD_LIMIT: ClassVar[int] = 100
@@ -90,7 +99,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             order: DatabaseApi.SORT_TYPES
             if self.order == "by_total_votes_with_voted_first":
                 order = "by_total_votes"
-            elif self.order in self.Orders.__args__:
+            elif self.order in self.ORDERS:
                 order = self.order
             else:
                 raise ValueError(f"Unknown order: {self.order}")

@@ -1,4 +1,3 @@
-import typing
 from enum import Enum
 
 import typer
@@ -92,13 +91,13 @@ else:
 
     # unfortunately typer doesn't support Literal types yet, so we have to convert it to an enum
     OrdersEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrdersEnum", {option: option for option in typing.get_args(ProposalsDataRetrieval.Orders)}
+        "OrdersEnum", {option: option for option in ProposalsDataRetrieval.ORDERS}
     )
     OrderDirectionsEnum = Enum(  # type: ignore[misc, no-redef]
-        "OrderDirectionsEnum", {option: option for option in typing.get_args(ProposalsDataRetrieval.OrderDirections)}
+        "OrderDirectionsEnum", {option: option for option in ProposalsDataRetrieval.ORDER_DIRECTIONS}
     )
     StatusesEnum = Enum(  # type: ignore[misc, no-redef]
-        "StatusesEnum", {option: option for option in typing.get_args(ProposalsDataRetrieval.Statuses)}
+        "StatusesEnum", {option: option for option in ProposalsDataRetrieval.STATUSES}
     )
 
     DEFAULT_ORDER = ProposalsDataRetrieval.DEFAULT_ORDER

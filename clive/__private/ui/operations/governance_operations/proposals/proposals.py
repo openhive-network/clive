@@ -60,7 +60,7 @@ class ProposalsOrderSelect(Select[ProposalsDataRetrieval.Orders]):
 
 class ProposalsOrderDirectionSelect(Select[ProposalsDataRetrieval.OrderDirections]):
     SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.OrderDirections]]] = [
-        (value.capitalize(), value) for value in ProposalsDataRetrieval.OrderDirections.__args__
+        (value.capitalize(), value) for value in ProposalsDataRetrieval.ORDER_DIRECTIONS
     ]
 
     def __init__(self) -> None:
@@ -73,7 +73,7 @@ class ProposalsOrderDirectionSelect(Select[ProposalsDataRetrieval.OrderDirection
 
 class ProposalsStatusSelect(Select[ProposalsDataRetrieval.Statuses]):
     SELECTABLES: Final[list[tuple[str, ProposalsDataRetrieval.Statuses]]] = [
-        (value.capitalize(), value) for value in ProposalsDataRetrieval.Statuses.__args__
+        (value.capitalize(), value) for value in ProposalsDataRetrieval.STATUSES
     ]
 
     def __init__(self) -> None:
