@@ -70,7 +70,7 @@ class WitnessesData:
 
 @dataclass(kw_only=True)
 class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, WitnessesData]):
-    Modes = TypeAliasType("Modes", Literal["search_by_pattern", "search_top_with_unvoted_first"])
+    Modes = TypeAliasType("Modes", Literal["search_by_pattern", "search_top_with_voted_first"])
     """
     Available modes for retrieving witnesses data.
 
@@ -80,10 +80,10 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     call.
     Amount of witnesses is limited to the search_by_name_limit.
 
-    search_top_with_unvoted_first:
+    search_top_with_voted_first:
     ------------------------------
     Retrieves top witnesses with the ones voted for by the account.
-    The list is sorted by the unvoted status and then by rank.
+    The list is sorted by the voted status and then by rank.
     Amount of witnesses is limited to the TOP_WITNESSES_HARD_LIMIT.
     """
 
@@ -93,7 +93,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
     TOP_WITNESSES_HARD_LIMIT: ClassVar[int] = 150
 
     DEFAULT_SEARCH_BY_NAME_LIMIT: ClassVar[int] = 50
-    DEFAULT_MODE: ClassVar[Modes] = "search_top"
+    DEFAULT_MODE: ClassVar[Modes] = "search_top_with_voted_first"
 
     node: Node
     account_name: str
@@ -142,8 +142,8 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         )
 
     async def _process_data(self, data: SanitizedData) -> WitnessesData:
-        if self.mode == "search_top":
-            witnesses = self.__get_top_witnesses_with_unvoted_first(data)
+        if self.mode == "search_top_with_voted_first":
+            witnesses = self.__get_top_witnesses_with_voted_first(data)
         elif self.mode == "search_by_pattern":
             witnesses = self.__get_witnesses_by_pattern(data)
         else:
@@ -159,7 +159,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             }
         )
 
-    def __get_top_witnesses_with_unvoted_first(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
+    def __get_top_witnesses_with_voted_first(self, data: SanitizedData) -> OrderedDict[str, WitnessData]:
         top_witnesses = self.__get_top_witnesses(data)
 
         # Include witnesses that account voted for but are not included in the top
@@ -174,7 +174,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
         top_witnesses_with_all_voted_for = voted_but_not_in_top_witnesses | top_witnesses
 
-        # Sort the witnesses based on unvoted status and rank
+        # Sort the witnesses based on voted status and rank
         return OrderedDict(
             sorted(
                 top_witnesses_with_all_voted_for.items(), key=lambda witness: (not witness[1].voted, witness[1].rank)
