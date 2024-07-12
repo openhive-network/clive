@@ -1,13 +1,36 @@
 SwitchWorkingAccountScreen {
   align: center middle;
+  background: $background 85%;
 
   SwitchWorkingAccountScreenContent {
     border-title-style: bold;
     border-title-color: $text;
     border-title-background: $primary;
-    border: $primary;
+    border: $primary outer;
+    background: $panel;
+    padding: 1;
     width: 50%;
     height: auto;
+
+    #notice-container {
+      align: center top;
+      height: auto;
+
+      Notice {
+        background: $primary-background;
+        width: auto;
+
+        #title {
+          background: $primary-background;
+        }
+      }
+
+      OneLineButton {
+        margin-left: 1;
+        width: 8;
+        min-width: 8;
+      }
+    }
 
     #buttons-container {
       align: center top;
@@ -18,10 +41,6 @@ SwitchWorkingAccountScreen {
         margin-right: 2;
         margin-left: 2;
       }
-    }
-
-    Notice {
-      margin-top: 1;
     }
 
     SwitchWorkingAccountContainer {

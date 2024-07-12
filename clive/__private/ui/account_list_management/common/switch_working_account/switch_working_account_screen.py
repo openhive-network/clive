@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 
+from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_container import (
     SwitchWorkingAccountContainer,
 )
@@ -33,7 +34,9 @@ class SwitchWorkingAccountScreen(ModalScreen[None]):
 
     def compose(self) -> ComposeResult:
         with SwitchWorkingAccountScreenContent():
-            yield Notice("To add/remove any account to the list, go to `Config`")
+            with Horizontal(id="notice-container"):
+                yield Notice("To add/remove any account to the list, go to:")
+                yield OneLineButton("Config", id_="config-button")
             yield self._switch_working_account_container
             with Horizontal(id="buttons-container"):
                 yield OneLineButton("Confirm", variant="success", id_="confirm-button")
@@ -43,3 +46,7 @@ class SwitchWorkingAccountScreen(ModalScreen[None]):
     def confirm_selected_working_account(self) -> None:
         self._switch_working_account_container.confirm_selected_working_account()
         self.app.pop_screen()
+
+    @on(OneLineButton.Pressed, "#config-button")
+    def push_account_list_management_screen(self) -> None:
+        self.app.push_screen(AccountListManagement())
