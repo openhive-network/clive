@@ -182,14 +182,14 @@ class WorkingAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WORKING ACCOUNT"
 
     def compose(self) -> ComposeResult:
-        yield AccountRow(self.app.world.profile_data.working_account)
+        yield AccountRow(self.profile_data.working_account)
 
 
 class WatchedAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WATCHED ACCOUNTS"
 
     def compose(self) -> ComposeResult:
-        account_rows = [AccountRow(account) for account in self.app.world.profile_data.watched_accounts_sorted]
+        account_rows = [AccountRow(account) for account in self.profile_data.watched_accounts_sorted]
         last_account_row = account_rows[-1]
         last_account_row.add_class("last")
         yield from account_rows
@@ -221,7 +221,7 @@ class DashboardBase(BaseScreen):
                 yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
 
     def on_mount(self) -> None:
-        self.watch(self.app.world, "profile_data", self._update_account_containers)
+        self.watch(self.world, "profile_data", self._update_account_containers)
 
     async def _update_account_containers(self) -> None:
         if (
@@ -261,21 +261,21 @@ class DashboardBase(BaseScreen):
 
     @property
     def has_working_account(self) -> bool:
-        return self.app.world.profile_data.is_working_account_set()
+        return self.profile_data.is_working_account_set()
 
     @property
     def has_watched_accounts(self) -> bool:
-        return bool(self.app.world.profile_data.watched_accounts)
+        return bool(self.profile_data.watched_accounts)
 
     @property
     def working_account(self) -> WorkingAccount | None:
         if not self.has_working_account:
             return None
-        return self.app.world.profile_data.working_account
+        return self.profile_data.working_account
 
     @property
     def watched_accounts(self) -> set[Account]:
-        return self.app.world.profile_data.watched_accounts.copy()
+        return self.profile_data.watched_accounts.copy()
 
     @property
     def has_tracked_accounts(self) -> bool:

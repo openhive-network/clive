@@ -48,10 +48,10 @@ class Config(BaseScreen):
             self.notify("Cannot manage key aliases without working account", severity="error")
             return
 
-        if not self.app.world.app_state.is_active:
+        if not self.app_state.is_active:
             raise OnlyInActiveModeError
 
         await self.app.push_screen(ManageKeyAliases())
 
     def _has_working_account(self) -> bool:
-        return self.app.world.profile_data.is_working_account_set()
+        return self.profile_data.is_working_account_set()

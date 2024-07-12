@@ -66,7 +66,7 @@ class AlarmsTable(CliveCheckerboardTable):
 
     @property
     def object_to_watch(self) -> TextualWorld:
-        return self.app.world
+        return self.world
 
     def check_if_should_be_updated(self, content: ProfileData) -> bool:
         account = self._get_actual_account_state(content)

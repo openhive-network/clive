@@ -12,7 +12,7 @@ class CartBinding(CliveWidget):
     ]
 
     def action_cart(self) -> None:
-        if not self.app.world.profile_data.cart:
+        if not self.profile_data.cart:
             self.notify("There are no operations in the cart! Cannot continue.", severity="warning")
             return
         self.app.push_screen(Cart())

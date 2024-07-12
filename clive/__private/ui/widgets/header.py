@@ -71,7 +71,7 @@ class AlarmDisplay(DynamicLabel):
             return "No alarms"
 
         super().__init__(
-            self.app.world,
+            self.world,
             "profile_data",
             update_callback,
             first_try_callback=lambda profile_data: all(
@@ -101,7 +101,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
 
         yield TitledLabel(
             "Block",
-            obj_to_watch=self.app.world,
+            obj_to_watch=self.world,
             attribute_name="node",
             callback=self.__get_last_block,
         )
@@ -114,7 +114,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         )
 
     async def __get_last_block(self) -> str:
-        gdpo = await self.app.world.node.cached.dynamic_global_properties_or_none
+        gdpo = await self.node.cached.dynamic_global_properties_or_none
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
 
@@ -124,7 +124,7 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         return f"{block_num} ({block_time} UTC)"
 
     async def __get_last_update(self) -> str:
-        gdpo = await self.app.world.node.cached.dynamic_global_properties_or_none
+        gdpo = await self.node.cached.dynamic_global_properties_or_none
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
 
@@ -141,7 +141,7 @@ class Header(TextualHeader, CliveWidget):
         self._header_title = HeaderTitle()
         super().__init__()
         self.__node_version_label = DynamicLabel(
-            obj_to_watch=self.app.world,
+            obj_to_watch=self.world,
             attribute_name="node",
             callback=self.__get_node_version,
             id_="node-type-label",
@@ -173,7 +173,7 @@ class Header(TextualHeader, CliveWidget):
             if not self.__is_in_onboarding_mode():
                 yield TitledLabel(
                     "Profile",
-                    obj_to_watch=self.app.world,
+                    obj_to_watch=self.world,
                     attribute_name="profile_data",
                     callback=self.__get_profile_name,
                     id_="profile-label",
@@ -189,7 +189,7 @@ class Header(TextualHeader, CliveWidget):
 
                 yield TitledLabel(
                     "Mode",
-                    obj_to_watch=self.app.world,
+                    obj_to_watch=self.world,
                     attribute_name="app_state",
                     callback=mode_callback,
                     id_="mode-label",
@@ -200,7 +200,7 @@ class Header(TextualHeader, CliveWidget):
             yield self._header_title
             yield TitledLabel(
                 "Node address",
-                obj_to_watch=self.app.world,
+                obj_to_watch=self.world,
                 attribute_name="node",
                 callback=self.__get_node_address,
                 id_="node-address-label",
@@ -236,4 +236,4 @@ class Header(TextualHeader, CliveWidget):
         return network_type
 
     def __is_in_onboarding_mode(self) -> bool:
-        return self.app.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
+        return self.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME

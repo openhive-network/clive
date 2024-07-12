@@ -70,12 +70,12 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
 
     def __init__(self) -> None:
         try:
-            first_value: PublicKey | NoSelection = self.app.world.profile_data.keys.first
+            first_value: PublicKey | NoSelection = self.profile_data.keys.first
         except KeyNotFoundError:
             first_value = Select.BLANK
 
         super().__init__(
-            [(key.alias, key) for key in self.app.world.profile_data.keys],
+            [(key.alias, key) for key in self.profile_data.keys],
             value=first_value,
             empty_string="no private key found",
         )
@@ -167,7 +167,7 @@ class TransactionSummaryCommon(BaseScreen):
 
         try:
             transaction = (
-                await self.app.world.commands.perform_actions_on_transaction(
+                await self.commands.perform_actions_on_transaction(
                     content=transaction,
                     sign_key=self.__get_key_to_sign() if should_be_signed else None,
                     force_unsign=not should_be_signed,
@@ -200,7 +200,7 @@ class TransactionSummaryCommon(BaseScreen):
 
         try:
             (
-                await self.app.world.commands.perform_actions_on_transaction(
+                await self.commands.perform_actions_on_transaction(
                     content=transaction,
                     sign_key=self.__get_key_to_sign() if not transaction.is_signed() else None,
                     broadcast=True,

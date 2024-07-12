@@ -36,9 +36,9 @@ class NodeSelector(Select[Url], CliveWidget):
 
     def __init__(self) -> None:
         super().__init__(
-            [(str(url), url) for url in self.app.world.profile_data.backup_node_addresses],
+            [(str(url), url) for url in self.profile_data.backup_node_addresses],
             allow_blank=False,
-            value=self.app.world.node.address,
+            value=self.node.address,
         )
 
 
@@ -46,7 +46,7 @@ class SelectedNodeAddress(Static, CliveWidget):
     """The currently selected node address."""
 
     def render(self) -> RenderableType:
-        return f"Selected node address: {self.app.world.node.address}"
+        return f"Selected node address: {self.node.address}"
 
 
 class NodesList(Container, CliveWidget):
@@ -104,7 +104,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
     async def _valid_and_save_address(self) -> None:
         address = self.query_one(NodeSelector).value
         assert not isinstance(address, NoSelection), "No node was selected."
-        await self.app.world.node.set_address(address)
+        await self.node.set_address(address)
         self.app.trigger_node_watchers()
         self.__selected_node.refresh()
 
@@ -119,7 +119,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
                 severity="error",
             )
         else:
-            self.notify(f"Node address set to `{self.app.world.node.address}`.")
+            self.notify(f"Node address set to `{self.node.address}`.")
 
 
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):

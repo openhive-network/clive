@@ -170,4 +170,4 @@ class DelegateHivePower(TabPane, OperationActionBindings):
 
     @property
     def working_account(self) -> str:
-        return self.app.world.profile_data.working_account.name
+        return self.profile_data.working_account.name

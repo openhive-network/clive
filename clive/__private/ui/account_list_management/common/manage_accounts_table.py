@@ -51,9 +51,9 @@ class AccountRow(CliveCheckerboardTableRow):
     @on(CliveButton.Pressed, "#discard-account-button")
     def discard_account(self) -> None:
         if self._account_type == "known_accounts":
-            self.app.world.profile_data.known_accounts.discard(self._account)
+            self.profile_data.known_accounts.discard(self._account)
         else:
-            self.app.world.profile_data.remove_tracked_account(self._account)
+            self.profile_data.remove_tracked_account(self._account)
         self.app.trigger_profile_data_watchers()
 
 
@@ -106,7 +106,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     @property
     def object_to_watch(self) -> TextualWorld:
-        return self.app.world
+        return self.world
 
     def update_previous_state(self, content: ProfileData) -> None:
         self._previous_accounts = self._get_accounts_from_new_content(content)

@@ -94,7 +94,7 @@ class Operations(CartBasedScreen, CartBinding):
         file_path = event.file_path
 
         try:
-            transaction = (await self.app.world.commands.load_transaction_from_file(path=file_path)).result_or_raise
+            transaction = (await self.commands.load_transaction_from_file(path=file_path)).result_or_raise
         except LoadTransactionError as error:
             self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
             return

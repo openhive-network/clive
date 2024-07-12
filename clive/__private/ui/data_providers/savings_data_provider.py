@@ -15,8 +15,8 @@ class SavingsDataProvider(DataProvider[SavingsData]):
 
     @work(name="savings data update worker")
     async def update(self) -> None:
-        account_name = self.app.world.profile_data.working_account.name
-        wrapper = await self.app.world.commands.retrieve_savings_data(account_name=account_name)
+        account_name = self.profile_data.working_account.name
+        wrapper = await self.commands.retrieve_savings_data(account_name=account_name)
 
         if wrapper.error_occurred:
             self.notify(f"Failed to retrieve savings data: {wrapper.error}", severity="error")

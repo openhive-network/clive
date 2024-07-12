@@ -43,7 +43,7 @@ class PublicKeyAliasInput(TextInput):
         setting_key_alias: Whether setting public key alias or just getting key alias for other purpose.
         key_manager: Key manager to use for validation. If not provided, the key manager from the world will be used.
         """
-        key_manager = key_manager if key_manager is not None else self.app.world.profile_data.keys
+        key_manager = key_manager if key_manager is not None else self.profile_data.keys
 
         super().__init__(
             title=title,

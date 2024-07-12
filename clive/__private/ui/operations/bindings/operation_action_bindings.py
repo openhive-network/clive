@@ -132,7 +132,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     async def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
             try:
-                return self.app.world.profile_data.keys.first
+                return self.profile_data.keys.first
             except KeyNotFoundError:
                 self.notify("No keys found for the working account.", severity="error")
                 return None
@@ -144,7 +144,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         if not key or not operations:
             return
 
-        wrapper = await self.app.world.commands.fast_broadcast(content=operations, sign_with=key)
+        wrapper = await self.commands.fast_broadcast(content=operations, sign_with=key)
         if not wrapper.success:
             return
 
@@ -164,7 +164,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         """
         if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES:
             operation = self.create_operation()
-            if operation is not None and operation in self.app.world.profile_data.cart:
+            if operation is not None and operation in self.profile_data.cart:
                 self.notify("Operation already in the cart", severity="error")
                 return False
 
@@ -173,7 +173,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self.notify(INVALID_OPERATION_WARNING, severity="warning")
             return False
 
-        self.app.world.profile_data.cart.extend(operations)
+        self.profile_data.cart.extend(operations)
         self.app.trigger_profile_data_watchers()
         return True
 

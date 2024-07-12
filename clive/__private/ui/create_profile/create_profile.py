@@ -78,15 +78,15 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         self.context.name = profile_name
 
         create_wallet = CreateWallet(
-            app_state=self.app.world.app_state,
-            beekeeper=self.app.world.beekeeper,
+            app_state=self.app_state,
+            beekeeper=self.world.beekeeper,
             wallet=profile_name,
             password=password,
         )
         write_data = SyncDataWithBeekeeper(
-            app_state=self.app.world.app_state,
+            app_state=self.app_state,
             profile_data=self.context,
-            beekeeper=self.app.world.beekeeper,
+            beekeeper=self.world.beekeeper,
         )
         return create_wallet, write_data
 
@@ -99,7 +99,7 @@ class CreateProfile(CreateProfileCommon):
 
     @property
     def context(self) -> ProfileData:
-        return self.app.world.profile_data
+        return self.profile_data
 
     @on(CliveButton.Pressed, "#cancel-button")
     def action_dashboard(self) -> None:

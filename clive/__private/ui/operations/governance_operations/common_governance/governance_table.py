@@ -79,7 +79,7 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
 
     @property
     def is_proxy_set(self) -> bool:
-        return bool(self.app.world.profile_data.working_account.data.proxy)
+        return bool(self.profile_data.working_account.data.proxy)
 
 
 class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump):
@@ -166,7 +166,7 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         self.governance_checkbox = GovernanceCheckbox(
             is_voted=self.__row_data.voted,
             initial_state=self.is_operation_in_cart or self.is_already_in_actions_container,
-            disabled=bool(self.app.world.profile_data.working_account.data.proxy) or self.is_operation_in_cart,
+            disabled=bool(self.profile_data.working_account.data.proxy) or self.is_operation_in_cart,
         )
         yield self.governance_checkbox
         yield from self.create_row_content()
@@ -362,7 +362,7 @@ class GovernanceTable(
 
     @property
     def is_proxy_set(self) -> bool:
-        return bool(self.app.world.profile_data.working_account.data.proxy)
+        return bool(self.profile_data.working_account.data.proxy)
 
     @property
     @abstractmethod

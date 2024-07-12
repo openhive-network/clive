@@ -39,7 +39,7 @@ class CartItemsAmount(DynamicLabel):
     """Holds the cart items amount info."""
 
     def __init__(self) -> None:
-        super().__init__(self.app.world, "profile_data", self.__get_cart_item_count)
+        super().__init__(self.world, "profile_data", self.__get_cart_item_count)
 
     def __get_cart_item_count(self, profile_data: ProfileData) -> str:
         amount = len(profile_data.cart)
@@ -63,18 +63,18 @@ class CartOverview(CliveWidget):
         with Resources():
             with self._rc_container:
                 yield Static("RC:")
-                yield DynamicLabel(self.app.world, "profile_data", self.__get_rc)
+                yield DynamicLabel(self.world, "profile_data", self.__get_rc)
             yield Static("HIVE balance:")
-            yield DynamicLabel(self.app.world, "profile_data", self.__get_hive_balance)
+            yield DynamicLabel(self.world, "profile_data", self.__get_hive_balance)
             yield Static("HBD balance:")
-            yield DynamicLabel(self.app.world, "profile_data", self.__get_hbd_balance)
+            yield DynamicLabel(self.world, "profile_data", self.__get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount()
             with self.__cart_items_container:
                 yield from self.__create_cart_items()
 
     def on_mount(self) -> None:
-        self.watch(self.app.world, "profile_data", callback=self.__sync_cart_items)
+        self.watch(self.world, "profile_data", callback=self.__sync_cart_items)
 
     def __sync_cart_items(self, _: ProfileData) -> None:
         with self.app.batch_update():
@@ -84,15 +84,15 @@ class CartOverview(CliveWidget):
 
     def __get_rc(self) -> str:
         self._set_rc_api_missing()
-        if self.app.world.profile_data.working_account.data.is_rc_api_missing:
+        if self.profile_data.working_account.data.is_rc_api_missing:
             return MISSING_API_LABEL
 
-        return humanize_percent(self.app.world.profile_data.working_account.data.rc_manabar_ensure.percentage)
+        return humanize_percent(self.profile_data.working_account.data.rc_manabar_ensure.percentage)
 
     def _set_rc_api_missing(self) -> None:
-        if self.app.world.profile_data.working_account.data.is_rc_api_missing:
+        if self.profile_data.working_account.data.is_rc_api_missing:
             self._rc_container.tooltip = (
-                self.app.world.profile_data.working_account.data.rc_manabar_ensure_missing_api.missing_api_text
+                self.profile_data.working_account.data.rc_manabar_ensure_missing_api.missing_api_text
             )
             return
 
@@ -107,4 +107,4 @@ class CartOverview(CliveWidget):
         return Asset.pretty_amount(profile_data.working_account.data.hbd_balance)
 
     def __create_cart_items(self) -> list[CartItem]:
-        return [CartItem(index + 1, operation) for index, operation in enumerate(self.app.world.profile_data.cart)]
+        return [CartItem(index + 1, operation) for index, operation in enumerate(self.profile_data.cart)]

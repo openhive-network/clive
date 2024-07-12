@@ -30,9 +30,9 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         self._accounts_input = AccountNameInput(
             required=False,
             validators=(
-                SetTrackedAccountValidator(self.app.world.profile_data)
+                SetTrackedAccountValidator(self.profile_data)
                 if accounts_type == "tracked_accounts"
-                else SetKnownAccountValidator(self.app.world.profile_data)
+                else SetKnownAccountValidator(self.profile_data)
             ),
             ask_known_account=accounts_type != "known_accounts",
         )
@@ -56,7 +56,7 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
             return
 
         account_name = self._accounts_input.value_or_error
-        wrapper = await self.app.world.commands.does_account_exists_in_node(account_name=account_name)
+        wrapper = await self.commands.does_account_exists_in_node(account_name=account_name)
         if wrapper.error_occurred:
             self.notify(f"Failed to check if account {account_name} exists in the node.", severity="warning")
             return
@@ -68,9 +68,9 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         account = Account(name=self._accounts_input.value_or_error)
 
         if self._accounts_type == "tracked_accounts":
-            self.app.world.profile_data.watched_accounts.add(account)
+            self.profile_data.watched_accounts.add(account)
         else:
-            self.app.world.profile_data.known_accounts.add(account)
+            self.profile_data.known_accounts.add(account)
         self.app.trigger_profile_data_watchers()
         self._accounts_input.input.clear()
         self.app.update_alarms_data_asap()

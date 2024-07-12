@@ -41,7 +41,7 @@ class TransactionSummaryFromFile(TransactionSummaryCommon):
         transaction = self.__transaction
         if not transaction.is_tapos_set():
             self.notify("TaPoS metadata was not set, updating automatically...")
-            await self.app.world.commands.update_transaction_metadata(transaction=transaction)
+            await self.commands.update_transaction_metadata(transaction=transaction)
         return transaction
 
     def action_save(self) -> None:

@@ -50,7 +50,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         except CliveValidatedInputError as error:
             raise FormValidationError(str(error)) from error
 
-        wrapper = await self.app.world.commands.does_account_exists_in_node(account_name=account_name)
+        wrapper = await self.commands.does_account_exists_in_node(account_name=account_name)
         if wrapper.error_occurred:
             raise FormValidationError(f"Failed to check if account {account_name} exists in the node.")
 

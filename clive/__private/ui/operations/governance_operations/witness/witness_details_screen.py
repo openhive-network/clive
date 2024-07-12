@@ -41,7 +41,7 @@ class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
 
     @work(name="governance update modal details")
     async def refresh_witness_data(self) -> None:
-        wrapper = await self.app.world.commands.find_witness(witness_name=self.__witness_name)
+        wrapper = await self.commands.find_witness(witness_name=self.__witness_name)
 
         if wrapper.error_occurred:
             new_witness_data = f"Unable to retrieve witness information:\n{wrapper.error}"

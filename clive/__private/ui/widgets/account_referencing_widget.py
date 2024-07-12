@@ -31,7 +31,7 @@ class AccountReferencingWidget(CliveWidget):
         init: bool = True,
     ) -> DynamicLabel:
         return DynamicLabel(
-            self.app.world,
+            self.world,
             "profile_data",
             lambda: foo() if self._account.name else "NULL",
             first_try_callback=self._check_if_account_node_data_is_available,

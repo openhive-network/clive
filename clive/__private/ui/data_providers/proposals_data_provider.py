@@ -23,10 +23,10 @@ class ProposalsDataProvider(DataProvider[ProposalsData]):
 
     @work(name="proposals data update worker")
     async def update(self) -> None:
-        proxy = self.app.world.profile_data.working_account.data.proxy
-        account_name = proxy if proxy else self.app.world.profile_data.working_account.name
+        proxy = self.profile_data.working_account.data.proxy
+        account_name = proxy if proxy else self.profile_data.working_account.name
 
-        wrapper = await self.app.world.commands.retrieve_proposals_data(
+        wrapper = await self.commands.retrieve_proposals_data(
             account_name=account_name, order=self.__order, order_direction=self.__order_direction, status=self.__status
         )
 

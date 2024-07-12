@@ -153,14 +153,14 @@ class NewKeyAlias(NewKeyAliasBase):
 
     @property
     def context(self) -> ProfileData:
-        return self.app.world.profile_data
+        return self.profile_data
 
     @CliveScreen.try_again_after_activation
     @on(NewKeyAliasBase.Saved)
     async def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
         self.context.keys.set_to_import([event.private_key])
 
-        await self.app.world.commands.sync_data_with_beekeeper()
+        await self.commands.sync_data_with_beekeeper()
         self.app.trigger_profile_data_watchers()
         self.app.post_message_to_screen("ManageKeyAliases", self.Changed())
         self.app.pop_screen()

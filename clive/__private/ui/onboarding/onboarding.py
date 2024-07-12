@@ -42,9 +42,9 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     async def action_finish(self) -> None:
         self._owner.add_post_action(self.app.update_data_from_node_asap)
 
-        self.app.world.profile_data = self.context
+        self.world.profile_data = self.context
         await super().action_finish()
-        self.app.world.profile_data.save()
+        self.profile_data.save()
 
 
 class Onboarding(Form[ProfileData]):

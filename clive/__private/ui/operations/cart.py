@@ -116,20 +116,20 @@ class CartItem(ColumnLayout, CliveWidget):
             return humanize_operation_details(self.operation) if self.is_valid() else "?"
 
         yield DynamicColumn(
-            self.app.world,
+            self.world,
             "profile_data",
             get_operation_index,
             classes="cell cell-middle",
         )
         yield DynamicColumn(
-            self.app.world,
+            self.world,
             "profile_data",
             get_operation_name,
             shrink=True,
             classes="cell cell-variant cell-middle",
         )
         yield DynamicColumn(
-            self.app.world,
+            self.world,
             "profile_data",
             get_operation_details,
             shrink=True,
@@ -167,11 +167,11 @@ class CartItem(ColumnLayout, CliveWidget):
     @property
     def operation(self) -> Operation:
         assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.app.world.profile_data.cart[self.__idx]
+        return self.profile_data.cart[self.__idx]
 
     @property
     def __operations_count(self) -> int:
-        return len(self.app.world.profile_data.cart)
+        return len(self.profile_data.cart)
 
     @property
     def __is_first(self) -> bool:
@@ -230,12 +230,12 @@ class Cart(BaseScreen):
             yield from self.__rebuild_items()
 
     def __rebuild_items(self) -> ComposeResult:
-        for idx in range(len(self.app.world.profile_data.cart)):
+        for idx in range(len(self.profile_data.cart)):
             yield CartItem(idx)
 
     @on(CartItem.Delete)
     def remove_item(self, event: CartItem.Delete) -> None:
-        self.app.world.profile_data.cart.remove(event.widget.operation)
+        self.profile_data.cart.remove(event.widget.operation)
         self.app.trigger_profile_data_watchers()
         self.__scrollable_part.query(CartItem).remove()
         self.__scrollable_part.mount(*self.__rebuild_items())
@@ -243,9 +243,9 @@ class Cart(BaseScreen):
     @on(CartItem.Move)
     def move_item(self, event: CartItem.Move) -> None:
         assert event.to_idx >= 0
-        assert event.to_idx < len(self.app.world.profile_data.cart)
+        assert event.to_idx < len(self.profile_data.cart)
 
-        self.app.world.profile_data.cart.swap(event.from_idx, event.to_idx)
+        self.profile_data.cart.swap(event.from_idx, event.to_idx)
         self.app.trigger_profile_data_watchers()
 
     @on(CartItem.Focus)
@@ -258,6 +258,6 @@ class Cart(BaseScreen):
         self.app.push_screen(TransactionSummaryFromCart())
 
     def action_clear_all(self) -> None:
-        self.app.world.profile_data.cart.clear()
+        self.profile_data.cart.clear()
         self.app.trigger_profile_data_watchers()
         self.__scrollable_part.add_class("-hidden")

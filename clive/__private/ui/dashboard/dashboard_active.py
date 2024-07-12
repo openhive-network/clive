@@ -11,4 +11,4 @@ class DashboardActive(DashboardBase):
     ]
 
     async def action_deactivate(self) -> None:
-        await self.app.world.commands.deactivate()
+        await self.commands.deactivate()

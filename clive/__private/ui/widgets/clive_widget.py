@@ -10,6 +10,12 @@ from textual.widgets import Footer
 if TYPE_CHECKING:
     from textual.binding import Binding
 
+    from clive import World
+    from clive.__private.core.app_state import AppState
+    from clive.__private.core.commands.commands import Commands
+    from clive.__private.core.node import Node
+    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.world import TextualWorld
     from clive.__private.ui.app import Clive
 
 
@@ -25,6 +31,26 @@ class CliveWidget(Widget):
         from clive.__private.ui.app import Clive  # To avoid circular imports
 
         return typing.cast(Clive, super().app)
+
+    @property
+    def world(self) -> TextualWorld:
+        return self.app.world
+
+    @property
+    def profile_data(self) -> ProfileData:
+        return self.world.profile_data
+
+    @property
+    def app_state(self) -> AppState:
+        return self.world.app_state
+
+    @property
+    def commands(self) -> Commands[World]:
+        return self.world.commands
+
+    @property
+    def node(self) -> Node:
+        return self.world.node
 
     def bind(self, binding: Binding, before: str | None = None) -> None:
         """

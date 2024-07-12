@@ -26,7 +26,7 @@ class AccountWitnessProxy(OperationSummary):
 
     @property
     def working_account_name(self) -> str:
-        return self.app.world.profile_data.working_account.name
+        return self.profile_data.working_account.name
 
     def content(self) -> ComposeResult:
         yield LabelizedInput("Account name", self.working_account_name)

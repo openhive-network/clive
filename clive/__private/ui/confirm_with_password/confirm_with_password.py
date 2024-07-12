@@ -59,7 +59,7 @@ class ConfirmWithPassword(BaseScreen):
             await self.__result_callback(password)
 
     async def _is_password_valid(self, password: str) -> bool:
-        wrapper = await self.app.world.commands.is_password_valid(password=password)
+        wrapper = await self.commands.is_password_valid(password=password)
         if not wrapper.success:
             return False
         return wrapper.result_or_raise

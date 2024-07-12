@@ -50,7 +50,7 @@ class Activate(BaseScreen):
     def __init__(self, *, activation_result_callback: ActivationResultCallbackOptional = None) -> None:
         super().__init__()
         self._activation_result_callback = activation_result_callback
-        self._name_input = LabelizedInput("Profile name", value=self.app.world.profile_data.name)
+        self._name_input = LabelizedInput("Profile name", value=self.profile_data.name)
         self._password_input = TextInput("Password", password=True)
         self._permanent_active_mode_switch = Checkbox("Permanent active mode?")
         self._temporary_active_mode_input = IntegerInput(
@@ -98,7 +98,7 @@ class Activate(BaseScreen):
             return
 
         if not (
-            await self.app.world.commands.activate(password=password, time=active_mode_time, permanent=permanent_active)
+            await self.commands.activate(password=password, time=active_mode_time, permanent=permanent_active)
         ).success:
             # do not exit_cancel here, because we want to stay on the screen
             return
