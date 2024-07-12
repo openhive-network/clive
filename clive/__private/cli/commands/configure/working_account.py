@@ -8,7 +8,7 @@ from clive.__private.cli.exceptions import (
     CLIWorkingAccountIsNotSetError,
 )
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.validators.account_name_validator import AccountNameValidator
+from clive.__private.validators.set_tracked_account_validator import SetTrackedAccountValidator
 
 
 @dataclass(kw_only=True)
@@ -19,7 +19,7 @@ class AddWorkingAccount(ProfileBasedCommand):
         if self.profile_data.is_working_account_set():
             raise CLIWorkingAccountIsAlreadySetError(self.profile_data)
 
-        result = AccountNameValidator().validate(self.account_name)
+        result = SetTrackedAccountValidator(self.profile_data).validate(self.account_name)
         if not result.is_valid:
             raise CLIPrettyError(f"Can't use this account name: {humanize_validation_result(result)}", errno.EINVAL)
 
