@@ -184,7 +184,12 @@ class ProposalsListHeader(GovernanceListHeader):
 
 
 class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
-    async def change_order(self, order: str, order_direction: str, status: str) -> None:
+    async def change_order(
+        self,
+        order: ProposalsDataRetrieval.Orders,
+        order_direction: ProposalsDataRetrieval.OrderDirections,
+        status: ProposalsDataRetrieval.Statuses,
+    ) -> None:
         await self.provider.change_order(order=order, order_direction=order_direction, status=status).wait()
         await self.reset_page()
 

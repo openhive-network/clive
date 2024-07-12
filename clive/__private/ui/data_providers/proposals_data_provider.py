@@ -17,9 +17,9 @@ class ProposalsDataProvider(DataProvider[ProposalsData]):
 
     def __init__(self, *, paused: bool = False, init_update: bool = True) -> None:
         super().__init__(paused=paused, init_update=init_update)
-        self.__order = ProposalsDataRetrieval.DEFAULT_ORDER
-        self.__order_direction = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
-        self.__status = ProposalsDataRetrieval.DEFAULT_STATUS
+        self.__order: ProposalsDataRetrieval.Orders = ProposalsDataRetrieval.DEFAULT_ORDER
+        self.__order_direction: ProposalsDataRetrieval.OrderDirections = ProposalsDataRetrieval.DEFAULT_ORDER_DIRECTION
+        self.__status: ProposalsDataRetrieval.Statuses = ProposalsDataRetrieval.DEFAULT_STATUS
 
     @work(name="proposals data update worker")
     async def update(self) -> None:
@@ -43,7 +43,12 @@ class ProposalsDataProvider(DataProvider[ProposalsData]):
         if result.proposals != self.content.proposals:
             self._content = result
 
-    def change_order(self, order: str, order_direction: str, status: str) -> Worker[None]:
+    def change_order(
+        self,
+        order: ProposalsDataRetrieval.Orders,
+        order_direction: ProposalsDataRetrieval.OrderDirections,
+        status: ProposalsDataRetrieval.Statuses,
+    ) -> Worker[None]:
         self.__order = order
         self.__order_direction = order_direction
         self.__status = status
