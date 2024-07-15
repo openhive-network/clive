@@ -40,8 +40,8 @@ typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
 
-wax = "0.3.10.dev25+8044195"
-schemas = "0.0.1.dev307+6f4cbb8"
+wax = "0.3.10.dev67+e2ca894"
+schemas = "0.0.1.dev309+5a8cfff"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
