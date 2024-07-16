@@ -3,10 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.ui.activate.activate import Activate
-from clive.__private.ui.dashboard.dashboard_active import DashboardActive
-from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.__private.ui.dashboard.dashboard import Dashboard
 
-from .checkers import assert_is_screen_active
+from .checkers import assert_is_dashboard, assert_is_screen_active
 from .textual_helpers import press_and_wait_for_screen, press_binding, write_text
 from .utils import get_mode, log_current_view
 
@@ -31,6 +30,7 @@ async def activate_body(pilot: ClivePilot, password: str, *, expected_screen: ty
 
 async def activate(pilot: ClivePilot, password: str) -> None:
     """Do activate when DashboardInactive is current screen."""
-    assert_is_screen_active(pilot, DashboardInactive)
+    assert_is_dashboard(pilot, active=False)
     await press_and_wait_for_screen(pilot, "f4", Activate)
-    await activate_body(pilot, password, expected_screen=DashboardActive)
+    await activate_body(pilot, password, expected_screen=Dashboard)
+    assert_is_dashboard(pilot, active=True)

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any, Literal
 
 from textual.css.query import NoMatches, TooManyMatches
 
+from clive.__private.ui.dashboard.dashboard import Dashboard
 from clive.__private.ui.widgets.currency_selector.currency_selector_base import CurrencySelectorBase
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
@@ -23,6 +24,20 @@ def assert_is_screen_active(pilot: ClivePilot, expected_screen: type[Screen[Any]
     assert isinstance(
         pilot.app.screen, expected_screen
     ), f"Expected screen '{expected_screen}' is not active. Current screen is '{pilot.app.screen}'."
+
+
+def assert_is_dashboard(pilot: ClivePilot, *, active: bool | None) -> None:
+    """
+    Assert that the dashboard is active.
+
+    Args:
+    ----
+        pilot: ClivePilot: Pilot instance.
+        active: Expected state of the dashboard or doesn't matter if None.
+    """
+    assert_is_screen_active(pilot, Dashboard)
+    if active is not None:
+        assert pilot.app.screen.is_active == active, f"Expected dashboard to be {'active' if active else 'inactive'}."
 
 
 def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context: str | None = None) -> None:

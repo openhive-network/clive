@@ -186,10 +186,10 @@ class TransactionSummaryCommon(BaseScreen):
             f" {'(signed)' if transaction.is_signed() else ''}"
         )
 
-    def action_dashboard(self) -> None:
-        from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+    async def action_dashboard(self) -> None:
+        from clive.__private.ui.dashboard.dashboard import Dashboard
 
-        self.app.pop_screen_until(DashboardBase)
+        await self.app.pop_screen_until(Dashboard)
 
     async def action_broadcast(self) -> None:
         await self.__broadcast()
@@ -212,7 +212,7 @@ class TransactionSummaryCommon(BaseScreen):
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return
 
-        self.action_dashboard()
+        await self.action_dashboard()
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
         self._actions_after_successful_broadcast()
 

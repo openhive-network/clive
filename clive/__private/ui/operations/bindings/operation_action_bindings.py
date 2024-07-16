@@ -108,18 +108,19 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     def action_finalize(self) -> None:
         if self._add_to_cart():
-            self.app.switch_screen(TransactionSummaryFromCart())
-            self.app.push_screen_at(-1, Cart())
-
-    def action_add_to_cart(self) -> None:
-        if self._add_to_cart():
-            self._pop_screen_on_successfully_added_to_cart()
-
-    def _pop_screen_on_successfully_added_to_cart(self) -> None:
-        if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
             self.app.pop_screen()
+            self.app.push_screen(Cart())
+            self.app.push_screen(TransactionSummaryFromCart())
+
+    async def action_add_to_cart(self) -> None:
+        if self._add_to_cart():
+            await self._pop_screen_on_successfully_added_to_cart()
+
+    async def _pop_screen_on_successfully_added_to_cart(self) -> None:
+        if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
+            await self.app.pop_screen()
         elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations_or_dashboard":
-            self._pop_screen_until_operations_or_dashboard()
+            await self._pop_screen_until_operations_or_dashboard()
 
     async def action_fast_broadcast(self) -> None:
         if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
@@ -151,7 +152,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         transaction = wrapper.result_or_raise
         transaction_id = transaction.calculate_transaction_id()
 
-        self._pop_screen_until_operations_or_dashboard()
+        await self._pop_screen_until_operations_or_dashboard()
         self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
     def _add_to_cart(self) -> bool:
@@ -202,8 +203,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         if sum([create_operation_missing, create_operations_missing]) != 1:
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
 
-    def _pop_screen_until_operations_or_dashboard(self) -> None:
-        from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+    async def _pop_screen_until_operations_or_dashboard(self) -> None:
+        from clive.__private.ui.dashboard.dashboard import Dashboard
         from clive.__private.ui.operations.operations import Operations
 
-        self.app.pop_screen_until(Operations, DashboardBase)
+        await self.app.pop_screen_until(Operations, Dashboard)

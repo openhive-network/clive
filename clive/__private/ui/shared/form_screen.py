@@ -39,10 +39,10 @@ class LastFormScreen(FormScreenBase[ContextT]):
     ]
 
     async def action_previous_screen(self) -> None:
-        self._owner.action_previous_screen()
+        await self._owner.action_previous_screen()
 
-    def action_start_over(self) -> None:
-        self._owner.reset()
+    async def action_start_over(self) -> None:
+        await self._owner.reset()
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):

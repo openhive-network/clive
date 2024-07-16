@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, ClassVar, Final, Literal
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
+from textual.reactive import var
 from textual.widgets import Label, Static
 
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
@@ -16,6 +17,7 @@ from clive.__private.core.formatters.humanize import (
 )
 from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
 from clive.__private.ui.account_details.account_details import AccountDetails
+from clive.__private.ui.activate.activate import Activate
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
@@ -33,6 +35,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
+    from clive.__private.core.app_state import AppState
     from clive.__private.storage.mock_database import Manabar
 
 
@@ -195,7 +198,7 @@ class WatchedAccountContainer(Static, CliveWidget):
         yield from account_rows
 
 
-class DashboardBase(BaseScreen):
+class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
     NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (go to the Config view to add some)"
 
@@ -204,6 +207,8 @@ class DashboardBase(BaseScreen):
         Binding("f2", "operations", "Operations"),
         Binding("f9", "config", "Config"),
     ]
+
+    is_active: bool = var(default=False)  # type: ignore[assignment]
 
     def __init__(self) -> None:
         super().__init__()
@@ -222,6 +227,22 @@ class DashboardBase(BaseScreen):
 
     def on_mount(self) -> None:
         self.watch(self.app.world, "profile_data", self._update_account_containers)
+        self.watch(self.app.world, "app_state", self._update_mode)
+
+    async def action_switch_mode(self) -> None:
+        if self.is_active:
+            await self.app.world.commands.deactivate()
+        else:
+            await self.app.push_screen(Activate())
+
+    def _update_mode(self, app_state: AppState) -> None:
+        self.is_active = app_state.is_active
+
+    def watch_is_active(self, is_active: bool) -> None:  # noqa: FBT001
+        self.unbind("f4")
+        binding_description = "Deactivate" if is_active else "Activate"
+        self.bind(Binding("f4", "switch_mode", binding_description))
+        self.refresh_bindings()
 
     async def _update_account_containers(self) -> None:
         if (

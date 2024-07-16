@@ -8,7 +8,7 @@ from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
 from clive.__private.config import ROOT_DIRECTORY
-from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+from clive.__private.ui.dashboard.dashboard import Dashboard
 from clive.__private.ui.onboarding.onboarding import OnboardingWelcomeScreen
 from clive.__private.ui.shared.base_screen import BaseScreen
 
@@ -32,7 +32,7 @@ class Help(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
 
-        if isinstance(self.app.screen, DashboardBase | OnboardingWelcomeScreen):
+        if isinstance(self.app.screen, Dashboard | OnboardingWelcomeScreen):
             self.__help_file_path: Path = self.GLOBAL_HELP_FILE_PATH
         else:
             class_path = Path(inspect.getfile(self.app.screen.__class__))
