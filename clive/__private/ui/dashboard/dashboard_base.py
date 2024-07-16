@@ -256,7 +256,7 @@ class DashboardBase(BaseScreen):
     @CliveScreen.prevent_action_when_no_accounts_node_data
     def action_operations(self) -> None:
         if not self.has_working_account:
-            self.notify("Cannot perform operations without working account", severity="error")
+            self.notify("Cannot perform operations without working account", severity="warning")
             return
         self.app.push_screen(Operations())
 
@@ -265,7 +265,7 @@ class DashboardBase(BaseScreen):
 
     def action_switch_working_account(self) -> None:
         if not self.profile_data.get_tracked_accounts():
-            self.notify("Cannot switch a working account without any account", severity="error")
+            self.notify("Cannot switch a working account without any account", severity="warning")
             return
         self.app.push_screen(SwitchWorkingAccountScreen())
 
