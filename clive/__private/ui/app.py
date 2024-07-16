@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 
 from textual import on, work
-from textual._context import active_app, active_message_pump
+from textual._context import active_app
 from textual.app import App, AutopilotCallbackType
 from textual.await_complete import AwaitComplete
 from textual.binding import Binding
@@ -24,7 +24,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
-from clive.__private.ui.screens.dashboard import DashboardLocked, DashboardUnlocked
+from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.exceptions import CommunicationError, ScreenNotFoundError
 
@@ -62,8 +62,7 @@ class Clive(App[int], ManualReactive):
 
     SCREENS = {
         "quit": Quit,
-        "dashboard_locked": DashboardLocked,
-        "dashboard_unlocked": DashboardUnlocked,
+        "dashboard": Dashboard,
     }
 
     header_expanded = var(default=False)
@@ -196,29 +195,7 @@ class Clive(App[int], ManualReactive):
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
         else:
-            self.push_screen(DashboardLocked())
-
-    def replace_screen(
-        self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]
-    ) -> AwaitMount:
-        new_, _ = self._get_screen(new)
-
-        if self.is_screen_on_top(old):
-            return self.switch_screen(new_)
-
-        old_screen_index = self.__get_screen_index(old)
-        self.app._screen_stack.pop(old_screen_index)
-        return self.push_screen_at(old_screen_index, new_)
-
-    def __get_screen_index(self, screen: str | type[Screen[ScreenResultType]]) -> int:
-        for index, screen_on_stack in enumerate(self.app._screen_stack):
-            if self.__screen_eq(screen_on_stack, screen):
-                return index
-
-        raise ScreenNotFoundError(f"Screen {screen} is not in the screen stack.\nScreen stack: {self.screen_stack}")
-
-    def is_screen_on_top(self, screen: str | type[Screen[Any]]) -> bool:
-        return self.__screen_eq(self.screen, screen)
+            self.push_screen(Dashboard())
 
     @overload
     def push_screen(
@@ -245,26 +222,7 @@ class Clive(App[int], ManualReactive):
         fun = super().push_screen
         return self.__update_screen(lambda: fun(screen=screen, callback=callback, wait_for_dismiss=wait_for_dismiss))  # type: ignore[no-any-return, call-overload]
 
-    def push_screen_at(
-        self,
-        index: int,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-    ) -> AwaitMount:
-        """Push a screen at the given index in the stack."""
-        next_screen, await_mount = self.app._get_screen(screen)
-
-        try:
-            message_pump = active_message_pump.get()
-        except LookupError:
-            message_pump = self.app
-
-        next_screen._push_result_callback(message_pump, callback)
-        self._load_screen_css(next_screen)
-        self.app._screen_stack.insert(index, next_screen)
-        return await_mount
-
-    def pop_screen(self) -> Screen[Any]:
+    def pop_screen(self) -> AwaitComplete:
         fun = super().pop_screen
         return self.__update_screen(lambda: fun())
 
@@ -295,7 +253,7 @@ class Clive(App[int], ManualReactive):
 
         return AwaitComplete(_pop_screen_until()).call_next(self)
 
-    def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
+    def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitComplete:
         fun = super().switch_screen
         return self.__update_screen(lambda: fun(screen))
 

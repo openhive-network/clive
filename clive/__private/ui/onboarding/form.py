@@ -72,7 +72,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
             self.action_previous_screen()
             return
 
-        self.__pop_current_screen()
+        self.dismiss()
 
     def __is_current_screen_to_skip(self) -> bool:
         return self.current_screen in self._skip_during_push_screen()
@@ -82,9 +82,6 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     def __push_current_screen(self) -> None:
         self.app.push_screen(self.current_screen(self))
-
-    def __pop_current_screen(self) -> None:
-        self.app.pop_screen().remove()
 
     def __check_valid_range(self, proposed_idx: int) -> bool:
         return (proposed_idx >= 0) and (proposed_idx < len(self.__screens))

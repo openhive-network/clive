@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Literal
+from typing import TYPE_CHECKING, ClassVar, Final, Literal
 
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
+from textual.reactive import var
 from textual.widgets import Label, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
@@ -25,6 +26,7 @@ from clive.__private.ui.screens.account_details.account_details import AccountDe
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.operations import Operations, Savings
+from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
@@ -38,6 +40,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
+    from clive.__private.core.app_state import AppState
     from clive.__private.core.commands.data_retrieval.update_node_data import Manabar
     from clive.__private.core.profile import Profile
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
@@ -262,7 +265,7 @@ class WatchedAccountContainer(Static, CliveWidget):
         yield from account_rows
 
 
-class DashboardBase(BaseScreen):
+class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
     NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (go to the Config view to add some)"
 
@@ -273,6 +276,8 @@ class DashboardBase(BaseScreen):
         Binding("f4", "add_account", "Add account"),
         Binding("f6", "config", "Config"),
     ]
+
+    is_unlocked: bool = var(default=False)  # type: ignore[assignment]
 
     def __init__(self) -> None:
         super().__init__()
@@ -290,6 +295,7 @@ class DashboardBase(BaseScreen):
 
     def on_mount(self) -> None:
         self.watch(self.world, "profile", self._update_account_containers)
+        self.watch(self.world, "app_state", self._update_mode)
 
     async def _update_account_containers(self, profile: Profile) -> None:
         if self.tracked_accounts == self._previous_tracked_accounts:
@@ -313,6 +319,16 @@ class DashboardBase(BaseScreen):
             await accounts_container.query("*").remove()
             await accounts_container.mount_all(widgets_to_mount)
 
+    def _update_mode(self, app_state: AppState) -> None:
+        self.is_unlocked = app_state.is_unlocked
+
+    def watch_is_unlocked(self, unlocked: bool) -> None:  # noqa: FBT001
+        lock_unlock_binding: Final[str] = "f5"
+        self.unbind(lock_unlock_binding)
+        binding_description = "Lock" if unlocked else "Unlock"
+        self.bind(Binding(lock_unlock_binding, "switch_mode", binding_description))
+        self.refresh_bindings()
+
     @CliveScreen.prevent_action_when_no_working_account()
     @CliveScreen.prevent_action_when_no_accounts_node_data()
     def action_operations(self) -> None:
@@ -327,6 +343,12 @@ class DashboardBase(BaseScreen):
 
     def action_add_account(self) -> None:
         self.app.push_screen(AddTrackedAccountDialog())
+
+    async def action_switch_mode(self) -> None:
+        if self.is_unlocked:
+            await self.app.world.commands.lock()
+        else:
+            await self.app.push_screen(Unlock())
 
     @property
     def has_working_account(self) -> bool:

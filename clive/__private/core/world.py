@@ -17,7 +17,6 @@ from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
-from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -199,14 +198,10 @@ class TUIWorld(World, ManualReactive):
         else:
             send_notification = partial(self.app.notify, f"{base_message}.")
 
-        with contextlib.suppress(ScreenNotFoundError):
-            self.app.replace_screen("DashboardUnlocked", "dashboard_locked")
         send_notification()
         self.app.trigger_app_state_watchers()
 
     def on_going_into_unlocked_mode(self) -> None:
-        with contextlib.suppress(ScreenNotFoundError):
-            self.app.replace_screen("DashboardLocked", "dashboard_unlocked")
         self.app.notify("Switched to the UNLOCKED mode.")
         self.app.trigger_app_state_watchers()
 

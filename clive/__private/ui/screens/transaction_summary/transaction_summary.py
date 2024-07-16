@@ -286,7 +286,7 @@ class TransactionSummary(BaseScreen):
 
     @CliveScreen.try_again_after_unlock
     async def _broadcast(self) -> None:
-        from clive.__private.ui.screens.dashboard import DashboardBase
+        from clive.__private.ui.screens.dashboard import Dashboard
 
         transaction = self.transaction_ensure
         try:
@@ -304,7 +304,7 @@ class TransactionSummary(BaseScreen):
             return
         self.profile.cart.clear()
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
-        self.app.pop_screen_until(DashboardBase)
+        self.app.pop_screen_until(Dashboard)
 
     async def _build_transaction(self) -> Transaction:
         return (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise

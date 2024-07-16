@@ -11,7 +11,7 @@ from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
-from clive.__private.ui.screens.dashboard import DashboardUnlocked
+from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.operations import Operations
 from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
@@ -32,6 +32,7 @@ from clive_local_tools.testnet_block_log.constants import (
 from clive_local_tools.tui.broadcast_transaction import broadcast_transaction
 from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
+    assert_is_dashboard,
     assert_is_focused,
     assert_is_screen_active,
 )
@@ -112,7 +113,7 @@ def prepare_expected_operation(
 
 
 async def go_to_savings(pilot: ClivePilot) -> None:
-    assert_is_screen_active(pilot, DashboardUnlocked)
+    assert_is_dashboard(pilot, unlocked=True)
     await press_and_wait_for_screen(pilot, "f2", Operations)
     await focus_next(pilot)
     await focus_next(pilot)
@@ -125,7 +126,8 @@ async def get_pending_transfers_from_savings_count(pilot: ClivePilot) -> int:
     pending_transfers = pilot.app.screen.query(PendingTransfer)
     tt.logger.debug(f"get_pending_transfers_from_savings_count: {len(pending_transfers)}")
     await press_and_wait_for_screen(pilot, "escape", Operations)
-    await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
+    await press_and_wait_for_screen(pilot, "escape", Dashboard)
+    assert_is_dashboard(pilot, unlocked=True)
     return len(pending_transfers)
 
 
@@ -193,7 +195,8 @@ async def test_savings(  # noqa: PLR0913
 
     if operation_type is TransferFromSavingsOperation:
         if operation_processing == "FAST_BROADCAST":
-            await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
+            await press_and_wait_for_screen(pilot, "escape", Dashboard)
+            assert_is_dashboard(pilot, unlocked=True)
         await assert_pending_transfers_from_savings_count(pilot, 1 + WORKING_ACCOUNT_DATA.from_savings_transfer_count)
         # TODO: check if pending transfer is as expected_operation
 
@@ -247,7 +250,8 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
         await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
-        await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
+        await press_and_wait_for_screen(pilot, "escape", Dashboard)
+        assert_is_dashboard(pilot, unlocked=True)
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
@@ -260,7 +264,7 @@ async def test_savings_finalize_cart(
     assert_operations_placed_in_blockchain(node, transaction_id, *expected_operations)
 
     if operation_type is TransferFromSavingsOperation:
-        assert_is_screen_active(pilot, DashboardUnlocked)
+        assert_is_dashboard(pilot, unlocked=True)
         await assert_pending_transfers_from_savings_count(
             pilot, TRANSFERS_COUNT + WORKING_ACCOUNT_DATA.from_savings_transfer_count
         )
@@ -304,7 +308,8 @@ async def test_canceling_transfer_from_savings(
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
         await fast_broadcast(pilot)
-        await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
+        await press_and_wait_for_screen(pilot, "escape", Dashboard)
+        assert_is_dashboard(pilot, unlocked=True)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
 

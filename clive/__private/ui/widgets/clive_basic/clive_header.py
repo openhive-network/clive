@@ -113,9 +113,9 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @property
     def _is_current_screen_dashboard(self) -> bool:
-        from clive.__private.ui.screens.dashboard import DashboardBase
+        from clive.__private.ui.screens.dashboard import Dashboard
 
-        return isinstance(self.app.screen, DashboardBase)
+        return isinstance(self.app.screen, Dashboard)
 
     @property
     def _is_current_screen_account_management(self) -> bool:

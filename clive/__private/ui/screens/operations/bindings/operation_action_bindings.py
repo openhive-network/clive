@@ -294,7 +294,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
 
     def _pop_screen_until_operations_or_dashboard(self) -> None:
-        from clive.__private.ui.screens.dashboard import DashboardBase
+        from clive.__private.ui.screens.dashboard import Dashboard
         from clive.__private.ui.screens.operations import Operations
 
-        self.app.pop_screen_until(Operations, DashboardBase)
+        self.app.pop_screen_until(Operations, Dashboard)
