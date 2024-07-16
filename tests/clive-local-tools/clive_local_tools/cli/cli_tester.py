@@ -399,3 +399,65 @@ class CLITester:
 
     def show_chain(self, *, profile_name: str | None = None) -> Result:
         return self.__invoke(["show", "chain"], profile_name=profile_name)
+
+    def process_transfer_schedule_create(  # noqa: PLR0913
+        self,
+        *,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        frequency: str,
+        from_: str | None = None,
+        memo: str | None = None,
+        pair_id: int | None = None,
+        password: str | None = None,
+        profile_name: str | None = None,
+        repeat: int,
+        save_file: str | None = None,
+        sign: str | None = None,
+        to: str,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "transfer-schedule", "create"],
+            **extract_params(locals()),
+        )
+
+    def process_transfer_schedule_modify(  # noqa: PLR0913
+        self,
+        *,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        frequency: str | None = None,
+        from_: str | None = None,
+        memo: str | None = None,
+        pair_id: int | None = None,
+        password: str | None = None,
+        profile_name: str | None = None,
+        repeat: int | None = None,
+        save_file: str | None = None,
+        sign: str | None = None,
+        to: str,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "transfer-schedule", "modify"],
+            **extract_params(locals()),
+        )
+
+    def process_transfer_schedule_remove(  # noqa: PLR0913
+        self,
+        *,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        from_: str | None = None,
+        pair_id: int | None = None,
+        password: str | None = None,
+        profile_name: str | None = None,
+        save_file: str | None = None,
+        sign: str | None = None,
+        to: str,
+    ) -> Result:
+        return self.__invoke(
+            ["process", "transfer-schedule", "remove"],
+            **extract_params(locals()),
+        )
