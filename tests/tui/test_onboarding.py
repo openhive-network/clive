@@ -13,7 +13,7 @@ from clive.__private.ui.onboarding.set_account.set_account import WorkingAccount
 from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
-from clive.__private.ui.screens.dashboard import DashboardUnlocked
+from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
@@ -23,6 +23,7 @@ from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileN
 from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
 from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
+    assert_is_dashboard,
     assert_is_focused,
     assert_is_screen_active,
 )
@@ -102,11 +103,12 @@ async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, 
 
 async def onboarding_finish(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "ctrl+n", OnboardingFinishScreen)
-    await press_and_wait_for_screen(pilot, "enter", DashboardUnlocked)
+    await press_and_wait_for_screen(pilot, "enter", Dashboard)
+    assert_is_dashboard(pilot, unlocked=True)
 
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
-    assert_is_screen_active(pilot, DashboardUnlocked)
+    assert_is_dashboard(pilot, unlocked=True)
     await press_and_wait_for_screen(pilot, "f6", Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)

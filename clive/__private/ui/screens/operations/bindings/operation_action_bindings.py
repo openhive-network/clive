@@ -110,11 +110,12 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def create_operations(self) -> list[OperationUnion] | None:
         return self._validate_and_notify(self._create_operations)
 
-    def action_finalize(self) -> None:
+    async def action_finalize(self) -> None:
         if self._add_to_cart():
             self._add_account_to_known_after_action()
-            self.app.switch_screen(TransactionSummaryFromCart())
-            self.app.push_screen_at(-1, Cart())
+            await self.app.pop_screen()
+            await self.app.push_screen(Cart())
+            await self.app.push_screen(TransactionSummaryFromCart())
 
     def action_add_to_cart(self) -> None:
         if self._add_to_cart():
@@ -233,7 +234,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
 
     def _pop_screen_until_operations_or_dashboard(self) -> None:
-        from clive.__private.ui.screens.dashboard import DashboardBase
+        from clive.__private.ui.screens.dashboard import Dashboard
         from clive.__private.ui.screens.operations import Operations
 
-        self.app.pop_screen_until(Operations, DashboardBase)
+        self.app.pop_screen_until(Operations, Dashboard)

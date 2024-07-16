@@ -84,7 +84,7 @@ class Form(Contextual[ContextT], CliveScreen[None]):
         self.app.push_screen(self.current_screen(self))
 
     def __pop_current_screen(self) -> None:
-        self.app.pop_screen().remove()
+        self.app.pop_screen()
 
     def __check_valid_range(self, proposed_idx: int) -> bool:
         return (proposed_idx >= 0) and (proposed_idx < len(self.__screens))

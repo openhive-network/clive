@@ -189,9 +189,9 @@ class TransactionSummaryCommon(BaseScreen):
         )
 
     def action_dashboard(self) -> None:
-        from clive.__private.ui.screens.dashboard import DashboardBase
+        from clive.__private.ui.screens.dashboard import Dashboard
 
-        self.app.pop_screen_until(DashboardBase)
+        self.app.pop_screen_until(Dashboard)
 
     async def action_broadcast(self) -> None:
         await self.__broadcast()

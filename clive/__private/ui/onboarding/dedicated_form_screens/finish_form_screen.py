@@ -52,10 +52,4 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
 
     async def action_finish(self) -> None:
         await self._owner.execute_post_actions()
-        self.app.pop_screen_until(WelcomeFormScreen)
-
-        # switch WelcomeFormScreen to the proper Dashboard screen
-        if self.app_state.is_unlocked:
-            self.app.switch_screen("dashboard_unlocked")
-        else:
-            self.app.switch_screen("dashboard_locked")
+        await self.app.pop_screen_until(WelcomeFormScreen)

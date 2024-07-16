@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 import test_tools as tt
 
-from clive.__private.ui.screens.dashboard import DashboardBase
+from clive.__private.ui.screens.dashboard import Dashboard
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 
@@ -42,7 +42,7 @@ async def press_and_wait_for_screen(  # noqa: PLR0913
     timeout: float = TUI_TESTS_GENERAL_TIMEOUT,
 ) -> None:
     """Press some binding and ensure screen changed after some action."""
-    if isinstance(pilot.app.screen, DashboardBase):
+    if isinstance(pilot.app.screen, Dashboard):
         await wait_for_accounts_data(pilot)
     await press_binding(pilot, key, key_description)
     await wait_for_screen(pilot, expected_screen, wait_for_focused=wait_for_focused, timeout=timeout)
