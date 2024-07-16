@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 from textual import on, work
 from textual._context import active_app, active_message_pump
 from textual.app import App, AutopilotCallbackType
+from textual.await_complete import AwaitComplete
 from textual.binding import Binding
 from textual.events import ScreenResume
 from textual.notifications import Notification, Notify, SeverityLevel
@@ -267,7 +268,7 @@ class Clive(App[int], ManualReactive):
         fun = super().pop_screen
         return self.__update_screen(lambda: fun())
 
-    def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> None:
+    def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> AwaitComplete:
         """
         Pop all screens until one of the given screen is on top of the stack.
 
@@ -275,20 +276,24 @@ class Clive(App[int], ManualReactive):
         ------
         ScreenNotFoundError:  if no screen was found.
         """
-        for screen in screens:
-            if not self.__is_screen_in_stack(screen):
-                continue  # Screen not found, try next one
 
-            with self.batch_update():
-                while not self.__screen_eq(self.screen_stack[-1], screen):
-                    with self.prevent(ScreenResume):
-                        self.pop_screen()
-                self.screen.post_message(ScreenResume())
-            break  # Screen found and located on top of the stack, stop
-        else:
-            raise ScreenNotFoundError(
-                f"None of the {screens} screens was found in stack.\nScreen stack: {self.screen_stack}"
-            )
+        async def _pop_screen_until() -> None:
+            for screen in screens:
+                if not self.__is_screen_in_stack(screen):
+                    continue  # Screen not found, try next one
+
+                with self.batch_update():
+                    while not self.__screen_eq(self.screen_stack[-1], screen):
+                        with self.prevent(ScreenResume):
+                            await self.pop_screen()
+                    self.screen.post_message(ScreenResume())
+                break  # Screen found and located on top of the stack, stop
+            else:
+                raise ScreenNotFoundError(
+                    f"None of the {screens} screens was found in stack.\nScreen stack: {self.screen_stack}"
+                )
+
+        return AwaitComplete(_pop_screen_until()).call_next(self)
 
     def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitMount:
         fun = super().switch_screen
