@@ -102,6 +102,9 @@ class CLITester:
     def show_account(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
         return self.__invoke(["show", "account"], account_name=account_name, profile_name=profile_name)
 
+    def show_transfer_schedule(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "transfer-schedule"], account_name=account_name, profile_name=profile_name)
+
     def process_update_owner_authority(  # noqa: PLR0913
         self,
         *,
