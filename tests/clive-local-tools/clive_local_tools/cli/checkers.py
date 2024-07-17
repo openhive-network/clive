@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable
 
 import pytest
+import test_tools as tt
 from click.testing import Result
 
 from clive.__private.core.formatters.humanize import humanize_bool
@@ -12,12 +13,20 @@ from .cli_tester import CLITester
 if TYPE_CHECKING:
     from typing import Literal
 
-    import test_tools as tt
-
     from clive.__private.cli.types import AuthorityType
+    from clive_local_tools.cli.get_data_from_table import (
+        TableDataType,
+        TableRowType,
+    )
     from schemas.fields.basic import PublicKey
 
     from .exceptions import CLITestCommandError
+
+
+from clive.__private.cli.commands.show.show_transfer_schedule import (
+    DEFAULT_UPCOMING_FUTURE_SCHEDULED_TRANSFERS_AMOUNT,
+)
+from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
 
 
 def assert_balances(
@@ -181,3 +190,106 @@ def _get_output(context: CLITester | Result, function: Callable[[CLITester], Res
     else:
         result = context
     return result.output
+
+
+def assert_transaction_in_blockchain(node: tt.RawNode, transaction_id: str) -> None:
+    node.wait_number_of_blocks(1)
+    node.api.account_history.get_transaction(
+        id_=transaction_id,
+        include_reversible=True,
+    )
+
+
+def assert_transfers_existing_number(
+    table: TableDataType,
+    required_number: int,
+    *,
+    upcoming: bool,
+) -> None:
+    if upcoming:
+        message = f"There should be {required_number} of upcoming scheduled transfers."
+    else:
+        message = f"There should be {required_number} of scheduled transfers."
+    assert len(table) == required_number, message
+
+
+def assert_max_number_of_upcoming(table: TableDataType) -> None:
+    assert (
+        len(table) == DEFAULT_UPCOMING_FUTURE_SCHEDULED_TRANSFERS_AMOUNT
+    ), f"Max number of incoming transfers should be {DEFAULT_UPCOMING_FUTURE_SCHEDULED_TRANSFERS_AMOUNT}."
+
+
+def assert_no_scheduled_transfers_for_account(result_output: str, account_name: str) -> None:
+    assert (
+        f"Account `{account_name}` has no scheduled transfers." in result_output
+    ), "There should be no scheduled transfers."
+
+
+def assert_from_account(scheduled_transfer: TableRowType, account_name: str) -> None:
+    assert "From" in scheduled_transfer, "There should be 'From' key for scheduled_transfer."
+    assert scheduled_transfer["From"] == account_name, f"Created scheduled transfer should be from `{account_name}`"
+
+
+def assert_coverage_scheduled_transfer(  # noqa: PLR0913
+    scheduled_transfer: TableRowType,
+    _from: str,
+    to: str,
+    pair_id: int,
+    amount: tt.Asset.HbdT | tt.Asset.HiveT,
+    memo: str,
+    frequency: str,
+    remaining: int,
+) -> None:
+    def __assert_coverage_scheduled_transfer_keys(scheduled_transfer: TableRowType) -> None:
+        keys = ["From", "To", "Pair id", "Amount", "Memo", "Next", "Frequency", "Remaining", "Failures"]
+        for key in keys:
+            assert key in scheduled_transfer, f"Field `{key}` should be defined."
+
+    __assert_coverage_scheduled_transfer_keys(scheduled_transfer)
+    assert scheduled_transfer["From"] == _from, "Value for `From` should match."
+    assert scheduled_transfer["To"] == to, "Value for `To` should match."
+    assert int(scheduled_transfer["Pair id"]) == pair_id, "Value for `Pair id` should match."
+    assert scheduled_transfer["Amount"] == amount.as_legacy(), "Value for `Amount` should match."
+    assert scheduled_transfer["Memo"] == memo, "Value for `Memo` should match."
+    assert shorthand_timedelta_to_timedelta(scheduled_transfer["Frequency"]) == shorthand_timedelta_to_timedelta(
+        frequency
+    ), "Value for `Frequency` should match."
+    assert int(scheduled_transfer["Remaining"]) == remaining, "Value for `Remaining` should match."
+
+
+def assert_coverage_upcoming_scheduled_transfer(  # noqa: PLR0913
+    upcoming_scheduled_transfer: TableRowType,
+    _from: str,
+    to: str,
+    pair_id: int,
+    amount: tt.Asset.HbdT | tt.Asset.HiveT,
+    possible_amount_after_operation: tt.Asset.HbdT | tt.Asset.HiveT,
+    frequency: str,
+) -> None:
+    def __assert_coverage_upcoming_scheduled_transfer_keys(upcoming_scheduled_transfer: TableRowType) -> None:
+        keys = ["From", "To", "Pair id", "Amount", "Possible balance after operation", "Next", "Frequency"]
+        for key in keys:
+            assert key in upcoming_scheduled_transfer, f"Field `{key}` should be defined."
+
+    __assert_coverage_upcoming_scheduled_transfer_keys(upcoming_scheduled_transfer)
+    assert upcoming_scheduled_transfer["From"] == _from, "Value for `From` should match."
+    assert upcoming_scheduled_transfer["To"] == to, "Value for `To` should match."
+    assert int(upcoming_scheduled_transfer["Pair id"]) == pair_id, "Value for `Pair id` should match."
+    assert upcoming_scheduled_transfer["Amount"] == amount.as_legacy(), "Value for `Amount` should match."
+    assert (
+        upcoming_scheduled_transfer["Possible balance after operation"] == possible_amount_after_operation.as_legacy()
+    ), "Value for `Possible balance after operation` should match."
+    assert shorthand_timedelta_to_timedelta(
+        upcoming_scheduled_transfer["Frequency"]
+    ) == shorthand_timedelta_to_timedelta(frequency), "Value for `Frequency` should match."
+
+
+def assert_calculated_possible_balance(
+    possible_balance: str | tt.Asset.HiveT | tt.Asset.HbdT,
+    upcoming_scheduled_transfer: TableRowType,
+) -> None:
+    message = "Values of `possible balance after operation` should match."
+    if isinstance(possible_balance, (tt.Asset.HbdT, tt.Asset.HiveT)):
+        assert upcoming_scheduled_transfer["Possible balance after operation"] == possible_balance.as_legacy(), message
+    else:
+        assert upcoming_scheduled_transfer["Possible balance after operation"] == possible_balance, message
