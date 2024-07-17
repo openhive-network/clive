@@ -140,6 +140,9 @@ class ProfileData(Context):
     ) -> None:
         self.save()
 
+    def copy(self) -> Self:
+        return deepcopy(self)
+
     @staticmethod
     def validate_profile_name(name: str) -> None:
         result = ProfileNameValidator().validate(name)
