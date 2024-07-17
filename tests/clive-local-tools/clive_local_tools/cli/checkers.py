@@ -279,9 +279,7 @@ def assert_coverage_upcoming_scheduled_transfer(  # noqa: PLR0913
     assert (
         upcoming_scheduled_transfer["Possible balance after operation"] == possible_amount_after_operation.as_legacy()
     ), "Value for `Possible balance after operation` should match."
-    assert shorthand_timedelta_to_timedelta(
-        upcoming_scheduled_transfer["Frequency"]
-    ) == shorthand_timedelta_to_timedelta(frequency), "Value for `Frequency` should match."
+    assert_scheduled_transfers_frequency_value(upcoming_scheduled_transfer, frequency)
 
 
 def assert_calculated_possible_balance(
@@ -293,3 +291,9 @@ def assert_calculated_possible_balance(
         assert upcoming_scheduled_transfer["Possible balance after operation"] == possible_balance.as_legacy(), message
     else:
         assert upcoming_scheduled_transfer["Possible balance after operation"] == possible_balance, message
+
+
+def assert_scheduled_transfers_frequency_value(scheduled_transfer: TableRowType, frequency: str) -> None:
+    assert shorthand_timedelta_to_timedelta(scheduled_transfer["Frequency"]) == shorthand_timedelta_to_timedelta(
+        frequency
+    ), "Value for `Frequency should match"
