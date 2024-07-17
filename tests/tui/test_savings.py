@@ -17,6 +17,7 @@ from clive.__private.ui.operations.savings_operations.savings_operations import 
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive_local_tools.checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS_DATA,
     WORKING_ACCOUNT_DATA,
@@ -25,7 +26,6 @@ from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
     assert_is_focused,
     assert_is_screen_active,
-    assert_operations_placed_in_blockchain,
 )
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
@@ -188,9 +188,6 @@ async def test_savings(  # noqa: PLR0913
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
-    # Wait for transaction be available in block
-    node.wait_number_of_blocks(1)
-
     # ASSERT
     assert_operations_placed_in_blockchain(node, transaction_id, expected_operation)
 
@@ -259,9 +256,6 @@ async def test_savings_finalize_cart(
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
-    # Wait for transaction be available in block
-    node.wait_number_of_blocks(1)
-
     # ASSERT
     assert_operations_placed_in_blockchain(node, transaction_id, *expected_operations)
 
@@ -313,9 +307,6 @@ async def test_canceling_transfer_from_savings(
         await press_and_wait_for_screen(pilot, "escape", DashboardActive)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
-
-        # Wait for transaction be available in block
-        node.wait_number_of_blocks(1)
 
         # ASSERT
         assert_operations_placed_in_blockchain(node, transaction_id, expected_operations[i])
