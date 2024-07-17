@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive_local_tools.checkers import assert_transaction_in_blockchain
 from clive_local_tools.cli import checkers
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.cli.helpers import get_transaction_id_from_result
@@ -39,7 +40,7 @@ async def test_authorize_default(node: tt.RawNode, cli_tester: CLITester, json_:
     # ASSERT
     transaction_id = get_transaction_id_from_result(result)
     assert transaction_id
-    checkers.assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, transaction_id)
 
 
 async def test_authorize_posting(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -55,7 +56,7 @@ async def test_authorize_posting(node: tt.RawNode, cli_tester: CLITester) -> Non
     # ASSERT
     transaction_id = get_transaction_id_from_result(result)
     assert transaction_id
-    checkers.assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, transaction_id)
 
 
 async def test_authorize_multiple_posting(cli_tester: CLITester) -> None:
@@ -84,7 +85,7 @@ async def test_authorize_active(node: tt.RawNode, cli_tester: CLITester) -> None
     # ASSERT
     transaction_id = get_transaction_id_from_result(result)
     assert transaction_id
-    checkers.assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, transaction_id)
 
 
 async def test_json_as_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: Path) -> None:
@@ -104,7 +105,7 @@ async def test_json_as_file(node: tt.RawNode, cli_tester: CLITester, tmp_path: P
     # ASSERT
     transaction_id = get_transaction_id_from_result(result)
     assert transaction_id
-    checkers.assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, transaction_id)
 
 
 async def test_negative_invalid_json_format(cli_tester: CLITester) -> None:
