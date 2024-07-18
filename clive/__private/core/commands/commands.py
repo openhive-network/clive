@@ -76,13 +76,13 @@ if TYPE_CHECKING:
         Witness,
     )
 
-WorldT = TypeVar("WorldT", bound="World")
+WorldT_co = TypeVar("WorldT_co", bound="World", covariant=True)
 
 
-class Commands(Generic[WorldT]):
+class Commands(Generic[WorldT_co]):
     def __init__(
         self,
-        world: WorldT,
+        world: WorldT_co,
         exception_handlers: list[type[AnyErrorHandlerContextManager]] | None = None,
         *args: Any,
         **kwargs: Any,

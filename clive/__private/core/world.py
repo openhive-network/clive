@@ -157,10 +157,10 @@ class TextualWorld(World, CliveWidget, ManualReactive):
         self.node = self._node
 
     @property
-    def commands(self) -> TextualCommands:  # type: ignore[override]
+    def commands(self) -> TextualCommands:
         return cast(TextualCommands, super().commands)
 
-    def _setup_commands(self) -> TextualCommands:  # type: ignore[override]
+    def _setup_commands(self) -> TextualCommands:
         return TextualCommands(self)
 
     def notify_wallet_closing(self) -> None:
