@@ -47,10 +47,10 @@ async def test_delegations_set_use_vests(node: tt.RawNode, cli_tester: CLITester
 async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.process_delegations_set(
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
         delegatee=DELEGATEE_ACCOUNT.name,
         amount=AMOUNT_TO_DELEGATE3,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT
@@ -61,10 +61,10 @@ async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester)
 async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     cli_tester.process_delegations_set(
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
         delegatee=DELEGATEE_ACCOUNT.name,
         amount=AMOUNT_TO_DELEGATE1,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
     operation = DelegateVestingSharesOperation(
         delegator=WORKING_ACCOUNT_DATA.account.name,
@@ -88,10 +88,10 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
 async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     cli_tester.process_delegations_set(
-        password=WORKING_ACCOUNT_PASSWORD,
-        sign=WORKING_ACCOUNT_KEY_ALIAS,
         delegatee=DELEGATEE_ACCOUNT.name,
         amount=AMOUNT_TO_DELEGATE1,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
     operation = DelegateVestingSharesOperation(
         delegator=WORKING_ACCOUNT_DATA.account.name,

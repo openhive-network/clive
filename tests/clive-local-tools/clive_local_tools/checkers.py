@@ -2,16 +2,21 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive_local_tools.cli.helpers import get_transaction_id_from_result
+
 if TYPE_CHECKING:
     import test_tools as tt
+
+    from click.testing import Result
 
     from schemas.operations import AnyOperation
     from schemas.operations.representations import HF26Representation
 
 
 def assert_operations_placed_in_blockchain(
-    node: tt.RawNode, transaction_id: str, *expected_operations: AnyOperation, wait_for_the_next_block: bool = True
+    node: tt.RawNode, output: str | Result, *expected_operations: AnyOperation, wait_for_the_next_block: bool = True
 ) -> None:
+    transaction_id = get_transaction_id_from_result(output) if isinstance(output, Result) else output
     if wait_for_the_next_block:
         # Wait for transaction be available in block
         node.wait_number_of_blocks(1)
