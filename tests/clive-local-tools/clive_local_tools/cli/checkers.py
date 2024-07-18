@@ -8,6 +8,7 @@ from click.testing import Result
 from clive.__private.core.formatters.humanize import humanize_bool
 
 from .cli_tester import CLITester
+from .helpers import get_transaction_id_from_result
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -80,7 +81,7 @@ def assert_authority_weight(
 def assert_weight_threshold(context: CLITester | Result, authority: AuthorityType, threshold: int) -> None:
     output = get_authority_output(context, authority)
     expected_output = f"weight threshold is {threshold}"
-    command=f"show {authority}-authority"
+    command = f"show {authority}-authority"
     assert_output_contains(expected_output, output, command)
 
 
@@ -88,7 +89,7 @@ def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
     result = context.show_memo_key() if isinstance(context, CLITester) else context
     output = result.output
     expected_output = str(memo_key)
-    command=f"show memo-key"
+    command = "show memo-key"
     assert_output_contains(expected_output, output, command)
 
 
@@ -104,7 +105,7 @@ def assert_output_contains(expected_output: str, output: str, command: str) -> N
 def assert_no_delegations(context: CLITester | Result) -> None:
     output = get_output(context, CLITester.show_hive_power)
     expected_output = "no delegations"
-    command=f"show hive-power"
+    command = "show hive-power"
     assert_output_contains(expected_output, output, command)
 
 
@@ -120,21 +121,21 @@ def assert_withdraw_routes(context: CLITester | Result, to: str, percent: int, *
 def assert_no_withdraw_routes(context: CLITester | Result) -> None:
     output = get_output(context, CLITester.show_hive_power)
     expected_output = "no withdraw routes"
-    command=f"show hive-power"
+    command = "show hive-power"
     assert_output_contains(expected_output, output, command)
 
 
 def assert_no_pending_power_down(context: CLITester | Result) -> None:
     output = get_output(context, CLITester.show_pending_power_down)
     expected_output = "no pending power down"
-    command=f"show pending power-down"
+    command = "show pending power-down"
     assert_output_contains(expected_output, output, command)
 
 
 def assert_no_pending_power_ups(context: CLITester | Result) -> None:
     output = get_output(context, CLITester.show_pending_power_ups)
     expected_output = "no pending power ups"
-    command=f"show pending power-ups"
+    command = "show pending power-ups"
     assert_output_contains(expected_output, output, command)
 
 
@@ -150,7 +151,7 @@ def assert_pending_removed_delegations(context: CLITester | Result, asset: tt.As
 def assert_no_removed_delegations(context: CLITester | Result) -> None:
     output = get_output(context, CLITester.show_pending_removed_delegations)
     expected_output = "no removed delegations"
-    command=f"show pending removed-delegations"
+    command = "show pending removed-delegations"
     assert_output_contains(expected_output, output, command)
 
 
@@ -179,7 +180,10 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
     assert actual_exit_code == expected_exit_code, message
 
 
-def assert_transaction_in_blockchain(node: tt.RawNode, transaction_id: str) -> None:
+def assert_transaction_in_blockchain(node: tt.RawNode, trx_id_or_result: str | Result) -> None:
+    transaction_id = (
+        get_transaction_id_from_result(trx_id_or_result) if isinstance(trx_id_or_result, Result) else trx_id_or_result
+    )
     # Wait for transaction be available in block
     node.wait_number_of_blocks(1)
     node.api.account_history.get_transaction(

@@ -8,7 +8,6 @@ from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.models.asset import Asset
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.checkers import assert_no_delegations, assert_transaction_in_blockchain
-from clive_local_tools.cli.helpers import get_transaction_id_from_result
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 from schemas.operations import DelegateVestingSharesOperation
@@ -40,8 +39,7 @@ async def test_delegations_set_use_vests(node: tt.RawNode, cli_tester: CLITester
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -54,8 +52,7 @@ async def test_delegations_set_use_hive(node: tt.RawNode, cli_tester: CLITester)
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, result)
 
 
 async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -81,8 +78,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -105,6 +101,5 @@ async def test_delegations_remove(node: tt.RawNode, cli_tester: CLITester) -> No
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
     assert_no_delegations(cli_tester)

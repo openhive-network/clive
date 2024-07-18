@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
-from clive_local_tools.cli.helpers import get_transaction_id_from_result
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 from schemas.operations import TransferToVestingOperation
@@ -34,8 +33,7 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_power_up_no_default_account(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -56,8 +54,7 @@ async def test_power_up_no_default_account(node: tt.RawNode, cli_tester: CLITest
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_power_up_default_account(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -76,5 +73,4 @@ async def test_power_up_default_account(node: tt.RawNode, cli_tester: CLITester)
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)

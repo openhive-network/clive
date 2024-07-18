@@ -38,4 +38,4 @@ async def test_pending_power_ups_basic(cli_tester: CLITester) -> None:
 
 async def test_pending_power_ups_default_account(cli_tester: CLITester) -> None:
     # ACT
-    result = cli_tester.show_pending_power_ups()
+    cli_tester.show_pending_power_ups()

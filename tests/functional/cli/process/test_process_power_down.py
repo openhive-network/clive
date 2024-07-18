@@ -14,7 +14,6 @@ from clive_local_tools.cli.checkers import (
     assert_transaction_in_blockchain,
 )
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.cli.helpers import get_transaction_id_from_result
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_DATA
 from schemas.operations import WithdrawVestingOperation
@@ -35,8 +34,7 @@ async def test_power_down_start_success_use_hive(node: tt.RawNode, cli_tester: C
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, result)
 
 
 async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -52,8 +50,7 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_power_down_start_fail(cli_tester: CLITester) -> None:
@@ -80,8 +77,7 @@ async def test_power_down_restart_create_use_hive(node: tt.RawNode, cli_tester: 
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_transaction_in_blockchain(node, transaction_id)
+    assert_transaction_in_blockchain(node, result)
 
 
 async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -97,8 +93,7 @@ async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester:
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -117,8 +112,7 @@ async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITest
     )
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -135,8 +129,7 @@ async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester
     result = cli_tester.process_power_down_cancel(password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS)
 
     # ASSERT
-    transaction_id = get_transaction_id_from_result(result)
-    assert_operations_placed_in_blockchain(node, transaction_id, operation)
+    assert_operations_placed_in_blockchain(node, result, operation)
     assert_no_pending_power_down(cli_tester)
 
 
