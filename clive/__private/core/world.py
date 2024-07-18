@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
 from textual.reactive import var
 
@@ -155,6 +155,10 @@ class TextualWorld(World, CliveWidget, ManualReactive):
         self.profile_data = self._profile_data
         self.app_state = self._app_state
         self.node = self._node
+
+    @property
+    def commands(self) -> TextualCommands:  # type: ignore[override]
+        return cast(TextualCommands, super().commands)
 
     def _setup_commands(self) -> TextualCommands:  # type: ignore[override]
         return TextualCommands(self)

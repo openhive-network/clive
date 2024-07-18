@@ -10,9 +10,8 @@ from textual.widgets import Footer
 if TYPE_CHECKING:
     from textual.binding import Binding
 
-    from clive import World
     from clive.__private.core.app_state import AppState
-    from clive.__private.core.commands.commands import Commands
+    from clive.__private.core.commands.commands import TextualCommands
     from clive.__private.core.node import Node
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
@@ -45,7 +44,7 @@ class CliveWidget(Widget):
         return self.world.app_state
 
     @property
-    def commands(self) -> Commands[World]:
+    def commands(self) -> TextualCommands:
         return self.world.commands
 
     @property
