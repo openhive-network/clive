@@ -34,6 +34,10 @@ class ErrorInResponseJsonError(CliveError):
     """Raised if "error" field found in response json."""
 
 
+class NullResultInResponseJsonError(CliveError):
+    """Raised if "result" field is None in response json."""
+
+
 class Communication:
     DEFAULT_ATTEMPTS: Final[int] = 5
     DEFAULT_TIMEOUT_TOTAL_SECONDS: Final[float] = 3
@@ -203,7 +207,7 @@ class Communication:
                         handle_timeout_error("reading json response", error)
                         continue
 
-                    with contextlib.suppress(ErrorInResponseJsonError):
+                    with contextlib.suppress(ErrorInResponseJsonError, NullResultInResponseJsonError):
                         self.__check_response(url=url, request=data_serialized, result=result)
                         await response.read()  # Ensure response is available outside of the context manager.
                         return response
@@ -230,5 +234,15 @@ class Communication:
         if "error" in item:
             logger.debug(f"Error in response from {url=}, request={request}, response={response}")
             raise ErrorInResponseJsonError
-        if "result" not in item:
-            raise UnknownResponseFormatError(url, request, response)
+        if "result" in item:
+            if item["result"] is not None:
+                return  # everything's good
+            # null result is some kind of random error, it could be already observed in
+            # account_history_api.get_account_history call
+            # where the result was null:
+            # {'id': 3, 'jsonrpc': '2.0', 'result': None}  # noqa: ERA001
+            # even though account for sure had some history (blocktrades.com)
+            # when account history plugin is not enabled on a node, still there is no null result but an error response
+            logger.debug(f"Null result from {url=}, request={request}, response={response}")
+            raise NullResultInResponseJsonError
+        raise UnknownResponseFormatError(url, request, response)
