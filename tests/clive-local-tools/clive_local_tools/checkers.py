@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
 from click.testing import Result
+from helpy.exceptions import RequestError
 
 from clive_local_tools.cli.helpers import get_transaction_id_from_result
 
@@ -26,10 +28,10 @@ def assert_transaction_in_blockchain(
     if wait_for_the_next_block:
         # Wait for transaction be available in block
         node.wait_number_of_blocks(1)
-    node.api.account_history.get_transaction(
-        id_=transaction_id,
-        include_reversible=True,
-    )
+    try:
+        node.api.account_history.get_transaction(id_=transaction_id, include_reversible=True)
+    except RequestError:
+        pytest.fail(f"The transaction with {transaction_id=} couldn't be found in the blockchain.")
 
 
 def assert_operations_placed_in_blockchain(
