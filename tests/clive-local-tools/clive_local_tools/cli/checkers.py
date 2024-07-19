@@ -8,7 +8,6 @@ from click.testing import Result
 from clive.__private.core.formatters.humanize import humanize_bool
 
 from .cli_tester import CLITester
-from .helpers import get_transaction_id_from_result
 
 if TYPE_CHECKING:
     from typing import Literal
@@ -178,15 +177,3 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
 
     assert actual_exit_code == expected_exit_code, message
-
-
-def assert_transaction_in_blockchain(node: tt.RawNode, trx_id_or_result: str | Result) -> None:
-    transaction_id = (
-        get_transaction_id_from_result(trx_id_or_result) if isinstance(trx_id_or_result, Result) else trx_id_or_result
-    )
-    # Wait for transaction be available in block
-    node.wait_number_of_blocks(1)
-    node.api.account_history.get_transaction(
-        id_=transaction_id,
-        include_reversible=True,
-    )

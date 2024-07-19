@@ -2,15 +2,27 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from click.testing import Result
-
-from clive_local_tools.cli.helpers import get_transaction_id_from_result
+from clive_local_tools.cli.helpers import ensure_transaction_id
 
 if TYPE_CHECKING:
     import test_tools as tt
+    from click.testing import Result
 
     from schemas.operations import AnyOperation
     from schemas.operations.representations import HF26Representation
+
+
+def assert_transaction_in_blockchain(
+    node: tt.RawNode, trx_id_or_result: str | Result, *, wait_for_the_next_block: bool = True
+) -> None:
+    transaction_id = ensure_transaction_id(trx_id_or_result)
+    if wait_for_the_next_block:
+        # Wait for transaction be available in block
+        node.wait_number_of_blocks(1)
+    node.api.account_history.get_transaction(
+        id_=transaction_id,
+        include_reversible=True,
+    )
 
 
 def assert_operations_placed_in_blockchain(
@@ -19,12 +31,8 @@ def assert_operations_placed_in_blockchain(
     *expected_operations: AnyOperation,
     wait_for_the_next_block: bool = True,
 ) -> None:
-    transaction_id = (
-        get_transaction_id_from_result(trx_id_or_result) if isinstance(trx_id_or_result, Result) else trx_id_or_result
-    )
-    if wait_for_the_next_block:
-        # Wait for transaction be available in block
-        node.wait_number_of_blocks(1)
+    assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
+    transaction_id = ensure_transaction_id(trx_id_or_result)
     transaction = node.api.account_history.get_transaction(
         id=transaction_id,
         include_reversible=True,  # type: ignore[call-arg] # TODO: id -> id_ after helpy bug fixed

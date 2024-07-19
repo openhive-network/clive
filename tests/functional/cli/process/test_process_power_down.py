@@ -7,12 +7,8 @@ import test_tools as tt
 
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
 from clive.models.asset import Asset
-from clive_local_tools.checkers import assert_operations_placed_in_blockchain
-from clive_local_tools.cli.checkers import (
-    assert_exit_code,
-    assert_no_pending_power_down,
-    assert_transaction_in_blockchain,
-)
+from clive_local_tools.checkers import assert_operations_placed_in_blockchain, assert_transaction_in_blockchain
+from clive_local_tools.cli.checkers import assert_exit_code, assert_no_pending_power_down
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_DATA
