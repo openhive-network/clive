@@ -7,6 +7,28 @@ from typing import Literal, cast, get_args, overload
 
 from inflection import underscore
 
+from clive.__private.core.constants.setting_identifiers import (
+    BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS,
+    BEEKEEPER_INITIALIZATION_TIMEOUT_SECS,
+    BEEKEEPER_PATH,
+    BEEKEEPER_REMOTE_ADDRESS,
+    DATA_PATH,
+    FORCE_ONBOARDING,
+    IS_DEV,
+    LOG_DEBUG_LOOP,
+    LOG_DEBUG_PERIOD_SECS,
+    LOG_KEEP_HISTORY,
+    LOG_LEVEL_3RD_PARTY,
+    LOG_LEVELS,
+    LOG_PATH,
+    MAX_NUMBER_OF_TRACKED_ACCOUNTS,
+    NODE_CHAIN_ID,
+    NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS,
+    NODE_REFRESH_ALARMS_RATE_SECS,
+    NODE_REFRESH_RATE_SECS,
+    SECRETS_DEFAULT_PRIVATE_KEY,
+    SECRETS_NODE_ADDRESS,
+)
 from clive.__private.settings._settings import settings
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -51,23 +73,22 @@ class SafeSettings:
 
         @property
         def is_set(self) -> bool:
-            return self._parent._get_or_default_false("IS_DEV")
+            return self._parent._get_or_default_false(IS_DEV)
 
         @property
         def should_force_onboarding(self) -> bool:
-            return self._parent._get_or_default_false("FORCE_ONBOARDING")
+            return self._parent._get_or_default_false(FORCE_ONBOARDING)
 
         @property
         def should_enable_debug_loop(self) -> bool:
-            return self._parent._get_or_default_false("LOG_DEBUG_LOOP")
+            return self._parent._get_or_default_false(LOG_DEBUG_LOOP)
 
         @property
         def debug_loop_period_secs(self) -> float:
             return self._get_log_debug_period_secs()
 
         def _get_log_debug_period_secs(self) -> float:
-            setting_name = "LOG_DEBUG_PERIOD_SECS"
-            return self._parent._get_number(setting_name, default=1, minimum=1)
+            return self._parent._get_number(LOG_DEBUG_PERIOD_SECS, default=1, minimum=1)
 
     @dataclass
     class _Log:
@@ -87,23 +108,22 @@ class SafeSettings:
 
         @property
         def should_keep_history(self) -> bool:
-            return self._parent._get_or_default_false("LOG_KEEP_HISTORY")
+            return self._parent._get_or_default_false(LOG_KEEP_HISTORY)
 
         def _get_log_levels(self) -> _AvailableLogLevelsContainer:
-            setting_name = "LOG_LEVELS"
+            setting_name = LOG_LEVELS
             value = self._parent._get_list(setting_name, ["INFO"])
             self._assert_log_levels(setting_name, value=value)
             return cast(_AvailableLogLevelsContainer, value)
 
         def _get_log_level_3rd_party(self) -> _AvailableLogLevels:
-            setting_name = "LOG_LEVEL_3RD_PARTY"
+            setting_name = LOG_LEVEL_3RD_PARTY
             value = self._parent._get_value_from_settings(setting_name, "WARNING")
             self._assert_log_level(setting_name, value=value)
             return cast(_AvailableLogLevels, value)
 
         def _get_log_path(self) -> Path:
-            setting_name = "LOG_PATH"
-            value = self._parent._get_value_from_settings(setting_name)
+            value = self._parent._get_value_from_settings(LOG_PATH)
             message = "log path is set dynamically and always ensured, so should be available now"
             assert isinstance(value, Path), message
             return value
@@ -131,13 +151,12 @@ class SafeSettings:
             return self._get_secrets_default_private_key()
 
         def _get_secrets_node_address(self) -> Url | None:
-            setting_name = "SECRETS.NODE_ADDRESS"
-            return self._parent._get_url(setting_name)
+            return self._parent._get_url(SECRETS_NODE_ADDRESS)
 
         def _get_secrets_default_private_key(self) -> str | None:
             from clive.__private.core.keys import PrivateKey
 
-            setting_name = "SECRETS.DEFAULT_PRIVATE_KEY"
+            setting_name = SECRETS_DEFAULT_PRIVATE_KEY
             value = self._parent._get_value_from_settings(setting_name, "")
             if not value:
                 return None
@@ -170,7 +189,7 @@ class SafeSettings:
             return self._get_beekeeper_initialization_timeout_secs()
 
         def _get_beekeeper_path(self) -> Path | None:
-            setting_name = "BEEKEEPER.PATH"
+            setting_name = BEEKEEPER_PATH
             value = self._parent._get_value_from_settings(setting_name, "")
             if not value:
                 return None
@@ -181,16 +200,13 @@ class SafeSettings:
             return value_
 
         def _get_beekeeper_remote_address(self) -> Url | None:
-            setting_name = "BEEKEEPER.REMOTE_ADDRESS"
-            return self._parent._get_url(setting_name)
+            return self._parent._get_url(BEEKEEPER_REMOTE_ADDRESS)
 
         def _get_beekeeper_communication_total_timeout_secs(self) -> float:
-            setting_name = "BEEKEEPER.COMMUNICATION_TOTAL_TIMEOUT_SECS"
-            return self._parent._get_number(setting_name, default=3, minimum=1)
+            return self._parent._get_number(BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=3, minimum=1)
 
         def _get_beekeeper_initialization_timeout_secs(self) -> float:
-            setting_name = "BEEKEEPER.INITIALIZATION_TIMEOUT_SECS"
-            return self._parent._get_number(setting_name, default=5, minimum=1)
+            return self._parent._get_number(BEEKEEPER_INITIALIZATION_TIMEOUT_SECS, default=5, minimum=1)
 
     @dataclass
     class _Node:
@@ -216,7 +232,7 @@ class SafeSettings:
             from clive.__private.core.validate_schema_field import is_schema_field_valid
             from clive.models.aliased import ChainIdSchema
 
-            setting_name = "NODE.CHAIN_ID"
+            setting_name = NODE_CHAIN_ID
             value = self._parent._get_value_from_settings(setting_name, "")
             if not value:
                 return None
@@ -230,16 +246,13 @@ class SafeSettings:
             return value_
 
         def _get_node_refresh_rate_secs(self) -> float:
-            setting_name = "NODE.REFRESH_RATE_SECS"
-            return self._parent._get_number(setting_name, default=1.5, minimum=1)
+            return self._parent._get_number(NODE_REFRESH_RATE_SECS, default=1.5, minimum=1)
 
         def _get_node_refresh_alarms_rate_secs(self) -> float:
-            setting_name = "NODE.REFRESH_ALARMS_RATE_SECS"
-            return self._parent._get_number(setting_name, default=30, minimum=5)
+            return self._parent._get_number(NODE_REFRESH_ALARMS_RATE_SECS, default=30, minimum=5)
 
         def _get_node_communication_timeout_total_secs(self) -> float:
-            setting_name = "NODE.COMMUNICATION_TOTAL_TIMEOUT_SECS"
-            return self._parent._get_number(setting_name, default=6, minimum=1)
+            return self._parent._get_number(NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=6, minimum=1)
 
     def __init__(self) -> None:
         self.dev = self._Dev(self)
@@ -274,14 +287,12 @@ class SafeSettings:
             getattr(self, my_prop_name)
 
     def _get_data_path(self) -> Path:
-        setting_name = "DATA_PATH"
-        value = settings.get(setting_name)
+        value = settings.get(DATA_PATH)
         assert isinstance(value, Path), "data path should is set by us, so should be available now"
         return value
 
     def _get_max_number_of_tracked_accounts(self) -> int:
-        setting_name = "MAX_NUMBER_OF_TRACKED_ACCOUNTS"
-        return int(self._get_number(setting_name, default=6, minimum=1))
+        return int(self._get_number(MAX_NUMBER_OF_TRACKED_ACCOUNTS, default=6, minimum=1))
 
     def _get_or_default_false(self, setting_name: str) -> bool:
         return self._get_bool(setting_name, default=False)

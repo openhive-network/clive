@@ -6,6 +6,7 @@ from typing import Final
 from dynaconf import Dynaconf  # type: ignore[import-untyped]
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
+from clive.__private.core.constants.setting_identifiers import LOG_DIRECTORY, LOG_PATH
 
 _DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
 
@@ -22,6 +23,6 @@ settings = Dynaconf(
 )
 
 # preconfigured settings, but initialized with a value based on other settings
-_log_directory = settings.get("LOG_DIRECTORY", "") or _DATA_DIRECTORY
+_log_directory = settings.get(LOG_DIRECTORY, "") or _DATA_DIRECTORY
 _log_path = Path(_log_directory) / "logs"
-settings.set("LOG_PATH", _log_path)
+settings.set(LOG_PATH, _log_path)

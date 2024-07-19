@@ -36,6 +36,7 @@ from clive.__private.core.beekeeper.notifications import (
     WalletClosingListener,
 )
 from clive.__private.core.communication import Communication
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings, settings
 from clive.core.url import Url
@@ -82,7 +83,7 @@ class Beekeeper:
         notify_closing_wallet_name_cb: Callable[[], str] | None = None,
     ) -> None:
         if remote_endpoint:
-            settings.set("beekeeper.remote_address", str(remote_endpoint))
+            settings.set(BEEKEEPER_REMOTE_ADDRESS, str(remote_endpoint))
 
         if not (Beekeeper.get_remote_address_from_settings() or Beekeeper.get_path_from_settings()):
             raise BeekeeperNotConfiguredError

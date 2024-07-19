@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
@@ -60,8 +61,8 @@ def prepare_node() -> tt.RawNode:
 
 async def prepare_profile(node: tt.RawNode) -> None:
     tt.logger.info("Configuring ProfileData for clive")
-    settings.set("SECRETS.NODE_ADDRESS", node.http_endpoint.as_string())
-    settings.set("NODE.CHAIN_ID", TESTNET_CHAIN_ID)
+    settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
+    settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
     ProfileData(
         WORKING_ACCOUNT_DATA.account.name,

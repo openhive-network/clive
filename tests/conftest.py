@@ -13,6 +13,7 @@ from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
+from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH, NODE_CHAIN_ID
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive.core.url import Url
@@ -46,12 +47,12 @@ def run_prepare_before_launch() -> None:
     if profile_data_directory.exists():
         shutil.rmtree(profile_data_directory)
 
-    settings.set("DATA_PATH", working_directory)
+    settings.set(DATA_PATH, working_directory)
     log_path = working_directory / "logs"
-    settings.set("LOG_PATH", log_path)
+    settings.set(LOG_PATH, log_path)
 
     # set chain id to the testnet one
-    settings.set("node.chain_id", TESTNET_CHAIN_ID)
+    settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
     prepare_before_launch(enable_stream_handlers=True)
 

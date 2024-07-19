@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
+from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID
 from clive.__private.core.profile_data import InvalidChainIdError, ProfileData
 from clive.__private.settings import safe_settings, settings
 from clive.models import Asset, Transaction
@@ -23,7 +24,7 @@ DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 
 @pytest.fixture()
 def profile_with_default_chain_id_from_settings() -> Iterator[ProfileData]:
-    chain_id_identifier = "NODE.CHAIN_ID"
+    chain_id_identifier = NODE_CHAIN_ID
     chain_id_before = safe_settings.node.chain_id
     settings.set(chain_id_identifier, DEFAULT_CHAIN_ID)
     yield ProfileData(name="test")

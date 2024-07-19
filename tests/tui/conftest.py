@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 import test_tools as tt
 
+from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
@@ -72,7 +73,7 @@ def node_with_wallet() -> NodeWithWallet:
     account = wallet.api.get_account(WORKING_ACCOUNT_DATA.account.name)
     tt.logger.debug(f"working account: {account}")
 
-    settings.set("SECRETS.NODE_ADDRESS", node.http_endpoint.as_string())
+    settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
 
     return node, wallet
 

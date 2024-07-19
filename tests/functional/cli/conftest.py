@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 from typer.testing import CliRunner
 
+from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
@@ -50,7 +51,7 @@ async def prepare_beekeeper_wallet(world: World) -> None:
 @pytest.fixture()
 async def node() -> tt.RawNode:
     node = run_node()
-    settings.set("SECRETS.NODE_ADDRESS", node.http_endpoint.as_string())
+    settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     return node
 
 
