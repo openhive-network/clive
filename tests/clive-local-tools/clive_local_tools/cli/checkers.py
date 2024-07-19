@@ -92,24 +92,19 @@ def assert_memo_key(context: CLITester | Result, memo_key: PublicKey) -> None:
     assert_output_contains(expected_output, output, command)
 
 
-def get_output(context: CLITester | Result, function: Callable[[CLITester], Result]) -> str:
-    result = function(context) if isinstance(context, CLITester) else context
-    return result.output
-
-
 def assert_output_contains(expected_output: str, output: str, command: str) -> None:
     assert expected_output in output, f"expected `{expected_output}` in command `{command}` output:\n{output}"
 
 
 def assert_no_delegations(context: CLITester | Result) -> None:
-    output = get_output(context, CLITester.show_hive_power)
+    output = _get_output(context, CLITester.show_hive_power)
     expected_output = "no delegations"
     command = "show hive-power"
     assert_output_contains(expected_output, output, command)
 
 
 def assert_withdraw_routes(context: CLITester | Result, to: str, percent: int, *, auto_vest: bool = False) -> None:
-    output = get_output(context, CLITester.show_hive_power)
+    output = _get_output(context, CLITester.show_hive_power)
     expected_output = str(percent)
     assert any(
         to in line and expected_output in line and humanize_bool(auto_vest) in line for line in output.split("\n")
@@ -118,21 +113,21 @@ def assert_withdraw_routes(context: CLITester | Result, to: str, percent: int, *
 
 
 def assert_no_withdraw_routes(context: CLITester | Result) -> None:
-    output = get_output(context, CLITester.show_hive_power)
+    output = _get_output(context, CLITester.show_hive_power)
     expected_output = "no withdraw routes"
     command = "show hive-power"
     assert_output_contains(expected_output, output, command)
 
 
 def assert_no_pending_power_down(context: CLITester | Result) -> None:
-    output = get_output(context, CLITester.show_pending_power_down)
+    output = _get_output(context, CLITester.show_pending_power_down)
     expected_output = "no pending power down"
     command = "show pending power-down"
     assert_output_contains(expected_output, output, command)
 
 
 def assert_no_pending_power_ups(context: CLITester | Result) -> None:
-    output = get_output(context, CLITester.show_pending_power_ups)
+    output = _get_output(context, CLITester.show_pending_power_ups)
     expected_output = "no pending power ups"
     command = "show pending power-ups"
     assert_output_contains(expected_output, output, command)
@@ -148,7 +143,7 @@ def assert_pending_removed_delegations(context: CLITester | Result, asset: tt.As
 
 
 def assert_no_removed_delegations(context: CLITester | Result) -> None:
-    output = get_output(context, CLITester.show_pending_removed_delegations)
+    output = _get_output(context, CLITester.show_pending_removed_delegations)
     expected_output = "no removed delegations"
     command = "show pending removed-delegations"
     assert_output_contains(expected_output, output, command)
@@ -177,3 +172,12 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
         message = f"Exit code '{actual_exit_code}' is different than expected '{expected_exit_code}'."
 
     assert actual_exit_code == expected_exit_code, message
+
+
+def _get_output(context: CLITester | Result, function: Callable[[CLITester], Result] | None = None) -> str:
+    if isinstance(context, CLITester):
+        assert function, "`function` must be provided when `context` is `CLITester`"
+        result = function(context)
+    else:
+        result = context
+    return result.output
