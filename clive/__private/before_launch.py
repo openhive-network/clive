@@ -30,5 +30,7 @@ def prepare_before_launch(*, enable_textual_logger: bool = True, enable_stream_h
     _copy_settings()
 
     if is_in_dev_mode():
+        from rich.pretty import pretty_repr
+
         logger.warning("Running in development mode.")
-        logger.debug(f"settings:\n{settings.as_dict()}")
+        logger.debug(f"settings:\n{pretty_repr(settings.as_dict())}")
