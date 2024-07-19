@@ -25,10 +25,16 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
         if not error_messages:
             return str(exception)
 
-        replaced = [
-            printed for searched, printed in cls.SEARCHED_AND_PRINTED_MESSAGES.items() if searched in error_messages
-        ]
-        return str(replaced) if replaced else str(error_messages)
+        replaced: list[str] = []
+        for error_message in error_messages:
+            for searched_message, replaced_message in cls.SEARCHED_AND_PRINTED_MESSAGES.items():
+                if searched_message in error_message:
+                    replaced.append(replaced_message)
+                    break
+            else:
+                replaced.append(error_message)
+
+        return str(replaced)
 
     def _notify_tui(self, message: str) -> None:
         """
