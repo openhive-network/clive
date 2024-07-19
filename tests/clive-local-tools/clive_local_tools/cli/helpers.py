@@ -1,7 +1,11 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
-from click.testing import Result
+
+if TYPE_CHECKING:
+    from click.testing import Result
 
 
 def get_transaction_id_from_result(result: Result) -> str:
@@ -11,9 +15,3 @@ def get_transaction_id_from_result(result: Result) -> str:
         if transaction_id:
             return transaction_id.strip(' "')
     pytest.fail(f"Could not find transaction id in stdout {stdout}")
-
-
-def ensure_transaction_id(trx_id_or_result: Result | str) -> str:
-    if isinstance(trx_id_or_result, Result):
-        return get_transaction_id_from_result(trx_id_or_result)
-    return trx_id_or_result
