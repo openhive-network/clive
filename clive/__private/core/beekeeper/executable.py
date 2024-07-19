@@ -21,7 +21,7 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperTimeoutError,
 )
 from clive.__private.logger import logger
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings
 
 
 class BeekeeperExecutable:

@@ -12,7 +12,6 @@ from typing import TYPE_CHECKING, Any, Final
 
 from pydantic import Field, validator
 
-from clive.__private.config import settings
 from clive.__private.core._async import event_wait
 from clive.__private.core.beekeeper.api import BeekeeperApi
 from clive.__private.core.beekeeper.command_line_args import (
@@ -38,7 +37,7 @@ from clive.__private.core.beekeeper.notifications import (
 )
 from clive.__private.core.communication import Communication
 from clive.__private.logger import logger
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings, settings
 from clive.core.url import Url
 from clive.dev import is_in_dev_mode
 from clive.models.base import CliveBaseModel

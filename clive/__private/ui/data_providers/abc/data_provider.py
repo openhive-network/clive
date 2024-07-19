@@ -9,7 +9,7 @@ from textual.reactive import var
 from textual.worker import Worker, WorkerState
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError

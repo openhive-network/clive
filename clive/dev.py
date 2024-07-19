@@ -2,7 +2,7 @@ from __future__ import annotations
 
 
 def is_in_dev_mode() -> bool:
-    from clive.__private.safe_settings import safe_settings
+    from clive.__private.settings import safe_settings
 
     return safe_settings.dev.is_set
 
@@ -21,7 +21,7 @@ def main() -> None:
     )
 
     if _is_cli_requested():  # don't run via textual_dev.run_app when CLI is requested (saves around 1s)
-        from clive.__private.config import settings
+        from clive.__private.settings import settings
         from clive.main import main as production_main
 
         settings.setenv("dev")

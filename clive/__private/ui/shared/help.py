@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Final
 from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
-from clive.__private.config import ROOT_DIRECTORY
+from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.ui.dashboard.dashboard_base import DashboardBase
 from clive.__private.ui.onboarding.onboarding import OnboardingWelcomeScreen
 from clive.__private.ui.shared.base_screen import BaseScreen

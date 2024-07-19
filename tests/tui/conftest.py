@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 import pytest
 import test_tools as tt
 
-from clive.__private.config import settings
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
+from clive.__private.settings import settings
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.app import Clive

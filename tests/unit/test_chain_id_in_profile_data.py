@@ -4,9 +4,8 @@ from typing import TYPE_CHECKING, Final
 
 import pytest
 
-from clive.__private.config import settings
 from clive.__private.core.profile_data import InvalidChainIdError, ProfileData
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings, settings
 from clive.models import Asset, Transaction
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from schemas.operations import TransferOperation

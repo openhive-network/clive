@@ -10,7 +10,7 @@ from textual.screen import ModalScreen
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 

@@ -12,14 +12,14 @@ if not is_tab_completion_active():
     from loguru import logger as loguru_logger
     from textual import log as textual_logger
 
-    from clive.__private.config import LAUNCH_TIME, ROOT_DIRECTORY
+    from clive.__private.core.constants.env import LAUNCH_TIME, ROOT_DIRECTORY
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
     from loguru._logger import Core
 
-    from clive.__private.safe_settings import SafeSettings
+    from clive.__private.settings import SafeSettings
 
 LogFilePaths = tuple[Path, ...]
 GroupLogFilePaths = dict[str, LogFilePaths]
@@ -77,7 +77,7 @@ class Logger:
 
     @property
     def safe_settings_delayed(self) -> SafeSettings:
-        from clive.__private.safe_settings import safe_settings
+        from clive.__private.settings import safe_settings
 
         return safe_settings
 

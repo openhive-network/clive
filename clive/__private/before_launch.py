@@ -3,9 +3,9 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from clive.__private.config import ROOT_DIRECTORY, settings
+from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.logger import logger
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings, settings
 from clive.dev import is_in_dev_mode
 
 

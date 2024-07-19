@@ -7,7 +7,7 @@ from typing import Literal, cast, get_args, overload
 
 from inflection import underscore
 
-from clive.__private.config import settings
+from clive.__private.settings._settings import settings
 from clive.core.url import Url
 from clive.exceptions import CliveError
 

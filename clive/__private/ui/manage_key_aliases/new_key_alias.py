@@ -12,7 +12,7 @@ from textual.widgets import Input
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.logger import logger
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen

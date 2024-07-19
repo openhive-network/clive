@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from textual.validation import Function, ValidationResult
 
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings
 from clive.__private.validators.account_name_validator import AccountNameValidator
 
 if TYPE_CHECKING:

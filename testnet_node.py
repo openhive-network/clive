@@ -9,12 +9,11 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
-from clive.__private.config import settings
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings, settings
 from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive.main import _main as clive_main

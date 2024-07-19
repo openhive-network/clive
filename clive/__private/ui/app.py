@@ -19,7 +19,7 @@ from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WI
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
-from clive.__private.safe_settings import safe_settings
+from clive.__private.settings import safe_settings
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
 from clive.__private.ui.get_css import get_relative_css_path
