@@ -23,6 +23,8 @@ if TYPE_CHECKING:
     from clive.__private.cli.types import AuthorityType
     from clive.__private.core.commands.sign import AlreadySignedMode
     from clive_local_tools.cli.command_options import CliOptionT
+    from schemas.fields.assets.hive import AssetHiveHF26, AssetHiveLegacy, AssetHiveT
+    from schemas.fields.assets.vests import AssetVestsHF26, AssetVestsLegacy
     from schemas.fields.basic import PublicKey
 
 
@@ -282,7 +284,7 @@ class CLITester:
         *,
         from_: str | None = None,
         to: str | None = None,
-        amount: tt.Asset.HiveT,
+        amount: AssetHiveT,
         profile_name: str | None = None,
         password: str | None = None,
         sign: str | None = None,
@@ -296,7 +298,7 @@ class CLITester:
         self,
         *,
         from_: str | None = None,
-        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        amount: AssetHiveHF26 | AssetHiveLegacy | AssetVestsHF26 | AssetVestsLegacy,
         profile_name: str | None = None,
         password: str | None = None,
         sign: str | None = None,
@@ -310,7 +312,7 @@ class CLITester:
         self,
         *,
         from_: str | None = None,
-        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        amount: AssetHiveHF26 | AssetHiveLegacy | AssetVestsHF26 | AssetVestsLegacy,
         profile_name: str | None = None,
         password: str | None = None,
         sign: str | None = None,
@@ -337,7 +339,7 @@ class CLITester:
         *,
         account_name: str | None = None,
         delegatee: str | None = None,
-        amount: tt.Asset.HiveT | tt.Asset.VestsT,
+        amount: AssetHiveHF26 | AssetHiveLegacy | AssetVestsHF26 | AssetVestsLegacy,
         profile_name: str | None = None,
         password: str | None = None,
         sign: str | None = None,
