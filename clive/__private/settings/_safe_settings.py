@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import ast
+from abc import ABC
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, cast, get_args, overload
+from typing import Literal, TypeVar, cast, get_args, overload
 
 from inflection import underscore
 
@@ -68,9 +69,13 @@ class SafeSettings:
     AVAILABLE_LOG_LEVELS = _AVAILABLE_LOG_LEVELS
 
     @dataclass
-    class _Dev:
+    class _Namespace(ABC):
         _parent: SafeSettings
 
+    _NamespaceT = TypeVar("_NamespaceT", bound=_Namespace)
+
+    @dataclass
+    class _Dev(_Namespace):
         @property
         def is_set(self) -> bool:
             return self._parent._get_or_default_false(IS_DEV)
@@ -91,9 +96,7 @@ class SafeSettings:
             return self._parent._get_number(LOG_DEBUG_PERIOD_SECS, default=1, minimum=1)
 
     @dataclass
-    class _Log:
-        _parent: SafeSettings
-
+    class _Log(_Namespace):
         @property
         def path(self) -> Path:
             return self._get_log_path()
@@ -139,9 +142,7 @@ class SafeSettings:
                 )
 
     @dataclass
-    class _Secrets:
-        _parent: SafeSettings
-
+    class _Secrets(_Namespace):
         @property
         def node_address(self) -> Url | None:
             return self._get_secrets_node_address()
@@ -169,9 +170,7 @@ class SafeSettings:
             return value_
 
     @dataclass
-    class _Beekeeper:
-        _parent: SafeSettings
-
+    class _Beekeeper(_Namespace):
         @property
         def path(self) -> Path | None:
             return self._get_beekeeper_path()
@@ -209,9 +208,7 @@ class SafeSettings:
             return self._parent._get_number(BEEKEEPER_INITIALIZATION_TIMEOUT_SECS, default=5, minimum=1)
 
     @dataclass
-    class _Node:
-        _parent: SafeSettings
-
+    class _Node(_Namespace):
         @property
         def chain_id(self) -> str | None:
             return self._get_node_chain_id()
@@ -255,11 +252,12 @@ class SafeSettings:
             return self._parent._get_number(NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=6, minimum=1)
 
     def __init__(self) -> None:
-        self.dev = self._Dev(self)
-        self.log = self._Log(self)
-        self.secrets = self._Secrets(self)
-        self.beekeeper = self._Beekeeper(self)
-        self.node = self._Node(self)
+        self._namespaces: set[type[SafeSettings._Namespace]] = set()
+        self.dev = self._create_namespace(self._Dev)
+        self.log = self._create_namespace(self._Log)
+        self.secrets = self._create_namespace(self._Secrets)
+        self.beekeeper = self._create_namespace(self._Beekeeper)
+        self.node = self._create_namespace(self._Node)
 
     @property
     def data_path(self) -> Path:
@@ -273,8 +271,7 @@ class SafeSettings:
         def find_property_names(cls: type[object]) -> list[str]:
             return [k for k, v in vars(cls).items() if isinstance(v, property)]
 
-        namespaces = [self._Dev, self._Log, self._Secrets, self._Beekeeper, self._Node]
-        for namespace in namespaces:
+        for namespace in self._namespaces:
             my_member_name = underscore(namespace.__name__).replace("_", "")
             my_member = getattr(self, my_member_name)
 
@@ -285,6 +282,10 @@ class SafeSettings:
         for my_prop_name in find_property_names(self.__class__):
             # call property to run setting validation
             getattr(self, my_prop_name)
+
+    def _create_namespace(self, namespace: type[_NamespaceT]) -> _NamespaceT:
+        self._namespaces.add(namespace)
+        return namespace(self)
 
     def _get_data_path(self) -> Path:
         value = settings.get(DATA_PATH)
