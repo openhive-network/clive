@@ -30,6 +30,7 @@ from clive.__private.core.constants.setting_identifiers import (
     SECRETS_DEFAULT_PRIVATE_KEY,
     SECRETS_NODE_ADDRESS,
 )
+from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.settings._settings import settings
 from clive.core.url import Url
 from clive.exceptions import CliveError
@@ -313,7 +314,9 @@ class SafeSettings:
         value_ = str(value)
         result = Number(minimum=minimum).validate(value_)
         if not result.is_valid:
-            raise SettingsValueError(setting_name=setting_name, value=value_, details=str(result.failure_descriptions))
+            raise SettingsValueError(
+                setting_name=setting_name, value=value_, details=humanize_validation_result(result)
+            )
 
         return float(value_)
 
