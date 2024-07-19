@@ -134,11 +134,11 @@ class _BatchNode(BaseNode):
                 raise error
             return
 
-        message = f"Invalid error response format: expected list, got {type(responses_from_error)}"
-        assert isinstance(responses_from_error, list), message
-        assert len(responses_from_error) == len(self.__batch), "Invalid amount of responses_from_error"
-
-        self.__handle_evaluation_error_in_multiple_responses(error, responses_from_error)
+        if isinstance(responses_from_error, list):
+            assert len(responses_from_error) == len(self.__batch), "Invalid amount of responses_from_error"
+            self.__handle_evaluation_error_in_multiple_responses(error, responses_from_error)
+        else:
+            self.__handle_evaluation_error_single_response(error, responses_from_error)
 
         if not self.__delay_error_on_data_access:
             raise error
@@ -157,14 +157,28 @@ class _BatchNode(BaseNode):
             request_id = int(response["id"])
             if "error" in response:
                 # creating a new instance so other responses won't be included in the error
-                new_error = CommunicationError(
-                    url=error.url,
-                    request=self.__batch[request_id].request,
-                    response=response,
-                )
-                self.__get_batch_delayed_result(request_id)._set_exception(new_error)
+                self.__set_communication_error_on_batch_delayed_result(error, request_id, response)
             else:
                 self.__get_batch_delayed_result(request_id)._set_response(**response)
+
+        if not self.__delay_error_on_data_access:
+            raise error
+
+    def __handle_evaluation_error_single_response(self, error: CommunicationError, response: dict[str, Any]) -> None:
+        """Single response error - set it on all delayed results."""
+        num_of_requests = len(self.__batch)
+        for request_id in range(num_of_requests):
+            self.__set_communication_error_on_batch_delayed_result(error, request_id, response)
+
+    def __set_communication_error_on_batch_delayed_result(
+        self, error: CommunicationError, request_id: int, response: dict[str, Any]
+    ) -> None:
+        new_error = CommunicationError(
+            url=error.url,
+            request=self.__batch[request_id].request,
+            response=response,
+        )
+        self.__get_batch_delayed_result(request_id)._set_exception(new_error)
 
     def __get_batch_delayed_result(self, request_id: int) -> _DelayedResponseWrapper:
         return self.__batch[request_id].delayed_result
