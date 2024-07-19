@@ -5,7 +5,7 @@ from typing import Final, TypeGuard
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
 from clive.dev import is_in_dev_mode
-from clive.exceptions import CommunicationError
+from clive.exceptions import CommunicationError, CommunicationTimeoutError
 
 
 class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
@@ -20,10 +20,14 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
 
     @classmethod
     def _determine_message(cls, exception: CommunicationError) -> str:
+        if isinstance(exception, CommunicationTimeoutError):
+            return cls._get_communication_timeout_message(exception)
+
         error_messages = exception.get_response_error_messages()
+        url = exception.url
 
         if not error_messages:
-            return str(exception)
+            return cls._get_communication_detailed_error_message(url, "No error details available.")
 
         replaced: list[str] = []
         for error_message in error_messages:
@@ -34,7 +38,8 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
             else:
                 replaced.append(error_message)
 
-        return str(replaced)
+        error_details = replaced[0] if len(replaced) == 1 else str(replaced)
+        return cls._get_communication_detailed_error_message(url, error_details)
 
     def _notify_tui(self, message: str) -> None:
         """
@@ -55,12 +60,20 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
             return
 
         clive_app = get_clive().app_instance()
-        notification_content = self._get_general_communication_issue_message(error.url)
+        notification_content = self._get_communication_not_available_message(error.url)
         if clive_app.is_notification_present(notification_content):
             return
 
         super()._notify_tui(notification_content)
 
     @staticmethod
-    def _get_general_communication_issue_message(url: str) -> str:
-        return f"Detected issue in communication with: {url}"
+    def _get_communication_not_available_message(url: str) -> str:
+        return f"Could not communicate with (seems to be unavailable): {url}"
+
+    @staticmethod
+    def _get_communication_detailed_error_message(url: str, error_details: str) -> str:
+        return f"Communication error with {url}:\n{error_details}"
+
+    @staticmethod
+    def _get_communication_timeout_message(exception: CommunicationTimeoutError) -> str:
+        return str(exception)
