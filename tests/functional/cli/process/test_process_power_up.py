@@ -30,7 +30,7 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
 
     # ACT
     result = cli_tester.process_power_up(
-        amount=operation.amount,
+        amount=AMOUNT_TO_POWER_UP,
         to=operation.to,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
@@ -56,7 +56,7 @@ async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_t
 
     # ACT
     result = cli_tester.process_power_up(
-        amount=operation.amount,
+        amount=AMOUNT_TO_POWER_UP,
         from_=operation.from_,
         to=operation.to,
         password=WORKING_ACCOUNT_PASSWORD,
@@ -77,7 +77,7 @@ async def test_power_up_default_account(node: tt.RawNode, cli_tester: CLITester)
 
     # ACT
     result = cli_tester.process_power_up(
-        amount=operation.amount,
+        amount=AMOUNT_TO_POWER_UP,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )

@@ -42,7 +42,9 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
 
     # ACT
     result = cli_tester.process_power_down_start(
-        amount=operation.vesting_shares, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN2,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT
@@ -85,7 +87,9 @@ async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester:
 
     # ACT
     result = cli_tester.process_power_down_restart(
-        amount=operation.vesting_shares, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN2,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT
@@ -104,7 +108,9 @@ async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITest
 
     # ACT
     result = cli_tester.process_power_down_restart(
-        amount=operation.vesting_shares, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN2,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT

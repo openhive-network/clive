@@ -33,7 +33,7 @@ async def test_delegations_set_use_vests(node: tt.RawNode, cli_tester: CLITester
     # ACT
     result = cli_tester.process_delegations_set(
         delegatee=operation.delegatee,
-        amount=operation.vesting_shares,
+        amount=AMOUNT_TO_DELEGATE1,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
@@ -72,7 +72,7 @@ async def test_delegations_reset(node: tt.RawNode, cli_tester: CLITester) -> Non
     # ACT
     result = cli_tester.process_delegations_set(
         delegatee=operation.delegatee,
-        amount=operation.vesting_shares,
+        amount=AMOUNT_TO_DELEGATE2,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
