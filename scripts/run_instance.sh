@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# Script responsible for starting a docker container built for image specified at command line.
+
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P )"
 #echo "$SCRIPTPATH"
 
@@ -8,8 +10,6 @@ export LOG_FILE="run_instance.log"
 source "${SCRIPTPATH}/common.sh"
 
 #log_exec_params "$@"
-
-# Script responsible for starting a docker container built for image specified at command line.
 
 print_help () {
     echo "Usage: ${0} <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."
