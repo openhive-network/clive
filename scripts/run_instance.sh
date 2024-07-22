@@ -5,6 +5,9 @@
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P )"
 #echo "$SCRIPTPATH"
 
+CURRENT_WORKING_DIR="$(pwd)"
+#echo "$CURRENT_WORKING_DIR"
+
 export LOG_FILE="run_instance.log"
 # shellcheck source=scripts/common.sh
 source "${SCRIPTPATH}/common.sh"
@@ -19,6 +22,7 @@ print_help () {
     echo
     echo "OPTIONS:"
     echo "  --name=<CONTAINER_NAME> (=${CONTAINER_NAME})    Allows to specify a dedicated name to the spawned container instance."
+    echo "  --data-dir=<PATH> (=<CWD>/${HOST_DATA_DIR_NAME})        Allows to specify path where clive data will be stored (mapped) on the host."
     echo "  --cli                                        Allows to launch clive in the CLI mode (by default, without this, TUI will be launched)."
     echo "  --detach                                     Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+@, Ctrl+Q key binding sequence."
     echo "  --docker-option=<OPTION>                     Allows to specify additional docker option, to be passed to underlying docker run spawn."
@@ -33,6 +37,10 @@ ENTRYPOINT_ARGS=()
 
 CONTAINER_NAME="clive-instance"
 IMAGE_NAME=""
+
+HOST_DATA_DIR_NAME="clive-data"
+HOST_DATA_DIR="${CURRENT_WORKING_DIR}/${HOST_DATA_DIR_NAME}"
+INTERNAL_DATA_DIR="/root/.clive"
 
 add_docker_arg() {
   local arg="${1}"
@@ -56,6 +64,9 @@ while [ $# -gt 0 ]; do
         ;;
     --cli)
       add_entrypoint_arg "--cli"
+      ;;
+    --data-dir=*)
+      HOST_DATA_DIR="${1#*=}"
       ;;
     --detach)
       add_docker_arg "--detach"
@@ -107,6 +118,9 @@ then
 fi
 
 add_docker_arg "--detach-keys=ctrl-@,ctrl-q"
+
+add_docker_arg "--volume"
+add_docker_arg "${HOST_DATA_DIR}:${INTERNAL_DATA_DIR}"
 
 docker container rm -f -v "${CONTAINER_NAME}" 2>/dev/null || true
 docker run --rm -it -e HIVED_UID="$(id -u)" --name "${CONTAINER_NAME}" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${ENTRYPOINT_ARGS[@]}"
