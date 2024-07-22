@@ -15,6 +15,7 @@ print_help () {
     echo "Usage: $0 <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."
     echo
     echo "Allows to start docker container for a pointed clive docker image."
+    echo "It's recommended to use official clive docker images available at https://hub.docker.com/r/hiveio/clive/tags"
     echo "OPTIONS:"
     echo "  --name=CONTAINER_NAME                 Allows to specify a dedicated name to the spawned container instance"
     echo "  --detach                              Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+p+q key binding"
