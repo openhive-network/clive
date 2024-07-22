@@ -30,6 +30,15 @@ print_help () {
     echo
 }
 
+ensure_docker_is_installed() {
+  # detect if docker is installed
+  if ! command -v docker &> /dev/null
+  then
+      echo "Error: Docker is not available. Please refer to the official Docker documentation to install it."
+      exit 1
+  fi
+}
+
 USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]..."
 
 DOCKER_ARGS=()
@@ -121,6 +130,8 @@ add_docker_arg "${HOST_DATA_DIR}:${INTERNAL_DATA_DIR}"
 #echo "Using docker image: ${IMAGE_NAME}"
 #echo "Additional docker args: ${DOCKER_ARGS[@]}"
 #echo "Additional entrypoint args: ${ENTRYPOINT_ARGS[@]}"
+
+ensure_docker_is_installed
 
 docker container rm -f -v "${CONTAINER_NAME}" 2>/dev/null || true
 docker run --rm -it -e HIVED_UID="$(id -u)" --name "${CONTAINER_NAME}" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${ENTRYPOINT_ARGS[@]}"
