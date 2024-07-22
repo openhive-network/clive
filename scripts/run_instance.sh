@@ -16,11 +16,12 @@ print_help () {
     echo
     echo "Allows to start docker container for a pointed clive docker image."
     echo "It's recommended to use official clive docker images available at https://hub.docker.com/r/hiveio/clive/tags"
+    echo
     echo "OPTIONS:"
-    echo "  --name=CONTAINER_NAME                 Allows to specify a dedicated name to the spawned container instance"
-    echo "  --detach                              Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+@, Ctrl+Q key binding sequence."
-    echo "  --docker-option=OPTION                Allows to specify additional docker option, to be passed to underlying docker run spawn."
-    echo "  --help                                Display this help screen and exit"
+    echo "  --name=<CONTAINER_NAME> (=${CONTAINER_NAME})    Allows to specify a dedicated name to the spawned container instance."
+    echo "  --detach                                     Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+@, Ctrl+Q key binding sequence."
+    echo "  --docker-option=<OPTION>                     Allows to specify additional docker option, to be passed to underlying docker run spawn."
+    echo "  --help                                       Display this help screen and exit."
     echo
 }
 
