@@ -58,10 +58,10 @@ add_entrypoint_arg() {
 
 while [ $# -gt 0 ]; do
   case "${1}" in
-     --name=*)
-        CONTAINER_NAME="${1#*=}"
-        echo "Container name is: ${CONTAINER_NAME}"
-        ;;
+    --name=*)
+      CONTAINER_NAME="${1#*=}"
+      echo "Container name is: ${CONTAINER_NAME}"
+      ;;
     --cli)
       add_entrypoint_arg "--cli"
       ;;
@@ -73,27 +73,27 @@ while [ $# -gt 0 ]; do
       ;;
 
     --docker-option=*)
-        options_string="${1#*=}"
-        IFS=" " read -ra options <<< "${options_string}"
-        for option in "${options[@]}"; do
-          add_docker_arg "${option}"
-        done
-        ;;
+      options_string="${1#*=}"
+      IFS=" " read -ra options <<< "${options_string}"
+      for option in "${options[@]}"; do
+        add_docker_arg "${option}"
+      done
+      ;;
     --help)
-        print_help
-        exit 0
-        ;;
-     -*)
-        echo "Error: Unrecognized option: ${1}"
-        echo "${USAGE_MSG}"
-        exit 1
-        ;;
-     *)
-        IMAGE_NAME="${1}"
-        echo "Using image name: ${IMAGE_NAME}"
-        ;;
-    esac
-    shift
+      print_help
+      exit 0
+      ;;
+    -*)
+      echo "Error: Unrecognized option: ${1}"
+      echo "${USAGE_MSG}"
+      exit 1
+      ;;
+    *)
+      IMAGE_NAME="${1}"
+      echo "Using image name: ${IMAGE_NAME}"
+      ;;
+  esac
+  shift
 done
 
 
