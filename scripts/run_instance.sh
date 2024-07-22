@@ -1,13 +1,13 @@
 #! /bin/bash
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P )"
-echo "$SCRIPTPATH"
+#echo "$SCRIPTPATH"
 
 export LOG_FILE=run_instance.log
 # shellcheck source=scripts/common.sh
 source "$SCRIPTPATH/common.sh"
 
-log_exec_params "$@"
+#log_exec_params "$@"
 
 # Script responsible for starting a docker container built for image specified at command line.
 
