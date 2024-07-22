@@ -40,7 +40,7 @@ class RemoveDelegation(OperationSummary):
         return DelegateVestingSharesOperation(
             delegator=self.working_account,
             delegatee=self._delegation.delegatee,
-            vesting_shares=VESTS_TO_REMOVE_DELEGATION,
+            vesting_shares=Asset.vests(VESTS_TO_REMOVE_DELEGATION),
         )
 
     @property
