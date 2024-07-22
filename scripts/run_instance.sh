@@ -104,10 +104,6 @@ if [ -z "${IMAGE_NAME}" ]; then
   exit 1
 fi
 
-#echo "Using docker image: ${IMAGE_NAME}"
-#echo "Additional docker args: ${DOCKER_ARGS[@]}"
-#echo "Additional entrypoint args: ${ENTRYPOINT_ARGS[@]}"
-
 # If command 'tput' exists
 if command -v tput &> /dev/null
 then
@@ -121,6 +117,10 @@ add_docker_arg "--detach-keys=ctrl-@,ctrl-q"
 
 add_docker_arg "--volume"
 add_docker_arg "${HOST_DATA_DIR}:${INTERNAL_DATA_DIR}"
+
+#echo "Using docker image: ${IMAGE_NAME}"
+#echo "Additional docker args: ${DOCKER_ARGS[@]}"
+#echo "Additional entrypoint args: ${ENTRYPOINT_ARGS[@]}"
 
 docker container rm -f -v "${CONTAINER_NAME}" 2>/dev/null || true
 docker run --rm -it -e HIVED_UID="$(id -u)" --name "${CONTAINER_NAME}" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${ENTRYPOINT_ARGS[@]}"
