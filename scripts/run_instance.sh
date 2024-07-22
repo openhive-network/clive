@@ -19,6 +19,7 @@ print_help () {
     echo
     echo "OPTIONS:"
     echo "  --name=<CONTAINER_NAME> (=${CONTAINER_NAME})    Allows to specify a dedicated name to the spawned container instance."
+    echo "  --cli                                        Allows to launch clive in the CLI mode (by default, without this, TUI will be launched)."
     echo "  --detach                                     Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+@, Ctrl+Q key binding sequence."
     echo "  --docker-option=<OPTION>                     Allows to specify additional docker option, to be passed to underlying docker run spawn."
     echo "  --help                                       Display this help screen and exit."
@@ -53,6 +54,9 @@ while [ $# -gt 0 ]; do
         CONTAINER_NAME="${1#*=}"
         echo "Container name is: ${CONTAINER_NAME}"
         ;;
+    --cli)
+      add_entrypoint_arg "--cli"
+      ;;
     --detach)
       add_docker_arg "--detach"
       ;;
