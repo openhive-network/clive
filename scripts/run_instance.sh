@@ -14,6 +14,18 @@ source "${SCRIPTPATH}/common.sh"
 
 #log_exec_params "$@"
 
+USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]..."
+
+DOCKER_ARGS=()
+ENTRYPOINT_ARGS=()
+
+CONTAINER_NAME="clive-instance"
+IMAGE_NAME=""
+
+HOST_DATA_DIR_NAME="clive-data"
+HOST_DATA_DIR="${CURRENT_WORKING_DIR}/${HOST_DATA_DIR_NAME}"
+INTERNAL_DATA_DIR="/root/.clive"
+
 print_help () {
     echo "${USAGE_MSG}"
     echo
@@ -39,17 +51,14 @@ ensure_docker_is_installed() {
   fi
 }
 
-USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]..."
-
-DOCKER_ARGS=()
-ENTRYPOINT_ARGS=()
-
-CONTAINER_NAME="clive-instance"
-IMAGE_NAME=""
-
-HOST_DATA_DIR_NAME="clive-data"
-HOST_DATA_DIR="${CURRENT_WORKING_DIR}/${HOST_DATA_DIR_NAME}"
-INTERNAL_DATA_DIR="/root/.clive"
+ensure_image_name_is_set() {
+  if [ -z "${IMAGE_NAME}" ]; then
+    echo "Error: Missing docker image name."
+    echo "${USAGE_MSG}"
+    echo
+    exit 1
+    fi
+}
 
 add_docker_arg() {
   local arg="${1}"
@@ -65,73 +74,84 @@ add_entrypoint_arg() {
   ENTRYPOINT_ARGS+=("${arg}")
 }
 
-while [ $# -gt 0 ]; do
-  case "${1}" in
-    --name=*)
-      CONTAINER_NAME="${1#*=}"
-      echo "Container name is: ${CONTAINER_NAME}"
-      ;;
-    --cli)
-      add_entrypoint_arg "--cli"
-      ;;
-    --data-dir=*)
-      HOST_DATA_DIR="${1#*=}"
-      ;;
-    --detach)
-      add_docker_arg "--detach"
-      ;;
+set_width_height() {
+  # If command 'tput' exists
+  if command -v tput &> /dev/null
+  then
+    add_docker_arg "--env"
+    add_docker_arg "COLUMNS=$(tput cols)"
+    add_docker_arg "--env"
+    add_docker_arg "LINES=$(tput lines)"
+  fi
+}
 
-    --docker-option=*)
-      options_string="${1#*=}"
-      IFS=" " read -ra options <<< "${options_string}"
-      for option in "${options[@]}"; do
-        add_docker_arg "${option}"
-      done
-      ;;
-    --help)
-      print_help
-      exit 0
-      ;;
-    -*)
-      echo "Error: Unrecognized option: ${1}"
-      echo "${USAGE_MSG}"
-      exit 1
-      ;;
-    *)
-      IMAGE_NAME="${1}"
-      echo "Using image name: ${IMAGE_NAME}"
-      ;;
-  esac
-  shift
-done
+process_args() {
+  while [ $# -gt 0 ]; do
+    case "${1}" in
+      --name=*)
+        CONTAINER_NAME="${1#*=}"
+        echo "Container name is: ${CONTAINER_NAME}"
+        ;;
+      --data-dir=*)
+        HOST_DATA_DIR="${1#*=}"
+        ;;
+      --cli)
+        add_entrypoint_arg "--cli"
+        ;;
+      --detach)
+        add_docker_arg "--detach"
+        ;;
+      --docker-option=*)
+        options_string="${1#*=}"
+        IFS=" " read -ra options <<< "${options_string}"
+        for option in "${options[@]}"; do
+          add_docker_arg "${option}"
+        done
+        ;;
+      --help)
+        print_help
+        exit 0
+        ;;
+      -*)
+        echo "Error: Unrecognized option: ${1}"
+        echo "${USAGE_MSG}"
+        exit 1
+        ;;
+      *)
+        IMAGE_NAME="${1}"
+        echo "Using image name: ${IMAGE_NAME}"
+        ;;
+    esac
+    shift
+  done
+}
 
+docker_run() {
+  docker container rm -f -v "${CONTAINER_NAME}" 2>/dev/null || true
+  docker run --rm -it \
+    -e HIVED_UID="$(id -u)" \
+    --name "${CONTAINER_NAME}" \
+    --stop-timeout=180 \
+    --detach-keys=ctrl-@,ctrl-q \
+    --volume="${HOST_DATA_DIR}:${INTERNAL_DATA_DIR}" \
+    "${DOCKER_ARGS[@]}" \
+    "${IMAGE_NAME}" \
+    "${ENTRYPOINT_ARGS[@]}"
+}
 
-if [ -z "${IMAGE_NAME}" ]; then
-  echo "Error: Missing docker image name."
-  echo "${USAGE_MSG}"
-  echo
-  exit 1
-fi
+main() {
+  ensure_docker_is_installed
 
-# If command 'tput' exists
-if command -v tput &> /dev/null
-then
-  add_docker_arg "--env"
-  add_docker_arg "COLUMNS=$(tput cols)"
-  add_docker_arg "--env"
-  add_docker_arg "LINES=$(tput lines)"
-fi
+  process_args "${@}"
+  ensure_image_name_is_set
 
-add_docker_arg "--detach-keys=ctrl-@,ctrl-q"
+  set_width_height
 
-add_docker_arg "--volume"
-add_docker_arg "${HOST_DATA_DIR}:${INTERNAL_DATA_DIR}"
+  #echo "Using docker image: ${IMAGE_NAME}"
+  #echo "Additional docker args: ${DOCKER_ARGS[@]}"
+  #echo "Additional entrypoint args: ${ENTRYPOINT_ARGS[@]}"
 
-#echo "Using docker image: ${IMAGE_NAME}"
-#echo "Additional docker args: ${DOCKER_ARGS[@]}"
-#echo "Additional entrypoint args: ${ENTRYPOINT_ARGS[@]}"
+  docker_run
+}
 
-ensure_docker_is_installed
-
-docker container rm -f -v "${CONTAINER_NAME}" 2>/dev/null || true
-docker run --rm -it -e HIVED_UID="$(id -u)" --name "${CONTAINER_NAME}" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${ENTRYPOINT_ARGS[@]}"
+main "${@}"
