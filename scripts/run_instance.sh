@@ -12,7 +12,7 @@ source "${SCRIPTPATH}/common.sh"
 #log_exec_params "$@"
 
 print_help () {
-    echo "Usage: ${0} <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."
+    echo "${USAGE_MSG}"
     echo
     echo "Allows to start docker container for a pointed clive docker image."
     echo "It's recommended to use official clive docker images available at https://hub.docker.com/r/hiveio/clive/tags"
@@ -23,6 +23,8 @@ print_help () {
     echo "  --help                                Display this help screen and exit"
     echo
 }
+
+USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."
 
 DOCKER_ARGS=()
 CLIVE_ARGS=()
@@ -81,7 +83,7 @@ CMD_ARGS=("${@}")
 
 if [ -z "${IMAGE_NAME}" ]; then
   echo "Error: Missing docker image name."
-  echo "Usage: ${0} <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."
+  echo "${USAGE_MSG}"
   echo
   exit 1
 fi
