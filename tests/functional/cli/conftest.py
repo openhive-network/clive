@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 import pytest
 from typer.testing import CliRunner
@@ -14,11 +14,14 @@ from clive.__private.storage.accounts import Account as WatchedAccount
 from clive.__private.storage.accounts import WorkingAccount
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_DATA, EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 
 if TYPE_CHECKING:
     import test_tools as tt
 
+OTHER_ACCOUNT: Final[tt.Account] = ALT_WORKING_ACCOUNT1_DATA.account
+OTHER_ACCOUNT_KEY_ALIAS: Final[str] = f"{OTHER_ACCOUNT}_key"
 
 @pytest.fixture()
 async def prepare_profile() -> ProfileData:
@@ -43,6 +46,11 @@ async def prepare_beekeeper_wallet(world: World) -> None:
 
         world.profile_data.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
+        )
+        await world.commands.sync_data_with_beekeeper()
+    async with world:
+        world.profile_data.keys.add_to_import(
+            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=OTHER_ACCOUNT_KEY_ALIAS),
         )
         await world.commands.sync_data_with_beekeeper()
 
