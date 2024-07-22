@@ -24,10 +24,10 @@ print_help () {
     echo
 }
 
-USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]... [<hived_option>]..."
+USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]..."
 
 DOCKER_ARGS=()
-CLIVE_ARGS=()
+ENTRYPOINT_ARGS=()
 
 CONTAINER_NAME="clive-instance"
 IMAGE_NAME=""
@@ -39,11 +39,11 @@ add_docker_arg() {
   DOCKER_ARGS+=("${arg}")
 }
 
-add_clive_arg() {
+add_entrypoint_arg() {
   local arg="${1}"
-#  echo "Processing hived argument: ${arg}"
+#  echo "Processing entrypoint argument: ${arg}"
 
-  CLIVE_ARGS+=("${arg}")
+  ENTRYPOINT_ARGS+=("${arg}")
 }
 
 while [ $# -gt 0 ]; do
@@ -68,7 +68,9 @@ while [ $# -gt 0 ]; do
         exit 0
         ;;
      -*)
-        add_clive_arg "${1}"
+        echo "Error: Unrecognized option: ${1}"
+        echo "${USAGE_MSG}"
+        exit 1
         ;;
      *)
         IMAGE_NAME="${1}"
@@ -78,8 +80,6 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-# Collect remaining command line args to pass to the container to run
-CMD_ARGS=("${@}")
 
 if [ -z "${IMAGE_NAME}" ]; then
   echo "Error: Missing docker image name."
@@ -88,10 +88,9 @@ if [ -z "${IMAGE_NAME}" ]; then
   exit 1
 fi
 
-CMD_ARGS+=("${CLIVE_ARGS[@]}")
-
 #echo "Using docker image: ${IMAGE_NAME}"
-#echo "Additional hived args: ${CMD_ARGS[@]}"
+#echo "Additional docker args: ${DOCKER_ARGS[@]}"
+#echo "Additional entrypoint args: ${ENTRYPOINT_ARGS[@]}"
 
 # If command 'tput' exists
 if command -v tput &> /dev/null
@@ -105,4 +104,4 @@ fi
 add_docker_arg "--detach-keys=ctrl-@,ctrl-q"
 
 docker container rm -f -v "${CONTAINER_NAME}" 2>/dev/null || true
-docker run --rm -it -e HIVED_UID="$(id -u)" --name "${CONTAINER_NAME}" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"
+docker run --rm -it -e HIVED_UID="$(id -u)" --name "${CONTAINER_NAME}" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${ENTRYPOINT_ARGS[@]}"
