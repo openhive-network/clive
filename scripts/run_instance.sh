@@ -18,7 +18,7 @@ print_help () {
     echo "It's recommended to use official clive docker images available at https://hub.docker.com/r/hiveio/clive/tags"
     echo "OPTIONS:"
     echo "  --name=CONTAINER_NAME                 Allows to specify a dedicated name to the spawned container instance"
-    echo "  --detach                              Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+p+q key binding"
+    echo "  --detach                              Allows to start container instance in detached mode. Otherwise, you can detach using Ctrl+@, Ctrl+Q key binding sequence."
     echo "  --docker-option=OPTION                Allows to specify additional docker option, to be passed to underlying docker run spawn."
     echo "  --help                                Display this help screen and exit"
     echo
@@ -99,6 +99,8 @@ then
   add_docker_arg "--env"
   add_docker_arg "LINES=$(tput lines)"
 fi
+
+add_docker_arg "--detach-keys=ctrl-@,ctrl-q"
 
 docker container rm -f -v "$CONTAINER_NAME" 2>/dev/null || true
 docker run --rm -it -e HIVED_UID="$(id -u)" --name "$CONTAINER_NAME" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"
