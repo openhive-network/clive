@@ -5,11 +5,16 @@ from typing import TYPE_CHECKING, Callable, ParamSpec, TypeVar, get_args
 
 import typer
 
-from clive.__private.cli.warnings import typer_echo_warnings
-from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
-from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
-from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
-from clive.__private.validators.scheduled_transfer_frequency_value_validator import ScheduledTransferFrequencyValidator
+from clive.__private.cli.completion import is_tab_completion_active
+
+if not is_tab_completion_active():
+    from clive.__private.cli.warnings import typer_echo_warnings
+    from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
+    from clive.__private.core.decimal_conventer import DecimalConversionNotANumberError, DecimalConverter
+    from clive.__private.core.shorthand_timedelta import shorthand_timedelta_to_timedelta
+    from clive.__private.validators.scheduled_transfer_frequency_value_validator import (
+        ScheduledTransferFrequencyValidator,
+    )
 
 if TYPE_CHECKING:
     from datetime import timedelta
