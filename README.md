@@ -64,16 +64,38 @@ In order to run clive via Docker, you need to have Docker installed on your mach
 instructions [here](https://docs.docker.com/get-docker/).
 
 You can then run a docker container with your desired version of Clive.
-Specify the first 8 characters of the commit you want to use, or use the "latest" postfix.
-The launch command (depending on the branch and chain version you want to use, e.g. TUI latest develop on testnet) will look
-like:
+It's recommended to use official clive docker images available at https://hub.docker.com/r/hiveio/clive/tags
+
+The simplest way to run clive is to do it via the `run_instance.sh` script like:
 
  ```bash
-docker pull registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest && docker run -ti --detach-keys 'ctrl-@,ctrl-q' --registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest
- ```
+# e.g: ./scripts/run_instance.sh hiveio/clive:v1.27.5.13
+./scripts/run_instance.sh <latest_version>
+```
 
-If you want to run clive in the interactive CLI mode, you should include the `--cli` flag in the command:
+If you want to run clive in the CLI mode, you should include the `--cli` flag in the command:
+
+```bash
+./scripts/run_instance.sh <latest_version> --cli
+```
+
+For more information about the script, you can run it with the `--help` flag:
 
  ```bash
-docker run -ti registry.gitlab.syncad.com/hive/clive/testnet-instance-develop:testnet-instance-latest --cli
- ```
+./scripts/run_instance.sh --help
+```
+
+That's the desired approach, because the `run_instance.sh` script will take care of any additional flags that need to be
+passed to the `docker run`. Like the one that remaps the detach keys to `ctrl-@,ctrl-q` to avoid detaching from the
+container when interacting with the TUI. Additionally, it will automatically map the volume to the data directory used
+inside container to persist the data and configuration between runs.
+
+However, if you still want to run clive manually via `docker run`, which is not recommended, you can see what the docker
+invocation command should look like in the mentioned `run_instance.sh` script.
+
+It should be similar to the following command, but we do not guarantee that this line will work as expected, as the
+script may be updated:
+
+```bash
+docker run -ti -v ./clive-data:/root/.clive --detach-keys 'ctrl-@,ctrl-q' <latest_version>
+```
