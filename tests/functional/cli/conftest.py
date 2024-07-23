@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
 OTHER_ACCOUNT: Final[tt.Account] = ALT_WORKING_ACCOUNT1_DATA.account
-OTHER_ACCOUNT_KEY_ALIAS: Final[str] = f"{OTHER_ACCOUNT}_key"
+OTHER_ACCOUNT_KEY_ALIAS: Final[str] = f"{OTHER_ACCOUNT.name}_key"
 
 @pytest.fixture()
 async def prepare_profile() -> ProfileData:
@@ -46,11 +46,6 @@ async def prepare_beekeeper_wallet(world: World) -> None:
 
         world.profile_data.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
-        )
-        await world.commands.sync_data_with_beekeeper()
-    async with world:
-        world.profile_data.keys.add_to_import(
-            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=OTHER_ACCOUNT_KEY_ALIAS),
         )
         await world.commands.sync_data_with_beekeeper()
 

@@ -21,6 +21,8 @@ def api(foo: FooT) -> FooT:
     async def impl(this: BeekeeperApi, **kwargs: Any) -> Any:  # noqa: ANN401
         if foo.__name__ not in ["create_session"] and not is_token_already_passed(**kwargs):
             kwargs["token"] = this._owner.token
+        if "import" in foo.__name__:
+            breakpoint()
         return (
             await this._owner._send(
                 result_model=get_type_hints(foo)["return"],
