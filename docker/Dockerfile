@@ -31,6 +31,15 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
+# create clive admin account so that we don't operate on root
+ENV CLIVE_ADMIN_UNIX_ACCOUNT="clive_admin"
+RUN useradd -ms /bin/bash -u 2000 -g users -c "Clive admin account" "${CLIVE_ADMIN_UNIX_ACCOUNT}" && \
+          echo "${CLIVE_ADMIN_UNIX_ACCOUNT} ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+RUN chown -R "${CLIVE_ADMIN_UNIX_ACCOUNT}:users" /clive
+
+USER $CLIVE_ADMIN_UNIX_ACCOUNT
+
 # create and use python virtualenv
 ENV PYTHON_VENV_PATH="/clive/venv"
 RUN python3 -m venv ${PYTHON_VENV_PATH}

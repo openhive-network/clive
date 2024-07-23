@@ -15,7 +15,7 @@ IMAGE_NAME=""
 
 HOST_DATA_DIR_NAME="clive-data"
 HOST_DATA_DIR="${CURRENT_WORKING_DIR}/${HOST_DATA_DIR_NAME}"
-INTERNAL_DATA_DIR="/root/.clive"
+INTERNAL_DATA_DIR="/home/clive_admin/.clive"
 
 print_help () {
     echo "${USAGE_MSG}"

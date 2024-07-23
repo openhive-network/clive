@@ -57,6 +57,12 @@ while [ $# -gt 0 ]; do
   shift
 done
 
+echo "/home/clive_admin"
+ls -al /home/clive_admin
+
+echo "/home/clive_admin/.clive"
+ls -al /home/clive_admin/.clive
+
 if [ "${TESTNET_MODE}" = "0" ]; then
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
     echo "Launching clive in TUI mode on mainnet"
