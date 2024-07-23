@@ -48,6 +48,11 @@ async def prepare_beekeeper_wallet(world: World) -> None:
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world.commands.sync_data_with_beekeeper()
+    async with world:
+        world.profile_data.keys.add_to_import(
+            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=OTHER_ACCOUNT_KEY_ALIAS),
+        )
+        await world.commands.sync_data_with_beekeeper()
 
 
 @pytest.fixture()
