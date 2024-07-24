@@ -316,3 +316,15 @@ async def show_transfer_schedule(
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowTransferSchedule(**common.as_dict(), account_name=account_name).run()
+
+
+@show.command(name="account", common_options=[WorldWithoutBeekeeperCommonOptions])
+async def show_account(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = options.account_name_option,
+) -> None:
+    """Show information about given account."""
+    from clive.__private.cli.commands.show.show_account import ShowAccount
+
+    common = WorldWithoutBeekeeperCommonOptions.get_instance()
+    await ShowAccount(**common.as_dict(), account_name=account_name).run()
