@@ -2,17 +2,8 @@
 
 # Script responsible for starting a docker container built for image specified at command line.
 
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 || exit 1; pwd -P )"
-#echo "$SCRIPTPATH"
-
 CURRENT_WORKING_DIR="$(pwd)"
 #echo "$CURRENT_WORKING_DIR"
-
-export LOG_FILE="run_instance.log"
-# shellcheck source=scripts/common.sh
-source "${SCRIPTPATH}/common.sh"
-
-#log_exec_params "$@"
 
 USAGE_MSG="Usage: ${0} <docker_img> [OPTION[=VALUE]]..."
 
@@ -74,17 +65,6 @@ add_entrypoint_arg() {
   ENTRYPOINT_ARGS+=("${arg}")
 }
 
-set_width_height() {
-  # If command 'tput' exists
-  if command -v tput &> /dev/null
-  then
-    add_docker_arg "--env"
-    add_docker_arg "COLUMNS=$(tput cols)"
-    add_docker_arg "--env"
-    add_docker_arg "LINES=$(tput lines)"
-  fi
-}
-
 process_args() {
   while [ $# -gt 0 ]; do
     case "${1}" in
@@ -144,8 +124,6 @@ main() {
 
   process_args "${@}"
   ensure_image_name_is_set
-
-  set_width_height
 
   #echo "Using docker image: ${IMAGE_NAME}"
   #echo "Additional docker args: ${DOCKER_ARGS[@]}"
