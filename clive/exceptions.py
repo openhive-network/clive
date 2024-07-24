@@ -95,13 +95,16 @@ class UnknownResponseFormatError(CommunicationError):
 
 
 class CommunicationTimeoutError(CommunicationError):
-    def __init__(self, url: str, request: str, timeout: float, attempts: int) -> None:
+    def __init__(self, url: str, request: str, timeout_secs: float, context: str = "") -> None:
         self.url = url
         self.request = request
-        self.timeout = timeout
-        self.attempts = attempts
+        self.timeout_secs = timeout_secs
+        self.context = context
+        context_details = f" Context: {context}. " if context else " "
         message = (
-            f"Timeout occurred during communication with: {url=}. Exceeded {attempts} attempts, each of {timeout:.2f}s."
+            f"Timeout occurred during communication with: {url}."
+            f" Took over {timeout_secs:.2f} seconds.{context_details}\n"
+            f"Request: {request}"
         )
         super().__init__(url, request, message=message)
 

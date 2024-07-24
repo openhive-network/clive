@@ -76,4 +76,7 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
 
     @staticmethod
     def _get_communication_timeout_message(exception: CommunicationTimeoutError) -> str:
-        return str(exception)
+        return (
+            f"Timeout occurred during communication with {exception.url}."
+            f" Took over {exception.timeout_secs:.2f} seconds."
+        )

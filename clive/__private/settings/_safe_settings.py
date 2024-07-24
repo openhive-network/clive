@@ -203,7 +203,7 @@ class SafeSettings:
             return self._parent._get_url(BEEKEEPER_REMOTE_ADDRESS)
 
         def _get_beekeeper_communication_total_timeout_secs(self) -> float:
-            return self._parent._get_number(BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=3, minimum=1)
+            return self._parent._get_number(BEEKEEPER_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=15, minimum=1)
 
         def _get_beekeeper_initialization_timeout_secs(self) -> float:
             return self._parent._get_number(BEEKEEPER_INITIALIZATION_TIMEOUT_SECS, default=5, minimum=1)
@@ -250,7 +250,7 @@ class SafeSettings:
             return self._parent._get_number(NODE_REFRESH_ALARMS_RATE_SECS, default=30, minimum=5)
 
         def _get_node_communication_timeout_total_secs(self) -> float:
-            return self._parent._get_number(NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=6, minimum=1)
+            return self._parent._get_number(NODE_COMMUNICATION_TOTAL_TIMEOUT_SECS, default=30, minimum=1)
 
     def __init__(self) -> None:
         self._namespaces: set[type[SafeSettings._Namespace]] = set()
