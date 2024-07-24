@@ -86,6 +86,8 @@ flowchart LR
 
         Show --> ShowNode[node]
 
+        Show --> ShowAccount[account]
+
         Show --> ShowAccounts[accounts]
 
         Show --> ShowKeys[keys]
