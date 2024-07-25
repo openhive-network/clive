@@ -19,21 +19,29 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class ProcessClaimNewAccountToken(OperationCommand):
-    _creator: str
+    creator_param_name: str
     ctx: typer.Context
     fee: Asset.Hive | None
     """None means RC will be used instead of payment in Hive"""
 
     @property
     def creator(self) -> str:
-        return self._get_working_account_name(self._creator, "creator")
+        return self._get_working_account_name(self.creator_param_name)
 
-    def _get_working_account_name(self, override_with: str, param_name: str) -> str:
+    def _get_working_account_name(self, param_name: str) -> str:
         def is_default(name: str) -> bool:
             return self.ctx.get_parameter_source(name) == ParameterSource.DEFAULT
 
+        try:
+            param_value = self.ctx.params[param_name]
+        except KeyError as error:
+            raise AssertionError(f"Parameter {param_name} not found in context params of {self.ctx.params}.") from error
+
+        message = f"Expected {param_name} to be a string, got {type(param_value)} of {param_value}."
+        assert isinstance(param_value, str), message
+
         if is_default("profile_name"):
-            return override_with
+            return param_value
 
         if is_default(param_name):
             # if profile_name is not default, then we have to get working account name from the given profile
@@ -41,7 +49,7 @@ class ProcessClaimNewAccountToken(OperationCommand):
             return ProfileData.get_working_account_name(self.profile_name)
 
         # when both profile name and working account name are given - use this explicitly given working account name
-        return override_with
+        return param_value
 
     async def _create_operation(self) -> ClaimAccountOperation:
         if self.fee == Asset.hive(HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION):
