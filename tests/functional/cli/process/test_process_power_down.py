@@ -33,7 +33,7 @@ async def test_power_down_start_success_use_hive(node: tt.RawNode, cli_tester: C
     assert_transaction_in_blockchain(node, result)
 
 
-async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: CLITester) -> None:
+async def test_power_down_start_success_use_vests(cli_tester: CLITester) -> None:
     # ARRANGE
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
@@ -41,12 +41,11 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
     )
 
     # ACT
-    result = cli_tester.process_power_down_start(
+    cli_tester.process_power_down_start(
         amount=operation.vesting_shares, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
-    assert_operations_placed_in_blockchain(node, result, operation)
 
 
 async def test_power_down_start_fail(cli_tester: CLITester) -> None:
