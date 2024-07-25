@@ -12,9 +12,7 @@ from clive_local_tools.cli.checkers import assert_exit_code, assert_no_pending_p
 from clive_local_tools.cli.exceptions import CLITestCommandError
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_DATA
-from schemas.fields.assets.vests import AssetVestsHF26
 from schemas.operations import WithdrawVestingOperation
-from schemas.operations.withdraw_vesting_operation import _WithdrawVestingOperation
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -37,7 +35,7 @@ async def test_power_down_start_success_use_hive(node: tt.RawNode, cli_tester: C
 
 async def test_power_down_start_success_use_vests(cli_tester: CLITester) -> None:
     # ARRANGE
-    operation = _WithdrawVestingOperation[AssetVestsHF26](
+    operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
         vesting_shares=AMOUNT_TO_POWER_DOWN2,
     )
