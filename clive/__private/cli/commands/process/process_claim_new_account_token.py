@@ -2,19 +2,46 @@ from __future__ import annotations
 
 import errno
 from dataclasses import dataclass
+from typing import TYPE_CHECKING
+
+from click.core import ParameterSource
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.node import HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION
+from clive.__private.core.profile_data import ProfileData
 from clive.models import Asset
 from schemas.operations import ClaimAccountOperation
+
+if TYPE_CHECKING:
+    import typer
 
 
 @dataclass(kw_only=True)
 class ProcessClaimNewAccountToken(OperationCommand):
-    creator: str
+    _creator: str
+    ctx: typer.Context
     fee: Asset.Hive | None
     """None means RC will be used instead of payment in Hive"""
+
+    @property
+    def creator(self) -> str:
+        return self._get_working_account_name(self._creator, "creator")
+
+    def _get_working_account_name(self, override_with: str, param_name: str) -> str:
+        def is_default(name: str) -> bool:
+            return self.ctx.get_parameter_source(name) == ParameterSource.DEFAULT
+
+        if is_default("profile_name"):
+            return override_with
+
+        if is_default(param_name):
+            # if profile_name is not default, then we have to get working account name from the given profile
+            # if not explicitly given
+            return ProfileData.get_working_account_name(self.profile_name)
+
+        # when both profile name and working account name are given - use this explicitly given working account name
+        return override_with
 
     async def _create_operation(self) -> ClaimAccountOperation:
         if self.fee == Asset.hive(HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION):

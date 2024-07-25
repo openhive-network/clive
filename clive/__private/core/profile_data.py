@@ -415,6 +415,10 @@ class ProfileData(Context):
         raise NoDefaultProfileToLoadError
 
     @classmethod
+    def get_working_account_name(cls, profile_name: str) -> str:
+        return ProfileData.load(profile_name, auto_create=False).working_account.name
+
+    @classmethod
     def is_default_profile_set(cls) -> bool:
         try:
             cls.get_default_profile_name()
