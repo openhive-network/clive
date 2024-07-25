@@ -298,7 +298,7 @@ class CLITester:
         self,
         *,
         from_: str | None = None,
-        amount: AssetHiveHF26 | AssetHiveLegacy | AssetVestsHF26 | AssetVestsLegacy,
+        amount: AssetHiveHF26 | AssetVestsHF26,
         profile_name: str | None = None,
         password: str | None = None,
         sign: str | None = None,
