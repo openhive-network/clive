@@ -3,12 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
-from textual.widgets import TabPane
 
 from clive.__private.ui.account_details.alarms.alarms import Alarms
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetTabPane
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -34,5 +34,5 @@ class AccountDetails(BaseScreen):
     def create_main_panel(self) -> ComposeResult:
         with CliveTabbedContent():
             yield Alarms(self._account)
-            yield TabPane(OPERATIONS_TAB_PANE_TITLE)
-            yield TabPane(BALANCES_TAB_PANE_TITLE)
+            yield NotImplementedYetTabPane(OPERATIONS_TAB_PANE_TITLE)
+            yield NotImplementedYetTabPane(BALANCES_TAB_PANE_TITLE)
