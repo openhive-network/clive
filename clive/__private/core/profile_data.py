@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.core.keys import KeyManager
+from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
@@ -121,6 +121,27 @@ class ProfileData(Context):
         self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
     ) -> None:
         self.save()
+
+    @classmethod
+    def create(  # noqa: PLR0913
+        cls,
+        name: str,
+        working_account: str | WorkingAccount | None = None,
+        watched_accounts: Iterable[WatchedAccount] | None = None,
+        known_accounts: Iterable[KnownAccount] | None = None,
+        key_aliases: Iterable[PublicKeyAliased] | None = None,
+        cart_operations: Iterable[OperationBaseClass] | None = None,
+        chain_id: str | None = None,
+        node_address: str | Url | None = None,
+    ) -> ProfileData:
+        profile = cls(name, working_account, watched_accounts, known_accounts)
+        profile.keys.add(*key_aliases or [])
+        profile.cart.extend(cart_operations or [])
+        if chain_id is not None:
+            profile.set_chain_id(chain_id)
+        if node_address is not None:
+            profile._set_node_address(Url.parse(node_address))
+        return profile
 
     def copy(self) -> Self:
         return deepcopy(self)
