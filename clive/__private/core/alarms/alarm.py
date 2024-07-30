@@ -36,12 +36,18 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     ALARM_DESCRIPTION: ClassVar[str] = ""
     FIX_ALARM_INFO: ClassVar[str] = "Override me"
 
-    def __init__(self, identifier: AlarmIdentifierT | None = None, alarm_data: AlarmDataT | None = None) -> None:
+    def __init__(
+        self,
+        *,
+        identifier: AlarmIdentifierT | None = None,
+        alarm_data: AlarmDataT | None = None,
+        is_harmless: bool = False,
+    ) -> None:
         super().__init__()
         self.identifier = identifier
         self.alarm_data = alarm_data
         self.is_active = False
-        self.is_harmless = False
+        self.is_harmless = is_harmless
 
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
         if identifier == self.identifier:
