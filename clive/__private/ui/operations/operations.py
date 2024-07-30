@@ -57,10 +57,6 @@ class Operations(CartBasedScreen, CartBinding):
             with NotImplementedYetTabPane("Account management"), ScrollablePart():
                 yield NotImplementedYetButton("Account management operations")
 
-    def action_show_tab(self, tab: str) -> None:
-        """Switch to a new tab."""
-        self.get_child_by_type(CliveTabbedContent).active = tab
-
     def action_load_transaction_from_file(self) -> None:
         self.app.push_screen(SelectFile())
         self.notify("Your cart will remain unchanged.")
