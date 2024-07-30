@@ -5,7 +5,7 @@ from typing import Any, TypeAlias
 
 from clive.models import Operation, OperationBaseClass, Transaction
 
-TransactionConvertibleType: TypeAlias = Operation | Iterable[Operation] | Transaction
+TransactionConvertibleType: TypeAlias = OperationBaseClass | Iterable[OperationBaseClass] | Transaction
 
 
 def ensure_transaction(content: TransactionConvertibleType) -> Transaction:

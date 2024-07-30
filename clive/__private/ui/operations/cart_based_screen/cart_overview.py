@@ -10,14 +10,13 @@ from clive.__private.core.formatters.humanize import humanize_operation_name, hu
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
-from clive.models import Asset
+from clive.models import Asset, OperationBaseClass
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.accounts.accounts import WorkingAccount
     from clive.__private.core.profile_data import ProfileData
-    from clive.models import Operation
 
 
 class Resources(Grid):
@@ -31,7 +30,7 @@ class CartInfoContainer(Container):
 class CartItem(Static):
     """Holds the cart item info."""
 
-    def __init__(self, index: int, operation: Operation) -> None:
+    def __init__(self, index: int, operation: OperationBaseClass) -> None:
         self._operation = operation
         super().__init__(f"{index}. {humanize_operation_name(operation)}")
 
