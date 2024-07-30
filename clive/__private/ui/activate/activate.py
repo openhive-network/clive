@@ -52,13 +52,14 @@ class Activate(BaseScreen):
         self._activation_result_callback = activation_result_callback
         self._name_input = LabelizedInput("Profile name", value=self.profile_data.name)
         self._password_input = TextInput("Password", password=True)
-        self._permanent_active_mode_switch = Checkbox("Permanent active mode?")
+        self._permanent_active_mode_switch = Checkbox("Permanent active mode?", value=True)
         self._temporary_active_mode_input = IntegerInput(
             "Active mode time (minutes)",
             value=60,
             always_show_title=True,
             validators=[Integer(minimum=1)],
             id="active-mode-input",
+            classes="-hidden",
         )
 
     def create_main_panel(self) -> ComposeResult:
