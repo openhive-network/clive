@@ -18,15 +18,14 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-AMOUNT_TO_POWER_DOWN1: Final[tt.Asset.HiveT] = tt.Asset.Test(123.235)
-AMOUNT_TO_POWER_DOWN2: Final[tt.Asset.VestT] = tt.Asset.Vest(345.456)
-AMOUNT_TO_POWER_DOWN3: Final[tt.Asset.HiveT] = tt.Asset.Test(234.567)
+AMOUNT_TO_POWER_DOWN_HP: Final[tt.Asset.HiveT] = tt.Asset.Hive(123.235)
+AMOUNT_TO_POWER_DOWN_VESTS: Final[tt.Asset.VestT] = tt.Asset.Vest(345.456)
 
 
 async def test_power_down_start_success_use_hive(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.process_power_down_start(
-        amount=AMOUNT_TO_POWER_DOWN1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN_HP, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -37,12 +36,12 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
     # ARRANGE
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
-        vesting_shares=AMOUNT_TO_POWER_DOWN2,
+        vesting_shares=AMOUNT_TO_POWER_DOWN_VESTS,
     )
 
     # ACT
     result = cli_tester.process_power_down_start(
-        amount=AMOUNT_TO_POWER_DOWN2,
+        amount=AMOUNT_TO_POWER_DOWN_VESTS,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
@@ -53,15 +52,16 @@ async def test_power_down_start_success_use_vests(node: tt.RawNode, cli_tester: 
 
 async def test_power_down_start_fail(cli_tester: CLITester) -> None:
     # ARRNGE
+    amount_to_power_down: Final[tt.Asset.HiveT] = tt.Asset.Hive(234.567)
     cli_tester.process_power_down_start(
-        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, amount=AMOUNT_TO_POWER_DOWN1
+        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, amount=AMOUNT_TO_POWER_DOWN_HP
     )
     expected_error = "Power-down is already in progress"
 
     # ACT
     with pytest.raises(CLITestCommandError, match=expected_error) as power_down_start_exception_info:
         cli_tester.process_power_down_start(
-            amount=AMOUNT_TO_POWER_DOWN3, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+            amount=amount_to_power_down, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
         )
 
     # ASSERT
@@ -71,7 +71,7 @@ async def test_power_down_start_fail(cli_tester: CLITester) -> None:
 async def test_power_down_restart_create_use_hive(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.process_power_down_restart(
-        amount=AMOUNT_TO_POWER_DOWN1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN_HP, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -82,12 +82,12 @@ async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester:
     # ARRANGE
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
-        vesting_shares=AMOUNT_TO_POWER_DOWN2,
+        vesting_shares=AMOUNT_TO_POWER_DOWN_VESTS,
     )
 
     # ACT
     result = cli_tester.process_power_down_restart(
-        amount=AMOUNT_TO_POWER_DOWN2,
+        amount=AMOUNT_TO_POWER_DOWN_VESTS,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
@@ -99,16 +99,16 @@ async def test_power_down_restart_create_use_vests(node: tt.RawNode, cli_tester:
 async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     cli_tester.process_power_down_start(
-        amount=AMOUNT_TO_POWER_DOWN1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN_HP, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,
-        vesting_shares=AMOUNT_TO_POWER_DOWN2,
+        vesting_shares=AMOUNT_TO_POWER_DOWN_VESTS,
     )
 
     # ACT
     result = cli_tester.process_power_down_restart(
-        amount=AMOUNT_TO_POWER_DOWN2,
+        amount=AMOUNT_TO_POWER_DOWN_VESTS,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
@@ -120,7 +120,7 @@ async def test_power_down_restart_override(node: tt.RawNode, cli_tester: CLITest
 async def test_power_down_cancel_success(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     cli_tester.process_power_down_start(
-        amount=AMOUNT_TO_POWER_DOWN1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        amount=AMOUNT_TO_POWER_DOWN_HP, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = WithdrawVestingOperation(
         account=WORKING_ACCOUNT_DATA.account.name,

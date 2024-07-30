@@ -15,9 +15,8 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-AMOUNT_TO_POWER_UP: Final[tt.Asset.HiveT] = tt.Asset.Test(654.321)
+AMOUNT_TO_POWER_UP: Final[tt.Asset.HiveT] = tt.Asset.Hive(654.321)
 OTHER_ACCOUNT: Final[tt.Account] = ALT_WORKING_ACCOUNT1_DATA.account
-OTHER_ACCOUNT_KEY_ALIAS: Final[str] = f"{OTHER_ACCOUNT.name}_key"
 
 
 async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -42,10 +41,11 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
 
 async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
+    other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
     async with world as world_cm:
         await world_cm.commands.activate(password=WORKING_ACCOUNT_PASSWORD)
         world_cm.profile_data.keys.add_to_import(
-            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=OTHER_ACCOUNT_KEY_ALIAS),
+            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias),
         )
         await world_cm.commands.sync_data_with_beekeeper()
     operation = TransferToVestingOperation(
@@ -60,7 +60,7 @@ async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_t
         from_=operation.from_,
         to=operation.to,
         password=WORKING_ACCOUNT_PASSWORD,
-        sign=OTHER_ACCOUNT_KEY_ALIAS,
+        sign=other_account_key_alias,
     )
 
     # ASSERT

@@ -12,9 +12,6 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-AMOUNT_TO_POWER_UP: Final[tt.Asset.HiveT] = tt.Asset.Test(234.567)
-
-
 async def test_no_pending_power_ups(cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.show_pending_power_ups(account_name=EMPTY_ACCOUNT.name)
@@ -25,10 +22,11 @@ async def test_no_pending_power_ups(cli_tester: CLITester) -> None:
 
 async def test_pending_power_ups_basic(cli_tester: CLITester) -> None:
     # ARRANGE
+    amount_to_power_up: Final[tt.Asset.HiveT] = tt.Asset.Hive(234.567)
     cli_tester.process_power_up(
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
-        amount=AMOUNT_TO_POWER_UP,
+        amount=amount_to_power_up,
         to=EMPTY_ACCOUNT.name,
     )
 

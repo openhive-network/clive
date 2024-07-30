@@ -20,8 +20,7 @@ if TYPE_CHECKING:
 
 
 WITHDRAW_TO_ACCOUNT: Final[tt.Account] = WATCHED_ACCOUNTS_DATA[0].account
-PERCENT1: int = 12
-PERCENT2: int = 30
+PERCENT: int = 12
 
 
 async def test_withdraw_routes_set(node: tt.RawNode, cli_tester: CLITester) -> None:
@@ -29,13 +28,13 @@ async def test_withdraw_routes_set(node: tt.RawNode, cli_tester: CLITester) -> N
     operation = SetWithdrawVestingRouteOperation(
         from_account=WORKING_ACCOUNT_DATA.account.name,
         to_account=WITHDRAW_TO_ACCOUNT.name,
-        percent=percent_to_hive_percent(Decimal(PERCENT1)),
+        percent=percent_to_hive_percent(Decimal(PERCENT)),
         auto_vest=False,
     )
 
     # ACT
     result = cli_tester.process_withdraw_routes_set(
-        to=operation.to_account, percent=PERCENT1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=operation.to_account, percent=PERCENT, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
 
     # ASSERT
@@ -48,14 +47,14 @@ async def test_withdraw_routes_set_autovest(node: tt.RawNode, cli_tester: CLITes
     operation = SetWithdrawVestingRouteOperation(
         from_account=WORKING_ACCOUNT_DATA.account.name,
         to_account=WITHDRAW_TO_ACCOUNT.name,
-        percent=percent_to_hive_percent(Decimal(PERCENT1)),
+        percent=percent_to_hive_percent(Decimal(PERCENT)),
         auto_vest=auto_vest,
     )
 
     # ACT
     result = cli_tester.process_withdraw_routes_set(
         to=operation.to_account,
-        percent=PERCENT1,
+        percent=PERCENT,
         auto_vest=operation.auto_vest,
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
@@ -67,19 +66,23 @@ async def test_withdraw_routes_set_autovest(node: tt.RawNode, cli_tester: CLITes
 
 async def test_withdraw_routes_reset(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
+    percent_reset: int = 30
     cli_tester.process_withdraw_routes_set(
-        to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = SetWithdrawVestingRouteOperation(
         from_account=WORKING_ACCOUNT_DATA.account.name,
         to_account=WITHDRAW_TO_ACCOUNT.name,
-        percent=percent_to_hive_percent(Decimal(PERCENT2)),
+        percent=percent_to_hive_percent(Decimal(percent_reset)),
         auto_vest=False,
     )
 
     # ACT
     result = cli_tester.process_withdraw_routes_set(
-        to=operation.to_account, percent=PERCENT2, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=operation.to_account,
+        percent=percent_reset,
+        password=WORKING_ACCOUNT_PASSWORD,
+        sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
     # ASSERT
@@ -89,7 +92,7 @@ async def test_withdraw_routes_reset(node: tt.RawNode, cli_tester: CLITester) ->
 async def test_withdraw_routes_remove(node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     cli_tester.process_withdraw_routes_set(
-        to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT1, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
+        to=WITHDRAW_TO_ACCOUNT.name, percent=PERCENT, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS
     )
     operation = SetWithdrawVestingRouteOperation(
         from_account=WORKING_ACCOUNT_DATA.account.name,

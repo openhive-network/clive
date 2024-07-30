@@ -12,10 +12,6 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-AMOUNT_TO_POWER_DOWN: Final[tt.Asset.VestT] = tt.Asset.Vest(345.678)
-SINGLE_POWER_DOWN: Final[tt.Asset.VestT] = AMOUNT_TO_POWER_DOWN / 13
-
-
 async def test_no_pending_power_down(cli_tester: CLITester) -> None:
     # ACT
     result = cli_tester.show_pending_power_down(account_name=EMPTY_ACCOUNT.name)
@@ -26,8 +22,9 @@ async def test_no_pending_power_down(cli_tester: CLITester) -> None:
 
 async def test_pending_power_down_basic(cli_tester: CLITester) -> None:
     # ARRANGE
+    amount_to_power_down: Final[tt.Asset.VestT] = tt.Asset.Vest(345.678)
     cli_tester.process_power_down_restart(
-        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, amount=AMOUNT_TO_POWER_DOWN
+        password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, amount=amount_to_power_down
     )
 
     # ACT

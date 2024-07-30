@@ -12,9 +12,6 @@ if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
 
 
-AMOUNT_TO_DELEGATE: Final[tt.Asset.VestT] = tt.Asset.Vest(123_456.789)
-
-
 async def test_no_pending_removed_delegations(cli_tester: CLITester) -> None:
     # ACT
     # ASSERT
@@ -23,11 +20,12 @@ async def test_no_pending_removed_delegations(cli_tester: CLITester) -> None:
 
 async def test_pending_removed_delegations_basic(cli_tester: CLITester) -> None:
     # ARRANGE
+    amount_to_delegate: Final[tt.Asset.VestT] = tt.Asset.Vest(123_456.789)
     cli_tester.process_delegations_set(
         password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
         delegatee=EMPTY_ACCOUNT.name,
-        amount=AMOUNT_TO_DELEGATE,
+        amount=amount_to_delegate,
     )
     cli_tester.process_delegations_remove(
         password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, delegatee=EMPTY_ACCOUNT.name
@@ -35,4 +33,4 @@ async def test_pending_removed_delegations_basic(cli_tester: CLITester) -> None:
 
     # ACT
     # ASSERT
-    assert_pending_removed_delegations(cli_tester, AMOUNT_TO_DELEGATE)
+    assert_pending_removed_delegations(cli_tester, amount_to_delegate)
