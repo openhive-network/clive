@@ -78,6 +78,7 @@ HiveInt = SchemasHiveInt
 Operation = AnyOperation
 OperationBaseClass = SchemasBaseOperationType
 OperationRepresentationType = Hf26OperationRepresentationType
+OperationRepresentation = HF26Representation[OperationBaseClass]
 OwnerHistory = OwnerHistoriesFundament
 ProposalSchema = Proposal[AssetHbdHF26]
 ProposalVotes = ListProposalVotes

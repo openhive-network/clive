@@ -95,8 +95,17 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
         return self.alarm_data
 
     @property
+    def identifier_ensure(self) -> AlarmIdentifierT:
+        assert self.identifier is not None, "You're trying to access alarm identifier that is not available."
+        return self.identifier
+
+    @property
     def has_data(self) -> bool:
         return self.alarm_data is not None
+
+    @property
+    def has_identifier(self) -> bool:
+        return self.identifier is not None
 
     @abstractmethod
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
