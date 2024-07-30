@@ -74,6 +74,8 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
 
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
         if identifier == self.identifier:
+            if not self.has_data:
+                self.alarm_data = alarm_data
             return
         self.is_active = True
         self.is_harmless = False
@@ -90,6 +92,10 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     def alarm_data_ensure(self) -> AlarmDataT:
         assert self.alarm_data is not None, "You're trying to access alarm data that is not available/active."
         return self.alarm_data
+
+    @property
+    def has_data(self) -> bool:
+        return self.alarm_data is not None
 
     @abstractmethod
     def update_alarm_status(self, data: AccountAlarmsData) -> None:
