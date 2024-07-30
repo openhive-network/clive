@@ -135,7 +135,6 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget, can_focus=True):
         buttons = self.query(CliveButton)
         for button in buttons:
             if button.has_focus:
-                logger.debug(f"BUTTON FOCUSED: {button}")
                 return button.id
         return None
 
@@ -206,7 +205,6 @@ class CartTable(CliveCheckerboardTable):
 
 class Cart(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
-
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         Binding("f9", "clear_all", "Clear all"),
@@ -218,6 +216,7 @@ class Cart(BaseScreen):
         super().__init__()
         self.__scrollable_part = ScrollablePart()
         self._cart_table = CartTable()
+        self._index_devaluation_in_progress = False
 
     def create_main_panel(self) -> ComposeResult:
         with self.__scrollable_part:
@@ -228,9 +227,12 @@ class Cart(BaseScreen):
 
     def _handle_remove_event(self, triggering_widget: CartItem) -> None:
         def devalue_indexes(rows: Sequence[CartItem]) -> None:
+            self._index_devaluation_in_progress = True
+            logger.debug("DEVALUATION STARTED")
             for row in rows:
                 row.reactive_idx = row.idx - 1
-
+            logger.debug("DEVALUATION ENDED")
+            self._index_devaluation_in_progress = False
         start_index = triggering_widget.idx
         rows = self.query(CartItem)[start_index:]
         devalue_indexes(rows)
@@ -254,8 +256,16 @@ class Cart(BaseScreen):
 
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
+        logger.debug(f"REMOVE CLICKED, DEVALUATION IN PROGRESS?: {self._index_devaluation_in_progress}")
+        if self._index_devaluation_in_progress:
+            self.task.cancel()
+            while self._index_devaluation_in_progress:
+                logger.debug("DEVALUATION IN PROGRESS")
+            logger.debug("DEVALUATION DONE")
+            self.task.uncancel()
         self.profile_data.cart.remove(event.widget.operation)
         self.app.trigger_profile_data_watchers()
+
         await self.query(CliveCheckerboardTableRow)[event.widget.idx].remove()
         self._handle_remove_event(triggering_widget=event.widget)
 
