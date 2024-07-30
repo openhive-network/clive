@@ -32,7 +32,7 @@ from clive.__private.core.formatters.data_labels import (
     VEST_HIVE_RATIO_LABEL,
 )
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
-from clive.models import Asset, Operation
+from clive.models import Asset
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
         HpAPRProtocol,
         VestsToHpProtocol,
     )
-    from clive.models.aliased import CurrentPriceFeed, HbdExchangeRate
+    from clive.models.aliased import CurrentPriceFeed, HbdExchangeRate, OperationBaseClass
 
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:
@@ -147,7 +147,7 @@ def humanize_class_name(cls: str | type[Any]) -> str:
     return inflection.humanize(underscore(class_name))
 
 
-def humanize_operation_name(operation: Operation) -> str:
+def humanize_operation_name(operation: OperationBaseClass) -> str:
     """
     Return pretty formatted operation name.
 
@@ -158,7 +158,7 @@ def humanize_operation_name(operation: Operation) -> str:
     return inflection.humanize(operation.get_name())
 
 
-def humanize_operation_details(operation: Operation) -> str:
+def humanize_operation_details(operation: OperationBaseClass) -> str:
     """
     Return pretty formatted operation details (properties).
 

@@ -18,8 +18,7 @@ from clive.__private.storage.contextual import Context
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.core.url import Url
 from clive.exceptions import CliveError
-from clive.models import Operation
-from clive.models.aliased import ChainIdSchema
+from clive.models.aliased import ChainIdSchema, OperationBaseClass
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterable, Iterator
@@ -99,7 +98,7 @@ class ProfileInvalidNameError(ProfileDataError):
         super().__init__(message)
 
 
-class Cart(list[Operation]):
+class Cart(list[OperationBaseClass]):
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
 
