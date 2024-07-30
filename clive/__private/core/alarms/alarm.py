@@ -3,6 +3,8 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 
+from clive.__private.core.formatters.case import underscore
+
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
@@ -36,6 +38,8 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     ALARM_DESCRIPTION: ClassVar[str] = ""
     FIX_ALARM_INFO: ClassVar[str] = "Override me"
 
+    _alarm_name_class_map: ClassVar[dict[str, type[AnyAlarm]]] = {}
+
     def __init__(
         self,
         *,
@@ -48,6 +52,25 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
         self.alarm_data = alarm_data
         self.is_active = False
         self.is_harmless = is_harmless
+
+    def __init_subclass__(cls, **kwargs: Any) -> None:
+        super().__init_subclass__(**kwargs)
+        cls._alarm_name_class_map[cls.get_name()] = cls
+
+    @classmethod
+    def get_name(cls) -> str:
+        return underscore(cls.__name__)
+
+    @classmethod
+    def all_alarm_classes(cls) -> list[type[AnyAlarm]]:
+        return list(cls._alarm_name_class_map.values())
+
+    @classmethod
+    def get_alarm_class_by_name(cls, name: str) -> type[AnyAlarm]:
+        try:
+            return cls._alarm_name_class_map[name]
+        except KeyError as error:
+            raise AssertionError(f"Alarm class with name '{name}' does not exist.") from error
 
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
         if identifier == self.identifier:
