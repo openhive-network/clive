@@ -16,12 +16,15 @@ if TYPE_CHECKING:
 
 
 class AlarmsStorage:
-    def __init__(self) -> None:
-        self.governance_voting_expiration = GovernanceVotingExpiration()
-        self.recovery_account_warning_listed = RecoveryAccountWarningListed()
-        self.declining_voting_rights_in_progress = DecliningVotingRightsInProgress()
-        self.changing_recovery_account_in_progress = ChangingRecoveryAccountInProgress()
-        self.governance_no_active_votes = GovernanceNoActiveVotes()
+    def __init__(self, alarms: list[AnyAlarm] | None = None) -> None:
+        alarms_ = alarms or []
+        self.governance_voting_expiration = self._get_or_create_alarm(alarms_, GovernanceVotingExpiration)
+        self.recovery_account_warning_listed = self._get_or_create_alarm(alarms_, RecoveryAccountWarningListed)
+        self.declining_voting_rights_in_progress = self._get_or_create_alarm(alarms_, DecliningVotingRightsInProgress)
+        self.changing_recovery_account_in_progress = self._get_or_create_alarm(
+            alarms_, ChangingRecoveryAccountInProgress
+        )
+        self.governance_no_active_votes = self._get_or_create_alarm(alarms_, GovernanceNoActiveVotes)
         self._is_updated = False
 
     def update_alarms_status(self, data: AccountAlarmsData) -> None:
@@ -42,3 +45,9 @@ class AlarmsStorage:
     @property
     def is_alarms_data_available(self) -> bool:
         return self._is_updated
+
+    def _get_or_create_alarm(self, alarms: list[AnyAlarm], alarm_cls: type[AnyAlarm]) -> AnyAlarm:
+        for alarm in alarms:
+            if isinstance(alarm, alarm_cls):
+                return alarm
+        return alarm_cls()
