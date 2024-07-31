@@ -390,3 +390,6 @@ class CLITester:
         save_file: str | None = None,
     ) -> Result:
         return self.__invoke(["process", "withdraw-routes", "remove"], **extract_params(locals()))
+
+    def show_chain(self, *, profile_name: str | None = None) -> Result:
+        return self.__invoke(["show", "chain"], profile_name=profile_name)
