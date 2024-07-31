@@ -1,64 +1,64 @@
 Header {
   box-sizing: content-box;
   border-bottom: inner $error;
+
+  #icon {
+    content-align: center middle;
+    background: $foreground-darken-1 5%;
+    width: auto;
+  }
+
+  HeaderTitle {
+    background: $foreground -5%;
+    width: 1fr;
+    height: 1;
+  }
+
+  DynamicPropertiesClock {
+    width: auto;
+
+    #last-update {
+      width: 28;
+    }
+  }
+
+  TitledLabel {
+    margin-right: 1;
+  }
+
+  #node-type-label {
+    margin-right: 1;
+    margin-left: 1;
+    color: green;
+
+    .-not-mainnet {
+      color: red;
+    }
+  }
+
+  #profile-label #value {
+    color: $accent;
+  }
+
+  #mode-label #value {
+    color: $error;
+  }
+
+  #bar {
+    background: $panel;
+    height: 1;
+  }
+
+  AlarmsSummary {
+    align: center middle;
+    width: 1fr;
+  }
 }
 
 Header.-unlocked {
   border-bottom: inner $success;
 }
 
-Header #icon {
-  content-align: center middle;
-  background: $foreground-darken-1 5%;
-  width: auto;
-}
-
-Header HeaderTitle {
-  background: $foreground -5%;
-  width: 1fr;
-  height: 1;
-}
-
-Header DynamicPropertiesClock {
-  width: auto;
-}
-
-Header DynamicPropertiesClock #last-update {
-  width: 28;
-}
-
-Header TitledLabel {
-  margin-right: 1;
-}
-
-Header #node-type-label {
-  margin-right: 1;
-  margin-left: 1;
-  color: green;
-}
-
-Header #node-type-label.-not-mainnet {
-  color: red;
-}
-
-Header #profile-label #value {
-  color: $accent;
-}
-
-Header #mode-label #value {
-  color: $error;
-}
-
-Header #bar {
-  background: $panel;
-  height: 1;
-}
-
 Header.-unlocked #mode-label #value {
   color: $success;
-}
-
-Header AlarmsSummary {
-  align: center middle;
-  width: 1fr;
 }
