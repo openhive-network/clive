@@ -19,7 +19,7 @@ class SyncDataWithBeekeeper(CommandInUnlocked, Command):
     beekeeper: Beekeeper
 
     async def _execute(self) -> None:
-        if not self.profile_data.is_working_account_set():
+        if not self.profile_data.account_manager.is_working_account_set():
             return
 
         await self.__import_pending_keys()

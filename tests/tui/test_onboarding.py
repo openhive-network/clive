@@ -119,7 +119,7 @@ async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
 
 
 def assert_working_account(pilot: ClivePilot, name: str) -> None:
-    assert pilot.app.world.profile_data.is_working_account_set(), "Expected working account to be set"
+    assert pilot.app.world.profile_data.account_manager.is_working_account_set(), "Expected working account to be set"
     assert pilot.app.world.profile_data.working_account.name == name, f"Expected working account to be {name}"
 
 
@@ -133,7 +133,7 @@ def assert_no_watched_accounts(pilot: ClivePilot) -> None:
 
 
 def assert_no_working_account(pilot: ClivePilot) -> None:
-    assert not pilot.app.world.profile_data.is_working_account_set(), "Expected no working account"
+    assert not pilot.app.world.profile_data.account_manager.is_working_account_set(), "Expected no working account"
 
 
 async def test_onboarding_watched_account_creation(prepared_tui_on_onboarding: ClivePilot) -> None:

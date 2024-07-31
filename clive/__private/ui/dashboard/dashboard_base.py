@@ -192,7 +192,7 @@ class WatchedAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WATCHED ACCOUNTS"
 
     def compose(self) -> ComposeResult:
-        account_rows = [TrackedAccountRow(account) for account in self.profile_data.watched_accounts_sorted]
+        account_rows = [TrackedAccountRow(account) for account in self.profile_data.account_manager.watched_accounts_sorted]
         last_account_row = account_rows[-1]
         last_account_row.add_class("last")
         yield from account_rows
@@ -212,7 +212,7 @@ class DashboardBase(BaseScreen):
     def __init__(self) -> None:
         super().__init__()
         self._previous_working_account = self.working_account
-        self._previous_watched_accounts = self.watched_accounts
+        self._previous_watched_accounts = self.profile_data.watched_accounts
         # Both attributes are used to check whether working or watched accounts have changed.
 
     def create_main_panel(self) -> ComposeResult:
@@ -230,12 +230,12 @@ class DashboardBase(BaseScreen):
     async def _update_account_containers(self) -> None:
         if (
             self.working_account == self._previous_working_account
-            and self.watched_accounts == self._previous_watched_accounts
+            and self.profile_data.watched_accounts == self._previous_watched_accounts
         ):
             return
 
         self._previous_working_account = self.working_account
-        self._previous_watched_accounts = self.watched_accounts
+        self._previous_watched_accounts = self.profile_data.watched_accounts
 
         widgets_to_mount: list[Widget] = []
 
@@ -264,14 +264,14 @@ class DashboardBase(BaseScreen):
         self.app.push_screen(Config())
 
     def action_switch_working_account(self) -> None:
-        if not self.profile_data.get_tracked_accounts():
+        if not self.profile_data.tracked_accounts:
             self.notify("Cannot switch a working account without any account", severity="warning")
             return
         self.app.push_screen(SwitchWorkingAccountScreen())
 
     @property
     def has_working_account(self) -> bool:
-        return self.profile_data.is_working_account_set()
+        return self.profile_data.account_manager.is_working_account_set()
 
     @property
     def has_watched_accounts(self) -> bool:
@@ -282,10 +282,6 @@ class DashboardBase(BaseScreen):
         if not self.has_working_account:
             return None
         return self.profile_data.working_account
-
-    @property
-    def watched_accounts(self) -> set[WatchedAccount]:
-        return self.profile_data.watched_accounts.copy()
 
     @property
     def has_tracked_accounts(self) -> bool:

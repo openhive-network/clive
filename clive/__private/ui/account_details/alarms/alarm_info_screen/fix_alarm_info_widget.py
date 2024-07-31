@@ -6,7 +6,6 @@ from textual import on
 from textual.containers import Center
 from textual.widgets import Static
 
-from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -92,7 +91,7 @@ class FixAlarmInfoWidget(CliveWidget):
             yield from self._get_mark_as_harmless_content()
             return
 
-        if self._is_account_working:
+        if self.profile_data.account_manager.is_account_working(self._account):
             # It is impossible to perform operations when account is not working,
             # so if the account is watched, it is not possible to go to screen with fix.
             yield Static(self._alarm_fix_details.fix_action_text)
@@ -104,7 +103,3 @@ class FixAlarmInfoWidget(CliveWidget):
                 id="change-to-working-info",
             )
         yield from self._get_mark_as_harmless_content()
-
-    @property
-    def _is_account_working(self) -> bool:
-        return isinstance(self._account, WorkingAccount)

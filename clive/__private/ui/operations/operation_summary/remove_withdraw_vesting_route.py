@@ -25,19 +25,15 @@ class RemoveWithdrawVestingRoute(OperationSummary):
         self._withdraw_route = withdraw_route
 
     def content(self) -> ComposeResult:
-        yield LabelizedInput("From account", self.working_account)
+        yield LabelizedInput("From account", self.profile_data.working_account.name)
         yield LabelizedInput("To account", self._withdraw_route.to_account)
         yield LabelizedInput("Percent", f"{self._withdraw_route.percent / HIVE_PERCENT_PRECISION :.2f} %")
         yield LabelizedInput("Auto vest", humanize_bool(self._withdraw_route.auto_vest))
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation:
         return SetWithdrawVestingRouteOperation(
-            from_account=self.working_account,
+            from_account=self.profile_data.working_account.name,
             to_account=self._withdraw_route.to_account,
             auto_vest=self._withdraw_route.auto_vest,
             percent=PERCENT_TO_REMOVE_WITHDRAW_ROUTE,
         )
-
-    @property
-    def working_account(self) -> str:
-        return self.profile_data.working_account.name

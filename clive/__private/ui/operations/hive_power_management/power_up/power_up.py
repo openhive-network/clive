@@ -37,7 +37,7 @@ class PowerUp(TabPane, OperationActionBindings):
         title: Title of the TabPane (will be displayed in a tab label).
         """
         super().__init__(title=title)
-        self._receiver_input = AccountNameInput("Receiver", value=self.working_account)
+        self._receiver_input = AccountNameInput("Receiver", value=self.profile_data.working_account.name)
         self._asset_input = HiveAssetAmountInput()
 
     def compose(self) -> ComposeResult:
@@ -57,9 +57,7 @@ class PowerUp(TabPane, OperationActionBindings):
             return None
 
         return TransferToVesting(
-            from_=self.working_account, to=self._receiver_input.value_or_error, amount=self._asset_input.value_or_error
+            from_=self.profile_data.working_account.name,
+            to=self._receiver_input.value_or_error,
+            amount=self._asset_input.value_or_error,
         )
-
-    @property
-    def working_account(self) -> str:
-        return self.profile_data.working_account.name

@@ -83,7 +83,7 @@ class KnownAccount(CliveWidget):
         if checked:
             self._account_holder.known_accounts.add(self.account)
         else:
-            self._account_holder.known_accounts.discard(self.account)
+            self._account_holder.known_accounts.remove(self.account)
 
         self.post_message(self.Status(is_account_known=checked, account_name=self.account_name_raw))
 

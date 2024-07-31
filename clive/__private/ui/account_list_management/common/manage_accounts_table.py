@@ -51,15 +51,9 @@ class AccountRow(CliveCheckerboardTableRow):
     @on(CliveButton.Pressed, "#discard-account-button")
     def discard_account(self) -> None:
         if self._account_type == "known_accounts":
-            # TODO: replace with proper interface
-            known_account_to_remove = next(
-                (account for account in self.profile_data.known_accounts if account.name == self._account.name), None
-            )
-            if known_account_to_remove is None:
-                return
-            self.profile_data.known_accounts.discard(known_account_to_remove)
+            self.profile_data.known_accounts.remove(self._account)
         else:
-            self.profile_data.remove_tracked_account(self._account)
+            self.profile_data.account_manager.remove_tracked_account(self._account)
         self.app.trigger_profile_data_watchers()
 
 
@@ -93,7 +87,8 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def create_dynamic_rows(self, content: ProfileData) -> list[AccountRow]:
         return [
-            AccountRow(account, self._accounts_type) for account in getattr(content, f"{self._accounts_type}_sorted")
+            AccountRow(account, self._accounts_type)
+            for account in getattr(content.account_manager, f"{self._accounts_type}_sorted")
         ]
 
     def get_no_content_available_widget(self) -> NoContentAvailable:
@@ -107,7 +102,9 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def is_anything_to_display(self, content: ProfileData) -> bool:
         return (
-            content.has_known_accounts() if self._accounts_type == "known_accounts" else content.has_tracked_accounts()
+            content.account_manager.has_known_accounts
+            if self._accounts_type == "known_accounts"
+            else content.account_manager.has_tracked_accounts
         )
 
     @property
@@ -118,12 +115,9 @@ class ManageAccountsTable(CliveCheckerboardTable):
         self._previous_accounts = self._get_accounts_from_new_content(content)
 
     def _get_accounts_from_new_content(self, content: ProfileData) -> set[Account]:
-        accounts: set[Account] = (
-            content.known_accounts.copy()  # type: ignore[assignment]
-            if self._accounts_type == "known_accounts"
-            else content.get_tracked_accounts().copy()
+        return (
+            set(content.known_accounts) if self._accounts_type == "known_accounts" else content.tracked_accounts.copy()
         )
-        return accounts
 
     def remove_underscore_from_text(self, text: str) -> str:
         return text.replace("_", " ")

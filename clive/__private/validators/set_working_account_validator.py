@@ -32,7 +32,7 @@ class SetWorkingAccountValidator(AccountNameValidator):
         return value not in [watched_account.name for watched_account in self._profile_data.watched_accounts]
 
     def _validate_account_already_working(self, value: str) -> bool:
-        if not self._profile_data.is_working_account_set():
+        if not self._profile_data.account_manager.is_working_account_set():
             return True
 
         return value != self._profile_data.working_account.name

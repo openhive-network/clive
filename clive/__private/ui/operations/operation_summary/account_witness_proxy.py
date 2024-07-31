@@ -24,13 +24,9 @@ class AccountWitnessProxy(OperationSummary):
             return ""
         return self._new_proxy
 
-    @property
-    def working_account_name(self) -> str:
-        return self.profile_data.working_account.name
-
     def content(self) -> ComposeResult:
-        yield LabelizedInput("Account name", self.working_account_name)
+        yield LabelizedInput("Account name", self.profile_data.working_account.name)
         yield LabelizedInput("New proxy", self._new_proxy if self._new_proxy is not None else "Proxy will be removed")
 
     def _create_operation(self) -> AccountWitnessProxyOperation:
-        return AccountWitnessProxyOperation(account=self.working_account_name, proxy=self.proxy_to_be_set)
+        return AccountWitnessProxyOperation(account=self.profile_data.working_account.name, proxy=self.proxy_to_be_set)

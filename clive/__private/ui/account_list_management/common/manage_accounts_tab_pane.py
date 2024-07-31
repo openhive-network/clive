@@ -66,7 +66,7 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
             return
 
         if self._accounts_type == "tracked_accounts":
-            self.profile_data.watched_accounts.add(WatchedAccount(name=account_name))
+            self.profile_data.account_manager.add_tracked_account(account_name)
         else:
             self.profile_data.known_accounts.add(KnownAccount(name=account_name))
 

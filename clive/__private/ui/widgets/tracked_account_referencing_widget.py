@@ -41,6 +41,6 @@ class TrackedAccountReferencingWidget(CliveWidget):
 
     def _check_if_account_node_data_is_available(self, profile_data: ProfileData) -> bool:
         try:
-            return profile_data.get_account_by_name(self._account).is_node_data_available
+            return profile_data.account_manager.get_tracked_account(self._account).is_node_data_available
         except AccountNotFoundError:
             return False
