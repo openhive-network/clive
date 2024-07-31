@@ -8,12 +8,8 @@ custom_json = CliveTyper(name="custom-json", help="Send raw custom json operatio
 
 @custom_json.callback(common_options=[OperationCommonOptions], invoke_without_command=True)
 async def process_custom_json(
-    ctx: typer.Context,
-    authorize: list[str] = typer.Option(
-        options.get_default_or_empty_list(options._get_default_working_account_name()),
-        help="Posting authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
-        " used, then posting authority of working account is used for authorization.",
-    ),
+    ctx: typer.Context,  # noqa: ARG001
+    authorize: list[str] = options.authorize_option,
     authorize_by_active: list[str] = typer.Option(
         [],
         help="Active authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
@@ -42,6 +38,5 @@ async def process_custom_json(
         authorize_by_active=authorize_by_active,
         authorize=authorize,
         json_or_path=json_,
-        ctx=ctx,
     )
     await operation.run()

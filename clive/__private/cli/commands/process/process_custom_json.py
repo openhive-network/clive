@@ -3,17 +3,12 @@ from __future__ import annotations
 import errno
 from dataclasses import dataclass
 from pathlib import Path
-from typing import TYPE_CHECKING
-
-from click.core import ParameterSource
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 from clive.__private.validators.json_validator import JsonValidator
 from clive.models.aliased import CustomJsonOperation
-
-if TYPE_CHECKING:
-    import typer
 
 
 @dataclass(kw_only=True)
@@ -22,7 +17,6 @@ class ProcessCustomJson(OperationCommand):
     authorize_by_active: list[str]
     authorize: list[str]
     json_or_path: str
-    ctx: typer.Context
 
     async def _create_operation(self) -> CustomJsonOperation:
         json_ = self.ensure_json_from_json_string_or_path(self.json_or_path)
@@ -56,10 +50,11 @@ class ProcessCustomJson(OperationCommand):
                 errno.EINVAL,
             )
 
-    async def _configure(self) -> None:
+    async def _hook_before_entering_context_manager(self) -> None:
         #  posting authority default value shouldn't be used when active authority is requested
         if self.authorize_has_default_value and self.authorize_by_active:
             self.authorize = []
+        await super()._hook_before_entering_context_manager()
 
     @staticmethod
     def ensure_json_from_json_string_or_path(json_or_path: str) -> str:
@@ -86,5 +81,4 @@ class ProcessCustomJson(OperationCommand):
 
     @property
     def authorize_has_default_value(self) -> bool:
-        authorize_source = self.ctx.get_parameter_source("authorize")
-        return authorize_source == ParameterSource.DEFAULT
+        return len(self.authorize) == 1 and self.authorize[0] == PERFORM_WORKING_ACCOUNT_LOAD

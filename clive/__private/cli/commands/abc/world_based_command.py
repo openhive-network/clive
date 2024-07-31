@@ -32,3 +32,6 @@ class WorldBasedCommand(ContextualCLICommand[World], BeekeeperCommon, ABC):
     async def _hook_before_entering_context_manager(self) -> None:
         if self.use_beekeeper:
             self._print_launching_beekeeper()
+
+    async def _hook_after_entering_context_manager(self) -> None:
+        self._supply_with_correct_default_for_working_account(self.world.profile_data)
