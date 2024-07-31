@@ -13,7 +13,7 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.accounts.account_manager import AccountManager
 
 
 class KnownAccount(CliveWidget):
@@ -28,7 +28,7 @@ class KnownAccount(CliveWidget):
     class Disabled(Message):
         """Posted when the widget is going to the disabled state. (e.g. account name is invalid so can't be known)."""
 
-    def __init__(self, input: Input, accounts_holder: ProfileData | None = None) -> None:  # noqa: A002
+    def __init__(self, input: Input, accounts_holder: AccountManager | None = None) -> None:  # noqa: A002
         """
         Initialize the widget.
 
@@ -38,7 +38,7 @@ class KnownAccount(CliveWidget):
         accounts_holder: Object that holds known accounts. If not provided, the account holder from app world is used.
         """
         self.input = input
-        self._account_holder = accounts_holder if accounts_holder is not None else self.profile_data
+        self._account_holder = accounts_holder if accounts_holder is not None else self.profile_data.accounts
 
         self.checkbox = Checkbox("Known?", disabled=True)
         super().__init__()
@@ -52,7 +52,7 @@ class KnownAccount(CliveWidget):
         """
         Get the account from the input.
 
-        Raises
+        Raises:  # noqa: D406
         ------
         InvalidAccountNameError: if the given account name is invalid.
         """
@@ -81,9 +81,9 @@ class KnownAccount(CliveWidget):
 
         checked = event.value
         if checked:
-            self._account_holder.known_accounts.add(self.account)
+            self._account_holder.known.add(self.account)
         else:
-            self._account_holder.known_accounts.discard(self.account)
+            self._account_holder.known.remove(self.account)
 
         self.post_message(self.Status(is_account_known=checked, account_name=self.account_name_raw))
 
@@ -105,7 +105,7 @@ class KnownAccount(CliveWidget):
         return KnownAccountModel.is_valid(self.account_name_raw)
 
     def __is_given_account_known(self) -> bool:
-        return self.account in self._account_holder.known_accounts
+        return self._account_holder.is_account_known(self.account)
 
     def __should_check_as_known(self) -> bool:
         return self.__is_account_name_valid() and self.__is_given_account_known()

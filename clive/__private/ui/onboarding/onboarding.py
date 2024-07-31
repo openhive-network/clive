@@ -71,7 +71,7 @@ class Onboarding(Form[ProfileData]):
         screens_to_skip: list[ScreenBuilder[ProfileData]] = []
 
         # skip NewKeyAliasForm if there is no working account set
-        if not self.context.is_working_account_set():
+        if not self.context.accounts.has_working_account:
             screens_to_skip.append(NewKeyAliasForm)
 
         return screens_to_skip

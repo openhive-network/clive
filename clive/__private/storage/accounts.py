@@ -58,6 +58,10 @@ class Account:
         return hash(self.name)
 
     @staticmethod
+    def ensure_account_name(account: str | Account) -> str:
+        return account if isinstance(account, str) else account.name
+
+    @staticmethod
     def validate(name: str) -> None:
         """
         Validate the given account name.

@@ -24,8 +24,12 @@ class RemoveDelegation(OperationSummary):
         self._delegation = delegation
         self._pretty_hp_amount = pretty_hp_amount
 
+    @property
+    def working_account_name(self) -> str:
+        return self.profile_data.accounts.working.name
+
     def content(self) -> ComposeResult:
-        yield LabelizedInput("Delegator", self.working_account)
+        yield LabelizedInput("Delegator", self.working_account_name)
         yield LabelizedInput("Delegate", self._delegation.delegatee)
         yield LabelizedInput(
             "Shares [HP]",
@@ -38,11 +42,7 @@ class RemoveDelegation(OperationSummary):
 
     def _create_operation(self) -> DelegateVestingSharesOperation:
         return DelegateVestingSharesOperation(
-            delegator=self.working_account,
+            delegator=self.working_account_name,
             delegatee=self._delegation.delegatee,
             vesting_shares=Asset.vests(VESTS_TO_REMOVE_DELEGATION),
         )
-
-    @property
-    def working_account(self) -> str:
-        return self.profile_data.working_account.name

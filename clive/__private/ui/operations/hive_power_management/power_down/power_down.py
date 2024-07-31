@@ -212,12 +212,8 @@ class PowerDown(TabPane, OperationActionBindings):
         # If the user has passed an amount in `HP` - convert it to `VESTS`. The operation is performed using VESTS.
         asset = ensure_vests(asset, self.provider.content.gdpo)
 
-        return WithdrawVestingOperation(account=self.working_account, vesting_shares=asset)
+        return WithdrawVestingOperation(account=self.profile_data.accounts.working.name, vesting_shares=asset)
 
     @property
     def provider(self) -> HivePowerDataProvider:
         return self.screen.query_one(HivePowerDataProvider)
-
-    @property
-    def working_account(self) -> str:
-        return self.profile_data.working_account.name

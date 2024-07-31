@@ -96,7 +96,7 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
         self.watch(self, "local_profile_data", delegate_work_rebuild_tracked_accounts)
 
     def _update_local_profile_data(self, profile_data: ProfileData) -> None:
-        if self.local_profile_data.tracked_accounts_sorted == profile_data.tracked_accounts_sorted:
+        if self.local_profile_data.accounts.tracked == profile_data.accounts.tracked:
             # nothing to update when tracked accounts have not changed
             return
 
@@ -117,15 +117,15 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
 
     def _create_radio_buttons(self, profile_data: ProfileData) -> list[AccountRadioButton | CliveRadioButton]:
         """Create radio buttons for all tracked accounts and a no working account button."""
-        tracked_account_radios = [AccountRadioButton(account) for account in profile_data.tracked_accounts_sorted]
+        tracked_account_radios = [AccountRadioButton(account) for account in profile_data.accounts.tracked]
         no_working_account_radio = NoWorkingAccountRadioButton(
-            is_working_account_set=not profile_data.is_working_account_set()
+            is_working_account_set=not profile_data.accounts.has_working_account
         )
 
         return [*tracked_account_radios, no_working_account_radio]
 
     def _create_tracked_accounts_content(self, profile_data: ProfileData) -> CliveRadioSet | NoTrackedAccounts:
-        if not profile_data.has_tracked_accounts():
+        if not profile_data.accounts.has_tracked_accounts:
             return NoTrackedAccounts()
 
         return CliveRadioSet(*self._create_radio_buttons(profile_data))
@@ -152,7 +152,7 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
             None if self._is_no_working_account_selected(self._selected_account) else self._selected_account
         )
 
-        self.profile_data.switch_working_account(new_working_account)
+        self.profile_data.accounts.switch_working_account(new_working_account)
         self._perform_actions_after_accounts_modification()
 
     def _perform_actions_after_accounts_modification(self) -> None:
@@ -166,14 +166,16 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
     def _get_current_state_for_selected_account(
         self, profile_data: ProfileData
     ) -> WorkingAccount | NoWorkingAccountSelected:
-        return profile_data.working_account if profile_data.is_working_account_set() else NoWorkingAccountSelected()
+        return (
+            profile_data.accounts.working if profile_data.accounts.has_working_account else NoWorkingAccountSelected()
+        )
 
     @property
     def _is_current_working_account_selected(self) -> bool:
         if self._is_no_working_account_selected(self._selected_account):
             return False
 
-        return self.profile_data.is_account_working(self._selected_account)
+        return self.profile_data.accounts.is_account_working(self._selected_account)
 
     def _is_no_working_account_selected(self, value: object) -> TypeIs[NoWorkingAccountSelected]:
         return isinstance(value, NoWorkingAccountSelected)

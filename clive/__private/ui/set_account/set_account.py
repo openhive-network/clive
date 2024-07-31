@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from textual.widgets import Checkbox
 
 from clive.__private.core.profile_data import ProfileData
-from clive.__private.storage.accounts import WatchedAccount
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
@@ -35,7 +34,7 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         self._account_name_input = AccountNameInput(
             placeholder="Please enter hive account name, without @",
             include_title_in_placeholder_when_blurred=False,
-            accounts_holder=self.context,
+            accounts_holder=self.context.accounts,
         )
         self._working_account_checkbox = WorkingAccountCheckbox()
 
@@ -58,11 +57,11 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
             raise FormValidationError(f"Account {account_name} does not exist in the node.")
 
         if self.__is_working_account():
-            self.context.set_working_account(account_name)
-            self.context.watched_accounts.clear()
+            self.context.accounts.set_working_account(account_name)
+            self.context.accounts.watched.clear()
         else:
-            self.context.unset_working_account()
-            self.context.watched_accounts.add(WatchedAccount(name=account_name))
+            self.context.accounts.unset_working_account()
+            self.context.accounts.add_tracked_account(account_name)
 
     def __is_working_account(self) -> bool:
         return self.query_one(WorkingAccountCheckbox).value

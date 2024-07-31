@@ -16,7 +16,7 @@ class AddWorkingAccount(ProfileBasedCommand):
     account_name: str
 
     async def validate_inside_context_manager(self) -> None:
-        if self.profile_data.is_working_account_set():
+        if self.profile_data.accounts.has_working_account:
             raise CLIWorkingAccountIsAlreadySetError(self.profile_data)
 
         result = SetTrackedAccountValidator(self.profile_data).validate(self.account_name)
@@ -24,7 +24,7 @@ class AddWorkingAccount(ProfileBasedCommand):
             raise CLIPrettyError(f"Can't use this account name: {humanize_validation_result(result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        self.profile_data.set_working_account(self.account_name)
+        self.profile_data.accounts.set_working_account(self.account_name)
 
 
 @dataclass(kw_only=True)
@@ -34,10 +34,10 @@ class RemoveWorkingAccount(ProfileBasedCommand):
     async def _run(self) -> None:
         account_name = self.account_name
 
-        if not self.profile_data.is_working_account_set():
+        if not self.profile_data.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(self.profile_data)
 
-        profile_working_account_name = self.profile_data.working_account.name
+        profile_working_account_name = self.profile_data.accounts.working.name
 
         if profile_working_account_name != account_name:
             raise CLIPrettyError(
@@ -48,4 +48,4 @@ class RemoveWorkingAccount(ProfileBasedCommand):
                 exit_code=errno.EINVAL,
             )
 
-        self.profile_data.unset_working_account()
+        self.profile_data.accounts.unset_working_account()

@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.widgets import TabPane
 
-from clive.__private.storage.accounts import KnownAccount, WatchedAccount
 from clive.__private.ui.account_list_management.common.manage_accounts_table import AccountsType, ManageAccountsTable
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
@@ -66,9 +65,9 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
             return
 
         if self._accounts_type == "tracked_accounts":
-            self.profile_data.watched_accounts.add(WatchedAccount(name=account_name))
+            self.profile_data.accounts.add_tracked_account(account_name)
         else:
-            self.profile_data.known_accounts.add(KnownAccount(name=account_name))
+            self.profile_data.accounts.known.add(account_name)
 
         self.app.trigger_profile_data_watchers()
         self._accounts_input.input.clear()

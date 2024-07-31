@@ -1,19 +1,18 @@
 from __future__ import annotations
 
-import contextlib
 import shelve
 from contextlib import asynccontextmanager, contextmanager
 from copy import deepcopy
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Final
 
+from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.accounts import Account, KnownAccount, TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.core.url import Url
@@ -27,6 +26,8 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
+    from clive.__private.storage.accounts import KnownAccount, WatchedAccount, WorkingAccount
+
 
 class ProfileDataError(CliveError):
     """An error related to profile data."""
@@ -37,26 +38,6 @@ class InvalidChainIdError(ProfileDataError):
 
     def __init__(self) -> None:
         super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
-
-
-class NoWorkingAccountError(ProfileDataError):
-    """No working account is available."""
-
-
-class WatchedAccountNotFoundError(ProfileDataError):
-    """Raised when an account is not found in `get_watched_account` method."""
-
-    def __init__(self, account_name: str) -> None:
-        super().__init__(f"Account {account_name} not found in watched accounts")
-        self.account_name = account_name
-
-
-class AccountNotFoundError(ProfileDataError):
-    """Raised when an account is not found in `get_account_by_name` method."""
-
-    def __init__(self, account_name: str) -> None:
-        super().__init__(f"Account {account_name} not found in tracked accounts (working + watched accounts)")
-        self.account_name = account_name
 
 
 class ProfileCouldNotBeLoadedError(ProfileDataError):
@@ -118,12 +99,7 @@ class ProfileData(Context):
         self.validate_profile_name(name)
 
         self.name = name
-        self.__working_account: WorkingAccount | None = None
-        self.watched_accounts = set(watched_accounts or [])
-        self.known_accounts = set(known_accounts or [])
-
-        if working_account is not None:
-            self.set_working_account(working_account)
+        self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
 
         self.__chain_id = self.__default_chain_id()
 
@@ -159,101 +135,9 @@ class ProfileData(Context):
 
         raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
 
-    def get_account_by_name(self, value: str | Account) -> TrackedAccount:
-        searched_account_name = self._get_account_name(value)
-        for account in self.get_tracked_accounts():
-            if account.name == searched_account_name:
-                return account
-
-        raise AccountNotFoundError(searched_account_name)
-
     @property
-    def working_account(self) -> WorkingAccount:
-        """
-        Returns the working account.
-
-        Raises
-        ------
-        NoWorkingAccountError: If no working account is set.
-        """
-        if not self.is_working_account_set():
-            raise NoWorkingAccountError
-        assert self.__working_account is not None
-        return self.__working_account
-
-    @property
-    def watched_accounts_sorted(self) -> list[WatchedAccount]:
-        return sorted(self.watched_accounts, key=lambda account: account.name)
-
-    @property
-    def known_accounts_sorted(self) -> list[KnownAccount]:
-        return sorted(self.known_accounts, key=lambda account: account.name)
-
-    @property
-    def tracked_accounts_sorted(self) -> list[TrackedAccount]:
-        """Working account is always first then watched accounts sorted alphabetically."""
-        return sorted(
-            self.get_tracked_accounts(),
-            key=lambda account: (not isinstance(account, WorkingAccount), account.name),
-        )
-
-    @staticmethod
-    def _get_account_name(account: str | Account) -> str:
-        return account if isinstance(account, str) else account.name
-
-    def set_working_account(self, value: str | WorkingAccount) -> None:
-        if isinstance(value, str):
-            value = WorkingAccount(value)
-        self.__working_account = value
-
-    def switch_working_account(self, new_working_account: str | Account | None = None) -> None:
-        """
-        Switch the working account to the one of watched accounts and move the old one to the watched accounts.
-
-        Working account can be deleted and moved to watched accounts if `new_working_account` is None.
-        """
-
-        def is_given_account_already_working() -> bool:
-            return new_working_account is not None and self.is_account_working(new_working_account)
-
-        if is_given_account_already_working():
-            return
-
-        if self.is_working_account_set():
-            # we allow for switching from no working account to watched account
-            self.move_working_account_to_watched()
-
-        if new_working_account is not None:
-            # we allow for only moving the current working account to watched accounts
-            self.set_watched_account_as_working(new_working_account)
-
-    def is_account_working(self, account: str | Account) -> bool:
-        if not self.is_working_account_set():
-            return False
-
-        account_name = self._get_account_name(account)
-        return self.working_account.name == account_name
-
-    def move_working_account_to_watched(self) -> None:
-        name, data, alarms = self.working_account.name, self.working_account._data, self.working_account._alarms
-
-        new_account_object = WatchedAccount(name, alarms)
-        new_account_object._data = data
-
-        self.unset_working_account()
-        self.watched_accounts.add(new_account_object)
-
-    def set_watched_account_as_working(self, account: str | Account) -> None:
-        account = self.get_watched_account(account)
-
-        self.remove_watched_account(account)
-        new_working_account = WorkingAccount(account.name, account._alarms)
-        new_working_account._data = account._data
-
-        self.set_working_account(new_working_account)
-
-    def unset_working_account(self) -> None:
-        self.__working_account = None
+    def accounts(self) -> AccountManager:
+        return self._accounts
 
     @property
     def node_address(self) -> Url:
@@ -287,61 +171,6 @@ class ProfileData(Context):
         """When no chain_id is set, it should be fetched from the node api."""
         self.__chain_id = None
 
-    def is_working_account_set(self) -> bool:
-        return self.__working_account is not None
-
-    def is_account_tracked(self, account: str | Account) -> bool:
-        account_name = self._get_account_name(account)
-        return account_name in [tracked_account.name for tracked_account in self.get_tracked_accounts()]
-
-    def get_tracked_accounts(self) -> set[TrackedAccount]:
-        accounts: set[TrackedAccount] = set()
-        accounts.update(self.watched_accounts)
-        if self.is_working_account_set():
-            accounts.add(self.working_account)
-        return accounts
-
-    def get_watched_account(self, account: str | Account) -> WatchedAccount:
-        account_name = self._get_account_name(account)
-        watched_account = next((account for account in self.watched_accounts if account.name == account_name), None)
-        if watched_account is None:
-            raise WatchedAccountNotFoundError(account_name)
-        return watched_account
-
-    def has_known_accounts(self) -> bool:
-        return bool(self.known_accounts)
-
-    def has_tracked_accounts(self) -> bool:
-        return bool(self.get_tracked_accounts())
-
-    def remove_tracked_account(self, to_remove: str | Account) -> None:
-        account_name = self._get_account_name(to_remove)
-        if self.is_working_account_set() and account_name == self.working_account.name:
-            self.unset_working_account()
-        else:
-            self.remove_watched_account(to_remove)
-
-    def remove_watched_account(self, to_remove: str | Account) -> None:
-        with contextlib.suppress(WatchedAccountNotFoundError):
-            account = self.get_watched_account(to_remove)
-            self.watched_accounts.discard(account)
-
-    @property
-    def is_accounts_alarms_data_available(self) -> bool:
-        tracked_accounts = self.get_tracked_accounts()
-        if not tracked_accounts:
-            return False
-
-        return all(account.is_alarms_data_available for account in tracked_accounts)
-
-    @property
-    def is_accounts_node_data_available(self) -> bool:
-        tracked_accounts = self.get_tracked_accounts()
-        if not tracked_accounts:
-            return False
-
-        return all(account.is_node_data_available for account in tracked_accounts)
-
     @classmethod
     def _get_file_storage_path(cls) -> Path:
         return Path(safe_settings.data_path) / "data/profile"
@@ -369,7 +198,7 @@ class ProfileData(Context):
 
     def _prepare_for_save(self) -> Self:
         this = deepcopy(self)
-        for account in this.get_tracked_accounts():
+        for account in this.accounts.tracked:
             account._prepare_for_save()
         return this
 

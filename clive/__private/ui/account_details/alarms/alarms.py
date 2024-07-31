@@ -93,7 +93,7 @@ class AlarmsTable(CliveCheckerboardTable):
 
     def _get_actual_account_state(self, content: ProfileData) -> TrackedAccount:
         """Return the account with the actual state."""
-        return content.get_account_by_name(self._account)
+        return content.accounts.get_tracked_account(self._account)
 
 
 class Alarms(TabPane, CliveWidget):

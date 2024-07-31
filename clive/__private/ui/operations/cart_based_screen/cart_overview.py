@@ -15,6 +15,7 @@ from clive.models import Asset
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.accounts.accounts import WorkingAccount
     from clive.__private.core.profile_data import ProfileData
     from clive.models import Operation
 
@@ -59,6 +60,10 @@ class CartOverview(CliveWidget):
         self.__cart_items_container = CartItemsContainer()
         self._rc_container = Horizontal(id="rc-container")
 
+    @property
+    def working_account(self) -> WorkingAccount:
+        return self.profile_data.accounts.working
+
     def compose(self) -> ComposeResult:
         with Resources():
             with self._rc_container:
@@ -84,27 +89,25 @@ class CartOverview(CliveWidget):
 
     def __get_rc(self) -> str:
         self._set_rc_api_missing()
-        if self.profile_data.working_account.data.is_rc_api_missing:
+        if self.working_account.data.is_rc_api_missing:
             return MISSING_API_LABEL
 
-        return humanize_percent(self.profile_data.working_account.data.rc_manabar_ensure.percentage)
+        return humanize_percent(self.working_account.data.rc_manabar_ensure.percentage)
 
     def _set_rc_api_missing(self) -> None:
-        if self.profile_data.working_account.data.is_rc_api_missing:
-            self._rc_container.tooltip = (
-                self.profile_data.working_account.data.rc_manabar_ensure_missing_api.missing_api_text
-            )
+        if self.working_account.data.is_rc_api_missing:
+            self._rc_container.tooltip = self.working_account.data.rc_manabar_ensure_missing_api.missing_api_text
             return
 
         self._rc_container.tooltip = None
 
     @staticmethod
     def __get_hive_balance(profile_data: ProfileData) -> str:
-        return Asset.pretty_amount(profile_data.working_account.data.hive_balance)
+        return Asset.pretty_amount(profile_data.accounts.working.data.hive_balance)
 
     @staticmethod
     def __get_hbd_balance(profile_data: ProfileData) -> str:
-        return Asset.pretty_amount(profile_data.working_account.data.hbd_balance)
+        return Asset.pretty_amount(profile_data.accounts.working.data.hbd_balance)
 
     def __create_cart_items(self) -> list[CartItem]:
         return [CartItem(index + 1, operation) for index, operation in enumerate(self.profile_data.cart)]

@@ -50,7 +50,7 @@ class AddKey(WorldBasedCommand):
 
     async def validate_inside_context_manager(self) -> None:
         profile_data = self.world.profile_data
-        if not profile_data.is_working_account_set():
+        if not profile_data.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile_data)
 
         key_manager = profile_data.keys
@@ -91,7 +91,7 @@ class RemoveKey(WorldBasedCommand):
 
     async def _run(self) -> None:
         profile_data = self.world.profile_data
-        if not profile_data.is_working_account_set():
+        if not profile_data.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile_data)
 
         wrapper = await self.world.commands.is_password_valid(password=self.password)

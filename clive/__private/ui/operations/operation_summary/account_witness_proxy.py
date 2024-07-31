@@ -19,14 +19,14 @@ class AccountWitnessProxy(OperationSummary):
         self._new_proxy = new_proxy
 
     @property
+    def working_account_name(self) -> str:
+        return self.profile_data.accounts.working.name
+
+    @property
     def proxy_to_be_set(self) -> str:
         if self._new_proxy is None:
             return ""
         return self._new_proxy
-
-    @property
-    def working_account_name(self) -> str:
-        return self.profile_data.working_account.name
 
     def content(self) -> ComposeResult:
         yield LabelizedInput("Account name", self.working_account_name)

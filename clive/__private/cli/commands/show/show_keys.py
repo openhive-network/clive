@@ -11,7 +11,7 @@ class ShowKeys(ProfileBasedCommand):
     async def _run(self) -> None:
         profile_name = self.profile_data.name
 
-        if not self.profile_data.is_working_account_set():
+        if not self.profile_data.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(self.profile_data)
 
         public_keys = list(self.profile_data.keys)

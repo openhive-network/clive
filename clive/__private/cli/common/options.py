@@ -34,6 +34,15 @@ def _get_default_profile_name() -> str | None:
     return None
 
 
+def _get_default_working_account_name() -> str | None:
+    if not is_tab_completion_active():
+        from clive.__private.core.profile_data import ProfileData, ProfileDataError
+
+        with contextlib.suppress(ProfileDataError):
+            return ProfileData.load(auto_create=False).accounts.working.name
+    return None
+
+
 def _get_default_beekeeper_remote() -> str | None:
     if not is_tab_completion_active():
         from clive.__private.core.beekeeper import Beekeeper

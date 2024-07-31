@@ -27,4 +27,4 @@ class SetKnownAccountValidator(AccountNameValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_account_already_known(self, value: str) -> bool:
-        return value not in [known_account.name for known_account in self._profile_data.known_accounts]
+        return not self._profile_data.accounts.is_account_known(value)

@@ -86,7 +86,7 @@ class AlarmsSummary(Container, CliveWidget):
     def __init__(self) -> None:
         super().__init__()
 
-        self.__label = AlarmDisplay(lambda pd: pd.get_tracked_accounts())
+        self.__label = AlarmDisplay(lambda pd: pd.accounts.tracked)
 
     def compose(self) -> ComposeResult:
         yield self.__label

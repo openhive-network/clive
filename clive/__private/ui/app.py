@@ -358,7 +358,7 @@ class Clive(App[int], ManualReactive):
 
         async def _update_alarms_data_asap() -> None:
             self._refresh_alarms_data_interval.pause()
-            while not self.world.profile_data.is_accounts_node_data_available:
+            while not self.world.profile_data.accounts.is_tracked_accounts_node_data_available:
                 await asyncio.sleep(0.1)
             self.update_alarms_data()
             self._refresh_alarms_data_interval.resume()
@@ -372,7 +372,7 @@ class Clive(App[int], ManualReactive):
 
     @work(name="alarms data update worker")
     async def update_alarms_data(self) -> None:
-        accounts = self.world.profile_data.get_tracked_accounts()
+        accounts = self.world.profile_data.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
         if wrapper.error_occurred:
             logger.warning(f"Update alarms data failed: {wrapper.error}")
@@ -382,9 +382,7 @@ class Clive(App[int], ManualReactive):
 
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
-        accounts = (
-            self.world.profile_data.get_tracked_accounts()
-        )  # accounts list gonna be empty, but dgpo will be refreshed
+        accounts = self.world.profile_data.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:

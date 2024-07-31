@@ -54,4 +54,4 @@ class Config(BaseScreen):
         await self.app.push_screen(ManageKeyAliases())
 
     def _has_working_account(self) -> bool:
-        return self.profile_data.is_working_account_set()
+        return self.profile_data.accounts.has_working_account

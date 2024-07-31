@@ -21,7 +21,7 @@ from clive_local_tools.testnet_block_log import (
 
 @pytest.fixture()
 async def prepare_profile_without_working_account(prepare_profile: ProfileData) -> ProfileData:
-    prepare_profile.unset_working_account()
+    prepare_profile.accounts.unset_working_account()
     prepare_profile.save()
     return prepare_profile
 

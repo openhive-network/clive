@@ -17,7 +17,7 @@ if TYPE_CHECKING:
     from textual.validation import Validator
     from textual.widgets._input import InputValidationOn
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.accounts.account_manager import AccountManager
 
 
 class AccountNameInput(TextInput):
@@ -69,7 +69,7 @@ class AccountNameInput(TextInput):
         show_invalid_reasons: bool = True,
         required: bool = True,
         ask_known_account: bool = True,
-        accounts_holder: ProfileData | None = None,
+        accounts_holder: AccountManager | None = None,
         validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,

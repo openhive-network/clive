@@ -6,7 +6,6 @@ from textual import on
 from textual.containers import Center
 from textual.widgets import Static
 
-from clive.__private.storage.accounts import WorkingAccount
 from clive.__private.ui.confirm_with_password.confirm_with_password import ConfirmWithPassword
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -51,6 +50,10 @@ class FixAlarmInfoWidget(CliveWidget):
         self._alarm = alarm
         self._alarm_fix_details = alarm_fix_details
         self._account = account
+
+    @property
+    def _is_account_working(self) -> bool:
+        return self.profile_data.accounts.is_account_working(self._account)
 
     def compose(self) -> ComposeResult:
         yield from self._get_how_to_fix_content()
@@ -104,7 +107,3 @@ class FixAlarmInfoWidget(CliveWidget):
                 id="change-to-working-info",
             )
         yield from self._get_mark_as_harmless_content()
-
-    @property
-    def _is_account_working(self) -> bool:
-        return isinstance(self._account, WorkingAccount)

@@ -177,7 +177,7 @@ class ProposalsList(GovernanceListWidget[ProposalData]):
 class ProposalsListHeader(GovernanceListHeader):
     def create_custom_columns(self) -> ComposeResult:
         yield SectionTitle(
-            f"Votes for proposals cast by your proxy ({self.profile_data.working_account.data.proxy})"
+            f"Votes for proposals cast by your proxy ({self.profile_data.accounts.working.data.proxy})"
             if self.is_proxy_set
             else "Update your proposal votes"
         )
@@ -265,7 +265,7 @@ class Proposals(GovernanceTabPane):
         )
 
     def _create_operations(self) -> list[Operation] | None:
-        working_account_name = self.profile_data.working_account.name
+        working_account_name = self.profile_data.accounts.working.name
 
         batched_proposals_ids_to_unvote = self.__split_proposals(approve=False)
         batched_proposals_ids_to_vote = self.__split_proposals(approve=True)

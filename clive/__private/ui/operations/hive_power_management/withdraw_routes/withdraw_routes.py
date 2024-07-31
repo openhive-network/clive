@@ -137,12 +137,8 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
             return None
 
         return SetWithdrawVestingRouteOperation(
-            from_account=self.working_account,
+            from_account=self.profile_data.accounts.working.name,
             to_account=self._account_input.value_or_error,
             percent=percent_to_hive_percent(self._percent_input.value_or_error),
             auto_vest=self._auto_vest_checkbox.value,
         )
-
-    @property
-    def working_account(self) -> str:
-        return self.profile_data.working_account.name

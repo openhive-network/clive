@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.profile_data import AccountNotFoundError
+from clive.__private.core.accounts.exceptions import AccountNotFoundError
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 
@@ -41,6 +41,6 @@ class TrackedAccountReferencingWidget(CliveWidget):
 
     def _check_if_account_node_data_is_available(self, profile_data: ProfileData) -> bool:
         try:
-            return profile_data.get_account_by_name(self._account).is_node_data_available
+            return profile_data.accounts.get_tracked_account(self._account).is_node_data_available
         except AccountNotFoundError:
             return False

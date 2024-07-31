@@ -7,8 +7,9 @@ from typing import Any
 from typing_extensions import Self
 
 from clive.__private.cli.exceptions import CLIPrettyError
+from clive.__private.core.accounts.exceptions import NoWorkingAccountError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
-from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
+from clive.__private.core.profile_data import ProfileData
 
 
 @dataclass(kw_only=True)
@@ -67,7 +68,7 @@ class ExternalCLICommand(ABC):
 
         def get_working_account_name() -> str:
             try:
-                return profile_data.working_account.name
+                return profile_data.accounts.working.name
             except NoWorkingAccountError as err:
                 raise CLIPrettyError(
                     "Working account is not set, can't use working account as default.",
