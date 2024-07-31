@@ -2,15 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Container, Horizontal
 from textual.reactive import var
 from textual.widgets import Header as TextualHeader
+from textual.widgets import Static
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
-from clive.__private.core.date_utils import utc_now
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
-from clive.__private.core.formatters.humanize import humanize_natural_time
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
@@ -20,8 +19,6 @@ from clive.__private.ui.widgets.titled_label import TitledLabel
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable
-
     from textual import events
     from textual.app import ComposeResult
     from textual.events import Mount
@@ -64,13 +61,6 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
             attribute_name="node",
             callback=self.__get_last_block,
         )
-        yield TitledLabel(
-            "Last update",
-            obj_to_watch=self,
-            attribute_name="last_update_trigger",
-            callback=self.__get_last_update,
-            id_="last-update",
-        )
 
     async def __get_last_block(self) -> str:
         gdpo = await self.node.cached.dynamic_global_properties_or_none
@@ -82,13 +72,6 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         self.__trigger_last_update()
         return f"{block_num} ({block_time} UTC)"
 
-    async def __get_last_update(self) -> str:
-        gdpo = await self.node.cached.dynamic_global_properties_or_none
-        if gdpo is None:
-            return NOT_AVAILABLE_LABEL
-
-        return humanize_natural_time(utc_now() - gdpo.time)
-
     def __trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
 
@@ -99,11 +82,11 @@ class Header(TextualHeader, CliveWidget):
     def __init__(self) -> None:
         self._header_title = HeaderTitle()
         super().__init__()
-        self.__node_version_label = DynamicLabel(
+        self.__node_version = DynamicLabel(
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self.__get_node_version,
-            id_="node-type-label",
+            id_="node-type",
         )
 
     def on_mount(self, event: Mount) -> None:
@@ -128,14 +111,19 @@ class Header(TextualHeader, CliveWidget):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            yield self.__node_version_label
             if not self.__is_in_onboarding_mode():
-                yield TitledLabel(
-                    "Profile",
+                yield DynamicLabel(
                     obj_to_watch=self.world,
                     attribute_name="profile_data",
                     callback=self.__get_profile_name,
-                    id_="profile-label",
+                    id_="profile-name",
+                )
+                yield Static("/", id="separator")
+                yield DynamicLabel(
+                    obj_to_watch=self.world,
+                    attribute_name="profile_data",
+                    callback=self._get_working_account_name,
+                    id_="working-account-name",
                 )
                 yield AlarmsSummary()
 
@@ -146,24 +134,23 @@ class Header(TextualHeader, CliveWidget):
                     self.remove_class("-unlocked")
                     return "locked"
 
-                yield TitledLabel(
-                    "Mode",
+                yield DynamicLabel(
                     obj_to_watch=self.world,
                     attribute_name="app_state",
                     callback=mode_callback,
                     id_="mode-label",
                 )
-            yield DynamicPropertiesClock()
 
-        with Vertical(id="expandable"):
+        with Horizontal(id="expandable"):
+            yield DynamicPropertiesClock()
             yield self._header_title
-            yield TitledLabel(
-                "Node address",
+            yield DynamicLabel(
                 obj_to_watch=self.world,
                 attribute_name="node",
                 callback=self.__get_node_address,
                 id_="node-address-label",
             )
+            yield self.__node_version
 
     def on_click(self, event: events.Click) -> None:
         event.prevent_default()
@@ -180,6 +167,10 @@ class Header(TextualHeader, CliveWidget):
     def __get_profile_name(profile_data: ProfileData) -> str:
         return profile_data.name
 
+    @staticmethod
+    def _get_working_account_name(profile_data: ProfileData) -> str:
+        return f"@{profile_data.working_account.name}" if profile_data.is_working_account_set() else "-"
+
     async def __get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"
 
@@ -189,10 +180,10 @@ class Header(TextualHeader, CliveWidget):
             network_type = "no connection"
 
         if network_type == "mainnet":
-            self.__node_version_label.remove_class(class_to_switch)
+            self.__node_version.remove_class(class_to_switch)
         else:
-            self.__node_version_label.add_class(class_to_switch)
-        return network_type
+            self.__node_version.add_class(class_to_switch)
+        return f"({network_type})"
 
     def __is_in_onboarding_mode(self) -> bool:
         return self.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
