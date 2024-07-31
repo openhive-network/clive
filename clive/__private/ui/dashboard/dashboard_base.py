@@ -152,9 +152,9 @@ class ActivityStats(TrackedAccountReferencingWidget):
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         with Vertical(id="account-alarms-and-details"):
-            with Horizontal(id="account-info-container"):
-                yield EllipsedStatic(f"{self._account.name}")
-                yield OneLineButton("Details", id_="details-button")
+            button = OneLineButton(f"{self._account.name}", id_="account-details-button")
+            button.tooltip = "See account details"
+            yield button
             yield AlarmDisplay(self._account, id_="account-alarms")
         yield Static()
         yield Label("LAST:")
@@ -166,7 +166,7 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
         )
 
     @CliveScreen.prevent_action_when_no_accounts_node_data
-    @on(OneLineButton.Pressed, "#details-button")
+    @on(OneLineButton.Pressed, "#account-details-button")
     def push_account_details_screen(self) -> None:
         self.app.push_screen(AccountDetails(self._account))
 
