@@ -8,7 +8,10 @@ if TYPE_CHECKING:
 
 class CLITestCommandError(AssertionError):
     def __init__(self, command: list[str], exit_code: int, stdout: str, result: Result) -> None:
-        super().__init__(f"command {command} failed because of {exit_code=}. Output:\n{stdout}")
+        message = f"command {command} failed because of {exit_code=}. Output:\n{stdout}"
+        if result.exception:
+            message += f"\nException occurred:\n{result.exception!r}"
+        super().__init__(message)
         self.command = command
         self.exit_code = exit_code
         self.stdout = stdout
