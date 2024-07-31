@@ -10,6 +10,18 @@ DashboardBase {
   WatchedAccountContainer {
     border-title-color: $text;
     border-title-style: bold;
+
+    AlarmDisplay {
+      #alarm-display-button {
+        margin-left: 1;
+        width: 20;
+      }
+    }
+
+    #account-details-button {
+      margin-left: 1;
+      width: 20;
+    }
   }
 
   WorkingAccountContainer {
@@ -43,27 +55,12 @@ DashboardBase {
     width: 3fr;
 
     #account-alarms-and-details {
-      width: auto;
+      margin-left: 1;
+      width: 1fr;
       height: auto;
 
       AlarmDisplay {
         align: center middle;
-        width: 100%;
-      }
-
-      #account-info-container {
-        width: auto;
-        height: 1;
-
-        EllipsedStatic {
-          width: 16;
-          text-align: center;
-        }
-
-        OneLineButton {
-          width: 9;
-          min-width: 9;
-        }
       }
     }
   }
