@@ -1,10 +1,9 @@
 Header {
   box-sizing: content-box;
-  border-bottom: inner $error;
+  border-bottom: inner $error-darken-1;
 
   #icon {
     content-align: center middle;
-    background: $foreground-darken-1 5%;
     width: auto;
   }
 
@@ -14,19 +13,37 @@ Header {
     height: 1;
   }
 
+  #profile-name {
+    color: $accent;
+  }
+
+  #separator {
+    margin: 0 1 0 1;
+    width: auto;
+  }
+
+  #working-account-name {
+    color: $success-darken-3;
+  }
+
+  AlarmsSummary {
+    margin-left: 1;
+    width: 15;
+  }
+
+  #mode-display {
+    text-style: bold;
+    margin-left: 25;
+    background: $error-lighten-3;
+    padding: 0 1 0 1;
+    color: $text;
+  }
+
   DynamicPropertiesClock {
     width: auto;
-
-    #last-update {
-      width: 28;
-    }
   }
 
-  TitledLabel {
-    margin-right: 1;
-  }
-
-  #node-type-label {
+  #node-type {
     margin-right: 1;
     margin-left: 1;
     color: green;
@@ -36,22 +53,13 @@ Header {
     }
   }
 
-  #profile-label #value {
-    color: $accent;
-  }
-
-  #mode-label #value {
-    color: $error;
-  }
-
   #bar {
     background: $panel;
     height: 1;
   }
 
-  AlarmsDisplay {
-    align: center middle;
-    width: 1fr;
+  #expandable {
+    height: 1;
   }
 }
 
@@ -59,6 +67,6 @@ Header.-unlocked {
   border-bottom: inner $success;
 }
 
-Header.-unlocked #mode-label #value {
-  color: $success;
+Header.-unlocked #mode-display {
+  background: $success-darken-3;
 }
