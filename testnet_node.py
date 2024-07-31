@@ -17,9 +17,19 @@ from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
 from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive.main import _main as clive_main
-from clive_local_tools.data.constants import TESTNET_CHAIN_ID
+from clive_local_tools.data.constants import (
+    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    TESTNET_CHAIN_ID,
+    WORKING_ACCOUNT_KEY_ALIAS,
+)
 from clive_local_tools.testnet_block_log import run_node
-from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
+from clive_local_tools.testnet_block_log.constants import (
+    ALT_WORKING_ACCOUNT1_DATA,
+    ALT_WORKING_ACCOUNT1_NAME,
+    WATCHED_ACCOUNTS_NAMES,
+    WORKING_ACCOUNT_DATA,
+    WORKING_ACCOUNT_NAME,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -63,27 +73,48 @@ async def prepare_profile(node: tt.RawNode) -> None:
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
+    _create_profile_data(
+        profile_name=WORKING_ACCOUNT_NAME,
+        working_account_name=WORKING_ACCOUNT_NAME,
+        watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
+    )
+    _create_profile_data(
+        profile_name=ALT_WORKING_ACCOUNT1_NAME,
+        working_account_name=ALT_WORKING_ACCOUNT1_NAME,
+        watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
+    )
+    await _create_wallet(
+        working_account_name=WORKING_ACCOUNT_NAME,
+        private_key=WORKING_ACCOUNT_DATA.account.private_key,
+        key_alias=WORKING_ACCOUNT_KEY_ALIAS,
+    )
+    await _create_wallet(
+        working_account_name=ALT_WORKING_ACCOUNT1_NAME,
+        private_key=ALT_WORKING_ACCOUNT1_DATA.account.private_key,
+        key_alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    )
+
+
+def _create_profile_data(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
     ProfileData(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
+        profile_name,
+        working_account=WorkingAccount(name=working_account_name),
+        watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],
     ).save()
 
-    async with World(WORKING_ACCOUNT_DATA.account.name) as world:
+
+async def _create_wallet(working_account_name: str, private_key: str, key_alias: str) -> None:
+    async with World(working_account_name) as world_cm:
         password = await CreateWallet(
-            app_state=world.app_state,
-            beekeeper=world.beekeeper,
-            wallet=WORKING_ACCOUNT_DATA.account.name,
-            password=WORKING_ACCOUNT_DATA.account.name,
+            app_state=world_cm.app_state,
+            beekeeper=world_cm.beekeeper,
+            wallet=working_account_name,
+            password=working_account_name,
         ).execute_with_result()
 
-        tt.logger.info(f"password for {WORKING_ACCOUNT_DATA.account.name} is: `{password}`")
-        world.profile_data.keys.add_to_import(
-            PrivateKeyAliased(
-                value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_DATA.account.name}_key"
-            )
-        )
-        await world.commands.sync_data_with_beekeeper()
+        tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
+        world_cm.profile_data.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
+        await world_cm.commands.sync_data_with_beekeeper()
 
 
 def create_proposal(wallet: tt.Wallet) -> None:
@@ -112,8 +143,8 @@ def create_proposal(wallet: tt.Wallet) -> None:
 
 
 def print_working_account_keys() -> None:
-    tt.logger.info(f"{WORKING_ACCOUNT_DATA.account.name} public key: {WORKING_ACCOUNT_DATA.account.public_key}")
-    tt.logger.info(f"{WORKING_ACCOUNT_DATA.account.name} private key: {WORKING_ACCOUNT_DATA.account.private_key}")
+    tt.logger.info(f"{WORKING_ACCOUNT_NAME} public key: {WORKING_ACCOUNT_DATA.account.public_key}")
+    tt.logger.info(f"{WORKING_ACCOUNT_NAME} private key: {WORKING_ACCOUNT_DATA.account.private_key}")
 
 
 async def launch_clive() -> None:
