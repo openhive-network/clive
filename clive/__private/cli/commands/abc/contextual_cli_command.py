@@ -46,6 +46,10 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
         """Additional hook called before entering the context manager."""
         return
 
+    async def _hook_after_entering_context_manager(self) -> None:
+        """Additional hook called after entering the context manager."""
+        return
+
     async def run(self) -> None:
         if not self._skip_validation:
             await self.validate()
@@ -57,6 +61,7 @@ class ContextualCLICommand(Generic[AsyncContextManagerType], ExternalCLICommand,
 
         await self._hook_before_entering_context_manager()
         async with self._context_manager_instance:
+            await self._hook_after_entering_context_manager()
             await self.fetch_data()
             if not self._skip_validation:
                 await self.validate_inside_context_manager()

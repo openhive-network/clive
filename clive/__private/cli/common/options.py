@@ -13,6 +13,7 @@ from clive.__private.cli.common.parsers import (
     voting_asset,
 )
 from clive.__private.cli.completion import is_tab_completion_active
+from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 from clive.__private.core.constants.node import (
     MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION,
     SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
@@ -33,15 +34,6 @@ def _get_default_profile_name() -> str | None:
     return None
 
 
-def _get_default_working_account_name() -> str | None:
-    if not is_tab_completion_active():
-        from clive.__private.core.profile_data import ProfileData, ProfileDataError
-
-        with contextlib.suppress(ProfileDataError):
-            return ProfileData.load(auto_create=False).working_account.name
-    return None
-
-
 def _get_default_beekeeper_remote() -> str | None:
     if not is_tab_completion_active():
         from clive.__private.core.beekeeper import Beekeeper
@@ -53,10 +45,6 @@ def _get_default_beekeeper_remote() -> str | None:
 
 def get_default_or_make_required(value: Any) -> Any:  # noqa: ANN401
     return ... if value is None else value
-
-
-def get_default_or_empty_list(value: Any) -> list[Any]:  # noqa: ANN401
-    return [] if value is None else [value]
 
 
 def modified_option(option: OptionInfo, **kwargs: Any) -> Any:  # noqa: ANN401
@@ -86,10 +74,12 @@ password_option = typer.Option(..., help="Password to unlock the wallet.", show_
 
 password_optional_option = modified_option(password_option, default=None)
 
+
+# we don't know if account_name_option is required until the profile is loaded
 account_name_option = typer.Option(
-    get_default_or_make_required(_get_default_working_account_name()),
-    help="The account to use. (defaults to the working account of the default profile)",
-    show_default=bool(_get_default_working_account_name()),
+    PERFORM_WORKING_ACCOUNT_LOAD,
+    help="The account to use. (default is working account of profile)",
+    show_default=False,
 )
 
 beekeeper_remote_option = typer.Option(
@@ -99,17 +89,17 @@ beekeeper_remote_option = typer.Option(
 )
 
 from_account_name_option = typer.Option(
-    get_default_or_make_required(_get_default_working_account_name()),
+    PERFORM_WORKING_ACCOUNT_LOAD,
     "--from",
-    help='The account to use as "from" argument. (defaults to the working account of the last used profile)',
-    show_default=bool(_get_default_working_account_name()),
+    help='The account to use as "from" argument. (default is working account of profile)',
+    show_default=False,
 )
 
 to_account_name_option = typer.Option(
-    get_default_or_make_required(_get_default_working_account_name()),
+    PERFORM_WORKING_ACCOUNT_LOAD,
     "--to",
-    help='The account to use as "to" argument. (defaults to the working account of the last used profile)',
-    show_default=bool(_get_default_working_account_name()),
+    help='The account to use as "to" argument. (default is working account of profile)',
+    show_default=False,
 )
 
 to_account_name_no_default_option = typer.Option(
