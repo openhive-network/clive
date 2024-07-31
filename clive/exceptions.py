@@ -132,7 +132,7 @@ class NodeAddressError(FormValidationError):
     """Base class for all node address exceptions."""
 
 
-class CannotActivateError(CliveError):
+class CannotUnlockError(CliveError):
     pass
 
 

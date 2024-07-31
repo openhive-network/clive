@@ -12,7 +12,7 @@ from clive.__private.ui.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.clive_screen import CliveScreen, OnlyInActiveModeError
+from clive.__private.ui.widgets.clive_screen import CliveScreen, OnlyInUnlockedModeError
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:
@@ -41,15 +41,15 @@ class Config(BaseScreen):
     def push_account_list_management_screen(self) -> None:
         self.app.push_screen(AccountListManagement())
 
-    @CliveScreen.try_again_after_activation
+    @CliveScreen.try_again_after_unlock
     @on(CliveButton.Pressed, "#manage-key-aliases")
     async def push_manage_key_aliases_screen(self) -> None:
         if not self._has_working_account():
             self.notify("Cannot manage key aliases without working account", severity="error")
             return
 
-        if not self.app_state.is_active:
-            raise OnlyInActiveModeError
+        if not self.app_state.is_unlocked:
+            raise OnlyInUnlockedModeError
 
         await self.app.push_screen(ManageKeyAliases())
 

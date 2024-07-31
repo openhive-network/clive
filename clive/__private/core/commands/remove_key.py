@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command_in_active import CommandInActive
+from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured
 from clive.__private.core.keys import PublicKey, PublicKeyAliased
 from clive.exceptions import CliveError
@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class RemoveKey(CommandInActive, CommandPasswordSecured):
+class RemoveKey(CommandInUnlocked, CommandPasswordSecured):
     beekeeper: Beekeeper
     wallet: str
     key_to_remove: PublicKey | PublicKeyAliased

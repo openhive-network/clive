@@ -181,11 +181,11 @@ class Header(TextualHeader, CliveWidget):
                 yield AlarmsSummary()
 
                 async def mode_callback(app_state: AppState) -> str:
-                    if app_state.is_active:
-                        self.add_class("-active")
-                        return "active"
-                    self.remove_class("-active")
-                    return "inactive"
+                    if app_state.is_unlocked:
+                        self.add_class("-unlocked")
+                        return "unlocked"
+                    self.remove_class("-unlocked")
+                    return "locked"
 
                 yield TitledLabel(
                     "Mode",

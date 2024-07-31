@@ -3,7 +3,7 @@ import errno
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
-from clive.__private.core.commands.activate import WalletDoesNotExistsError
+from clive.__private.core.commands.unlock import WalletDoesNotExistsError
 from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileDoesNotExistsError
 from clive.dev import is_in_dev_mode
 from clive.exceptions import CommunicationError

@@ -3,7 +3,7 @@ Header {
   border-bottom: inner $error;
 }
 
-Header.-active {
+Header.-unlocked {
   border-bottom: inner $success;
 }
 
@@ -54,7 +54,7 @@ Header #bar {
   height: 1;
 }
 
-Header.-active #mode-label #value {
+Header.-unlocked #mode-label #value {
   color: $success;
 }
 

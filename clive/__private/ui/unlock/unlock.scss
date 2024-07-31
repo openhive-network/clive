@@ -1,9 +1,9 @@
-Activate {
+Unlock {
   LabelizedInput {
     margin-bottom: 1;
   }
 
-  ActiveModeTimeContainer {
+  UnlockModeTimeContainer {
     margin: 1 0;
     height: auto;
   }
@@ -15,7 +15,7 @@ Activate {
       width: 1fr;
     }
 
-    #activate-button {
+    #unlock-button {
       margin-right: 1;
     }
   }

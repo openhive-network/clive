@@ -14,19 +14,19 @@ class AppState:
     """A class that holds information about the current state of an application."""
 
     world: World
-    _is_active: bool = False
+    _is_unlocked: bool = False
 
     @property
-    def is_active(self) -> bool:
-        return self._is_active
+    def is_unlocked(self) -> bool:
+        return self._is_unlocked
 
-    def activate(self) -> None:
-        self._is_active = True
-        logger.info("Mode switched to ACTIVE.")
+    def unlock(self) -> None:
+        self._is_unlocked = True
+        logger.info("Mode switched to UNLOCKED.")
 
-    def deactivate(self) -> None:
-        self._is_active = False
-        logger.info("Mode switched to INACTIVE.")
+    def lock(self) -> None:
+        self._is_unlocked = False
+        logger.info("Mode switched to LOCKED.")
 
     def __hash__(self) -> int:
         return id(self.world)

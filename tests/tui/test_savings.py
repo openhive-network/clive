@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 from textual.widgets import RadioSet
 
-from clive.__private.ui.dashboard.dashboard_active import DashboardActive
+from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.operation_summary.cancel_transfer_from_savings import CancelTransferFromSavings
 from clive.__private.ui.operations.operations import Operations
@@ -112,7 +112,7 @@ def prepare_expected_operation(
 
 
 async def go_to_savings(pilot: ClivePilot) -> None:
-    assert_is_screen_active(pilot, DashboardActive)
+    assert_is_screen_active(pilot, DashboardUnlocked)
     await press_and_wait_for_screen(pilot, "f2", Operations)
     await focus_next(pilot)
     await focus_next(pilot)
@@ -125,7 +125,7 @@ async def get_pending_transfers_from_savings_count(pilot: ClivePilot) -> int:
     pending_transfers = pilot.app.screen.query(PendingTransfer)
     tt.logger.debug(f"get_pending_transfers_from_savings_count: {len(pending_transfers)}")
     await press_and_wait_for_screen(pilot, "escape", Operations)
-    await press_and_wait_for_screen(pilot, "escape", DashboardActive)
+    await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
     return len(pending_transfers)
 
 
@@ -150,7 +150,7 @@ TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
 @pytest.mark.parametrize("other_account", [None, OTHER_RECEIVER])
 @pytest.mark.parametrize("operation_type", [TransferFromSavingsOperation, TransferToSavingsOperation])
 async def test_savings(  # noqa: PLR0913
-    prepared_tui_on_dashboard_active: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard_unlocked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
     operation_type: type[TransferFromSavingsOperation | TransferToSavingsOperation],
     other_account: str | None,  # None means using current profile account name
     asset: tt.Asset.HbdT | tt.Asset.HiveT,
@@ -160,13 +160,13 @@ async def test_savings(  # noqa: PLR0913
     """
     #110: I-II (create transfer to/from savings).
 
-    Clive is activated. Then:
+    Clive is unlocked. Then:
     1. The user an operation in HBD/HIVE with memo (if possible) to own account/another account and Fast broadcasts it.
     2. The user an operation in HBD/HIVE without memo (if possible) to own account/another account and finalizes
        transaction.
     3. The user an operation in HBD/HIVE to own account/another account, adds to the cart and then broadcasts it.
     """
-    node, _, pilot = prepared_tui_on_dashboard_active
+    node, _, pilot = prepared_tui_on_dashboard_unlocked
 
     # ARRANGE
     expected_operation = prepare_expected_operation(
@@ -184,7 +184,7 @@ async def test_savings(  # noqa: PLR0913
     await fill_savings_data(pilot, operation_type, other_account, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
-    await process_operation(pilot, operation_processing, activated=True)
+    await process_operation(pilot, operation_processing, unlocked=True)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
@@ -193,7 +193,7 @@ async def test_savings(  # noqa: PLR0913
 
     if operation_type is TransferFromSavingsOperation:
         if operation_processing == "FAST_BROADCAST":
-            await press_and_wait_for_screen(pilot, "escape", DashboardActive)
+            await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
         await assert_pending_transfers_from_savings_count(pilot, 1 + WORKING_ACCOUNT_DATA.from_savings_transfer_count)
         # TODO: check if pending transfer is as expected_operation
 
@@ -208,18 +208,18 @@ TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 @pytest.mark.parametrize("other_account", [None, OTHER_RECEIVER])
 @pytest.mark.parametrize("operation_type", [TransferFromSavingsOperation, TransferToSavingsOperation])
 async def test_savings_finalize_cart(
-    prepared_tui_on_dashboard_active: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard_unlocked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
     operation_type: type[TransferFromSavingsOperation | TransferToSavingsOperation],
     other_account: str | None,  # None means using current profile account name
 ) -> None:
     """
     #110: I-II (create transfer to/from savings).
 
-    Clive is activated. Then:
+    Clive is unlocked. Then:
     4. The user makes two operations to own account/another account, the first in HBD, the second in HIVE,
        adds them to cart and then broadcasts.
     """
-    node, _, pilot = prepared_tui_on_dashboard_active
+    node, _, pilot = prepared_tui_on_dashboard_unlocked
 
     # ARRANGE
     expected_operations = [
@@ -247,7 +247,7 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
         await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
-        await press_and_wait_for_screen(pilot, "escape", DashboardActive)
+        await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
@@ -260,7 +260,7 @@ async def test_savings_finalize_cart(
     assert_operations_placed_in_blockchain(node, transaction_id, *expected_operations)
 
     if operation_type is TransferFromSavingsOperation:
-        assert_is_screen_active(pilot, DashboardActive)
+        assert_is_screen_active(pilot, DashboardUnlocked)
         await assert_pending_transfers_from_savings_count(
             pilot, TRANSFERS_COUNT + WORKING_ACCOUNT_DATA.from_savings_transfer_count
         )
@@ -268,10 +268,10 @@ async def test_savings_finalize_cart(
 
 
 async def test_canceling_transfer_from_savings(
-    prepared_tui_on_dashboard_active: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard_unlocked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
 ) -> None:
     """#110: III (cancel transfer from savings)."""
-    node, wallet, pilot = prepared_tui_on_dashboard_active
+    node, wallet, pilot = prepared_tui_on_dashboard_unlocked
 
     # ARRANGE
     expected_operations = [
@@ -304,7 +304,7 @@ async def test_canceling_transfer_from_savings(
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
         await fast_broadcast(pilot)
-        await press_and_wait_for_screen(pilot, "escape", DashboardActive)
+        await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
 

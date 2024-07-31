@@ -11,11 +11,11 @@ if TYPE_CHECKING:
 
 
 @dataclass(kw_only=True)
-class Deactivate(Command):
+class Lock(Command):
     app_state: AppState
     beekeeper: Beekeeper
     wallet: str
 
     async def _execute(self) -> None:
         await self.beekeeper.api.lock(wallet_name=self.wallet)
-        self.app_state.deactivate()
+        self.app_state.lock()

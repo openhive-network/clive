@@ -13,7 +13,6 @@ from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.manual_reactive import ManualReactive
-from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -137,10 +136,10 @@ class World:
         return self._app_state
 
     def notify_wallet_closing(self) -> None:
-        self.app_state.deactivate()
+        self.app_state.lock()
 
 
-class TextualWorld(World, CliveWidget, ManualReactive):
+class TextualWorld(World, ManualReactive):
     profile_data: ProfileData = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
@@ -167,9 +166,9 @@ class TextualWorld(World, CliveWidget, ManualReactive):
         super().notify_wallet_closing()
 
         with contextlib.suppress(ScreenNotFoundError):
-            self.app.replace_screen("DashboardActive", "dashboard_inactive")
+            self.app.replace_screen("DashboardUnlocked", "dashboard_locked")
 
-        self.notify("Switched to the INACTIVE mode.", severity="warning", timeout=5)
+        self.app.notify("Switched to the LOCKED mode.", severity="warning", timeout=5)
         self.app.trigger_app_state_watchers()
 
 

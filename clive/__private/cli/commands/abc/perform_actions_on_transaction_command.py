@@ -60,7 +60,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
 
         if self.__is_beekeeper_required():
-            await self.world.commands.activate(password=self.password_ensure)
+            await self.world.commands.unlock(password=self.password_ensure)
 
         transaction = (
             await self.world.commands.perform_actions_on_transaction(

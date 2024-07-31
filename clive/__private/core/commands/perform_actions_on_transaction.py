@@ -12,7 +12,7 @@ from clive.__private.core.commands.unsign import UnSign
 from clive.models import Transaction
 
 if TYPE_CHECKING:
-    from clive.__private.core.commands.abc.command_in_active import AppStateProtocol
+    from clive.__private.core.commands.abc.command_in_unlocked import AppStateProtocol
 
 if TYPE_CHECKING:
     from pathlib import Path

@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Final, Literal
 
 from clive.__private.core.commands.abc.command import CommandError
-from clive.__private.core.commands.abc.command_in_active import CommandInActive
+from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import calculate_sig_digest
 from clive.models import Signature, Transaction
@@ -27,7 +27,7 @@ ALREADY_SIGNED_MODE_DEFAULT: Final[Literal["error"]] = "error"
 
 
 @dataclass(kw_only=True)
-class Sign(CommandInActive, CommandWithResult[Transaction]):
+class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
     beekeeper: Beekeeper
     transaction: Transaction
     key: PublicKey

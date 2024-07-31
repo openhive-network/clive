@@ -7,7 +7,7 @@ import typer
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
-from clive.__private.core.commands.activate import ActivateInvalidPasswordError, WalletDoesNotExistsError
+from clive.__private.core.commands.unlock import UnlockInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
     PrivateKey,
@@ -72,8 +72,8 @@ class AddKey(WorldBasedCommand):
         profile_data.keys.add_to_import(self.private_key_aliased)
 
         try:
-            await self.world.commands.activate(password=self.password)
-        except (ActivateInvalidPasswordError, WalletDoesNotExistsError):
+            await self.world.commands.unlock(password=self.password)
+        except (UnlockInvalidPasswordError, WalletDoesNotExistsError):
             profile_data.skip_saving()
             raise
 
@@ -118,7 +118,7 @@ class RemoveKey(WorldBasedCommand):
         self.world.profile_data.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
-        activate_wrapper = await self.world.commands.activate(password=self.password)
-        activate_wrapper.raise_if_error_occurred()
+        unlock_wrapper = await self.world.commands.unlock(password=self.password)
+        unlock_wrapper.raise_if_error_occurred()
         remove_wrapper = await self.world.commands.remove_key(password=self.password, key_to_remove=key)
         remove_wrapper.raise_if_error_occurred()

@@ -11,13 +11,14 @@ if TYPE_CHECKING:
 
 
 async def test_patched_notification_timeout(
-    prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
 ) -> None:
     # ARRANGE
     notification_message = "test notification"
-    _, _, pilot = prepared_tui_on_dashboard_inactive
+    _, _, pilot = prepared_tui_on_dashboard_locked
 
     # ACT
+
     pilot.app.notify(notification_message)
     await pilot.pause()  # wait for notification
 

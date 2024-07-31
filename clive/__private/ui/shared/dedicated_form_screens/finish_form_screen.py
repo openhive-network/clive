@@ -55,7 +55,7 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
         self.app.pop_screen_until(WelcomeFormScreen)
 
         # switch WelcomeFormScreen to the proper Dashboard screen
-        if self.app_state.is_active:
-            self.app.switch_screen("dashboard_active")
+        if self.app_state.is_unlocked:
+            self.app.switch_screen("dashboard_unlocked")
         else:
-            self.app.switch_screen("dashboard_inactive")
+            self.app.switch_screen("dashboard_locked")

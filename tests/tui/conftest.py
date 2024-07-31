@@ -13,8 +13,8 @@ from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive.__private.ui.app import Clive
-from clive.__private.ui.dashboard.dashboard_active import DashboardActive
-from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.__private.ui.dashboard.dashboard_locked import DashboardLocked
+from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 from clive_local_tools.tui.clive_quit import clive_quit
@@ -88,7 +88,7 @@ async def prepared_env(
 
     pilot: ClivePilot
     async with app.run_test() as pilot:
-        await wait_for_screen(pilot, DashboardInactive)
+        await wait_for_screen(pilot, DashboardLocked)
 
         yield node, wallet, pilot
 
@@ -96,14 +96,14 @@ async def prepared_env(
 
 
 @pytest.fixture()
-async def prepared_tui_on_dashboard_inactive(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
+async def prepared_tui_on_dashboard_locked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     return prepared_env
 
 
 @pytest.fixture()
-async def prepared_tui_on_dashboard_active(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
+async def prepared_tui_on_dashboard_unlocked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
     await pilot.pause()  # required, otherwise next call to self.app inside Commands will fail with NoActiveAppError
-    await pilot.app.world.commands.activate(password=WORKING_ACCOUNT_PASSWORD)
-    await wait_for_screen(pilot, DashboardActive)
+    await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
+    await wait_for_screen(pilot, DashboardUnlocked)
     return prepared_env

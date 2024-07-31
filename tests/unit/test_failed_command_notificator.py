@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 import pytest
 
 from clive.__private.core.commands.abc.command import Command, CommandError
-from clive.__private.core.commands.abc.command_in_active import CommandInActive, CommandRequiresActiveModeError
+from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked, CommandRequiresUnlockedModeError
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError
 from clive.__private.core.error_handlers.failed_command_notificator import FailedCommandNotificator
 
@@ -17,7 +17,7 @@ class MockCommand(Command):
 
 
 @dataclass(kw_only=True)
-class MockCommandInActive(CommandInActive):
+class MockCommandInUnlocked(CommandInUnlocked):
     app_state: None = field(init=False, default=None)  # type: ignore[assignment]
 
     async def _execute(self) -> None:
@@ -27,7 +27,9 @@ class MockCommandInActive(CommandInActive):
         return True
 
 
-@pytest.mark.parametrize("exception", [CommandError, CommandExecutionNotPossibleError, CommandRequiresActiveModeError])
+@pytest.mark.parametrize(
+    "exception", [CommandError, CommandExecutionNotPossibleError, CommandRequiresUnlockedModeError]
+)
 async def test_catching_correct_exception(exception: type[CommandError]) -> None:
     async with FailedCommandNotificator():
         raise exception(MockCommand())
@@ -41,9 +43,9 @@ async def test_catching_incorrect_exception(exception: type[Exception]) -> None:
 
 
 async def test_catch_only() -> None:
-    async with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
-        raise CommandRequiresActiveModeError(MockCommandInActive())
+    async with FailedCommandNotificator(catch_only=CommandRequiresUnlockedModeError):
+        raise CommandRequiresUnlockedModeError(MockCommandInUnlocked())
 
     with pytest.raises(CommandError):
-        async with FailedCommandNotificator(catch_only=CommandRequiresActiveModeError):
+        async with FailedCommandNotificator(catch_only=CommandRequiresUnlockedModeError):
             raise CommandError(MockCommand())

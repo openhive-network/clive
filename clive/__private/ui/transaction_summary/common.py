@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
+from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
@@ -156,7 +156,7 @@ class TransactionSummaryCommon(BaseScreen):
             things_to_mount.append(operation_item)
         await self.__scrollable_part.mount_all(things_to_mount)
 
-    @CliveScreen.try_again_after_activation
+    @CliveScreen.try_again_after_unlock
     @on(SelectFileToSaveTransaction.Saved)
     async def save_to_file(self, event: SelectFileToSaveTransaction.Saved) -> None:
         file_path = event.file_path
@@ -175,8 +175,8 @@ class TransactionSummaryCommon(BaseScreen):
                     force_save_format="bin" if save_as_binary else "json",
                 )
             ).result_or_raise
-        except CommandRequiresActiveModeError:
-            raise  # reraise so try_again_after_activation decorator can handle it
+        except CommandRequiresUnlockedModeError:
+            raise  # reraise so try_again_after_unlock decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
@@ -194,7 +194,7 @@ class TransactionSummaryCommon(BaseScreen):
     async def action_broadcast(self) -> None:
         await self.__broadcast()
 
-    @CliveScreen.try_again_after_activation
+    @CliveScreen.try_again_after_unlock
     async def __broadcast(self) -> None:
         transaction = self.transaction
 
@@ -206,8 +206,8 @@ class TransactionSummaryCommon(BaseScreen):
                     broadcast=True,
                 )
             ).raise_if_error_occurred()
-        except CommandRequiresActiveModeError:
-            raise  # reraise so try_again_after_activation decorator can handle it
+        except CommandRequiresUnlockedModeError:
+            raise  # reraise so try_again_after_unlock decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return

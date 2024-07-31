@@ -20,8 +20,8 @@ from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.ui.dashboard.dashboard_active import DashboardActive
-from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive
+from clive.__private.ui.dashboard.dashboard_locked import DashboardLocked
+from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
@@ -62,8 +62,8 @@ class Clive(App[int], ManualReactive):
 
     SCREENS = {
         "quit": Quit,
-        "dashboard_inactive": DashboardInactive,
-        "dashboard_active": DashboardActive,
+        "dashboard_locked": DashboardLocked,
+        "dashboard_unlocked": DashboardUnlocked,
     }
 
     header_expanded = var(default=False)
@@ -196,7 +196,7 @@ class Clive(App[int], ManualReactive):
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
         else:
-            self.push_screen(DashboardInactive())
+            self.push_screen(DashboardLocked())
 
     def replace_screen(
         self, old: str | type[Screen[ScreenResultType]], new: str | Screen[ScreenResultType]

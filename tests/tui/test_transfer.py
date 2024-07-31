@@ -13,7 +13,6 @@ from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAs
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
-from clive_local_tools.tui.activate import activate
 from clive_local_tools.tui.checkers import assert_is_clive_composed_input_focused, assert_is_screen_active
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
@@ -24,6 +23,7 @@ from clive_local_tools.tui.textual_helpers import (
     press_and_wait_for_screen,
     write_text,
 )
+from clive_local_tools.tui.unlock import unlock
 from clive_local_tools.tui.utils import get_mode, log_current_view
 from schemas.operations import TransferOperation
 
@@ -68,30 +68,30 @@ TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
 ]
 
 
-@pytest.mark.parametrize("activated", ["True", "False"])
+@pytest.mark.parametrize("unlocked", ["True", "False"])
 @pytest.mark.parametrize("asset", [tt.Asset.Hive(1.03), tt.Asset.Hbd(2)])
 @pytest.mark.parametrize(("memo", "operation_processing"), TESTDATA)
 async def test_transfers(
-    prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
     asset: tt.Asset.HbdT | tt.Asset.HiveT,
     memo: str | None,
     operation_processing: OperationProcessing,
     *,
-    activated: bool,
+    unlocked: bool,
 ) -> None:
     """
     #103: I.1..3, II.1..3.
 
-    Clive in activated/deactivated modes. Then:
+    Clive in unlocked/locked modes. Then:
     1. The user makes a transfer in HBD/HIVE with memo and Fast broadcasts it.
     2. The user makes a transfer in HBD/HIVE without memo and finalizes transaction.
     3. The user makes a transfer in HBD/HIVE, adds to the cart and then broadcasts it.
     """
-    node, _, pilot = prepared_tui_on_dashboard_inactive
+    node, _, pilot = prepared_tui_on_dashboard_locked
 
     # ARRANGE
     log_current_view(pilot.app, nodes=True)
-    assert get_mode(pilot.app) == "inactive", "Expected 'inactive' mode!"
+    assert get_mode(pilot.app) == "locked", "Expected 'locked' mode!"
 
     expected_operation = TransferOperation(
         from_=SENDER,
@@ -103,8 +103,8 @@ async def test_transfers(
     # TODO: save balances before transfer
 
     # ACT
-    if activated:
-        await activate(pilot, PASS)
+    if unlocked:
+        await unlock(pilot, PASS)
 
     ### Create transfer
     await press_and_wait_for_screen(pilot, "f2", Operations)
@@ -115,7 +115,7 @@ async def test_transfers(
     await fill_transfer_data(pilot, RECEIVER, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
-    await process_operation(pilot, operation_processing, activated=activated)
+    await process_operation(pilot, operation_processing, unlocked=unlocked)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
@@ -132,21 +132,21 @@ TRANSFERS_DATA: Final[list[tuple[tt.Asset.HbdT | tt.Asset.HiveT, str]]] = [
 TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 
 
-@pytest.mark.parametrize("activated", [True, False])
+@pytest.mark.parametrize("unlocked", [True, False])
 async def test_transfers_finalize_cart(
-    prepared_tui_on_dashboard_inactive: tuple[tt.RawNode, tt.Wallet, ClivePilot], *, activated: bool
+    prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot], *, unlocked: bool
 ) -> None:
     """
     #103: I.4, II.4.
 
-    Clive in activated/deactivated modes. Then:
+    Clive in unlocked/locked modes. Then:
     4. The user makes two transfers, the first in HBD, the second in HIVE, adds them to cart and then broadcasts.
     """
-    node, _, pilot = prepared_tui_on_dashboard_inactive
+    node, _, pilot = prepared_tui_on_dashboard_locked
 
     # ARRANGE
     log_current_view(pilot.app, nodes=True)
-    assert get_mode(pilot.app) == "inactive", "Expected 'inactive' mode!"
+    assert get_mode(pilot.app) == "locked", "Expected 'locked' mode!"
 
     expected_operations = [
         TransferOperation(from_=SENDER, to=RECEIVER, amount=TRANSFERS_DATA[i][0], memo=TRANSFERS_DATA[i][1])
@@ -156,8 +156,8 @@ async def test_transfers_finalize_cart(
     # TODO: save balances before transfer
 
     # ACT
-    if activated:
-        await activate(pilot, PASS)
+    if unlocked:
+        await unlock(pilot, PASS)
 
     ### Create 2 transfers
     # Choose transfer operation
@@ -174,7 +174,7 @@ async def test_transfers_finalize_cart(
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to cart
-    await finalize_transaction(pilot, activated=activated, password=PASS)
+    await finalize_transaction(pilot, unlocked=unlocked, password=PASS)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 

@@ -7,7 +7,7 @@ import pytest
 from clive.__private.ui.app import Clive
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.create_profile.create_profile import CreateProfileForm
-from clive.__private.ui.dashboard.dashboard_active import DashboardActive
+from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
 from clive.__private.ui.manage_key_aliases.manage_key_aliases import KeyAlias, ManageKeyAliases
 from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAliasForm
 from clive.__private.ui.onboarding.onboarding import OnboardingFinishScreen, OnboardingWelcomeScreen
@@ -106,11 +106,11 @@ async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, 
 
 async def onboarding_finish(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "ctrl+n", OnboardingFinishScreen)
-    await press_and_wait_for_screen(pilot, "enter", DashboardActive)
+    await press_and_wait_for_screen(pilot, "enter", DashboardUnlocked)
 
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
-    assert_is_screen_active(pilot, DashboardActive)
+    assert_is_screen_active(pilot, DashboardUnlocked)
     await press_and_wait_for_screen(pilot, "f9", Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)

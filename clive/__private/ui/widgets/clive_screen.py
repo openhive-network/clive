@@ -9,7 +9,7 @@ from textual.message import Message
 from textual.screen import Screen, ScreenResultType
 
 from clive.__private.core.clive_import import get_clive
-from clive.__private.core.commands.abc.command_in_active import CommandRequiresActiveModeError
+from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.logger import logger
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.exceptions import CliveError
@@ -25,8 +25,8 @@ if TYPE_CHECKING:
 P = ParamSpec("P")
 
 
-class OnlyInActiveModeError(CliveError):
-    """Should be raised when some action is only available in active mode."""
+class OnlyInUnlockedModeError(CliveError):
+    """Should be raised when some action is only available in unlocked mode."""
 
 
 class CliveScreen(Screen[ScreenResultType], CliveWidget):
@@ -64,25 +64,25 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         return wrapper
 
     @staticmethod
-    def try_again_after_activation(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
+    def try_again_after_unlock(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
         @wraps(func)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
             app_ = get_clive().app_instance()
 
             try:
                 await func(*args, **kwargs)
-            except (CommandRequiresActiveModeError, OnlyInActiveModeError):
-                from clive.__private.ui.activate.activate import Activate
+            except (CommandRequiresUnlockedModeError, OnlyInUnlockedModeError):
+                from clive.__private.ui.unlock.unlock import Unlock
 
-                async def _on_activation_result(*, activated: bool) -> None:
-                    if not activated:
-                        app_.notify("Aborted. Active mode was required for this action.", severity="warning")
+                async def _on_unlock_result(*, unlocked: bool) -> None:
+                    if not unlocked:
+                        app_.notify("Aborted. UNLOCKED mode was required for this action.", severity="warning")
                         return
 
                     await func(*args, **kwargs)
 
-                app_.notify("This action requires active mode. Please activate...")
-                await app_.push_screen(Activate(activation_result_callback=_on_activation_result))
+                app_.notify("This action requires Clive to be in UNLOCKED mode. Please unlock...")
+                await app_.push_screen(Unlock(unlock_result_callback=_on_unlock_result))
 
         return wrapper
 

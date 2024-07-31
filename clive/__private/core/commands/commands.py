@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, Generic, Iterable, Literal, TypeVar, overload
 
 from clive.__private.core.commands.abc.command_with_result import CommandResultT, CommandWithResult
-from clive.__private.core.commands.activate import Activate
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
@@ -27,7 +26,6 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
-from clive.__private.core.commands.deactivate import Deactivate
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_accounts import FindAccounts
@@ -37,12 +35,14 @@ from clive.__private.core.commands.find_witness import FindWitness
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.load_transaction import LoadTransaction
+from clive.__private.core.commands.lock import Lock
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
+from clive.__private.core.commands.unlock import Unlock
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.commands.update_transaction_metadata import (
     UpdateTransactionMetadata,
@@ -53,7 +53,7 @@ from clive.__private.core.error_handlers.abc.error_handler_context_manager impor
 from clive.__private.core.error_handlers.async_closed import AsyncClosedErrorHandler
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.clive_dom_node import CliveDOMNode
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -108,11 +108,9 @@ class Commands(Generic[WorldT_co]):
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
         )
 
-    async def activate(
-        self, *, password: str, time: timedelta | None = None, permanent: bool = False
-    ) -> CommandWrapper:
+    async def unlock(self, *, password: str, time: timedelta | None = None, permanent: bool = False) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
-            Activate(
+            Unlock(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
                 wallet=self._world.profile_data.name,
@@ -122,9 +120,9 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
-    async def deactivate(self) -> CommandWrapper:
+    async def lock(self) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
-            Deactivate(
+            Lock(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
                 wallet=self._world.profile_data.name,
@@ -471,21 +469,19 @@ class Commands(Generic[WorldT_co]):
         return CommandWrapper(command=command, error=error)
 
 
-class TextualCommands(Commands["TextualWorld"], CliveWidget):
+class TextualCommands(Commands["TextualWorld"], CliveDOMNode):
     def __init__(self, world: TextualWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
-    async def activate(
-        self, *, password: str, time: timedelta | None = None, permanent: bool = False
-    ) -> CommandWrapper:
-        wrapper = await super().activate(password=password, time=time, permanent=permanent)
+    async def unlock(self, *, password: str, time: timedelta | None = None, permanent: bool = False) -> CommandWrapper:
+        wrapper = await super().unlock(password=password, time=time, permanent=permanent)
         if wrapper.success:
-            await self.app.replace_screen("DashboardInactive", "dashboard_active")
+            await self.app.replace_screen("DashboardLocked", "dashboard_unlocked")
             self.app.trigger_app_state_watchers()
         return wrapper
 
-    async def deactivate(self) -> CommandWrapper:
-        wrapper = await super().deactivate()
-        await self.app.replace_screen("DashboardActive", "dashboard_inactive")
+    async def lock(self) -> CommandWrapper:
+        wrapper = await super().lock()
+        await self.app.replace_screen("DashboardUnlocked", "dashboard_locked")
         self.app.trigger_app_state_watchers()
         return wrapper

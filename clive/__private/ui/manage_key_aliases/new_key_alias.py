@@ -154,7 +154,7 @@ class NewKeyAlias(NewKeyAliasBase):
     def context(self) -> ProfileData:
         return self.profile_data
 
-    @CliveScreen.try_again_after_activation
+    @CliveScreen.try_again_after_unlock
     @on(NewKeyAliasBase.Saved)
     async def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
         self.context.keys.set_to_import([event.private_key])
