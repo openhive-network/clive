@@ -8,7 +8,7 @@ from textual.widgets import Static
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import humanize_operation_name, humanize_percent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.models import Asset
 

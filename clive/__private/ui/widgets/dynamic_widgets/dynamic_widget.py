@@ -1,18 +1,18 @@
 from __future__ import annotations
 
+from abc import abstractmethod
 from inspect import isawaitable
-from typing import TYPE_CHECKING, Any, Awaitable, Callable, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generic, TypeVar, cast, overload
 
-from textual.widgets import Label
+from textual.widget import Widget
 
+from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.callback import count_parameters
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
-    from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable
-
 
 T = TypeVar("T")
 
@@ -24,22 +24,20 @@ WatchLikeCallbackType = (
     WatchLikeCallbackBothValuesType[T] | WatchLikeCallbackNewValueType[T] | WatchLikeCallbackNoArgsType[T]
 )
 
-DynamicLabelCallbackType = WatchLikeCallbackType[str]
-DynamicLabelFirstTryCallbackType = WatchLikeCallbackType[bool]
+DynamicWidgetCallbackType = WatchLikeCallbackType[Any]
+DynamicWidgetFirstTryCallbackType = WatchLikeCallbackType[bool]
 
 
-class DynamicLabel(CliveWidget):
-    """A label that can be updated dynamically when a reactive variable changes."""
+WidgetT = TypeVar("WidgetT", bound=Widget)
+
+
+class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT]):
+    """A widget that can be updated dynamically when a reactive variable changes."""
 
     DEFAULT_CSS = """
-    DynamicLabel {
+    DynamicWidget {
         height: auto;
         width: auto;
-    }
-
-    DynamicLabel LoadingIndicator {
-        min-height: 1;
-        min-width: 5;
     }
     """
 
@@ -47,29 +45,22 @@ class DynamicLabel(CliveWidget):
         self,
         obj_to_watch: Reactable,
         attribute_name: str,
-        callback: DynamicLabelCallbackType,
+        callback: DynamicWidgetCallbackType,
         *,
-        first_try_callback: DynamicLabelFirstTryCallbackType = lambda: True,
-        prefix: str = "",
+        first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
-        shrink: bool = False,
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:
         super().__init__(id=id_, classes=classes)
 
-        self.__label = Label("loading...", shrink=shrink)
+        self._widget = self.create_widget()
 
         self._init = init
         self.__obj_to_watch = obj_to_watch
         self.__attribute_name = attribute_name
         self.__callback = callback
         self._first_try_callback = first_try_callback
-        self.__prefix = prefix
-
-    @property
-    def renderable(self) -> RenderableType:
-        return self.__label.renderable
 
     def on_mount(self) -> None:
         def delegate_work(old_value: Any, value: Any) -> None:  # noqa: ANN401
@@ -78,7 +69,7 @@ class DynamicLabel(CliveWidget):
         self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work, self._init)
 
     def compose(self) -> ComposeResult:
-        yield self.__label
+        yield self._widget
 
     async def attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
         callback = self.__callback
@@ -90,28 +81,28 @@ class DynamicLabel(CliveWidget):
         result = self._call_with_arbitrary_args(callback, old_value, value)
         if isawaitable(result):
             result = await result
-        if result != self.__label.renderable:
-            self.__label.update(f"{self.__prefix}{result}")
+
+        self.update_widget_state(result)
 
     @overload
     def _call_with_arbitrary_args(
         self,
-        callback: DynamicLabelCallbackType,
+        callback: DynamicWidgetCallbackType,
         old_value: Any,  # noqa: ANN401
         value: Any,  # noqa: ANN401
-    ) -> Awaitable[str] | str: ...
+    ) -> Awaitable[Any] | Any: ...  # noqa: ANN401
 
     @overload
     def _call_with_arbitrary_args(
         self,
-        callback: DynamicLabelFirstTryCallbackType,
+        callback: DynamicWidgetFirstTryCallbackType,
         old_value: Any,  # noqa: ANN401
         value: Any,  # noqa: ANN401
     ) -> Awaitable[bool] | bool: ...
 
     def _call_with_arbitrary_args(
         self,
-        callback: DynamicLabelCallbackType | DynamicLabelFirstTryCallbackType,
+        callback: DynamicWidgetCallbackType | DynamicWidgetFirstTryCallbackType,
         old_value: Any,
         value: Any,
     ) -> Awaitable[str] | str | Awaitable[bool] | bool:
@@ -123,3 +114,11 @@ class DynamicLabel(CliveWidget):
             return cast(WatchLikeCallbackNewValueType[Any], callback)(value)
 
         return cast(WatchLikeCallbackNoArgsType[Any], callback)()
+
+    @abstractmethod
+    def update_widget_state(self, result: Any) -> None:  # noqa: ANN401
+        pass
+
+    @abstractmethod
+    def create_widget(self) -> WidgetT:
+        pass

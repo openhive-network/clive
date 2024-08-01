@@ -4,7 +4,7 @@ from abc import abstractmethod
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:
     from clive.__private.ui.data_providers.abc.data_provider import DataProvider

@@ -29,7 +29,7 @@ from clive.__private.ui.widgets.clive_data_table import CliveDataTable, CliveDat
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
