@@ -126,6 +126,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 last_refresh=utc_now(),
                 last_history_entry=info.last_history_entry,
                 last_account_update=info.core.last_account_update,
+                pending_claimed_accounts=info.core.pending_claimed_accounts,
                 recovery_account=info.core.recovery_account,
                 governance_vote_expiration_ts=info.core.governance_vote_expiration_ts,
                 vote_manabar=self.__update_manabar(

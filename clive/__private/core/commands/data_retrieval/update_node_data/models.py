@@ -47,6 +47,7 @@ class NodeData:
     last_refresh: datetime
     last_history_entry: datetime
     last_account_update: datetime
+    pending_claimed_accounts: int
     recovery_account: str
     governance_vote_expiration_ts: datetime
     vote_manabar: Manabar
