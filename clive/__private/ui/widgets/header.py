@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
 
 
-class HeaderIcon(TextualHeaderIcon):
+class HeaderIcon(TextualHeaderIcon, CliveWidget):
     def __init__(self) -> None:
         super().__init__(id="icon")
 
@@ -36,6 +36,10 @@ class HeaderIcon(TextualHeaderIcon):
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
+
+    def on_click(self, event: events.Click) -> None:  # type: ignore[override]
+        event.prevent_default()
+        self.app.header_expanded = not self.app.header_expanded
 
 
 class AlarmsSummary(Container, CliveWidget):
@@ -76,7 +80,19 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         self.last_update_trigger = not self.last_update_trigger
 
 
-class Header(TextualHeader, CliveWidget):
+class CliveHeader(TextualHeader):
+    """
+    Header that not expand on click.
+
+    Default behavior of the textual header is to expand on click. We do not want behavior like that, so we had to
+    override the `_on_click` method. In the method we just toggle class again, so in the end the header will not expand.
+    """
+
+    def _on_click(self) -> None:  # type: ignore[override]
+        self.toggle_class("-tall")
+
+
+class Header(CliveHeader, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self) -> None:
@@ -151,10 +167,6 @@ class Header(TextualHeader, CliveWidget):
                 id_="node-address-label",
             )
             yield self.__node_version
-
-    def on_click(self, event: events.Click) -> None:
-        event.prevent_default()
-        self.app.header_expanded = not self.app.header_expanded
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.add_class("-tall") if expanded else self.remove_class("-tall")
