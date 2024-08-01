@@ -1,8 +1,8 @@
-Header {
+CliveHeader {
   box-sizing: content-box;
   border-bottom: inner $error-darken-1;
 
-  #icon {
+  HeaderIcon {
     content-align: center middle;
     width: auto;
   }
@@ -58,10 +58,10 @@ Header {
   }
 }
 
-Header.-unlocked {
+CliveHeader.-unlocked {
   border-bottom: inner $success;
 }
 
-Header.-unlocked #mode-display {
+CliveHeader.-unlocked #mode-display {
   background: $success-darken-3;
 }
