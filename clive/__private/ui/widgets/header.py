@@ -14,7 +14,7 @@ from clive.__private.core.formatters.humanize import humanize_natural_time
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
 from clive.exceptions import CommunicationError
 

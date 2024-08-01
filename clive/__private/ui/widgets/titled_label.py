@@ -6,16 +6,19 @@ from textual.widgets import Label
 
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import (
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import (
     DynamicLabel,
-    DynamicLabelCallbackType,
-    DynamicLabelFirstTryCallbackType,
 )
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
     from textual.app import ComposeResult
     from textual.reactive import Reactable
+
+    from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
+        DynamicWidgetCallbackType,
+        DynamicWidgetFirstTryCallbackType,
+    )
 
 
 class TitledLabel(CliveWidget):
@@ -35,8 +38,8 @@ class TitledLabel(CliveWidget):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
-        callback: DynamicLabelCallbackType | None = None,
-        first_try_callback: DynamicLabelFirstTryCallbackType = lambda: True,
+        callback: DynamicWidgetCallbackType | None = None,
+        first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
         id_: str | None = None,
     ) -> None:

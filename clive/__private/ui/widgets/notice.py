@@ -9,7 +9,10 @@ from clive.__private.ui.widgets.titled_label import TitledLabel
 if TYPE_CHECKING:
     from textual.reactive import Reactable
 
-    from clive.__private.ui.widgets.dynamic_label import DynamicLabelCallbackType, DynamicLabelFirstTryCallbackType
+    from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
+        DynamicWidgetCallbackType,
+        DynamicWidgetFirstTryCallbackType,
+    )
 
 
 NoticeVariant = Literal["default", "grey"]
@@ -40,8 +43,8 @@ class Notice(TitledLabel):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
-        callback: DynamicLabelCallbackType | None = None,
-        first_try_callback: DynamicLabelFirstTryCallbackType = lambda: True,
+        callback: DynamicWidgetCallbackType | None = None,
+        first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
         variant: NoticeVariant = "default",
     ) -> None:
