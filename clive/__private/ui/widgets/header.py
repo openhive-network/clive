@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Container, Horizontal
+from textual.containers import Center, Container, Horizontal
 from textual.events import Click
+from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Header as TextualHeader
 from textual.widgets import Static
@@ -15,9 +16,11 @@ from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import DynamicOneLineButton
 from clive.__private.ui.widgets.titled_label import TitledLabel
 from clive.exceptions import CommunicationError
 
@@ -136,6 +139,54 @@ class WorkingAccountIcon(DynamicOneLineButton):
         return isinstance(self.app.screen, DashboardBase)
 
 
+class ModeIcon(DynamicOneLineButton):
+    class WalletLocked(Message):
+        """Posted when the wallet is locked."""
+
+    class WalletUnlocked(Message):
+        """Posted when the wallet is unlocked."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            obj_to_watch=self.world,
+            attribute_name="app_state",
+            callback=self.mode_callback,
+            id_="mode-icon",
+        )
+        if self.app_state.is_unlocked:
+            self.tooltip = "Lock wallet"
+        else:
+            self.tooltip = "Unlock wallet"
+
+    @property
+    def mode(self) -> str:
+        return str(self._widget.label).lower()
+
+    async def mode_callback(self, app_state: AppState) -> str:
+        if app_state.is_unlocked:
+            self.post_message(self.WalletUnlocked())
+            self._widget.variant = "success"
+            return "UNLOCKED"
+        self.post_message(self.WalletLocked())
+        self._widget.variant = "error"
+        return "LOCKED"
+
+    @on(OneLineButton.Pressed)
+    async def change_wallet_state(self) -> None:
+        from clive.__private.ui.unlock.unlock import Unlock
+
+        if isinstance(self.app.screen, Unlock):
+            return
+
+        if self.mode == "unlocked":
+            await self.commands.lock()
+            self.tooltip = "Unlock wallet"
+            return
+
+        self.tooltip = "Lock wallet"
+        await self.app.push_screen(Unlock())
+
+
 class CliveHeader(TextualHeader):
     """
     Header that not expand on click.
@@ -193,20 +244,8 @@ class Header(CliveHeader, CliveWidget):
                 yield Static("/", id="separator")
                 yield WorkingAccountIcon()
                 yield AlarmsSummary()
-
-                async def mode_callback(app_state: AppState) -> str:
-                    if app_state.is_unlocked:
-                        self.add_class("-unlocked")
-                        return "unlocked"
-                    self.remove_class("-unlocked")
-                    return "locked"
-
-                yield DynamicLabel(
-                    obj_to_watch=self.world,
-                    attribute_name="app_state",
-                    callback=mode_callback,
-                    id_="mode-label",
-                )
+                with Center():
+                    yield ModeIcon()
 
         with Horizontal(id="expandable"):
             yield DynamicPropertiesClock()
@@ -218,6 +257,14 @@ class Header(CliveHeader, CliveWidget):
                 id_="node-address-label",
             )
             yield self.__node_version
+
+    @on(ModeIcon.WalletUnlocked)
+    def change_state_to_unlocked(self) -> None:
+        self.add_class("-unlocked")
+
+    @on(ModeIcon.WalletLocked)
+    def change_state_to_locked(self) -> None:
+        self.remove_class("-unlocked")
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.add_class("-tall") if expanded else self.remove_class("-tall")
