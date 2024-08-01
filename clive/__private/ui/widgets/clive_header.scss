@@ -33,12 +33,13 @@ CliveHeader {
     width: 15;
   }
 
-  #mode-display {
-    text-style: bold;
-    margin-left: 25;
-    background: $error-lighten-3;
+  ModeIcon {
     padding: 0 1 0 1;
-    color: $text;
+  }
+
+  Center {
+    width: 2fr;
+    height: auto;
   }
 
   DynamicPropertiesClock {
@@ -67,8 +68,4 @@ CliveHeader {
 
 CliveHeader.-unlocked {
   border-bottom: inner $success;
-}
-
-CliveHeader.-unlocked #mode-display {
-  background: $success-darken-3;
 }
