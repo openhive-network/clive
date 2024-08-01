@@ -16,7 +16,7 @@ from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:

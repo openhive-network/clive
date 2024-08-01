@@ -12,7 +12,7 @@ from clive.__private.core.formatters.humanize import (
 )
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.clive_widget import CliveWidget
-from clive.__private.ui.widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
