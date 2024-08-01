@@ -3,13 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
-from textual.widgets import Header as TextualHeader
-from textual.widgets import Static
+from textual.widgets import Header, Static
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
-from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -27,15 +25,25 @@ if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
 
 
-class HeaderIcon(TextualHeaderIcon):
+class HeaderIcon(TextualHeaderIcon, CliveWidget):
+    DEFAULT_CSS = """
+    HeaderIcon:hover {
+        background: rgba(0, 0, 0 , 0.2);
+    }
+    """
+
     def __init__(self) -> None:
-        super().__init__(id="icon")
+        super().__init__()
+        self.tooltip = "Toggle header details"
 
     def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
+
+    def on_click(self) -> None:  # type: ignore[override]
+        self.app.header_expanded = not self.app.header_expanded
 
 
 class BlockDisplay(Horizontal, CliveWidget):
@@ -57,7 +65,7 @@ class BlockDisplay(Horizontal, CliveWidget):
         return f"{block_num} ({block_time} UTC)"
 
 
-class Header(TextualHeader, CliveWidget):
+class CliveHeader(Header, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     def __init__(self) -> None:
@@ -133,12 +141,17 @@ class Header(TextualHeader, CliveWidget):
             )
             yield self.__node_version
 
-    def on_click(self, event: events.Click) -> None:
-        event.prevent_default()
-        self.app.header_expanded = not self.app.header_expanded
-
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.add_class("-tall") if expanded else self.remove_class("-tall")
+
+    def _on_click(self, event: events.Click) -> None:  # type: ignore[override]
+        """
+        Override this method to prevent expanding header on click.
+
+        Default behavior of the textual header is to expand on click.
+        We do not want behavior like that, so we had to override the `_on_click` method.
+        """
+        event.prevent_default()
 
     @staticmethod
     def __get_node_address(node: Node) -> str:
