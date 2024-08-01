@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal, cast
 
 from textual import on
-from textual.containers import Horizontal
+from textual.containers import Center, Horizontal
+from textual.message import Message
 from textual.widgets import Header, Static
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
@@ -29,6 +30,8 @@ if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
     from clive.__private.core.profile import Profile
+
+CliveLockStatus = Literal["unlocked", "locked"]
 
 
 class HeaderIcon(TextualHeaderIcon, CliveWidget):
@@ -124,6 +127,57 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
         self.app.push_screen(AccountListManagement())
 
+class LockStatus(DynamicOneLineButtonUnfocusable):
+    class WalletLocked(Message):
+        """Posted when the wallet is locked."""
+
+    class WalletUnlocked(Message):
+        """Posted when the wallet is unlocked."""
+
+    def __init__(self) -> None:
+        super().__init__(
+            obj_to_watch=self.world,
+            attribute_name="app_state",
+            callback=self.mode_callback,
+            id_="status-icon",
+        )
+
+    @property
+    def status(self) -> CliveLockStatus:
+        return cast(CliveLockStatus, str(self._widget.label).lower())
+
+    def mode_callback(self, app_state: AppState) -> str:
+        if app_state.is_unlocked:
+            self._wallet_to_unlocked_changed()
+            return "UNLOCKED"
+
+        self._wallet_to_locked_changed()
+        return "LOCKED"
+
+    @on(OneLineButton.Pressed)
+    async def change_wallet_status(self) -> None:
+        from clive.__private.ui.unlock.unlock import Unlock
+
+        if isinstance(self.app.screen, Unlock):
+            return
+
+        if self.status == "unlocked":
+            await self.commands.lock()
+            return
+
+        await self.app.push_screen(Unlock())
+
+    def _wallet_to_locked_changed(self) -> None:
+        self.post_message(self.WalletLocked())
+        self._widget.variant = "error"
+        self.tooltip = "Unlock wallet"
+
+    def _wallet_to_unlocked_changed(self) -> None:
+        self.post_message(self.WalletUnlocked())
+        self._widget.variant = "success"
+        self.tooltip = "Lock wallet"
+
+
 class CliveHeader(Header, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
@@ -169,20 +223,8 @@ class CliveHeader(Header, CliveWidget):
                 yield Static("/", id="separator")
                 yield WorkingAccountButton()
                 yield AlarmDisplay()
-
-                async def mode_callback(app_state: AppState) -> str:
-                    if app_state.is_unlocked:
-                        self.add_class("-unlocked")
-                        return "unlocked"
-                    self.remove_class("-unlocked")
-                    return "locked"
-
-                yield DynamicLabel(
-                    obj_to_watch=self.world,
-                    attribute_name="app_state",
-                    callback=mode_callback,
-                    id_="mode-label",
-                )
+                with Center():
+                    yield LockStatus()
 
         with Horizontal(id="expandable"):
             yield BlockDisplay()
@@ -194,6 +236,14 @@ class CliveHeader(Header, CliveWidget):
                 id_="node-address-label",
             )
             yield self.__node_version
+
+    @on(LockStatus.WalletUnlocked)
+    def change_state_to_unlocked(self) -> None:
+        self.add_class("-unlocked")
+
+    @on(LockStatus.WalletLocked)
+    def change_state_to_locked(self) -> None:
+        self.remove_class("-unlocked")
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.add_class("-tall") if expanded else self.remove_class("-tall")

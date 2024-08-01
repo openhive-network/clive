@@ -5,20 +5,20 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 from textual.css.query import NoMatches
 
-from clive.__private.ui.widgets.clive_header import DynamicLabel
+from clive.__private.ui.widgets.clive_header import CliveLockStatus, LockStatus
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:
     from clive_local_tools.tui.types import CliveApp
 
 
-def get_mode(app: CliveApp) -> str:
+def get_status(app: CliveApp) -> CliveLockStatus:
     """Do not call while onboarding process."""
     try:
-        widget = app.screen.query_one("#mode-display", DynamicLabel)
+        widget = app.screen.query_one("#status-icon", LockStatus)
     except NoMatches as error:
-        raise AssertionError("Mode couldn't be found. It is not available in the onboarding process.") from error
-    return str(widget.renderable).strip()
+        raise AssertionError("Status couldn't be found. It is not available in the onboarding process.") from error
+    return widget.status
 
 
 def log_current_view(app: CliveApp, *, nodes: bool = False, source: str | None = None) -> None:

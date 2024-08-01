@@ -24,7 +24,7 @@ from clive_local_tools.tui.textual_helpers import (
     write_text,
 )
 from clive_local_tools.tui.unlock import unlock
-from clive_local_tools.tui.utils import get_mode, log_current_view
+from clive_local_tools.tui.utils import get_status, log_current_view
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
@@ -91,7 +91,7 @@ async def test_transfers(
 
     # ARRANGE
     log_current_view(pilot.app, nodes=True)
-    assert get_mode(pilot.app) == "locked", "Expected 'locked' mode!"
+    assert get_status(pilot.app) == "locked", "Expected 'locked' status!"
 
     expected_operation = TransferOperation(
         from_=SENDER,
@@ -146,7 +146,7 @@ async def test_transfers_finalize_cart(
 
     # ARRANGE
     log_current_view(pilot.app, nodes=True)
-    assert get_mode(pilot.app) == "locked", "Expected 'locked' mode!"
+    assert get_status(pilot.app) == "locked", "Expected 'locked' status!"
 
     expected_operations = [
         TransferOperation(from_=SENDER, to=RECEIVER, amount=TRANSFERS_DATA[i][0], memo=TRANSFERS_DATA[i][1])

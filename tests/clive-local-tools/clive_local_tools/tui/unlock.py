@@ -8,7 +8,7 @@ from clive.__private.ui.unlock.unlock import Unlock
 
 from .checkers import assert_is_screen_active
 from .textual_helpers import press_and_wait_for_screen, press_binding, write_text
-from .utils import get_mode, log_current_view
+from .utils import get_status, log_current_view
 
 if TYPE_CHECKING:
     from textual.screen import Screen
@@ -26,7 +26,7 @@ async def unlock_body(pilot: ClivePilot, password: str, *, expected_screen: type
     else:
         await press_binding(pilot, "f2", unlock_binding_desc)
     log_current_view(pilot.app, nodes=True)
-    assert get_mode(pilot.app) == "unlocked", "Expected 'unlocked' mode!"
+    assert get_status(pilot.app) == "unlocked", "Expected 'unlocked' status!"
 
 
 async def unlock(pilot: ClivePilot, password: str) -> None:
