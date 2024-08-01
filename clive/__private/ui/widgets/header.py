@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.containers import Container, Horizontal
+from textual.events import Click
 from textual.reactive import var
 from textual.widgets import Header as TextualHeader
 from textual.widgets import Static
@@ -13,6 +15,7 @@ from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
+from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.titled_label import TitledLabel
@@ -80,6 +83,59 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
         self.last_update_trigger = not self.last_update_trigger
 
 
+class WorkingAccountIcon(DynamicOneLineButton):
+    def __init__(self) -> None:
+        super().__init__(
+            obj_to_watch=self.world,
+            attribute_name="profile_data",
+            callback=self.working_account_callback,
+            classes="success-transparent-button",
+        )
+        self.tooltip = "Modify working account"
+
+    @staticmethod
+    async def working_account_callback(profile_data: ProfileData) -> str:
+        if not profile_data.is_working_account_set() and not profile_data.get_tracked_accounts():
+            return "add account"
+
+        return (
+            f"@{profile_data.working_account.name}" if profile_data.is_working_account_set() else "set working account"
+        )
+
+    @on(OneLineButton.Pressed)
+    def switch_working_account(self) -> None:
+        if not self._is_current_screen_dashboard:
+            return
+
+        from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
+        from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (  # noqa: E501
+            SwitchWorkingAccountScreen,
+        )
+
+        if not self.world.profile_data.get_tracked_accounts():
+            self.app.push_screen(AccountListManagement())
+            return
+        self.app.push_screen(SwitchWorkingAccountScreen())
+
+    @on(CliveScreen.Resumed)
+    def determine_tooltip(self) -> None:
+        if not self._is_current_screen_dashboard:
+            self.tooltip = "Go to the dashboard to modify working account"
+            return
+
+        if not self.profile_data.is_working_account_set() and not self.profile_data.get_tracked_accounts():
+            self.tooltip = "Add account"
+            return
+
+        self.tooltip = "Modify working account"
+
+    @property
+    def _is_current_screen_dashboard(self) -> bool:
+        from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+
+        return isinstance(self.app.screen, DashboardBase)
+
+
 class CliveHeader(TextualHeader):
     """
     Header that not expand on click.
@@ -135,12 +191,7 @@ class Header(CliveHeader, CliveWidget):
                     id_="profile-name",
                 )
                 yield Static("/", id="separator")
-                yield DynamicLabel(
-                    obj_to_watch=self.world,
-                    attribute_name="profile_data",
-                    callback=self._get_working_account_name,
-                    id_="working-account-name",
-                )
+                yield WorkingAccountIcon()
                 yield AlarmsSummary()
 
                 async def mode_callback(app_state: AppState) -> str:
@@ -178,10 +229,6 @@ class Header(CliveHeader, CliveWidget):
     @staticmethod
     def __get_profile_name(profile_data: ProfileData) -> str:
         return profile_data.name
-
-    @staticmethod
-    def _get_working_account_name(profile_data: ProfileData) -> str:
-        return f"@{profile_data.working_account.name}" if profile_data.is_working_account_set() else "-"
 
     async def __get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"

@@ -18,3 +18,12 @@ Tabs {
     }
   }
 }
+
+.success-transparent-button Button {
+  background: $panel;
+  color: green;
+
+  &:hover {
+    background: $background-darken-1;
+  }
+}
