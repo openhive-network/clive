@@ -52,6 +52,8 @@ class Clive(App[int], ManualReactive):
 
     AUTO_FOCUS = "*"
 
+    ENABLE_COMMAND_PALETTE = False
+
     BINDINGS = [
         Binding("ctrl+s", "app.screenshot()", "Screenshot", show=False),
         Binding("ctrl+x", "push_screen('quit')", "Quit", show=False),
