@@ -17,12 +17,14 @@ CliveHeader {
   }
 
   #separator {
-    margin: 0 1 0 1;
+    margin-left: 1;
     width: auto;
   }
 
-  #working-account-name {
-    color: $success-darken-3;
+  WorkingAccountButton {
+    OneLineButton {
+      min-width: 5;
+    }
   }
 
   AlarmsSummary {
