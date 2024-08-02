@@ -209,7 +209,7 @@ class DashboardBase(BaseScreen):
         Binding("f2", "operations", "Operations"),
         Binding("f3", "switch_working_account", "Switch working account"),
         Binding("f4", "add_account", "Add account"),
-        Binding("f9", "config", "Config"),
+        Binding("f6", "config", "Config"),
     ]
 
     def __init__(self) -> None:
