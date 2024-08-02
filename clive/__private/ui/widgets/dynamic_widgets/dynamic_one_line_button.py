@@ -1,0 +1,56 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
+    DynamicWidget,
+    DynamicWidgetFirstTryCallbackType,
+    WatchLikeCallbackType,
+)
+
+if TYPE_CHECKING:
+    from textual.reactive import Reactable
+    from textual.widgets._button import ButtonVariant
+
+
+DynamicOneLineButtonCallbackType = WatchLikeCallbackType[str]
+
+
+class DynamicOneLineButton(DynamicWidget[OneLineButton, str]):
+    def __init__(
+        self,
+        obj_to_watch: Reactable,
+        attribute_name: str,
+        callback: DynamicOneLineButtonCallbackType,
+        *,
+        first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
+        variant: ButtonVariant = "primary",
+        init: bool = True,
+        id_: str | None = None,
+        classes: str | None = None,
+    ) -> None:
+        self._variant = variant
+        super().__init__(
+            obj_to_watch,
+            attribute_name,
+            callback,
+            first_try_callback=first_try_callback,
+            init=init,
+            id_=id_,
+            classes=classes,
+        )
+
+    def update_widget_state(self, result: str) -> None:
+        if result != self._widget.label:
+            self._widget.update(result)
+
+    def create_widget(self) -> OneLineButton:
+        return OneLineButton("loading...", self._variant)
+
+
+class DynamicOneLineButtonUnfocusable(DynamicOneLineButton):
+    def create_widget(self) -> OneLineButton:
+        button = super().create_widget()
+        button.can_focus = False
+        return button
