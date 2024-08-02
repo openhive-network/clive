@@ -6,6 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.section import Section
@@ -42,7 +43,14 @@ class AddAccountContainer(Horizontal, CliveWidget):
     }
     """
 
-    def __init__(self, accounts_type: AccountsType, *, with_cancel_button: bool = False) -> None:
+    def __init__(
+        self,
+        accounts_type: AccountsType,
+        *,
+        with_cancel_button: bool = False,
+        show_section_title: bool = True,
+        use_one_line_buttons: bool = False,
+    ) -> None:
         super().__init__()
         self._account_input = AccountNameInput(
             required=False,
@@ -55,21 +63,44 @@ class AddAccountContainer(Horizontal, CliveWidget):
         )
         self._accounts_type = accounts_type
         self._with_cancel_button = with_cancel_button
+        self._show_section_title = show_section_title
+        self._use_one_line_buttons = use_one_line_buttons
 
     def compose(self) -> ComposeResult:
-        with Section(f"{'Track' if self._accounts_type == 'tracked_accounts' else 'Add known'} account"):
+        section_title = (
+            f"{'Track' if self._accounts_type == 'tracked_accounts' else 'Add known'}"
+            if self._show_section_title
+            else ""
+        )
+        with Section(section_title):
             yield self._account_input
             with Horizontal(id="buttons-container" if self._with_cancel_button else "button-container"):
-                yield CliveButton(
-                    "Add",
-                    variant="success",
-                    id_="save-account-button",
+                yield (
+                    CliveButton(
+                        "Add",
+                        variant="success",
+                        id_="save-account-button",
+                    )
+                    if not self._use_one_line_buttons
+                    else OneLineButton(
+                        "Add",
+                        variant="success",
+                        id_="save-account-button",
+                    )
                 )
                 if self._with_cancel_button:
-                    yield CliveButton(
-                        "Cancel",
-                        variant="error",
-                        id_="cancel-button",
+                    yield (
+                        CliveButton(
+                            "Cancel",
+                            variant="error",
+                            id_="cancel-button",
+                        )
+                        if not self._use_one_line_buttons
+                        else OneLineButton(
+                            "Cancel",
+                            variant="error",
+                            id_="cancel-button",
+                        )
                     )
 
     @on(CliveButton.Pressed, "#save-account-button")
