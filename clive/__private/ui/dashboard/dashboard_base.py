@@ -16,6 +16,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
 )
 from clive.__private.ui.account_details.account_details import AccountDetails
+from clive.__private.ui.account_list_management.common.add_tracked_account_screen import AddTrackedAccountScreen
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
     SwitchWorkingAccountScreen,
 )
@@ -207,6 +208,7 @@ class DashboardBase(BaseScreen):
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
         Binding("f2", "operations", "Operations"),
         Binding("f3", "switch_working_account", "Switch working account"),
+        Binding("f4", "add_account", "Add account"),
         Binding("f9", "config", "Config"),
     ]
 
@@ -264,6 +266,9 @@ class DashboardBase(BaseScreen):
             self.notify("Cannot switch a working account without any account", severity="warning")
             return
         self.app.push_screen(SwitchWorkingAccountScreen())
+
+    def action_add_account(self) -> None:
+        self.app.push_screen(AddTrackedAccountScreen())
 
     @property
     def has_working_account(self) -> bool:
