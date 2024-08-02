@@ -111,7 +111,7 @@ async def onboarding_finish(pilot: ClivePilot) -> None:
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
     assert_is_screen_active(pilot, DashboardUnlocked)
-    await press_and_wait_for_screen(pilot, "f9", Config)
+    await press_and_wait_for_screen(pilot, "f6", Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)
     key_aliases = pilot.app.screen.query(KeyAlias)
