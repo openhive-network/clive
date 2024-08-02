@@ -94,11 +94,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @staticmethod
     async def working_account_callback(profile: Profile) -> str:
-        return (
-            f"@{profile.accounts.working.name}"
-            if profile.accounts.has_working_account
-            else "<no working account>"
-        )
+        return f"@{profile.accounts.working.name}" if profile.accounts.has_working_account else "<no working account>"
 
     @on(OneLineButton.Pressed)
     def switch_working_account(self) -> None:
