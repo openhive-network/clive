@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
-from textual.containers import Horizontal, Center
+from textual import events, on
+from textual.containers import Center, Container, Horizontal
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Header, Static
@@ -11,7 +11,6 @@ from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
-from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
@@ -25,12 +24,12 @@ from clive.__private.ui.widgets.titled_label import TitledLabel
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
-    from textual import events
     from textual.app import ComposeResult
     from textual.events import Mount
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
+    from clive.__private.core.profile_data import ProfileData
 
 
 class HeaderIcon(TextualHeaderIcon, CliveWidget):
@@ -184,6 +183,46 @@ class ModeIcon(DynamicOneLineButtonUnfocusable):
         self.tooltip = "Lock wallet"
 
 
+class NodeStatus(DynamicOneLineButtonUnfocusable):
+    def __init__(self) -> None:
+        super().__init__(
+            obj_to_watch=self.world,
+            attribute_name="node",
+            callback=self._update_node_status,
+            first_try_callback=lambda: self.node.cached.online is not None,
+            variant="success-transparent",
+        )
+
+    async def _update_node_status(self, node: Node) -> str:
+        if not node.cached.online:
+            self._widget.variant = "error-on-transparent"
+            return "offline"
+
+        self._widget.tooltip = (
+            "Switch node address"
+            if not self.world.is_in_onboarding_mode and not await self._is_testnet_network
+            else "Testnet - can't switch node address"
+        )
+        self._widget.variant = "success-on-transparent"
+        return "online"
+
+    @on(OneLineButton.Pressed)
+    async def push_select_node_address(self) -> None:
+        from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
+
+        if isinstance(self.app.screen, SetNodeAddress) or self.world.is_in_onboarding_mode:
+            return
+
+        if await self._is_testnet_network:
+            return
+
+        await self.app.push_screen(SetNodeAddress())
+
+    @property
+    async def _is_testnet_network(self) -> bool:
+        return await self.world.node.cached.network_type == "testnet"
+
+
 class CliveHeader(Header, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
@@ -220,7 +259,7 @@ class CliveHeader(Header, CliveWidget):
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            if not self.__is_in_onboarding_mode():
+            if not self.world.is_in_onboarding_mode:
                 yield DynamicLabel(
                     obj_to_watch=self.world,
                     attribute_name="profile_data",
@@ -232,6 +271,8 @@ class CliveHeader(Header, CliveWidget):
                 yield AlarmDisplay()
                 with Center():
                     yield ModeIcon()
+            with Container(id="node-status-container"):
+                yield NodeStatus()
 
         with Horizontal(id="expandable"):
             yield DynamicPropertiesClock()
@@ -285,8 +326,3 @@ class CliveHeader(Header, CliveWidget):
         else:
             self.__node_version.add_class(class_to_switch)
         return f"({network_type})"
-
-    def __is_in_onboarding_mode(self) -> bool:
-        from clive.__private.ui.onboarding.onboarding import Onboarding
-
-        return self.profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME

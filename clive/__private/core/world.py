@@ -158,13 +158,20 @@ class TextualWorld(World, ManualReactive):
 
     def _load_profile(self, profile_name: str | None) -> ProfileData:
         profile = super()._load_profile(profile_name)
-        if profile_name == Onboarding.ONBOARDING_PROFILE_NAME:
+        if self._is_in_onboarding_mode(profile):
             profile.skip_saving()
         return profile
 
     @property
     def commands(self) -> TextualCommands:
         return cast(TextualCommands, super().commands)
+
+    @property
+    def is_in_onboarding_mode(self) -> bool:
+        return self._is_in_onboarding_mode(self.profile_data)
+
+    def _is_in_onboarding_mode(self, profile_data: ProfileData) -> bool:
+        return profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME
 
     def _setup_commands(self) -> TextualCommands:
         return TextualCommands(self)

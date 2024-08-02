@@ -94,7 +94,10 @@ class _BatchRequestResponseItem:
 
 
 class _BatchNode(BaseNode):
-    def __init__(self, url: Url, communication: Communication, *, delay_error_on_data_access: bool = False) -> None:
+    def __init__(
+        self, node: Node, url: Url, communication: Communication, *, delay_error_on_data_access: bool = False
+    ) -> None:
+        self._node = node
         self.__url = url
         self.__communication = communication
         self.__delay_error_on_data_access = delay_error_on_data_access
@@ -116,13 +119,18 @@ class _BatchNode(BaseNode):
             responses: list[dict[str, Any]] = await (
                 await self.__communication.arequest(url=self.__url.as_string(), data=query)
             ).json()
+
         except CommunicationError as error:
+            if not error.is_response_available:
+                self._node.cached._online = False
+
             self.__handle_evaluation_communication_error(error)
         else:
             assert len(responses) == len(self.__batch), "Invalid amount of responses"
             for response in responses:
                 request_id = int(response["id"])
                 self.__get_batch_delayed_result(request_id)._set_response(**response)
+            self._node.cached._online = True
 
     def __handle_evaluation_communication_error(self, error: CommunicationError) -> None:
         responses_from_error = error.get_response()
@@ -206,6 +214,7 @@ class Node(BaseNode):
         _node: Node
         _basic_info: NodeBasicInfoData | None = field(init=False, default=None)
         _lock: asyncio.Lock = field(init=False, default_factory=asyncio.Lock)
+        _online: bool | None = None
 
         @property
         async def basic_info(self) -> NodeBasicInfoData:
@@ -224,6 +233,10 @@ class Node(BaseNode):
         @property
         async def dynamic_global_properties(self) -> DynamicGlobalProperties:
             return (await self.basic_info).dynamic_global_properties
+
+        @property
+        def online(self) -> bool | None:
+            return self._online
 
         @property
         async def dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
@@ -285,7 +298,9 @@ class Node(BaseNode):
             # dgpo.time # this will raise Error
         dgpo.time # this is legit call
         """
-        return _BatchNode(self.address, self.__communication, delay_error_on_data_access=delay_error_on_data_access)
+        return _BatchNode(
+            self, self.address, self.__communication, delay_error_on_data_access=delay_error_on_data_access
+        )
 
     @contextmanager
     def modified_connection_details(
@@ -309,12 +324,19 @@ class Node(BaseNode):
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
-        response = await self.__communication.arequest(address, data=serialized_request)
-        data = await response.json()
+
+        try:
+            data = await (await self.__communication.arequest(address, data=serialized_request)).json()
+        except CommunicationError as error:
+            if not error.is_response_available:
+                self.cached._online = False
+            raise
+
         response_model = get_response_model(expect_type, **data)
-        if isinstance(response_model, JSONRPCResult):
-            return response_model.result
-        raise CommunicationError(address, serialized_request, data)
+        assert isinstance(
+            response_model, JSONRPCResult
+        ), f"Response  model is not JSONRPCResult, but {type(response_model)}"
+        return response_model.result
 
     @property
     async def chain_id(self) -> str:

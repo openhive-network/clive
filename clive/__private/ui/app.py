@@ -174,7 +174,7 @@ class Clive(App[int], ManualReactive):
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             should_force_onboarding = safe_settings.dev.should_force_onboarding
-            return self.world.profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME or should_force_onboarding
+            return self.world.is_in_onboarding_mode or should_force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
@@ -388,6 +388,7 @@ class Clive(App[int], ManualReactive):
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
             logger.warning(f"Update node data failed: {wrapper.error}")
+            self.trigger_node_watchers()
             return
 
         self.trigger_profile_data_watchers()
