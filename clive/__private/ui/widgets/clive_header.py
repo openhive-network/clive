@@ -99,13 +99,13 @@ class WorkingAccountIcon(DynamicOneLineButtonUnfocusable):
         if not self._is_current_screen_dashboard:
             return
 
-        from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
+        from clive.__private.ui.account_list_management.common.add_tracked_account_screen import AddTrackedAccountScreen
         from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (  # noqa: E501
             SwitchWorkingAccountScreen,
         )
 
         if not self.profile.accounts.has_tracked_accounts:
-            self.app.push_screen(AccountListManagement())
+            self.app.push_screen(AddTrackedAccountScreen())
             return
         self.app.push_screen(SwitchWorkingAccountScreen())
 
