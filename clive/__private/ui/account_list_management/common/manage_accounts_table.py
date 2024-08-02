@@ -63,7 +63,6 @@ class ManageAccountsTable(CliveCheckerboardTable):
     DEFAULT_CSS = """
     ManageAccountsTable {
         margin-top: 1;
-        width: 50%;
 
         Static {
             text-align: center;
