@@ -1,14 +1,12 @@
 ManageAccountsTabPane {
+  align: center middle;
+
   ScrollablePart {
-    align: center top;
+    width: 50%;
   }
 
-  Section {
-    width: 50%;
-
-    SectionBody {
-      layout: horizontal;
-    }
+  AddAccountContainer Section SectionBody {
+    layout: horizontal;
   }
 
   ManageAccountsTable {
