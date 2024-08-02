@@ -32,5 +32,5 @@ async def unlock_body(pilot: ClivePilot, password: str, *, expected_screen: type
 async def unlock(pilot: ClivePilot, password: str) -> None:
     """Do unlock when DashboardLocked is current screen."""
     assert_is_screen_active(pilot, DashboardLocked)
-    await press_and_wait_for_screen(pilot, "f4", Unlock)
+    await press_and_wait_for_screen(pilot, "f5", Unlock)
     await unlock_body(pilot, password, expected_screen=DashboardUnlocked)

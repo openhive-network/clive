@@ -92,7 +92,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
             return
 
         if not self.profile.accounts.has_tracked_accounts:
-            self._push_account_list_management()
+            self._push_add_tracked_account_screen()
             return
         self._push_switch_working_account_screen()
 
@@ -121,10 +121,11 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
         self.app.push_screen(SwitchWorkingAccountScreen())
 
-    def _push_account_list_management(self) -> None:
-        from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
+    def _push_add_tracked_account_screen(self) -> None:
+        from clive.__private.ui.account_list_management.common.add_tracked_account_dialog import AddTrackedAccountDialog
 
-        self.app.push_screen(AccountListManagement())
+        self.app.push_screen(AddTrackedAccountDialog())
+
 
 class LockStatus(DynamicOneLineButtonUnfocusable):
     class WalletLocked(Message):
