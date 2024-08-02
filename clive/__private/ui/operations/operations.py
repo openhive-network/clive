@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 class OperationButton(CliveButton):
     def __init__(self, label: TextType, operation_screen: type[OperationBaseScreen]) -> None:
-        super().__init__(label)
+        super().__init__(label, classes="operation-button")
         self.operation_screen = operation_screen
 
 
@@ -61,7 +61,7 @@ class Operations(CartBasedScreen, CartBinding):
         self.app.push_screen(SelectFile())
         self.notify("Your cart will remain unchanged.")
 
-    @on(OperationButton.Pressed)
+    @on(OperationButton.Pressed, ".operation-button")
     def push_operation_screen(self, event: OperationButton.Pressed) -> None:
         button: OperationButton = event.button  # type: ignore[assignment]
         self.app.push_screen(button.operation_screen())
