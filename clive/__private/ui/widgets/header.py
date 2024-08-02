@@ -23,6 +23,7 @@ from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabe
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import DynamicOneLineButton
 from clive.__private.ui.widgets.titled_label import TitledLabel
 from clive.exceptions import CommunicationError
+from clive.models.aliased import DynamicGlobalProperties
 
 if TYPE_CHECKING:
     from textual import events
@@ -189,6 +190,36 @@ class CliveHeader(TextualHeader):
         self.toggle_class("-tall")
 
 
+class NodeStatus(Static, CliveWidget):
+    def __init__(self) -> None:
+        super().__init__("loading...")
+        self.tooltip = "Click to switch node address"
+
+    def on_mount(self) -> None:
+        self.run_worker(self._update_node_status())
+        self.set_interval(3, self._update_node_status)
+
+    async def _update_node_status(self) -> None:
+        command = await self.commands.get_dynamic_global_properties()
+        dgpo = command.result
+
+        if type(dgpo) is not DynamicGlobalProperties:
+            self.update("offline")
+            self.add_class("-inactive")
+            return
+        self.remove_class("-inactive")
+        self.update("online")
+
+    @on(Click)
+    def push_select_node_address(self) -> None:
+        from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
+
+        if isinstance(self.app.screen, SetNodeAddress):
+            return
+
+        self.app.push_screen(SetNodeAddress())
+
+
 class Header(CliveHeader, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
@@ -236,6 +267,7 @@ class Header(CliveHeader, CliveWidget):
                 yield AlarmDisplay()
                 with Center():
                     yield ModeIcon()
+                yield NodeStatus()
 
         with Horizontal(id="expandable"):
             yield DynamicPropertiesClock()

@@ -45,6 +45,17 @@ Header {
     height: auto;
   }
 
+  NodeStatus.-inactive {
+    color: $error;
+  }
+
+  NodeStatus {
+    content-align: right middle;
+    margin-right: 1;
+    width: 1fr;
+    color: $success-darken-3;
+  }
+
   DynamicPropertiesClock {
     width: auto;
   }
