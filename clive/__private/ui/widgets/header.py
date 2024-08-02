@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Center, Container, Horizontal
+from textual.containers import Center, Horizontal
 from textual.events import Click
 from textual.message import Message
 from textual.reactive import var
@@ -46,16 +46,6 @@ class HeaderIcon(TextualHeaderIcon, CliveWidget):
     def on_click(self, event: events.Click) -> None:  # type: ignore[override]
         event.prevent_default()
         self.app.header_expanded = not self.app.header_expanded
-
-
-class AlarmsSummary(Container, CliveWidget):
-    def __init__(self) -> None:
-        super().__init__()
-
-        self._label = AlarmDisplay()
-
-    def compose(self) -> ComposeResult:
-        yield self._label
 
 
 class DynamicPropertiesClock(Horizontal, CliveWidget):
@@ -243,7 +233,7 @@ class Header(CliveHeader, CliveWidget):
                 )
                 yield Static("/", id="separator")
                 yield WorkingAccountIcon()
-                yield AlarmsSummary()
+                yield AlarmDisplay()
                 with Center():
                     yield ModeIcon()
 
