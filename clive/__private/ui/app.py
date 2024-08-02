@@ -26,7 +26,7 @@ from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.quit.quit import Quit
 from clive.__private.ui.shared.help import Help
-from clive.exceptions import ScreenNotFoundError
+from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Iterator
@@ -174,7 +174,7 @@ class Clive(App[int], ManualReactive):
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             should_force_onboarding = safe_settings.dev.should_force_onboarding
-            return self.world.profile.name == Onboarding.ONBOARDING_PROFILE_NAME or should_force_onboarding
+            return self.world.is_in_onboarding_mode or should_force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
@@ -387,6 +387,11 @@ class Clive(App[int], ManualReactive):
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
+            error = wrapper.error
+            if isinstance(error, CommunicationError) and not error.is_response_available:
+                # notify watchers when node goes offline
+                self.trigger_node_watchers()
+
             logger.warning(f"Update node data failed: {wrapper.error}")
             return
 

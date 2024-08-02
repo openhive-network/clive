@@ -1,3 +1,5 @@
+$success-header-color: $success-darken-3;
+
 CliveHeader {
   box-sizing: content-box;
   border-bottom: inner $error-darken-1;
@@ -38,13 +40,24 @@ CliveHeader {
   }
 
   BlockDisplay {
+  #node-status-container {
+    align: right middle;
+  }
+
+  NodeStatus {
+    OneLineButton {
+      min-width: 6;
+    }
+  }
+
+  BlockDisplay {
     width: auto;
   }
 
   #node-type {
     margin-right: 1;
     margin-left: 1;
-    color: green;
+    color: $success-header-color;
 
     .-not-mainnet {
       color: red;
