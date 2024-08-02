@@ -8,7 +8,7 @@ from clive.__private.ui.unlock.unlock import Unlock
 
 class DashboardLocked(DashboardBase):
     BINDINGS = [
-        Binding("f4", "unlock", "Unlock wallet"),
+        Binding("f5", "unlock", "Unlock wallet"),
     ]
 
     def action_unlock(self) -> None:
