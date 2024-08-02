@@ -28,3 +28,7 @@ class CliveButton(Button, CliveWidget):
 
     def on_focus(self) -> None:
         self.bind(Binding("enter", "press", str(self.label)))
+
+    def update(self, new_label: TextType) -> None:
+        self.label = new_label
+        self.refresh(layout=True)
