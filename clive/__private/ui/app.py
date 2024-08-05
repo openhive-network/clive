@@ -16,7 +16,6 @@ from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
@@ -173,7 +172,7 @@ class Clive(App[int], ManualReactive):
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             should_force_onboarding = safe_settings.dev.should_force_onboarding
-            return self.world.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME or should_force_onboarding
+            return self.world.profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME or should_force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")

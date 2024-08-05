@@ -11,7 +11,6 @@ from textual.widgets._header import HeaderTitle
 from clive.__private.core.date_utils import utc_now
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.core.formatters.humanize import humanize_natural_time
-from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_label import DynamicLabel
@@ -27,6 +26,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
+    from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.accounts import TrackedAccount
 
 
@@ -236,4 +236,6 @@ class Header(TextualHeader, CliveWidget):
         return network_type
 
     def __is_in_onboarding_mode(self) -> bool:
-        return self.profile_data.name == ProfileData.ONBOARDING_PROFILE_NAME
+        from clive.__private.ui.onboarding.onboarding import Onboarding
+
+        return self.profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME

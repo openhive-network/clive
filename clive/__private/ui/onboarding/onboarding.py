@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
 
@@ -42,12 +42,16 @@ class OnboardingFinishScreen(FinishFormScreen[ProfileData]):
     async def action_finish(self) -> None:
         self._owner.add_post_action(self.app.update_data_from_node_asap)
 
-        self.world.profile_data = self.context
+        profile = self.context
+        profile.enable_saving()
+        self.world.profile_data = profile
         await super().action_finish()
         self.profile_data.save()
 
 
 class Onboarding(Form[ProfileData]):
+    ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
+
     @property
     def context(self) -> ProfileData:
         return self.__context
@@ -65,7 +69,7 @@ class Onboarding(Form[ProfileData]):
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
-        self.__context = ProfileData(ProfileData.ONBOARDING_PROFILE_NAME)
+        self.__context = ProfileData(self.ONBOARDING_PROFILE_NAME)
 
     def _skip_during_push_screen(self) -> list[ScreenBuilder[ProfileData]]:
         screens_to_skip: list[ScreenBuilder[ProfileData]] = []
