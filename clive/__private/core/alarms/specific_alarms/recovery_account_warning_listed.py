@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataNeverExpiresWithoutAction
+from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier
 from clive.__private.core.constants.alarm_descriptions import RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
 
 if TYPE_CHECKING:
@@ -21,7 +22,13 @@ class RecoveryAccountWarningListedAlarmData(AlarmDataNeverExpiresWithoutAction):
         return {self.WARNING_LISTED_ACCOUNT_LABEL: self.warning_recovery_account} | super().get_titled_data()
 
 
-class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmData]):
+class RecoveryAccountWarningListedAlarmIdentifier(AlarmIdentifier):
+    recovery_account: str
+
+
+class RecoveryAccountWarningListed(
+    Alarm[RecoveryAccountWarningListedAlarmIdentifier, RecoveryAccountWarningListedAlarmData]
+):
     WARNING_RECOVERY_ACCOUNTS: Final[set[str]] = {"steem"}
 
     ALARM_DESCRIPTION = RECOVERY_ACCOUNT_WARNING_LISTED_ALARM_DESCRIPTION
@@ -32,7 +39,7 @@ class RecoveryAccountWarningListed(Alarm[str, RecoveryAccountWarningListedAlarmD
             self.disable_alarm()
             return
 
-        new_identifier = data.recovery_account
+        new_identifier = RecoveryAccountWarningListedAlarmIdentifier(recovery_account=data.recovery_account)
         self.enable_alarm(
             new_identifier, RecoveryAccountWarningListedAlarmData(warning_recovery_account=data.recovery_account)
         )

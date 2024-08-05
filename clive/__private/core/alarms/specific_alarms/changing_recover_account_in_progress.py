@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataWithStartAndEndDate
+from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
 from clive.__private.core.constants.alarm_descriptions import CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION
 from clive.__private.core.constants.node import CHANGE_RECOVERY_ACCOUNT_PENDING_DAYS
 
@@ -24,7 +25,7 @@ class ChangingRecoveryAccountInProgressAlarmData(AlarmDataWithStartAndEndDate):
         return super().get_titled_data() | {self.NEW_RECOVERY_ACCOUNT_LABEL: self.new_recovery_account}
 
 
-class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountInProgressAlarmData]):
+class ChangingRecoveryAccountInProgress(Alarm[DateTimeAlarmIdentifier, ChangingRecoveryAccountInProgressAlarmData]):
     ALARM_DESCRIPTION = CHANGING_RECOVERY_ACCOUNT_IN_PROGRESS_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You can cancel it by setting a recovery account to the previous one."
 
@@ -35,7 +36,7 @@ class ChangingRecoveryAccountInProgress(Alarm[datetime, ChangingRecoveryAccountI
             self.disable_alarm()
             return
 
-        new_identifier = request.effective_on
+        new_identifier = DateTimeAlarmIdentifier(value=request.effective_on)
         self.enable_alarm(
             new_identifier,
             ChangingRecoveryAccountInProgressAlarmData(

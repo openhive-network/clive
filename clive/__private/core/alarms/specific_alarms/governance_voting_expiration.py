@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarm_data import AlarmDataWithEndDate
+from clive.__private.core.alarms.alarm_identifier import DateTimeAlarmIdentifier
 from clive.__private.core.constants.alarm_descriptions import (
     GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION,
 )
@@ -20,7 +21,7 @@ class GovernanceVotingExpirationAlarmData(AlarmDataWithEndDate):
     END_DATE_LABEL: ClassVar[str] = "Expiration date"
 
 
-class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarmData]):
+class GovernanceVotingExpiration(Alarm[DateTimeAlarmIdentifier, GovernanceVotingExpirationAlarmData]):
     ALARM_DESCRIPTION = GOVERNANCE_VOTING_EXPIRATION_ALARM_DESCRIPTION
     FIX_ALARM_INFO = "You should cast votes for witnesses and proposals or set a proxy."
 
@@ -37,7 +38,7 @@ class GovernanceVotingExpiration(Alarm[datetime, GovernanceVotingExpirationAlarm
             self.disable_alarm()
             return
 
-        new_identifier = expiration
+        new_identifier = DateTimeAlarmIdentifier(value=expiration)
         self.enable_alarm(new_identifier, alarm_data)
         return
 

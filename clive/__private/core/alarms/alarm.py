@@ -3,13 +3,14 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar, Generic, TypeAlias, TypeVar
 
+from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier
 from clive.__private.core.formatters.case import underscore
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_alarms_data import AccountAlarmsData
 
 
-AlarmIdentifierT = TypeVar("AlarmIdentifierT")
+AlarmIdentifierT = TypeVar("AlarmIdentifierT", bound=AlarmIdentifier)
 AlarmDataT = TypeVar("AlarmDataT")
 AnyAlarm: TypeAlias = "Alarm[Any, Any]"
 
@@ -20,8 +21,8 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
 
     How to complete handle an alarm in TUI:
     ---------------------------------------
-    1. Select an alarm identifier - it can be any type, just pass it in a generic way to the `Alarm` model when
-       selecting/creating.
+    1. Create an alarm identifier class that inherits from `AlarmIdentifier` or reuse one of existing identifiers when
+       easily distinguishable.
     2. Implement a data class to store alarm data (it must inherit from `BaseAlarmData`).
     3. Create a model of your alarm by creating a class inheriting from `Alarm` (pass the alarm identifier and data in
        a generic way).
