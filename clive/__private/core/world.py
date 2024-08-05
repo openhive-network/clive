@@ -13,6 +13,7 @@ from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.ui.manual_reactive import ManualReactive
+from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -148,12 +149,18 @@ class TextualWorld(World, ManualReactive):
         profile_name = (
             ProfileData.get_default_profile_name()
             if ProfileData.is_default_profile_set()
-            else ProfileData.ONBOARDING_PROFILE_NAME
+            else Onboarding.ONBOARDING_PROFILE_NAME
         )
         super().__init__(profile_name)
         self.profile_data = self._profile_data
         self.app_state = self._app_state
         self.node = self._node
+
+    def _load_profile(self, profile_name: str | None) -> ProfileData:
+        profile = super()._load_profile(profile_name)
+        if profile_name == Onboarding.ONBOARDING_PROFILE_NAME:
+            profile.skip_saving()
+        return profile
 
     @property
     def commands(self) -> TextualCommands:

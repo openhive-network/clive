@@ -85,7 +85,6 @@ class Cart(list[OperationBaseClass]):
 
 
 class ProfileData(Context):
-    ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
     _DEFAULT_PROFILE_IDENTIFIER: Final[str] = "!default_profile"
 
     def __init__(
@@ -210,7 +209,12 @@ class ProfileData(Context):
             db[cls._DEFAULT_PROFILE_IDENTIFIER] = name
 
     def skip_saving(self) -> None:
+        logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
         self.__skip_save = True
+
+    def enable_saving(self) -> None:
+        logger.debug(f"Enabling saving of profile: {self.name} with id {id(self)}")
+        self.__skip_save = False
 
     def delete(self) -> None:
         self.delete_by_name(self.name)
@@ -238,7 +242,7 @@ class ProfileData(Context):
         with cls.__open_database() as db:
             profile_name: str | None = db.get(cls._DEFAULT_PROFILE_IDENTIFIER, None)
 
-        if profile_name is not None and profile_name != cls.ONBOARDING_PROFILE_NAME:
+        if profile_name is not None:
             return profile_name
         raise NoDefaultProfileToLoadError
 
