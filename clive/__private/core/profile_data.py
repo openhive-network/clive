@@ -308,6 +308,10 @@ class ProfileData(Context):
             raise WatchedAccountNotFoundError(account_name)
         return watched_account
 
+    def is_account_watched(self, account: str | Account) -> bool:
+        account_name = self._get_account_name(account)
+        return account_name in [watched_account.name for watched_account in self.watched_accounts]
+
     def has_known_accounts(self) -> bool:
         return bool(self.known_accounts)
 
