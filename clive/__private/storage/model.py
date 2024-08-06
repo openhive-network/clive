@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from hashlib import sha256
 from typing import Any
 
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier  # noqa: TCH001
@@ -55,3 +56,11 @@ class PersistentStorageModelSchema(PersistentStorageModel):
     """Should be used for generating schema of the storage model that could be later used for revision calculation."""
 
     profiles: list[ProfileStorageModelSchema] = []  # type: ignore[assignment] # noqa: RUF012
+
+
+def get_storage_model_schema_json() -> str:
+    return PersistentStorageModelSchema.schema_json(indent=4)
+
+
+def calculate_storage_model_revision() -> str:
+    return sha256(get_storage_model_schema_json().encode()).hexdigest()[:8]

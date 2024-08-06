@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Iterable
 
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import PersistentStorageModel, ProfileStorageModel
+from clive.__private.storage.model import PersistentStorageModel, ProfileStorageModel, calculate_storage_model_revision
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
@@ -183,7 +183,8 @@ class PersistentStorageService:
 
     @classmethod
     def _get_storage_filepath(cls) -> Path:
-        return safe_settings.data_path / "data/profiles.json"
+        revision = calculate_storage_model_revision()
+        return safe_settings.data_path / f"data/{revision}/profiles.json"
 
     @classmethod
     def _get_storage(cls, storage: PersistentStorageModel | None = None) -> PersistentStorageModel:
