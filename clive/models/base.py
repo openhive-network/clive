@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from pydantic import BaseModel
 
 from clive.__private.core.constants.date import TIME_FORMAT_WITH_MILLIS
+from clive.models.aliased import Serializable
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny
@@ -15,7 +16,8 @@ class CliveBaseModel(BaseModel):
     class Config:
         allow_population_by_field_name = True
         json_encoders = {  # noqa: RUF012; pydantic convention
-            datetime: lambda d: d.strftime(TIME_FORMAT_WITH_MILLIS)
+            datetime: lambda d: d.strftime(TIME_FORMAT_WITH_MILLIS),
+            Serializable: lambda x: x.serialize(),
         }
 
     def json(  # noqa: PLR0913

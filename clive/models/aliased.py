@@ -41,6 +41,7 @@ from schemas.fields.compound import Price, Proposal
 from schemas.fields.hex import Sha256
 from schemas.fields.hex import Signature as SchemasSignature
 from schemas.fields.hive_int import HiveInt as SchemasHiveInt
+from schemas.fields.serializable import Serializable as SchemasSerializable
 from schemas.operation import Operation as SchemasBaseOperationType
 from schemas.operations import AnyOperation
 from schemas.operations import CustomJsonOperation as SchemasCustomJsonOperation
@@ -88,6 +89,7 @@ RecurrentTransferOperation = SchemasRecurrentTransferOperation
 RecurrentTransferPairIdOperationExtension = RecurrentTransferPairId
 RecurrentTransferPairIdRepresentation = HF26Representation[RecurrentTransferPairIdOperationExtension]
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
+Serializable = SchemasSerializable
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Signature = SchemasSignature
 TransactionStatus = SchemasFindTransaction
