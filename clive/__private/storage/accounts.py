@@ -76,7 +76,7 @@ class Account:
     @property
     def alarms(self) -> AlarmsStorage:
         if not self._alarms.is_alarms_data_available:
-            raise AccountDataTooEarlyAccessError
+            raise AccountAlarmsTooEarlyAccessError
         return self._alarms
 
     @property
