@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from urllib.parse import urlparse
 
+from typing_extensions import Self
+
 from clive.exceptions import NodeAddressError
 
 
@@ -13,7 +15,10 @@ class Url:
     port: int | None = None
 
     @classmethod
-    def parse(cls, url: str, *, protocol: str = "") -> Url:
+    def parse(cls, url: str | Self, *, protocol: str = "") -> Url:
+        if isinstance(url, Url):
+            return url
+
         parsed_url = urlparse(url, scheme=protocol)
 
         if not parsed_url.netloc:
