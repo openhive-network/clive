@@ -15,7 +15,7 @@ from clive.__private.core.iwax import (
     calculate_manabar_full_regeneration_time,
 )
 from clive.__private.storage import mock_database
-from clive.__private.storage.accounts import Account
+from clive.__private.storage.accounts import TrackedAccount
 from clive.__private.storage.mock_database import DisabledAPI, NodeData
 from clive.exceptions import CommunicationError
 from clive.models.aliased import (
@@ -90,12 +90,12 @@ class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
     core_accounts: FindAccounts | None = None
     rc_accounts: FindRcAccounts | None = None
-    account_harvested_data: dict[Account, _AccountHarvestedDataRaw] = field(
+    account_harvested_data: dict[TrackedAccount, _AccountHarvestedDataRaw] = field(
         default_factory=lambda: defaultdict(_AccountHarvestedDataRaw)
     )
 
 
-AccountSanitizedDataContainer = dict[Account, _AccountSanitizedData]
+AccountSanitizedDataContainer = dict[TrackedAccount, _AccountSanitizedData]
 
 
 @dataclass
@@ -107,7 +107,7 @@ class SanitizedData:
 @dataclass
 class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, DynamicGlobalProperties]):
     node: Node
-    accounts: list[Account] = field(default_factory=list)
+    accounts: list[TrackedAccount] = field(default_factory=list)
 
     async def _execute(self) -> None:
         self.__assert_no_duplicate_accounts()
@@ -166,7 +166,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
         gdpo = data.gdpo
 
-        accounts_processed_data: dict[Account, _AccountProcessedData] = {}
+        accounts_processed_data: dict[TrackedAccount, _AccountProcessedData] = {}
         for account in self.accounts:
             account_data = data.account_sanitized_data[account]
             accounts_processed_data[account] = _AccountProcessedData(
@@ -262,7 +262,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             - head_block_time
         )
 
-    def __get_account(self, name: str) -> Account:
+    def __get_account(self, name: str) -> TrackedAccount:
         return next(filter(lambda account: account.name == name, self.accounts))
 
     def __assert_gpdo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:

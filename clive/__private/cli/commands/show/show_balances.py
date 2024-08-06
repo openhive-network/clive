@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.storage.accounts import Account
+from clive.__private.storage.accounts import TrackedAccount
 from clive.models import Asset
 
 
@@ -13,7 +13,7 @@ class ShowBalances(WorldBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        account = Account(name=self.account_name)
+        account = TrackedAccount(name=self.account_name)
 
         (await self.world.commands.update_node_data(accounts=[account])).raise_if_error_occurred()
 

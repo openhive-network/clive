@@ -58,34 +58,12 @@ class AccountType(str, Enum):
 @dataclass
 class Account:
     name: str
-    _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
-    _data: NodeData | None = field(init=False, default=None, compare=False)
 
     def __post_init__(self) -> None:
         self.validate(self.name)
 
     def __hash__(self) -> int:
         return hash(self.name)
-
-    @property
-    def data(self) -> NodeData:
-        if self._data is None:
-            raise AccountDataTooEarlyAccessError
-        return self._data
-
-    @property
-    def alarms(self) -> AlarmsStorage:
-        if not self._alarms.is_alarms_data_available:
-            raise AccountAlarmsTooEarlyAccessError
-        return self._alarms
-
-    @property
-    def is_node_data_available(self) -> bool:
-        return self._data is not None
-
-    @property
-    def is_alarms_data_available(self) -> bool:
-        return self._alarms.is_alarms_data_available
 
     @staticmethod
     def validate(name: str) -> None:
@@ -109,11 +87,52 @@ class Account:
             return False
         return True
 
+
+@dataclass
+class TrackedAccount(Account):
+    _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
+    _data: NodeData | None = field(init=False, default=None, compare=False)
+
+    def __hash__(self) -> int:
+        return super().__hash__()
+
+    @property
+    def data(self) -> NodeData:
+        if self._data is None:
+            raise AccountDataTooEarlyAccessError
+        return self._data
+
+    @property
+    def alarms(self) -> AlarmsStorage:
+        if not self._alarms.is_alarms_data_available:
+            raise AccountAlarmsTooEarlyAccessError
+        return self._alarms
+
+    @property
+    def is_node_data_available(self) -> bool:
+        return self._data is not None
+
+    @property
+    def is_alarms_data_available(self) -> bool:
+        return self._alarms.is_alarms_data_available
+
     def _prepare_for_save(self) -> None:
         self._data = None  # do not store old data gathered from the node
 
 
 @dataclass
-class WorkingAccount(Account):
+class KnownAccount(Account):
+    def __hash__(self) -> int:
+        return super().__hash__()
+
+
+@dataclass
+class WatchedAccount(TrackedAccount):
+    def __hash__(self) -> int:
+        return super().__hash__()
+
+
+@dataclass
+class WorkingAccount(TrackedAccount):
     def __hash__(self) -> int:
         return super().__hash__()

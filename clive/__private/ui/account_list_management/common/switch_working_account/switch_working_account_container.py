@@ -7,7 +7,7 @@ from textual.containers import Container
 from textual.reactive import var
 
 from clive.__private.core.clive_import import get_clive
-from clive.__private.storage.accounts import Account, WorkingAccount
+from clive.__private.storage.accounts import TrackedAccount, WorkingAccount
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_radio_set import CliveRadioSet
@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 class AccountRadioButton(CliveRadioButton):
     WORKING_ACCOUNT_IDENTIFIER: Final[str] = "[yellow italic](working)[/]"
 
-    def __init__(self, account: Account) -> None:
+    def __init__(self, account: TrackedAccount) -> None:
         is_working = isinstance(account, WorkingAccount)
         self.account = account
         super().__init__(
@@ -84,8 +84,8 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
         super().__init__()
         self._show_title = show_title
 
-        self._selected_account: Account | NoWorkingAccountSelected = self._get_current_state_for_selected_account(
-            self.local_profile_data
+        self._selected_account: TrackedAccount | NoWorkingAccountSelected = (
+            self._get_current_state_for_selected_account(self.local_profile_data)
         )
 
     def on_mount(self) -> None:

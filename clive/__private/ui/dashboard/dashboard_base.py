@@ -14,7 +14,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_natural_time,
     humanize_percent,
 )
-from clive.__private.storage.accounts import Account, AccountType, WorkingAccount
+from clive.__private.storage.accounts import AccountType, TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
     SwitchWorkingAccountScreen,
@@ -50,7 +50,7 @@ class AccountsContainer(Container):
 class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
     def __init__(
         self,
-        account: Account,
+        account: TrackedAccount,
         manabar_type: Literal["rc_manabar", "vote_manabar", "downvote_manabar"],
         name: str,
         classes: str | None = None,
@@ -284,7 +284,7 @@ class DashboardBase(BaseScreen):
         return self.profile_data.working_account
 
     @property
-    def watched_accounts(self) -> set[Account]:
+    def watched_accounts(self) -> set[WatchedAccount]:
         return self.profile_data.watched_accounts.copy()
 
     @property

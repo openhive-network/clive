@@ -11,8 +11,7 @@ from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive.__private.storage.accounts import Account as WatchedAccount
-from clive.__private.storage.accounts import WorkingAccount
+from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_active import DashboardActive
 from clive.__private.ui.dashboard.dashboard_inactive import DashboardInactive

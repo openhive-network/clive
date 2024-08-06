@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import TrackedAccount
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -57,7 +57,7 @@ class AlarmDisplay(DynamicLabel):
 
     def __init__(
         self,
-        account_getter: Callable[[ProfileData], Iterable[Account]],
+        account_getter: Callable[[ProfileData], Iterable[TrackedAccount]],
         id_: str | None = None,
         classes: str | None = None,
     ) -> None:

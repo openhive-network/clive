@@ -66,7 +66,7 @@ if TYPE_CHECKING:
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import TextualWorld, World
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import TrackedAccount
     from clive.models import Transaction
     from clive.models.aliased import (
         DynamicGlobalProperties,
@@ -290,7 +290,7 @@ class Commands(Generic[WorldT_co]):
         return result
 
     async def update_node_data(
-        self, *, accounts: Iterable[Account] | None = None
+        self, *, accounts: Iterable[TrackedAccount] | None = None
     ) -> CommandWithResultWrapper[DynamicGlobalProperties]:
         result = await self.__surround_with_exception_handlers(
             UpdateNodeData(accounts=list(accounts or []), node=self._world.node)
@@ -299,7 +299,7 @@ class Commands(Generic[WorldT_co]):
             await self._world.node.cached.update_dynamic_global_properties(result.result_or_raise)
         return result
 
-    async def update_alarms_data(self, *, accounts: Iterable[Account] | None = None) -> CommandWrapper:
+    async def update_alarms_data(self, *, accounts: Iterable[TrackedAccount] | None = None) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             UpdateAlarmsData(accounts=list(accounts) if accounts is not None else [], node=self._world.node)
         )

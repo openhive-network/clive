@@ -12,7 +12,7 @@ from clive.__private.core.keys import KeyManager
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.accounts import Account, WorkingAccount
+from clive.__private.storage.accounts import Account, KnownAccount, TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.storage.contextual import Context
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.core.url import Url
@@ -111,8 +111,8 @@ class ProfileData(Context):
         self,
         name: str,
         working_account: str | WorkingAccount | None = None,
-        watched_accounts: Iterable[Account] | None = None,
-        known_accounts: Iterable[Account] | None = None,
+        watched_accounts: Iterable[WatchedAccount] | None = None,
+        known_accounts: Iterable[KnownAccount] | None = None,
     ) -> None:
         self.validate_profile_name(name)
 
@@ -158,7 +158,7 @@ class ProfileData(Context):
 
         raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
 
-    def get_account_by_name(self, value: str | Account) -> Account:
+    def get_account_by_name(self, value: str | Account) -> TrackedAccount:
         searched_account_name = self._get_account_name(value)
         for account in self.get_tracked_accounts():
             if account.name == searched_account_name:
@@ -181,15 +181,15 @@ class ProfileData(Context):
         return self.__working_account
 
     @property
-    def watched_accounts_sorted(self) -> list[Account]:
+    def watched_accounts_sorted(self) -> list[WatchedAccount]:
         return sorted(self.watched_accounts, key=lambda account: account.name)
 
     @property
-    def known_accounts_sorted(self) -> list[Account]:
+    def known_accounts_sorted(self) -> list[KnownAccount]:
         return sorted(self.known_accounts, key=lambda account: account.name)
 
     @property
-    def tracked_accounts_sorted(self) -> list[Account]:
+    def tracked_accounts_sorted(self) -> list[TrackedAccount]:
         """Working account is always first then watched accounts sorted alphabetically."""
         return sorted(
             self.get_tracked_accounts(),
@@ -226,7 +226,7 @@ class ProfileData(Context):
             # we allow for only moving the current working account to watched accounts
             self.set_watched_account_as_working(new_working_account)
 
-    def is_account_working(self, account: Account | str) -> bool:
+    def is_account_working(self, account: str | Account) -> bool:
         if not self.is_working_account_set():
             return False
 
@@ -236,13 +236,13 @@ class ProfileData(Context):
     def move_working_account_to_watched(self) -> None:
         name, data, alarms = self.working_account.name, self.working_account._data, self.working_account._alarms
 
-        new_account_object = Account(name, alarms)
+        new_account_object = WatchedAccount(name, alarms)
         new_account_object._data = data
 
         self.unset_working_account()
         self.watched_accounts.add(new_account_object)
 
-    def set_watched_account_as_working(self, account: Account | str) -> None:
+    def set_watched_account_as_working(self, account: str | Account) -> None:
         account = self.get_watched_account(account)
 
         self.remove_watched_account(account)
@@ -293,19 +293,19 @@ class ProfileData(Context):
         account_name = self._get_account_name(account)
         return account_name not in [tracked_account.name for tracked_account in self.get_tracked_accounts()]
 
-    def get_tracked_accounts(self) -> set[Account]:
-        accounts = self.watched_accounts.copy()
+    def get_tracked_accounts(self) -> set[TrackedAccount]:
+        accounts: set[TrackedAccount] = set()
+        accounts.update(self.watched_accounts)
         if self.is_working_account_set():
             accounts.add(self.working_account)
         return accounts
 
-    def get_watched_account(self, account: str | Account) -> Account:
-        account_to_find: Account = self.get_account_by_name(account) if isinstance(account, str) else account
-
-        if account_to_find in self.watched_accounts:
-            return account_to_find
-
-        raise WatchedAccountNotFoundError(account_to_find.name)
+    def get_watched_account(self, account: str | Account) -> WatchedAccount:
+        account_name = self._get_account_name(account)
+        watched_account = next((account for account in self.watched_accounts if account.name == account_name), None)
+        if watched_account is None:
+            raise WatchedAccountNotFoundError(account_name)
+        return watched_account
 
     def has_known_accounts(self) -> bool:
         return bool(self.known_accounts)

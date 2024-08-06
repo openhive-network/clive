@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.alarms.alarm import AnyAlarm
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import TrackedAccount
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
@@ -67,7 +67,7 @@ class AlarmInfoScreen(ModalScreen[None]):
 
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    def __init__(self, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails, account: Account) -> None:
+    def __init__(self, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails, account: TrackedAccount) -> None:
         super().__init__()
         self._alarm = alarm
         self._alarm_fix_details = alarm_fix_details

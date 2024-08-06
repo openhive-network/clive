@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.storage.accounts import Account
+from clive.__private.storage.accounts import WatchedAccount
 from clive.__private.validators.set_tracked_account_validator import SetTrackedAccountValidator
 
 
@@ -18,7 +18,7 @@ class AddWatchedAccount(ProfileBasedCommand):
             raise CLIPrettyError(f"Can't use this account name: {humanize_validation_result(result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        self.profile_data.watched_accounts.add(Account(self.account_name))
+        self.profile_data.watched_accounts.add(WatchedAccount(self.account_name))
 
 
 @dataclass(kw_only=True)

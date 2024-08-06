@@ -51,7 +51,13 @@ class AccountRow(CliveCheckerboardTableRow):
     @on(CliveButton.Pressed, "#discard-account-button")
     def discard_account(self) -> None:
         if self._account_type == "known_accounts":
-            self.profile_data.known_accounts.discard(self._account)
+            # TODO: replace with proper interface
+            known_account_to_remove = next(
+                (account for account in self.profile_data.known_accounts if account.name == self._account.name), None
+            )
+            if known_account_to_remove is None:
+                return
+            self.profile_data.known_accounts.discard(known_account_to_remove)
         else:
             self.profile_data.remove_tracked_account(self._account)
         self.app.trigger_profile_data_watchers()
@@ -112,11 +118,12 @@ class ManageAccountsTable(CliveCheckerboardTable):
         self._previous_accounts = self._get_accounts_from_new_content(content)
 
     def _get_accounts_from_new_content(self, content: ProfileData) -> set[Account]:
-        return (
-            content.known_accounts.copy()
+        accounts: set[Account] = (
+            content.known_accounts.copy()  # type: ignore[assignment]
             if self._accounts_type == "known_accounts"
             else content.get_tracked_accounts().copy()
         )
+        return accounts
 
     def remove_underscore_from_text(self, text: str) -> str:
         return text.replace("_", " ")

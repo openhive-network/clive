@@ -13,7 +13,7 @@ from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetTabP
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import TrackedAccount
 
 OPERATIONS_TAB_PANE_TITLE: Final[str] = "Operations"
 BALANCES_TAB_PANE_TITLE: Final[str] = "Balances"
@@ -26,7 +26,7 @@ class AccountDetails(BaseScreen):
 
     BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
 
-    def __init__(self, account: Account) -> None:
+    def __init__(self, account: TrackedAccount) -> None:
         super().__init__()
         self._account = account
         self.subtitle = f"for the {account.name} account"

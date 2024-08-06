@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import TrackedAccount
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
@@ -39,7 +39,7 @@ class AlarmsTableHeader(Horizontal):
 
 
 class AlarmsTableRow(CliveCheckerboardTableRow):
-    def __init__(self, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails, account: Account) -> None:
+    def __init__(self, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails, account: TrackedAccount) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(alarm.get_alarm_basic_info(), classes="basic-info-cell"),
             CliveCheckerBoardTableCell(OneLineButton("Info", id_="alarm-info-button")),
@@ -56,7 +56,7 @@ class AlarmsTableRow(CliveCheckerboardTableRow):
 class AlarmsTable(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "profile_data"
 
-    def __init__(self, account: Account) -> None:
+    def __init__(self, account: TrackedAccount) -> None:
         super().__init__(header=AlarmsTableHeader(), title="Manage alarms")
         self._account = account
         self._previous_alarms: list[AnyAlarm] | NotUpdatedYet = NotUpdatedYet()
@@ -91,7 +91,7 @@ class AlarmsTable(CliveCheckerboardTable):
         account = self._get_actual_account_state(content)
         self._previous_alarms = account.alarms.harmful_alarms
 
-    def _get_actual_account_state(self, content: ProfileData) -> Account:
+    def _get_actual_account_state(self, content: ProfileData) -> TrackedAccount:
         """Return the account with the actual state."""
         return content.get_account_by_name(self._account)
 
@@ -103,7 +103,7 @@ class Alarms(TabPane, CliveWidget):
 
     ALARM_TAB_PANE_TITLE: Final[str] = "Alarms"
 
-    def __init__(self, account: Account) -> None:
+    def __init__(self, account: TrackedAccount) -> None:
         super().__init__(title=self.ALARM_TAB_PANE_TITLE)
         self._account = account
 

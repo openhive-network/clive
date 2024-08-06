@@ -7,7 +7,7 @@ from textual import on
 from textual.message import Message
 from textual.widgets import Checkbox, Input
 
-from clive.__private.storage.accounts import Account
+from clive.__private.storage.accounts import KnownAccount as KnownAccountModel
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
@@ -48,7 +48,7 @@ class KnownAccount(CliveWidget):
         return self.input.value
 
     @property
-    def account(self) -> Account:
+    def account(self) -> KnownAccountModel:
         """
         Get the account from the input.
 
@@ -56,7 +56,7 @@ class KnownAccount(CliveWidget):
         ------
         InvalidAccountNameError: if the given account name is invalid.
         """
-        return Account(self.account_name_raw)
+        return KnownAccountModel(self.account_name_raw)
 
     def on_mount(self) -> None:
         # >>> start workaround for Textual calling validate on input when self.watch is used. Setting validate_on to
@@ -102,7 +102,7 @@ class KnownAccount(CliveWidget):
             self.post_message(self.Disabled())
 
     def __is_account_name_valid(self) -> bool:
-        return Account.is_valid(self.account_name_raw)
+        return KnownAccountModel.is_valid(self.account_name_raw)
 
     def __is_given_account_known(self) -> bool:
         return self.account in self._account_holder.known_accounts

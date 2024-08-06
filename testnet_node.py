@@ -15,8 +15,7 @@ from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
-from clive.__private.storage.accounts import Account as WatchedAccount
-from clive.__private.storage.accounts import WorkingAccount
+from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.testnet_block_log import run_node

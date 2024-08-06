@@ -5,7 +5,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
 from clive.__private.core.commands.abc.command_cached_data_retrieval import CommandCachedDataRetrieval
-from clive.__private.storage.accounts import Account
+from clive.__private.storage.accounts import TrackedAccount
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
@@ -48,8 +48,8 @@ class AccountAlarmsData:
     """Can be None if there is no change recovery account requests for this account."""
 
 
-AccountHarvestedAlarmsDataContainer = dict[Account, _AccountAlarmsHarvestedData]
-AccountSanitizedAlarmsDataContainer = dict[Account, _AccountAlarmsSanitizedData]
+AccountHarvestedAlarmsDataContainer = dict[TrackedAccount, _AccountAlarmsHarvestedData]
+AccountSanitizedAlarmsDataContainer = dict[TrackedAccount, _AccountAlarmsSanitizedData]
 
 
 @dataclass(kw_only=True)
@@ -57,7 +57,7 @@ class UpdateAlarmsData(
     CommandCachedDataRetrieval[AccountHarvestedAlarmsDataContainer, AccountSanitizedAlarmsDataContainer]
 ):
     node: Node
-    accounts: list[Account]
+    accounts: list[TrackedAccount]
 
     async def _execute(self) -> None:
         if not self.accounts:
@@ -97,7 +97,7 @@ class UpdateAlarmsData(
         return account_sanitized_data
 
     async def _process_data(self, data: AccountSanitizedAlarmsDataContainer) -> None:
-        accounts_processed_data: dict[Account, AccountAlarmsData] = {}
+        accounts_processed_data: dict[TrackedAccount, AccountAlarmsData] = {}
         for account in self.accounts:
             account_data = data[account]
             accounts_processed_data[account] = AccountAlarmsData(

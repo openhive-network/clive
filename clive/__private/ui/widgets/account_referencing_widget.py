@@ -10,13 +10,13 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.profile_data import ProfileData
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import TrackedAccount
 
 
 class AccountReferencingWidget(CliveWidget):
     def __init__(
         self,
-        account: Account,
+        account: TrackedAccount,
         name: str | None = None,
         classes: str | None = None,
     ) -> None:
