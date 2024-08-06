@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from clive.__private.storage.accounts import TrackedAccount
 
 
-class AccountReferencingWidget(CliveWidget):
+class TrackedAccountReferencingWidget(CliveWidget):
     def __init__(
         self,
         account: TrackedAccount,

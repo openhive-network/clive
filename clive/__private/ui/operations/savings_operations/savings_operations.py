@@ -16,7 +16,6 @@ from clive.__private.ui.operations.operation_base_screen import OperationBaseScr
 from clive.__private.ui.operations.operation_summary.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
-from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
@@ -41,6 +40,7 @@ from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.section_title import SectionTitle
+from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.exceptions import RequestIdError
 from clive.models import Asset
 from schemas.operations import (
@@ -91,7 +91,7 @@ class SavingsBalancesTable(CliveDataTable):
         )
 
 
-class SavingsInterestInfo(AccountReferencingWidget):
+class SavingsInterestInfo(TrackedAccountReferencingWidget):
     def __init__(self) -> None:
         super().__init__(account=self.profile_data.working_account)
 

@@ -22,7 +22,7 @@ DashboardBase {
     border: $watched-color;
   }
 
-  AccountRow {
+  TrackedAccountRow {
     box-sizing: content-box;
     height: 6;
 
@@ -39,7 +39,7 @@ DashboardBase {
     }
   }
 
-  AccountInfo {
+  TrackedAccountInfo {
     width: 3fr;
 
     #account-alarms-and-details {

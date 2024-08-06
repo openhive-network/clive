@@ -23,13 +23,13 @@ from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.widgets.account_referencing_widget import AccountReferencingWidget
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.header import AlarmDisplay
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
+from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.models import Asset
 
 if TYPE_CHECKING:
@@ -47,7 +47,7 @@ class AccountsContainer(Container):
     """Container with working and watched accounts."""
 
 
-class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
+class ManabarRepresentation(TrackedAccountReferencingWidget, CliveWidget):
     def __init__(
         self,
         account: TrackedAccount,
@@ -114,7 +114,7 @@ class ManabarRepresentation(AccountReferencingWidget, CliveWidget):
         return getattr(self._account.data, self._manabar_type)  # type: ignore[no-any-return]
 
 
-class BalanceStats(AccountReferencingWidget):
+class BalanceStats(TrackedAccountReferencingWidget):
     full_caption: Final[str] = "full!"
 
     def compose(self) -> ComposeResult:
@@ -123,7 +123,7 @@ class BalanceStats(AccountReferencingWidget):
         yield ManabarRepresentation(self._account, "downvote_manabar", "DOWNVOTING", classes="even-manabar")
 
 
-class ActivityStats(AccountReferencingWidget):
+class ActivityStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield Static("", classes="empty")
         yield EllipsedStatic("LIQUID", classes="title")
@@ -148,7 +148,7 @@ class ActivityStats(AccountReferencingWidget):
         )
 
 
-class AccountInfo(Container, AccountReferencingWidget):
+class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         with Vertical(id="account-alarms-and-details"):
             with Horizontal(id="account-info-container"):
@@ -170,11 +170,11 @@ class AccountInfo(Container, AccountReferencingWidget):
         self.app.push_screen(AccountDetails(self._account))
 
 
-class AccountRow(AccountReferencingWidget):
+class TrackedAccountRow(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         self.add_class("working" if isinstance(self._account, WorkingAccount) else "watched")
         with Horizontal():
-            yield AccountInfo(self._account)
+            yield TrackedAccountInfo(self._account)
             with Container(id="tables"):
                 yield BalanceStats(self._account)
                 yield Static()
@@ -185,14 +185,14 @@ class WorkingAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WORKING ACCOUNT"
 
     def compose(self) -> ComposeResult:
-        yield AccountRow(self.profile_data.working_account)
+        yield TrackedAccountRow(self.profile_data.working_account)
 
 
 class WatchedAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WATCHED ACCOUNTS"
 
     def compose(self) -> ComposeResult:
-        account_rows = [AccountRow(account) for account in self.profile_data.watched_accounts_sorted]
+        account_rows = [TrackedAccountRow(account) for account in self.profile_data.watched_accounts_sorted]
         last_account_row = account_rows[-1]
         last_account_row.add_class("last")
         yield from account_rows
