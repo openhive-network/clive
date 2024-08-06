@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 import shelve
 from contextlib import asynccontextmanager, contextmanager
 from copy import deepcopy
@@ -321,9 +322,8 @@ class ProfileData(Context):
             self.remove_watched_account(to_remove)
 
     def remove_watched_account(self, to_remove: str | Account) -> None:
-        account_name = self._get_account_name(to_remove)
-        account = next((account for account in self.watched_accounts if account.name == account_name), None)
-        if account is not None:
+        with contextlib.suppress(WatchedAccountNotFoundError):
+            account = self.get_watched_account(to_remove)
             self.watched_accounts.discard(account)
 
     @property
