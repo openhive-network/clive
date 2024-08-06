@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum
 from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
@@ -46,13 +45,6 @@ To check if your account alarms are available, use the `is_account_alarms_availa
 
     def __init__(self) -> None:
         super().__init__(self._MESSAGE)
-
-
-class AccountType(str, Enum):
-    value: str
-
-    WORKING = "working"
-    WATCHED = "watched"
 
 
 @dataclass

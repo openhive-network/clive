@@ -14,7 +14,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_natural_time,
     humanize_percent,
 )
-from clive.__private.storage.accounts import AccountType, TrackedAccount, WatchedAccount, WorkingAccount
+from clive.__private.storage.accounts import TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
     SwitchWorkingAccountScreen,
@@ -172,7 +172,7 @@ class AccountInfo(Container, AccountReferencingWidget):
 
 class AccountRow(AccountReferencingWidget):
     def compose(self) -> ComposeResult:
-        self.add_class(AccountType.WORKING if isinstance(self._account, WorkingAccount) else AccountType.WATCHED)
+        self.add_class("working" if isinstance(self._account, WorkingAccount) else "watched")
         with Horizontal():
             yield AccountInfo(self._account)
             with Container(id="tables"):
