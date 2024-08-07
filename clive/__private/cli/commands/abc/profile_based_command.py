@@ -16,4 +16,4 @@ class ProfileBasedCommand(ContextualCLICommand[ProfileData], ABC):
         return self._context_manager_instance
 
     async def _create_context_manager_instance(self) -> ProfileData:
-        return ProfileData.load(self.profile_name)
+        return ProfileData.load(self.profile_name, auto_create=False)
