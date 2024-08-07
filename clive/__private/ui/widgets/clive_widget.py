@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-import typing
 from typing import TYPE_CHECKING
 
 from textual.css.query import NoMatches
 from textual.widget import Widget
 from textual.widgets import Footer
+
+from clive.__private.ui.clive_dom_node import CliveDOMNode
 
 if TYPE_CHECKING:
     from textual.binding import Binding
@@ -15,21 +16,14 @@ if TYPE_CHECKING:
     from clive.__private.core.node import Node
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.ui.app import Clive
 
 
-class CliveWidget(Widget):
+class CliveWidget(CliveDOMNode, Widget):
     """
     An ordinary textual widget that also knows what type of application it belongs to.
 
     Inspired by: https://github.com/Textualize/textual/discussions/1099#discussioncomment-4049612
     """
-
-    @property
-    def app(self) -> Clive:  # type: ignore[override]
-        from clive.__private.ui.app import Clive  # To avoid circular imports
-
-        return typing.cast(Clive, super().app)
 
     @property
     def world(self) -> TextualWorld:

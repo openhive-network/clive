@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.dom import DOMNode
+from clive.__private.ui.clive_dom_node import CliveDOMNode
 
 if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import Any
 
 
-class ManualReactive(DOMNode):
+class ManualReactive(CliveDOMNode):
     def update_reactive(self, attribute_name: str, update_function: Callable[[Any], None] | None = None) -> None:
         """
         Update the given reactive attribute with the given update function.
