@@ -289,9 +289,14 @@ class SafeSettings:
         return namespace(self)
 
     def _get_data_path(self) -> Path:
-        value = settings.get(DATA_PATH)
-        assert isinstance(value, Path), "data path should is set by us, so should be available now"
-        return value
+        setting_name = DATA_PATH
+        value = settings.get(setting_name)
+        if isinstance(value, Path):
+            # case when value is set in runtime, by us
+            return value
+        # case when value is overridden by environment variable
+        self._assert_is_string(setting_name, value=value)
+        return Path(value)
 
     def _get_max_number_of_tracked_accounts(self) -> int:
         return int(self._get_number(MAX_NUMBER_OF_TRACKED_ACCOUNTS, default=6, minimum=1))
