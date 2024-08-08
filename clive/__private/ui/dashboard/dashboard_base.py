@@ -23,11 +23,11 @@ from clive.__private.ui.config.config import Config
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
-from clive.__private.ui.widgets.header import AlarmDisplay
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.models import Asset
