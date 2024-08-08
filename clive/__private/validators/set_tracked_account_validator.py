@@ -33,7 +33,7 @@ class SetTrackedAccountValidator(AccountNameValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_account_already_tracked(self, value: str) -> bool:
-        return self._profile_data.is_account_tracked(value)
+        return not self._profile_data.is_account_tracked(value)
 
     def _validate_max_tracked_accounts_reached(self, _: str) -> bool:
         return len(self._profile_data.get_tracked_accounts()) < self.MAX_NUMBER_OF_TRACKED_ACCOUNTS

@@ -292,7 +292,7 @@ class ProfileData(Context):
 
     def is_account_tracked(self, account: str | Account) -> bool:
         account_name = self._get_account_name(account)
-        return account_name not in [tracked_account.name for tracked_account in self.get_tracked_accounts()]
+        return account_name in [tracked_account.name for tracked_account in self.get_tracked_accounts()]
 
     def get_tracked_accounts(self) -> set[TrackedAccount]:
         accounts: set[TrackedAccount] = set()
