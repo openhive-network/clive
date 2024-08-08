@@ -40,6 +40,7 @@ from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
 from schemas.fields.compound import Price, Proposal
 from schemas.fields.hex import Sha256
 from schemas.fields.hex import Signature as SchemasSignature
+from schemas.fields.hex import TransactionId as SchemasTransactionId
 from schemas.fields.hive_int import HiveInt as SchemasHiveInt
 from schemas.operation import Operation as SchemasBaseOperationType
 from schemas.operations import AnyOperation
@@ -89,6 +90,7 @@ RecurrentTransferPairIdRepresentation = HF26Representation[RecurrentTransferPair
 SavingsWithdrawals = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
 SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Signature = SchemasSignature
+TransactionId = SchemasTransactionId
 TransactionStatus = SchemasFindTransaction
 RecurrentTransfer = FindRecurrentTransfersFundament[AssetHiveHF26, AssetHbdHF26]
 Version = GetVersion
