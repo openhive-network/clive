@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Iterable
 
 from clive.__private.settings import safe_settings
@@ -117,6 +118,9 @@ class PersistentStorageService:
         """
         self._raise_if_profile_not_stored(profile_name)
         self._remove_profile_storage_model_by_name(profile_name)
+        with contextlib.suppress(NoDefaultProfileToLoadError):
+            if profile_name == self.get_default_profile_name():
+                self._unset_default_profile()
         self.save_storage()
 
     def list_stored_profile_names(self) -> list[str]:
@@ -173,6 +177,9 @@ class PersistentStorageService:
 
     def _set_default_profile(self, profile_name: str) -> None:
         self.cached_storage.default_profile = profile_name
+
+    def _unset_default_profile(self) -> None:
+        self.cached_storage.default_profile = None
 
     def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
         """
