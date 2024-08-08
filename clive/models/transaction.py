@@ -6,10 +6,8 @@ from typing import Any
 from pydantic import Field, validator
 
 from clive.models import Operation, Signature  # noqa: TCH001
-from clive.models.aliased import OperationRepresentationType  # noqa: TCH001
-from schemas.fields.hex import TransactionId
+from clive.models.aliased import HiveInt, OperationRepresentationType, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
-from schemas.fields.hive_int import HiveInt
 from schemas.operations.representations import convert_to_representation
 from schemas.transaction import Transaction as SchemasTransaction
 
