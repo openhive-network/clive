@@ -81,7 +81,7 @@ class Account:
 
 
 @dataclass
-class TrackedAccount(Account):
+class DetailedAccount(Account):
     _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
     _data: NodeData | None = field(init=False, default=None, compare=False)
 
@@ -114,6 +114,12 @@ class TrackedAccount(Account):
 
 @dataclass
 class KnownAccount(Account):
+    def __hash__(self) -> int:
+        return super().__hash__()
+
+
+@dataclass
+class TrackedAccount(DetailedAccount):
     def __hash__(self) -> int:
         return super().__hash__()
 
