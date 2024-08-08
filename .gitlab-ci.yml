@@ -221,6 +221,19 @@ deploy_wheel_to_pypi:
 
 #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>| BUILD AND DEPLOY DOCKER |>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
+.generate_clive_startup_scripts_base:
+  extends: .job-defaults
+  stage: build_and_deploy_docker
+  variables:
+    GIT_SUBMODULE_STRATEGY: none
+  script:
+    # CLIVE_IMAGE_PATH variable should come from dependent image builduing job
+    - $CI_PROJECT_DIR/scripts/ci-helpers/generate_startup_scripts.sh "${CLIVE_IMAGE_NAME}"
+  artifacts:
+    expose_as: 'startup scripts'
+    paths:
+      - ./scripts/start_clive.sh
+
 .prepare_clive_image:
   extends: .docker_image_builder_job
   stage: build_and_deploy_docker
@@ -280,6 +293,14 @@ deploy_wheel_to_pypi:
 build_and_push_clive_image:
   extends: .prepare_clive_image
 
+generate_clive_startup_scripts:
+  extends: .generate_clive_startup_scripts_base
+  needs:
+    - job: build_and_push_clive_image
+      artifacts: true
+  artifacts:
+    expire_in: 7 days
+
 build_and_push_clive_testnet_image:
   extends: .prepare_clive_image
   <<: *clive_testnet_needs
@@ -305,6 +326,26 @@ build_and_push_clive_testnet_image:
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
+
+generate_clive_develop_startup_scripts:
+  extends: .generate_clive_startup_scripts_base
+  only:
+    - develop
+  needs:
+    - job: build_and_push_clive_stable_image
+      artifacts: true
+  artifacts:
+    expire_in: 30 days
+
+generate_clive_master_startup_scripts:
+  extends: .generate_clive_startup_scripts_base
+  only:
+    - master
+  needs:
+    - job: build_and_push_clive_stable_image
+      artifacts: true
+  artifacts:
+    expire_in: never
 
 build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
