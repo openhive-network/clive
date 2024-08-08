@@ -15,10 +15,6 @@ class AlarmStorageModel(CliveBaseModel):
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
-class KnownAccountStorageModel(CliveBaseModel):
-    name: str
-
-
 class TrackedAccountStorageModel(CliveBaseModel):
     name: str
     alarms: list[AlarmStorageModel] = []  # noqa: RUF012
@@ -33,7 +29,7 @@ class ProfileStorageModel(CliveBaseModel):
     name: str
     working_account: str | None = None
     tracked_accounts: list[TrackedAccountStorageModel] = []  # noqa: RUF012
-    known_accounts: list[KnownAccountStorageModel] = []  # noqa: RUF012
+    known_accounts: list[str] = []  # noqa: RUF012
     key_aliases: list[KeyAliasStorageModel] = []  # noqa: RUF012
     cart_operations: list[OperationRepresentationType] = []  # noqa: RUF012
     chain_id: str | None = None

@@ -5,14 +5,13 @@ from typing import TYPE_CHECKING
 from clive.__private.storage.model import (
     AlarmStorageModel,
     KeyAliasStorageModel,
-    KnownAccountStorageModel,
     ProfileStorageModel,
     TrackedAccountStorageModel,
 )
 from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
-    from clive.__private.core.accounts.accounts import KnownAccount, TrackedAccount
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile_data import ProfileData
@@ -42,8 +41,8 @@ class RuntimeToStorageConverter:
     def _tracked_accounts_to_model_container(self) -> list[TrackedAccountStorageModel]:
         return [self._tracked_account_to_model(account) for account in self._profile.accounts.tracked]
 
-    def _known_accounts_to_model_container(self) -> list[KnownAccountStorageModel]:
-        return [self._known_account_to_model(account) for account in self._profile.accounts.known]
+    def _known_accounts_to_model_container(self) -> list[str]:
+        return [account.name for account in self._profile.accounts.known]
 
     def _key_aliases_to_model_container(self) -> list[KeyAliasStorageModel]:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
@@ -54,9 +53,6 @@ class RuntimeToStorageConverter:
     def _tracked_account_to_model(self, account: TrackedAccount) -> TrackedAccountStorageModel:
         alarms = [self._alarm_to_model(alarm) for alarm in account._alarms.all_alarms if alarm.has_identifier]
         return TrackedAccountStorageModel(name=account.name, alarms=alarms)
-
-    def _known_account_to_model(self, account: KnownAccount) -> KnownAccountStorageModel:
-        return KnownAccountStorageModel(name=account.name)
 
     def _alarm_to_model(self, alarm: AnyAlarm) -> AlarmStorageModel:
         return AlarmStorageModel(

@@ -7,7 +7,7 @@ from clive.__private.storage.model import calculate_storage_model_revision
 
 def test_storage_revision_doesnt_changed() -> None:
     # ARRANGE
-    expected_revision: Final[str] = "2c0d6f2e"
+    expected_revision: Final[str] = "f41418b1"
 
     # ACT
     actual_revision = calculate_storage_model_revision()
