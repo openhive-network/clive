@@ -13,7 +13,6 @@ if TYPE_CHECKING:
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,
-        KnownAccountStorageModel,
         ProfileStorageModel,
         TrackedAccountStorageModel,
     )
@@ -61,7 +60,7 @@ class StorageToRuntimeConverter:
         }
 
     def _known_accounts_from_profile_storage_model(self) -> set[KnownAccount]:
-        return {self._known_account_from_model(account) for account in self._model.known_accounts}
+        return {self._known_account_from_model_representation(account) for account in self._model.known_accounts}
 
     def _key_aliases_from_profile_storage_model(self) -> set[PublicKeyAliased]:
         return {self._key_alias_from_model(key) for key in self._model.key_aliases}
@@ -79,8 +78,8 @@ class StorageToRuntimeConverter:
         alarms = [self._alarm_from_model(alarm) for alarm in model.alarms]
         return AlarmsStorage(alarms)
 
-    def _known_account_from_model(self, model: KnownAccountStorageModel) -> KnownAccount:
-        return KnownAccount(model.name)
+    def _known_account_from_model_representation(self, name: str) -> KnownAccount:
+        return KnownAccount(name)
 
     def _alarm_from_model(self, model: AlarmStorageModel) -> AnyAlarm:
         alarm_cls = Alarm.get_alarm_class_by_name(model.name)
