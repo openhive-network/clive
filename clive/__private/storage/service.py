@@ -41,27 +41,25 @@ class NoDefaultProfileToLoadError(PersistentStorageServiceError):
 
 
 class PersistentStorageService:
-    @classmethod
-    def save_storage(cls, storage: PersistentStorageModel) -> None:
-        storage_path = cls._get_storage_filepath()
-        serialized_storage = cls._serialize_storage_model(storage)
+    def __init__(self) -> None:
+        self._cached_storage: PersistentStorageModel | None = None
+
+    @property
+    def cached_storage(self) -> PersistentStorageModel:
+        if self._cached_storage is None:
+            self._cached_storage = self._load_storage()
+        return self._cached_storage
+
+    def save_storage(self) -> None:
+        storage_path = self._get_storage_filepath()
+        serialized_storage = self._serialize_storage_model(self.cached_storage)
 
         # create data directory if it doesn't exist
         storage_path.parent.mkdir(parents=True, exist_ok=True)
 
         storage_path.write_text(serialized_storage)
 
-    @classmethod
-    def load_storage(cls) -> PersistentStorageModel:
-        storage_path = cls._get_storage_filepath()
-        if not storage_path.is_file():
-            return PersistentStorageModel()
-
-        storage_serialized = storage_path.read_text()
-        return cls._deserialize_storage_model(storage_serialized)
-
-    @classmethod
-    def save_profile(cls, profile: ProfileData) -> None:
+    def save_profile(self, profile: ProfileData) -> None:
         """
         Save profile to the storage.
 
@@ -74,24 +72,20 @@ class PersistentStorageService:
             ProfileAlreadyExistsError: If given profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
         """
-        storage = cls.load_storage()
-
-        cls._raise_if_profile_with_name_already_exists_on_first_save(profile, storage)
+        self._raise_if_profile_with_name_already_exists_on_first_save(profile)
         profile.unset_is_newly_created()
 
         model = RuntimeToStorageConverter(profile).create_storage_model()
 
-        if not cls.is_default_profile_set(storage):
+        if not self.is_default_profile_set():
             # set first profile as default when no default set yet
-            cls._set_default_profile(model.name, storage)
+            self._set_default_profile(model.name)
 
-        # remove old profile if exists
-        storage.profiles = cls._remove_profile_storage_model_by_name(model.name, storage.profiles)
-        storage.profiles.append(model)
-        cls.save_storage(storage)
+        self._remove_profile_storage_model_by_name(model.name)  # remove old profile if exists
+        self.cached_storage.profiles.append(model)
+        self.save_storage()
 
-    @classmethod
-    def load_profile(cls, profile_name: str | None = None) -> ProfileData:
+    def load_profile(self, profile_name: str | None = None) -> ProfileData:
         """
         Load profile with the given name from the storage.
 
@@ -104,14 +98,12 @@ class PersistentStorageService:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
             NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
         """
-        storage = cls.load_storage()
-        profile_name_ = profile_name if profile_name is not None else cls.get_default_profile_name(storage)
-        cls._raise_if_profile_not_stored(profile_name_, storage)
-        profile_storage_model = cls._find_profile_storage_model_by_name(profile_name_, storage.profiles)
+        profile_name_ = profile_name if profile_name is not None else self.get_default_profile_name()
+        self._raise_if_profile_not_stored(profile_name_)
+        profile_storage_model = self._find_profile_storage_model_by_name(profile_name_)
         return StorageToRuntimeConverter(profile_storage_model).create_profile()
 
-    @classmethod
-    def remove_profile(cls, profile_name: str) -> None:
+    def remove_profile(self, profile_name: str) -> None:
         """
         Remove profile with the given name from the storage.
 
@@ -123,103 +115,88 @@ class PersistentStorageService:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        storage = cls.load_storage()
-        cls._raise_if_profile_not_stored(profile_name, storage)
-        storage.profiles = cls._remove_profile_storage_model_by_name(profile_name, storage.profiles)
-        cls.save_storage(storage)
+        self._raise_if_profile_not_stored(profile_name)
+        self._remove_profile_storage_model_by_name(profile_name)
+        self.save_storage()
 
-    @classmethod
-    def list_stored_profile_names(cls, storage: PersistentStorageModel | None = None) -> list[str]:
+    def list_stored_profile_names(self) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        storage = cls._get_storage(storage)
-        return sorted(profile.name for profile in storage.profiles)
+        return sorted(profile.name for profile in self.cached_storage.profiles)
 
-    @classmethod
-    def get_default_profile_name(cls, storage: PersistentStorageModel | None = None) -> str:
+    def get_default_profile_name(self) -> str:
         """
         Get the profile name of default profile stored in the storage.
 
-        Args:
-        ----
-            storage: Storage model to be used. If not provided, storage will be loaded from the disk.
-
-        Raises:
+        Raises:  # noqa: D406
         ------
             NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
         """
-        storage = cls._get_storage(storage)
-        cls._raise_if_no_default_profile_is_set(storage)
+        self._raise_if_no_default_profile_is_set()
+        storage = self.cached_storage
         assert storage.default_profile is not None, "Default profile must be set if no error was raised."
         return storage.default_profile
 
-    @classmethod
-    def set_default_profile(cls, profile_name: str) -> None:
+    def set_default_profile(self, profile_name: str) -> None:
         """
         Set profile as default.
 
         Args:
         ----
             profile_name: Name of the profile to be set as default.
-            storage: Storage model to be used. If not provided, storage will be loaded from the disk.
 
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
         """
-        storage = cls._get_storage()
-        cls._raise_if_profile_not_stored(profile_name, storage)
-        cls._set_default_profile(profile_name, storage)
-        cls.save_storage(storage)
+        self._raise_if_profile_not_stored(profile_name)
+        self._set_default_profile(profile_name)
+        self.save_storage()
 
-    @classmethod
-    def is_profile_stored(cls, profile_name: str, storage: PersistentStorageModel | None = None) -> bool:
-        storage = cls._get_storage(storage)
-        return profile_name in cls.list_stored_profile_names(storage)
+    def is_profile_stored(self, profile_name: str) -> bool:
+        return profile_name in self.list_stored_profile_names()
 
-    @classmethod
-    def is_default_profile_set(cls, storage: PersistentStorageModel | None = None) -> bool:
-        storage = cls._get_storage(storage)
-        return storage.default_profile is not None
+    def is_default_profile_set(self) -> bool:
+        return self.cached_storage.default_profile is not None
 
     @classmethod
     def _get_storage_filepath(cls) -> Path:
         revision = calculate_storage_model_revision()
         return safe_settings.data_path / f"data/{revision}/profiles.json"
 
-    @classmethod
-    def _get_storage(cls, storage: PersistentStorageModel | None = None) -> PersistentStorageModel:
-        return cls.load_storage() if storage is None else storage
+    def _load_storage(self) -> PersistentStorageModel:
+        storage_path = self._get_storage_filepath()
+        if not storage_path.is_file():
+            return PersistentStorageModel()
 
-    @classmethod
-    def _set_default_profile(cls, profile_name: str, storage: PersistentStorageModel) -> None:
-        storage.default_profile = profile_name
+        storage_serialized = storage_path.read_text()
+        return self._deserialize_storage_model(storage_serialized)
 
-    @classmethod
-    def _find_profile_storage_model_by_name(
-        cls, profile_name: str, profiles: Iterable[ProfileStorageModel]
-    ) -> ProfileStorageModel:
+    def _set_default_profile(self, profile_name: str) -> None:
+        self.cached_storage.default_profile = profile_name
+
+    def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
         """
         Find profile storage model by name in the given container of profiles.
 
         Args:
         ----
             profile_name: Name of the profile to be found.
-            profiles: Container of profiles to search in.
 
         Raises:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
         """
+        profiles = self.cached_storage.profiles
         profile_storage_model = next((profile for profile in profiles if profile.name == profile_name), None)
         if profile_storage_model is None:
             raise ProfileDoesNotExistsError(profile_name)
         return profile_storage_model
 
-    @classmethod
-    def _remove_profile_storage_model_by_name(
-        cls, profile_name: str, profiles: Iterable[ProfileStorageModel]
-    ) -> list[ProfileStorageModel]:
-        return [profile for profile in profiles if profile.name != profile_name]
+    def _remove_profile_storage_model_by_name(self, profile_name: str) -> None:
+        storage = self.cached_storage
+        old_profiles = storage.profiles
+        new_profiles = [profile for profile in old_profiles if profile.name != profile_name]
+        storage.profiles = new_profiles
 
     @classmethod
     def _serialize_storage_model(cls, storage: PersistentStorageModel) -> str:
@@ -229,23 +206,18 @@ class PersistentStorageService:
     def _deserialize_storage_model(cls, storage_serialized: str) -> PersistentStorageModel:
         return PersistentStorageModel.parse_raw(storage_serialized)
 
-    @classmethod
-    def _raise_if_no_default_profile_is_set(cls, storage: PersistentStorageModel) -> None:
-        if not cls.is_default_profile_set(storage):
+    def _raise_if_no_default_profile_is_set(self) -> None:
+        if not self.is_default_profile_set():
             raise NoDefaultProfileToLoadError
 
-    @classmethod
-    def _raise_if_profile_not_stored(cls, profile_name: str, storage: PersistentStorageModel | None = None) -> None:
-        if not cls.is_profile_stored(profile_name, storage):
+    def _raise_if_profile_not_stored(self, profile_name: str) -> None:
+        if not self.is_profile_stored(profile_name):
             raise ProfileDoesNotExistsError(profile_name)
 
-    @classmethod
-    def _raise_if_profile_with_name_already_exists_on_first_save(
-        cls, profile: ProfileData, storage: PersistentStorageModel
-    ) -> None:
+    def _raise_if_profile_with_name_already_exists_on_first_save(self, profile: ProfileData) -> None:
         profile_name = profile.name
         is_newly_created = profile.is_newly_created
-        existing_profile_names = cls.list_stored_profile_names(storage)
+        existing_profile_names = self.list_stored_profile_names()
 
         if is_newly_created and profile_name in existing_profile_names:
             raise ProfileAlreadyExistsError(profile_name, existing_profile_names)

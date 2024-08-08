@@ -348,7 +348,7 @@ class ProfileData(Context):
         """
         if self.__skip_save:
             return
-        PersistentStorageService.save_profile(self)
+        PersistentStorageService().save_profile(self)
 
     @classmethod
     def set_default_profile(cls, profile_name: str) -> None:
@@ -363,7 +363,7 @@ class ProfileData(Context):
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
         """
-        PersistentStorageService.set_default_profile(profile_name)
+        PersistentStorageService().set_default_profile(profile_name)
 
     def skip_saving(self) -> None:
         logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
@@ -396,7 +396,7 @@ class ProfileData(Context):
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        PersistentStorageService.remove_profile(profile_name)
+        PersistentStorageService().remove_profile(profile_name)
 
     @classmethod
     def get_default_profile_name(cls) -> str:
@@ -411,11 +411,11 @@ class ProfileData(Context):
         ------
             NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
         """
-        return PersistentStorageService.get_default_profile_name()
+        return PersistentStorageService().get_default_profile_name()
 
     @classmethod
     def is_default_profile_set(cls) -> bool:
-        return PersistentStorageService.is_default_profile_set()
+        return PersistentStorageService().is_default_profile_set()
 
     @classmethod
     def load(cls, name: str | None = None, *, auto_create: bool = True) -> ProfileData:
@@ -445,7 +445,7 @@ class ProfileData(Context):
         _name = name or cls.get_default_profile_name()
 
         try:
-            return PersistentStorageService.load_profile(_name)
+            return PersistentStorageService().load_profile(_name)
         except ProfileDoesNotExistsError:
             if auto_create:
                 return create_new_profile(_name)
@@ -460,7 +460,7 @@ class ProfileData(Context):
     @classmethod
     def list_profiles(cls) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        return PersistentStorageService.list_stored_profile_names()
+        return PersistentStorageService().list_stored_profile_names()
 
     @staticmethod
     def __default_chain_id() -> str | None:
