@@ -1,7 +1,7 @@
 import errno
 import inspect
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field, fields
+from dataclasses import Field, dataclass, field, fields
 from typing import Any
 
 from typing_extensions import Self

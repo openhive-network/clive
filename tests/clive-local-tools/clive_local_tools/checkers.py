@@ -6,7 +6,7 @@ import pytest
 from click.testing import Result
 from helpy.exceptions import RequestError
 
-from clive_local_tools.cli.helpers import get_transaction_id_from_result
+from clive_local_tools.helpers import get_transaction_id_from_output
 
 if TYPE_CHECKING:
     import test_tools as tt
@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
     if isinstance(trx_id_or_result, Result):
-        return get_transaction_id_from_result(trx_id_or_result)
+        return get_transaction_id_from_output(trx_id_or_result.stdout)
     return trx_id_or_result
 
 

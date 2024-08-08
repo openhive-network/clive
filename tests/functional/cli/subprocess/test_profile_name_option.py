@@ -7,12 +7,13 @@ import pytest
 
 from clive.models.aliased import CustomJsonOperation
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
-from clive_local_tools.cli.helpers import get_transaction_id_from_output, run_clive_in_subprocess
+from clive_local_tools.cli.helpers import run_clive_in_subprocess
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,
     WORKING_ACCOUNT_KEY_ALIAS,
 )
+from clive_local_tools.helpers import get_transaction_id_from_output
 from clive_local_tools.testnet_block_log import (
     ALT_WORKING_ACCOUNT1_NAME,
     WATCHED_ACCOUNTS_NAMES,
