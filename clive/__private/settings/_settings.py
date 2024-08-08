@@ -5,7 +5,7 @@ from typing import Final
 
 from dynaconf import Dynaconf  # type: ignore[import-untyped]
 
-from clive.__private.core.constants.env import ROOT_DIRECTORY
+from clive.__private.core.constants.env import ENVVAR_PREFIX, ROOT_DIRECTORY
 from clive.__private.core.constants.setting_identifiers import LOG_DIRECTORY, LOG_PATH
 
 _DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
@@ -14,7 +14,7 @@ _DATA_DIRECTORY: Final[Path] = Path.home() / ".clive"
 _SETTINGS_FILES: Final[list[str]] = ["settings.toml", str(_DATA_DIRECTORY / "settings.toml")]
 
 settings = Dynaconf(
-    envvar_prefix="CLIVE",
+    envvar_prefix=ENVVAR_PREFIX,
     root_path=ROOT_DIRECTORY,
     settings_files=_SETTINGS_FILES,
     environments=True,
@@ -26,3 +26,8 @@ settings = Dynaconf(
 _log_directory = settings.get(LOG_DIRECTORY, "") or _DATA_DIRECTORY
 _log_path = Path(_log_directory) / "logs"
 settings.set(LOG_PATH, _log_path)
+
+
+def clive_prefixed_envvar(setting_name: str) -> str:
+    underscored_setting_name = setting_name.replace(".", "__")
+    return f"{ENVVAR_PREFIX}_{underscored_setting_name}"

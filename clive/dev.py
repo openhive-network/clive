@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+from clive.__private.core.constants.setting_identifiers import IS_DEV
+from clive.__private.settings import clive_prefixed_envvar
+
 
 def is_in_dev_mode() -> bool:
     from clive.__private.settings import safe_settings
@@ -39,7 +42,7 @@ def main() -> None:
     features.add("devtools")
 
     environment["TEXTUAL"] = ",".join(sorted(features))
-    environment["CLIVE_IS_DEV"] = "1"
+    environment[clive_prefixed_envvar(IS_DEV)] = "1"
 
     run_app("clive/main.py", [], environment)
 
