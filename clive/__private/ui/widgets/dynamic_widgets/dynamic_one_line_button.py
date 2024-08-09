@@ -11,7 +11,8 @@ from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
 
 if TYPE_CHECKING:
     from textual.reactive import Reactable
-    from textual.widgets._button import ButtonVariant
+
+    from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
 DynamicOneLineButtonCallbackType = WatchLikeCallbackType[str]
@@ -25,7 +26,7 @@ class DynamicOneLineButton(DynamicWidget[OneLineButton, str]):
         callback: DynamicOneLineButtonCallbackType,
         *,
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
-        variant: ButtonVariant = "primary",
+        variant: CliveButtonVariant = "primary",
         init: bool = True,
         id_: str | None = None,
         classes: str | None = None,
