@@ -112,9 +112,6 @@ class TrackedAccount(Account):
     def is_alarms_data_available(self) -> bool:
         return self._alarms.is_alarms_data_available
 
-    def _prepare_for_save(self) -> None:
-        self._data = None  # do not store old data gathered from the node
-
 
 @dataclass
 class KnownAccount(Account):

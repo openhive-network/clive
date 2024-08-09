@@ -27,7 +27,8 @@ if TYPE_CHECKING:
 
 def _get_default_profile_name() -> str | None:
     if not is_tab_completion_active():
-        from clive.__private.core.profile_data import NoDefaultProfileToLoadError, ProfileData
+        from clive.__private.core.profile_data import ProfileData
+        from clive.__private.storage.service import NoDefaultProfileToLoadError
 
         with contextlib.suppress(NoDefaultProfileToLoadError):
             return ProfileData.get_default_profile_name()

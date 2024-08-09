@@ -4,7 +4,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.unlock import WalletDoesNotExistsError
-from clive.__private.core.profile_data import ProfileAlreadyExistsError, ProfileDoesNotExistsError
+from clive.__private.storage.service import ProfileAlreadyExistsError, ProfileDoesNotExistsError
 from clive.dev import is_in_dev_mode
 from clive.exceptions import CommunicationError
 
@@ -36,4 +36,4 @@ def register_error_handlers(cli: CliveTyper) -> None:
 
     @cli.error_handler(ProfileAlreadyExistsError)
     def handle_profile_already_not_exists(error: ProfileAlreadyExistsError) -> None:
-        raise CLIProfileAlreadyExistsError(error.profile_name, error.existing_profiles) from None
+        raise CLIProfileAlreadyExistsError(error.profile_name, error.existing_profile_names) from None

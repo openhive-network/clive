@@ -1,26 +1,24 @@
 from __future__ import annotations
 
-import shelve
-from contextlib import asynccontextmanager, contextmanager
+from contextlib import asynccontextmanager
 from copy import deepcopy
-from pathlib import Path
-from typing import TYPE_CHECKING, Any, Final
+from typing import TYPE_CHECKING
 
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive.__private.core.clive_import import get_clive
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.storage.contextual import Context
+from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.aliased import ChainIdSchema, OperationBaseClass
 
 if TYPE_CHECKING:
-    from collections.abc import AsyncIterator, Iterable, Iterator
+    from collections.abc import AsyncIterator, Iterable
     from types import TracebackType
 
     from typing_extensions import Self
@@ -39,37 +37,6 @@ class InvalidChainIdError(ProfileDataError):
         super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
 
 
-class ProfileCouldNotBeLoadedError(ProfileDataError):
-    """Raised when a profile could not be loaded."""
-
-
-class ProfileCouldNotBeDeletedError(ProfileDataError):
-    """Raised when a profile could not be deleted."""
-
-
-class ProfileDoesNotExistsError(ProfileCouldNotBeLoadedError, ProfileCouldNotBeDeletedError):
-    def __init__(self, profile_name: str) -> None:
-        self.profile_name = profile_name
-        super().__init__(f"Profile `{profile_name}` does not exist.")
-
-
-class NoDefaultProfileToLoadError(ProfileCouldNotBeLoadedError):
-    """Raised when default profile is not set."""
-
-
-class ProfileSaveError(ProfileDataError):
-    """Raised when a profile could not be saved."""
-
-
-class ProfileAlreadyExistsError(ProfileDataError):
-    def __init__(self, profile_name: str, existing_profiles: list[str] | None = None) -> None:
-        self.profile_name = profile_name
-        self.existing_profiles = existing_profiles
-        detail = f", different than {existing_profiles}." if existing_profiles else "."
-        message = f"Profile `{self.profile_name}` already exists. Please choose another name{detail}"
-        super().__init__(message)
-
-
 class ProfileInvalidNameError(ProfileDataError):
     def __init__(self, profile_name: str, reason: str | None = None) -> None:
         self.profile_name = profile_name
@@ -85,8 +52,6 @@ class Cart(list[OperationBaseClass]):
 
 
 class ProfileData(Context):
-    _DEFAULT_PROFILE_IDENTIFIER: Final[str] = "!default_profile"
-
     def __init__(
         self,
         name: str,
@@ -111,8 +76,8 @@ class ProfileData(Context):
             self.__backup_node_addresses = self.__default_node_address()
             self.__node_address = self.__backup_node_addresses[0]
 
-        self.__first_time_save = True
         self.__skip_save = False
+        self._is_newly_created = True
 
     async def __aenter__(self) -> Self:
         return self
@@ -121,6 +86,11 @@ class ProfileData(Context):
         self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
     ) -> None:
         self.save()
+
+    @property
+    def is_newly_created(self) -> bool:
+        """Determine if the profile is newly created (has not been saved yet)."""
+        return self._is_newly_created
 
     @classmethod
     def create(  # noqa: PLR0913
@@ -133,6 +103,8 @@ class ProfileData(Context):
         cart_operations: Iterable[OperationBaseClass] | None = None,
         chain_id: str | None = None,
         node_address: str | Url | None = None,
+        *,
+        is_newly_created: bool = True,
     ) -> ProfileData:
         profile = cls(name, working_account, watched_accounts, known_accounts)
         profile.keys.add(*key_aliases or [])
@@ -141,7 +113,11 @@ class ProfileData(Context):
             profile.set_chain_id(chain_id)
         if node_address is not None:
             profile._set_node_address(Url.parse(node_address))
+        profile._is_newly_created = is_newly_created
         return profile
+
+    def unset_is_newly_created(self) -> None:
+        self._is_newly_created = False
 
     def copy(self) -> Self:
         return deepcopy(self)
@@ -190,44 +166,33 @@ class ProfileData(Context):
         """When no chain_id is set, it should be fetched from the node api."""
         self.__chain_id = None
 
-    @classmethod
-    def _get_file_storage_path(cls) -> Path:
-        return Path(safe_settings.data_path) / "data/profile"
-
     def save(self) -> None:
+        """
+        Save the current profile to the storage.
+
+        Raises: # noqa: D406
+        ------
+            ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
+                it could not be saved, that would overwrite other profile.
+        """
         if self.__skip_save:
             return
-
-        existing_profiles = self.list_profiles()
-        if self.__first_time_save and self.name in existing_profiles:
-            raise ProfileAlreadyExistsError(self.name, existing_profiles)
-        self.__first_time_save = False
-
-        clive = get_clive().app_instance()
-
-        if clive.is_launched:
-            clive.trigger_profile_data_watchers()
-
-        with self.__open_database() as db:
-            db[self.name] = self._prepare_for_save()
-
-        # set the profile as default if that's not already set (first profile is set always as default)
-        if not self.is_default_profile_set():
-            self.set_default_profile(self.name)
-
-    def _prepare_for_save(self) -> Self:
-        this = deepcopy(self)
-        for account in this.accounts.tracked:
-            account._prepare_for_save()
-        return this
+        PersistentStorageService.save_profile(self)
 
     @classmethod
-    def set_default_profile(cls, name: str) -> None:
-        if name not in cls.list_profiles():
-            raise ProfileDoesNotExistsError(name)
+    def set_default_profile(cls, profile_name: str) -> None:
+        """
+        Set profile with the given name as default.
 
-        with cls.__open_database() as db:
-            db[cls._DEFAULT_PROFILE_IDENTIFIER] = name
+        Args:
+        ----
+            profile_name: Name of the profile to be set as default.
+
+        Raises:
+        ------
+            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
+        """
+        PersistentStorageService.set_default_profile(profile_name)
 
     def skip_saving(self) -> None:
         logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
@@ -238,53 +203,48 @@ class ProfileData(Context):
         self.__skip_save = False
 
     def delete(self) -> None:
+        """
+        Remove the current profile from the storage.
+
+        Raises:  # noqa: D406
+        ------
+            ProfileDoesNotExistsError: If this profile is not stored, it could not be removed.
+        """
         self.delete_by_name(self.name)
 
     @classmethod
-    def delete_by_name(cls, name: str) -> None:
-        with cls.__open_database() as db:
-            try:
-                del db[name]
-            except KeyError as error:
-                raise ProfileDoesNotExistsError(name) from error
+    def delete_by_name(cls, profile_name: str) -> None:
+        """
+        Remove profile with the given name from the storage.
+
+        Args:
+        ----
+            profile_name: Name of the profile to be removed.
+
+        Raises:
+        ------
+            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
+        """
+        PersistentStorageService.remove_profile(profile_name)
 
     @classmethod
-    def get_default_profile_name(cls, *, exclude_if_deleted: bool = True) -> str:
+    def get_default_profile_name(cls) -> str:
         """
-        Get the name of default profile set.
+        Get the profile name of default profile set in the storage.
 
-        Raises
+        Args:
+        ----
+            storage: Storage model to be used. If not provided, storage will be loaded from the disk.
+
+        Raises:
         ------
-        NoDefaultProfileToLoadError: If no default profile is set.
+            NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
         """
-        if exclude_if_deleted and not cls.list_profiles():
-            raise NoDefaultProfileToLoadError
-
-        with cls.__open_database() as db:
-            profile_name: str | None = db.get(cls._DEFAULT_PROFILE_IDENTIFIER, None)
-
-        if profile_name is not None:
-            return profile_name
-        raise NoDefaultProfileToLoadError
+        return PersistentStorageService.get_default_profile_name()
 
     @classmethod
     def is_default_profile_set(cls) -> bool:
-        try:
-            cls.get_default_profile_name()
-        except NoDefaultProfileToLoadError:
-            return False
-        return True
-
-    @classmethod
-    @contextmanager
-    def __open_database(cls) -> Iterator[shelve.Shelf[Any]]:
-        path = cls._get_file_storage_path()
-
-        # create data directory if it doesn't exist
-        path.parent.mkdir(parents=True, exist_ok=True)
-
-        with shelve.open(str(path)) as db:  # noqa: S301; TODO: handle that in the future
-            yield db
+        return PersistentStorageService.is_default_profile_set()
 
     @classmethod
     def load(cls, name: str | None = None, *, auto_create: bool = True) -> ProfileData:
@@ -299,29 +259,26 @@ class ProfileData(Context):
 
         Args:
         ----
-        name: Name of the profile to load. If None, the default profile is loaded.
-        auto_create: If True, a new profile is created if the profile with the given name does not exist.
-
-        Returns:
-        -------
-        Profile data.
+            name: Name of the profile to load. If None, the default profile is loaded.
+            auto_create: If True, a new profile is created if the profile with the given name does not exist.
 
         Raises:
         ------
-        NoDefaultProfileToLoadError: If name is None but no default profile is set.
-        ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
+            NoDefaultProfileToLoadError: If name is None but no default profile is set.
+            ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
         def create_new_profile(new_profile_name: str) -> ProfileData:
-            if not auto_create:
-                raise ProfileDoesNotExistsError(new_profile_name)
             return cls(new_profile_name)
 
         _name = name or cls.get_default_profile_name()
 
-        with cls.__open_database() as db:
-            stored_profile: ProfileData | None = db.get(_name, None)
-            return stored_profile if stored_profile else create_new_profile(_name)
+        try:
+            return PersistentStorageService.load_profile(_name)
+        except ProfileDoesNotExistsError:
+            if auto_create:
+                return create_new_profile(_name)
+            raise
 
     @classmethod
     @asynccontextmanager
@@ -331,15 +288,12 @@ class ProfileData(Context):
 
     @classmethod
     def list_profiles(cls) -> list[str]:
-        """Get a list of all profiles sorted alphabetically."""
-        with cls.__open_database() as db:
-            return sorted(db.keys() - {cls._DEFAULT_PROFILE_IDENTIFIER})
+        """List all stored profile names sorted alphabetically."""
+        return PersistentStorageService.list_stored_profile_names()
 
     @staticmethod
     def __default_chain_id() -> str | None:
-        chain_id = safe_settings.node.chain_id
-        logger.info(f"Setting default chain_id to: {chain_id}")
-        return chain_id
+        return safe_settings.node.chain_id
 
     @staticmethod
     def __default_node_address() -> list[Url]:
