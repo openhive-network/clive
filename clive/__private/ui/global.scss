@@ -27,3 +27,19 @@ Tabs {
     background: $background-darken-1;
   }
 }
+
+.grey-lighten-button Button {
+  background: $panel-lighten-2;
+
+  &:hover {
+    background: $background-darken-1;
+  }
+}
+
+.grey-darken-button Button {
+  background: $panel-lighten-1;
+
+  &:hover {
+    background: $background-darken-1;
+  }
+}
