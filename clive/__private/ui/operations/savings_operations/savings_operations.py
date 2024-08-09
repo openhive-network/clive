@@ -43,6 +43,7 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.exceptions import RequestIdError
 from clive.models import Asset
+from clive.models.asset import AssetFactoryHolder
 from schemas.operations import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
@@ -198,10 +199,15 @@ class PendingTransfersPane(TabPane, CliveWidget):
 class SavingsTransfers(TabPane, OperationActionBindings):
     TITLE: Final[str] = "transfer"
 
-    def __init__(self) -> None:
-        super().__init__(title=self.TITLE)
+    def __init__(self, *, hive_default_selected: bool = False) -> None:
+        super().__init__(title=self.TITLE, id="transfer-tab")
 
         self._amount_input = LiquidAssetAmountInput()
+
+        if hive_default_selected:
+            self._amount_input._currency_selector._value = AssetFactoryHolder(
+                asset_cls=Asset.Hive, asset_factory=Asset.hive
+            )
         self._memo_input = MemoInput()
         self._to_account_input = AccountNameInput("To", value=self.default_receiver)
 
@@ -283,6 +289,10 @@ class Savings(OperationBaseScreen, CartBinding):
         get_relative_css_path(__file__),
     ]
 
+    def __init__(self, *, hive_default_selected: bool = False) -> None:
+        super().__init__()
+        self._hive_default_selected = hive_default_selected
+
     def create_left_panel(self) -> ComposeResult:
         yield LocationIndicator("Savings operations")
         with SavingsDataProvider() as provider:
@@ -292,4 +302,4 @@ class Savings(OperationBaseScreen, CartBinding):
             yield SavingsAPR(provider)
             with CliveTabbedContent():
                 yield PendingTransfersPane()
-                yield SavingsTransfers()
+                yield SavingsTransfers(hive_default_selected=self._hive_default_selected)
