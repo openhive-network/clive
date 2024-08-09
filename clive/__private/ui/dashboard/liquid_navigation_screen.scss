@@ -1,0 +1,20 @@
+LiquidNavigationScreen {
+  align: center middle;
+  background: $background 85%;
+
+  LiquidNavigationScreenContent {
+    border-title-style: bold;
+    border-title-color: $text;
+    border-title-background: $primary;
+    border: $primary outer;
+    background: $background-lighten-1;
+    padding: 1;
+    width: 50%;
+    height: auto;
+
+    OneLineButton {
+      margin: 1 0 1 0;
+      width: 50%;
+    }
+  }
+}
