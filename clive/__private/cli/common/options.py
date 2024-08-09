@@ -26,7 +26,8 @@ if TYPE_CHECKING:
 
 def _get_default_profile_name() -> str | None:
     if not is_tab_completion_active():
-        from clive.__private.core.profile_data import NoDefaultProfileToLoadError, ProfileData
+        from clive.__private.core.profile_data import ProfileData
+        from clive.__private.storage.service import NoDefaultProfileToLoadError
 
         with contextlib.suppress(NoDefaultProfileToLoadError):
             return ProfileData.get_default_profile_name()
@@ -35,9 +36,10 @@ def _get_default_profile_name() -> str | None:
 
 def _get_default_working_account_name() -> str | None:
     if not is_tab_completion_active():
-        from clive.__private.core.profile_data import ProfileData, ProfileDataError
+        from clive.__private.core.profile_data import NoWorkingAccountError, ProfileData
+        from clive.__private.storage.service import NoDefaultProfileToLoadError, ProfileDoesNotExistsError
 
-        with contextlib.suppress(ProfileDataError):
+        with contextlib.suppress(ProfileDoesNotExistsError, NoDefaultProfileToLoadError, NoWorkingAccountError):
             return ProfileData.load(auto_create=False).working_account.name
     return None
 

@@ -36,6 +36,7 @@ class StorageToRuntimeConverter:
             operations=self._operations_from_model(),
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
+            is_newly_created=False,
         )
 
     def _working_account_from_profile_storage_model(self) -> WorkingAccount | None:
@@ -52,7 +53,12 @@ class StorageToRuntimeConverter:
         return self._working_account_from_model(working_account_model)
 
     def _watched_accounts_from_profile_storage_model(self) -> set[WatchedAccount]:
-        return {self._watched_account_from_model(account) for account in self._model.tracked_accounts}
+        working_account_name = self._model.working_account
+        return {
+            self._watched_account_from_model(account)
+            for account in self._model.tracked_accounts
+            if account.name != working_account_name
+        }
 
     def _known_accounts_from_profile_storage_model(self) -> set[KnownAccount]:
         return {self._known_account_from_model(account) for account in self._model.known_accounts}

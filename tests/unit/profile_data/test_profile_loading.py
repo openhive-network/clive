@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import pytest
 
-from clive.__private.core.profile_data import NoDefaultProfileToLoadError, ProfileData, ProfileDoesNotExistsError
+from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import TyperWorld, World
+from clive.__private.storage.service import NoDefaultProfileToLoadError, ProfileDoesNotExistsError
 
 
 def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
