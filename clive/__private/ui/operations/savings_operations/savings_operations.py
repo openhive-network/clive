@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on
 from textual.containers import Grid, Horizontal
@@ -54,6 +54,10 @@ if TYPE_CHECKING:
 
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
     from clive.models.aliased import SavingsWithdrawals
+
+
+TransferType = Literal["from-savings", "to-savings"]
+SavingsTabType = Literal["pending-transfers-tab", "transfer-tab"]
 
 
 class Body(Grid):
@@ -189,7 +193,7 @@ class PendingTransfersPane(TabPane, CliveWidget):
     TITLE: Final[str] = "pending transfers"
 
     def __init__(self) -> None:
-        super().__init__(title=self.TITLE)
+        super().__init__(title=self.TITLE, id="pending-transfers-tab")
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
@@ -199,7 +203,7 @@ class PendingTransfersPane(TabPane, CliveWidget):
 class SavingsTransfers(TabPane, OperationActionBindings):
     TITLE: Final[str] = "transfer"
 
-    def __init__(self, *, hive_default_selected: bool = False) -> None:
+    def __init__(self, default_transfer_type: TransferType, *, hive_default_selected: bool = False) -> None:
         super().__init__(title=self.TITLE, id="transfer-tab")
 
         self._amount_input = LiquidAssetAmountInput()
@@ -211,11 +215,15 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self._memo_input = MemoInput()
         self._to_account_input = AccountNameInput("To", value=self.default_receiver)
 
-        self._to_button = CliveRadioButton("transfer to savings", id="to-savings-choose", value=True)
-        self._from_button = CliveRadioButton("transfer from savings", id="from-savings-choose")
+        self._to_button = CliveRadioButton(
+            "transfer to savings", id="to-savings-choose", value=default_transfer_type == "to-savings"
+        )
+        self._from_button = CliveRadioButton(
+            "transfer from savings", id="from-savings-choose", value=default_transfer_type == "from-savings"
+        )
 
         self._transfer_time_reminder = Notice("transfer from savings will take 3 days")
-        self._transfer_time_reminder.visible = False
+        self._transfer_time_reminder.visible = default_transfer_type == "from-savings"
 
     @property
     def default_receiver(self) -> str:
@@ -289,8 +297,16 @@ class Savings(OperationBaseScreen, CartBinding):
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self, *, hive_default_selected: bool = False) -> None:
+    def __init__(
+        self,
+        default_transfer_type: TransferType = "to-savings",
+        initial_tab: SavingsTabType = "pending-transfers-tab",
+        *,
+        hive_default_selected: bool = False,
+    ) -> None:
         super().__init__()
+        self._default_transfer_type = default_transfer_type
+        self._initial_tab = initial_tab
         self._hive_default_selected = hive_default_selected
 
     def create_left_panel(self) -> ComposeResult:
@@ -300,6 +316,6 @@ class Savings(OperationBaseScreen, CartBinding):
                 yield SavingsBalancesTable()
                 yield SavingsInterestInfo()
             yield SavingsAPR(provider)
-            with CliveTabbedContent():
+            with CliveTabbedContent(initial=self._initial_tab):
                 yield PendingTransfersPane()
-                yield SavingsTransfers(hive_default_selected=self._hive_default_selected)
+                yield SavingsTransfers(self._default_transfer_type, hive_default_selected=self._hive_default_selected)
