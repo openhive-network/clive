@@ -83,7 +83,7 @@ class WorkingAccountIcon(DynamicOneLineButton):
             obj_to_watch=self.world,
             attribute_name="profile_data",
             callback=self.working_account_callback,
-            classes="success-transparent-button",
+            variant="success-transparent",
         )
         self.tooltip = "Modify working account"
 

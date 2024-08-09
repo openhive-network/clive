@@ -12,7 +12,8 @@ from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
 if TYPE_CHECKING:
     from rich.text import TextType
     from textual.reactive import Reactable
-    from textual.widgets._button import ButtonVariant
+
+    from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
 class DynamicOneLineButton(DynamicWidget[OneLineButton]):
@@ -25,7 +26,7 @@ class DynamicOneLineButton(DynamicWidget[OneLineButton]):
         callback: DynamicWidgetCallbackType,
         *,
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
-        variant: ButtonVariant = "primary",
+        variant: CliveButtonVariant = "primary",
         prefix: str = "",
         init: bool = True,
         id_: str | None = None,

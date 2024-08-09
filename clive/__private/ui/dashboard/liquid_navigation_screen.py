@@ -61,7 +61,9 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
             case "transfer-to-savings":
                 from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 
-                self.app.push_screen(Savings(initial_tab="transfer-tab", hive_default_selected=self._asset_type == "hive"))
+                self.app.push_screen(
+                    Savings(initial_tab="transfer-tab", hive_default_selected=self._asset_type == "hive")
+                )
             case _:
                 from clive.__private.ui.operations.hive_power_management.hive_power_management import (
                     HivePowerManagement,
