@@ -57,11 +57,11 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
             raise FormValidationError(f"Account {account_name} does not exist in the node.")
 
         if self.__is_working_account():
-            self.context.account_manager.set_working_account(account_name)
-            self.context.watched_accounts.clear()
+            self.context.accounts.set_working_account(account_name)
+            self.context.accounts.watched.clear()
         else:
-            self.context.account_manager.unset_working_account()
-            self.context.account_manager.add_tracked_account(account_name)
+            self.context.accounts.unset_working_account()
+            self.context.accounts.add_tracked_account(account_name)
 
     def __is_working_account(self) -> bool:
         return self.query_one(WorkingAccountCheckbox).value

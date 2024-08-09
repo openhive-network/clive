@@ -37,7 +37,7 @@ class PowerUp(TabPane, OperationActionBindings):
         title: Title of the TabPane (will be displayed in a tab label).
         """
         super().__init__(title=title)
-        self._receiver_input = AccountNameInput("Receiver", value=self.profile_data.working_account.name)
+        self._receiver_input = AccountNameInput("Receiver", value=self.profile_data.accounts.working.name)
         self._asset_input = HiveAssetAmountInput()
 
     def compose(self) -> ComposeResult:
@@ -50,14 +50,14 @@ class PowerUp(TabPane, OperationActionBindings):
                     yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
 
     def _get_hive_balance(self) -> Asset.Hive:
-        return self.profile_data.working_account.data.hive_balance
+        return self.profile_data.accounts.working.data.hive_balance
 
     def _create_operation(self) -> TransferToVesting | None:
         if not CliveValidatedInput.validate_many(self._asset_input, self._receiver_input):
             return None
 
         return TransferToVesting(
-            from_=self.profile_data.working_account.name,
+            from_=self.profile_data.accounts.working.name,
             to=self._receiver_input.value_or_error,
             amount=self._asset_input.value_or_error,
         )

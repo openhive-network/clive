@@ -84,15 +84,15 @@ class CartOverview(CliveWidget):
 
     def __get_rc(self) -> str:
         self._set_rc_api_missing()
-        if self.profile_data.working_account.data.is_rc_api_missing:
+        if self.profile_data.accounts.working.data.is_rc_api_missing:
             return MISSING_API_LABEL
 
-        return humanize_percent(self.profile_data.working_account.data.rc_manabar_ensure.percentage)
+        return humanize_percent(self.profile_data.accounts.working.data.rc_manabar_ensure.percentage)
 
     def _set_rc_api_missing(self) -> None:
-        if self.profile_data.working_account.data.is_rc_api_missing:
+        if self.profile_data.accounts.working.data.is_rc_api_missing:
             self._rc_container.tooltip = (
-                self.profile_data.working_account.data.rc_manabar_ensure_missing_api.missing_api_text
+                self.profile_data.accounts.working.data.rc_manabar_ensure_missing_api.missing_api_text
             )
             return
 
@@ -100,11 +100,11 @@ class CartOverview(CliveWidget):
 
     @staticmethod
     def __get_hive_balance(profile_data: ProfileData) -> str:
-        return Asset.pretty_amount(profile_data.working_account.data.hive_balance)
+        return Asset.pretty_amount(profile_data.accounts.working.data.hive_balance)
 
     @staticmethod
     def __get_hbd_balance(profile_data: ProfileData) -> str:
-        return Asset.pretty_amount(profile_data.working_account.data.hbd_balance)
+        return Asset.pretty_amount(profile_data.accounts.working.data.hbd_balance)
 
     def __create_cart_items(self) -> list[CartItem]:
         return [CartItem(index + 1, operation) for index, operation in enumerate(self.profile_data.cart)]

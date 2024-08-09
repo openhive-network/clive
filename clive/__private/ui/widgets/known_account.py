@@ -81,9 +81,9 @@ class KnownAccount(CliveWidget):
 
         checked = event.value
         if checked:
-            self._account_holder.known_accounts.add(self.account)
+            self._account_holder.accounts.known.add(self.account)
         else:
-            self._account_holder.known_accounts.remove(self.account)
+            self._account_holder.accounts.known.remove(self.account)
 
         self.post_message(self.Status(is_account_known=checked, account_name=self.account_name_raw))
 
@@ -105,7 +105,7 @@ class KnownAccount(CliveWidget):
         return KnownAccountModel.is_valid(self.account_name_raw)
 
     def __is_given_account_known(self) -> bool:
-        return self.account in self._account_holder.known_accounts
+        return self.account in self._account_holder.accounts.known
 
     def __should_check_as_known(self) -> bool:
         return self.__is_account_name_valid() and self.__is_given_account_known()

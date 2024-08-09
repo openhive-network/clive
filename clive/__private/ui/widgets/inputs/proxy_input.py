@@ -40,7 +40,7 @@ class ProxyInput(AccountNameInput):
         ------------------------------------
         setting_proxy: Whether setting proxy or just getting proxy for other purpose.
         """
-        working_account_name = self.profile_data.working_account.name
+        working_account_name = self.profile_data.accounts.working.name
         super().__init__(
             title=title,
             value=value,

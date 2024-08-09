@@ -22,7 +22,7 @@ class ProcessWithdrawal(OperationCommand):
     async def _create_operation(self) -> TransferFromSavingsOperation:
         if self.request_id is None:
             wrapper = await self.world.commands.retrieve_savings_data(
-                account_name=self.world.profile_data.working_account.name
+                account_name=self.world.profile_data.accounts.working.name
             )
             savings_data: SavingsData = wrapper.result_or_raise
             self.request_id = savings_data.create_request_id()

@@ -38,7 +38,7 @@ def _get_default_working_account_name() -> str | None:
         from clive.__private.core.profile_data import ProfileData, ProfileDataError
 
         with contextlib.suppress(ProfileDataError):
-            return ProfileData.load(auto_create=False).working_account.name
+            return ProfileData.load(auto_create=False).accounts.working.name
     return None
 
 

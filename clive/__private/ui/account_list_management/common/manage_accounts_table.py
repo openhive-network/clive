@@ -18,7 +18,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 if TYPE_CHECKING:
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.storage.accounts import Account
+    from clive.__private.storage.accounts import Account, KnownAccount, TrackedAccount
 from clive.__private.storage.accounts import WorkingAccount
 
 AccountsType = Literal["known_accounts", "tracked_accounts"]
@@ -51,9 +51,9 @@ class AccountRow(CliveCheckerboardTableRow):
     @on(CliveButton.Pressed, "#discard-account-button")
     def discard_account(self) -> None:
         if self._account_type == "known_accounts":
-            self.profile_data.known_accounts.remove(self._account)
+            self.profile_data.accounts.known.remove(self._account)
         else:
-            self.profile_data.account_manager.remove_tracked_account(self._account)
+            self.profile_data.accounts.remove_tracked_account(self._account)
         self.app.trigger_profile_data_watchers()
 
 
@@ -82,13 +82,13 @@ class ManageAccountsTable(CliveCheckerboardTable):
             header=AccountsTableHeader(show_type_column=accounts_type == "tracked_accounts"),
             title=f"Your {self.remove_underscore_from_text(accounts_type)}",
         )
-        self._previous_accounts: set[Account] | NotUpdatedYet = NotUpdatedYet()
+        self._previous_accounts: set[KnownAccount] | list[TrackedAccount] | NotUpdatedYet = NotUpdatedYet()
         self._accounts_type = accounts_type
 
     def create_dynamic_rows(self, content: ProfileData) -> list[AccountRow]:
         return [
             AccountRow(account, self._accounts_type)
-            for account in getattr(content.account_manager, f"{self._accounts_type}_sorted")
+            for account in getattr(content.accounts, f"{self._accounts_type}_sorted")
         ]
 
     def get_no_content_available_widget(self) -> NoContentAvailable:
@@ -102,9 +102,9 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def is_anything_to_display(self, content: ProfileData) -> bool:
         return (
-            content.account_manager.has_known_accounts
+            content.accounts.has_known_accounts
             if self._accounts_type == "known_accounts"
-            else content.account_manager.has_tracked_accounts
+            else content.accounts.has_tracked_accounts
         )
 
     @property
@@ -114,10 +114,8 @@ class ManageAccountsTable(CliveCheckerboardTable):
     def update_previous_state(self, content: ProfileData) -> None:
         self._previous_accounts = self._get_accounts_from_new_content(content)
 
-    def _get_accounts_from_new_content(self, content: ProfileData) -> set[Account]:
-        return (
-            set(content.known_accounts) if self._accounts_type == "known_accounts" else content.tracked_accounts.copy()
-        )
+    def _get_accounts_from_new_content(self, content: ProfileData) -> set[KnownAccount] | list[TrackedAccount]:
+        return content.accounts.known.content if self._accounts_type == "known_accounts" else content.accounts.tracked
 
     def remove_underscore_from_text(self, text: str) -> str:
         return text.replace("_", " ")

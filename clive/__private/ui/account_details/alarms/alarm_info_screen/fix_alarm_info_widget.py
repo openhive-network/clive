@@ -91,7 +91,7 @@ class FixAlarmInfoWidget(CliveWidget):
             yield from self._get_mark_as_harmless_content()
             return
 
-        if self.profile_data.account_manager.is_account_working(self._account):
+        if self.profile_data.accounts.is_account_working(self._account):
             # It is impossible to perform operations when account is not working,
             # so if the account is watched, it is not possible to go to screen with fix.
             yield Static(self._alarm_fix_details.fix_action_text)

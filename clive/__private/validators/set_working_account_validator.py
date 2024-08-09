@@ -29,10 +29,10 @@ class SetWorkingAccountValidator(AccountNameValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_account_already_watched(self, value: str) -> bool:
-        return value not in [watched_account.name for watched_account in self._profile_data.watched_accounts]
+        return value not in [watched_account.name for watched_account in self._profile_data.accounts.watched]
 
     def _validate_account_already_working(self, value: str) -> bool:
-        if not self._profile_data.account_manager.is_working_account_set():
+        if not self._profile_data.accounts.is_working_account_set():
             return True
 
-        return value != self._profile_data.working_account.name
+        return value != self._profile_data.accounts.working.name

@@ -22,7 +22,7 @@ class CancelTransferFromSavings(OperationSummary):
 
     @property
     def from_account(self) -> str:
-        return self.profile_data.working_account.name
+        return self.profile_data.accounts.working.name
 
     @property
     def realized_on(self) -> str:

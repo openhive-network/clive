@@ -135,7 +135,7 @@ class Witness(GovernanceTableRow[WitnessData]):
     def is_operation_in_cart(self) -> bool:
         return (
             AccountWitnessVoteOperation(
-                account=self.profile_data.working_account.name,
+                account=self.profile_data.accounts.working.name,
                 witness=self.row_data.name,
                 approve=not self.row_data.voted,
             )
@@ -249,7 +249,7 @@ class WitnessesListHeader(GovernanceListHeader):
 
     def create_additional_headlines(self) -> ComposeResult:
         yield SectionTitle(
-            f"Votes for witnesses cast by your proxy ({self.profile_data.working_account.data.proxy})"
+            f"Votes for witnesses cast by your proxy ({self.profile_data.accounts.working.data.proxy})"
             if self.is_proxy_set
             else "Modify the votes for witnesses"
         )
@@ -306,7 +306,7 @@ class Witnesses(GovernanceTabPane):
             )
             return None
 
-        working_account_name = self.profile_data.working_account.name
+        working_account_name = self.profile_data.accounts.working.name
         operations_to_perform = self.screen.query_one(WitnessesActions).actions_to_perform
 
         return [

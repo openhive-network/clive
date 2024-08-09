@@ -17,7 +17,7 @@ class AddWatchedAccount(ProfileBasedCommand):
             raise CLIPrettyError(f"Can't use this account name: {humanize_validation_result(result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        self.profile_data.account_manager.add_tracked_account(self.account_name)
+        self.profile_data.accounts.add_tracked_account(self.account_name)
 
 
 @dataclass(kw_only=True)
@@ -25,4 +25,4 @@ class RemoveWatchedAccount(ProfileBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
-        self.profile_data.watched_accounts.remove(self.account_name)
+        self.profile_data.accounts.watched.remove(self.account_name)

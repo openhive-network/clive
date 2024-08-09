@@ -28,8 +28,8 @@ class WitnessesDataProvider(DataProvider[WitnessesData]):
 
     @work(name="witnesses data update worker")
     async def update(self) -> None:
-        proxy = self.profile_data.working_account.data.proxy
-        account_name = proxy if proxy else self.profile_data.working_account.name
+        proxy = self.profile_data.accounts.working.data.proxy
+        account_name = proxy if proxy else self.profile_data.accounts.working.name
 
         wrapper = await self.commands.retrieve_witnesses_data(
             account_name=account_name,

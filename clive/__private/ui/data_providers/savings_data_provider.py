@@ -15,7 +15,7 @@ class SavingsDataProvider(DataProvider[SavingsData]):
 
     @work(name="savings data update worker")
     async def update(self) -> None:
-        account_name = self.profile_data.working_account.name
+        account_name = self.profile_data.accounts.working.name
         wrapper = await self.commands.retrieve_savings_data(account_name=account_name)
 
         if wrapper.error_occurred:

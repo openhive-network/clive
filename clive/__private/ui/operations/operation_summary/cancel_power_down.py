@@ -32,6 +32,6 @@ class CancelPowerDown(OperationSummary):
 
     def _create_operation(self) -> WithdrawVestingOperation:
         return WithdrawVestingOperation(
-            account=self.profile_data.working_account.name,
+            account=self.profile_data.accounts.working.name,
             vesting_shares=Asset.vests(VESTS_TO_REMOVE_POWER_DOWN),
         )
