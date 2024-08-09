@@ -89,7 +89,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
             obj_to_watch=self.world,
             attribute_name="profile",
             callback=self.working_account_callback,
-            classes="success-transparent-button",
+            variant="success-on-transparent",
         )
 
     @staticmethod
@@ -188,7 +188,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             attribute_name="node",
             callback=self._update_node_status,
             first_try_callback=lambda: self.node.cached.online is not None,
-            variant="success-transparent",
+            variant="success-on-transparent",
         )
 
     async def _update_node_status(self, node: Node) -> str:

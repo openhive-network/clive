@@ -43,6 +43,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile import Profile
     from clive.__private.storage.mock_database import Manabar
+    from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 
 class Body(ScrollableContainer, can_focus=True):
@@ -136,12 +137,14 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
         activity_type: Literal["liquid", "savings"],
         asset_type: Literal["hive", "hbd"],
         classes: str | None = None,
+        variant: CliveButtonVariant = "primary",
     ) -> None:
         super().__init__(
             obj_to_watch=self.world,
             attribute_name="profile",
             callback=self._update_asset_value,
             first_try_callback=lambda: account.is_node_data_available,
+            variant=variant,
             classes=classes,
         )
         self._activity_type = activity_type
@@ -183,11 +186,11 @@ class ActivityStats(TrackedAccountReferencingWidget):
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield ActivityStatsButton(self._account, "liquid", "hive", classes="grey-darken-button")
-        yield ActivityStatsButton(self._account, "savings", "hive", classes="grey-lighten-button")
+        yield ActivityStatsButton(self._account, "liquid", "hive", variant="grey-darken")
+        yield ActivityStatsButton(self._account, "savings", "hive", variant="grey-lighten")
         yield Static("HBD", classes="token token-variant")
-        yield ActivityStatsButton(self._account, "liquid", "hbd", classes="grey-lighten-button")
-        yield ActivityStatsButton(self._account, "savings", "hbd", classes="grey-darken-button")
+        yield ActivityStatsButton(self._account, "liquid", "hbd", variant="grey-lighten")
+        yield ActivityStatsButton(self._account, "savings", "hbd", variant="grey-darken")
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
