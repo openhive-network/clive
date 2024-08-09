@@ -21,6 +21,7 @@ from clive.__private.ui.account_list_management.common.switch_working_account.sw
     SwitchWorkingAccountScreen,
 )
 from clive.__private.ui.config.config import Config
+from clive.__private.ui.dashboard.liquid_navigation_screen import LiquidNavigationScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -28,6 +29,9 @@ from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
+    DynamicOneLineButtonUnfocusable,
+)
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
@@ -125,29 +129,65 @@ class BalanceStats(TrackedAccountReferencingWidget):
         yield ManabarRepresentation(self._account, "downvote_manabar", "DOWNVOTING", classes="even-manabar")
 
 
+class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
+    can_focus = False
+
+    def __init__(
+        self,
+        account: TrackedAccount,
+        activity_type: Literal["balance", "savings"],
+        asset_type: Literal["hive", "hbd"],
+        classes: str | None = None,
+    ) -> None:
+        super().__init__(
+            obj_to_watch=self.world,
+            attribute_name="profile",
+            callback=self._update_asset_value,
+            first_try_callback=lambda: account.is_node_data_available,
+            classes=classes,
+        )
+        self._activity_type = activity_type
+        self._account = account
+        self._asset_type = asset_type
+        self._widget.add_class("balance-button")
+
+        if activity_type == "savings":
+            self.tooltip = f"Perform transfer from savings as {self._account.name}"
+        else:
+            self.tooltip = f"Choose liquid operation to perform as {self._account.name}"
+
+    def _update_asset_value(self) -> str:
+        asset_search_pattern = f"{self._asset_type}_{self._activity_type}"
+        return Asset.pretty_amount(getattr(self._account.data, asset_search_pattern))
+
+    @on(OneLineButton.Pressed, ".balance-button")
+    async def push_activity_screen(self) -> None:
+        if self._activity_type == "savings":
+            from clive.__private.ui.operations.savings_operations.savings_operations import Savings
+
+            if not self.profile.accounts.is_account_working(self._account):
+                self.profile.accounts.switch_working_account(self._account)
+                self.notify(f"Working account automatically switched to {self._account.name}")
+
+            await self.app.push_screen(
+                Savings("from-savings", "transfer-tab", hive_default_selected=self._asset_type == "hive")
+            )
+            return
+
+        await self.app.push_screen(LiquidNavigationScreen(self._account, asset_type=self._asset_type))
+
+
 class ActivityStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield Static("", classes="empty")
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hive_balance),
-            classes="amount",
-        )
-        yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hive_savings),
-            classes="amount amount-variant",
-        )
+        yield ActivityStatsButton(self._account, "balance", "hive", classes="grey-darken-button")
+        yield ActivityStatsButton(self._account, "savings", "hive", classes="grey-lighten-button")
         yield Static("HBD", classes="token token-variant")
-        yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hbd_balance),
-            classes="amount amount-variant",
-        )
-        yield self.create_dynamic_label(
-            lambda: Asset.pretty_amount(self._account.data.hbd_savings),
-            classes="amount",
-        )
+        yield ActivityStatsButton(self._account, "balance", "hbd", classes="grey-lighten-button")
+        yield ActivityStatsButton(self._account, "savings", "hbd", classes="grey-darken-button")
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):

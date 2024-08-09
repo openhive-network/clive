@@ -120,6 +120,10 @@ DashboardBase {
       width: 1fr;
     }
 
+    ActivityStatsButton OneLineButton {
+      width: 1fr;
+    }
+
     .title {
       background: $accent-lighten-3;
       color: $text;
@@ -136,15 +140,6 @@ DashboardBase {
 
     .token-variant {
       background: $accent-lighten-2;
-    }
-
-    .amount {
-      background: $panel-lighten-1;
-      width: 1fr;
-    }
-
-    .amount-variant {
-      background: $panel-lighten-2;
     }
   }
 }
