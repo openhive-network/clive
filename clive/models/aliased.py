@@ -45,6 +45,7 @@ from schemas.fields.hive_int import HiveInt as SchemasHiveInt
 from schemas.operation import Operation as SchemasBaseOperationType
 from schemas.operations import AnyOperation
 from schemas.operations import CustomJsonOperation as SchemasCustomJsonOperation
+from schemas.operations import TransferOperation as SchemasTransferOperation
 from schemas.operations.extensions.recurrent_transfer_extensions import RecurrentTransferPairId
 from schemas.operations.recurrent_transfer_operation import (
     RecurrentTransferOperation as SchemasRecurrentTransferOperation,
@@ -92,6 +93,7 @@ SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF2
 Signature = SchemasSignature
 TransactionId = SchemasTransactionId
 TransactionStatus = SchemasFindTransaction
+TransferOperation = SchemasTransferOperation
 RecurrentTransfer = FindRecurrentTransfersFundament[AssetHiveHF26, AssetHbdHF26]
 Version = GetVersion
 VestingDelegation = VestingDelegationsFundament

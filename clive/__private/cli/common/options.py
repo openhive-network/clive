@@ -88,20 +88,21 @@ beekeeper_remote_option = typer.Option(
     show_default=bool(_get_default_beekeeper_remote()),
 )
 
-account_name_option = working_account_option_template
+account_name_option = modified_option(
+    working_account_option_template,
+    param_decls=("--account-name",),
+)
 
 from_account_name_option = modified_option(
     working_account_option_template,
     param_decls=("--from",),
     help='The account to use as "from" argument. (default is working account of profile)',
-    show_default=False,
 )
 
 to_account_name_option = modified_option(
     working_account_option_template,
     param_decls=("--to",),
     help='The account to use as "to" argument. (default is working account of profile)',
-    show_default=False,
 )
 
 to_account_name_no_default_option = typer.Option(
@@ -176,6 +177,7 @@ pair_id_value_none_option = modified_option(pair_id_value_option, default=None, 
 
 repeat_value_option = typer.Option(
     ...,
+    "--repeat",
     min=SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
     help="How many times the recurrent transfer should be executed. (must be greater than 1)",
     show_default=False,
@@ -198,12 +200,7 @@ percent_option = typer.Option(
 
 working_account_list_option_template = typer.Option(
     [PERFORM_WORKING_ACCOUNT_LOAD],
+    "--account-name",
     help="List of accounts to use. (default is working account of profile)",
     show_default=False,
-)
-
-authorize_option = modified_option(
-    working_account_list_option_template,
-    help="Posting authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
-    " used, then posting authority of working account is used for authorization.",
 )
