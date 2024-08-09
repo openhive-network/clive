@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Container, Horizontal, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.reactive import var
 from textual.widgets import Header as TextualHeader
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
@@ -37,16 +37,6 @@ class HeaderIcon(TextualHeaderIcon):
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
-
-
-class AlarmsSummary(Container, CliveWidget):
-    def __init__(self) -> None:
-        super().__init__()
-
-        self.__label = AlarmDisplay()
-
-    def compose(self) -> ComposeResult:
-        yield self.__label
 
 
 class DynamicPropertiesClock(Horizontal, CliveWidget):
@@ -135,7 +125,7 @@ class Header(TextualHeader, CliveWidget):
                     callback=self.__get_profile_name,
                     id_="profile-label",
                 )
-                yield AlarmsSummary()
+                yield AlarmDisplay()
 
                 async def mode_callback(app_state: AppState) -> str:
                     if app_state.is_unlocked:
