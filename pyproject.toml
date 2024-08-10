@@ -40,7 +40,7 @@ typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
 
-wax = "0.3.10.dev25+8044195"
+wax = "0.3.10.dev102+32ca5ac"
 schemas = "0.0.1.dev309+5a8cfff"
 
 
