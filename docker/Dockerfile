@@ -6,6 +6,10 @@ ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
 FROM $HIVED_IMAGE AS hived_image
 
+FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10 AS stripped_beekeeper_source
+
+COPY --from=hived_image "/home/hived/bin/beekeeper" "/home/hived/bin/beekeeper"
+RUN strip -p /home/hived/bin/beekeeper -o /home/hived_admin/beekeeper.stripped
 
 FROM $BASE_IMAGE AS common
 
@@ -19,9 +23,9 @@ ADD ./README.md /clive/
 
 WORKDIR /clive
 
-ENV BEEKEEPER_PATH_SOURCE="/home/hived/bin/beekeeper"
+ENV BEEKEEPER_PATH_SOURCE="/home/hived_admin/beekeeper.stripped"
 ENV BEEKEEPER_PATH_DEST="/clive/beekeeper"
-COPY --from=hived_image "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
+COPY --from=stripped_beekeeper_source "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
 
 # crucial for proper display
 ENV COLORTERM=truecolor
