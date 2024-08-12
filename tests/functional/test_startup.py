@@ -8,6 +8,9 @@ from typing import Final
 
 import test_tools as tt
 
+from clive.__private.core.constants.setting_identifiers import DATA_PATH
+from clive.__private.settings import clive_prefixed_envvar
+
 
 def test_if_entry_point_works() -> None:
     # ARRANGE
@@ -26,7 +29,7 @@ def test_if_dev_entry_point_works() -> None:
     working_directory = tt.context.get_current_directory()
     entry_point: Final[str] = "clive-dev"
     envs = os.environ
-    envs["CLIVE_DATA_PATH"] = working_directory.as_posix()
+    envs[clive_prefixed_envvar(DATA_PATH)] = working_directory.as_posix()
     beekeeper_pid = working_directory / "beekeeper" / "beekeeper.pid"
     beekeeper_output = working_directory / "test_output.log"
 
