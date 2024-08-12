@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import subprocess
 from typing import TYPE_CHECKING, Final
 
 import pytest
@@ -85,11 +84,11 @@ async def test_negative_no_default_profile(node: tt.RawNode) -> None:  # noqa: A
     expected_error = "Missing option '--profile-name'."
 
     # ACT
-    with pytest.raises(subprocess.CalledProcessError) as exception_info:
+    with pytest.raises(AssertionError) as exception_info:
         run_clive_in_subprocess(["clive", "show", "balances"])
 
     # ASSERT
-    assert expected_error in exception_info.value.output.decode()
+    assert expected_error in str(exception_info.value)
 
 
 async def test_default_profile_without_working_account(
@@ -109,11 +108,11 @@ async def test_negative_default_profile_without_working_account(
     expected_error = "Working account is not set"
 
     # ACT
-    with pytest.raises(subprocess.CalledProcessError) as exception_info:
+    with pytest.raises(AssertionError) as exception_info:
         run_clive_in_subprocess(["clive", "show", "balances"])
 
     # ASSERT
-    assert expected_error in exception_info.value.output.decode()
+    assert expected_error in str(exception_info.value)
 
 
 async def test_custom_profile_and_custom_working_account(

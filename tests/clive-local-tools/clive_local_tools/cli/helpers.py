@@ -23,5 +23,12 @@ def run_clive_in_subprocess(command: list[str]) -> str:
     assert secret_node_address is not None, "Secrets node address is not set"
     env[clive_prefixed_envvar(SECRETS_NODE_ADDRESS)] = str(secret_node_address)
 
-    completed_process = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env, check=True)
+    try:
+        completed_process = subprocess.run(
+            command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, env=env, check=True
+        )
+    except subprocess.CalledProcessError as error:
+        output_string = error.output.decode() if isinstance(error.output, bytes) else error.output
+        message = f"error executing command {command}:\n{output_string}"
+        raise AssertionError(message) from error
     return completed_process.stdout.decode()
