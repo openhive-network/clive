@@ -155,7 +155,7 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
             with Horizontal(id="account-info-container"):
                 yield EllipsedStatic(f"{self._account.name}")
                 yield OneLineButton("Details", id_="details-button")
-            yield AlarmDisplay(lambda _: [self._account], id_="account-alarms")
+            yield AlarmDisplay(self._account, id_="account-alarms")
         yield Static()
         yield Label("LAST:")
         yield self.create_dynamic_label(

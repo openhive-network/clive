@@ -24,7 +24,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.events import Mount
 
-    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
 
@@ -127,7 +126,7 @@ class Header(TextualHeader, CliveWidget):
                     id_="profile-label",
                 )
                 with Center():
-                    yield AlarmDisplay(lambda _: [self.profile_data.accounts.working])
+                    yield AlarmDisplay()
 
                 async def mode_callback(app_state: AppState) -> str:
                     if app_state.is_unlocked:
