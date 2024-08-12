@@ -1,7 +1,7 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationCommonOptions
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 
 custom_json = CliveTyper(name="custom-json", help="Send raw custom json operation.")
