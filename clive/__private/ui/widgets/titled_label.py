@@ -15,8 +15,10 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.reactive import Reactable
 
+    from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import (
+        DynamicLabelCallbackType,
+    )
     from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
-        DynamicWidgetCallbackType,
         DynamicWidgetFirstTryCallbackType,
     )
 
@@ -38,7 +40,7 @@ class TitledLabel(CliveWidget):
         *,
         obj_to_watch: Reactable | None = None,
         attribute_name: str | None = None,
-        callback: DynamicWidgetCallbackType | None = None,
+        callback: DynamicLabelCallbackType | None = None,
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
         id_: str | None = None,

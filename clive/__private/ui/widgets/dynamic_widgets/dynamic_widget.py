@@ -14,24 +14,28 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.reactive import Reactable
 
-T = TypeVar("T")
+CallbackReturnT = TypeVar("CallbackReturnT")
 
-WatchLikeCallbackBothValuesType = Callable[[Any, Any], Awaitable[T]] | Callable[[Any, Any], T]
-WatchLikeCallbackNewValueType = Callable[[Any], Awaitable[T]] | Callable[[Any], T]
-WatchLikeCallbackNoArgsType = Callable[[], Awaitable[T]] | Callable[[], T]
+WatchLikeCallbackBothValuesType = (
+    Callable[[Any, Any], Awaitable[CallbackReturnT]] | Callable[[Any, Any], CallbackReturnT]
+)
+WatchLikeCallbackNewValueType = Callable[[Any], Awaitable[CallbackReturnT]] | Callable[[Any], CallbackReturnT]
+WatchLikeCallbackNoArgsType = Callable[[], Awaitable[CallbackReturnT]] | Callable[[], CallbackReturnT]
 
 WatchLikeCallbackType = (
-    WatchLikeCallbackBothValuesType[T] | WatchLikeCallbackNewValueType[T] | WatchLikeCallbackNoArgsType[T]
+    WatchLikeCallbackBothValuesType[CallbackReturnT]
+    | WatchLikeCallbackNewValueType[CallbackReturnT]
+    | WatchLikeCallbackNoArgsType[CallbackReturnT]
 )
 
-DynamicWidgetCallbackType = WatchLikeCallbackType[Any]
+DynamicWidgetCallbackType = WatchLikeCallbackType[CallbackReturnT]
 DynamicWidgetFirstTryCallbackType = WatchLikeCallbackType[bool]
 
 
 WidgetT = TypeVar("WidgetT", bound=Widget)
 
 
-class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT]):
+class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, CallbackReturnT]):
     """A widget that can be updated dynamically when a reactive variable changes."""
 
     DEFAULT_CSS = """
@@ -45,7 +49,7 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT]):
         self,
         obj_to_watch: Reactable,
         attribute_name: str,
-        callback: DynamicWidgetCallbackType,
+        callback: DynamicWidgetCallbackType[CallbackReturnT],
         *,
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
@@ -80,14 +84,16 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT]):
 
         result = self._call_with_arbitrary_args(callback, old_value, value)
         if isawaitable(result):
-            result = await result
+            result_ = await result
+        else:
+            result_ = result
 
-        self.update_widget_state(result)
+        self.update_widget_state(result_)
 
     @overload
     def _call_with_arbitrary_args(
         self,
-        callback: DynamicWidgetCallbackType,
+        callback: DynamicWidgetCallbackType[CallbackReturnT],
         old_value: Any,  # noqa: ANN401
         value: Any,  # noqa: ANN401
     ) -> Awaitable[Any] | Any: ...  # noqa: ANN401
@@ -102,7 +108,7 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT]):
 
     def _call_with_arbitrary_args(
         self,
-        callback: DynamicWidgetCallbackType | DynamicWidgetFirstTryCallbackType,
+        callback: DynamicWidgetCallbackType[CallbackReturnT] | DynamicWidgetFirstTryCallbackType,
         old_value: Any,
         value: Any,
     ) -> Awaitable[str] | str | Awaitable[bool] | bool:
@@ -116,7 +122,7 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT]):
         return cast(WatchLikeCallbackNoArgsType[Any], callback)()
 
     @abstractmethod
-    def update_widget_state(self, result: Any) -> None:  # noqa: ANN401
+    def update_widget_state(self, result: CallbackReturnT) -> None:
         pass
 
     @abstractmethod

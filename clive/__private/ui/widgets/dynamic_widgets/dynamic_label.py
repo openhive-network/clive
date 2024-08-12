@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 DynamicLabelCallbackType = WatchLikeCallbackType[str]
 
 
-class DynamicLabel(DynamicWidget[Label]):
+class DynamicLabel(DynamicWidget[Label, str]):
     def __init__(
         self,
         obj_to_watch: Reactable,
