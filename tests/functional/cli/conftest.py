@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING
 import pytest
 from typer.testing import CliRunner
 
+from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node

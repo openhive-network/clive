@@ -23,8 +23,8 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
-    from clive.__private.storage.accounts import TrackedAccount
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 

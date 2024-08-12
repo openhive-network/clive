@@ -13,7 +13,7 @@ from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetTabP
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.storage.accounts import TrackedAccount
+    from clive.__private.core.accounts.accounts import TrackedAccount
 
 OPERATIONS_TAB_PANE_TITLE: Final[str] = "Operations"
 BALANCES_TAB_PANE_TITLE: Final[str] = "Balances"

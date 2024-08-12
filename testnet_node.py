@@ -9,13 +9,13 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
+from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
-from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,

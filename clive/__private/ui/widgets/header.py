@@ -25,9 +25,9 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.events import Mount
 
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
-    from clive.__private.storage.accounts import TrackedAccount
 
 
 class HeaderIcon(TextualHeaderIcon):

@@ -6,12 +6,12 @@ from typing import TYPE_CHECKING
 import pytest
 import test_tools as tt
 
+from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive.__private.ui.app import Clive
 from clive.__private.ui.dashboard.dashboard_locked import DashboardLocked
 from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked

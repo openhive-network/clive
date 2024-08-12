@@ -4,7 +4,7 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.storage.accounts import TrackedAccount
+from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.models import Asset
 
 

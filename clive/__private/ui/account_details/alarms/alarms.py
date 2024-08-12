@@ -25,10 +25,10 @@ from clive.__private.ui.widgets.scrolling import ScrollablePart
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.storage.accounts import TrackedAccount
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 

@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any
 
+from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.commands.abc.command_cached_data_retrieval import CommandCachedDataRetrieval
-from clive.__private.storage.accounts import TrackedAccount
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node

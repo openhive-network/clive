@@ -26,7 +26,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.storage.accounts import KnownAccount, WatchedAccount, WorkingAccount
+    from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 
 
 class ProfileDataError(CliveError):

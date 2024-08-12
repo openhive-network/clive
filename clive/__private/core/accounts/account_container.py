@@ -4,8 +4,8 @@ import contextlib
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, Generic, TypeVar
 
+from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
-from clive.__private.storage.accounts import Account, KnownAccount, WatchedAccount
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

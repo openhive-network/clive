@@ -59,6 +59,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from pathlib import Path
 
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
@@ -66,7 +67,6 @@ if TYPE_CHECKING:
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import TextualWorld, World
-    from clive.__private.storage.accounts import TrackedAccount
     from clive.models import Transaction
     from clive.models.aliased import (
         DynamicGlobalProperties,

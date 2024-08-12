@@ -7,7 +7,7 @@ from textual import on
 from textual.message import Message
 from textual.widgets import Checkbox, Input
 
-from clive.__private.storage.accounts import KnownAccount as KnownAccountModel
+from clive.__private.core.accounts.accounts import KnownAccount as KnownAccountModel
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 
 if TYPE_CHECKING:

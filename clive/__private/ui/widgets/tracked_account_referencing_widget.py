@@ -9,8 +9,8 @@ from clive.__private.ui.widgets.dynamic_label import DynamicLabel
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.profile_data import ProfileData
-    from clive.__private.storage.accounts import TrackedAccount
 
 
 class TrackedAccountReferencingWidget(CliveWidget):

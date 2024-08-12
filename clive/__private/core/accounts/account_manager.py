@@ -6,8 +6,8 @@ from clive.__private.core.accounts.account_container import (
     KnownAccountContainer,
     WatchedAccountContainer,
 )
+from clive.__private.core.accounts.accounts import Account, TrackedAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.accounts.exceptions import AccountNotFoundError, NoWorkingAccountError
-from clive.__private.storage.accounts import Account, TrackedAccount, WatchedAccount, WorkingAccount
 
 
 class AccountManager:

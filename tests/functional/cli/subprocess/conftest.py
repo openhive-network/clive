@@ -2,10 +2,10 @@ from __future__ import annotations
 
 import pytest
 
+from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile_data import ProfileData
 from clive.__private.core.world import World
-from clive.__private.storage.accounts import WatchedAccount, WorkingAccount
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,

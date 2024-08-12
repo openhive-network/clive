@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
+from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.date_utils import utc_epoch, utc_now
@@ -15,7 +16,6 @@ from clive.__private.core.iwax import (
     calculate_manabar_full_regeneration_time,
 )
 from clive.__private.storage import mock_database
-from clive.__private.storage.accounts import TrackedAccount
 from clive.__private.storage.mock_database import DisabledAPI, NodeData
 from clive.exceptions import CommunicationError
 from clive.models.aliased import (

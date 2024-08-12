@@ -7,6 +7,7 @@ from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
 from textual.widgets import Label, Static
 
+from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
@@ -14,7 +15,6 @@ from clive.__private.core.formatters.humanize import (
     humanize_natural_time,
     humanize_percent,
 )
-from clive.__private.storage.accounts import TrackedAccount, WorkingAccount
 from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
     SwitchWorkingAccountScreen,

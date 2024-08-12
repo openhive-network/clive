@@ -6,8 +6,8 @@ from textual import on
 from textual.containers import Container
 from textual.reactive import var
 
+from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
 from clive.__private.core.clive_import import get_clive
-from clive.__private.storage.accounts import TrackedAccount, WorkingAccount
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
 from clive.__private.ui.widgets.clive_radio_set import CliveRadioSet

@@ -16,10 +16,10 @@ from clive.__private.ui.widgets.clive_checkerboard_table import (
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 
 if TYPE_CHECKING:
+    from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount
     from clive.__private.core.profile_data import ProfileData
     from clive.__private.core.world import TextualWorld
-    from clive.__private.storage.accounts import Account, KnownAccount, TrackedAccount
-from clive.__private.storage.accounts import WorkingAccount
+from clive.__private.core.accounts.accounts import WorkingAccount
 
 AccountsType = Literal["known_accounts", "tracked_accounts"]
 
