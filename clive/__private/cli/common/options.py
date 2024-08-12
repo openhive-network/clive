@@ -76,7 +76,7 @@ password_optional_option = modified_option(password_option, default=None)
 
 
 # we don't know if account_name_option is required until the profile is loaded
-account_name_option = typer.Option(
+working_account_option_template = typer.Option(
     PERFORM_WORKING_ACCOUNT_LOAD,
     help="The account to use. (default is working account of profile)",
     show_default=False,
@@ -88,18 +88,21 @@ beekeeper_remote_option = typer.Option(
     show_default=bool(_get_default_beekeeper_remote()),
 )
 
-from_account_name_option = typer.Option(
-    PERFORM_WORKING_ACCOUNT_LOAD,
-    "--from",
-    help='The account to use as "from" argument. (default is working account of profile)',
-    show_default=False,
+account_name_option = modified_option(
+    working_account_option_template,
+    param_decls=("--account-name",),
 )
 
-to_account_name_option = typer.Option(
-    PERFORM_WORKING_ACCOUNT_LOAD,
-    "--to",
+from_account_name_option = modified_option(
+    working_account_option_template,
+    param_decls=("--from",),
+    help='The account to use as "from" argument. (default is working account of profile)',
+)
+
+to_account_name_option = modified_option(
+    working_account_option_template,
+    param_decls=("--to",),
     help='The account to use as "to" argument. (default is working account of profile)',
-    show_default=False,
 )
 
 to_account_name_no_default_option = typer.Option(
@@ -116,7 +119,8 @@ delegatee_account_name_option = typer.Option(
 )
 
 proposal_id: list[int] = typer.Option(
-    ..., help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times."
+    ...,
+    help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times.",
 )
 
 authority_account_name_option = typer.Option(
@@ -157,7 +161,10 @@ frequency_value_option = typer.Option(
 )
 frequency_value_optional_option = modified_option(frequency_value_option, default=None)
 
-memo_value_option = typer.Option("", help="The memo to attach to the transfer.")
+memo_value_option = typer.Option(
+    "",
+    help="The memo to attach to the transfer.",
+)
 memo_value_optional_option = modified_option(memo_value_option, default=None)
 
 
@@ -192,4 +199,10 @@ percent_option = typer.Option(
     ...,
     parser=decimal_percent,
     help="Percent (0.00-100.00)",
+)
+
+working_account_list_option_template = typer.Option(
+    [PERFORM_WORKING_ACCOUNT_LOAD],
+    help="List of accounts to use. (default is working account of profile)",
+    show_default=False,
 )
