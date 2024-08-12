@@ -103,7 +103,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
 
         Probably you want to use other `value_` properties instead.
 
-        Raises
+        Raises:  # noqa: D406
         ------
         AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
