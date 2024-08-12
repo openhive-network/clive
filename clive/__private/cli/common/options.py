@@ -66,11 +66,12 @@ def modified_option(option: OptionInfo, **kwargs: Any) -> Any:  # noqa: ANN401
 
 profile_name_option = typer.Option(
     get_default_or_make_required(_get_default_profile_name()),
+    "--profile-name",
     help="The profile to use.",
     show_default=bool(_get_default_profile_name()),
 )
 
-password_option = typer.Option(..., help="Password to unlock the wallet.", show_default=False)
+password_option = typer.Option(..., "--password", help="Password to unlock the wallet.", show_default=False)
 
 password_optional_option = modified_option(password_option, default=None)
 
@@ -84,6 +85,7 @@ working_account_option_template = typer.Option(
 
 beekeeper_remote_option = typer.Option(
     _get_default_beekeeper_remote(),
+    "--beekeeper-remote",
     help="Beekeeper remote endpoint. (starts locally if not provided)",
     show_default=bool(_get_default_beekeeper_remote()),
 )
@@ -114,12 +116,14 @@ to_account_name_no_default_option = typer.Option(
 
 delegatee_account_name_option = typer.Option(
     ...,
+    "--delegatee",
     help='The account to use as "delegatee" argument.',
     show_default=False,
 )
 
 proposal_id: list[int] = typer.Option(
     ...,
+    "--proposal-id",
     help=f"List of proposal identifiers, option can appear {MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION} times.",
 )
 
@@ -146,6 +150,7 @@ authority_weight_option = typer.Option(
 
 liquid_amount_option = typer.Option(
     ...,
+    "--amount",
     parser=liquid_asset,
     help="The liquid asset (HIVE/HBD) amount to transfer. (e.g. 2.500 HIVE)",
     show_default=False,
@@ -155,6 +160,7 @@ liquid_amount_optional_option = modified_option(liquid_amount_option, default=No
 
 frequency_value_option = typer.Option(
     ...,
+    "--frequency",
     parser=scheduled_transfer_frequency_parser,
     help=f"How often the transfer should be executed ({SHORTHAND_TIMEDELTA_EXAMPLE})",
     show_default=False,
@@ -163,6 +169,7 @@ frequency_value_optional_option = modified_option(frequency_value_option, defaul
 
 memo_value_option = typer.Option(
     "",
+    "--memo",
     help="The memo to attach to the transfer.",
 )
 memo_value_optional_option = modified_option(memo_value_option, default=None)
@@ -170,6 +177,7 @@ memo_value_optional_option = modified_option(memo_value_option, default=None)
 
 pair_id_value_option = typer.Option(
     0,
+    "--pair-id",
     min=SCHEDULED_TRANSFER_MINIMUM_PAIR_ID_VALUE,
     help=(
         "Unique pair id used to differentiate between multiple transfers to the same account \n"
@@ -181,6 +189,7 @@ pair_id_value_none_option = modified_option(pair_id_value_option, default=None, 
 
 repeat_value_option = typer.Option(
     ...,
+    "--repeat",
     min=SCHEDULED_TRANSFER_MINIMUM_REPEAT_VALUE,
     help="How many times the recurrent transfer should be executed. (must be greater than 1)",
     show_default=False,
@@ -190,6 +199,7 @@ repeat_value_optional_option = modified_option(repeat_value_option, default=None
 
 voting_amount_option = typer.Option(
     ...,
+    "--amount",
     parser=voting_asset,
     help="The voting asset (HP/VESTS). (e.g. 2.500 HP)",
     show_default=False,
@@ -197,6 +207,7 @@ voting_amount_option = typer.Option(
 
 percent_option = typer.Option(
     ...,
+    "--percent",
     parser=decimal_percent,
     help="Percent (0.00-100.00)",
 )
