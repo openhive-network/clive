@@ -57,13 +57,8 @@ DashboardBase {
     width: 3fr;
 
     #account-alarms-and-details {
-      margin-left: 1;
       width: 1fr;
       height: auto;
-
-      AlarmDisplay {
-        align: center middle;
-      }
     }
   }
 
