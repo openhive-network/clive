@@ -83,7 +83,7 @@ class Account:
 @dataclass
 class TrackedAccount(Account):
     _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
-    _data: NodeData | None = field(init=False, default=None, compare=False)
+    _data: NodeData | None = field(default=None, compare=False)
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -123,8 +123,16 @@ class WatchedAccount(TrackedAccount):
     def __hash__(self) -> int:
         return super().__hash__()
 
+    @classmethod
+    def create_from_working(cls, account: WorkingAccount) -> WatchedAccount:
+        return cls(account.name, account._alarms, account._data)
+
 
 @dataclass
 class WorkingAccount(TrackedAccount):
     def __hash__(self) -> int:
         return super().__hash__()
+
+    @classmethod
+    def create_from_watched(cls, account: WatchedAccount) -> WorkingAccount:
+        return cls(account.name, account._alarms, account._data)
