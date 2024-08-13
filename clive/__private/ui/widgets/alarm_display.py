@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
+from textual import on
+
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.clive_screen import CliveScreen
+from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import DynamicOneLineButtonUnfocusable
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
@@ -13,17 +17,10 @@ class AutoUseWorkingAccount:
     """Used to indicate that the working account should be used in the alarm display."""
 
 
-class AlarmDisplay(DynamicLabel):
+class AlarmDisplay(DynamicOneLineButtonUnfocusable):
     DEFAULT_CSS = """
     AlarmDisplay {
-        text-style: bold;
-        background: $error-lighten-3;
         padding: 0 1;
-        color: $text;
-
-        &.-no-alarm {
-            background: $success-lighten-3;
-        }
     }
     """
 
@@ -41,7 +38,9 @@ class AlarmDisplay(DynamicLabel):
             first_try_callback=self._first_try_alarms_callback,
             id_=id_,
             classes=classes,
+            variant="error",
         )
+        self._widget.add_class("alarm-display-button")
 
     @property
     def account(self) -> TrackedAccount:
@@ -50,20 +49,19 @@ class AlarmDisplay(DynamicLabel):
         return account
 
     def _update_callback(self, pd: ProfileData) -> str:
-        class_name = "-no-alarm"
         no_alarms_info = "No alarms"
 
         if self._is_in_auto_working_account_mode() and not pd.accounts.has_working_account:
-            self.add_class(class_name)
+            self._change_to_no_alarms_info()
             return no_alarms_info
 
         alarm_count = len(self.account.alarms.harmful_alarms)
 
         if alarm_count:
-            self.remove_class(class_name)
+            self._change_to_alarm_count()
             return f"{alarm_count} ALARM{'S' if alarm_count > 1 else ''}"
 
-        self.add_class(class_name)
+        self._change_to_no_alarms_info()
         return no_alarms_info
 
     def _first_try_alarms_callback(self, pd: ProfileData) -> bool:
@@ -77,5 +75,23 @@ class AlarmDisplay(DynamicLabel):
         # the first attempt in _update_callback
         return True
 
+    def _change_to_no_alarms_info(self) -> None:
+        self._widget.variant = "success"
+        self.tooltip = None
+
+    def _change_to_alarm_count(self) -> None:
+        self._widget.variant = "error"
+        self.tooltip = "See account alarms"
+
     def _is_in_auto_working_account_mode(self) -> bool:
         return isinstance(self._account, AutoUseWorkingAccount)
+
+    @CliveScreen.prevent_action_when_no_accounts_node_data
+    @on(OneLineButton.Pressed, ".alarm-display-button")
+    def push_account_details_screen(self) -> None:
+        from clive.__private.ui.account_details.account_details import AccountDetails
+
+        if self._is_in_auto_working_account_mode() and not self.profile_data.accounts.has_working_account:
+            return
+
+        self.app.push_screen(AccountDetails(self.account))
