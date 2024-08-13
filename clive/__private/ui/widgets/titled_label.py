@@ -47,29 +47,29 @@ class TitledLabel(CliveWidget):
     ) -> None:
         super().__init__(id=id_)
         self.title = title
-        self.__value = value
+        self._value = value
 
-        self.__value_label: DynamicLabel | Label = (
+        self._value_label: DynamicLabel | Label = (
             DynamicLabel(
                 obj_to_watch,
                 attribute_name,
                 callback,
-                prefix=self.__formatted_value(),
+                prefix=self._formatted_value(),
                 first_try_callback=first_try_callback,
                 init=init,
                 id_="value",
             )
             if obj_to_watch and attribute_name and callback
-            else Label(self.__formatted_value(), id="value")
+            else Label(self._formatted_value(), id="value")
         )
 
     @property
     def value(self) -> RenderableType:
-        return self.__value_label.renderable
+        return self._value_label.renderable
 
     def compose(self) -> ComposeResult:
         yield Label(f"{self.title}:", id="title")
-        yield self.__value_label
+        yield self._value_label
 
-    def __formatted_value(self) -> str:
-        return f" {self.__value}"
+    def _formatted_value(self) -> str:
+        return f" {self._value}"

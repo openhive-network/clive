@@ -61,22 +61,22 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
         self._widget = self.create_widget()
 
         self._init = init
-        self.__obj_to_watch = obj_to_watch
-        self.__attribute_name = attribute_name
-        self.__callback = callback
+        self._obj_to_watch = obj_to_watch
+        self._attribute_name = attribute_name
+        self._callback = callback
         self._first_try_callback = first_try_callback
 
     def on_mount(self) -> None:
         def delegate_work(old_value: Any, value: Any) -> None:  # noqa: ANN401
             self.run_worker(self.attribute_changed(old_value, value))
 
-        self.watch(self.__obj_to_watch, self.__attribute_name, delegate_work, self._init)
+        self.watch(self._obj_to_watch, self._attribute_name, delegate_work, self._init)
 
     def compose(self) -> ComposeResult:
         yield self._widget
 
     async def attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
-        callback = self.__callback
+        callback = self._callback
 
         should_update = self._call_with_arbitrary_args(self._first_try_callback, old_value, value)
         if not should_update:
