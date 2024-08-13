@@ -36,6 +36,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
+    from clive.__private.core.profile_data import ProfileData
     from clive.__private.storage.mock_database import Manabar
 
 
@@ -211,9 +212,8 @@ class DashboardBase(BaseScreen):
 
     def __init__(self) -> None:
         super().__init__()
-        self._previous_working_account = self.working_account
-        self._previous_watched_accounts = self.profile_data.accounts.watched.content
-        # Both attributes are used to check whether working or watched accounts have changed.
+        self._previous_tracked_accounts = self.tracked_accounts
+        # used to check whether working or watched accounts have changed.
 
     def create_main_panel(self) -> ComposeResult:
         with Body(), AccountsContainer():
@@ -227,15 +227,11 @@ class DashboardBase(BaseScreen):
     def on_mount(self) -> None:
         self.watch(self.world, "profile_data", self._update_account_containers)
 
-    async def _update_account_containers(self) -> None:
-        if (
-            self.working_account == self._previous_working_account
-            and self.profile_data.accounts.watched.content == self._previous_watched_accounts
-        ):
+    async def _update_account_containers(self, profile_data: ProfileData) -> None:
+        if self.tracked_accounts == self._previous_tracked_accounts:
             return
 
-        self._previous_working_account = self.working_account
-        self._previous_watched_accounts = self.profile_data.accounts.watched.content
+        self._previous_tracked_accounts = profile_data.accounts.tracked
 
         widgets_to_mount: list[Widget] = []
 
@@ -278,8 +274,8 @@ class DashboardBase(BaseScreen):
         return bool(self.profile_data.accounts.watched)
 
     @property
-    def working_account(self) -> WorkingAccount | None:
-        return self.profile_data.accounts.working_or_none
+    def tracked_accounts(self) -> list[TrackedAccount]:
+        return self.profile_data.accounts.tracked
 
     @property
     def has_tracked_accounts(self) -> bool:
