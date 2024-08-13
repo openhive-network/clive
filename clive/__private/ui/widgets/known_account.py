@@ -92,7 +92,8 @@ class KnownAccount(CliveWidget):
         is_account_known = self.__should_check_as_known()
 
         self.checkbox.disabled = not valid
-        self.checkbox.value = is_account_known
+        with self.app.prevent(Checkbox.Changed):
+            self.checkbox.value = is_account_known
 
         if valid:
             self.post_message(self.Status(is_account_known=is_account_known, account_name=self.account_name_raw))
