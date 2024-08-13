@@ -43,6 +43,10 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
             yield self._account_name_input
             yield self._working_account_checkbox
 
+    def on_mount(self) -> None:
+        # TODO: probably no need for this method after https://gitlab.syncad.com/hive/clive/-/issues/238
+        self.context.accounts.known.clear()
+
     async def apply_and_validate(self) -> None:
         try:
             account_name = self._account_name_input.value_or_error
@@ -56,12 +60,22 @@ class SetAccount(BaseScreen, FormScreen[ProfileData]):
         if not wrapper.result_or_raise:
             raise FormValidationError(f"Account {account_name} does not exist in the node.")
 
+        # allow only for adding one account
+        self.context.accounts.watched.clear()
+        self.context.accounts.unset_working_account()
+        self._remove_invalid_known_accounts(account_name)
+
         if self.__is_working_account():
             self.context.accounts.set_working_account(account_name)
-            self.context.accounts.watched.clear()
         else:
-            self.context.accounts.unset_working_account()
             self.context.accounts.add_tracked_account(account_name)
+
+    def _remove_invalid_known_accounts(self, account_name_to_keep: str) -> None:
+        """Remove all known accounts except the one that should be kept."""
+        # TODO: probably no need for this method after https://gitlab.syncad.com/hive/clive/-/issues/238
+        for known_account in self.context.accounts.known:
+            if known_account.name != account_name_to_keep:
+                self.context.accounts.known.remove(known_account)
 
     def __is_working_account(self) -> bool:
         return self.query_one(WorkingAccountCheckbox).value
