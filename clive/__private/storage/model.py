@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+from datetime import datetime  # noqa: TCH003
 from hashlib import sha256
 from typing import Any
+
+from pydantic import Field
 
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier  # noqa: TCH001
 from clive.models import OperationRepresentationType  # noqa: TCH001
@@ -15,9 +18,26 @@ class AlarmStorageModel(CliveBaseModel):
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
+class AuthorityStorageModel(CliveBaseModel):
+    weight_threshold: int
+    account_auths: list[tuple[str, int]]
+    key_auths: list[tuple[str, int]]
+
+
+class AllAuthoritiesStorageModel(CliveBaseModel):
+    owner: AuthorityStorageModel
+    active: AuthorityStorageModel
+    posting: AuthorityStorageModel
+    owner_lut: dict[str, AuthorityStorageModel] = Field(default_factory=dict)
+    active_lut: dict[str, AuthorityStorageModel] = Field(default_factory=dict)
+    posting_lut: dict[str, AuthorityStorageModel] = Field(default_factory=dict)
+    last_updated: datetime
+
+
 class TrackedAccountStorageModel(CliveBaseModel):
     name: str
     alarms: list[AlarmStorageModel] = []  # noqa: RUF012
+    authorities: AllAuthoritiesStorageModel | None = None
 
 
 class KeyAliasStorageModel(CliveBaseModel):

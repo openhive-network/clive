@@ -36,6 +36,7 @@ from schemas.apis.transaction_status_api import FindTransaction as SchemasFindTr
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
 from schemas.fields.basic import AccountName as SchemasAccountName
+from schemas.fields.compound import Authority as SchemasAuthority
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
 from schemas.fields.compound import Price, Proposal
 from schemas.fields.hex import Sha256
@@ -61,6 +62,7 @@ AccountName = SchemasAccountName
 ApiOperationObject = Hf26ApiOperationObject
 ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
 AssetBase = SchemasAssetBase
+Authority = SchemasAuthority
 ChainIdSchema = Sha256
 ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
 CustomJsonOperation = SchemasCustomJsonOperation

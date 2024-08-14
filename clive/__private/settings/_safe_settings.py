@@ -223,6 +223,10 @@ class SafeSettings:
             return self._get_node_refresh_alarms_rate_secs()
 
         @property
+        def refresh_authority_rate_secs(self) -> float:
+            return self._get_node_refresh_authority_rate_secs()
+
+        @property
         def communication_timeout_total_secs(self) -> float:
             return self._get_node_communication_timeout_total_secs()
 
@@ -247,6 +251,9 @@ class SafeSettings:
             return self._parent._get_number(NODE_REFRESH_RATE_SECS, default=1.5, minimum=1)
 
         def _get_node_refresh_alarms_rate_secs(self) -> float:
+            return self._parent._get_number(NODE_REFRESH_ALARMS_RATE_SECS, default=30, minimum=5)
+
+        def _get_node_refresh_authority_rate_secs(self) -> float:
             return self._parent._get_number(NODE_REFRESH_ALARMS_RATE_SECS, default=30, minimum=5)
 
         def _get_node_communication_timeout_total_secs(self) -> float:

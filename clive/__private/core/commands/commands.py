@@ -21,6 +21,7 @@ from clive.__private.core.commands.data_retrieval.hive_power_data import HivePow
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsData, ProposalsDataRetrieval
 from clive.__private.core.commands.data_retrieval.savings_data import SavingsData, SavingsDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_alarms_data import UpdateAlarmsData
+from clive.__private.core.commands.data_retrieval.update_authority_data import UpdateAuthorityData
 from clive.__private.core.commands.data_retrieval.update_node_data import UpdateNodeData
 from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
@@ -60,6 +61,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.accounts.accounts import TrackedAccount
+    from clive.__private.core.authority import AllAuthorities
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
@@ -300,6 +302,11 @@ class Commands(Generic[WorldT_co]):
     async def update_alarms_data(self, *, accounts: Iterable[TrackedAccount] | None = None) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             UpdateAlarmsData(accounts=list(accounts) if accounts is not None else [], node=self._world.node)
+        )
+
+    async def update_authority_data(self, *, account: TrackedAccount) -> CommandWithResultWrapper[AllAuthorities]:
+        return await self.__surround_with_exception_handlers(
+            UpdateAuthorityData(account=account, node=self._world.node)
         )
 
     async def retrieve_savings_data(self, *, account_name: str) -> CommandWithResultWrapper[SavingsData]:

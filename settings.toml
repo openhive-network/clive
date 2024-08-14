@@ -18,6 +18,7 @@ INITIALIZATION_TIMEOUT_SECS = 5
 CHAIN_ID = "beeab0de00000000000000000000000000000000000000000000000000000000"
 REFRESH_RATE_SECS = 1.5 # how often information about accounts are fetched from node
 REFRESH_ALARMS_RATE_SECS = 30 # how often information about alarms are fetched from node
+REFRESH_AUTHORITY_RATE_SECS = 30 # how often information about tracked accounts authority is fetched from node
 COMMUNICATION_TOTAL_TIMEOUT_SECS = 30
 
 [dev]

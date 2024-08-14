@@ -11,6 +11,7 @@ from clive.exceptions import CliveError
 from clive.models.aliased import AccountName
 
 if TYPE_CHECKING:
+    from clive.__private.core.authority import AllAuthorities
     from clive.__private.storage.mock_database import NodeData
 
 
@@ -42,6 +43,13 @@ class AccountAlarmsTooEarlyAccessError(AccountError):
 You are trying to access account alarms too early.
 To check if your account alarms are available, use the `is_account_alarms_available` property.
 """
+
+    def __init__(self) -> None:
+        super().__init__(self._MESSAGE)
+
+
+class AuthoritysTooEarlyAccessError(AccountError):
+    _MESSAGE = "You are trying to access account authority too early."
 
     def __init__(self) -> None:
         super().__init__(self._MESSAGE)
@@ -87,6 +95,7 @@ class Account:
 @dataclass
 class TrackedAccount(Account):
     _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
+    _authorities: AllAuthorities | None = field(default=None, compare=False)
     _data: NodeData | None = field(default=None, compare=False)
 
     def __hash__(self) -> int:
@@ -103,6 +112,12 @@ class TrackedAccount(Account):
         if not self._alarms.is_alarms_data_available:
             raise AccountAlarmsTooEarlyAccessError
         return self._alarms
+
+    @property
+    def authorities(self) -> AllAuthorities:
+        if self._authorities is None:
+            raise AuthoritysTooEarlyAccessError
+        return self._authorities
 
     @property
     def is_node_data_available(self) -> bool:
@@ -126,7 +141,7 @@ class WatchedAccount(TrackedAccount):
 
     @classmethod
     def create_from_working(cls, account: WorkingAccount) -> WatchedAccount:
-        return cls(account.name, account._alarms, account._data)
+        return cls(account.name, account._alarms, account._authorities, account._data)
 
 
 @dataclass
@@ -136,4 +151,4 @@ class WorkingAccount(TrackedAccount):
 
     @classmethod
     def create_from_watched(cls, account: WatchedAccount) -> WorkingAccount:
-        return cls(account.name, account._alarms, account._data)
+        return cls(account.name, account._alarms, account._authorities, account._data)

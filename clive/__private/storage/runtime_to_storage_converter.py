@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from clive.__private.storage.model import (
     AlarmStorageModel,
+    AllAuthoritiesStorageModel,
+    AuthorityStorageModel,
     KeyAliasStorageModel,
     ProfileStorageModel,
     TrackedAccountStorageModel,
@@ -13,6 +15,7 @@ from schemas.operations.representations import convert_to_representation
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
+    from clive.__private.core.authority import AllAuthorities, Authority
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
     from clive.models.aliased import OperationRepresentation
@@ -52,7 +55,9 @@ class RuntimeToStorageConverter:
 
     def _tracked_account_to_model(self, account: TrackedAccount) -> TrackedAccountStorageModel:
         alarms = [self._alarm_to_model(alarm) for alarm in account._alarms.all_alarms if alarm.has_identifier]
-        return TrackedAccountStorageModel(name=account.name, alarms=alarms)
+        return TrackedAccountStorageModel(
+            name=account.name, alarms=alarms, authorities=self._all_authorities_to_model(account._authorities)
+        )
 
     def _alarm_to_model(self, alarm: AnyAlarm) -> AlarmStorageModel:
         return AlarmStorageModel(
@@ -61,3 +66,29 @@ class RuntimeToStorageConverter:
 
     def _key_alias_to_model(self, key: PublicKeyAliased) -> KeyAliasStorageModel:
         return KeyAliasStorageModel(alias=key.alias, public_key=key.value)
+
+    def _all_authorities_to_model(self, authorities: AllAuthorities | None) -> AllAuthoritiesStorageModel | None:
+        if authorities is None:
+            return None
+        return AllAuthoritiesStorageModel(
+            owner=self._authority_to_model(authorities.owner),
+            active=self._authority_to_model(authorities.active),
+            posting=self._authority_to_model(authorities.posting),
+            owner_lut=self._authority_lut_to_model(authorities.owner_lut),
+            active_lut=self._authority_lut_to_model(authorities.owner_lut),
+            posting_lut=self._authority_lut_to_model(authorities.owner_lut),
+            last_updated=authorities.last_updated,
+        )
+
+    def _authority_lut_to_model(self, lut: dict[str, Authority]) -> dict[str, AuthorityStorageModel]:
+        lut_model: dict[str, AuthorityStorageModel] = {}
+        for name, authority in lut.items():
+            lut_model[name] = self._authority_to_model(authority)
+        return lut_model
+
+    def _authority_to_model(self, authority: Authority) -> AuthorityStorageModel:
+        return AuthorityStorageModel(
+            weight_threshold=authority.weight_threshold,
+            account_auths=authority.account_auths.copy(),
+            key_auths=authority.key_auths.copy(),
+        )

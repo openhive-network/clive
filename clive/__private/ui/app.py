@@ -183,9 +183,13 @@ class Clive(App[int], ManualReactive):
         self._refresh_alarms_data_interval = self.set_interval(
             safe_settings.node.refresh_alarms_rate_secs, lambda: self.update_alarms_data(), pause=True
         )
+        self._refresh_authority_data_interval = self.set_interval(
+            safe_settings.node.refresh_authority_rate_secs, lambda: self.update_authority_data(), pause=True
+        )
 
         self.update_data_from_node_asap()
         self.update_alarms_data_asap()
+        self.update_authority_data_asap()
 
         should_enable_debug_loop = safe_settings.dev.should_enable_debug_loop
         if should_enable_debug_loop:
@@ -364,6 +368,14 @@ class Clive(App[int], ManualReactive):
 
         self.run_worker(_update_alarms_data_asap())
 
+    def update_authority_data_asap(self) -> None:
+        async def _update_authority_data_asap() -> None:
+            self._refresh_authority_data_interval.pause()
+            self.update_authority_data()
+            self._refresh_authority_data_interval.resume()
+
+        self.run_worker(_update_authority_data_asap())
+
     def update_data_from_node_asap(self) -> None:
         self._refresh_node_data_interval.pause()
         self.update_data_from_node()
@@ -377,6 +389,16 @@ class Clive(App[int], ManualReactive):
             logger.warning(f"Update alarms data failed: {wrapper.error}")
             return
 
+        self.trigger_profile_watchers()
+
+    @work(name="account authority data update worker")
+    async def update_authority_data(self) -> None:
+        accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
+        for account in accounts:
+            wrapper = await self.world.commands.update_authority_data(account=account)
+            if wrapper.error_occurred:
+                logger.warning(f"Update account authority data for account {account.name} failed: {wrapper.error}")
+                return
         self.trigger_profile_watchers()
 
     @work(name="node data update worker")
