@@ -19,6 +19,8 @@ from clive.__private.settings import safe_settings, settings
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    ALT_WORKING_ACCOUNT2_KEY_ALIAS,
+    ALT_WORKING_ACCOUNT3_KEY_ALIAS,
     TESTNET_CHAIN_ID,
     WORKING_ACCOUNT_KEY_ALIAS,
 )
@@ -26,6 +28,9 @@ from clive_local_tools.testnet_block_log import run_node
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT1_NAME,
+    ALT_WORKING_ACCOUNT2_DATA,
+    ALT_WORKING_ACCOUNT3_DATA,
+    ALT_WORKING_ACCOUNT3_NAME,
     WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
     WORKING_ACCOUNT_NAME,
@@ -72,6 +77,18 @@ async def prepare_profiles(node: tt.RawNode) -> None:
     tt.logger.info("Configuring profiles for clive")
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
+    working_account_key = PrivateKeyAliased(
+        value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS
+    )
+    alt_working_account1_key = PrivateKeyAliased(
+        value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS
+    )
+    alt_working_account2_key = PrivateKeyAliased(
+        value=ALT_WORKING_ACCOUNT2_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT2_KEY_ALIAS
+    )
+    alt_working_account3_key = PrivateKeyAliased(
+        value=ALT_WORKING_ACCOUNT3_DATA.account.private_key, alias=ALT_WORKING_ACCOUNT3_KEY_ALIAS
+    )
 
     _create_profile(
         profile_name=WORKING_ACCOUNT_NAME,
@@ -83,15 +100,19 @@ async def prepare_profiles(node: tt.RawNode) -> None:
         working_account_name=ALT_WORKING_ACCOUNT1_NAME,
         watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
     )
-    await _create_wallet(
-        working_account_name=WORKING_ACCOUNT_NAME,
-        private_key=WORKING_ACCOUNT_DATA.account.private_key,
-        key_alias=WORKING_ACCOUNT_KEY_ALIAS,
+    _create_profile(
+        profile_name=ALT_WORKING_ACCOUNT3_NAME,
+        working_account_name=ALT_WORKING_ACCOUNT3_NAME,
+        watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
     )
+    await _create_wallet(WORKING_ACCOUNT_NAME, working_account_key)
+    await _create_wallet(ALT_WORKING_ACCOUNT1_NAME, alt_working_account1_key)
     await _create_wallet(
-        working_account_name=ALT_WORKING_ACCOUNT1_NAME,
-        private_key=ALT_WORKING_ACCOUNT1_DATA.account.private_key,
-        key_alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+        ALT_WORKING_ACCOUNT3_NAME,
+        working_account_key,
+        alt_working_account1_key,
+        alt_working_account2_key,
+        alt_working_account3_key,
     )
 
 
@@ -103,7 +124,7 @@ def _create_profile(profile_name: str, working_account_name: str, watched_accoun
     ).save()
 
 
-async def _create_wallet(working_account_name: str, private_key: str, key_alias: str) -> None:
+async def _create_wallet(working_account_name: str, *keys: PrivateKeyAliased) -> None:
     async with World(working_account_name) as world_cm:
         password = await CreateWallet(
             app_state=world_cm.app_state,
@@ -111,9 +132,9 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
             wallet=working_account_name,
             password=working_account_name,
         ).execute_with_result()
-
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
-        world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
+        for key in keys:
+            world_cm.profile.keys.add_to_import(key)
         await world_cm.commands.sync_data_with_beekeeper()
 
 

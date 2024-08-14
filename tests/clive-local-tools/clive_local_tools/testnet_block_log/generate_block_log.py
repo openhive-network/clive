@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 from datetime import timedelta
+from itertools import pairwise
 from pathlib import Path
 from random import uniform
 from typing import Final
@@ -12,6 +13,7 @@ from clive.__private.core.date_utils import utc_now
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
     ALT_WORKING_ACCOUNT2_DATA,
+    ALT_WORKING_ACCOUNT3_DATA,
     CREATOR_ACCOUNT,
     EMPTY_ACCOUNT,
     PROPOSALS,
@@ -109,29 +111,30 @@ def create_proposals(wallet: tt.Wallet) -> None:
 
 def create_working_accounts(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating working accounts...")
-    wallet.create_account(
-        WORKING_ACCOUNT_DATA.account.name,
-        hives=WORKING_ACCOUNT_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=WORKING_ACCOUNT_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=WORKING_ACCOUNT_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-    )
-    wallet.create_account(
-        ALT_WORKING_ACCOUNT1_DATA.account.name,
-        hives=ALT_WORKING_ACCOUNT1_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=ALT_WORKING_ACCOUNT1_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=ALT_WORKING_ACCOUNT1_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-    )
-    wallet.create_account(
-        ALT_WORKING_ACCOUNT2_DATA.account.name,
-        hives=ALT_WORKING_ACCOUNT2_DATA.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        vests=ALT_WORKING_ACCOUNT2_DATA.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-        hbds=ALT_WORKING_ACCOUNT2_DATA.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
-    )
+    working_accounts = [
+        WORKING_ACCOUNT_DATA,
+        ALT_WORKING_ACCOUNT1_DATA,
+        ALT_WORKING_ACCOUNT2_DATA,
+        ALT_WORKING_ACCOUNT3_DATA,
+    ]
+    for working_account_data in working_accounts:
+        wallet.create_account(
+            working_account_data.account.name,
+            hives=working_account_data.hives_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            vests=working_account_data.vests.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+            hbds=working_account_data.hbds_liquid.as_nai(),  # type: ignore[arg-type]  # test-tools dooesn't convert to hf26
+        )
 
 
 def prepare_savings(wallet: tt.Wallet) -> None:
     tt.logger.info("Preparing savings of all accounts...")
-    all_accounts = [WORKING_ACCOUNT_DATA, ALT_WORKING_ACCOUNT1_DATA, ALT_WORKING_ACCOUNT2_DATA, *WATCHED_ACCOUNTS_DATA]
+    all_accounts = [
+        WORKING_ACCOUNT_DATA,
+        ALT_WORKING_ACCOUNT1_DATA,
+        ALT_WORKING_ACCOUNT2_DATA,
+        ALT_WORKING_ACCOUNT3_DATA,
+        *WATCHED_ACCOUNTS_DATA,
+    ]
     for data in all_accounts:
         if data.hives_savings > 0:
             wallet.api.transfer_to_savings(
@@ -176,6 +179,55 @@ def create_watched_accounts(wallet: tt.Wallet) -> None:
         )
 
 
+# authority structure should be following (same for owner, active, and posting):
+# for `multiauth`:
+#    account auths: `jane`, `mary`
+#    key auths: 1 key
+# for `jane`:
+#    account auths: `mary`
+#    key auths: 2 keys
+# for `mary`:
+#    account auths: `bob`
+#    key auths: 2 keys
+# for `bob`:
+#    account auths: `timmy`
+#    key auths: 2 keys
+# for `timmy`:
+#    account auths: `john`
+#    key auths: 2 keys
+# for `john`:
+#    account auths: empty
+#    key auths: 2 keys
+def update_authorities(wallet: tt.Wallet) -> None:
+    tt.logger.info("Updating authorities...")
+    for type_ in ["posting", "active", "owner"]:
+        for data in [ALT_WORKING_ACCOUNT1_DATA, ALT_WORKING_ACCOUNT2_DATA]:
+            wallet.api.update_account_auth_account(
+                account_name=ALT_WORKING_ACCOUNT3_DATA.account.name,
+                type_=type_,
+                auth_account=data.account.name,
+                weight=1,
+            )
+        for data1, data2 in pairwise([ALT_WORKING_ACCOUNT1_DATA, ALT_WORKING_ACCOUNT2_DATA, *WATCHED_ACCOUNTS_DATA]):
+            wallet.api.update_account_auth_account(
+                account_name=data1.account.name,
+                type_=type_,
+                auth_account=data2.account.name,
+                weight=1,
+            )
+            wallet.api.update_account_auth_key(
+                account_name=data1.account.name,
+                type_=type_,
+                key=tt.Account(data1.account.name, secret=type_).public_key,
+                weight=1,
+            )
+        wallet.api.update_account_auth_threshold(
+            account_name=ALT_WORKING_ACCOUNT3_DATA.account.name,
+            type_=type_,
+            threshold=3,
+        )
+
+
 def create_empty_account(wallet: tt.Wallet) -> None:
     tt.logger.info("Creating empty account...")
     wallet.create_account(EMPTY_ACCOUNT.name)
@@ -210,6 +262,7 @@ def main() -> None:
     create_proposals(wallet)
     create_working_accounts(wallet)
     create_watched_accounts(wallet)
+    update_authorities(wallet)
     prepare_savings(wallet)
     prepare_votes_for_witnesses(wallet)
     create_empty_account(wallet)

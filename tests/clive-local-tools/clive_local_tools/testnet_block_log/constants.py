@@ -48,3 +48,10 @@ ALT_WORKING_ACCOUNT2_DATA: Final[AccountData] = AccountData(
     hbds_liquid=tt.Asset.Tbd(121_000),
     vests=tt.Asset.Test(122_000),  # in hive power
 )
+ALT_WORKING_ACCOUNT3_NAME: Final[str] = "multiauth"
+ALT_WORKING_ACCOUNT3_DATA: Final[AccountData] = AccountData(
+    account=tt.Account(ALT_WORKING_ACCOUNT3_NAME),
+    hives_liquid=tt.Asset.Test(130_000),
+    hbds_liquid=tt.Asset.Tbd(131_000),
+    vests=tt.Asset.Test(132_000),  # in hive power
+)
