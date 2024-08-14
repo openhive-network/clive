@@ -6,7 +6,7 @@ from pathlib import Path
 from pydantic import BaseModel, Field
 
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
-from clive.core.url import Url
+from clive.__private.core.url import Url
 
 
 @dataclass

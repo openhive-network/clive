@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, get_args
 from pydantic import Field
 
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
+from clive.__private.core.url import Url
 from clive.__private.settings import safe_settings
-from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.base import CliveBaseModel
 

@@ -5,7 +5,7 @@ import typer
 
 from clive.__private.cli.commands.abc.contextual_cli_command import ContextualCLICommand
 from clive.__private.core.beekeeper import Beekeeper
-from clive.core.url import Url
+from clive.__private.core.url import Url
 
 
 @dataclass(kw_only=True)

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
-from clive.core.url import Url
+from clive.__private.core.url import Url
 
 
 @pytest.mark.parametrize(

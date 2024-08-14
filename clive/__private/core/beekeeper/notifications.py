@@ -7,8 +7,8 @@ from clive.__private.core.beekeeper.notification_http_server import (
     AsyncHttpServer,
     JsonT,
 )
+from clive.__private.core.url import Url
 from clive.__private.logger import logger
-from clive.core.url import Url
 
 if TYPE_CHECKING:
     from collections.abc import Callable

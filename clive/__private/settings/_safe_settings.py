@@ -31,8 +31,8 @@ from clive.__private.core.constants.setting_identifiers import (
     SECRETS_NODE_ADDRESS,
 )
 from clive.__private.core.formatters.humanize import humanize_validation_result
+from clive.__private.core.url import Url
 from clive.__private.settings._settings import settings
-from clive.core.url import Url
 from clive.exceptions import CliveError
 
 _AvailableLogLevels = Literal["DEBUG", "INFO", "WARNING", "ERROR"]

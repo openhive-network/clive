@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any
 import aiohttp
 
 if TYPE_CHECKING:
-    from clive.core.url import Url
+    from clive.__private.core.url import Url
     from schemas.jsonrpc import JSONRPCRequest
 
 

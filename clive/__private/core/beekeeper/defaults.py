@@ -7,7 +7,7 @@ from pydantic import BaseModel
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.command_line_args import ExportKeysWalletParams
-    from clive.core.url import Url
+    from clive.__private.core.url import Url
 
 
 class BeekeeperDefaults(BaseModel):

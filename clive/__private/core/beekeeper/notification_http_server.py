@@ -5,7 +5,7 @@ from typing import Any, Protocol
 
 from aiohttp import web
 
-from clive.core.url import Url
+from clive.__private.core.url import Url
 from clive.exceptions import CliveError
 
 JsonT = dict[str, Any]
