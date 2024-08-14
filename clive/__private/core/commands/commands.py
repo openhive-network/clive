@@ -67,8 +67,8 @@ if TYPE_CHECKING:
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
     from clive.__private.core.world import TextualWorld, World
-    from clive.models import Transaction
-    from clive.models.aliased import (
+    from clive.__private.models import Transaction
+    from clive.__private.models.aliased import (
         DynamicGlobalProperties,
         ProposalSchema,
         SchemasAccount,

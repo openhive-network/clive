@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
 from clive.__private.core.iwax import calculate_sig_digest
-from clive.models import Signature, Transaction
+from clive.__private.models import Signature, Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper

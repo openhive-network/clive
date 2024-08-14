@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, TypeAlias
 
-from clive.models import Operation, OperationBaseClass, Transaction
+from clive.__private.models import Operation, OperationBaseClass, Transaction
 
 TransactionConvertibleType: TypeAlias = OperationBaseClass | Iterable[OperationBaseClass] | Transaction
 

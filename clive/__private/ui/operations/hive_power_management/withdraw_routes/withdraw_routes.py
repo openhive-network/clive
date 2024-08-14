@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.models.aliased import WithdrawRouteSchema
+    from clive.__private.models.aliased import WithdrawRouteSchema
 
 
 class PlaceTaker(Static):

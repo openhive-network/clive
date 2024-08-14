@@ -5,14 +5,16 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
-from clive.models.hp_vests_balance import HpVestsBalance
+from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node.node import Node
-    from clive.models.aliased import DynamicGlobalProperties, VestingDelegationExpiration
-    from clive.models.aliased import FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations
+    from clive.__private.models.aliased import DynamicGlobalProperties, VestingDelegationExpiration
+    from clive.__private.models.aliased import (
+        FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations,
+    )
 
 
 class FindVestingDelegationExpirationsCommandError(CommandError):

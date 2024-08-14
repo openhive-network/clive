@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
-from clive.models.asset import Asset
+from clive.__private.models import Asset
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain, assert_transaction_in_blockchain
 from clive_local_tools.cli.checkers import assert_no_delegations
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD

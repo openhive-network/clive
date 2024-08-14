@@ -11,8 +11,8 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node import Node
-    from clive.models import Asset
-    from clive.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
+    from clive.__private.models import Asset
+    from clive.__private.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
     from schemas.operations import TransferFromSavingsOperation
 

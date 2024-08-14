@@ -11,11 +11,11 @@ from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.url import Url
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
+from clive.__private.models.aliased import ChainIdSchema, OperationBaseClass
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.exceptions import CliveError
-from clive.models.aliased import ChainIdSchema, OperationBaseClass
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterable

@@ -4,10 +4,10 @@ from math import ceil
 from typing import TYPE_CHECKING
 
 from clive.__private.core.hive_vests_conversions import vests_to_hive
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
-    from clive.models.aliased import DynamicGlobalProperties
+    from clive.__private.models.aliased import DynamicGlobalProperties
 
 
 def calculate_hive_power(gdpo: DynamicGlobalProperties, vests_value: Asset.Vests | int) -> int:

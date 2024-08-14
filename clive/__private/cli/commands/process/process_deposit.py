@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.models import Asset
+from clive.__private.models import Asset
 from schemas.operations import TransferToSavingsOperation
 
 

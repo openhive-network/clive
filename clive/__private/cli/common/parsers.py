@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from datetime import timedelta
     from decimal import Decimal
 
-    from clive.models import Asset
+    from clive.__private.models import Asset
 
 ParsedAssetT = TypeVar("ParsedAssetT", bound="Asset.AnyT")
 P = ParamSpec("P")
@@ -55,7 +55,7 @@ def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
         "Invalid value for '--amount': Invalid asset amount format: '5.0000000'. Reason: ['Invalid precision for HIVE.
           Must be <=3.']"
     """
-    from clive.models.asset import Asset, AssetAmountInvalidFormatError, UnknownAssetTypeError
+    from clive.__private.models.asset import Asset, AssetAmountInvalidFormatError, UnknownAssetTypeError
 
     _allowed_assets: tuple[type[Asset.AnyT], ...] = allowed_assets  # type: ignore[assignment]
     allowed_symbols_message = f"Only {[Asset.get_symbol(allowed) for allowed in _allowed_assets]} are allowed."
@@ -73,13 +73,13 @@ def _parse_asset(raw: str, *allowed_assets: type[ParsedAssetT]) -> ParsedAssetT:
 
 
 def liquid_asset(raw: str) -> Asset.LiquidT:
-    from clive.models.asset import Asset
+    from clive.__private.models import Asset
 
     return _parse_asset(raw, *get_args(Asset.LiquidT))  # type: ignore[no-any-return]
 
 
 def voting_asset(raw: str) -> Asset.VotingT:
-    from clive.models.asset import Asset
+    from clive.__private.models import Asset
 
     raw = raw.upper().replace("HP", "HIVE")
 
@@ -87,7 +87,7 @@ def voting_asset(raw: str) -> Asset.VotingT:
 
 
 def hive_asset(raw: str) -> Asset.Hive:
-    from clive.models.asset import Asset
+    from clive.__private.models import Asset
 
     return _parse_asset(raw, Asset.Hive)
 

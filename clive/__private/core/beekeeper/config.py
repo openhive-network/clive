@@ -8,9 +8,9 @@ from pydantic import Field
 
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 from clive.__private.core.url import Url
+from clive.__private.models.base import CliveBaseModel
 from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError
-from clive.models.base import CliveBaseModel
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.command_line_args import ExportKeysWalletParams

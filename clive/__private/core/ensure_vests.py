@@ -3,11 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.hive_vests_conversions import hive_to_vests
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
-    from clive.models.aliased import DynamicGlobalProperties
+    from clive.__private.models.aliased import DynamicGlobalProperties
 
 
 def ensure_vests(value: Asset.VotingT, gdpo: DynamicGlobalProperties) -> Asset.Vests:

@@ -6,7 +6,7 @@ import pytest
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.load_transaction import LoadTransaction
-from clive.models import Asset, Transaction
+from clive.__private.models import Asset, Transaction
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:

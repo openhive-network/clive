@@ -30,8 +30,8 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.node import Node
-    from clive.models import Asset
-    from clive.models.aliased import (
+    from clive.__private.models import Asset
+    from clive.__private.models.aliased import (
         CurrentPriceFeed,
         DynamicGlobalProperties,
         FeedHistory,

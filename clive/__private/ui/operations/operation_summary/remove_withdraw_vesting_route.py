@@ -12,7 +12,7 @@ from schemas.operations import SetWithdrawVestingRouteOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models.aliased import WithdrawRouteSchema
+    from clive.__private.models.aliased import WithdrawRouteSchema
 
 
 class RemoveWithdrawVestingRoute(OperationSummary):

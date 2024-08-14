@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.models.asset import Asset, AssetFactoryHolder
 from clive.__private.ui.widgets.currency_selector.currency_selector_liquid import CurrencySelectorLiquid
-from clive.models.asset import Asset, AssetFactoryHolder
 
 from .checkers import assert_is_focused
 

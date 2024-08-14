@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.models import Asset
+from clive.__private.models import Asset
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:

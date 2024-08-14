@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from textual import on
 
+from clive.__private.models import Asset
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.models import Asset
 
 if TYPE_CHECKING:
     from collections.abc import Callable

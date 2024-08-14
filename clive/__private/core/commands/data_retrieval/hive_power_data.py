@@ -6,15 +6,15 @@ from typing import TYPE_CHECKING, Final
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import align_to_dot
-from clive.models import Asset
-from clive.models.hp_vests_balance import HpVestsBalance
+from clive.__private.models import Asset
+from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 if TYPE_CHECKING:
     from datetime import datetime
     from decimal import Decimal
 
     from clive.__private.core.node import Node
-    from clive.models.aliased import DynamicGlobalProperties, SchemasAccount
+    from clive.__private.models.aliased import DynamicGlobalProperties, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindVestingDelegations, ListWithdrawVestingRoutes
     from schemas.apis.database_api.fundaments_of_reponses import VestingDelegationsFundament as VestingDelegation
     from schemas.apis.database_api.fundaments_of_reponses import WithdrawVestingRoutesFundament as WithdrawRoute

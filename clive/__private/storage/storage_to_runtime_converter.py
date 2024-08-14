@@ -10,13 +10,13 @@ from clive.__private.core.keys import PublicKeyAliased
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
+    from clive.__private.models import OperationBaseClass
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,
         ProfileStorageModel,
         TrackedAccountStorageModel,
     )
-    from clive.models import OperationBaseClass
 
 
 class StorageToRuntimeConverter:

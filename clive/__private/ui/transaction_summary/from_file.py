@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.models import Transaction
+    from clive.__private.models import Transaction
 
 
 class AlreadySignedHint(Label):

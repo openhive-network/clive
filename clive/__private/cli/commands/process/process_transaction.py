@@ -6,8 +6,8 @@ from clive.__private.cli.commands.abc.perform_actions_on_transaction_command imp
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.formatters.humanize import humanize_validation_result
+from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
-from clive.models import Transaction
 
 
 @dataclass(kw_only=True)

@@ -4,7 +4,7 @@ from datetime import datetime
 
 from pydantic import validator
 
-from clive.models.base import CliveBaseModel
+from clive.__private.models.base import CliveBaseModel
 
 
 class BeekeeperResponse(CliveBaseModel):

@@ -4,7 +4,8 @@ from typing import TYPE_CHECKING, Optional, cast
 
 import typer
 
-from clive.__private.cli.common import options
+from clive.__private.cli.clive_typer import CliveTyper
+from clive.__private.cli.common import OperationCommonOptions, options
 from clive.__private.cli.common.options import (
     frequency_value_option,
     frequency_value_optional_option,
@@ -19,9 +20,7 @@ from clive.__private.cli.common.options import (
 )
 
 if TYPE_CHECKING:
-    from clive.models import Asset
-from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions
+    from clive.__private.models import Asset
 
 
 @dataclass(kw_only=True)

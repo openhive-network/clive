@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.models import Operation
+    from clive.__private.models import Operation
 
 
 class ProposalsOrderSelect(CliveSelect[ProposalsDataRetrieval.Orders]):

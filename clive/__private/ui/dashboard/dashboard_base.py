@@ -15,6 +15,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_natural_time,
     humanize_percent,
 )
+from clive.__private.models import Asset
 from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
     SwitchWorkingAccountScreen,
@@ -30,7 +31,6 @@ from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
-from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

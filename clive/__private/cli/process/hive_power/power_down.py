@@ -6,7 +6,7 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import OperationCommonOptions, options
 
 if TYPE_CHECKING:
-    from clive.models import Asset
+    from clive.__private.models import Asset
 
 power_down = CliveTyper(name="power-down", help="Perform power-down, send withdraw_vesting_operation.")
 

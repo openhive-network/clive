@@ -15,18 +15,18 @@ from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
 )
+from clive.__private.models.aliased import (
+    DynamicGlobalProperties,
+)
 from clive.__private.storage import mock_database
 from clive.__private.storage.mock_database import DisabledAPI, NodeData
 from clive.exceptions import CommunicationError
-from clive.models.aliased import (
-    DynamicGlobalProperties,
-)
 
 if TYPE_CHECKING:
     from types import TracebackType
 
     from clive.__private.core.node.node import Node
-    from clive.models.aliased import (
+    from clive.__private.models.aliased import (
         FindRcAccounts,
         RcAccount,
         SchemasAccount,

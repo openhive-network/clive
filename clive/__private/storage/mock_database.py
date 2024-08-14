@@ -11,7 +11,7 @@ from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
-    from clive.models import Asset
+    from clive.__private.models import Asset
 
 
 @dataclass

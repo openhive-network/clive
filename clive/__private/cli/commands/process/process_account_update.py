@@ -18,7 +18,7 @@ if TYPE_CHECKING:
         AuthorityType,
         AuthorityUpdateFunction,
     )
-    from clive.models.aliased import SchemasAccount
+    from clive.__private.models.aliased import SchemasAccount
 
 
 @dataclass(kw_only=True)

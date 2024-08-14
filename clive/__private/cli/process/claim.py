@@ -7,7 +7,7 @@ from clive.__private.cli.common import OperationCommonOptions, options
 from clive.__private.cli.common.parsers import hive_asset
 
 if TYPE_CHECKING:
-    from clive.models import Asset
+    from clive.__private.models import Asset
 
 claim = CliveTyper(name="claim", help="Manage the things you can collect.")
 
