@@ -3,6 +3,7 @@ from __future__ import annotations
 import contextlib
 from typing import TYPE_CHECKING, Iterable
 
+from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.storage.model import PersistentStorageModel, ProfileStorageModel, calculate_storage_model_revision
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
@@ -52,11 +53,14 @@ class PersistentStorageService:
         return self._cached_storage
 
     def save_storage(self) -> None:
+        versioned_storage_dir = self._get_storage_versioned_directory()
         storage_path = self._get_storage_filepath()
         serialized_storage = self._serialize_storage_model(self.cached_storage)
 
         # create data directory if it doesn't exist
-        storage_path.parent.mkdir(parents=True, exist_ok=True)
+        versioned_storage_dir.mkdir(parents=True, exist_ok=True)
+
+        self._create_current_storage_symlink()
 
         storage_path.write_text(serialized_storage)
 
@@ -163,9 +167,29 @@ class PersistentStorageService:
         return self.cached_storage.default_profile is not None
 
     @classmethod
-    def _get_storage_filepath(cls) -> Path:
+    def _get_storage_directory(cls) -> Path:
+        return safe_settings.data_path / "data"
+
+    @classmethod
+    def _get_storage_versioned_directory(cls) -> Path:
+        """Get the directory where the storage file is stored in a versioned way."""
         revision = calculate_storage_model_revision()
-        return safe_settings.data_path / f"data/{revision}/profiles.json"
+        return cls._get_storage_directory() / revision
+
+    @classmethod
+    def _get_storage_filepath(cls) -> Path:
+        return cls._get_storage_versioned_directory() / "profiles.json"
+
+    def _create_current_storage_symlink(self) -> None:
+        versioned_storage_dir = self._get_storage_versioned_directory()
+        symlink_dir = self._get_storage_directory() / "current"
+
+        if symlink_dir.resolve() == versioned_storage_dir:
+            logger.debug("Current storage symlink already points to the current version. Skipping symlink creation.")
+            return
+
+        symlink_dir.unlink(missing_ok=True)
+        symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
 
     def _load_storage(self) -> PersistentStorageModel:
         storage_path = self._get_storage_filepath()
