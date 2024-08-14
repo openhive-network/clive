@@ -53,7 +53,7 @@ class FixAlarmInfoWidget(CliveWidget):
 
     @property
     def _is_account_working(self) -> bool:
-        return self.profile_data.accounts.is_account_working(self._account)
+        return self.profile.accounts.is_account_working(self._account)
 
     def compose(self) -> ComposeResult:
         yield from self._get_how_to_fix_content()
@@ -66,7 +66,7 @@ class FixAlarmInfoWidget(CliveWidget):
                 return
 
             self._alarm.is_harmless = True
-            self.app.trigger_profile_data_watchers()
+            self.app.trigger_profile_watchers()
             self.app.pop_screen()
 
         self.app.push_screen(

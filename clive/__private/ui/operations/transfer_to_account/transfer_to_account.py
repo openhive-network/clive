@@ -44,7 +44,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
 
     @property
     def from_account(self) -> str:
-        return self.profile_data.accounts.working.name
+        return self.profile.accounts.working.name
 
     def create_left_panel(self) -> ComposeResult:
         with SectionScrollable("Perform a transfer to account"), Body():

@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from rich.text import Text
     from textual.app import ComposeResult
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.__private.ui.shared.form import Form
 
 
@@ -36,7 +36,7 @@ class NodeSelector(Select[Url], CliveWidget):
 
     def __init__(self) -> None:
         super().__init__(
-            [(str(url), url) for url in self.profile_data.backup_node_addresses],
+            [(str(url), url) for url in self.profile.backup_node_addresses],
             allow_blank=False,
             value=self.node.address,
         )
@@ -125,7 +125,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
 class SetNodeAddressForm(SetNodeAddressBase, FormScreen[None]):
     BIG_TITLE = "onboarding"
 
-    def __init__(self, owner: Form[ProfileData]) -> None:
+    def __init__(self, owner: Form[Profile]) -> None:
         super().__init__(owner=owner)
 
     async def apply_and_validate(self) -> None:

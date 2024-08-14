@@ -10,7 +10,7 @@ from textual.message import Message
 from textual.widgets import Input
 
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
@@ -151,8 +151,8 @@ class NewKeyAlias(NewKeyAliasBase):
         """
 
     @property
-    def context(self) -> ProfileData:
-        return self.profile_data
+    def context(self) -> Profile:
+        return self.profile
 
     @CliveScreen.try_again_after_unlock
     @on(NewKeyAliasBase.Saved)
@@ -160,7 +160,7 @@ class NewKeyAlias(NewKeyAliasBase):
         self.context.keys.set_to_import([event.private_key])
 
         await self.commands.sync_data_with_beekeeper()
-        self.app.trigger_profile_data_watchers()
+        self.app.trigger_profile_watchers()
         self.app.post_message_to_screen("ManageKeyAliases", self.Changed())
         self.app.pop_screen()
         self.notify("New key alias was created.")
@@ -186,13 +186,13 @@ class NewKeyAlias(NewKeyAliasBase):
             raise self.FailedValidationAlreadyHandledError
 
 
-class NewKeyAliasForm(NewKeyAliasBase, FormScreen[ProfileData]):
+class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
     BIG_TITLE = "Onboarding"
     SUBTITLE = "Optional step, could be done later"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
 
-    def __init__(self, owner: Form[ProfileData]) -> None:
+    def __init__(self, owner: Form[Profile]) -> None:
         super().__init__(owner=owner)
 
     @on(NewKeyAliasBase.Saved)

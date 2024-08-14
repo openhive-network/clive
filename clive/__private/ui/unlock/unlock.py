@@ -50,7 +50,7 @@ class Unlock(BaseScreen):
     def __init__(self, *, unlock_result_callback: UnlockResultCallbackOptional = None) -> None:
         super().__init__()
         self._unlock_result_callback = unlock_result_callback
-        self._name_input = LabelizedInput("Profile name", value=self.profile_data.name)
+        self._name_input = LabelizedInput("Profile name", value=self.profile.name)
         self._password_input = TextInput("Password", password=True)
         self._permanent_unlock_switch = Checkbox("Permanent unlock?", value=True)
         self._temporary_unlock_input = IntegerInput(

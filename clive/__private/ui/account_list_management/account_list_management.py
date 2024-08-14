@@ -34,7 +34,7 @@ class AccountListManagement(BaseScreen):
             yield KnownAccounts()
 
     def on_mount(self) -> None:
-        self.app.trigger_profile_data_watchers()
+        self.app.trigger_profile_watchers()
 
     @on(CliveTabbedContent.TabActivated)
     @on(ScreenSuspend)

@@ -23,12 +23,12 @@ from clive_local_tools.testnet_block_log import (
 )
 
 if TYPE_CHECKING:
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 async def test_default_profile(
-    prepare_profile: ProfileData,  # noqa: ARG001
-    alt_prepare_profile: ProfileData,  # noqa: ARG001
+    prepare_profile: Profile,  # noqa: ARG001
+    alt_prepare_profile: Profile,  # noqa: ARG001
     node: tt.RawNode,  # noqa: ARG001
 ) -> None:
     # ACT
@@ -38,7 +38,7 @@ async def test_default_profile(
     assert f"Profile name: {WORKING_ACCOUNT_NAME}" in output
 
 
-async def test_custom_profile(prepare_profile: ProfileData, alt_prepare_profile: ProfileData, node: tt.RawNode) -> None:  # noqa: ARG001
+async def test_custom_profile(prepare_profile: Profile, alt_prepare_profile: Profile, node: tt.RawNode) -> None:  # noqa: ARG001
     # ACT
     output = run_clive_in_subprocess(["clive", "show", "profile", f"--profile-name={ALT_WORKING_ACCOUNT1_NAME}"])
 
@@ -92,7 +92,7 @@ async def test_negative_no_default_profile(node: tt.RawNode) -> None:  # noqa: A
 
 
 async def test_default_profile_without_working_account(
-    prepare_profile_without_working_account: ProfileData,  # noqa: ARG001
+    prepare_profile_without_working_account: Profile,  # noqa: ARG001
     node: tt.RawNode,  # noqa: ARG001
 ) -> None:
     # ACT
@@ -101,7 +101,7 @@ async def test_default_profile_without_working_account(
 
 
 async def test_negative_default_profile_without_working_account(
-    prepare_profile_without_working_account: ProfileData,  # noqa: ARG001
+    prepare_profile_without_working_account: Profile,  # noqa: ARG001
     node: tt.RawNode,  # noqa: ARG001
 ) -> None:
     # ARRANGE
@@ -116,8 +116,8 @@ async def test_negative_default_profile_without_working_account(
 
 
 async def test_custom_profile_and_custom_working_account(
-    prepare_profile: ProfileData,  # noqa: ARG001
-    alt_prepare_profile: ProfileData,  # noqa: ARG001
+    prepare_profile: Profile,  # noqa: ARG001
+    alt_prepare_profile: Profile,  # noqa: ARG001
     node: tt.RawNode,  # noqa: ARG001
 ) -> None:
     # ARRANGE

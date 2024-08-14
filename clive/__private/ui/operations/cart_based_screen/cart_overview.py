@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.accounts.accounts import WorkingAccount
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class Resources(Grid):
@@ -39,10 +39,10 @@ class CartItemsAmount(DynamicLabel):
     """Holds the cart items amount info."""
 
     def __init__(self) -> None:
-        super().__init__(self.world, "profile_data", self.__get_cart_item_count)
+        super().__init__(self.world, "profile", self.__get_cart_item_count)
 
-    def __get_cart_item_count(self, profile_data: ProfileData) -> str:
-        amount = len(profile_data.cart)
+    def __get_cart_item_count(self, profile: Profile) -> str:
+        amount = len(profile.cart)
         if amount > 0:
             return f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART"
         return "CART IS EMPTY"
@@ -61,26 +61,26 @@ class CartOverview(CliveWidget):
 
     @property
     def working_account(self) -> WorkingAccount:
-        return self.profile_data.accounts.working
+        return self.profile.accounts.working
 
     def compose(self) -> ComposeResult:
         with Resources():
             with self._rc_container:
                 yield Static("RC:")
-                yield DynamicLabel(self.world, "profile_data", self.__get_rc)
+                yield DynamicLabel(self.world, "profile", self.__get_rc)
             yield Static("HIVE balance:")
-            yield DynamicLabel(self.world, "profile_data", self.__get_hive_balance)
+            yield DynamicLabel(self.world, "profile", self.__get_hive_balance)
             yield Static("HBD balance:")
-            yield DynamicLabel(self.world, "profile_data", self.__get_hbd_balance)
+            yield DynamicLabel(self.world, "profile", self.__get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount()
             with self.__cart_items_container:
                 yield from self.__create_cart_items()
 
     def on_mount(self) -> None:
-        self.watch(self.world, "profile_data", callback=self.__sync_cart_items)
+        self.watch(self.world, "profile", callback=self.__sync_cart_items)
 
-    def __sync_cart_items(self, _: ProfileData) -> None:
+    def __sync_cart_items(self, _: Profile) -> None:
         with self.app.batch_update():
             self.__cart_items_container.query(CartItem).remove()
             new_cart_items = self.__create_cart_items()
@@ -101,12 +101,12 @@ class CartOverview(CliveWidget):
         self._rc_container.tooltip = None
 
     @staticmethod
-    def __get_hive_balance(profile_data: ProfileData) -> str:
-        return Asset.pretty_amount(profile_data.accounts.working.data.hive_balance)
+    def __get_hive_balance(profile: Profile) -> str:
+        return Asset.pretty_amount(profile.accounts.working.data.hive_balance)
 
     @staticmethod
-    def __get_hbd_balance(profile_data: ProfileData) -> str:
-        return Asset.pretty_amount(profile_data.accounts.working.data.hbd_balance)
+    def __get_hbd_balance(profile: Profile) -> str:
+        return Asset.pretty_amount(profile.accounts.working.data.hbd_balance)
 
     def __create_cart_items(self) -> list[CartItem]:
-        return [CartItem(index + 1, operation) for index, operation in enumerate(self.profile_data.cart)]
+        return [CartItem(index + 1, operation) for index, operation in enumerate(self.profile.cart)]

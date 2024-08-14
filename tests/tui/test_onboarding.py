@@ -119,21 +119,21 @@ async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
 
 
 def assert_working_account(pilot: ClivePilot, name: str) -> None:
-    assert pilot.app.world.profile_data.accounts.has_working_account, "Expected working account to be set"
-    assert pilot.app.world.profile_data.accounts.working.name == name, f"Expected working account to be {name}"
+    assert pilot.app.world.profile.accounts.has_working_account, "Expected working account to be set"
+    assert pilot.app.world.profile.accounts.working.name == name, f"Expected working account to be {name}"
 
 
 def assert_watched_accounts(pilot: ClivePilot, *names: str) -> None:
-    watched_account_names = [account.name for account in pilot.app.world.profile_data.accounts.watched]
+    watched_account_names = [account.name for account in pilot.app.world.profile.accounts.watched]
     assert watched_account_names == list(names), f"Expected watched accounts to be {list(names)}"
 
 
 def assert_no_watched_accounts(pilot: ClivePilot) -> None:
-    assert not pilot.app.world.profile_data.accounts.watched, "Expected no watched accounts"
+    assert not pilot.app.world.profile.accounts.watched, "Expected no watched accounts"
 
 
 def assert_no_working_account(pilot: ClivePilot) -> None:
-    assert not pilot.app.world.profile_data.accounts.has_working_account, "Expected no working account"
+    assert not pilot.app.world.profile.accounts.has_working_account, "Expected no working account"
 
 
 async def test_onboarding_watched_account_creation(prepared_tui_on_onboarding: ClivePilot) -> None:

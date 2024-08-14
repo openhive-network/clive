@@ -10,4 +10,4 @@ class SetNode(ProfileBasedCommand):
 
     async def _run(self) -> None:
         url = Url.parse(self.node_address)
-        self.profile_data._set_node_address(url)
+        self.profile._set_node_address(url)

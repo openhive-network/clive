@@ -18,10 +18,10 @@ class TransactionSummaryFromCart(TransactionSummaryCommon):
         return await self.__build_transaction()
 
     async def __build_transaction(self) -> Transaction:
-        return (await self.commands.build_transaction(content=self.profile_data.cart)).result_or_raise
+        return (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
 
     def _actions_after_successful_broadcast(self) -> None:
         self.__clear_cart()
 
     def __clear_cart(self) -> None:
-        self.profile_data.cart.clear()
+        self.profile.cart.clear()

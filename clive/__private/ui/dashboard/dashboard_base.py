@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.__private.storage.mock_database import Manabar
 
 
@@ -186,14 +186,14 @@ class WorkingAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WORKING ACCOUNT"
 
     def compose(self) -> ComposeResult:
-        yield TrackedAccountRow(self.profile_data.accounts.working)
+        yield TrackedAccountRow(self.profile.accounts.working)
 
 
 class WatchedAccountContainer(Static, CliveWidget):
     BORDER_TITLE = "WATCHED ACCOUNTS"
 
     def compose(self) -> ComposeResult:
-        account_rows = [TrackedAccountRow(account) for account in self.profile_data.accounts.watched]
+        account_rows = [TrackedAccountRow(account) for account in self.profile.accounts.watched]
         last_account_row = account_rows[-1]
         last_account_row.add_class("last")
         yield from account_rows
@@ -225,13 +225,13 @@ class DashboardBase(BaseScreen):
                 yield NoContentAvailable(self.NO_ACCOUNTS_INFO)
 
     def on_mount(self) -> None:
-        self.watch(self.world, "profile_data", self._update_account_containers)
+        self.watch(self.world, "profile", self._update_account_containers)
 
-    async def _update_account_containers(self, profile_data: ProfileData) -> None:
+    async def _update_account_containers(self, profile: Profile) -> None:
         if self.tracked_accounts == self._previous_tracked_accounts:
             return
 
-        self._previous_tracked_accounts = profile_data.accounts.tracked
+        self._previous_tracked_accounts = profile.accounts.tracked
 
         widgets_to_mount: list[Widget] = []
 
@@ -260,22 +260,22 @@ class DashboardBase(BaseScreen):
         self.app.push_screen(Config())
 
     def action_switch_working_account(self) -> None:
-        if not self.profile_data.accounts.tracked:
+        if not self.profile.accounts.tracked:
             self.notify("Cannot switch a working account without any account", severity="warning")
             return
         self.app.push_screen(SwitchWorkingAccountScreen())
 
     @property
     def has_working_account(self) -> bool:
-        return self.profile_data.accounts.has_working_account
+        return self.profile.accounts.has_working_account
 
     @property
     def has_watched_accounts(self) -> bool:
-        return bool(self.profile_data.accounts.watched)
+        return bool(self.profile.accounts.watched)
 
     @property
     def tracked_accounts(self) -> list[TrackedAccount]:
-        return self.profile_data.accounts.tracked
+        return self.profile.accounts.tracked
 
     @property
     def has_tracked_accounts(self) -> bool:

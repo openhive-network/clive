@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import Self
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.models import OperationBaseClass
 
 
@@ -106,31 +106,31 @@ class CartItem(ColumnLayout, CliveWidget):
         return self.__idx < self.__operations_count
 
     def compose(self) -> ComposeResult:
-        def get_operation_index(_: ProfileData) -> str:
+        def get_operation_index(_: Profile) -> str:
             return f"{self.__idx + 1}." if self.is_valid() else "?"
 
-        def get_operation_name(_: ProfileData) -> str:
+        def get_operation_name(_: Profile) -> str:
             return humanize_operation_name(self.operation) if self.is_valid() else "?"
 
-        def get_operation_details(_: ProfileData) -> str:
+        def get_operation_details(_: Profile) -> str:
             return humanize_operation_details(self.operation) if self.is_valid() else "?"
 
         yield DynamicColumn(
             self.world,
-            "profile_data",
+            "profile",
             get_operation_index,
             classes="cell cell-middle",
         )
         yield DynamicColumn(
             self.world,
-            "profile_data",
+            "profile",
             get_operation_name,
             shrink=True,
             classes="cell cell-variant cell-middle",
         )
         yield DynamicColumn(
             self.world,
-            "profile_data",
+            "profile",
             get_operation_details,
             shrink=True,
             classes="cell",
@@ -167,11 +167,11 @@ class CartItem(ColumnLayout, CliveWidget):
     @property
     def operation(self) -> OperationBaseClass:
         assert self.is_valid(), "cannot get operation, position is invalid"
-        return self.profile_data.cart[self.__idx]
+        return self.profile.cart[self.__idx]
 
     @property
     def __operations_count(self) -> int:
-        return len(self.profile_data.cart)
+        return len(self.profile.cart)
 
     @property
     def __is_first(self) -> bool:
@@ -197,7 +197,7 @@ class CartItem(ColumnLayout, CliveWidget):
     def move_item(self, event: CartItem.Move) -> None:
         if event.to_idx == self.__idx:
             self.__idx = event.from_idx
-        self.app.trigger_profile_data_watchers()
+        self.app.trigger_profile_watchers()
 
 
 class CartHeader(ColumnLayout):
@@ -230,23 +230,23 @@ class Cart(BaseScreen):
             yield from self.__rebuild_items()
 
     def __rebuild_items(self) -> ComposeResult:
-        for idx in range(len(self.profile_data.cart)):
+        for idx in range(len(self.profile.cart)):
             yield CartItem(idx)
 
     @on(CartItem.Delete)
     def remove_item(self, event: CartItem.Delete) -> None:
-        self.profile_data.cart.remove(event.widget.operation)
-        self.app.trigger_profile_data_watchers()
+        self.profile.cart.remove(event.widget.operation)
+        self.app.trigger_profile_watchers()
         self.__scrollable_part.query(CartItem).remove()
         self.__scrollable_part.mount(*self.__rebuild_items())
 
     @on(CartItem.Move)
     def move_item(self, event: CartItem.Move) -> None:
         assert event.to_idx >= 0
-        assert event.to_idx < len(self.profile_data.cart)
+        assert event.to_idx < len(self.profile.cart)
 
-        self.profile_data.cart.swap(event.from_idx, event.to_idx)
-        self.app.trigger_profile_data_watchers()
+        self.profile.cart.swap(event.from_idx, event.to_idx)
+        self.app.trigger_profile_watchers()
 
     @on(CartItem.Focus)
     def focus_item(self, event: CartItem.Focus) -> None:
@@ -258,6 +258,6 @@ class Cart(BaseScreen):
         self.app.push_screen(TransactionSummaryFromCart())
 
     def action_clear_all(self) -> None:
-        self.profile_data.cart.clear()
-        self.app.trigger_profile_data_watchers()
+        self.profile.cart.clear()
+        self.app.trigger_profile_watchers()
         self.__scrollable_part.add_class("-hidden")

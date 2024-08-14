@@ -93,7 +93,7 @@ class SavingsBalancesTable(CliveDataTable):
 
 class SavingsInterestInfo(TrackedAccountReferencingWidget):
     def __init__(self) -> None:
-        super().__init__(account=self.profile_data.accounts.working)
+        super().__init__(account=self.profile.accounts.working)
 
     @property
     def provider(self) -> SavingsDataProvider:
@@ -213,7 +213,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
     @property
     def default_receiver(self) -> str:
-        return self.profile_data.accounts.working.name
+        return self.profile.accounts.working.name
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
@@ -267,7 +267,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         savings_data = provider.content
 
         transfer_from_savings_operations_in_cart = [
-            operation for operation in self.profile_data.cart if isinstance(operation, TransferFromSavingsOperation)
+            operation for operation in self.profile.cart if isinstance(operation, TransferFromSavingsOperation)
         ]
         return savings_data.create_request_id(future_transfers=transfer_from_savings_operations_in_cart)
 

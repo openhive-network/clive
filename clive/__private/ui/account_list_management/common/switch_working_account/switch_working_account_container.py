@@ -19,7 +19,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from typing_extensions import TypeIs
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class AccountRadioButton(CliveRadioButton):
@@ -67,9 +67,9 @@ class NoWorkingAccountSelected:
     """Class using to indicate that no working account is selected."""
 
 
-def get_default_profile_data() -> ProfileData:
+def get_default_profile() -> Profile:
     app = get_clive().app_instance()
-    return app.world.profile_data.copy()
+    return app.world.profile.copy()
 
 
 class SwitchWorkingAccountContainer(Container, CliveWidget):
@@ -77,58 +77,58 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    local_profile_data: ProfileData = var(get_default_profile_data, init=False)  # type: ignore[assignment, arg-type]
-    """Reactive to provide a single state of profile data across the widget."""
+    local_profile: Profile = var(get_default_profile, init=False)  # type: ignore[assignment, arg-type]
+    """Reactive to provide a single state of profile across the widget."""
 
     def __init__(self, *, show_title: bool = True) -> None:
         super().__init__()
         self._show_title = show_title
 
         self._selected_account: TrackedAccount | NoWorkingAccountSelected = (
-            self._get_current_state_for_selected_account(self.local_profile_data)
+            self._get_current_state_for_selected_account(self.local_profile)
         )
 
     def on_mount(self) -> None:
-        def delegate_work_rebuild_tracked_accounts(profile_data: ProfileData) -> None:
-            self.run_worker(self._rebuild_tracked_accounts(profile_data))
+        def delegate_work_rebuild_tracked_accounts(profile: Profile) -> None:
+            self.run_worker(self._rebuild_tracked_accounts(profile))
 
-        self.watch(self.world, "profile_data", self._update_local_profile_data)
-        self.watch(self, "local_profile_data", delegate_work_rebuild_tracked_accounts)
+        self.watch(self.world, "profile", self._update_local_profile)
+        self.watch(self, "local_profile", delegate_work_rebuild_tracked_accounts)
 
-    def _update_local_profile_data(self, profile_data: ProfileData) -> None:
-        if self.local_profile_data.accounts.tracked == profile_data.accounts.tracked:
+    def _update_local_profile(self, profile: Profile) -> None:
+        if self.local_profile.accounts.tracked == profile.accounts.tracked:
             # nothing to update when tracked accounts have not changed
             return
 
-        self.local_profile_data = profile_data.copy()
+        self.local_profile = profile.copy()
 
-    async def _rebuild_tracked_accounts(self, profile_data: ProfileData) -> None:
-        self._handle_selected_account_changed(profile_data)
+    async def _rebuild_tracked_accounts(self, profile: Profile) -> None:
+        self._handle_selected_account_changed(profile)
 
         with self.app.batch_update():
             section_body = self.query_one(SectionBody)
 
             await section_body.query("*").remove()
-            await section_body.mount(self._create_tracked_accounts_content(profile_data))
+            await section_body.mount(self._create_tracked_accounts_content(profile))
 
     def compose(self) -> ComposeResult:
         with Section("Switch working account" if self._show_title else None):
-            yield self._create_tracked_accounts_content(self.local_profile_data)
+            yield self._create_tracked_accounts_content(self.local_profile)
 
-    def _create_radio_buttons(self, profile_data: ProfileData) -> list[AccountRadioButton | CliveRadioButton]:
+    def _create_radio_buttons(self, profile: Profile) -> list[AccountRadioButton | CliveRadioButton]:
         """Create radio buttons for all tracked accounts and a no working account button."""
-        tracked_account_radios = [AccountRadioButton(account) for account in profile_data.accounts.tracked]
+        tracked_account_radios = [AccountRadioButton(account) for account in profile.accounts.tracked]
         no_working_account_radio = NoWorkingAccountRadioButton(
-            is_working_account_set=not profile_data.accounts.has_working_account
+            is_working_account_set=not profile.accounts.has_working_account
         )
 
         return [*tracked_account_radios, no_working_account_radio]
 
-    def _create_tracked_accounts_content(self, profile_data: ProfileData) -> CliveRadioSet | NoTrackedAccounts:
-        if not profile_data.accounts.has_tracked_accounts:
+    def _create_tracked_accounts_content(self, profile: Profile) -> CliveRadioSet | NoTrackedAccounts:
+        if not profile.accounts.has_tracked_accounts:
             return NoTrackedAccounts()
 
-        return CliveRadioSet(*self._create_radio_buttons(profile_data))
+        return CliveRadioSet(*self._create_radio_buttons(profile))
 
     @on(CliveRadioSet.Changed)
     def change_selected_working_account(self, event: CliveRadioSet.Changed) -> None:
@@ -152,30 +152,26 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
             None if self._is_no_working_account_selected(self._selected_account) else self._selected_account
         )
 
-        self.profile_data.accounts.switch_working_account(new_working_account)
+        self.profile.accounts.switch_working_account(new_working_account)
         self._perform_actions_after_accounts_modification()
 
     def _perform_actions_after_accounts_modification(self) -> None:
-        self.app.trigger_profile_data_watchers()
+        self.app.trigger_profile_watchers()
         self.app.update_alarms_data_asap()
 
-    def _handle_selected_account_changed(self, profile_data: ProfileData) -> None:
+    def _handle_selected_account_changed(self, profile: Profile) -> None:
         """Due to the dynamic nature, we must take into account that tracked accounts may be modified elsewhere."""
-        self._selected_account = self._get_current_state_for_selected_account(profile_data)
+        self._selected_account = self._get_current_state_for_selected_account(profile)
 
-    def _get_current_state_for_selected_account(
-        self, profile_data: ProfileData
-    ) -> WorkingAccount | NoWorkingAccountSelected:
-        return (
-            profile_data.accounts.working if profile_data.accounts.has_working_account else NoWorkingAccountSelected()
-        )
+    def _get_current_state_for_selected_account(self, profile: Profile) -> WorkingAccount | NoWorkingAccountSelected:
+        return profile.accounts.working if profile.accounts.has_working_account else NoWorkingAccountSelected()
 
     @property
     def _is_current_working_account_selected(self) -> bool:
         if self._is_no_working_account_selected(self._selected_account):
             return False
 
-        return self.profile_data.accounts.is_account_working(self._selected_account)
+        return self.profile.accounts.is_account_working(self._selected_account)
 
     def _is_no_working_account_selected(self, value: object) -> TypeIs[NoWorkingAccountSelected]:
         return isinstance(value, NoWorkingAccountSelected)

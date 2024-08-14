@@ -135,11 +135,11 @@ class Witness(GovernanceTableRow[WitnessData]):
     def is_operation_in_cart(self) -> bool:
         return (
             AccountWitnessVoteOperation(
-                account=self.profile_data.accounts.working.name,
+                account=self.profile.accounts.working.name,
                 witness=self.row_data.name,
                 approve=not self.row_data.voted,
             )
-            in self.profile_data.cart
+            in self.profile.cart
         )
 
 
@@ -209,7 +209,7 @@ class WitnessesActions(GovernanceActions):
     NAME_OF_ACTION: ClassVar[str] = "Witness"
 
     async def mount_operations_from_cart(self) -> None:
-        for operation in self.profile_data.cart:
+        for operation in self.profile.cart:
             if isinstance(operation, AccountWitnessVoteOperation):
                 await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
 
@@ -249,7 +249,7 @@ class WitnessesListHeader(GovernanceListHeader):
 
     def create_additional_headlines(self) -> ComposeResult:
         yield SectionTitle(
-            f"Votes for witnesses cast by your proxy ({self.profile_data.accounts.working.data.proxy})"
+            f"Votes for witnesses cast by your proxy ({self.profile.accounts.working.data.proxy})"
             if self.is_proxy_set
             else "Modify the votes for witnesses"
         )
@@ -306,7 +306,7 @@ class Witnesses(GovernanceTabPane):
             )
             return None
 
-        working_account_name = self.profile_data.accounts.working.name
+        working_account_name = self.profile.accounts.working.name
         operations_to_perform = self.screen.query_one(WitnessesActions).actions_to_perform
 
         return [

@@ -26,18 +26,18 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 
 
-class ProfileDataError(CliveError):
-    """An error related to profile data."""
+class ProfileError(CliveError):
+    """An error related to profile."""
 
 
-class InvalidChainIdError(ProfileDataError):
+class InvalidChainIdError(ProfileError):
     """Raised when an invalid chain id is set."""
 
     def __init__(self) -> None:
         super().__init__("Invalid chain ID. Should be a 64 character long hex string.")
 
 
-class ProfileInvalidNameError(ProfileDataError):
+class ProfileInvalidNameError(ProfileError):
     def __init__(self, profile_name: str, reason: str | None = None) -> None:
         self.profile_name = profile_name
         self.reason = reason
@@ -51,7 +51,7 @@ class Cart(list[OperationBaseClass]):
         self[index_1], self[index_2] = self[index_2], self[index_1]
 
 
-class ProfileData(Context):
+class Profile(Context):
     def __init__(
         self,
         name: str,
@@ -105,7 +105,7 @@ class ProfileData(Context):
         node_address: str | Url | None = None,
         *,
         is_newly_created: bool = True,
-    ) -> ProfileData:
+    ) -> Profile:
         profile = cls(name, working_account, watched_accounts, known_accounts)
         profile.keys.add(*key_aliases or [])
         profile.cart.extend(cart_operations or [])
@@ -247,9 +247,9 @@ class ProfileData(Context):
         return PersistentStorageService().is_default_profile_set()
 
     @classmethod
-    def load(cls, name: str | None = None, *, auto_create: bool = True) -> ProfileData:
+    def load(cls, name: str | None = None, *, auto_create: bool = True) -> Profile:
         """
-        Load profile data with the given name from the database.
+        Load profile with the given name from the database.
 
         Cases:
         1. if name=None and is_default_profile_set=True -> load default profile
@@ -268,7 +268,7 @@ class ProfileData(Context):
             ProfileDoesNotExistsError: If the profile does not exist and auto_create is False.
         """
 
-        def create_new_profile(new_profile_name: str) -> ProfileData:
+        def create_new_profile(new_profile_name: str) -> Profile:
             return cls(new_profile_name)
 
         _name = name or cls.get_default_profile_name()
@@ -282,9 +282,9 @@ class ProfileData(Context):
 
     @classmethod
     @asynccontextmanager
-    async def load_with_auto_save(cls, name: str = "", *, auto_create: bool = True) -> AsyncIterator[ProfileData]:
-        async with cls.load(name, auto_create=auto_create) as profile_data:
-            yield profile_data
+    async def load_with_auto_save(cls, name: str = "", *, auto_create: bool = True) -> AsyncIterator[Profile]:
+        async with cls.load(name, auto_create=auto_create) as profile:
+            yield profile
 
     @classmethod
     def list_profiles(cls) -> list[str]:

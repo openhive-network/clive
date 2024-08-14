@@ -26,4 +26,4 @@ class SetWatchedAccountValidator(SetWorkingAccountValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_max_watched_accounts_reached(self, _: str) -> bool:
-        return len(self._profile_data.accounts.watched) < self.MAX_NUMBER_OF_WATCHED_ACCOUNTS
+        return len(self._profile.accounts.watched) < self.MAX_NUMBER_OF_WATCHED_ACCOUNTS

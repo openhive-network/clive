@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.core.url import Url
     from clive.models.aliased import Config, DynamicGlobalProperties, Version
 
@@ -266,8 +266,8 @@ class Node(BaseNode):
                 if self._basic_info is None:
                     await self._node._sync_node_basic_info()
 
-    def __init__(self, profile_data: ProfileData) -> None:
-        self.__profile_data = profile_data
+    def __init__(self, profile: Profile) -> None:
+        self.__profile = profile
         self.__communication = Communication(timeout_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.api = Apis(self)
         self.cached = self.CachedData(self)
@@ -300,10 +300,10 @@ class Node(BaseNode):
 
     @property
     def address(self) -> Url:
-        return self.__profile_data.node_address
+        return self.__profile.node_address
 
     async def set_address(self, address: Url) -> None:
-        self.__profile_data._set_node_address(address)
+        self.__profile._set_node_address(address)
         self.cached.clear()
 
     async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
@@ -318,10 +318,10 @@ class Node(BaseNode):
 
     @property
     async def chain_id(self) -> str:
-        if chain_id_from_profile := self.__profile_data.chain_id:
+        if chain_id_from_profile := self.__profile.chain_id:
             return chain_id_from_profile
         chain_id_from_node = await self.cached.chain_id
-        self.__profile_data.set_chain_id(chain_id_from_node)
+        self.__profile.set_chain_id(chain_id_from_node)
         return chain_id_from_node
 
     async def _sync_node_basic_info(self) -> None:

@@ -9,7 +9,7 @@ from clive.__private.core.keys import PublicKeyAliased
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,
@@ -23,10 +23,10 @@ class StorageToRuntimeConverter:
     def __init__(self, model: ProfileStorageModel) -> None:
         self._model = model
 
-    def create_profile(self) -> ProfileData:
-        from clive.__private.core.profile_data import ProfileData
+    def create_profile(self) -> Profile:
+        from clive.__private.core.profile import Profile
 
-        return ProfileData.create(
+        return Profile.create(
             name=self._model.name,
             working_account=self._working_account_from_profile_storage_model(),
             watched_accounts=self._watched_accounts_from_profile_storage_model(),

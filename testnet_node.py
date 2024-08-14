@@ -13,7 +13,7 @@ from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccoun
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
 from clive.main import _main as clive_main
@@ -68,17 +68,17 @@ def prepare_node() -> tt.RawNode:
     return run_node(webserver_http_endpoint="0.0.0.0:8090")
 
 
-async def prepare_profile(node: tt.RawNode) -> None:
-    tt.logger.info("Configuring ProfileData for clive")
+async def prepare_profiles(node: tt.RawNode) -> None:
+    tt.logger.info("Configuring profiles for clive")
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
-    _create_profile_data(
+    _create_profile(
         profile_name=WORKING_ACCOUNT_NAME,
         working_account_name=WORKING_ACCOUNT_NAME,
         watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
     )
-    _create_profile_data(
+    _create_profile(
         profile_name=ALT_WORKING_ACCOUNT1_NAME,
         working_account_name=ALT_WORKING_ACCOUNT1_NAME,
         watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
@@ -95,8 +95,8 @@ async def prepare_profile(node: tt.RawNode) -> None:
     )
 
 
-def _create_profile_data(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
-    ProfileData(
+def _create_profile(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
+    Profile(
         profile_name,
         working_account=WorkingAccount(name=working_account_name),
         watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],
@@ -113,7 +113,7 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
         ).execute_with_result()
 
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
-        world_cm.profile_data.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
+        world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
         await world_cm.commands.sync_data_with_beekeeper()
 
 
@@ -169,7 +169,7 @@ async def main() -> None:
 
     if not enable_clive_onboarding:
         shutil.rmtree(safe_settings.data_path, ignore_errors=True)
-        await prepare_profile(node)
+        await prepare_profiles(node)
 
     if disable_tui:
         serve_forever()

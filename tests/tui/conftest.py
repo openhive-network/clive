@@ -9,7 +9,7 @@ import test_tools as tt
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
@@ -36,14 +36,14 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 
 @pytest.fixture()
-async def prepare_profile() -> ProfileData:
-    profile_data = ProfileData(
+async def prepare_profile() -> Profile:
+    profile = Profile(
         WORKING_ACCOUNT_DATA.account.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
     )
-    profile_data.save()
-    return profile_data
+    profile.save()
+    return profile
 
 
 @pytest.fixture()
@@ -52,11 +52,11 @@ async def world() -> World:
 
 
 @pytest.fixture()
-async def prepare_beekeeper_wallet(prepare_profile: ProfileData, world: World) -> None:  # noqa: ARG001
+async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> None:  # noqa: ARG001
     async with world as world_cm:
         (await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)).raise_if_error_occurred()
 
-        world_cm.profile_data.keys.add_to_import(
+        world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
         )
         await world_cm.commands.sync_data_with_beekeeper()

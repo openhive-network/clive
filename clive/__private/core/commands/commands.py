@@ -98,7 +98,7 @@ class Commands(Generic[WorldT_co]):
             CreateWallet(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
-                wallet=self._world.profile_data.name,
+                wallet=self._world.profile.name,
                 password=password,
             )
         )
@@ -113,7 +113,7 @@ class Commands(Generic[WorldT_co]):
             Unlock(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
-                wallet=self._world.profile_data.name,
+                wallet=self._world.profile.name,
                 password=password,
                 time=time,
                 permanent=permanent,
@@ -125,7 +125,7 @@ class Commands(Generic[WorldT_co]):
             Lock(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
-                wallet=self._world.profile_data.name,
+                wallet=self._world.profile.name,
             )
         )
 
@@ -133,7 +133,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             IsPasswordValid(
                 beekeeper=self._world.beekeeper,
-                wallet=self._world.profile_data.name,
+                wallet=self._world.profile.name,
                 password=password,
             )
         )
@@ -255,7 +255,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             ImportKey(
                 app_state=self._world.app_state,
-                wallet=self._world.profile_data.name,
+                wallet=self._world.profile.name,
                 key_to_import=key_to_import,
                 beekeeper=self._world.beekeeper,
             )
@@ -265,7 +265,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             RemoveKey(
                 app_state=self._world.app_state,
-                wallet=self._world.profile_data.name,
+                wallet=self._world.profile.name,
                 beekeeper=self._world.beekeeper,
                 key_to_remove=key_to_remove,
                 password=password,
@@ -276,7 +276,7 @@ class Commands(Generic[WorldT_co]):
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
                 app_state=self._world.app_state,
-                profile_data=self._world.profile_data,
+                profile=self._world.profile,
                 beekeeper=self._world.beekeeper,
             )
         )

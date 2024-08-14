@@ -44,7 +44,7 @@ async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_t
     other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
     async with world as world_cm:
         await world_cm.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
-        world_cm.profile_data.keys.add_to_import(
+        world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias),
         )
         await world_cm.commands.sync_data_with_beekeeper()
