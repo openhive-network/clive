@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
+from clive.__private.core.authority import AllAuthorities, Authority
 from clive.__private.core.keys import PublicKeyAliased
 
 if TYPE_CHECKING:
@@ -13,6 +14,8 @@ if TYPE_CHECKING:
     from clive.__private.models.schemas import OperationBase
     from clive.__private.storage.model import (
         AlarmStorageModel,
+        AllAuthoritiesStorageModel,
+        AuthorityStorageModel,
         KeyAliasStorageModel,
         ProfileStorageModel,
         TrackedAccountStorageModel,
@@ -69,10 +72,14 @@ class StorageToRuntimeConverter:
         return [op_repr.value for op_repr in self._model.cart_operations]  # type: ignore[attr-defined]
 
     def _working_account_from_model(self, model: TrackedAccountStorageModel) -> WorkingAccount:
-        return WorkingAccount(model.name, self._alarms_storage_from_model(model))
+        return WorkingAccount(
+            model.name, self._alarms_storage_from_model(model), self._all_authorities_from_model(model.authorities)
+        )
 
     def _watched_account_from_model(self, model: TrackedAccountStorageModel) -> WatchedAccount:
-        return WatchedAccount(model.name, self._alarms_storage_from_model(model))
+        return WatchedAccount(
+            model.name, self._alarms_storage_from_model(model), self._all_authorities_from_model(model.authorities)
+        )
 
     def _alarms_storage_from_model(self, model: TrackedAccountStorageModel) -> AlarmsStorage:
         alarms = [self._alarm_from_model(alarm) for alarm in model.alarms]
@@ -87,3 +94,31 @@ class StorageToRuntimeConverter:
 
     def _key_alias_from_model(self, model: KeyAliasStorageModel) -> PublicKeyAliased:
         return PublicKeyAliased(value=model.public_key, alias=model.alias)
+
+    def _all_authorities_from_model(
+        self, authorities_model: AllAuthoritiesStorageModel | None
+    ) -> AllAuthorities | None:
+        if authorities_model is None:
+            return None
+        return AllAuthorities(
+            owner=self._authority_from_model(authorities_model.owner),
+            active=self._authority_from_model(authorities_model.active),
+            posting=self._authority_from_model(authorities_model.posting),
+            owner_lut=self._authority_lut_from_model(authorities_model.owner_lut),
+            active_lut=self._authority_lut_from_model(authorities_model.active_lut),
+            posting_lut=self._authority_lut_from_model(authorities_model.posting_lut),
+            last_updated=authorities_model.last_updated,
+        )
+
+    def _authority_lut_from_model(self, lut_model: dict[str, AuthorityStorageModel]) -> dict[str, Authority]:
+        lut: dict[str, Authority] = {}
+        for name, authority_model in lut_model.items():
+            lut[name] = self._authority_from_model(authority_model)
+        return lut
+
+    def _authority_from_model(self, authority_model: AuthorityStorageModel) -> Authority:
+        return Authority(
+            weight_threshold=authority_model.weight_threshold,
+            account_auths=authority_model.account_auths.copy(),
+            key_auths=authority_model.key_auths.copy(),
+        )
