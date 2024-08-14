@@ -317,5 +317,5 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         if validation_result.is_valid:
             self.pretty.display = False
         else:
-            self.query_one(Pretty).update(humanize_validation_result(validation_result))
+            self.query_one(Pretty).update(validation_result.failure_descriptions)
             self.pretty.display = True
