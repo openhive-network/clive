@@ -20,7 +20,7 @@ class AccountWitnessProxy(OperationSummary):
 
     @property
     def working_account_name(self) -> str:
-        return self.profile_data.accounts.working.name
+        return self.profile.accounts.working.name
 
     @property
     def proxy_to_be_set(self) -> str:

@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 
 def test_if_profile_is_saved(world: World, wallet_name: str) -> None:
-    world.profile_data.save()
+    world.profile.save()
 
     # ARRANGE, ACT & ASSERT
-    assert world.profile_data.list_profiles() == [wallet_name]
+    assert world.profile.list_profiles() == [wallet_name]

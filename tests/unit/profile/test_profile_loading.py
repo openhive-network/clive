@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import pytest
 
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.core.world import TyperWorld, World
 from clive.__private.storage.service import NoDefaultProfileToLoadError, ProfileDoesNotExistsError
 
 
 def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
     # ARRANGE, ACT & ASSERT
-    assert world.profile_data.name == wallet_name
+    assert world.profile.name == wallet_name
 
 
 async def test_if_first_profile_is_saved_as_a_default_one() -> None:
@@ -23,12 +23,12 @@ async def test_if_first_profile_is_saved_as_a_default_one() -> None:
     # ACT
     # Creating world without given profile name should load the default one
     async with World(use_beekeeper=False) as world:
-        loaded_profile_name = world.profile_data.name
+        loaded_profile_name = world.profile.name
 
     # ASSERT
     assert loaded_profile_name == expected_profile_name
-    assert ProfileData.get_default_profile_name() == expected_profile_name
-    assert ProfileData.list_profiles() == [expected_profile_name]
+    assert Profile.get_default_profile_name() == expected_profile_name
+    assert Profile.list_profiles() == [expected_profile_name]
 
 
 async def test_if_correct_profile_is_loaded_when_default_is_stored() -> None:
@@ -43,12 +43,12 @@ async def test_if_correct_profile_is_loaded_when_default_is_stored() -> None:
     # ACT
     # Explicitly loading the expected profile, even when there is a default one
     async with World(default_profile_name, use_beekeeper=False) as world:
-        loaded_profile_name = world.profile_data.name
+        loaded_profile_name = world.profile.name
 
     # ASSERT
     assert loaded_profile_name == default_profile_name
-    assert ProfileData.get_default_profile_name() == additional_profile_name
-    assert ProfileData.list_profiles() == [default_profile_name, additional_profile_name]
+    assert Profile.get_default_profile_name() == additional_profile_name
+    assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
 
 
 async def test_if_default_profile_is_loaded_other_was_saved() -> None:
@@ -63,17 +63,17 @@ async def test_if_default_profile_is_loaded_other_was_saved() -> None:
     # ACT
     # Explicitly loading the other profile should not change the default one
     async with World(additional_profile_name, use_beekeeper=False) as world:
-        explicitly_loaded_profile_name = world.profile_data.name
+        explicitly_loaded_profile_name = world.profile.name
 
     # Check if the default profile is loaded
     async with World(use_beekeeper=False) as world:
-        default_loaded_profile_name = world.profile_data.name
+        default_loaded_profile_name = world.profile.name
 
     # ASSERT
     assert explicitly_loaded_profile_name == additional_profile_name
     assert default_loaded_profile_name == default_profile_name
-    assert ProfileData.get_default_profile_name() == default_profile_name
-    assert ProfileData.list_profiles() == [default_profile_name, additional_profile_name]
+    assert Profile.get_default_profile_name() == default_profile_name
+    assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
 
 
 @pytest.mark.parametrize("world_cls", [World, TyperWorld])
@@ -105,9 +105,9 @@ async def test_loading_existing_profile_with_auto_create_disabled() -> None:
 
     # ACT
     async with World(profile_name, use_beekeeper=False) as world:
-        loaded_profile_name = world.profile_data.name
+        loaded_profile_name = world.profile.name
 
     # ASSERT
     assert loaded_profile_name == profile_name
-    assert ProfileData.get_default_profile_name() == profile_name
-    assert ProfileData.list_profiles() == [profile_name]
+    assert Profile.get_default_profile_name() == profile_name
+    assert Profile.list_profiles() == [profile_name]

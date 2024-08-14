@@ -7,16 +7,16 @@ from textual.validation import Function, ValidationResult
 from clive.__private.validators.account_name_validator import AccountNameValidator
 
 if TYPE_CHECKING:
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class SetWorkingAccountValidator(AccountNameValidator):
     ACCOUNT_ALREADY_WORKING_FAILURE: ClassVar[str] = "This account is already a working account."
     ACCOUNT_ALREADY_WATCHED_FAILURE: ClassVar[str] = "You cannot set account as working while its already watched."
 
-    def __init__(self, profile_data: ProfileData) -> None:
+    def __init__(self, profile: Profile) -> None:
         super().__init__()
-        self._profile_data = profile_data
+        self._profile = profile
 
     def validate(self, value: str) -> ValidationResult:
         super_result = super().validate(value)
@@ -29,7 +29,7 @@ class SetWorkingAccountValidator(AccountNameValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_account_already_watched(self, value: str) -> bool:
-        return not self._profile_data.accounts.is_account_watched(value)
+        return not self._profile.accounts.is_account_watched(value)
 
     def _validate_account_already_working(self, value: str) -> bool:
-        return not self._profile_data.accounts.is_account_working(value)
+        return not self._profile.accounts.is_account_working(value)

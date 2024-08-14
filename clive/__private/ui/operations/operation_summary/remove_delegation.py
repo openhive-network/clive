@@ -26,7 +26,7 @@ class RemoveDelegation(OperationSummary):
 
     @property
     def working_account_name(self) -> str:
-        return self.profile_data.accounts.working.name
+        return self.profile.accounts.working.name
 
     def content(self) -> ComposeResult:
         yield LabelizedInput("Delegator", self.working_account_name)

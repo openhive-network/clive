@@ -13,7 +13,7 @@ from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccoun
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
 from clive.main import _main as clive_main
@@ -96,7 +96,7 @@ async def prepare_profile(node: tt.RawNode) -> None:
 
 
 def _create_profile_data(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
-    ProfileData(
+    Profile(
         profile_name,
         working_account=WorkingAccount(name=working_account_name),
         watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],
@@ -113,7 +113,7 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
         ).execute_with_result()
 
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
-        world_cm.profile_data.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
+        world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
         await world_cm.commands.sync_data_with_beekeeper()
 
 

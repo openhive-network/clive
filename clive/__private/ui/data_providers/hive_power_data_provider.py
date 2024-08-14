@@ -15,7 +15,7 @@ class HivePowerDataProvider(DataProvider[HivePowerData]):
 
     @work(name="hive power data update worker")
     async def update(self) -> None:
-        account_name = self.profile_data.accounts.working.name
+        account_name = self.profile.accounts.working.name
 
         wrapper = await self.commands.retrieve_hp_data(account_name=account_name)
 

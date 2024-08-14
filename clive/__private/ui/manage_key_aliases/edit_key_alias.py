@@ -12,7 +12,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import (
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class EditKeyAlias(KeyAliasForm):
@@ -30,8 +30,8 @@ class EditKeyAlias(KeyAliasForm):
         super().__init__()
 
     @property
-    def context(self) -> ProfileData:
-        return self.profile_data
+    def context(self) -> Profile:
+        return self.profile
 
     def action_save(self) -> None:
         self._save()
@@ -47,9 +47,9 @@ class EditKeyAlias(KeyAliasForm):
 
         old_alias = self.public_key.alias
         new_alias = self._key_alias_input.value_or_error
-        self.profile_data.keys.rename(old_alias, new_alias)
+        self.profile.keys.rename(old_alias, new_alias)
 
-        self.app.trigger_profile_data_watchers()
+        self.app.trigger_profile_watchers()
         self.app.post_message_to_screen("ManageKeyAliases", self.Changed())
         self.app.pop_screen()
         self.notify(f"Key alias `{self.public_key.alias}` was edited.")

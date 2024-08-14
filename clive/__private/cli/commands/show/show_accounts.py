@@ -11,7 +11,7 @@ class ShowAccounts(ProfileBasedCommand):
         self._show_accounts_info()
 
     def _show_accounts_info(self) -> None:
-        profile = self.profile_data
+        profile = self.profile
         if profile.accounts.has_working_account:
             typer.echo(f"Working account: {profile.accounts.working.name}")
         else:

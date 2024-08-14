@@ -17,7 +17,7 @@ from clive.models.asset import Asset
 if TYPE_CHECKING:
     from datetime import timedelta
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class CLIPrettyError(ClickException):
@@ -38,7 +38,7 @@ class CLIPrettyError(ClickException):
 
 
 class CLIWorkingAccountIsNotSetError(CLIPrettyError):
-    def __init__(self, profile: ProfileData | None = None) -> None:
+    def __init__(self, profile: Profile | None = None) -> None:
         self.profile = profile
         message = (
             f"Working account is not set{f' for the `{profile.name}` profile' if profile else ''}.\n"
@@ -48,7 +48,7 @@ class CLIWorkingAccountIsNotSetError(CLIPrettyError):
 
 
 class CLIWorkingAccountIsAlreadySetError(CLIPrettyError):
-    def __init__(self, profile: ProfileData | None = None) -> None:
+    def __init__(self, profile: Profile | None = None) -> None:
         self.profile = profile
         message = (
             f"Working account is already set{f' for the `{profile.name}` profile' if profile else ''}.\n"

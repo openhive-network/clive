@@ -11,7 +11,7 @@ from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import Commands, TextualCommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.exceptions import ScreenNotFoundError
@@ -50,7 +50,7 @@ class World:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
 
-        self._profile_data = self._load_profile(profile_name)
+        self._profile = self._load_profile(profile_name)
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
@@ -58,7 +58,7 @@ class World:
         self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
 
-        self._node = Node(self._profile_data)
+        self._node = Node(self._profile)
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -109,12 +109,12 @@ class World:
         return self
 
     async def close(self) -> None:
-        self.profile_data.save()
+        self.profile.save()
         if self._beekeeper is not None:
             await self._beekeeper.close()
 
-    def _load_profile(self, profile_name: str | None) -> ProfileData:
-        return ProfileData.load(profile_name)
+    def _load_profile(self, profile_name: str | None) -> Profile:
+        return Profile.load(profile_name)
 
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
@@ -122,15 +122,15 @@ class World:
     async def __setup_beekeeper(self, *, remote_endpoint: Url | None = None) -> Beekeeper:
         beekeeper = Beekeeper(
             remote_endpoint=remote_endpoint,
-            notify_closing_wallet_name_cb=lambda: self.profile_data.name,
+            notify_closing_wallet_name_cb=lambda: self.profile.name,
         )
         beekeeper.attach_wallet_closing_listener(self)
         await beekeeper.launch()
         return beekeeper
 
     @property
-    def profile_data(self) -> ProfileData:
-        return self._profile_data
+    def profile(self) -> Profile:
+        return self._profile
 
     @property
     def app_state(self) -> AppState:
@@ -141,22 +141,22 @@ class World:
 
 
 class TextualWorld(World, ManualReactive):
-    profile_data: ProfileData = var(None)  # type: ignore[assignment]
+    profile: Profile = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
         profile_name = (
-            ProfileData.get_default_profile_name()
-            if ProfileData.is_default_profile_set()
+            Profile.get_default_profile_name()
+            if Profile.is_default_profile_set()
             else Onboarding.ONBOARDING_PROFILE_NAME
         )
         super().__init__(profile_name)
-        self.profile_data = self._profile_data
+        self.profile = self._profile
         self.app_state = self._app_state
         self.node = self._node
 
-    def _load_profile(self, profile_name: str | None) -> ProfileData:
+    def _load_profile(self, profile_name: str | None) -> Profile:
         profile = super()._load_profile(profile_name)
         if profile_name == Onboarding.ONBOARDING_PROFILE_NAME:
             profile.skip_saving()
@@ -180,5 +180,5 @@ class TextualWorld(World, ManualReactive):
 
 
 class TyperWorld(World):
-    def _load_profile(self, profile_name: str | None) -> ProfileData:
-        return ProfileData.load(profile_name, auto_create=False)
+    def _load_profile(self, profile_name: str | None) -> Profile:
+        return Profile.load(profile_name, auto_create=False)

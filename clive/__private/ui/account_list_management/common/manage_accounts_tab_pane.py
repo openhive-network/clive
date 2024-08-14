@@ -29,9 +29,9 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         self._accounts_input = AccountNameInput(
             required=False,
             validators=(
-                SetTrackedAccountValidator(self.profile_data)
+                SetTrackedAccountValidator(self.profile)
                 if accounts_type == "tracked_accounts"
-                else SetKnownAccountValidator(self.profile_data)
+                else SetKnownAccountValidator(self.profile)
             ),
             ask_known_account=accounts_type != "known_accounts",
         )
@@ -65,10 +65,10 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
             return
 
         if self._accounts_type == "tracked_accounts":
-            self.profile_data.accounts.add_tracked_account(account_name)
+            self.profile.accounts.add_tracked_account(account_name)
         else:
-            self.profile_data.accounts.known.add(account_name)
+            self.profile.accounts.known.add(account_name)
 
-        self.app.trigger_profile_data_watchers()
+        self.app.trigger_profile_watchers()
         self._accounts_input.input.clear()
         self.app.update_alarms_data_asap()

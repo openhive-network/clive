@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any, Final
 
 import test_tools as tt
 
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.storage.model import PersistentStorageModelSchema, calculate_storage_model_revision
 
 if TYPE_CHECKING:
@@ -35,7 +35,7 @@ def test_storage_dir_contains_expected_files() -> None:
 
     # ACT
     # saving a profile will cause persisting storage data to be saved
-    ProfileData(FIRST_PROFILE_NAME).save()
+    Profile(FIRST_PROFILE_NAME).save()
 
     # ASSERT
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
@@ -61,15 +61,15 @@ def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: Monkey
 
     # ACT & ASSERT
     # we need to have more than one revision of profile data for this test
-    ProfileData(FIRST_PROFILE_NAME).save()
+    Profile(FIRST_PROFILE_NAME).save()
 
     # stimulate the situation when the schema has changed, causing different revision
     monkeypatch.setattr(PersistentStorageModelSchema, "schema_json", mock_schema_json)
 
     assert not new_revision_dir.is_dir(), "New revision dir should not yet exist."
-    assert ProfileData.list_profiles() == [], "There should be no profiles yet in new revision."
+    assert Profile.list_profiles() == [], "There should be no profiles yet in new revision."
 
-    ProfileData(profile_name_in_new_revision).save()
+    Profile(profile_name_in_new_revision).save()
 
     assert new_revision_dir.is_dir(), "New revision dir should exist."
 
@@ -77,4 +77,4 @@ def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: Monkey
     assert current_revision_symlink.resolve() == new_revision_dir, message
 
     message = "There should be only one profile saved in new revision."
-    assert ProfileData.list_profiles() == [profile_name_in_new_revision], message
+    assert Profile.list_profiles() == [profile_name_in_new_revision], message

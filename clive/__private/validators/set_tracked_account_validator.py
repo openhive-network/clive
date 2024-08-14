@@ -8,7 +8,7 @@ from clive.__private.settings import safe_settings
 from clive.__private.validators.account_name_validator import AccountNameValidator
 
 if TYPE_CHECKING:
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class SetTrackedAccountValidator(AccountNameValidator):
@@ -18,9 +18,9 @@ class SetTrackedAccountValidator(AccountNameValidator):
     )
     ACCOUNT_ALREADY_TRACKED_FAILURE: ClassVar[str] = "You cannot track account while its already tracked."
 
-    def __init__(self, profile_data: ProfileData) -> None:
+    def __init__(self, profile: Profile) -> None:
         super().__init__()
-        self._profile_data = profile_data
+        self._profile = profile
 
     def validate(self, value: str) -> ValidationResult:
         super_result = super().validate(value)
@@ -33,7 +33,7 @@ class SetTrackedAccountValidator(AccountNameValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_account_already_tracked(self, value: str) -> bool:
-        return not self._profile_data.accounts.is_account_tracked(value)
+        return not self._profile.accounts.is_account_tracked(value)
 
     def _validate_max_tracked_accounts_reached(self, _: str) -> bool:
-        return len(self._profile_data.accounts.tracked) < self.MAX_NUMBER_OF_TRACKED_ACCOUNTS
+        return len(self._profile.accounts.tracked) < self.MAX_NUMBER_OF_TRACKED_ACCOUNTS

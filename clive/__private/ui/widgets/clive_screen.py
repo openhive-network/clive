@@ -53,8 +53,8 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
             app_ = get_clive().app_instance()
             if (
-                not app_.world.profile_data.accounts.is_tracked_accounts_node_data_available
-                or not app_.world.profile_data.accounts.is_tracked_accounts_alarms_data_available
+                not app_.world.profile.accounts.is_tracked_accounts_node_data_available
+                or not app_.world.profile.accounts.is_tracked_accounts_alarms_data_available
             ):
                 logger.debug(f"action {func.__name__} prevented because no node or alarms data is available yet")
                 app_.notify("Waiting for data...", severity="warning")

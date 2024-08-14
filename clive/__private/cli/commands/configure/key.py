@@ -49,11 +49,11 @@ class AddKey(WorldBasedCommand):
         return self.alias if self.alias else private_key.calculate_public_key().value
 
     async def validate_inside_context_manager(self) -> None:
-        profile_data = self.world.profile_data
-        if not profile_data.accounts.has_working_account:
-            raise CLIWorkingAccountIsNotSetError(profile_data)
+        profile = self.world.profile
+        if not profile.accounts.has_working_account:
+            raise CLIWorkingAccountIsNotSetError(profile)
 
-        key_manager = profile_data.keys
+        key_manager = profile.keys
         alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(
             self.get_actual_alias()
         )
@@ -66,15 +66,15 @@ class AddKey(WorldBasedCommand):
             raise CLIPrettyError(f"Can't add key: {humanize_validation_result(private_key_result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        profile_data = self.world.profile_data
+        profile = self.world.profile
         typer.echo("Importing key...")
 
-        profile_data.keys.add_to_import(self.private_key_aliased)
+        profile.keys.add_to_import(self.private_key_aliased)
 
         try:
             await self.world.commands.unlock(password=self.password)
         except (UnlockInvalidPasswordError, WalletDoesNotExistsError):
-            profile_data.skip_saving()
+            profile.skip_saving()
             raise
 
         await self.world.commands.sync_data_with_beekeeper()
@@ -90,9 +90,9 @@ class RemoveKey(WorldBasedCommand):
     password: str
 
     async def _run(self) -> None:
-        profile_data = self.world.profile_data
-        if not profile_data.accounts.has_working_account:
-            raise CLIWorkingAccountIsNotSetError(profile_data)
+        profile = self.world.profile
+        if not profile.accounts.has_working_account:
+            raise CLIWorkingAccountIsNotSetError(profile)
 
         wrapper = await self.world.commands.is_password_valid(password=self.password)
         if not wrapper.result_or_raise:
@@ -100,7 +100,7 @@ class RemoveKey(WorldBasedCommand):
 
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
 
-        public_key = profile_data.keys.get(self.alias)
+        public_key = profile.keys.get(self.alias)
 
         self.__remove_key_association_from_the_profile(public_key)
 
@@ -115,7 +115,7 @@ class RemoveKey(WorldBasedCommand):
         typer.echo(message)
 
     def __remove_key_association_from_the_profile(self, key: PublicKeyAliased) -> None:
-        self.world.profile_data.keys.remove(key)
+        self.world.profile.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
         unlock_wrapper = await self.world.commands.unlock(password=self.password)

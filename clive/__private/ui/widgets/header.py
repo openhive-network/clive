@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class HeaderIcon(TextualHeaderIcon):
@@ -121,7 +121,7 @@ class Header(TextualHeader, CliveWidget):
                 yield TitledLabel(
                     "Profile",
                     obj_to_watch=self.world,
-                    attribute_name="profile_data",
+                    attribute_name="profile",
                     callback=self.__get_profile_name,
                     id_="profile-label",
                 )
@@ -166,8 +166,8 @@ class Header(TextualHeader, CliveWidget):
         return str(node.address)
 
     @staticmethod
-    def __get_profile_name(profile_data: ProfileData) -> str:
-        return profile_data.name
+    def __get_profile_name(profile: Profile) -> str:
+        return profile.name
 
     async def __get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"
@@ -186,4 +186,4 @@ class Header(TextualHeader, CliveWidget):
     def __is_in_onboarding_mode(self) -> bool:
         from clive.__private.ui.onboarding.onboarding import Onboarding
 
-        return self.profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME
+        return self.profile.name == Onboarding.ONBOARDING_PROFILE_NAME

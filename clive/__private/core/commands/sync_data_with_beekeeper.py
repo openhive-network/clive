@@ -10,16 +10,16 @@ from clive.__private.core.commands.import_key import ImportKey
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper.handle import Beekeeper
     from clive.__private.core.keys import PrivateKeyAliased, PublicKeyAliased
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 @dataclass(kw_only=True)
 class SyncDataWithBeekeeper(CommandInUnlocked, Command):
-    profile_data: ProfileData
+    profile: Profile
     beekeeper: Beekeeper
 
     async def _execute(self) -> None:
-        if not self.profile_data.accounts.has_working_account:
+        if not self.profile.accounts.has_working_account:
             return
 
         await self.__import_pending_keys()
@@ -28,9 +28,9 @@ class SyncDataWithBeekeeper(CommandInUnlocked, Command):
         async def import_key(key_to_import: PrivateKeyAliased) -> PublicKeyAliased:
             return await ImportKey(
                 app_state=self.app_state,
-                wallet=self.profile_data.name,
+                wallet=self.profile.name,
                 key_to_import=key_to_import,
                 beekeeper=self.beekeeper,
             ).execute_with_result()
 
-        await self.profile_data.keys.import_pending_to_beekeeper(import_key)
+        await self.profile.keys.import_pending_to_beekeeper(import_key)

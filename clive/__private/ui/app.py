@@ -172,7 +172,7 @@ class Clive(App[int], ManualReactive):
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             should_force_onboarding = safe_settings.dev.should_force_onboarding
-            return self.world.profile_data.name == Onboarding.ONBOARDING_PROFILE_NAME or should_force_onboarding
+            return self.world.profile.name == Onboarding.ONBOARDING_PROFILE_NAME or should_force_onboarding
 
         self.__class__.is_launched = True
         self.console.set_window_title("Clive")
@@ -343,8 +343,8 @@ class Clive(App[int], ManualReactive):
             return screen.__class__.__name__ == other
         return isinstance(screen, other)
 
-    def trigger_profile_data_watchers(self) -> None:
-        self.world.update_reactive("profile_data")
+    def trigger_profile_watchers(self) -> None:
+        self.world.update_reactive("profile")
 
     def trigger_node_watchers(self) -> None:
         self.world.update_reactive("node")
@@ -357,7 +357,7 @@ class Clive(App[int], ManualReactive):
 
         async def _update_alarms_data_asap() -> None:
             self._refresh_alarms_data_interval.pause()
-            while not self.world.profile_data.accounts.is_tracked_accounts_node_data_available:
+            while not self.world.profile.accounts.is_tracked_accounts_node_data_available:
                 await asyncio.sleep(0.1)
             self.update_alarms_data()
             self._refresh_alarms_data_interval.resume()
@@ -371,24 +371,24 @@ class Clive(App[int], ManualReactive):
 
     @work(name="alarms data update worker")
     async def update_alarms_data(self) -> None:
-        accounts = self.world.profile_data.accounts.tracked
+        accounts = self.world.profile.accounts.tracked
         wrapper = await self.world.commands.update_alarms_data(accounts=accounts)
         if wrapper.error_occurred:
             logger.warning(f"Update alarms data failed: {wrapper.error}")
             return
 
-        self.trigger_profile_data_watchers()
+        self.trigger_profile_watchers()
 
     @work(name="node data update worker")
     async def update_data_from_node(self) -> None:
-        accounts = self.world.profile_data.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
+        accounts = self.world.profile.accounts.tracked  # accounts list gonna be empty, but dgpo will be refreshed
 
         wrapper = await self.world.commands.update_node_data(accounts=accounts)
         if wrapper.error_occurred:
             logger.warning(f"Update node data failed: {wrapper.error}")
             return
 
-        self.trigger_profile_data_watchers()
+        self.trigger_profile_watchers()
         self.trigger_node_watchers()
 
     async def __debug_log(self) -> None:

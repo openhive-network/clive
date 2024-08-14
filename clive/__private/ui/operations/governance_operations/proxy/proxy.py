@@ -79,10 +79,10 @@ class Proxy(TabPane, CliveWidget):
 
     def __init__(self, title: TextType) -> None:
         super().__init__(title=title)
-        self._current_proxy = self.profile_data.accounts.working.data.proxy
+        self._current_proxy = self.profile.accounts.working.data.proxy
 
     def on_mount(self) -> None:
-        self.watch(self.world, "profile_data", self.sync_when_proxy_changed)
+        self.watch(self.world, "profile", self.sync_when_proxy_changed)
 
     @property
     def new_proxy_input(self) -> NewProxyInput:
@@ -108,9 +108,9 @@ class Proxy(TabPane, CliveWidget):
         self.app.push_screen(AccountWitnessProxy(new_proxy=None))
 
     def sync_when_proxy_changed(self) -> None:
-        proxy_profile_data = self.profile_data.accounts.working.data.proxy
-        if self._current_proxy != proxy_profile_data:
-            self._current_proxy = proxy_profile_data
+        proxy_profile = self.profile.accounts.working.data.proxy
+        if self._current_proxy != proxy_profile:
+            self._current_proxy = proxy_profile
 
             content = ProxySet(self._current_proxy) if self._current_proxy else ProxyNotSet()
 

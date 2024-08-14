@@ -14,12 +14,12 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.keys import PublicKeyAliased
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.models.aliased import OperationRepresentation
 
 
 class RuntimeToStorageConverter:
-    def __init__(self, profile: ProfileData) -> None:
+    def __init__(self, profile: Profile) -> None:
         self._profile = profile
 
     def create_storage_model(self) -> ProfileStorageModel:

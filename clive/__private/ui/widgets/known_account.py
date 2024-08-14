@@ -38,7 +38,7 @@ class KnownAccount(CliveWidget):
         accounts_holder: Object that holds known accounts. If not provided, the account holder from app world is used.
         """
         self.input = input
-        self._account_holder = accounts_holder if accounts_holder is not None else self.profile_data.accounts
+        self._account_holder = accounts_holder if accounts_holder is not None else self.profile.accounts
 
         self.checkbox = Checkbox("Known?", disabled=True)
         super().__init__()

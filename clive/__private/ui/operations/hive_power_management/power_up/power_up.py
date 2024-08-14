@@ -42,7 +42,7 @@ class PowerUp(TabPane, OperationActionBindings):
 
     @property
     def working_account_name(self) -> str:
-        return self.profile_data.accounts.working.name
+        return self.profile.accounts.working.name
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
@@ -54,7 +54,7 @@ class PowerUp(TabPane, OperationActionBindings):
                     yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
 
     def _get_hive_balance(self) -> Asset.Hive:
-        return self.profile_data.accounts.working.data.hive_balance
+        return self.profile.accounts.working.data.hive_balance
 
     def _create_operation(self) -> TransferToVesting | None:
         if not CliveValidatedInput.validate_many(self._asset_input, self._receiver_input):

@@ -10,7 +10,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.accounts.accounts import TrackedAccount
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class TrackedAccountReferencingWidget(CliveWidget):
@@ -32,15 +32,15 @@ class TrackedAccountReferencingWidget(CliveWidget):
     ) -> DynamicLabel:
         return DynamicLabel(
             self.world,
-            "profile_data",
+            "profile",
             lambda: foo() if self._account.name else "NULL",
             first_try_callback=self._check_if_account_node_data_is_available,
             classes=classes,
             init=init,
         )
 
-    def _check_if_account_node_data_is_available(self, profile_data: ProfileData) -> bool:
+    def _check_if_account_node_data_is_available(self, profile: Profile) -> bool:
         try:
-            return profile_data.accounts.get_tracked_account(self._account).is_node_data_available
+            return profile.accounts.get_tracked_account(self._account).is_node_data_available
         except AccountNotFoundError:
             return False

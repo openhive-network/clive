@@ -69,8 +69,8 @@ async def _wait_for_screen_change(pilot: ClivePilot, expected_screen: type[Scree
 
 async def _wait_for_accounts_data(pilot: ClivePilot) -> None:
     while (
-        not pilot.app.world.profile_data.accounts.is_tracked_accounts_node_data_available
-        or not pilot.app.world.profile_data.accounts.is_tracked_accounts_alarms_data_available
+        not pilot.app.world.profile.accounts.is_tracked_accounts_node_data_available
+        or not pilot.app.world.profile.accounts.is_tracked_accounts_alarms_data_available
     ):
         tt.logger.debug("Waiting for accounts node and alarms data...")
         await pilot.pause(POLL_TIME_SECS)

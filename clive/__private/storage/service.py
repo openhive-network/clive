@@ -13,7 +13,7 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class PersistentStorageServiceError(CliveError):
@@ -64,7 +64,7 @@ class PersistentStorageService:
 
         storage_path.write_text(serialized_storage)
 
-    def save_profile(self, profile: ProfileData) -> None:
+    def save_profile(self, profile: Profile) -> None:
         """
         Save profile to the storage.
 
@@ -90,7 +90,7 @@ class PersistentStorageService:
         self.cached_storage.profiles.append(model)
         self.save_storage()
 
-    def load_profile(self, profile_name: str | None = None) -> ProfileData:
+    def load_profile(self, profile_name: str | None = None) -> Profile:
         """
         Load profile with the given name from the storage.
 
@@ -245,7 +245,7 @@ class PersistentStorageService:
         if not self.is_profile_stored(profile_name):
             raise ProfileDoesNotExistsError(profile_name)
 
-    def _raise_if_profile_with_name_already_exists_on_first_save(self, profile: ProfileData) -> None:
+    def _raise_if_profile_with_name_already_exists_on_first_save(self, profile: Profile) -> None:
         profile_name = profile.name
         is_newly_created = profile.is_newly_created
         existing_profile_names = self.list_stored_profile_names()

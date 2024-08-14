@@ -9,7 +9,7 @@ from typing_extensions import Self
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.accounts.exceptions import NoWorkingAccountError
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 
 
 @dataclass(kw_only=True)
@@ -59,7 +59,7 @@ class ExternalCLICommand(ABC):
     def __get_initialized_fields(self) -> list[Field[Any]]:
         return [field_instance for field_instance in fields(self) if field_instance.init]
 
-    def _supply_with_correct_default_for_working_account(self, profile_data: ProfileData) -> None:
+    def _supply_with_correct_default_for_working_account(self, profile: Profile) -> None:
         """
         We can load default working account value only during runtime.
 
@@ -68,7 +68,7 @@ class ExternalCLICommand(ABC):
 
         def get_working_account_name() -> str:
             try:
-                return profile_data.accounts.working.name
+                return profile.accounts.working.name
             except NoWorkingAccountError as err:
                 raise CLIPrettyError(
                     "Working account is not set, can't use working account as default.",

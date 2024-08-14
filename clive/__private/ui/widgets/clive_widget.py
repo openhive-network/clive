@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
     from clive.__private.core.commands.commands import TextualCommands
     from clive.__private.core.node import Node
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.__private.core.world import TextualWorld
 
 
@@ -30,8 +30,8 @@ class CliveWidget(CliveDOMNode, Widget):
         return self.app.world
 
     @property
-    def profile_data(self) -> ProfileData:
-        return self.world.profile_data
+    def profile(self) -> Profile:
+        return self.world.profile
 
     @property
     def app_state(self) -> AppState:

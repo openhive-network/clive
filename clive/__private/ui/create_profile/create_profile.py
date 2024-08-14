@@ -11,7 +11,7 @@ from textual.widgets import Static
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
@@ -32,7 +32,7 @@ class ButtonsContainer(Horizontal):
     """Container for the buttons."""
 
 
-class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
+class CreateProfileCommon(BaseScreen, Contextual[Profile], ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -85,7 +85,7 @@ class CreateProfileCommon(BaseScreen, Contextual[ProfileData], ABC):
         )
         write_data = SyncDataWithBeekeeper(
             app_state=self.app_state,
-            profile_data=self.context,
+            profile=self.context,
             beekeeper=self.world.beekeeper,
         )
         return create_wallet, write_data
@@ -98,8 +98,8 @@ class CreateProfile(CreateProfileCommon):
     ]
 
     @property
-    def context(self) -> ProfileData:
-        return self.profile_data
+    def context(self) -> Profile:
+        return self.profile
 
     @on(CliveButton.Pressed, "#cancel-button")
     def action_dashboard(self) -> None:
@@ -117,7 +117,7 @@ class CreateProfile(CreateProfileCommon):
         except FormValidationError as error:
             self.notify(f"Failed the validation process! Reason: {error.reason}", severity="error")
         else:
-            self.app.trigger_profile_data_watchers()
+            self.app.trigger_profile_watchers()
             self.app.pop_screen()
             self.notify("Profile created successfully!")
 
@@ -128,7 +128,7 @@ class CreateProfile(CreateProfileCommon):
             yield CliveButton("Cancel", variant="error", id_="cancel-button")
 
 
-class CreateProfileForm(CreateProfileCommon, FormScreen[ProfileData]):
+class CreateProfileForm(CreateProfileCommon, FormScreen[Profile]):
     BIG_TITLE = "onboarding"
 
     async def apply_and_validate(self) -> None:

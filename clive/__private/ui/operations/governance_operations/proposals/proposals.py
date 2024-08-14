@@ -133,7 +133,7 @@ class Proposal(GovernanceTableRow[ProposalData]):
 
     @property
     def is_operation_in_cart(self) -> bool:
-        for operation in self.profile_data.cart:
+        for operation in self.profile.cart:
             if (
                 isinstance(operation, UpdateProposalVotesOperation)
                 and self.row_data.proposal_id in operation.proposal_ids
@@ -152,7 +152,7 @@ class ProposalsActions(GovernanceActions):
     NAME_OF_ACTION: ClassVar[str] = "Proposal"
 
     async def mount_operations_from_cart(self) -> None:
-        for operation in self.profile_data.cart:
+        for operation in self.profile.cart:
             if isinstance(operation, UpdateProposalVotesOperation):
                 for proposal_id in operation.proposal_ids:
                     await self.add_row(identifier=str(proposal_id), pending=True)
@@ -177,7 +177,7 @@ class ProposalsList(GovernanceListWidget[ProposalData]):
 class ProposalsListHeader(GovernanceListHeader):
     def create_custom_columns(self) -> ComposeResult:
         yield SectionTitle(
-            f"Votes for proposals cast by your proxy ({self.profile_data.accounts.working.data.proxy})"
+            f"Votes for proposals cast by your proxy ({self.profile.accounts.working.data.proxy})"
             if self.is_proxy_set
             else "Update your proposal votes"
         )
@@ -265,7 +265,7 @@ class Proposals(GovernanceTabPane):
         )
 
     def _create_operations(self) -> list[Operation] | None:
-        working_account_name = self.profile_data.accounts.working.name
+        working_account_name = self.profile.accounts.working.name
 
         batched_proposals_ids_to_unvote = self.__split_proposals(approve=False)
         batched_proposals_ids_to_vote = self.__split_proposals(approve=True)

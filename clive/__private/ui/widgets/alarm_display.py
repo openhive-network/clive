@@ -6,7 +6,7 @@ from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabe
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
 
 
 class AutoUseWorkingAccount:
@@ -36,7 +36,7 @@ class AlarmDisplay(DynamicLabel):
         self._account = account
         super().__init__(
             self.world,
-            "profile_data",
+            "profile",
             self._update_callback,
             first_try_callback=self._first_try_alarms_callback,
             id_=id_,
@@ -45,15 +45,15 @@ class AlarmDisplay(DynamicLabel):
 
     @property
     def account(self) -> TrackedAccount:
-        account = self.profile_data.accounts.working if self._is_in_auto_working_account_mode() else self._account
+        account = self.profile.accounts.working if self._is_in_auto_working_account_mode() else self._account
         assert not isinstance(account, AutoUseWorkingAccount), "Account should be ensured to be a TrackedAccount."
         return account
 
-    def _update_callback(self, pd: ProfileData) -> str:
+    def _update_callback(self, profile: Profile) -> str:
         class_name = "-no-alarm"
         no_alarms_info = "No alarms"
 
-        if self._is_in_auto_working_account_mode() and not pd.accounts.has_working_account:
+        if self._is_in_auto_working_account_mode() and not profile.accounts.has_working_account:
             self.add_class(class_name)
             return no_alarms_info
 
@@ -66,12 +66,12 @@ class AlarmDisplay(DynamicLabel):
         self.add_class(class_name)
         return no_alarms_info
 
-    def _first_try_alarms_callback(self, pd: ProfileData) -> bool:
+    def _first_try_alarms_callback(self, profile: Profile) -> bool:
         if not self._is_in_auto_working_account_mode():
             return self.account.is_alarms_data_available
 
-        if pd.accounts.has_working_account:
-            return pd.accounts.working.is_alarms_data_available
+        if profile.accounts.has_working_account:
+            return profile.accounts.working.is_alarms_data_available
 
         # if the working account is not set, we cannot display alarms, so True is returned to allow
         # the first attempt in _update_callback

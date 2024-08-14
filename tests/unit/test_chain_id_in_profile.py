@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID
-from clive.__private.core.profile_data import InvalidChainIdError, ProfileData
+from clive.__private.core.profile import InvalidChainIdError, Profile
 from clive.__private.settings import safe_settings, settings
 from clive.models import Asset, Transaction
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
@@ -23,16 +23,16 @@ DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 
 
 @pytest.fixture()
-def profile_with_default_chain_id_from_settings() -> Iterator[ProfileData]:
+def profile_with_default_chain_id_from_settings() -> Iterator[Profile]:
     chain_id_identifier = NODE_CHAIN_ID
     chain_id_before = safe_settings.node.chain_id
     settings.set(chain_id_identifier, DEFAULT_CHAIN_ID)
-    yield ProfileData(name="test")
+    yield Profile(name="test")
     settings.set(chain_id_identifier, chain_id_before)
 
 
 def test_default_profile_chain_id_is_set_from_settings(
-    profile_with_default_chain_id_from_settings: ProfileData,
+    profile_with_default_chain_id_from_settings: Profile,
 ) -> None:
     # ARRANGE
     profile = profile_with_default_chain_id_from_settings
@@ -45,7 +45,7 @@ def test_default_profile_chain_id_is_set_from_settings(
 
 
 def test_default_chain_id_is_overridden_with_explicitly_set(
-    profile_with_default_chain_id_from_settings: ProfileData,
+    profile_with_default_chain_id_from_settings: Profile,
 ) -> None:
     # ARRANGE
     expected_chain_id = "1" * 64
@@ -58,7 +58,7 @@ def test_default_chain_id_is_overridden_with_explicitly_set(
     assert profile.chain_id == expected_chain_id
 
 
-def test_default_chain_id_could_be_unset(profile_with_default_chain_id_from_settings: ProfileData) -> None:
+def test_default_chain_id_could_be_unset(profile_with_default_chain_id_from_settings: Profile) -> None:
     # ARRANGE
     profile = profile_with_default_chain_id_from_settings
 
@@ -69,7 +69,7 @@ def test_default_chain_id_could_be_unset(profile_with_default_chain_id_from_sett
     assert profile.chain_id is None
 
 
-def test_setting_wrong_chain_id_raises_exception(profile_with_default_chain_id_from_settings: ProfileData) -> None:
+def test_setting_wrong_chain_id_raises_exception(profile_with_default_chain_id_from_settings: Profile) -> None:
     # ARRANGE
     profile = profile_with_default_chain_id_from_settings
 
@@ -93,7 +93,7 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
         ]
     )
 
-    profile = world.profile_data
+    profile = world.profile
     profile.unset_chain_id()
 
     # unsetting because autouse fixture sets it to default value in other tests

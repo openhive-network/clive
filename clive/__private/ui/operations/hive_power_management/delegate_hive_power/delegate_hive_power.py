@@ -150,7 +150,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
         # If the user has passed an amount in `HP` - convert it to `VESTS`. The operation is performed using VESTS.
         asset = ensure_vests(asset, self.provider.content.gdpo)
         return DelegateVestingSharesOperation(
-            delegator=self.profile_data.accounts.working.name,
+            delegator=self.profile.accounts.working.name,
             delegatee=self._delegate_input.value_or_error,
             vesting_shares=asset,
         )

@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICom
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.core.profile_data import ProfileData
+from clive.__private.core.profile import Profile
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 from clive.__private.validators.set_password_validator import SetPasswordValidator
 from clive.exceptions import CommunicationError
@@ -32,7 +32,7 @@ class CreateProfile(BeekeeperBasedCommand):
             )
 
     async def _run(self) -> None:
-        profile = ProfileData(self.profile_name, self.working_account_name)
+        profile = Profile(self.profile_name, self.working_account_name)
 
         profile.save()
 
@@ -48,7 +48,7 @@ class DeleteProfile(ExternalCLICommand):
     profile_name: str
 
     async def _run(self) -> None:
-        ProfileData.delete_by_name(self.profile_name)
+        Profile.delete_by_name(self.profile_name)
 
 
 @dataclass(kw_only=True)
@@ -56,4 +56,4 @@ class SetDefaultProfile(ExternalCLICommand):
     profile_name: str
 
     async def _run(self) -> None:
-        ProfileData.set_default_profile(self.profile_name)
+        Profile.set_default_profile(self.profile_name)

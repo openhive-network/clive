@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
-    from clive.__private.core.profile_data import ProfileData
+    from clive.__private.core.profile import Profile
     from clive.__private.core.world import TextualWorld
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
@@ -54,7 +54,7 @@ class AlarmsTableRow(CliveCheckerboardTableRow):
 
 
 class AlarmsTable(CliveCheckerboardTable):
-    ATTRIBUTE_TO_WATCH = "profile_data"
+    ATTRIBUTE_TO_WATCH = "profile"
 
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(header=AlarmsTableHeader(), title="Manage alarms")
@@ -68,12 +68,12 @@ class AlarmsTable(CliveCheckerboardTable):
     def object_to_watch(self) -> TextualWorld:
         return self.world
 
-    def check_if_should_be_updated(self, content: ProfileData) -> bool:
+    def check_if_should_be_updated(self, content: Profile) -> bool:
         account = self._get_actual_account_state(content)
         alarms = account.alarms.harmful_alarms
         return alarms != self._previous_alarms
 
-    def create_dynamic_rows(self, content: ProfileData) -> list[AlarmsTableRow]:
+    def create_dynamic_rows(self, content: Profile) -> list[AlarmsTableRow]:
         account = self._get_actual_account_state(content)
 
         return [
@@ -81,17 +81,17 @@ class AlarmsTable(CliveCheckerboardTable):
             for alarm in account.alarms.harmful_alarms
         ]
 
-    def is_anything_to_display(self, content: ProfileData) -> bool:
+    def is_anything_to_display(self, content: Profile) -> bool:
         if not self._get_actual_account_state(content).is_alarms_data_available:
             return False
 
         return bool(self._get_actual_account_state(content).alarms.harmful_alarms)
 
-    def update_previous_state(self, content: ProfileData) -> None:
+    def update_previous_state(self, content: Profile) -> None:
         account = self._get_actual_account_state(content)
         self._previous_alarms = account.alarms.harmful_alarms
 
-    def _get_actual_account_state(self, content: ProfileData) -> TrackedAccount:
+    def _get_actual_account_state(self, content: Profile) -> TrackedAccount:
         """Return the account with the actual state."""
         return content.accounts.get_tracked_account(self._account)
 
