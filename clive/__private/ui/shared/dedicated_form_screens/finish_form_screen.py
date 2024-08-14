@@ -6,7 +6,7 @@ from textual import on
 from textual.containers import Horizontal
 from textual.widgets import Static
 
-from clive.__private.storage.contextual import ContextT
+from clive.__private.core.contextual import ContextT
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen

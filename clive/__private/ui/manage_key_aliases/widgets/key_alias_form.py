@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any, ClassVar
 from textual.message import Message
 from textual.widgets import Static
 
+from clive.__private.core.contextual import Contextual
 from clive.__private.core.profile import Profile
-from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
