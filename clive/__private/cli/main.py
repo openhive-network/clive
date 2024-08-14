@@ -36,5 +36,6 @@ def main(
 ) -> None:
     if version:
         from clive import __version__
+        from clive.__private.storage.model import calculate_storage_model_revision
 
-        typer.echo(f"CLIVE Version: {__version__}")
+        typer.echo(f"Clive version: {__version__}\nStorage model revision: {calculate_storage_model_revision()}")
