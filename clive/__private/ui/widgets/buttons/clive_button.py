@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Literal
 
+from rich.text import Text
 from textual.binding import Binding
 from textual.widgets import Button
 from textual.widgets._button import ButtonVariant
@@ -68,9 +69,11 @@ class CliveButton(Button, CliveWidget):
         id_: str | None = None,
         classes: str | None = None,
         disabled: bool = False,
+        ellipsis_: bool = False,
     ) -> None:
+        self._ellipsis = ellipsis_
         super().__init__(
-            label=label,
+            label=self._create_label(label) if label is not None else None,
             variant=variant,  # type: ignore[arg-type]
             id=id_,
             classes=classes,
@@ -81,9 +84,12 @@ class CliveButton(Button, CliveWidget):
         self.bind(Binding("enter", "press", str(self.label)))
 
     def update(self, new_label: TextType) -> None:
-        self.label = new_label
+        self.label = self._create_label(new_label)
         self.refresh(layout=True)
 
     def validate_variant(self, variant: str) -> str:
         """No need for runtime validation, as invalid variant will be detected by mypy."""
         return variant
+
+    def _create_label(self, label: TextType) -> TextType:
+        return Text(str(label), no_wrap=True, overflow="ellipsis") if self._ellipsis else label
