@@ -11,29 +11,44 @@ FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10 AS stripp
 COPY --from=hived_image "/home/hived/bin/beekeeper" "/home/hived/bin/beekeeper"
 RUN strip -p /home/hived/bin/beekeeper -o /home/hived_admin/beekeeper.stripped
 
-FROM $BASE_IMAGE AS common
+FROM $BASE_IMAGE AS preconfigured_base_image
+
+ENV CLIVE_UID=2001
+
+ENV APT_CACHE_DIR=/var/cache/buildkit/apt
+ENV PIP_CACHE_DIR=/var/cache/buildkit/pip
+
+# create and use python virtualenv (use directory outside clive user home to reduce usermod execution time)
+ENV PYTHON_VENV_PATH="/clive/venv"
+
+RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
+    apt-get update && \
+    apt-get install -y sudo python3-venv && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    useradd -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
+    mkdir -p /clive && chown -R clive /clive && mkdir -p "${PYTHON_VENV_PATH}" && chown -R clive "${PYTHON_VENV_PATH}" && \
+    chown -R clive:users /var/cache/ && \
+    chmod -R 777 /var/cache/
+
+USER clive
 
 SHELL ["/bin/bash", "-c"]
 
 ADD ./docker/entrypoint.sh .
 
-ADD ./pyproject.toml /clive/
-ADD ./poetry.lock /clive/
-ADD ./README.md /clive/
+ADD --chown=clive ./pyproject.toml /clive/
+ADD --chown=clive ./poetry.lock /clive/
+ADD --chown=clive ./README.md /clive/
 
 WORKDIR /clive
 
 ENV BEEKEEPER_PATH_SOURCE="/home/hived_admin/beekeeper.stripped"
 ENV BEEKEEPER_PATH_DEST="/clive/beekeeper"
-COPY --from=stripped_beekeeper_source "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
+COPY --chown=clive --from=stripped_beekeeper_source "${BEEKEEPER_PATH_SOURCE}" "${BEEKEEPER_PATH_DEST}"
 
 # crucial for proper display
 ENV COLORTERM=truecolor
-
-RUN apt-get update && \
-    apt-get install -y python3-venv && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
 
 # create and use python virtualenv
 ENV PYTHON_VENV_PATH="/clive/venv"
@@ -41,7 +56,7 @@ RUN python3 -m venv ${PYTHON_VENV_PATH}
 ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 
-FROM common AS instance
+FROM preconfigured_base_image AS instance
 
 ARG CLIVE_VERSION
 
@@ -78,6 +93,7 @@ LABEL io.hive.image.commit.log_message="$GIT_LAST_LOG_MESSAGE"
 LABEL io.hive.image.commit.author="$GIT_LAST_COMMITTER"
 LABEL io.hive.image.commit.date="$GIT_LAST_COMMIT_DATE"
 
+USER root
 ENTRYPOINT ["/entrypoint.sh"]
 
 
@@ -126,4 +142,5 @@ LABEL org.opencontainers.image.ref.name="Clive+Testnet"
 LABEL org.opencontainers.image.title="Clive with Testnet Image"
 LABEL org.opencontainers.image.description="Runs Clive with embedded Hive Testnet"
 
+USER root
 ENTRYPOINT ["/entrypoint.sh"]
