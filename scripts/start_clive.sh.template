@@ -109,4 +109,4 @@ then
   add_docker_arg "${CLIVE_DATA_LOCATION_DIR}:${CLIVE_DATA_LOCATION_DIR}"
 fi
 
-docker run --detach-keys='ctrl-@,ctrl-q' --rm -it -e HIVED_UID="$(id -u)" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"
+docker run --detach-keys='ctrl-@,ctrl-q' --rm -it -e CLIVE_UID="$(id -u)" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"

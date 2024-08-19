@@ -1,6 +1,28 @@
-#! /bin/bash
+#!/bin/bash
 
 set -euo pipefail
+
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+
+if [[ "$EUID" -eq 0 ]]; then
+  if [[ -z "${CLIVE_UID:-}" ]]; then
+    echo "Warning: variable CLIVE_UID is not set or set to an empty value." >&2
+  elif ! [[ "${CLIVE_UID}" =~ ^[0-9]+$ ]] ; then
+    echo "Error: variable CLIVE_UID is set to '${CLIVE_UID}' and not an integer. Exiting..." >&2
+    exit 1
+  elif [[ "${CLIVE_UID}" -ne 0 ]];
+  then
+    if [[ "${CLIVE_UID}" -ne $(id -u clive) ]];
+    then
+      echo "Setting user clive's UID to value '${CLIVE_UID}'"
+      usermod -o -u "${CLIVE_UID}" clive
+    fi
+
+    echo "Respawning entrypoint as user clive"
+    sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
+    exit 0
+  fi
+fi
 
 TESTNET_NODE_LOG_FILE=testnet_node.log
 
@@ -56,6 +78,9 @@ while [ $# -gt 0 ]; do
   esac
   shift
 done
+
+cd /clive
+source "${PYTHON_VENV_PATH}/bin/activate"
 
 if [ "${TESTNET_MODE}" = "0" ]; then
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
