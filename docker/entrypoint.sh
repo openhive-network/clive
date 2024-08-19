@@ -80,6 +80,7 @@ while [ $# -gt 0 ]; do
 done
 
 cd /clive
+# shellcheck source=/dev/null
 source "${PYTHON_VENV_PATH}/bin/activate"
 
 if [ "${TESTNET_MODE}" = "0" ]; then
