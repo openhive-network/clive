@@ -13,17 +13,20 @@ RUN strip -p /home/hived/bin/beekeeper -o /home/hived_admin/beekeeper.stripped
 
 FROM $BASE_IMAGE AS preconfigured_base_image
 
+ARG CLIVE_VERSION
+ENV CLIVE_VERSION=${CLIVE_VERSION}
 ENV CLIVE_UID=2001
 
 ENV APT_CACHE_DIR=/var/cache/buildkit/apt
 ENV PIP_CACHE_DIR=/var/cache/buildkit/pip
 
 # create and use python virtualenv (use directory outside clive user home to reduce usermod execution time)
-ENV PYTHON_VENV_PATH="/clive/venv"
+ENV PYTHON_VENV_PATH="/clive-venv"
+ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     apt-get update && \
-    apt-get install -y sudo python3-venv && \
+    apt-get install -y sudo && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
     useradd -d /clive -ms /bin/bash -u ${CLIVE_UID} -g users -c "clive application account" "clive" && \
@@ -50,15 +53,30 @@ COPY --chown=clive --from=stripped_beekeeper_source "${BEEKEEPER_PATH_SOURCE}" "
 # crucial for proper display
 ENV COLORTERM=truecolor
 
-# create and use python virtualenv
-ENV PYTHON_VENV_PATH="/clive/venv"
-RUN python3 -m venv ${PYTHON_VENV_PATH}
-ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
+FROM preconfigured_base_image AS python_installer
+
+USER root
+RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
+    apt-get update && \
+    apt-get install -y python3-venv && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+USER clive
+WORKDIR /clive
+# Project IDS:
+# - 362 -> schemas
+# - 392 -> clive
+# - 419 -> wax
+RUN python3 -m venv "${PYTHON_VENV_PATH}" && \
+    pip install clive=="${CLIVE_VERSION}" \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
+    --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple && \
+    find "${PYTHON_VENV_PATH}" -name __pycache__ -exec rm -rf {} +
 
 
 FROM preconfigured_base_image AS instance
-
-ARG CLIVE_VERSION
 
 ARG BUILD_TIME
 ARG GIT_COMMIT_SHA
@@ -67,14 +85,7 @@ ARG GIT_LAST_LOG_MESSAGE
 ARG GIT_LAST_COMMITTER
 ARG GIT_LAST_COMMIT_DATE
 
-# Project IDS:
-# - 362 -> schemas
-# - 392 -> clive
-# - 419 -> wax
-RUN pip install clive=="${CLIVE_VERSION}" \
-    --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
-    --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
-    --extra-index-url https://gitlab.syncad.com/api/v4/projects/419/packages/pypi/simple
+COPY --chown=clive --from=python_installer "${PYTHON_VENV_PATH}" "${PYTHON_VENV_PATH}"
 
 ENV TESTNET_MODE=0
 
