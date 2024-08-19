@@ -3,7 +3,6 @@ ARG BASE_IMAGE
 
 ARG CI_REGISTRY_IMAGE=registry.gitlab.syncad.com/hive/clive/
 
-
 FROM $HIVED_IMAGE AS hived_image
 
 FROM registry.gitlab.syncad.com/hive/hive/ci-base-image:ubuntu22.04-10 AS stripped_beekeeper_source
@@ -68,7 +67,8 @@ WORKDIR /clive
 # - 362 -> schemas
 # - 392 -> clive
 # - 419 -> wax
-RUN python3 -m venv "${PYTHON_VENV_PATH}" && \
+RUN --mount=type=cache,mode=0777,uid=${CLIVE_UID},target=${PIP_CACHE_DIR} \
+    python3 -m venv "${PYTHON_VENV_PATH}" && \
     pip install clive=="${CLIVE_VERSION}" \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/362/packages/pypi/simple \
     --extra-index-url https://gitlab.syncad.com/api/v4/projects/393/packages/pypi/simple \
