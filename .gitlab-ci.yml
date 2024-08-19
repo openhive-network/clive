@@ -16,6 +16,8 @@ variables:
   # git:
   GIT_STRATEGY: clone
   GIT_SUBMODULE_STRATEGY: recursive
+  GIT_SUBMODULE_DEPTH: 1
+
   # static code analysis:
   PACKAGES_TO_CHECK: "clive/ tests/"
   # tests:
