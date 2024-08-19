@@ -196,7 +196,7 @@ class ActivityStats(TrackedAccountReferencingWidget):
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         with Vertical(id="account-alarms-and-details"):
-            button = OneLineButton(f"{self._account.name}", id_="account-details-button")
+            button = OneLineButton(f"{self._account.name}", id_="account-details-button", ellipsis_=True)
             button.tooltip = "See account details"
             yield button
             yield AlarmDisplay(self._account, id_="account-alarms")
