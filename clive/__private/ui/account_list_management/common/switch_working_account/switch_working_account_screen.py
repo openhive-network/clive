@@ -4,17 +4,16 @@ from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
-from textual.containers import Center, Horizontal, Vertical
+from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 
-from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
+from clive.__private.ui.account_list_management.common.account_managament_reference import AccountManagementReference
 from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_container import (
     SwitchWorkingAccountContainer,
 )
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -36,18 +35,11 @@ class SwitchWorkingAccountScreen(ModalScreen[None]):
 
     def compose(self) -> ComposeResult:
         with SwitchWorkingAccountScreenContent():
-            with Vertical(id="notice-container"):
-                yield Notice("To add/remove any account to the list, go to:", variant="grey")
-                with Center():
-                    yield OneLineButton("Account management", id_="account-management-button")
+            yield AccountManagementReference()
             yield self._switch_working_account_container
             with Horizontal(id="buttons-container"):
                 yield OneLineButton("Confirm", variant="success", id_="confirm-button")
                 yield CancelButton()
-
-    @on(OneLineButton.Pressed, "#account-management-button")
-    def push_account_list_management_screen(self) -> None:
-        self.app.push_screen(AccountListManagement())
 
     @on(OneLineButton.Pressed, "#confirm-button")
     def confirm_selected_working_account(self) -> None:

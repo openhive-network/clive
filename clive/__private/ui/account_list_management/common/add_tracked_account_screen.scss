@@ -11,5 +11,10 @@ AddTrackedAccountScreen {
     padding: 1;
     width: 40%;
     height: auto;
+
+    AccountManagementReference {
+      align: center top;
+      margin-bottom: 1;
+    }
   }
 }
