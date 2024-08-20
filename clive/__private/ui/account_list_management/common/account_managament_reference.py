@@ -1,0 +1,30 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from textual import on
+from textual.containers import Center, Vertical
+
+from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.notice import Notice
+
+if TYPE_CHECKING:
+    from textual.app import ComposeResult
+
+
+class AccountManagementReference(Vertical):
+    DEFAULT_CSS = """
+    AccountManagementReference {
+        height: auto;
+    }
+    """
+
+    def compose(self) -> ComposeResult:
+        yield Notice("For more advanced management, go to:", variant="grey")
+        with Center():
+            yield OneLineButton("Account management", id_="account-management-button")
+
+    @on(OneLineButton.Pressed, "#account-management-button")
+    def push_account_list_management_screen(self) -> None:
+        self.app.push_screen(AccountListManagement())
