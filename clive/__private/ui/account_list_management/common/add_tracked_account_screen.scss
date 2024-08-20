@@ -12,6 +12,11 @@ AddTrackedAccountScreen {
     width: 50%;
     height: auto;
 
+    AccountManagementReference {
+      align: center top;
+      margin-bottom: 1;
+    }
+
     OneLineButton {
       margin-right: 2;
       margin-left: 2;
