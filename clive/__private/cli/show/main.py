@@ -1,14 +1,17 @@
 from enum import Enum
-from typing import cast
+from typing import Optional, cast
 
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import options
+from clive.__private.cli.common.ensure_single_value import ensure_single_value, ensure_single_value_account_name
+from clive.__private.cli.common.parameters import argument_related_options, arguments
+from clive.__private.cli.common.parameters.utils import make_argument_related_option
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 from clive.__private.cli.common.world_common_options import WorldWithoutBeekeeperCommonOptions
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
+from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 show = CliveTyper(name="show", help="Show various data.")
 
@@ -51,12 +54,18 @@ async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
 
 
 @show.command(name="balances", common_options=[WorldWithoutBeekeeperCommonOptions])
-async def show_balances(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+async def show_balances(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+) -> None:
     """Show balances of the selected account."""
     from clive.__private.cli.commands.show.show_balances import ShowBalances
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowBalances(**common.as_dict(), account_name=account_name).run()
+    await ShowBalances(
+        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+    ).run()
 
 
 @show.command(name="node", common_options=[ProfileCommonOptions])
@@ -68,16 +77,24 @@ async def show_node(ctx: typer.Context) -> None:  # noqa: ARG001
     await ShowNode(**common.as_dict()).run()
 
 
+_transaction_id_argument = typer.Argument(
+    None, help=f"Hash of the transaction ({REQUIRED_AS_ARG_OR_OPTION}).", show_default=False
+)
+
+
 @show.command(name="transaction-status", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_transaction_status(
     ctx: typer.Context,  # noqa: ARG001
-    transaction_id: str = typer.Option(..., help="Hash of the transaction.", show_default=False),
+    transaction_id: Optional[str] = _transaction_id_argument,
+    transaction_id_option: Optional[str] = make_argument_related_option("--transaction-id"),
 ) -> None:
     """Print status of a specific transaction."""
     from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowTransactionStatus(**common.as_dict(), transaction_id=transaction_id).run()
+    await ShowTransactionStatus(
+        **common.as_dict(), transaction_id=ensure_single_value(transaction_id, transaction_id_option, "transaction-id")
+    ).run()
 
 
 if is_tab_completion_active():
@@ -107,18 +124,26 @@ else:
 
 
 @show.command(name="proxy", common_options=[WorldWithoutBeekeeperCommonOptions])
-async def show_proxy(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+async def show_proxy(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+) -> None:
     """Show proxy of selected account."""
     from clive.__private.cli.commands.show.show_proxy import ShowProxy
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowProxy(**common.as_dict(), account_name=account_name).run()
+    await ShowProxy(
+        **common.as_dict(),
+        account_name=ensure_single_value_account_name(account_name, account_name_option),
+    ).run()
 
 
 @show.command(name="witnesses", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_witnesses(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
     page_size: int = typer.Option(
         30,
         help="The number of witnesses presented on a single page.",
@@ -134,19 +159,20 @@ async def show_witnesses(
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowWitnesses(
         **common.as_dict(),
-        account_name=account_name,
+        account_name=ensure_single_value_account_name(account_name, account_name_option),
         page_size=page_size,
         page_no=page_no,
     ).run()
 
 
+_witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS_ARG_OR_OPTION})", show_default=False)
+
+
 @show.command(name="witness", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_witness(
     ctx: typer.Context,  # noqa: ARG001
-    name: str = typer.Option(
-        ...,
-        help="Witness name.",
-    ),
+    name: Optional[str] = _witness_name_argument,
+    name_option: Optional[str] = make_argument_related_option("--name"),
 ) -> None:
     """Show details of a specified witness."""
     from clive.__private.cli.commands.show.show_witness import ShowWitness
@@ -154,14 +180,15 @@ async def show_witness(
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowWitness(
         **common.as_dict(),
-        name=name,
+        name=ensure_single_value(name, name_option, "name"),
     ).run()
 
 
 @show.command(name="proposals", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_proposals(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
     order_by: OrdersEnum = typer.Option(
         DEFAULT_ORDER,
         help="Proposals listing can be ordered by criteria.",
@@ -197,7 +224,7 @@ async def show_proposals(  # noqa: PLR0913
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowProposals(
         **common.as_dict(),
-        account_name=account_name,
+        account_name=ensure_single_value_account_name(account_name, account_name_option),
         order_by=order_by_,
         order_direction=order_direction_,
         status=status_,
@@ -206,13 +233,18 @@ async def show_proposals(  # noqa: PLR0913
     ).run()
 
 
+_proposal_id_argument = typer.Argument(
+    None,
+    help=f"Identifier of chosen proposal. ({REQUIRED_AS_ARG_OR_OPTION})",
+    show_default=False,
+)
+
+
 @show.command(name="proposal", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_proposal(
     ctx: typer.Context,  # noqa: ARG001
-    proposal_id: int = typer.Option(
-        ...,
-        help="Identifier of chosen proposal.",
-    ),
+    proposal_id: Optional[int] = _proposal_id_argument,
+    proposal_id_option: Optional[int] = make_argument_related_option("--proposal-id"),
 ) -> None:
     """Show details of a specified proposal."""
     from clive.__private.cli.commands.show.show_proposal import ShowProposal
@@ -220,53 +252,74 @@ async def show_proposal(
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
     await ShowProposal(
         **common.as_dict(),
-        proposal_id=proposal_id,
+        proposal_id=ensure_single_value(proposal_id, proposal_id_option, "proposal-id"),
     ).run()
 
 
 @show.command(name="owner-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_owner_authority(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """Fetch from blockchain and display owner authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowAuthority(**common.as_dict(), account_name=account_name, authority="owner").run()
+    await ShowAuthority(
+        **common.as_dict(),
+        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        authority="owner",
+    ).run()
 
 
 @show.command(name="active-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_active_authority(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """Fetch from blockchain and display active authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowAuthority(**common.as_dict(), account_name=account_name, authority="active").run()
+    await ShowAuthority(
+        **common.as_dict(),
+        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        authority="active",
+    ).run()
 
 
 @show.command(name="posting-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_posting_authority(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """Fetch from blockchain and display posting authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowAuthority(**common.as_dict(), account_name=account_name, authority="posting").run()
+    await ShowAuthority(
+        **common.as_dict(),
+        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        authority="posting",
+    ).run()
 
 
 @show.command(name="memo-key", common_options=[WorldWithoutBeekeeperCommonOptions])
-async def show_memo_key(ctx: typer.Context, account_name: str = options.account_name_option) -> None:  # noqa: ARG001
+async def show_memo_key(
+    ctx: typer.Context,  # noqa: ARG001
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+) -> None:
     """Fetch from blockchain and display memo key of selected account."""
     from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowMemoKey(**common.as_dict(), account_name=account_name).run()
+    await ShowMemoKey(
+        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+    ).run()
 
 
 @show.command(name="chain", common_options=[WorldWithoutBeekeeperCommonOptions])
@@ -281,19 +334,23 @@ async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
 @show.command(name="hive-power", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_hive_power(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """Show info about hive power related to account including delegations and withdraw routes."""
     from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowHivePower(**common.as_dict(), account_name=account_name).run()
+    await ShowHivePower(
+        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+    ).run()
 
 
 @show.command(name="new-account-token", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """
     Show number of possessed tokens for account creation.
@@ -303,28 +360,36 @@ async def show_new_account_token(
     from clive.__private.cli.commands.show.show_new_account_token import ShowNewAccountToken
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowNewAccountToken(**common.as_dict(), account_name=account_name).run()
+    await ShowNewAccountToken(
+        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+    ).run()
 
 
 @show.command(name="transfer-schedule", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_transfer_schedule(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """Fetch from blockchain information about recurrent transfers of selected account."""
     from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowTransferSchedule(**common.as_dict(), account_name=account_name).run()
+    await ShowTransferSchedule(
+        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+    ).run()
 
 
 @show.command(name="account", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_account(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = arguments.account_name_argument,
+    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
 ) -> None:
     """Show information about given account."""
     from clive.__private.cli.commands.show.show_account import ShowAccount
 
     common = WorldWithoutBeekeeperCommonOptions.get_instance()
-    await ShowAccount(**common.as_dict(), account_name=account_name).run()
+    await ShowAccount(
+        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+    ).run()
