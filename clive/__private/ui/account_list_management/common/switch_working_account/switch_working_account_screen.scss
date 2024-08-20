@@ -12,9 +12,8 @@ SwitchWorkingAccountScreen {
     width: 50%;
     height: auto;
 
-    #notice-container {
+    AccountManagementReference {
       align: center top;
-      height: auto;
     }
 
     #buttons-container {
