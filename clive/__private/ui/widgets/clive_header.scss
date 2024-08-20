@@ -59,8 +59,8 @@ CliveHeader {
     margin-left: 1;
     color: $success-header-color;
 
-    .-not-mainnet {
-      color: red;
+    &.-not-mainnet {
+      color: $warning-lighten-2;
     }
   }
 
