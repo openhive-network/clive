@@ -7,7 +7,9 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common.ensure_single_value import ensure_single_value, ensure_single_value_account_name
 from clive.__private.cli.common.parameters import argument_related_options, arguments
 from clive.__private.cli.common.parameters.utils import make_argument_related_option
-from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
+from clive.__private.cli.common.profile_common_options import (
+    ProfileCommonOptionsWithPositionalName,
+)
 from clive.__private.cli.common.world_common_options import WorldWithoutBeekeeperCommonOptions
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
@@ -26,31 +28,31 @@ async def show_profiles() -> None:
     await ShowProfiles().run()
 
 
-@show.command(name="profile", common_options=[ProfileCommonOptions])
+@show.command(name="profile", common_options=[ProfileCommonOptionsWithPositionalName])
 async def show_profile(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show profile information."""
     from clive.__private.cli.commands.show.show_profile import ShowProfile
 
-    common = ProfileCommonOptions.get_instance()
-    await ShowProfile(**common.as_dict()).run()
+    common = ProfileCommonOptionsWithPositionalName.get_instance()
+    await ShowProfile(profile_name=common.ensure_single_profile_name_value()).run()
 
 
-@show.command(name="accounts", common_options=[ProfileCommonOptions])
+@show.command(name="accounts", common_options=[ProfileCommonOptionsWithPositionalName])
 async def show_accounts(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all accounts stored in the profile."""
     from clive.__private.cli.commands.show.show_accounts import ShowAccounts
 
-    common = ProfileCommonOptions.get_instance()
-    await ShowAccounts(**common.as_dict()).run()
+    common = ProfileCommonOptionsWithPositionalName.get_instance()
+    await ShowAccounts(profile_name=common.ensure_single_profile_name_value()).run()
 
 
-@show.command(name="keys", common_options=[ProfileCommonOptions])
+@show.command(name="keys", common_options=[ProfileCommonOptionsWithPositionalName])
 async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show all the public keys stored in Clive."""
     from clive.__private.cli.commands.show.show_keys import ShowKeys
 
-    common = ProfileCommonOptions.get_instance()
-    await ShowKeys(**common.as_dict()).run()
+    common = ProfileCommonOptionsWithPositionalName.get_instance()
+    await ShowKeys(profile_name=common.ensure_single_profile_name_value()).run()
 
 
 @show.command(name="balances", common_options=[WorldWithoutBeekeeperCommonOptions])
@@ -68,13 +70,13 @@ async def show_balances(
     ).run()
 
 
-@show.command(name="node", common_options=[ProfileCommonOptions])
+@show.command(name="node", common_options=[ProfileCommonOptionsWithPositionalName])
 async def show_node(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show address of the currently selected node."""
     from clive.__private.cli.commands.show.show_node import ShowNode
 
-    common = ProfileCommonOptions.get_instance()
-    await ShowNode(**common.as_dict()).run()
+    common = ProfileCommonOptionsWithPositionalName.get_instance()
+    await ShowNode(profile_name=common.ensure_single_profile_name_value()).run()
 
 
 _transaction_id_argument = typer.Argument(

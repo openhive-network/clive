@@ -36,6 +36,10 @@ def get_default_or_make_required(value: Any) -> Any:  # noqa: ANN401
     return ... if value is None else value
 
 
+def get_default_or_make_optional(value: Any) -> Any:  # noqa: ANN401
+    return value if value else None
+
+
 def modified_param(source: OptionInfo | ArgumentInfo, **kwargs: Any) -> Any:  # noqa: ANN401
     """
     Create option/argument based on another option/argument, but with some attributes modified.

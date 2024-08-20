@@ -33,7 +33,6 @@ password_option = typer.Option(..., "--password", help="Password to unlock the w
 
 password_optional_option = modified_param(password_option, default=None)
 
-
 # we don't know if account_name_option is required until the profile is loaded
 working_account_option_template = typer.Option(
     PERFORM_WORKING_ACCOUNT_LOAD,
@@ -129,7 +128,6 @@ memo_value_option = typer.Option(
 )
 memo_value_optional_option = modified_param(memo_value_option, default=None)
 
-
 pair_id_value_option = typer.Option(
     0,
     "--pair-id",
@@ -150,7 +148,6 @@ repeat_value_option = typer.Option(
     show_default=False,
 )
 repeat_value_optional_option = modified_param(repeat_value_option, default=None)
-
 
 voting_amount_option = typer.Option(
     ...,
