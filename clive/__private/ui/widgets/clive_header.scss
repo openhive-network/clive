@@ -60,14 +60,14 @@ CliveHeader {
     width: auto;
   }
 
+  #node-type.-not-mainnet {
+    color: $warning-lighten-2;
+  }
+
   #node-type {
     margin-right: 1;
     margin-left: 1;
     color: $success-header-color;
-
-    .-not-mainnet {
-      color: red;
-    }
   }
 
   #bar {
