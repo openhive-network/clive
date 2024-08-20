@@ -12,7 +12,7 @@ class PublicKeyAliasValidator(Validator):
     ALREADY_IN_USE_FAILURE_DESCRIPTION: Final[str] = "Alias is already in use."
 
     MIN_LENGTH: Final[int] = 1
-    MAX_LENGTH: Final[int] = 50
+    MAX_LENGTH: Final[int] = 53
 
     def __init__(self, key_manager: KeyManager, *, validate_like_adding_new: bool = False) -> None:
         super().__init__()
