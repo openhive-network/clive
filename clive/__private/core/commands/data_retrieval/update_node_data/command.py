@@ -1,13 +1,18 @@
 from __future__ import annotations
 
-from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.accounts.accounts import TrackedAccount
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
+    AccountProcessedData,
+    AccountSanitizedData,
+    AccountSanitizedDataContainer,
+    HarvestedDataRaw,
+    SanitizedData,
+)
 from clive.__private.core.date_utils import utc_epoch, utc_now
 from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.core.iwax import (
@@ -23,6 +28,7 @@ from clive.__private.storage import mock_database
 from clive.__private.storage.mock_database import NodeData
 
 if TYPE_CHECKING:
+    from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.node.node import Node
     from clive.__private.models.aliased import (
         FindRcAccounts,
@@ -34,50 +40,6 @@ if TYPE_CHECKING:
         FindAccounts,
     )
     from schemas.fields.compound import Manabar
-
-
-@dataclass
-class _AccountHarvestedDataRaw:
-    core: SchemasAccount | None = None
-    rc: RcAccount | None = None
-    account_history: GetAccountHistory | None = None
-
-
-@dataclass
-class _AccountSanitizedData:
-    core: SchemasAccount
-    account_history: GetAccountHistory | None = None
-    """Could be missing if account_history_api is not available"""
-    rc: RcAccount | None = None
-    """Could be missing if rc_api is not available"""
-
-
-@dataclass
-class _AccountProcessedData:
-    core: SchemasAccount
-    last_history_entry: datetime = field(default_factory=lambda: utc_epoch())
-    """Could be missing if account_history_api is not available"""
-    rc: RcAccount | None = None
-    """Could be missing if rc_api is not available"""
-
-
-@dataclass
-class HarvestedDataRaw:
-    gdpo: DynamicGlobalProperties | None = None
-    core_accounts: FindAccounts | None = None
-    rc_accounts: FindRcAccounts | None = None
-    account_harvested_data: dict[TrackedAccount, _AccountHarvestedDataRaw] = field(
-        default_factory=lambda: defaultdict(_AccountHarvestedDataRaw)
-    )
-
-
-AccountSanitizedDataContainer = dict[TrackedAccount, _AccountSanitizedData]
-
-
-@dataclass
-class SanitizedData:
-    gdpo: DynamicGlobalProperties
-    account_sanitized_data: AccountSanitizedDataContainer
 
 
 @dataclass
@@ -130,7 +92,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
         account_sanitized_data: AccountSanitizedDataContainer = {}
         for account, unsanitized in data.account_harvested_data.items():
-            account_sanitized_data[account] = _AccountSanitizedData(
+            account_sanitized_data[account] = AccountSanitizedData(
                 core=unsanitized.core,  # type:ignore[arg-type] # already sanitized above
                 rc=unsanitized.rc,
                 account_history=self.__assert_account_history_or_none(unsanitized.account_history),
@@ -142,10 +104,10 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
 
         gdpo = data.gdpo
 
-        accounts_processed_data: dict[TrackedAccount, _AccountProcessedData] = {}
+        accounts_processed_data: dict[TrackedAccount, AccountProcessedData] = {}
         for account in self.accounts:
             account_data = data.account_sanitized_data[account]
-            accounts_processed_data[account] = _AccountProcessedData(
+            accounts_processed_data[account] = AccountProcessedData(
                 core=account_data.core,
                 rc=account_data.rc,
                 last_history_entry=self.__get_account_last_history_entry(account_data.account_history),
