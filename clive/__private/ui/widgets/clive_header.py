@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, cast
 
 from textual import events, on
-from textual.containers import Center, Container, Horizontal
+from textual.containers import Horizontal
 from textual.message import Message
 from textual.widgets import Header, Static
 from textual.widgets._header import HeaderIcon as TextualHeaderIcon
@@ -211,6 +211,14 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
         await self.app.push_screen(SetNodeAddress())
 
 
+class RightPart(Horizontal):
+    """Right part of the header or expandable."""
+
+
+class LeftPart(Horizontal):
+    """Left part of the header or expandable."""
+
+
 class CliveHeader(Header, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
@@ -247,30 +255,18 @@ class CliveHeader(Header, CliveWidget):
         yield HeaderIcon()
         with Horizontal(id="bar"):
             if not self.world.is_in_onboarding_mode:
-                yield DynamicLabel(
-                    obj_to_watch=self.world,
-                    attribute_name="profile",
-                    callback=self.__get_profile_name,
-                    id_="profile-name",
-                )
-                yield Static("/", id="separator")
-                yield WorkingAccountButton()
-                yield AlarmDisplay()
-                with Center():
-                    yield LockStatus()
-            with Container(id="node-status-container"):
-                yield NodeStatus()
+                with LeftPart():
+                    yield from self._create_left_part_bar()
+                yield LockStatus()
+            with RightPart():
+                yield from self._create_right_part_bar()
 
         with Horizontal(id="expandable"):
-            yield BlockDisplay()
+            with LeftPart():
+                yield from self._create_left_part_expandable()
             yield self._header_title
-            yield DynamicLabel(
-                obj_to_watch=self.world,
-                attribute_name="node",
-                callback=self.__get_node_address,
-                id_="node-address-label",
-            )
-            yield self.__node_version
+            with RightPart():
+                yield from self._create_right_part_expandable()
 
     @on(LockStatus.WalletUnlocked)
     def change_state_to_unlocked(self) -> None:
@@ -282,6 +278,32 @@ class CliveHeader(Header, CliveWidget):
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.add_class("-tall") if expanded else self.remove_class("-tall")
+
+    def _create_left_part_bar(self) -> ComposeResult:
+        yield DynamicLabel(
+            obj_to_watch=self.world,
+            attribute_name="profile",
+            callback=self.__get_profile_name,
+            id_="profile-name",
+        )
+        yield Static("/", id="separator")
+        yield WorkingAccountButton()
+        yield AlarmDisplay()
+
+    def _create_right_part_bar(self) -> ComposeResult:
+        yield NodeStatus()
+
+    def _create_left_part_expandable(self) -> ComposeResult:
+        yield BlockDisplay()
+
+    def _create_right_part_expandable(self) -> ComposeResult:
+        yield DynamicLabel(
+            obj_to_watch=self.world,
+            attribute_name="node",
+            callback=self.__get_node_address,
+            id_="node-address-label",
+        )
+        yield self.__node_version
 
     def _on_click(self, event: events.Click) -> None:  # type: ignore[override]
         """
