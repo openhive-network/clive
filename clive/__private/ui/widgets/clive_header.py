@@ -184,7 +184,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self._update_node_status,
-            first_try_callback=lambda: self.node.cached.online is not None,
+            first_try_callback=lambda: self.node.cached.online_or_none is not None,
             variant="success-on-transparent",
         )
 
@@ -194,7 +194,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
         else:
             self._widget.tooltip = "Switch node address"
 
-        if not node.cached.online:
+        if not await node.cached.online:
             self._widget.variant = "error-on-transparent"
             return "offline"
 
