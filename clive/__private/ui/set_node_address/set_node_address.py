@@ -12,13 +12,13 @@ from textual.widgets._select import NoSelection
 
 from clive.__private.core.communication import Communication
 from clive.__private.core.date_utils import utc_now
+from clive.__private.core.url import Url
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section import SectionScrollable
-from clive.core.url import Url
 from clive.exceptions import CommunicationError, NodeAddressError
 from schemas.jsonrpc import JSONRPCRequest
 

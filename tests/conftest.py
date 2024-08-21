@@ -14,9 +14,9 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH, NODE_CHAIN_ID
+from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive.core.url import Url
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo

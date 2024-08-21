@@ -37,9 +37,9 @@ from clive.__private.core.beekeeper.notifications import (
 )
 from clive.__private.core.communication import Communication
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS
+from clive.__private.core.url import Url
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings, settings
-from clive.core.url import Url
 from clive.dev import is_in_dev_mode
 from clive.models.base import CliveBaseModel
 from schemas.jsonrpc import (

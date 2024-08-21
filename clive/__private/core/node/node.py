@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.profile import Profile
-    from clive.core.url import Url
+    from clive.__private.core.url import Url
     from clive.models.aliased import Config, DynamicGlobalProperties, Version
 
 

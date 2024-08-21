@@ -10,7 +10,7 @@ from clive_local_tools.beekeeper.network import raw_http_call
 from schemas.jsonrpc import JSONRPCRequest
 
 if TYPE_CHECKING:
-    from clive.core.url import Url
+    from clive.__private.core.url import Url
     from clive_local_tools.data.models import WalletInfo
 
 # We have 500ms time period protection on ulocking wallet.

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.profile_based_command import ProfileBasedCommand
-from clive.core.url import Url
+from clive.__private.core.url import Url
 
 
 @dataclass(kw_only=True)

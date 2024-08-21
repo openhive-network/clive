@@ -8,12 +8,12 @@ from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.contextual import Context
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import KeyManager, PublicKeyAliased
+from clive.__private.core.url import Url
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
-from clive.core.url import Url
 from clive.exceptions import CliveError
 from clive.models.aliased import ChainIdSchema, OperationBaseClass
 

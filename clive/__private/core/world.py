@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.core.url import Url
+    from clive.__private.core.url import Url
 
 
 class World:
