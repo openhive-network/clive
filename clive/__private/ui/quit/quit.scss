@@ -8,12 +8,12 @@ Quit {
     content-align: center middle;
   }
 
-  Button {
-    width: 1fr;
-  }
-
   #buttons {
     height: auto;
+
+    Button {
+      width: 1fr;
+    }
   }
 
   #quit {
