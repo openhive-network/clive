@@ -7,7 +7,11 @@ from clive.__private.core.accounts.account_container import (
     WatchedAccountContainer,
 )
 from clive.__private.core.accounts.accounts import Account, TrackedAccount, WatchedAccount, WorkingAccount
-from clive.__private.core.accounts.exceptions import AccountNotFoundError, NoWorkingAccountError
+from clive.__private.core.accounts.exceptions import (
+    AccountAlreadyExistsError,
+    AccountNotFoundError,
+    NoWorkingAccountError,
+)
 
 
 class AccountManager:
@@ -26,10 +30,10 @@ class AccountManager:
         if working_account is not None:
             self.set_working_account(working_account)
 
-        if watched_accounts is not None:
-            self.add_tracked_account(*watched_accounts)
+        if watched_accounts:
+            self.watched.add(*watched_accounts)
 
-        if known_accounts is not None:
+        if known_accounts:
             self.known.add(*known_accounts)
 
     @property
@@ -172,6 +176,33 @@ class AccountManager:
             self._set_watched_account_as_working(new_working_account)
 
     def add_tracked_account(self, *to_add: str | Account) -> None:
+        """
+        Add accounts to the tracked (working + watched) accounts.
+
+        When there's no working account, the first account from the list will be set as working account.
+
+        Args:
+        ----
+            to_add: Accounts to add.
+
+        Raises:
+        ------
+            AccountAlreadyExistsError: If any of the accounts already exists in tracked accounts
+                (either as working or watched).
+        """
+        if not to_add:
+            return
+
+        if not self.has_working_account:
+            first_account_to_add = to_add[0]
+            self.set_working_account(first_account_to_add)
+            to_add = to_add[1:]
+
+        # raise AccountAlreadyExistsError if any of the accounts is already a working account
+        for account in to_add:
+            if self.is_account_working(account):
+                raise AccountAlreadyExistsError(Account.ensure_account_name(account), "WorkingAccount")
+
         self.watched.add(*to_add)
 
     def remove_tracked_account(self, *to_remove: str | Account) -> None:
