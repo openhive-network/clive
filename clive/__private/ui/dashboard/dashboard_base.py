@@ -135,7 +135,7 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
         self,
         account: TrackedAccount,
         activity_type: Literal["liquid", "savings"],
-        asset_type: Literal["hive", "hbd"],
+        asset_type: type[Asset.LiquidT],
         classes: str | None = None,
         variant: CliveButtonVariant = "primary",
     ) -> None:
@@ -158,8 +158,13 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
             self.tooltip = f"Choose liquid operation to perform as {self._account.name}"
 
     def _update_asset_value(self) -> str:
-        asset_search_pattern = f"{self._asset_type}_{self._activity_type}"
-        return Asset.pretty_amount(getattr(self._account.data, asset_search_pattern))
+        asset_value = self._get_account_asset_value()
+        return Asset.pretty_amount(asset_value)
+
+    def _get_account_asset_value(self) -> Asset.LiquidT:
+        asset_name = Asset.get_symbol(self._asset_type).lower()
+        activity_type_to_search = "savings" if self._activity_type == "savings" else "balance"
+        return getattr(self._account.data, f"{asset_name}_{activity_type_to_search}")  # type: ignore[no-any-return]
 
     @on(OneLineButton.Pressed, ".balance-button")
     async def push_activity_screen(self) -> None:
@@ -172,9 +177,7 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
             from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 
             _auto_switch_working_account()
-            await self.app.push_screen(
-                Savings("from-savings", "transfer-tab", hive_default_selected=self._asset_type == "hive")
-            )
+            await self.app.push_screen(Savings("transfer-tab", "from-savings", self._asset_type))
             return
 
         await self.app.push_screen(LiquidNavigationScreen(self._account, asset_type=self._asset_type))
@@ -186,11 +189,11 @@ class ActivityStats(TrackedAccountReferencingWidget):
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield ActivityStatsButton(self._account, "liquid", "hive", variant="grey-darken")
-        yield ActivityStatsButton(self._account, "savings", "hive", variant="grey-lighten")
+        yield ActivityStatsButton(self._account, "liquid", Asset.Hive, variant="grey-darken")
+        yield ActivityStatsButton(self._account, "savings", Asset.Hive, variant="grey-lighten")
         yield Static("HBD", classes="token token-variant")
-        yield ActivityStatsButton(self._account, "liquid", "hbd", variant="grey-lighten")
-        yield ActivityStatsButton(self._account, "savings", "hbd", variant="grey-darken")
+        yield ActivityStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-lighten")
+        yield ActivityStatsButton(self._account, "savings", Asset.Hbd, variant="grey-darken")
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
