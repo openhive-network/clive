@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal, cast
 
 from textual import events, on
-from textual.containers import Center, Container, Horizontal
+from textual.containers import Horizontal
 from textual.message import Message
 from textual.reactive import var
 from textual.widgets import Header, Static
@@ -214,6 +214,14 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
         await self.app.push_screen(SetNodeAddress())
 
 
+class RightPart(Horizontal):
+    """Right part of the header or expandable."""
+
+
+class LeftPart(Horizontal):
+    """Left part of the header or expandable."""
+
+
 class CliveHeader(Header, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
@@ -251,30 +259,32 @@ class CliveHeader(Header, CliveWidget):
         yield HeaderIcon()
         with Horizontal(id="bar"):
             if not self.world.is_in_onboarding_mode:
-                yield DynamicLabel(
-                    obj_to_watch=self.world,
-                    attribute_name="profile",
-                    callback=self.__get_profile_name,
-                    id_="profile-name",
-                )
-                yield Static("/", id="separator")
-                yield WorkingAccountButton()
-                yield AlarmDisplay()
-                with Center():
-                    yield ModeIcon()
-            with Container(id="node-status-container"):
+                with LeftPart():
+                    yield DynamicLabel(
+                        obj_to_watch=self.world,
+                        attribute_name="profile",
+                        callback=self.__get_profile_name,
+                        id_="profile-name",
+                    )
+                    yield Static("/", id="separator")
+                    yield WorkingAccountButton()
+                    yield AlarmDisplay()
+                yield ModeIcon()
+            with RightPart():
                 yield NodeStatus()
 
         with Horizontal(id="expandable"):
-            yield DynamicPropertiesClock()
+            with LeftPart():
+                yield DynamicPropertiesClock()
             yield self._header_title
-            yield DynamicLabel(
-                obj_to_watch=self.world,
-                attribute_name="node",
-                callback=self.__get_node_address,
-                id_="node-address-label",
-            )
-            yield self.__node_version
+            with RightPart():
+                yield DynamicLabel(
+                    obj_to_watch=self.world,
+                    attribute_name="node",
+                    callback=self.__get_node_address,
+                    id_="node-address-label",
+                )
+                yield self.__node_version
 
     @on(ModeIcon.WalletUnlocked)
     def change_state_to_unlocked(self) -> None:

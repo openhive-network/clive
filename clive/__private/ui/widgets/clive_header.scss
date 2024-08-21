@@ -4,9 +4,39 @@ CliveHeader {
   box-sizing: content-box;
   border-bottom: inner $error-darken-1;
 
+  &.-unlocked {
+    border-bottom: inner $success;
+  }
+
   HeaderIcon {
     content-align: center middle;
     width: auto;
+  }
+
+  #bar {
+    background: $panel;
+    height: 1;
+  }
+
+  LeftPart {
+    #profile-name {
+      color: $accent;
+    }
+
+    #separator {
+      margin-left: 1;
+      width: auto;
+    }
+
+    WorkingAccountButton {
+      OneLineButton {
+        min-width: 5;
+      }
+    }
+
+    DynamicPropertiesClock {
+      width: auto;
+    }
   }
 
   HeaderTitle {
@@ -14,58 +44,25 @@ CliveHeader {
     height: 1;
   }
 
-  #profile-name {
-    color: $accent;
-  }
-
-  #separator {
-    margin-left: 1;
-    width: auto;
-  }
-
-  WorkingAccountButton {
-    OneLineButton {
-      min-width: 5;
-    }
-  }
-
-  Center {
-    width: 2fr;
-    height: auto;
-  }
-
-  #node-status-container {
+  RightPart {
     align: right middle;
-  }
 
-  NodeStatus {
-    margin-right: 1;
+    NodeStatus {
+      margin-right: 1;
 
-    OneLineButton {
-      min-width: 6;
+      OneLineButton {
+        min-width: 6;
+      }
+    }
+
+    #node-type {
+      margin-right: 1;
+      margin-left: 1;
+      color: $success-header-color;
+
+      &.-not-mainnet {
+        color: $warning-lighten-2;
+      }
     }
   }
-
-  DynamicPropertiesClock {
-    width: auto;
-  }
-
-  #node-type {
-    margin-right: 1;
-    margin-left: 1;
-    color: $success-header-color;
-
-    &.-not-mainnet {
-      color: $warning-lighten-2;
-    }
-  }
-
-  #bar {
-    background: $panel;
-    height: 1;
-  }
-}
-
-CliveHeader.-unlocked {
-  border-bottom: inner $success;
 }
