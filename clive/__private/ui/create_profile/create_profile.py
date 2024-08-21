@@ -11,8 +11,8 @@ from textual.widgets import Static
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
+from clive.__private.core.contextual import Contextual
 from clive.__private.core.profile import Profile
-from clive.__private.storage.contextual import Contextual
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.shared.form_screen import FormScreen

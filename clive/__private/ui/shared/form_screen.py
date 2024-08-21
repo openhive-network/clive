@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
-from clive.__private.storage.contextual import ContextT, Contextual
+from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.exceptions import FormValidationError
 
