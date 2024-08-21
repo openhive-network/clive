@@ -348,6 +348,7 @@ class Node(BaseNode):
         assert isinstance(
             response_model, JSONRPCResult
         ), f"Response  model is not JSONRPCResult, but {type(response_model)}"
+        self.cached._set_online()
         return response_model.result
 
     @property
