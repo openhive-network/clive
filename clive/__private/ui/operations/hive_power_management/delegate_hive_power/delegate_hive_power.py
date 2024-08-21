@@ -7,6 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.ensure_vests import ensure_vests
+from clive.__private.models import Asset
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -29,7 +30,6 @@ from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmoun
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
-from clive.models import Asset
 from schemas.operations import DelegateVestingSharesOperation
 
 if TYPE_CHECKING:
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.models.aliased import VestingDelegation
+    from clive.__private.models.aliased import VestingDelegation
 
 
 class PlaceTaker(Static):

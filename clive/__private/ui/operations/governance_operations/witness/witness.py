@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.models import Operation
+    from clive.__private.models import Operation
 
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
 

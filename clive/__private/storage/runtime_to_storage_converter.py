@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
-    from clive.models.aliased import OperationRepresentation
+    from clive.__private.models.aliased import OperationRepresentation
 
 
 class RuntimeToStorageConverter:

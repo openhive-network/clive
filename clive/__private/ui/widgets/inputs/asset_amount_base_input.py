@@ -7,12 +7,12 @@ from textual import on
 from textual.containers import Horizontal, Vertical
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.models import Asset
 from clive.__private.ui.widgets.currency_selector.currency_selector_base import CurrencySelectorBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
 )
 from clive.__private.validators.asset_amount_validator import AssetAmountValidator
-from clive.models import Asset
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

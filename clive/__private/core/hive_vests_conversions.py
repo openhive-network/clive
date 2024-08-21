@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
-    from clive.models.aliased import DynamicGlobalProperties
+    from clive.__private.models.aliased import DynamicGlobalProperties
 
 
 def vests_to_hive(amount: int | Asset.Vests, gdpo: DynamicGlobalProperties) -> Asset.Hive:

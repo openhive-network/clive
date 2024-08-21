@@ -32,7 +32,7 @@ from clive.__private.core.formatters.data_labels import (
     VEST_HIVE_RATIO_LABEL,
 )
 from clive.__private.core.iwax import calculate_current_inflation_rate, calculate_hp_apr, calculate_witness_votes_hp
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from datetime import timedelta
@@ -43,7 +43,7 @@ if TYPE_CHECKING:
         HpAPRProtocol,
         VestsToHpProtocol,
     )
-    from clive.models.aliased import CurrentPriceFeed, HbdExchangeRate, OperationBaseClass
+    from clive.__private.models.aliased import CurrentPriceFeed, HbdExchangeRate, OperationBaseClass
 
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:

@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile import Profile
     from clive.__private.core.url import Url
-    from clive.models.aliased import Config, DynamicGlobalProperties, Version
+    from clive.__private.models.aliased import Config, DynamicGlobalProperties, Version
 
 
 class BatchRequestError(CliveError):

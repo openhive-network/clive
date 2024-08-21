@@ -9,17 +9,17 @@ from clive.__private.core.communication import CustomJSONEncoder
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
+from clive.__private.models import Asset, Transaction
+from clive.__private.models.asset import UnknownAssetTypeError
 from clive.exceptions import CliveError
-from clive.models import Asset, Transaction
-from clive.models.asset import UnknownAssetTypeError
 from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
-    from clive.models import Operation
-    from clive.models.aliased import CurrentPriceFeed
+    from clive.__private.models import Operation
+    from clive.__private.models.aliased import CurrentPriceFeed
 
 
 class HpAPRProtocol(Protocol):

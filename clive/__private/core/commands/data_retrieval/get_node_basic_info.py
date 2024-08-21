@@ -7,7 +7,7 @@ from clive.__private.core.commands.abc.command_data_retrieval import CommandData
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
-    from clive.models.aliased import Config, DynamicGlobalProperties, Version
+    from clive.__private.models.aliased import Config, DynamicGlobalProperties, Version
 
 
 @dataclass

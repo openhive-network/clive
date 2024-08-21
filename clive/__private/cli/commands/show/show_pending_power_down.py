@@ -15,10 +15,10 @@ from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_hive_power,
 )
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
-    from clive.models.hp_vests_balance import HpVestsBalance
+    from clive.__private.models import HpVestsBalance
 
 
 @dataclass(kw_only=True)

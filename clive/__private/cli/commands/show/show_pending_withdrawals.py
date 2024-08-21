@@ -9,11 +9,11 @@ from rich.table import Table
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.styling import colorize_content_not_available
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.models.aliased import SavingsWithdrawals
+    from clive.__private.models.aliased import SavingsWithdrawals
 
 
 @dataclass(kw_only=True)

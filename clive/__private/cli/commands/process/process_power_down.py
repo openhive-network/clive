@@ -6,7 +6,7 @@ from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import PowerDownInProgressError
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
 from clive.__private.core.ensure_vests import ensure_vests_async
-from clive.models.asset import Asset
+from clive.__private.models.asset import Asset
 from schemas.operations import WithdrawVestingOperation
 
 

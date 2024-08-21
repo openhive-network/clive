@@ -11,8 +11,8 @@ from clive.__private.core.decimal_conventer import (
     DecimalConverter,
     DecimalConvertible,
 )
+from clive.__private.models.base import CliveBaseModel
 from clive.exceptions import CliveError
-from clive.models.base import CliveBaseModel
 from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 
 AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)

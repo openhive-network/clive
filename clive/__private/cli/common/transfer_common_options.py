@@ -6,7 +6,7 @@ from clive.__private.cli.common.common_options_base import CommonOptionsBase
 from clive.__private.cli.common.options import liquid_amount_option, memo_value_option
 
 if TYPE_CHECKING:
-    from clive.models import Asset
+    from clive.__private.models import Asset
 
 
 @dataclass(kw_only=True)

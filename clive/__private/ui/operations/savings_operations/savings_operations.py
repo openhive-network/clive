@@ -8,6 +8,7 @@ from textual.widgets import Button, Label, RadioSet, Static, TabPane
 
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
 from clive.__private.core.percent_conversions import hive_percent_to_percent
+from clive.__private.models import Asset
 from clive.__private.ui.data_providers.savings_data_provider import SavingsDataProvider
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -42,7 +43,6 @@ from clive.__private.ui.widgets.section import Section
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.exceptions import RequestIdError
-from clive.models import Asset
 from schemas.operations import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.models.aliased import SavingsWithdrawals
+    from clive.__private.models.aliased import SavingsWithdrawals
 
 
 TransferType = Literal["from-savings", "to-savings"]

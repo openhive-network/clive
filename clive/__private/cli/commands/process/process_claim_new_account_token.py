@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.constants.node import HIVE_FEE_TO_USE_RC_IN_CLAIM_ACCOUNT_TOKEN_OPERATION
-from clive.models import Asset
+from clive.__private.models import Asset
 from schemas.operations import ClaimAccountOperation
 
 

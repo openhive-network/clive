@@ -18,8 +18,8 @@ from clive.__private.core.ensure_transaction import TransactionConvertibleType
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.models import Transaction
 from clive.__private.validators.path_validator import PathValidator
-from clive.models import Transaction
 
 
 @dataclass(kw_only=True)

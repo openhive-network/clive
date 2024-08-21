@@ -8,12 +8,12 @@ from textual.containers import Center, Vertical
 from textual.screen import ModalScreen
 
 from clive.__private.core.accounts.accounts import Account
+from clive.__private.models import Asset
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations import HivePowerManagement, Savings, TransferToAccount
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section import Section
-from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

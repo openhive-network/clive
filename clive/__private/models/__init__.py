@@ -15,6 +15,7 @@ if not is_tab_completion_active():
         VirtualOperationRepresentationType,
     )
     from .asset import Asset
+    from .hp_vests_balance import HpVestsBalance
     from .transaction import Transaction, TransactionWithHash
 
     __all__ = [
@@ -29,6 +30,7 @@ if not is_tab_completion_active():
         "VirtualOperationRepresentationType",
         "VirtualOperationRepresentationType",
         "Asset",
+        "HpVestsBalance",
         "Transaction",
         "TransactionWithHash",
     ]

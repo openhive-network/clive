@@ -7,7 +7,7 @@ from clive.__private.cli.common import OperationCommonOptions, options
 from clive.__private.cli.common.parsers import hive_asset
 
 if TYPE_CHECKING:
-    from clive.models import Asset
+    from clive.__private.models import Asset
 
 power_up = CliveTyper(name="power-up", help="Perform power-up by sending transfer_to_vesting_operation.")
 

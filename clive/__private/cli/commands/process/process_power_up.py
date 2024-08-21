@@ -7,7 +7,7 @@ from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from schemas.operations import TransferToVestingOperation
 
 if TYPE_CHECKING:
-    from clive.models.asset import Asset
+    from clive.__private.models.asset import Asset
 
 
 @dataclass(kw_only=True)

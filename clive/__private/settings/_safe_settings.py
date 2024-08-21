@@ -228,7 +228,7 @@ class SafeSettings:
 
         def _get_node_chain_id(self) -> str | None:
             from clive.__private.core.validate_schema_field import is_schema_field_valid
-            from clive.models.aliased import ChainIdSchema
+            from clive.__private.models.aliased import ChainIdSchema
 
             setting_name = NODE_CHAIN_ID
             value = self._parent._get_value_from_settings(setting_name, "")

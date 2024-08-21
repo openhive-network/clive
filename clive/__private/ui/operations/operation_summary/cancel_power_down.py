@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
 from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.models import Asset
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
-from clive.models import Asset
 from schemas.operations import WithdrawVestingOperation
 
 if TYPE_CHECKING:
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.models.hp_vests_balance import HpVestsBalance
+    from clive.__private.models import HpVestsBalance
 
 
 class CancelPowerDown(OperationSummary):

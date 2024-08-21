@@ -4,13 +4,13 @@ from abc import abstractmethod
 from typing import Generic
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.clive_select import CliveSelect
-from clive.models.asset import (
+from clive.__private.models.asset import (
     AssetAmount,
     AssetFactory,
     AssetFactoryHolder,
     AssetT,
 )
+from clive.__private.ui.widgets.clive_select import CliveSelect
 
 
 class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[AssetT], AbstractClassMessagePump):

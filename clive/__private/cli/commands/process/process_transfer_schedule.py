@@ -19,8 +19,8 @@ from clive.__private.core.constants.node import (
     VALUE_TO_REMOVE_SCHEDULED_TRANSFER,
 )
 from clive.__private.core.date_utils import timedelta_to_int_hours
-from clive.models import Asset
-from clive.models.aliased import (
+from clive.__private.models import Asset
+from clive.__private.models.aliased import (
     RecurrentTransferOperation,
     RecurrentTransferPairIdOperationExtension,
     RecurrentTransferPairIdRepresentation,

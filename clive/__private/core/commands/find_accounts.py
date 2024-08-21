@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.models.aliased import FindAccounts as SchemasFindAccounts
-from clive.models.aliased import SchemasAccount
+from clive.__private.models.aliased import FindAccounts as SchemasFindAccounts
+from clive.__private.models.aliased import SchemasAccount
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node

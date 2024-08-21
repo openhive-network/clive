@@ -12,7 +12,7 @@ from clive.__private.core.constants.node import (
     VESTS_TO_REMOVE_DELEGATION,
 )
 from clive.__private.core.formatters.humanize import humanize_timedelta
-from clive.models.asset import Asset
+from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:
     from datetime import timedelta

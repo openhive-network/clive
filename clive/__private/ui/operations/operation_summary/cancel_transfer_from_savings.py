@@ -10,7 +10,7 @@ from schemas.operations import CancelTransferFromSavingsOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models.aliased import SavingsWithdrawals
+    from clive.__private.models.aliased import SavingsWithdrawals
 
 
 class CancelTransferFromSavings(OperationSummary):

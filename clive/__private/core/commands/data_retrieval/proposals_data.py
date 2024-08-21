@@ -7,14 +7,14 @@ from typing_extensions import TypeAliasType
 
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_votes_with_suffix
-from clive.models import Asset
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     import datetime
 
     from clive.__private.core.node import Node
     from clive.__private.core.node.api.database_api import DatabaseApi
-    from clive.models.aliased import DynamicGlobalProperties, ProposalSchema, ProposalsList, ProposalVotes
+    from clive.__private.models.aliased import DynamicGlobalProperties, ProposalSchema, ProposalsList, ProposalVotes
 
 
 @dataclass
