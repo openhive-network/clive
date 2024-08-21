@@ -122,7 +122,7 @@ class _BatchNode(BaseNode):
 
         except CommunicationError as error:
             if not error.is_response_available:
-                self._node.cached._online = False
+                self._node.cached._set_offline()
 
             self.__handle_evaluation_communication_error(error)
         else:
@@ -130,7 +130,7 @@ class _BatchNode(BaseNode):
             for response in responses:
                 request_id = int(response["id"])
                 self.__get_batch_delayed_result(request_id)._set_response(**response)
-            self._node.cached._online = True
+            self._node.cached._set_online()
 
     def __handle_evaluation_communication_error(self, error: CommunicationError) -> None:
         responses_from_error = error.get_response()
@@ -213,8 +213,8 @@ class Node(BaseNode):
     class CachedData:
         _node: Node
         _basic_info: NodeBasicInfoData | None = field(init=False, default=None)
-        _lock: asyncio.Lock = field(init=False, default_factory=asyncio.Lock)
         _online: bool | None = None
+        _lock: asyncio.Lock = field(init=False, default_factory=asyncio.Lock)
 
         @property
         async def basic_info(self) -> NodeBasicInfoData:
@@ -235,7 +235,13 @@ class Node(BaseNode):
             return (await self.basic_info).dynamic_global_properties
 
         @property
-        def online(self) -> bool | None:
+        async def online(self) -> bool:
+            await self._ensure_basic_info()
+            assert self._online is not None, "online is guaranteed to be set here"
+            return self._online
+
+        @property
+        def online_or_none(self) -> bool | None:
             return self._online
 
         @property
@@ -273,6 +279,12 @@ class Node(BaseNode):
                 return
 
             set_data()
+
+        def _set_online(self) -> None:
+            self._online = True
+
+        def _set_offline(self) -> None:
+            self._online = False
 
         async def _ensure_basic_info(self) -> None:
             async with self._lock:
@@ -329,7 +341,7 @@ class Node(BaseNode):
             data = await (await self.__communication.arequest(address, data=serialized_request)).json()
         except CommunicationError as error:
             if not error.is_response_available:
-                self.cached._online = False
+                self.cached._set_offline()
             raise
 
         response_model = get_response_model(expect_type, **data)
