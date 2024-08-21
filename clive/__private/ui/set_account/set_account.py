@@ -68,7 +68,7 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
         if self.__is_working_account():
             self.context.accounts.set_working_account(account_name)
         else:
-            self.context.accounts.add_tracked_account(account_name)
+            self.context.accounts.watched.add(account_name)
 
     def _remove_invalid_known_accounts(self, account_name_to_keep: str) -> None:
         """Remove all known accounts except the one that should be kept."""
