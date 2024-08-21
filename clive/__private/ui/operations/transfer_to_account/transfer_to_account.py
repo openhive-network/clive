@@ -15,7 +15,7 @@ from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAs
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.section import SectionScrollable
 from clive.models import Asset
-from clive.models.asset import AssetAmount, AssetFactoryHolder
+from clive.models.asset import AssetAmount
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
@@ -35,17 +35,17 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self, *, hive_default_selected: bool = False) -> None:
+    def __init__(self, *, default_asset_selected: type[Asset.LiquidT] = Asset.Hbd) -> None:
         super().__init__()
 
         self._to_input = AccountNameInput("To")
         self._amount_input = LiquidAssetAmountInput()
-        if hive_default_selected:
-            self._amount_input._currency_selector._value = AssetFactoryHolder(
-                asset_cls=Asset.Hive, asset_factory=Asset.hive
-            )
-
         self._memo_input = MemoInput(include_title_in_placeholder_when_blurred=True)
+        self._default_asset_selected = default_asset_selected
+
+    def on_mount(self) -> None:
+        self._amount_input.select_asset(self._default_asset_selected)
+        self._to_input.clear_validation()
 
     @property
     def from_account(self) -> str:

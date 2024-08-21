@@ -43,7 +43,6 @@ from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.__private.ui.widgets.tracked_account_referencing_widget import TrackedAccountReferencingWidget
 from clive.exceptions import RequestIdError
 from clive.models import Asset
-from clive.models.asset import AssetFactoryHolder
 from schemas.operations import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
@@ -203,15 +202,11 @@ class PendingTransfersPane(TabPane, CliveWidget):
 class SavingsTransfers(TabPane, OperationActionBindings):
     TITLE: Final[str] = "transfer"
 
-    def __init__(self, default_transfer_type: TransferType, *, hive_default_selected: bool = False) -> None:
+    def __init__(self, default_transfer_type: TransferType, default_asset_selected: type[Asset.LiquidT]) -> None:
         super().__init__(title=self.TITLE, id="transfer-tab")
 
+        self._default_asset_selected = default_asset_selected
         self._amount_input = LiquidAssetAmountInput()
-
-        if hive_default_selected:
-            self._amount_input._currency_selector._value = AssetFactoryHolder(
-                asset_cls=Asset.Hive, asset_factory=Asset.hive
-            )
         self._memo_input = MemoInput()
         self._to_account_input = AccountNameInput("To", value=self.default_receiver)
 
@@ -224,6 +219,9 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
         self._transfer_time_reminder = Notice("transfer from savings will take 3 days")
         self._transfer_time_reminder.visible = default_transfer_type == "from-savings"
+
+    def on_mount(self) -> None:
+        self._amount_input.select_asset(self._default_asset_selected)
 
     @property
     def default_receiver(self) -> str:
@@ -299,15 +297,14 @@ class Savings(OperationBaseScreen, CartBinding):
 
     def __init__(
         self,
-        default_transfer_type: TransferType = "to-savings",
         initial_tab: SavingsTabType = "pending-transfers-tab",
-        *,
-        hive_default_selected: bool = False,
+        default_transfer_type: TransferType = "to-savings",
+        default_asset_selected: type[Asset.LiquidT] = Asset.Hbd,
     ) -> None:
         super().__init__()
         self._default_transfer_type = default_transfer_type
         self._initial_tab = initial_tab
-        self._hive_default_selected = hive_default_selected
+        self._default_asset_selected = default_asset_selected
 
     def create_left_panel(self) -> ComposeResult:
         yield LocationIndicator("Savings operations")
@@ -318,4 +315,4 @@ class Savings(OperationBaseScreen, CartBinding):
             yield SavingsAPR(provider)
             with CliveTabbedContent(initial=self._initial_tab):
                 yield PendingTransfersPane()
-                yield SavingsTransfers(self._default_transfer_type, hive_default_selected=self._hive_default_selected)
+                yield SavingsTransfers(self._default_transfer_type, default_asset_selected=self._default_asset_selected)

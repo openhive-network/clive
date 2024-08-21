@@ -42,6 +42,10 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
         """Return selectable item for given asset."""
         return self._selectable[asset]
 
+    def select_asset(self, asset: str) -> None:
+        """Select asset by name."""
+        self.value = self.get_selectable(asset)
+
     @property
     def asset_cls(self) -> type[AssetT]:
         """Returns selected asset type."""
