@@ -39,8 +39,8 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widget import Widget
 
+    from clive.__private.core.commands.data_retrieval.update_node_data import Manabar
     from clive.__private.core.profile import Profile
-    from clive.__private.storage.mock_database import Manabar
     from clive.__private.ui.widgets.buttons.clive_button import CliveButtonVariant
 
 

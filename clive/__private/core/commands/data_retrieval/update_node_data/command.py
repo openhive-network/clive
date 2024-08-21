@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
 from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
     AccountProcessedData,
     AccountSanitizedData,
@@ -24,8 +25,6 @@ from clive.__private.models.aliased import (
     DynamicGlobalProperties,
 )
 from clive.__private.models.disabled_api import DisabledAPI
-from clive.__private.storage import mock_database
-from clive.__private.storage.mock_database import NodeData
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
@@ -39,7 +38,7 @@ if TYPE_CHECKING:
     from schemas.apis.database_api import (
         FindAccounts,
     )
-    from schemas.fields.compound import Manabar
+    from schemas.fields.compound import Manabar as SchemasManabar
 
 
 @dataclass
@@ -156,7 +155,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             + int(account.received_vesting_shares.amount)
         )
 
-    def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: Manabar) -> mock_database.Manabar:
+    def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: SchemasManabar) -> Manabar:
         head_block_time = gdpo.time
         head_block_timestamp = int(head_block_time.timestamp())
         last_update_timestamp = manabar.last_update_time
@@ -178,7 +177,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             last_update_time=last_update_timestamp,
         )
 
-        return mock_database.Manabar(
+        return Manabar(
             value=mana_value,
             max_value=max_mana_value,
             full_regeneration=full_regeneration,

@@ -11,7 +11,7 @@ from clive.__private.models.aliased import AccountName
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from clive.__private.storage.mock_database import NodeData
+    from clive.__private.core.commands.data_retrieval.update_node_data import NodeData
 
 
 class AccountError(CliveError):
