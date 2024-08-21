@@ -2,30 +2,16 @@ from __future__ import annotations
 
 import contextlib
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, Generic, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeVar
 
 from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount
-from clive.__private.core.accounts.exceptions import AccountNotFoundError
-from clive.exceptions import CliveError
+from clive.__private.core.accounts.exceptions import AccountAlreadyExistsError, AccountNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Iterator
 
 
 AccountT = TypeVar("AccountT", KnownAccount, WatchedAccount)
-
-
-class AccountContainerError(CliveError):
-    """Base class for errors related with account containers."""
-
-
-class AccountAlreadyExistsError(AccountContainerError):
-    """Raised when account already exists in the container."""
-
-    def __init__(self, account_name: str, container: AccountContainerBase[Any]) -> None:
-        super().__init__(f"Account {account_name} already exists in {type(container).__name__}.")
-        self.account_name = account_name
-        self.container = container
 
 
 class AccountContainerBase(ABC, Generic[AccountT]):
@@ -92,7 +78,7 @@ class AccountContainerBase(ABC, Generic[AccountT]):
             )
 
             if new_account in self._accounts:
-                raise AccountAlreadyExistsError(new_account.name, self)
+                raise AccountAlreadyExistsError(new_account.name, type(self).__name__)
 
             self._accounts.add(new_account)
 

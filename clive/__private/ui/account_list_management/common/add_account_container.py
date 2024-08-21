@@ -119,7 +119,7 @@ class AddAccountContainer(Horizontal, CliveWidget):
             return
 
         if self._accounts_type == "tracked_accounts":
-            self.profile_data.accounts.watched.add(account_name)
+            self.profile_data.accounts.add_tracked_account(account_name)
         else:
             self.profile_data.accounts.known.add(account_name)
         self.app.trigger_profile_data_watchers()
