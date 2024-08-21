@@ -117,6 +117,10 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
     def selected_asset_precision(self) -> int:
         return Asset.get_precision(self.selected_asset_type)
 
+    def select_asset(self, asset_type: type[AssetInputT]) -> None:
+        with self.prevent(CurrencySelectorBase.Changed):
+            self._currency_selector.select_asset(Asset.get_symbol(asset_type))
+
     def compose(self) -> ComposeResult:
         with Vertical():
             with Horizontal():

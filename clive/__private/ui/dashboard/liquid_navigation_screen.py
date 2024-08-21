@@ -18,6 +18,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.accounts.accounts import Account
+    from clive.models import Asset
 
 
 def auto_switch_working_account(account: Account) -> None:
@@ -44,7 +45,7 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [Binding("escape", "cancel", "Quit")]
 
-    def __init__(self, account: Account, asset_type: Literal["hive", "hbd"]) -> None:
+    def __init__(self, account: Account, asset_type: type[Asset.LiquidT]) -> None:
         super().__init__()
         self._account = account
         self._asset_type = asset_type
@@ -65,13 +66,11 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
             case "transfer-to-account":
                 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
 
-                self.app.push_screen(TransferToAccount(hive_default_selected=self._asset_type == "hive"))
+                self.app.push_screen(TransferToAccount(default_asset_selected=self._asset_type))
             case "transfer-to-savings":
                 from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 
-                self.app.push_screen(
-                    Savings(initial_tab="transfer-tab", hive_default_selected=self._asset_type == "hive")
-                )
+                self.app.push_screen(Savings(initial_tab="transfer-tab", default_asset_selected=self._asset_type))
             case _:
                 from clive.__private.ui.operations.hive_power_management.hive_power_management import (
                     HivePowerManagement,
