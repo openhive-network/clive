@@ -18,8 +18,9 @@ from clive.__private.core.iwax import (
 from clive.__private.models.aliased import (
     DynamicGlobalProperties,
 )
+from clive.__private.models.disabled_api import DisabledAPI
 from clive.__private.storage import mock_database
-from clive.__private.storage.mock_database import DisabledAPI, NodeData
+from clive.__private.storage.mock_database import NodeData
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:

@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
-from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
+from clive.__private.models.disabled_api import DisabledAPI
 
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
@@ -31,15 +31,6 @@ class Manabar:
         raw_max_value = Decimal(self.max_value.amount)
         percentage = raw_value * 100 / raw_max_value
         return DecimalConverter.round_to_precision(percentage, precision=precision)
-
-
-@dataclass(kw_only=True)
-class DisabledAPI:
-    missing_api: str
-
-    @property
-    def missing_api_text(self) -> str:
-        return f"{MISSING_API_LABEL} (missing {self.missing_api})"
 
 
 @dataclass(kw_only=True)
