@@ -4,7 +4,7 @@ from typing import Final
 
 import pytest
 
-from clive.__private.core.commands.data_retrieval.update_node_data import SuppressNotExistingApis
+from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
 from clive.exceptions import CommunicationError
 
 URL: Final[str] = "http://doesnt_matter.com"
