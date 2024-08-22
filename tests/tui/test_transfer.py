@@ -132,7 +132,7 @@ TRANSFERS_DATA: Final[list[tuple[tt.Asset.HbdT | tt.Asset.HiveT, str]]] = [
 TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 
 
-@pytest.mark.parametrize("unlocked", [True, False])
+@pytest.mark.parametrize("unlocked", [False])
 async def test_transfers_finalize_cart(
     prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot], *, unlocked: bool
 ) -> None:

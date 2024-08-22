@@ -11,6 +11,7 @@ from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
+from clive.__private.logger import logger
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
@@ -255,13 +256,17 @@ class CliveHeader(Header, CliveWidget):
 
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
-        if not self.world.is_in_onboarding_mode:
+        is_in_onboarding_mode = self.world.is_in_onboarding_mode
+        logger.warning(f"scheduling watcher. is_in_onboarding_mode: {is_in_onboarding_mode}")
+        if not is_in_onboarding_mode:
             self.watch(self.world, "profile", self._update_alarm_display_showing)
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
-            if not self.world.is_in_onboarding_mode:
+            is_in_onboarding_mode = self.world.is_in_onboarding_mode
+            logger.warning(f"compose happening. is_in_onboarding_more: {is_in_onboarding_mode}")
+            if not is_in_onboarding_mode:
                 with LeftPart():
                     yield DynamicLabel(
                         obj_to_watch=self.world,
@@ -311,6 +316,13 @@ class CliveHeader(Header, CliveWidget):
 
     def _update_alarm_display_showing(self, profile: Profile) -> None:
         """Use to mount/remove the alarm display depends on the current working account."""
+        logger.warning(f"watcher running. in {self.screen}")
+        has_left_part = bool(self.query("#bar LeftPart"))
+        logger.warning(f"has_left_part: {has_left_part}")
+        if not has_left_part:
+            logger.warning(f"is_in_onboarding_mode: {self.world.is_in_onboarding_mode}")
+            logger.warning(f"header: {self.screen.query('*').nodes}")
+
         left_part = self.query_one("#bar LeftPart", LeftPart)
 
         is_mounted = bool(self.query(AlarmDisplay))
