@@ -7,6 +7,7 @@ from textual.containers import Container
 from textual.reactive import var
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
+from clive.__private.core.accounts.exceptions import AccountAlreadyExistsError
 from clive.__private.core.clive_import import get_clive
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
@@ -152,7 +153,11 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
             None if self._is_no_working_account_selected(self._selected_account) else self._selected_account
         )
 
-        self.profile.accounts.switch_working_account(new_working_account)
+        try:
+            self.profile.accounts.switch_working_account(new_working_account)
+        except AccountAlreadyExistsError:
+            return
+
         self._perform_actions_after_accounts_modification()
 
     def _perform_actions_after_accounts_modification(self) -> None:

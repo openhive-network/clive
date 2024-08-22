@@ -159,13 +159,15 @@ class AccountManager:
         Raises:
         ------
             AccountNotFoundError: If given account wasn't found in watched accounts.
+            AccountAlreadyExistsError: If the given account is already a working account.
         """
 
         def is_given_account_already_working() -> bool:
             return new_working_account is not None and self.is_account_working(new_working_account)
 
         if is_given_account_already_working():
-            return
+            assert new_working_account is not None, "Shouldn't be None, it was checked already"
+            raise AccountAlreadyExistsError(Account.ensure_account_name(new_working_account), "WorkingAccount")
 
         if self.has_working_account:
             # we allow for switching from no working account to watched account
