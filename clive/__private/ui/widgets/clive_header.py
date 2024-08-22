@@ -61,10 +61,10 @@ class BlockDisplay(Horizontal, CliveWidget):
             "Block",
             obj_to_watch=self.world,
             attribute_name="node",
-            callback=self.__get_last_block,
+            callback=self._get_last_block,
         )
 
-    async def __get_last_block(self) -> str:
+    async def _get_last_block(self) -> str:
         gdpo = await self.node.cached.dynamic_global_properties_or_none
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
@@ -226,10 +226,10 @@ class CliveHeader(Header, CliveWidget):
     def __init__(self) -> None:
         self._header_title = HeaderTitle()
         super().__init__()
-        self.__node_version = DynamicLabel(
+        self._node_version = DynamicLabel(
             obj_to_watch=self.world,
             attribute_name="node",
-            callback=self.__get_node_version,
+            callback=self._get_node_version,
             id_="node-type",
         )
 
@@ -287,7 +287,7 @@ class CliveHeader(Header, CliveWidget):
         yield DynamicLabel(
             obj_to_watch=self.world,
             attribute_name="profile",
-            callback=self.__get_profile_name,
+            callback=self._get_profile_name,
             id_="profile-name",
         )
         yield Static("/", id="separator")
@@ -304,10 +304,10 @@ class CliveHeader(Header, CliveWidget):
         yield DynamicLabel(
             obj_to_watch=self.world,
             attribute_name="node",
-            callback=self.__get_node_address,
+            callback=self._get_node_address,
             id_="node-address-label",
         )
-        yield self.__node_version
+        yield self._node_version
 
     def _on_click(self, event: events.Click) -> None:  # type: ignore[override]
         """
@@ -336,14 +336,14 @@ class CliveHeader(Header, CliveWidget):
             left_part.query_one(AlarmDisplay).remove()
 
     @staticmethod
-    def __get_node_address(node: Node) -> str:
+    def _get_node_address(node: Node) -> str:
         return str(node.address)
 
     @staticmethod
-    def __get_profile_name(profile: Profile) -> str:
+    def _get_profile_name(profile: Profile) -> str:
         return profile.name
 
-    async def __get_node_version(self, node: Node) -> str:
+    async def _get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"
 
         try:
@@ -352,7 +352,7 @@ class CliveHeader(Header, CliveWidget):
             network_type = "no connection"
 
         if network_type == "mainnet":
-            self.__node_version.remove_class(class_to_switch)
+            self._node_version.remove_class(class_to_switch)
         else:
-            self.__node_version.add_class(class_to_switch)
+            self._node_version.add_class(class_to_switch)
         return f"({network_type})"
