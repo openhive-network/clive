@@ -255,6 +255,9 @@ class CliveHeader(Header, CliveWidget):
 
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
+        if not self.world.is_in_onboarding_mode:
+            self.watch(self.world, "profile", self._update_alarm_display_showing)
+
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
         with Horizontal(id="bar"):
@@ -305,6 +308,18 @@ class CliveHeader(Header, CliveWidget):
         We do not want behavior like that, so we had to override the `_on_click` method.
         """
         event.prevent_default()
+
+    def _update_alarm_display_showing(self, profile: Profile) -> None:
+        """Use to mount/remove the alarm display depends on the current working account."""
+        left_part = self.query_one("#bar LeftPart", LeftPart)
+
+        is_mounted = bool(self.query(AlarmDisplay))
+        has_working_account = profile.accounts.has_working_account
+
+        if has_working_account and not is_mounted:
+            left_part.mount(AlarmDisplay())
+        elif not has_working_account and is_mounted:
+            left_part.query_one(AlarmDisplay).remove()
 
     @staticmethod
     def __get_node_address(node: Node) -> str:
