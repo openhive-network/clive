@@ -101,6 +101,7 @@ class StorageToRuntimeConverter:
         if authorities_model is None:
             return None
         return AllAuthorities(
+            name=authorities_model.name,
             owner=self._authority_from_model(authorities_model.owner),
             active=self._authority_from_model(authorities_model.active),
             posting=self._authority_from_model(authorities_model.posting),

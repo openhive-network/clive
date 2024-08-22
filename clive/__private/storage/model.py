@@ -25,6 +25,7 @@ class AuthorityStorageModel(CliveBaseModel):
 
 
 class AllAuthoritiesStorageModel(CliveBaseModel):
+    name: str
     owner: AuthorityStorageModel
     active: AuthorityStorageModel
     posting: AuthorityStorageModel

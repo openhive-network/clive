@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
-from textual.widgets import Label, Select, Static
+from textual.widgets import Checkbox, Label, Select, Static
 
 from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.core.formatters import humanize
@@ -81,6 +81,23 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
         )
 
 
+class SelectAuthority(CliveWidget):
+    """Combobox for selecting the authority."""
+
+    def compose(self) -> ComposeResult:
+        tree = self.profile.accounts.working.authorities.create_authority_tree()
+        from textual.containers import VerticalScroll
+
+        from clive.__private.core.authority import RoleSignature
+
+        with VerticalScroll():
+            for item in tree:
+                if isinstance(item, RoleSignature.AccountAuth):
+                    yield Static(f"{item}")
+                else:
+                    yield Checkbox(f"{item}", value=True)
+
+
 class KeyHint(Label):
     """Hint for the key."""
 
@@ -101,7 +118,7 @@ class TransactionSummaryCommon(BaseScreen):
         self._transaction = transaction
         self.__transaction_metadata_container = TransactionMetadataContainer()
         self.__scrollable_part = ScrollablePartFocusable()
-        self._select_key = SelectKey()
+        self._select_key = SelectAuthority()
 
     @property
     def transaction(self) -> Transaction:
@@ -223,10 +240,7 @@ class TransactionSummaryCommon(BaseScreen):
         self.app.push_screen(SelectFileToSaveTransaction())
 
     def __get_key_to_sign(self) -> PublicKey:
-        try:
-            return self._select_key.value
-        except NoItemSelectedError as error:
-            raise NoItemSelectedError("No key was selected!") from error
+        raise NoItemSelectedError("No key was selected!")
 
     @staticmethod
     def __get_operation_representation_json(operation: Operation) -> str:

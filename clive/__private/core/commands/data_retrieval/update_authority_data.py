@@ -22,13 +22,14 @@ class InvalidAuthorityError(Exception):
 class UpdateAuthorityData(CommandDataRetrieval[AllAuthorities, AllAuthorities, AllAuthorities]):
     node: Node
     account: TrackedAccount
-    _depth: int = field(init=False)
+    _max_sig_check_depth: int = field(init=False)
 
     async def _execute(self) -> None:
         await super()._execute()
 
     async def _harvest_data_from_api(self) -> AllAuthorities:
-        self._depth = (await self.node.cached.config).HIVE_MAX_SIG_CHECK_DEPTH
+        config = await self.node.cached.config
+        self._max_sig_check_depth = config.HIVE_MAX_SIG_CHECK_DEPTH
         find_accounts_data = await self.node.api.database_api.find_accounts(accounts=[self.account.name])
         self._assert_account_names_matches_in_result([self.account.name], find_accounts_data)
 
@@ -37,6 +38,7 @@ class UpdateAuthorityData(CommandDataRetrieval[AllAuthorities, AllAuthorities, A
         posting_lut = await self._create_lut(find_accounts_data, "posting")
 
         return AllAuthorities(
+            name=find_accounts_data.accounts[0].name,
             owner=Authority.from_schemas_authority(find_accounts_data.accounts[0].owner),
             active=Authority.from_schemas_authority(find_accounts_data.accounts[0].active),
             posting=Authority.from_schemas_authority(find_accounts_data.accounts[0].posting),
@@ -73,7 +75,7 @@ class UpdateAuthorityData(CommandDataRetrieval[AllAuthorities, AllAuthorities, A
     ) -> dict[str, Authority]:
         next_level_authorities = self.get_next_level_authorities(find_accounts_data, authority_type)
         lut = next_level_authorities.copy()
-        for _ in range(self._depth):
+        for _ in range(self._max_sig_check_depth):
             next_level_account_names: list[str] = [
                 account_weight_tuple[0]
                 for auth in list(next_level_authorities.values())
