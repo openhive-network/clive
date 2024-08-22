@@ -6,6 +6,7 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Label, Select, Static
+from textual.widgets import Checkbox
 
 from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.core.formatters import humanize
@@ -81,6 +82,16 @@ class SelectKey(SafeSelect[PublicKey], CliveWidget):
         )
 
 
+class SelectAuthority(CliveWidget):
+    """Combobox for selecting the authority."""
+
+    def compose(self) -> ComposeResult:
+        from textual.containers import VerticalScroll
+        with VerticalScroll():
+            for key in self.profile.keys:
+                yield Checkbox(f"{key}")
+
+
 class KeyHint(Label):
     """Hint for the key."""
 
@@ -101,7 +112,7 @@ class TransactionSummaryCommon(BaseScreen):
         self._transaction = transaction
         self.__transaction_metadata_container = TransactionMetadataContainer()
         self.__scrollable_part = ScrollablePartFocusable()
-        self._select_key = SelectKey()
+        self._select_key = SelectAuthority()
 
     @property
     def transaction(self) -> Transaction:

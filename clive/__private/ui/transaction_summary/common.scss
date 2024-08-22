@@ -11,11 +11,17 @@ TransactionSummaryCommon {
 
   ActionsContainer {
     margin: 1;
-    height: 3;
+    height: 35;
   }
 
   SelectKey {
     max-width: 25%;
+  }
+
+  SelectAuthority {
+    margin: 1;
+    height: 15;
+    max-width: 75%;
   }
 
   KeyHint {
