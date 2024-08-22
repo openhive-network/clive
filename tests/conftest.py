@@ -20,6 +20,7 @@ from clive.__private.settings import settings
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
+from clive_local_tools.testnet_block_log import run_node
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
@@ -99,6 +100,14 @@ async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
     await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
     yield init_node
     init_node.close()
+
+
+@pytest.fixture()
+async def prepared_block_log_node(world: World) -> AsyncIterator[tt.RawNode]:
+    node = run_node()
+    await world.node.set_address(Url.parse(node.http_endpoint.as_string()))
+    yield node
+    node.close()
 
 
 @pytest.fixture()
