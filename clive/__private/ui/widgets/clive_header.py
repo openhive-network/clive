@@ -60,26 +60,26 @@ class DynamicPropertiesClock(Horizontal, CliveWidget):
     """A value that is used to trigger a re-rendering of the last update time."""
 
     def compose(self) -> ComposeResult:
-        self.set_interval(1, self.__trigger_last_update)
+        self.set_interval(1, self._trigger_last_update)
 
         yield TitledLabel(
             "Block",
             obj_to_watch=self.world,
             attribute_name="node",
-            callback=self.__get_last_block,
+            callback=self._get_last_block,
         )
 
-    async def __get_last_block(self) -> str:
+    async def _get_last_block(self) -> str:
         gdpo = await self.node.cached.dynamic_global_properties_or_none
         if gdpo is None:
             return NOT_AVAILABLE_LABEL
 
         block_num = gdpo.head_block_number
         block_time = gdpo.time.time()
-        self.__trigger_last_update()
+        self._trigger_last_update()
         return f"{block_num} ({block_time} UTC)"
 
-    def __trigger_last_update(self) -> None:
+    def _trigger_last_update(self) -> None:
         self.last_update_trigger = not self.last_update_trigger
 
 
@@ -228,10 +228,10 @@ class CliveHeader(Header, CliveWidget):
     def __init__(self) -> None:
         self._header_title = HeaderTitle()
         super().__init__()
-        self.__node_version = DynamicLabel(
+        self._node_version = DynamicLabel(
             obj_to_watch=self.world,
             attribute_name="node",
-            callback=self.__get_node_version,
+            callback=self._get_node_version,
             id_="node-type",
         )
         self._current_working_account = self.profile.accounts.working_or_none
@@ -266,7 +266,7 @@ class CliveHeader(Header, CliveWidget):
                     yield DynamicLabel(
                         obj_to_watch=self.world,
                         attribute_name="profile",
-                        callback=self.__get_profile_name,
+                        callback=self._get_profile_name,
                         id_="profile-name",
                     )
                     yield Static("/", id="separator")
@@ -284,10 +284,10 @@ class CliveHeader(Header, CliveWidget):
                 yield DynamicLabel(
                     obj_to_watch=self.world,
                     attribute_name="node",
-                    callback=self.__get_node_address,
+                    callback=self._get_node_address,
                     id_="node-address-label",
                 )
-                yield self.__node_version
+                yield self._node_version
 
     @on(ModeIcon.WalletUnlocked)
     def change_state_to_unlocked(self) -> None:
@@ -322,14 +322,14 @@ class CliveHeader(Header, CliveWidget):
             left_part.query_one(AlarmDisplay).remove()
 
     @staticmethod
-    def __get_node_address(node: Node) -> str:
+    def _get_node_address(node: Node) -> str:
         return str(node.address)
 
     @staticmethod
-    def __get_profile_name(profile: Profile) -> str:
+    def _get_profile_name(profile: Profile) -> str:
         return profile.name
 
-    async def __get_node_version(self, node: Node) -> str:
+    async def _get_node_version(self, node: Node) -> str:
         class_to_switch = "-not-mainnet"
 
         try:
@@ -338,7 +338,7 @@ class CliveHeader(Header, CliveWidget):
             network_type = "no connection"
 
         if network_type == "mainnet":
-            self.__node_version.remove_class(class_to_switch)
+            self._node_version.remove_class(class_to_switch)
         else:
-            self.__node_version.add_class(class_to_switch)
+            self._node_version.add_class(class_to_switch)
         return f"({network_type})"
