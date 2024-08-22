@@ -8,7 +8,7 @@ from textual.containers import Center, Vertical
 from textual.events import Click
 from textual.screen import ModalScreen
 
-from clive.__private.ui.app import Clive
+from clive.__private.core.accounts.accounts import Account
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -17,16 +17,14 @@ from clive.__private.ui.widgets.section import Section
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.core.accounts.accounts import Account
     from clive.models import Asset
 
 
-def auto_switch_working_account(account: Account) -> None:
-    app = Clive.app_instance()
-
-    if not app.world.profile.accounts.is_account_working(account):
-        app.world.profile.accounts.switch_working_account(account)
-        app.notify(f"Working account automatically switched to {account.name}")
+def auto_switch_working_account(widget: CliveWidget, account: str | Account) -> None:
+    if widget.profile.accounts.is_account_working(account):
+        return
+    widget.profile.accounts.switch_working_account(account)
+    widget.notify(f"Working account automatically switched to {Account.ensure_account_name(account)}")
 
 
 class LiquidNavigationScreenContent(Vertical):
@@ -59,7 +57,7 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
 
     @on(LiquidOperationChooseButton.Pressed, ".liquid-operation-choose-button")
     def push_liquid_operation_screen(self, event: LiquidOperationChooseButton.Pressed) -> None:
-        auto_switch_working_account(self._account)
+        auto_switch_working_account(self, self._account)
 
         button = cast(LiquidOperationChooseButton, event.button)
         match button.operation:

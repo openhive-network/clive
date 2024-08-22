@@ -182,7 +182,7 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
 
         from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 
-        auto_switch_working_account(self._account)
+        auto_switch_working_account(self, self._account)
         self.app.push_screen(Savings("transfer-tab", "from-savings", self._asset_type))
 
 
