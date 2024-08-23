@@ -5,7 +5,6 @@ from typing import TYPE_CHECKING, Callable, Literal
 from textual import on
 from textual.binding import Binding
 from textual.containers import Center, Vertical
-from textual.events import Click
 from textual.screen import ModalScreen
 
 from clive.__private.core.accounts.accounts import Account
@@ -79,7 +78,6 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
             yield OneLineButton("Cancel", id_="cancel-button", variant="error")
 
     @on(OneLineButton.Pressed, "#cancel-button")
-    @on(Click)
     def action_cancel(self) -> None:
         self.app.pop_screen()
 
