@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, cast
+from typing import TYPE_CHECKING, Final
 
 from textual import events, on
 from textual.containers import Horizontal
@@ -30,8 +30,6 @@ if TYPE_CHECKING:
     from clive.__private.core.app_state import AppState
     from clive.__private.core.node.node import Node
     from clive.__private.core.profile import Profile
-
-CliveLockStatus = Literal["unlocked", "locked"]
 
 
 class HeaderIcon(TextualHeaderIcon, CliveWidget):
@@ -129,6 +127,9 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
 
 class LockStatus(DynamicOneLineButtonUnfocusable):
+    LOCKED_LABEL: Final[str] = "LOCKED"
+    UNLOCKED_LABEL: Final[str] = "UNLOCKED"
+
     class WalletLocked(Message):
         """Posted when the wallet is locked."""
 
@@ -144,16 +145,16 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
         )
 
     @property
-    def status(self) -> CliveLockStatus:
-        return cast(CliveLockStatus, str(self._widget.label).lower())
+    def is_locked(self) -> bool:
+        return str(self._widget.label) == self.LOCKED_LABEL
 
     def mode_callback(self, app_state: AppState) -> str:
         if app_state.is_unlocked:
             self._wallet_to_unlocked_changed()
-            return "UNLOCKED"
+            return self.UNLOCKED_LABEL
 
         self._wallet_to_locked_changed()
-        return "LOCKED"
+        return self.LOCKED_LABEL
 
     @on(OneLineButton.Pressed)
     async def change_wallet_status(self) -> None:
@@ -162,11 +163,10 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
         if isinstance(self.app.screen, Unlock):
             return
 
-        if self.status == "unlocked":
+        if self.is_locked:
+            await self.app.push_screen(Unlock())
+        else:
             await self.commands.lock()
-            return
-
-        await self.app.push_screen(Unlock())
 
     def _wallet_to_locked_changed(self) -> None:
         self.post_message(self.WalletLocked())
