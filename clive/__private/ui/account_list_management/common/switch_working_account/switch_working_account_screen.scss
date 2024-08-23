@@ -7,13 +7,18 @@ SwitchWorkingAccountScreen {
     border-title-color: $text;
     border-title-background: $primary;
     border: $primary outer;
-    background: $panel;
+    background: $panel 80%;
     padding: 1;
     width: 50%;
     height: auto;
 
+    RadioSet {
+      background: rgba(0, 0, 0, 0);
+    }
+
     AccountManagementReference {
       align: center top;
+      margin-bottom: 1;
     }
 
     #buttons-container {
@@ -22,13 +27,12 @@ SwitchWorkingAccountScreen {
       height: auto;
 
       OneLineButton {
-        margin-right: 2;
-        margin-left: 2;
+        margin: 0 2;
+        width: 20;
       }
     }
 
     SwitchWorkingAccountContainer {
-      margin-top: 1;
       height: auto;
     }
   }

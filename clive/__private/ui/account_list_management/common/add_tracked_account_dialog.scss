@@ -7,10 +7,14 @@ AddTrackedAccountDialog {
     border-title-color: $text;
     border-title-background: $primary;
     border: $primary outer;
-    background: $panel;
+    background: $panel 80%;
     padding: 1;
     width: 50%;
     height: auto;
+
+    Section {
+      margin: 0 4;
+    }
 
     AccountManagementReference {
       align: center top;
@@ -18,12 +22,13 @@ AddTrackedAccountDialog {
     }
 
     #buttons-container {
-      width: 60%;
+      align: center top;
+      margin-top: 1;
       height: auto;
 
       OneLineButton {
-        margin: 0 2 0 2;
-        width: 50%;
+        margin: 0 2;
+        width: 20;
       }
     }
   }
