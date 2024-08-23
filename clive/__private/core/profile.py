@@ -64,15 +64,15 @@ class Profile(Context):
         self.name = name
         self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
 
-        self.__chain_id = self.__default_chain_id()
+        self._chain_id = self._default_chain_id()
 
         self.cart = Cart()
         self.keys = KeyManager()
 
-        self.__backup_node_addresses = self.__default_node_address()
+        self._backup_node_addresses = self._default_node_address()
         self._set_node_address(self._initial_node_address())
 
-        self.__skip_save = False
+        self._skip_save = False
         self._is_newly_created = True
 
     async def __aenter__(self) -> Self:
@@ -108,7 +108,7 @@ class Profile(Context):
         if chain_id is not None:
             profile.set_chain_id(chain_id)
         if node_address is not None:
-            secret_node_address = cls.__get_secret_node_address()
+            secret_node_address = cls._get_secret_node_address()
             profile._set_node_address(secret_node_address or Url.parse(node_address))
         profile._is_newly_created = is_newly_created
         return profile
@@ -133,11 +133,11 @@ class Profile(Context):
 
     @property
     def node_address(self) -> Url:
-        return self.__node_address
+        return self._node_address
 
     @property
     def backup_node_addresses(self) -> list[Url]:
-        return self.__backup_node_addresses
+        return self._backup_node_addresses
 
     def _set_node_address(self, value: Url) -> None:
         """
@@ -145,24 +145,24 @@ class Profile(Context):
 
         It is marked as not intended for usage because you rather should use Node.set_address instead.
         """
-        self.__node_address = value
-        if value not in self.__backup_node_addresses:
+        self._node_address = value
+        if value not in self._backup_node_addresses:
             # allow newly seen node address to be used as backup
-            self.__backup_node_addresses.insert(0, value)
+            self._backup_node_addresses.insert(0, value)
 
     @property
     def chain_id(self) -> str | None:
-        return self.__chain_id
+        return self._chain_id
 
     def set_chain_id(self, value: str) -> None:
         if not is_schema_field_valid(ChainIdSchema, value):
             raise InvalidChainIdError
 
-        self.__chain_id = value
+        self._chain_id = value
 
     def unset_chain_id(self) -> None:
         """When no chain_id is set, it should be fetched from the node api."""
-        self.__chain_id = None
+        self._chain_id = None
 
     def save(self) -> None:
         """
@@ -173,7 +173,7 @@ class Profile(Context):
             ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
                 it could not be saved, that would overwrite other profile.
         """
-        if self.__skip_save:
+        if self._skip_save:
             return
         PersistentStorageService().save_profile(self)
 
@@ -194,11 +194,11 @@ class Profile(Context):
 
     def skip_saving(self) -> None:
         logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
-        self.__skip_save = True
+        self._skip_save = True
 
     def enable_saving(self) -> None:
         logger.debug(f"Enabling saving of profile: {self.name} with id {id(self)}")
-        self.__skip_save = False
+        self._skip_save = False
 
     def delete(self) -> None:
         """
@@ -290,22 +290,22 @@ class Profile(Context):
         return PersistentStorageService().list_stored_profile_names()
 
     @staticmethod
-    def __default_chain_id() -> str | None:
+    def _default_chain_id() -> str | None:
         return safe_settings.node.chain_id
 
     @staticmethod
-    def __default_node_address() -> list[Url]:
+    def _default_node_address() -> list[Url]:
         return [
             Url("https", "api.hive.blog"),
             Url("https", "api.openhive.network"),
         ]
 
     @staticmethod
-    def __get_secret_node_address() -> Url | None:
+    def _get_secret_node_address() -> Url | None:
         return safe_settings.secrets.node_address
 
     def _initial_node_address(self) -> Url:
-        secret_node_address = self.__get_secret_node_address()
+        secret_node_address = self._get_secret_node_address()
         if secret_node_address:
             return secret_node_address
-        return self.__backup_node_addresses[0]
+        return self._backup_node_addresses[0]
