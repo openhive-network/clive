@@ -48,5 +48,6 @@ class AddTrackedAccountDialog(ModalScreen[None]):
 
     @on(OneLineButton.Pressed, "#save-account-button")
     async def save_account(self) -> None:
-        await self._add_account_container.save_account()
-        self.app.pop_screen()
+        is_account_saved = await self._add_account_container.save_account()
+        if is_account_saved:
+            self.app.pop_screen()

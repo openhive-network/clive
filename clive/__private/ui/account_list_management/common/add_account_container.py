@@ -51,19 +51,26 @@ class AddAccountContainer(Horizontal, CliveWidget):
         with Section(section_title):
             yield self._account_input
 
-    async def save_account(self) -> None:
+    async def save_account(self) -> bool:
+        """
+        Save the account to the profile.
+
+        Returns: # noqa: D406
+        -------
+            True if the account was saved, False otherwise.
+        """
         if not self._account_input.validate_passed():
-            return
+            return False
 
         account_name = self._account_input.value_or_error
         wrapper = await self.commands.does_account_exists_in_node(account_name=account_name)
         if wrapper.error_occurred:
             self.notify(f"Failed to check if account {account_name} exists in the node.", severity="warning")
-            return
+            return False
 
         if not wrapper.result_or_raise:
             self.notify(f"Account {account_name} does not exist in the node.", severity="warning")
-            return
+            return False
 
         if self._accounts_type == "tracked_accounts":
             self.profile.accounts.add_tracked_account(account_name)
@@ -73,3 +80,4 @@ class AddAccountContainer(Horizontal, CliveWidget):
         self.app.trigger_profile_watchers()
         self._account_input.input.clear()
         self.app.update_alarms_data_asap()
+        return True
