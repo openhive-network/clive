@@ -23,6 +23,7 @@ from clive.__private.ui.account_list_management.common.switch_working_account.sw
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.dashboard.liquid_navigation_screen import LiquidNavigationScreen, auto_switch_working_account
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.operations import Savings
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
@@ -177,8 +178,6 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
         if self._balance_type == "liquid":
             self.app.push_screen(LiquidNavigationScreen(self._account, asset_type=self._asset_type))
             return
-
-        from clive.__private.ui.operations.savings_operations.savings_operations import Savings
 
         auto_switch_working_account(self, self._account)
         self.app.push_screen(Savings("transfer-tab", "from-savings", self._asset_type))

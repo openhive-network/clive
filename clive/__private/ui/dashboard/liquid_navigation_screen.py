@@ -10,6 +10,7 @@ from textual.screen import ModalScreen
 
 from clive.__private.core.accounts.accounts import Account
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.operations import HivePowerManagement, Savings, TransferToAccount
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section import Section
@@ -52,18 +53,12 @@ class LiquidOperationChooseButton(OneLineButton):
         action_map[self._action]()
 
     def _push_transfer_to_account_screen(self) -> None:
-        from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
-
         self.app.push_screen(TransferToAccount(default_asset_selected=self._asset_type))
 
     def _push_transfer_to_savings_screen(self) -> None:
-        from clive.__private.ui.operations.savings_operations.savings_operations import Savings
-
         self.app.push_screen(Savings(initial_tab="transfer-tab", default_asset_selected=self._asset_type))
 
     def _push_power_up_screen(self) -> None:
-        from clive.__private.ui.operations.hive_power_management.hive_power_management import HivePowerManagement
-
         self.app.push_screen(HivePowerManagement())
 
 
