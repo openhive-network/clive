@@ -27,6 +27,7 @@ def auto_switch_working_account(widget: CliveWidget, account: str | Account) -> 
         return
     widget.profile.accounts.switch_working_account(account)
     widget.notify(f"Working account automatically switched to {Account.ensure_account_name(account)}")
+    widget.app.trigger_profile_watchers()
 
 
 class LiquidNavigationScreenContent(Vertical):
