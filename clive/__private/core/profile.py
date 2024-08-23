@@ -69,12 +69,8 @@ class Profile(Context):
         self.cart = Cart()
         self.keys = KeyManager()
 
-        if address := self.__get_secret_node_address():
-            self.__backup_node_addresses = [address]
-            self.__node_address = address
-        else:
-            self.__backup_node_addresses = self.__default_node_address()
-            self.__node_address = self.__backup_node_addresses[0]
+        self.__backup_node_addresses = self.__default_node_address()
+        self._set_node_address(self._initial_node_address())
 
         self.__skip_save = False
         self._is_newly_created = True
@@ -112,7 +108,8 @@ class Profile(Context):
         if chain_id is not None:
             profile.set_chain_id(chain_id)
         if node_address is not None:
-            profile._set_node_address(Url.parse(node_address))
+            secret_node_address = cls.__get_secret_node_address()
+            profile._set_node_address(secret_node_address or Url.parse(node_address))
         profile._is_newly_created = is_newly_created
         return profile
 
@@ -136,12 +133,10 @@ class Profile(Context):
 
     @property
     def node_address(self) -> Url:
-        return self.__get_secret_node_address() or self.__node_address
+        return self.__node_address
 
     @property
     def backup_node_addresses(self) -> list[Url]:
-        if secret_node_address := self.__get_secret_node_address():
-            return [secret_node_address]
         return self.__backup_node_addresses
 
     def _set_node_address(self, value: Url) -> None:
@@ -151,6 +146,9 @@ class Profile(Context):
         It is marked as not intended for usage because you rather should use Node.set_address instead.
         """
         self.__node_address = value
+        if value not in self.__backup_node_addresses:
+            # allow newly seen node address to be used as backup
+            self.__backup_node_addresses.insert(0, value)
 
     @property
     def chain_id(self) -> str | None:
@@ -305,3 +303,9 @@ class Profile(Context):
     @staticmethod
     def __get_secret_node_address() -> Url | None:
         return safe_settings.secrets.node_address
+
+    def _initial_node_address(self) -> Url:
+        secret_node_address = self.__get_secret_node_address()
+        if secret_node_address:
+            return secret_node_address
+        return self.__backup_node_addresses[0]
