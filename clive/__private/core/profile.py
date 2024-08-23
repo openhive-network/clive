@@ -60,17 +60,14 @@ class Profile(Context):
         known_accounts: Iterable[KnownAccount] | None = None,
     ) -> None:
         self.validate_profile_name(name)
-
         self.name = name
-        self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
-
-        self._chain_id = self._default_chain_id()
-
         self.cart = Cart()
         self.keys = KeyManager()
 
+        self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
         self._backup_node_addresses = self._default_node_address()
         self._set_node_address(self._initial_node_address())
+        self._chain_id = self._default_chain_id()
 
         self._skip_save = False
         self._is_newly_created = True
@@ -87,6 +84,77 @@ class Profile(Context):
     def is_newly_created(self) -> bool:
         """Determine if the profile is newly created (has not been saved yet)."""
         return self._is_newly_created
+
+    def unset_is_newly_created(self) -> None:
+        self._is_newly_created = False
+
+    @property
+    def accounts(self) -> AccountManager:
+        return self._accounts
+
+    @property
+    def node_address(self) -> Url:
+        return self._node_address
+
+    @property
+    def backup_node_addresses(self) -> list[Url]:
+        return self._backup_node_addresses
+
+    @property
+    def chain_id(self) -> str | None:
+        return self._chain_id
+
+    def set_chain_id(self, value: str) -> None:
+        if not is_schema_field_valid(ChainIdSchema, value):
+            raise InvalidChainIdError
+
+        self._chain_id = value
+
+    def unset_chain_id(self) -> None:
+        """When no chain_id is set, it should be fetched from the node api."""
+        self._chain_id = None
+
+    def skip_saving(self) -> None:
+        logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
+        self._skip_save = True
+
+    def enable_saving(self) -> None:
+        logger.debug(f"Enabling saving of profile: {self.name} with id {id(self)}")
+        self._skip_save = False
+
+    def copy(self) -> Self:
+        return deepcopy(self)
+
+    def save(self) -> None:
+        """
+        Save the current profile to the storage.
+
+        Raises: # noqa: D406
+        ------
+            ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
+                it could not be saved, that would overwrite other profile.
+        """
+        if self._skip_save:
+            return
+        PersistentStorageService().save_profile(self)
+
+    def delete(self) -> None:
+        """
+        Remove the current profile from the storage.
+
+        Raises:  # noqa: D406
+        ------
+            ProfileDoesNotExistsError: If this profile is not stored, it could not be removed.
+        """
+        self.delete_by_name(self.name)
+
+    @staticmethod
+    def validate_profile_name(name: str) -> None:
+        result = ProfileNameValidator().validate(name)
+        if result.is_valid:
+            return
+
+        raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
 
     @classmethod
     def create(  # noqa: PLR0913
@@ -113,117 +181,14 @@ class Profile(Context):
         profile._is_newly_created = is_newly_created
         return profile
 
-    def unset_is_newly_created(self) -> None:
-        self._is_newly_created = False
-
-    def copy(self) -> Self:
-        return deepcopy(self)
-
-    @staticmethod
-    def validate_profile_name(name: str) -> None:
-        result = ProfileNameValidator().validate(name)
-        if result.is_valid:
-            return
-
-        raise ProfileInvalidNameError(name, reason=humanize_validation_result(result))
-
-    @property
-    def accounts(self) -> AccountManager:
-        return self._accounts
-
-    @property
-    def node_address(self) -> Url:
-        return self._node_address
-
-    @property
-    def backup_node_addresses(self) -> list[Url]:
-        return self._backup_node_addresses
-
-    def _set_node_address(self, value: Url) -> None:
-        """
-        Set the node address.
-
-        It is marked as not intended for usage because you rather should use Node.set_address instead.
-        """
-        self._node_address = value
-        if value not in self._backup_node_addresses:
-            # allow newly seen node address to be used as backup
-            self._backup_node_addresses.insert(0, value)
-
-    @property
-    def chain_id(self) -> str | None:
-        return self._chain_id
-
-    def set_chain_id(self, value: str) -> None:
-        if not is_schema_field_valid(ChainIdSchema, value):
-            raise InvalidChainIdError
-
-        self._chain_id = value
-
-    def unset_chain_id(self) -> None:
-        """When no chain_id is set, it should be fetched from the node api."""
-        self._chain_id = None
-
-    def save(self) -> None:
-        """
-        Save the current profile to the storage.
-
-        Raises: # noqa: D406
-        ------
-            ProfileAlreadyExistsError: If profile is newly created and profile with that name already exists,
-                it could not be saved, that would overwrite other profile.
-        """
-        if self._skip_save:
-            return
-        PersistentStorageService().save_profile(self)
+    @classmethod
+    def list_profiles(cls) -> list[str]:
+        """List all stored profile names sorted alphabetically."""
+        return PersistentStorageService().list_stored_profile_names()
 
     @classmethod
-    def set_default_profile(cls, profile_name: str) -> None:
-        """
-        Set profile with the given name as default.
-
-        Args:
-        ----
-            profile_name: Name of the profile to be set as default.
-
-        Raises:
-        ------
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
-        """
-        PersistentStorageService().set_default_profile(profile_name)
-
-    def skip_saving(self) -> None:
-        logger.debug(f"Skipping saving of profile: {self.name} with id {id(self)}")
-        self._skip_save = True
-
-    def enable_saving(self) -> None:
-        logger.debug(f"Enabling saving of profile: {self.name} with id {id(self)}")
-        self._skip_save = False
-
-    def delete(self) -> None:
-        """
-        Remove the current profile from the storage.
-
-        Raises:  # noqa: D406
-        ------
-            ProfileDoesNotExistsError: If this profile is not stored, it could not be removed.
-        """
-        self.delete_by_name(self.name)
-
-    @classmethod
-    def delete_by_name(cls, profile_name: str) -> None:
-        """
-        Remove profile with the given name from the storage.
-
-        Args:
-        ----
-            profile_name: Name of the profile to be removed.
-
-        Raises:
-        ------
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
-        """
-        PersistentStorageService().remove_profile(profile_name)
+    def is_default_profile_set(cls) -> bool:
+        return PersistentStorageService().is_default_profile_set()
 
     @classmethod
     def get_default_profile_name(cls) -> str:
@@ -241,8 +206,19 @@ class Profile(Context):
         return PersistentStorageService().get_default_profile_name()
 
     @classmethod
-    def is_default_profile_set(cls) -> bool:
-        return PersistentStorageService().is_default_profile_set()
+    def set_default_profile(cls, profile_name: str) -> None:
+        """
+        Set profile with the given name as default.
+
+        Args:
+        ----
+            profile_name: Name of the profile to be set as default.
+
+        Raises:
+        ------
+            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
+        """
+        PersistentStorageService().set_default_profile(profile_name)
 
     @classmethod
     def load(cls, name: str | None = None, *, auto_create: bool = True) -> Profile:
@@ -285,9 +261,36 @@ class Profile(Context):
             yield profile
 
     @classmethod
-    def list_profiles(cls) -> list[str]:
-        """List all stored profile names sorted alphabetically."""
-        return PersistentStorageService().list_stored_profile_names()
+    def delete_by_name(cls, profile_name: str) -> None:
+        """
+        Remove profile with the given name from the storage.
+
+        Args:
+        ----
+            profile_name: Name of the profile to be removed.
+
+        Raises:
+        ------
+            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
+        """
+        PersistentStorageService().remove_profile(profile_name)
+
+    def _initial_node_address(self) -> Url:
+        secret_node_address = self._get_secret_node_address()
+        if secret_node_address:
+            return secret_node_address
+        return self._backup_node_addresses[0]
+
+    def _set_node_address(self, value: Url) -> None:
+        """
+        Set the node address.
+
+        It is marked as not intended for usage because you rather should use Node.set_address instead.
+        """
+        self._node_address = value
+        if value not in self._backup_node_addresses:
+            # allow newly seen node address to be used as backup
+            self._backup_node_addresses.insert(0, value)
 
     @staticmethod
     def _default_chain_id() -> str | None:
@@ -303,9 +306,3 @@ class Profile(Context):
     @staticmethod
     def _get_secret_node_address() -> Url | None:
         return safe_settings.secrets.node_address
-
-    def _initial_node_address(self) -> Url:
-        secret_node_address = self._get_secret_node_address()
-        if secret_node_address:
-            return secret_node_address
-        return self._backup_node_addresses[0]
