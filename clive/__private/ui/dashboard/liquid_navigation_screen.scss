@@ -13,8 +13,21 @@ LiquidNavigationScreen {
     height: auto;
 
     OneLineButton {
-      margin: 1 0 1 0;
-      width: 50%;
+      margin-top: 1;
+      width: 30;
+    }
+
+    Section {
+      width: auto;
+
+      SectionBody {
+        padding: 1 4;
+        width: auto;
+
+        OneLineButton {
+          margin: 1 0;
+        }
+      }
     }
   }
 }

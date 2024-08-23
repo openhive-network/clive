@@ -13,11 +13,11 @@ from clive.__private.ui.operations import HivePowerManagement, Savings, Transfer
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section import Section
+from clive.models import Asset
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.models import Asset
 
 ActionType = Literal["transfer-to-account", "transfer-to-savings", "power-up"]
 
@@ -30,7 +30,7 @@ def auto_switch_working_account(widget: CliveWidget, account: str | Account) -> 
 
 
 class LiquidNavigationScreenContent(Vertical):
-    BORDER_TITLE = "Liquid operations"
+    pass
 
 
 class LiquidOperationChooseButton(OneLineButton):
@@ -71,11 +71,16 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
         self._asset_type = asset_type
 
     def compose(self) -> ComposeResult:
-        with LiquidNavigationScreenContent(), Section("Choose liquid operation to perform"), Center():
-            yield self._create_liquid_operation_choose_button("Transfer to account", "transfer-to-account")
-            yield self._create_liquid_operation_choose_button("Transfer to savings", "transfer-to-savings")
-            yield self._create_liquid_operation_choose_button("Power up", "power-up")
-            yield OneLineButton("Cancel", id_="cancel-button", variant="error")
+        content = LiquidNavigationScreenContent()
+        content.border_title = f"Choose liquid operation to perform on {Asset.get_symbol(self._asset_type)}"
+
+        with content:
+            with Center(), Section():
+                yield self._create_liquid_operation_choose_button("Transfer to account", "transfer-to-account")
+                yield self._create_liquid_operation_choose_button("Transfer to savings", "transfer-to-savings")
+                yield self._create_liquid_operation_choose_button("Power up", "power-up")
+            with Center():
+                yield OneLineButton("Cancel", id_="cancel-button", variant="error")
 
     @on(OneLineButton.Pressed, "#cancel-button")
     def action_cancel(self) -> None:
