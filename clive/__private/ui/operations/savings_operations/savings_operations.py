@@ -209,12 +209,12 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self._amount_input = LiquidAssetAmountInput()
         self._memo_input = MemoInput()
         self._to_account_input = AccountNameInput("To", value=self.default_receiver)
+        self._default_transfer_type = default_transfer_type
 
         self._to_button = self._create_to_savings_button(default_transfer_type)
         self._from_button = self._create_from_savings_button(default_transfer_type)
 
-        self._transfer_time_reminder = Notice("transfer from savings will take 3 days")
-        self._transfer_time_reminder.visible = default_transfer_type == "from-savings"
+        self._transfer_time_reminder = self._create_transfer_time_reminder()
 
     def on_mount(self) -> None:
         self._amount_input.select_asset(self._default_asset_selected)
@@ -269,6 +269,12 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             return None
 
         return TransferFromSavingsOperation(**data, request_id=request_id)
+
+    def _create_transfer_time_reminder(self) -> Notice:
+        notice = Notice("transfer from savings will take 3 days")
+        notice.visible = self._default_transfer_type == "from-savings"
+
+        return notice
 
     def _create_to_savings_button(self, default_transfer_type: TransferType) -> CliveRadioButton:
         return CliveRadioButton(
