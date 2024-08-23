@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from textual import on
 from textual.binding import Binding
@@ -121,20 +121,18 @@ class ManabarRepresentation(TrackedAccountReferencingWidget, CliveWidget):
         return getattr(self._account.data, self._manabar_type)  # type: ignore[no-any-return]
 
 
-class BalanceStats(TrackedAccountReferencingWidget):
-    full_caption: Final[str] = "full!"
-
+class ManabarStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield ManabarRepresentation(self._account, "rc_manabar", "RC", classes="even-manabar")
         yield ManabarRepresentation(self._account, "vote_manabar", "VOTING", classes="odd-manabar")
         yield ManabarRepresentation(self._account, "downvote_manabar", "DOWNVOTING", classes="even-manabar")
 
 
-class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
+class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
     def __init__(
         self,
         account: TrackedAccount,
-        activity_type: Literal["liquid", "savings"],
+        balance_type: Literal["liquid", "savings"],
         asset_type: type[Asset.LiquidT],
         classes: str | None = None,
         variant: CliveButtonVariant = "primary",
@@ -147,12 +145,12 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
             variant=variant,
             classes=classes,
         )
-        self._activity_type = activity_type
+        self._balance_type = balance_type
         self._account = account
         self._asset_type = asset_type
         self._widget.add_class("balance-button")
 
-        if activity_type == "savings":
+        if balance_type == "savings":
             self.tooltip = f"Perform transfer from savings as {self._account.name}"
         else:
             self.tooltip = f"Choose liquid operation to perform as {self._account.name}"
@@ -163,7 +161,7 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
 
     def _get_account_asset_value(self) -> Asset.LiquidT:
         asset_symbol = Asset.get_symbol(self._asset_type).lower()
-        asset_name = f"{asset_symbol}_{self._activity_type}"
+        asset_name = f"{asset_symbol}_{self._balance_type}"
 
         asset_name_to_value: dict[str, Asset.LiquidT] = {
             "hive_liquid": self._account.data.hive_balance,
@@ -175,8 +173,8 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
         return asset_name_to_value[asset_name]
 
     @on(OneLineButton.Pressed, ".balance-button")
-    def push_activity_screen(self) -> None:
-        if self._activity_type == "liquid":
+    def push_balance_screen(self) -> None:
+        if self._balance_type == "liquid":
             self.app.push_screen(LiquidNavigationScreen(self._account, asset_type=self._asset_type))
             return
 
@@ -186,17 +184,17 @@ class ActivityStatsButton(DynamicOneLineButtonUnfocusable):
         self.app.push_screen(Savings("transfer-tab", "from-savings", self._asset_type))
 
 
-class ActivityStats(TrackedAccountReferencingWidget):
+class BalanceStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield Static("", classes="empty")
         yield EllipsedStatic("LIQUID", classes="title")
         yield EllipsedStatic("SAVINGS", classes="title title-variant")
         yield Static("HIVE", classes="token")
-        yield ActivityStatsButton(self._account, "liquid", Asset.Hive, variant="grey-darken")
-        yield ActivityStatsButton(self._account, "savings", Asset.Hive, variant="grey-lighten")
+        yield BalanceStatsButton(self._account, "liquid", Asset.Hive, variant="grey-darken")
+        yield BalanceStatsButton(self._account, "savings", Asset.Hive, variant="grey-lighten")
         yield Static("HBD", classes="token token-variant")
-        yield ActivityStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-lighten")
-        yield ActivityStatsButton(self._account, "savings", Asset.Hbd, variant="grey-darken")
+        yield BalanceStatsButton(self._account, "liquid", Asset.Hbd, variant="grey-lighten")
+        yield BalanceStatsButton(self._account, "savings", Asset.Hbd, variant="grey-darken")
 
 
 class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
@@ -227,9 +225,9 @@ class TrackedAccountRow(TrackedAccountReferencingWidget):
         with Horizontal():
             yield TrackedAccountInfo(self._account)
             with Container(id="tables"):
-                yield BalanceStats(self._account)
+                yield ManabarStats(self._account)
                 yield Static()
-                yield ActivityStats(self._account)
+                yield BalanceStats(self._account)
 
 
 class WorkingAccountContainer(Static, CliveWidget):
