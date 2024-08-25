@@ -14,8 +14,8 @@
 
 # Introduction
 
-**clive** is a combination of the cli and hive words. It's an interactive command line application for interacting with
-the [Hive](https://gitlab.syncad.com/hive/hive) blockchain. Inspired by midnight commander, written in Python.
+**clive** is a portmanteau of two words: CLI (command-line-interface) and Hive. Clive is an command line application for interacting with
+the [Hive](https://gitlab.syncad.com/hive/hive) blockchain. Clive also has a terminal user-interface (TUI) that supports mouse-based navigation that is inspired by midnight commander. Both the CLI and the TUI are written in Python. Clive is being designed in part to replace the original Hive CLI which is primarily used by power users and for writing tests for Hive.
 
 # Requirements
 
@@ -51,7 +51,7 @@ to install it via poetry as it includes dependencies used during development.
 # Running
 
 You can simply invoke the TUI application by running the `clive` command.
-If you want to use the CLI mode, pass any argument to the `clive` command.
+If you want to use the CLI mode, pass an argument to the `clive` command.
 
  ```bash
  clive         # Run the TUI application
