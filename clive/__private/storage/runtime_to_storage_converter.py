@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
-    from clive.__private.models.aliased import OperationRepresentation
+    from clive.__private.models.aliased import OperationRepresentationBase
 
 
 class RuntimeToStorageConverter:
@@ -47,7 +47,7 @@ class RuntimeToStorageConverter:
     def _key_aliases_to_model_container(self) -> list[KeyAliasStorageModel]:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
-    def _operations_to_model_container(self) -> list[OperationRepresentation]:
+    def _operations_to_model_container(self) -> list[OperationRepresentationBase]:
         return [convert_to_representation(operation) for operation in self._profile.cart]
 
     def _tracked_account_to_model(self, account: TrackedAccount) -> TrackedAccountStorageModel:
