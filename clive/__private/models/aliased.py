@@ -66,55 +66,82 @@ from schemas.operations.virtual import AnyVirtualOperation
 from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
 from schemas.virtual_operation import VirtualOperation
 
-Account = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
-AccountName = SchemasAccountName
+# operation and virtual operation BASIC aliases
+
 ApiOperationObject = Hf26ApiOperationObject
+OperationBase = Operation
+OperationRepresentationBase = HF26Representation[OperationBase]
+OperationRepresentationUnion = Hf26OperationRepresentationType
+OperationUnion = AnyOperation
+
 ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
-AssetBase = SchemasAssetBase
-ChainId = Sha256
-ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
-Config = GetConfig
-CustomJsonOperation = SchemasCustomJsonOperation
-DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
-DynamicGlobalProperties = GetDynamicGlobalProperties
-FeedHistory = GetFeedHistory
+VirtualOperationBase = VirtualOperation
+VirtualOperationRepresentationUnion = Hf26VirtualOperationRepresentationType
+VirtualOperationUnion = AnyVirtualOperation
+
+# "list" API response aliases (have nested list property which stores actual model)
+
+ListProposals = SchemasListProposals
+ListProposalVotes = SchemasListProposalVotes
+ListWitnesses = SchemasListWitnesses
+ListWitnessVotes = SchemasListWitnessVotes
+
+# find API response aliases (have nested list property which stores actual model)
+
 FindAccounts = SchemasFindAccounts
 FindProposals = SchemasFindProposals
 FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
 FindRecurrentTransfers = SchemasFindRecurrentTransfers
 FindVestingDelegationExpirations = SchemasFindVestingDelegationExpirations
 FindWitnesses = SchemasFindWitnesses
+
+# get API responses (have single model as a response)
+
+Config = GetConfig
+DynamicGlobalProperties = GetDynamicGlobalProperties
+FeedHistory = GetFeedHistory
 HardforkProperties = GetHardforkProperties
-HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
+Version = GetVersion
+WitnessSchedule = GetWitnessSchedule
+
+# operations
+
+CustomJsonOperation = SchemasCustomJsonOperation
+RecurrentTransferOperation = SchemasRecurrentTransferOperation
+TransferOperation = SchemasTransferOperation
+
+# extensions
+
+RecurrentTransferPairIdExtension = RecurrentTransferPairId
+RecurrentTransferPairIdRepresentation = HF26Representation[RecurrentTransferPairIdExtension]
+
+# basic fields
+
+AccountName = SchemasAccountName
+ChainId = Sha256
 HiveInt = SchemasHiveInt
-ListProposals = SchemasListProposals
-ListProposalVotes = SchemasListProposalVotes
-ListWitnesses = SchemasListWitnesses
-ListWitnessVotes = SchemasListWitnessVotes
-OperationBase = Operation
-OperationRepresentationBase = HF26Representation[OperationBase]
-OperationRepresentationUnion = Hf26OperationRepresentationType
-OperationUnion = AnyOperation
+Signature = SchemasSignature
+TransactionId = SchemasTransactionId
+
+# compound models
+
+Account = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
+ChangeRecoveryAccountRequest = ListChangeRecoveryAccountRequestsFundament
+DeclineVotingRightsRequest = ListDeclineVotingRightsRequestsFundament
+HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
 OwnerHistory = OwnerHistoriesFundament
 PriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Proposal = SchemasProposal[AssetHbdHF26]
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 RecurrentTransfer = FindRecurrentTransfersFundament[AssetHiveHF26, AssetHbdHF26]
-RecurrentTransferOperation = SchemasRecurrentTransferOperation
-RecurrentTransferPairIdExtension = RecurrentTransferPairId
-RecurrentTransferPairIdRepresentation = HF26Representation[RecurrentTransferPairIdExtension]
 SavingsWithdrawal = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
-Serializable = SchemasSerializable
-Signature = SchemasSignature
-TransactionId = SchemasTransactionId
 TransactionStatus = SchemasFindTransaction
-TransferOperation = SchemasTransferOperation
-Version = GetVersion
 VestingDelegation = VestingDelegationsFundament
 VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF26]
-VirtualOperationBase = VirtualOperation
-VirtualOperationRepresentationUnion = Hf26VirtualOperationRepresentationType
-VirtualOperationUnion = AnyVirtualOperation
 WithdrawRoute = WithdrawVestingRoutesFundament
 Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
-WitnessSchedule = GetWitnessSchedule
+
+# other
+
+AssetBase = SchemasAssetBase
+Serializable = SchemasSerializable
