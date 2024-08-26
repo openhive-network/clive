@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class WorkingAccount(TabPane, CliveWidget):
+class SwitchWorkingAccount(TabPane, CliveWidget):
     """TabPane used to modify the working account."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
