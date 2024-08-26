@@ -22,7 +22,7 @@ from clive.__private.core.date_utils import timedelta_to_int_hours
 from clive.__private.models import Asset
 from clive.__private.models.aliased import (
     RecurrentTransferOperation,
-    RecurrentTransferPairIdOperationExtension,
+    RecurrentTransferPairIdExtension,
     RecurrentTransferPairIdRepresentation,
 )
 
@@ -63,7 +63,7 @@ class _ProcessTransferScheduleCommon(OperationCommand, ABC):
         if self.pair_id is None or self.pair_id == 0:
             return []
 
-        recurrent_transfer_extension = RecurrentTransferPairIdOperationExtension(pair_id=self.pair_id)
+        recurrent_transfer_extension = RecurrentTransferPairIdExtension(pair_id=self.pair_id)
         extension = RecurrentTransferPairIdRepresentation(
             type=recurrent_transfer_extension.get_name(), value=recurrent_transfer_extension
         )
