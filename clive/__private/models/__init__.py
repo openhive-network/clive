@@ -11,7 +11,7 @@ if not is_tab_completion_active():
         OperationUnion,
         Signature,
         VirtualOperationBase,
-        VirtualOperationRepresentationType,
+        VirtualOperationRepresentationUnion,
         VirtualOperationUnion,
     )
     from .asset import Asset
@@ -30,7 +30,6 @@ if not is_tab_completion_active():
         "Transaction",
         "TransactionWithHash",
         "VirtualOperationBase",
-        "VirtualOperationRepresentationType",
-        "VirtualOperationRepresentationType",
+        "VirtualOperationRepresentationUnion",
         "VirtualOperationUnion",
     ]
