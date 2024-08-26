@@ -6,14 +6,14 @@ from typing import Any
 from pydantic import Field, validator
 
 from clive.__private.models import OperationUnion, Signature  # noqa: TCH001
-from clive.__private.models.aliased import HiveInt, OperationRepresentationType, TransactionId
+from clive.__private.models.aliased import HiveInt, OperationRepresentationUnion, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.operations.representations import convert_to_representation
 from schemas.transaction import Transaction as SchemasTransaction
 
 
 class Transaction(SchemasTransaction):
-    operations: list[OperationRepresentationType] = Field(default_factory=list)
+    operations: list[OperationRepresentationUnion] = Field(default_factory=list)
     ref_block_num: HiveInt = Field(default_factory=lambda: HiveInt(-1))
     ref_block_prefix: HiveInt = Field(default_factory=lambda: HiveInt(-1))
     expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
@@ -27,7 +27,7 @@ class Transaction(SchemasTransaction):
 
     @validator("operations", pre=True)
     @classmethod
-    def convert_operations(cls, value: Any) -> list[OperationRepresentationType]:  # noqa: ANN401
+    def convert_operations(cls, value: Any) -> list[OperationRepresentationUnion]:  # noqa: ANN401
         assert isinstance(value, list)
         return [convert_to_representation(op) for op in value]
 

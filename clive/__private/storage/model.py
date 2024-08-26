@@ -4,7 +4,7 @@ from hashlib import sha256
 from typing import Any
 
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier  # noqa: TCH001
-from clive.__private.models import OperationRepresentationType  # noqa: TCH001
+from clive.__private.models import OperationRepresentationUnion  # noqa: TCH001
 from clive.__private.models.base import CliveBaseModel
 
 
@@ -31,7 +31,7 @@ class ProfileStorageModel(CliveBaseModel):
     tracked_accounts: list[TrackedAccountStorageModel] = []  # noqa: RUF012
     known_accounts: list[str] = []  # noqa: RUF012
     key_aliases: list[KeyAliasStorageModel] = []  # noqa: RUF012
-    cart_operations: list[OperationRepresentationType] = []  # noqa: RUF012
+    cart_operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     chain_id: str | None = None
     node_address: str
 
