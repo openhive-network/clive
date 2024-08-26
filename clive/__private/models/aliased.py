@@ -115,6 +115,6 @@ VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF
 VirtualOperationBase = VirtualOperation
 VirtualOperationRepresentationUnion = Hf26VirtualOperationRepresentationType
 VirtualOperationUnion = AnyVirtualOperation
-WithdrawRouteSchema = WithdrawVestingRoutesFundament
+WithdrawRoute = WithdrawVestingRoutesFundament
 Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
 WitnessSchedule = GetWitnessSchedule

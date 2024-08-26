@@ -12,7 +12,7 @@ from schemas.operations import SetWithdrawVestingRouteOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.aliased import WithdrawRouteSchema
+    from clive.__private.models.aliased import WithdrawRoute
 
 
 class RemoveWithdrawVestingRoute(OperationSummary):
@@ -20,7 +20,7 @@ class RemoveWithdrawVestingRoute(OperationSummary):
 
     SECTION_TITLE: ClassVar[str] = "Remove withdraw vesting route"
 
-    def __init__(self, withdraw_route: WithdrawRouteSchema) -> None:
+    def __init__(self, withdraw_route: WithdrawRoute) -> None:
         super().__init__()
         self._withdraw_route = withdraw_route
 

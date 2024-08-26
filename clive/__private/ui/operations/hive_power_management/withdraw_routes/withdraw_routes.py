@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.__private.models.aliased import WithdrawRouteSchema
+    from clive.__private.models.aliased import WithdrawRoute as SchemasWithdrawRoute
 
 
 class PlaceTaker(Static):
@@ -54,7 +54,7 @@ class WithdrawRoutesHeader(Horizontal):
 class WithdrawRoute(CliveCheckerboardTableRow):
     """Row of the `WithdrawRoutesTable`."""
 
-    def __init__(self, withdraw_route: WithdrawRouteSchema, aligned_percent: str) -> None:
+    def __init__(self, withdraw_route: SchemasWithdrawRoute, aligned_percent: str) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(withdraw_route.to_account),
             CliveCheckerBoardTableCell(aligned_percent),
@@ -75,7 +75,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(header=WithdrawRoutesHeader(), title="Current withdraw routes")
-        self._previous_withdraw_routes: list[WithdrawRouteSchema] | NotUpdatedYet = NotUpdatedYet()
+        self._previous_withdraw_routes: list[SchemasWithdrawRoute] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: HivePowerData) -> list[WithdrawRoute]:
         percents_to_align = [
