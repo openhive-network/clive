@@ -1,31 +1,32 @@
 from __future__ import annotations
 
 from clive.__private.core.node.api.api import Api
-from clive.__private.models import Asset  # noqa: TCH001
-from schemas.apis import rc_api  # noqa: TCH001
+from clive.__private.models.aliased import (  # noqa: TCH001
+    FindRcAccounts,
+    GetResourcePool,
+    ListRcAccounts,
+    ListRcDirectDelegations,
+    ResourceParams,
+)
 
 
 class RcApi(Api):
     @Api.method
-    async def find_rc_accounts(
-        self, *, accounts: list[str], refresh_mana: bool = False
-    ) -> rc_api.FindRcAccounts[Asset.Vests]:
+    async def find_rc_accounts(self, *, accounts: list[str], refresh_mana: bool = False) -> FindRcAccounts:
         raise NotImplementedError
 
     @Api.method
-    async def get_resource_params(self) -> rc_api.GetResourceParams:
+    async def get_resource_params(self) -> ResourceParams:
         raise NotImplementedError
 
     @Api.method
-    async def get_resource_pool(self) -> rc_api.GetResourcePool:
+    async def get_resource_pool(self) -> GetResourcePool:
         raise NotImplementedError
 
     @Api.method
-    async def list_rc_accounts(
-        self, *, accounts: list[str], refresh_mana: bool = False
-    ) -> rc_api.ListRcAccounts[Asset.Vests]:
+    async def list_rc_accounts(self, *, accounts: list[str], refresh_mana: bool = False) -> ListRcAccounts:
         raise NotImplementedError
 
     @Api.method
-    async def list_rc_direct_delegations(self, *, start: tuple[str, str], limit: int) -> rc_api.ListRcDirectDelegations:
+    async def list_rc_direct_delegations(self, *, start: tuple[str, str], limit: int) -> ListRcDirectDelegations:
         raise NotImplementedError

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.iwax import validate_transaction
 from clive.__private.models import Asset, Transaction
-from schemas.operations import TransferOperation
+from clive.__private.models.aliased import TransferOperation
 
 if TYPE_CHECKING:
     from clive.__private.models import OperationUnion

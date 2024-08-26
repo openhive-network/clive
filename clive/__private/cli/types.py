@@ -4,9 +4,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from typing import TypeVar
 
-    from schemas.fields.basic import AccountName, PublicKey
-    from schemas.fields.compound import Authority
-    from schemas.operations import AccountUpdate2Operation
+    from clive.__private.models.aliased import AccountName, AccountUpdate2Operation, Authority, PublicKey
 
     AccountUpdateFunction = Callable[[AccountUpdate2Operation], AccountUpdate2Operation]
     AuthorityUpdateFunction = Callable[[Authority], Authority]

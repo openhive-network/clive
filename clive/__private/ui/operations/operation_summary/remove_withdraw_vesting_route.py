@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, ClassVar
 from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import humanize_bool
+from clive.__private.models.aliased import SetWithdrawVestingRouteOperation
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
-from schemas.operations import SetWithdrawVestingRouteOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

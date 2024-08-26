@@ -11,6 +11,7 @@ from clive.__private.core.commands.abc.command_in_unlocked import CommandRequire
 from clive.__private.core.formatters import humanize
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.models.aliased import convert_to_representation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
@@ -19,7 +20,6 @@ from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
 from clive.exceptions import NoItemSelectedError
-from schemas.operations.representations import HF26Representation, convert_to_representation
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -27,6 +27,7 @@ if TYPE_CHECKING:
     from textual.widgets._select import NoSelection
 
     from clive.__private.models import OperationUnion, Transaction
+    from clive.__private.models.aliased import OperationRepresentationBase
 
 
 class StaticPart(Container):
@@ -230,5 +231,5 @@ class TransactionSummaryCommon(BaseScreen):
 
     @staticmethod
     def __get_operation_representation_json(operation: OperationUnion) -> str:
-        representation: HF26Representation[OperationUnion] = convert_to_representation(operation=operation)
+        representation: OperationRepresentationBase = convert_to_representation(operation=operation)
         return representation.json(by_alias=True)

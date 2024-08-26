@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.formatters import humanize
+from clive.__private.models.aliased import CancelTransferFromSavingsOperation
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
-from schemas.operations import CancelTransferFromSavingsOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

@@ -7,7 +7,7 @@ from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import WithdrawRoutesZeroPercentError
 from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.percent_conversions import percent_to_hive_percent
-from schemas.operations import SetWithdrawVestingRouteOperation
+from clive.__private.models.aliased import SetWithdrawVestingRouteOperation
 
 
 @dataclass(kw_only=True)

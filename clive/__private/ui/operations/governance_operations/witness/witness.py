@@ -14,6 +14,7 @@ from textual.widgets import Label, Static
 from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessData, WitnessesDataRetrieval
 from clive.__private.core.constants.node import MAX_NUMBER_OF_WITNESSES_VOTES
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
+from clive.__private.models.aliased import AccountWitnessVoteOperation
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
 from clive.__private.ui.dialogs import WitnessDetailsDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -37,7 +38,6 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
-from schemas.operations.account_witness_vote_operation import AccountWitnessVoteOperation
 
 if TYPE_CHECKING:
     from typing import Final

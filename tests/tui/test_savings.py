@@ -6,6 +6,11 @@ import pytest
 import test_tools as tt
 from textual.widgets import RadioSet
 
+from clive.__private.models.aliased import (
+    CancelTransferFromSavingsOperation,
+    TransferFromSavingsOperation,
+    TransferToSavingsOperation,
+)
 from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.operation_summary.cancel_transfer_from_savings import CancelTransferFromSavings
@@ -38,11 +43,6 @@ from clive_local_tools.tui.textual_helpers import (
     write_text,
 )
 from clive_local_tools.tui.utils import log_current_view
-from schemas.operations import (
-    CancelTransferFromSavingsOperation,
-    TransferFromSavingsOperation,
-    TransferToSavingsOperation,
-)
 
 if TYPE_CHECKING:
     from typing import Any

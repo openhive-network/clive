@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.models import Asset
-from schemas.operations import TransferToSavingsOperation
+from clive.__private.models.aliased import TransferToSavingsOperation
 
 
 @dataclass(kw_only=True)

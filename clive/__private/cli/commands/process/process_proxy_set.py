@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from schemas.operations import AccountWitnessProxyOperation
+from clive.__private.models.aliased import AccountWitnessProxyOperation
 
 
 @dataclass(kw_only=True)

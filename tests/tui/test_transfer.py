@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 import pytest
 import test_tools as tt
 
+from clive.__private.models.aliased import TransferOperation
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
@@ -25,7 +26,6 @@ from clive_local_tools.tui.textual_helpers import (
 )
 from clive_local_tools.tui.unlock import unlock
 from clive_local_tools.tui.utils import is_header_in_locked_mode, log_current_view
-from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot, LiquidAssetToken, OperationProcessing

@@ -11,8 +11,7 @@ from clive_local_tools.helpers import get_transaction_id_from_output
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from schemas.operations import AnyOperation
-    from schemas.operations.representations import HF26Representation
+    from clive.__private.models.aliased import OperationUnion, RepresentationBase
 
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:
@@ -37,7 +36,7 @@ def assert_transaction_in_blockchain(
 def assert_operations_placed_in_blockchain(
     node: tt.RawNode,
     trx_id_or_result: str | Result,
-    *expected_operations: AnyOperation,
+    *expected_operations: OperationUnion,
     wait_for_the_next_block: bool = True,
 ) -> None:
     assert_transaction_in_blockchain(node, trx_id_or_result, wait_for_the_next_block=wait_for_the_next_block)
@@ -48,7 +47,7 @@ def assert_operations_placed_in_blockchain(
     )
     operations_to_check = list(expected_operations)
     for operation_representation in transaction.operations:
-        _operation_representation: HF26Representation[AnyOperation] = operation_representation
+        _operation_representation: RepresentationBase[OperationUnion] = operation_representation
         operation = _operation_representation.value
         if operation in operations_to_check:
             operations_to_check.remove(operation)

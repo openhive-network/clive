@@ -12,8 +12,6 @@ if TYPE_CHECKING:
     from clive.__private.models.aliased import (
         ChangeRecoveryAccountRequest,
         DeclineVotingRightsRequest,
-    )
-    from schemas.apis.database_api import (
         ListChangeRecoveryAccountRequests,
         ListDeclineVotingRightsRequests,
     )

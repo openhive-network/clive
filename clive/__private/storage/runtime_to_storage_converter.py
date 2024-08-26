@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.models.aliased import convert_to_representation
 from clive.__private.storage.model import (
     AlarmStorageModel,
     KeyAliasStorageModel,
     ProfileStorageModel,
     TrackedAccountStorageModel,
 )
-from schemas.operations.representations import convert_to_representation
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount

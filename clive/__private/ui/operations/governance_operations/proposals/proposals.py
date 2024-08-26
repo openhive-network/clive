@@ -12,6 +12,7 @@ from clive.__private.core.commands.data_retrieval.proposals_data import Proposal
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 from clive.__private.core.formatters.humanize import humanize_datetime
+from clive.__private.models.aliased import UpdateProposalVotesOperation
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
@@ -31,7 +32,6 @@ from clive.__private.ui.widgets.clive_select import CliveSelect
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
-from schemas.operations.update_proposal_votes_operation import UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
     from typing import Final

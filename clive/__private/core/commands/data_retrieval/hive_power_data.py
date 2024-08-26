@@ -13,10 +13,15 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.node import Node
-    from clive.__private.models.aliased import Account, DynamicGlobalProperties
-    from schemas.apis.database_api import FindAccounts, FindVestingDelegations, ListWithdrawVestingRoutes
-    from schemas.apis.database_api.fundaments_of_reponses import VestingDelegationsFundament as VestingDelegation
-    from schemas.apis.database_api.fundaments_of_reponses import WithdrawVestingRoutesFundament as WithdrawRoute
+    from clive.__private.models.aliased import (
+        Account,
+        DynamicGlobalProperties,
+        FindAccounts,
+        FindVestingDelegations,
+        ListWithdrawVestingRoutes,
+        VestingDelegation,
+        WithdrawRoute,
+    )
 
 _MAX_WITHDRAW_VESTING_ROUTES_LIMIT: Final[int] = 10
 

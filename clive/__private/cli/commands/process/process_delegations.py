@@ -6,8 +6,8 @@ from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import DelegationsZeroAmountError
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.__private.core.ensure_vests import ensure_vests_async
+from clive.__private.models.aliased import DelegateVestingSharesOperation
 from clive.__private.models.asset import Asset
-from schemas.operations import DelegateVestingSharesOperation
 
 
 @dataclass(kw_only=True)

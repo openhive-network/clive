@@ -10,9 +10,14 @@ from clive.__private.core.date_utils import utc_epoch
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from clive.__private.models.aliased import Account, DynamicGlobalProperties, FindRcAccounts, RcAccount
-    from schemas.apis.account_history_api import GetAccountHistory
-    from schemas.apis.database_api import FindAccounts
+    from clive.__private.models.aliased import (
+        Account,
+        DynamicGlobalProperties,
+        FindAccounts,
+        FindRcAccounts,
+        GetAccountHistory,
+        RcAccount,
+    )
 
 
 @dataclass

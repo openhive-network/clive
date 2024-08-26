@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import TabPane
 
+from clive.__private.models.aliased import TransferToVestingOperation
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.widgets.buttons.generous_button import GenerousButton
@@ -14,7 +15,6 @@ from clive.__private.ui.widgets.inputs.hive_asset_amount_input import HiveAssetA
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
-from schemas.operations import TransferToVestingOperation as TransferToVesting
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -56,11 +56,11 @@ class PowerUp(TabPane, OperationActionBindings):
     def _get_hive_balance(self) -> Asset.Hive:
         return self.profile.accounts.working.data.hive_balance
 
-    def _create_operation(self) -> TransferToVesting | None:
+    def _create_operation(self) -> TransferToVestingOperation | None:
         if not CliveValidatedInput.validate_many(self._asset_input, self._receiver_input):
             return None
 
-        return TransferToVesting(
+        return TransferToVestingOperation(
             from_=self.working_account_name,
             to=self._receiver_input.value_or_error,
             amount=self._asset_input.value_or_error,

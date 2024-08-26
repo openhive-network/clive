@@ -8,13 +8,13 @@ from pydantic import Extra
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.main import cli
 from clive.__private.core._thread import thread_pool
+from clive.__private.models.aliased import ExtraFieldsPolicy, MissingFieldsInGetConfigPolicy, set_policies
 from clive.__private.run_cli import run_cli
 from clive.__private.run_tui import run_tui
-from schemas.policies import ExtraFields, MissingFieldsInGetConfig, set_policies
 
 
 def __disable_schemas_extra_fields_check() -> None:
-    set_policies(ExtraFields(policy=Extra.allow), MissingFieldsInGetConfig(allow=True))
+    set_policies(ExtraFieldsPolicy(policy=Extra.allow), MissingFieldsInGetConfigPolicy(allow=True))
 
 
 def _is_cli_requested() -> bool:

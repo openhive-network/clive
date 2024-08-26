@@ -31,14 +31,14 @@ if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
     from clive.__private.models.aliased import (
         Account,
+        FindAccounts,
         FindRcAccounts,
+        GetAccountHistory,
         RcAccount,
     )
-    from schemas.apis.account_history_api import GetAccountHistory
-    from schemas.apis.database_api import (
-        FindAccounts,
+    from clive.__private.models.aliased import (
+        Manabar as SchemasManabar,
     )
-    from schemas.fields.compound import Manabar as SchemasManabar
 
 
 @dataclass

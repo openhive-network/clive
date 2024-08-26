@@ -6,7 +6,7 @@ from typing import TypeAlias
 
 import test_tools as tt
 
-from schemas.fields.basic import PublicKey
+from clive.__private.models.aliased import PublicKey
 
 from .exceptions import UnsupportedOptionError
 

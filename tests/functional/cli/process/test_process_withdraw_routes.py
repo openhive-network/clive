@@ -7,11 +7,11 @@ import pytest
 
 from clive.__private.core.constants.node import PERCENT_TO_REMOVE_WITHDRAW_ROUTE
 from clive.__private.core.percent_conversions import percent_to_hive_percent
+from clive.__private.models.aliased import SetWithdrawVestingRouteOperation
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.checkers import assert_no_withdraw_routes
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
-from schemas.operations import SetWithdrawVestingRouteOperation
 
 if TYPE_CHECKING:
     import test_tools as tt

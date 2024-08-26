@@ -9,9 +9,9 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
+from clive.__private.models.aliased import JSONRPCExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError, CommunicationError
-from schemas.jsonrpc import ExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -38,11 +38,13 @@ class ResponseNotReadyError(BatchRequestError):
 
 class BaseNode:
     @abstractmethod
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT: ...
+    async def handle_request(
+        self, request: JSONRPCRequest, *, expect_type: type[JSONRPCExpectResultT]
+    ) -> JSONRPCExpectResultT: ...
 
 
 class _DelayedResponseWrapper:
-    def __init__(self, url: Url, request: str, expected_type: type[ExpectResultT]) -> None:
+    def __init__(self, url: Url, request: str, expected_type: type[JSONRPCExpectResultT]) -> None:
         super().__setattr__("_url", url)
         super().__setattr__("_request", request)
         super().__setattr__("_response", None)
@@ -105,7 +107,9 @@ class _BatchNode(BaseNode):
         self.__batch: list[_BatchRequestResponseItem] = []
         self.api = Apis(self)
 
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
+    async def handle_request(
+        self, request: JSONRPCRequest, *, expect_type: type[JSONRPCExpectResultT]
+    ) -> JSONRPCExpectResultT:
         request.id_ = len(self.__batch)
         serialized_request = request.json(by_alias=True)
         delayed_result = _DelayedResponseWrapper(url=self.__url, request=serialized_request, expected_type=expect_type)
@@ -333,7 +337,9 @@ class Node(BaseNode):
         self.__profile._set_node_address(address)
         self.cached.clear()
 
-    async def handle_request(self, request: JSONRPCRequest, *, expect_type: type[ExpectResultT]) -> ExpectResultT:
+    async def handle_request(
+        self, request: JSONRPCRequest, *, expect_type: type[JSONRPCExpectResultT]
+    ) -> JSONRPCExpectResultT:
         address = str(self.address)
         serialized_request = request.json(by_alias=True)
 

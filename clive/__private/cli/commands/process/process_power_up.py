@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from schemas.operations import TransferToVestingOperation
+from clive.__private.models.aliased import TransferToVestingOperation
 
 if TYPE_CHECKING:
     from clive.__private.models.asset import Asset

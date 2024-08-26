@@ -9,6 +9,7 @@ from textual.widgets import Checkbox, Static, TabPane
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
+from clive.__private.models.aliased import SetWithdrawVestingRouteOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -29,7 +30,6 @@ from clive.__private.ui.widgets.inputs.percent_input import PercentInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
-from schemas.operations import SetWithdrawVestingRouteOperation
 
 if TYPE_CHECKING:
     from rich.text import TextType

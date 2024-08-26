@@ -6,10 +6,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
 from clive.__private.cli.exceptions import CLIPrettyError
-from schemas.fields.basic import AccountName, PublicKey
-from schemas.fields.compound import Authority
-from schemas.fields.hive_int import HiveInt
-from schemas.operations import AccountUpdate2Operation
+from clive.__private.models.aliased import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
 
 if TYPE_CHECKING:
     from clive.__private.cli.types import (

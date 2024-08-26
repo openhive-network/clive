@@ -7,9 +7,9 @@ import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.url import Url
+from clive.__private.models.aliased import get_response_model
 from clive_local_tools.beekeeper.network import get_port
 from schemas.apis import beekeeper_api
-from schemas.jsonrpc import get_response_model
 
 
 async def check_webserver_http_endpoint(*, nofification_endpoint: Url | None, webserver_http_endpoint: Url) -> None:

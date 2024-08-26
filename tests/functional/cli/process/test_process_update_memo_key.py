@@ -7,8 +7,8 @@ from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
+    from clive.__private.models.aliased import PublicKey
     from clive_local_tools.cli.cli_tester import CLITester
-    from schemas.fields.basic import PublicKey
 
 
 ALICE_MEMO_KEY: Final[PublicKey] = WORKING_ACCOUNT_DATA.account.public_key
