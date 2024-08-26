@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.keys import PublicKeyAliased
-    from clive.__private.models import Operation
+    from clive.__private.models import OperationUnion
 
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
@@ -48,17 +48,18 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         self.__check_if_correctly_implemented()
 
-    def _create_operation(self) -> Operation | None | _NotImplemented:
+    def _create_operation(self) -> OperationUnion | None | _NotImplemented:
         """Return a new operation based on the data from screen or None."""
         return _NotImplemented()
 
-    def _create_operations(self) -> list[Operation] | None | _NotImplemented:
+    def _create_operations(self) -> list[OperationUnion] | None | _NotImplemented:
         """Return a list of operations based on the data from screen or None."""
         return _NotImplemented()
 
     def _validate_and_notify(
-        self, create_one_many_operations_cb: Callable[[], Operation | list[Operation] | None | _NotImplemented]
-    ) -> list[Operation] | None:
+        self,
+        create_one_many_operations_cb: Callable[[], OperationUnion | list[OperationUnion] | None | _NotImplemented],
+    ) -> list[OperationUnion] | None:
         """
         Validate operations from callback result. If any of them is invalid, notifies the user and returns None.
 
@@ -99,11 +100,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         return operations
 
-    def create_operation(self) -> Operation | None:
+    def create_operation(self) -> OperationUnion | None:
         result = self._validate_and_notify(self._create_operation)
         return result[0] if result else None
 
-    def create_operations(self) -> list[Operation] | None:
+    def create_operations(self) -> list[OperationUnion] | None:
         return self._validate_and_notify(self._create_operations)
 
     def action_finalize(self) -> None:
@@ -177,7 +178,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         self.app.trigger_profile_watchers()
         return True
 
-    def ensure_operations_list(self) -> list[Operation]:
+    def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()
         if operation is not None:
             return [operation]

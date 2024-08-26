@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
-    from clive.__private.models import Operation
+    from clive.__private.models import OperationUnion
     from clive.__private.models.aliased import PriceFeed
 
 
@@ -68,7 +68,7 @@ def __validate_wax_response(response: wax.python_result) -> None:
         raise WaxOperationFailedError(response.exception_message.decode())
 
 
-def __as_binary_json(item: Operation | Transaction | dict[str, Any]) -> bytes:
+def __as_binary_json(item: OperationUnion | Transaction | dict[str, Any]) -> bytes:
     if isinstance(item, dict):
         return json.dumps(item, cls=CustomJSONEncoder).encode()
 
@@ -82,7 +82,7 @@ def validate_transaction(transaction: Transaction) -> None:
     return __validate_wax_response(wax.validate_transaction(__as_binary_json(transaction)))
 
 
-def validate_operation(operation: Operation) -> None:
+def validate_operation(operation: OperationUnion) -> None:
     return __validate_wax_response(wax.validate_operation(__as_binary_json(operation)))
 
 

@@ -7,10 +7,12 @@ from clive.__private.models import Asset, Transaction
 from schemas.operations import TransferOperation
 
 if TYPE_CHECKING:
-    from clive.__private.models import Operation
+    from clive.__private.models import OperationUnion
 
 
-operations: Final[list[Operation]] = [TransferOperation(from_="alice", to="bob", amount=Asset.hive(10), memo="aaa")]
+operations: Final[list[OperationUnion]] = [
+    TransferOperation(from_="alice", to="bob", amount=Asset.hive(10), memo="aaa")
+]
 
 
 def test_valid_transaction() -> None:

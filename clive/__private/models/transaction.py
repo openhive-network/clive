@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import Field, validator
 
-from clive.__private.models import Operation, Signature  # noqa: TCH001
+from clive.__private.models import OperationUnion, Signature  # noqa: TCH001
 from clive.__private.models.aliased import HiveInt, OperationRepresentationType, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.operations.representations import convert_to_representation
@@ -21,7 +21,7 @@ class Transaction(SchemasTransaction):
     signatures: list[Signature] = Field(default_factory=list)
 
     @property
-    def operations_models(self) -> list[Operation]:
+    def operations_models(self) -> list[OperationUnion]:
         """Get only the operation models from already stored operations representations."""
         return [op.value for op in self.operations]  # type: ignore[attr-defined]
 
@@ -31,7 +31,7 @@ class Transaction(SchemasTransaction):
         assert isinstance(value, list)
         return [convert_to_representation(op) for op in value]
 
-    def add_operation(self, operation: Operation) -> None:
+    def add_operation(self, operation: OperationUnion) -> None:
         self.operations.append(convert_to_representation(operation))
 
     def is_signed(self) -> bool:

@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.models import Operation
+    from clive.__private.models import OperationUnion
 
 
 class ProposalsOrderSelect(CliveSelect[ProposalsDataRetrieval.Orders]):
@@ -264,7 +264,7 @@ class Proposals(GovernanceTabPane):
             order=message.order_by, order_direction=message.order_direction, status=message.status
         )
 
-    def _create_operations(self) -> list[Operation] | None:
+    def _create_operations(self) -> list[OperationUnion] | None:
         working_account_name = self.profile.accounts.working.name
 
         batched_proposals_ids_to_unvote = self.__split_proposals(approve=False)

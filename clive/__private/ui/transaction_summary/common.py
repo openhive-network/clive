@@ -26,7 +26,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
 
-    from clive.__private.models import Operation, Transaction
+    from clive.__private.models import OperationUnion, Transaction
 
 
 class StaticPart(Container):
@@ -109,7 +109,7 @@ class TransactionSummaryCommon(BaseScreen):
         return self._transaction
 
     @property
-    def operations(self) -> list[Operation]:
+    def operations(self) -> list[OperationUnion]:
         return self.transaction.operations_models
 
     async def on_mount(self) -> None:
@@ -229,6 +229,6 @@ class TransactionSummaryCommon(BaseScreen):
             raise NoItemSelectedError("No key was selected!") from error
 
     @staticmethod
-    def __get_operation_representation_json(operation: Operation) -> str:
-        representation: HF26Representation[Operation] = convert_to_representation(operation=operation)
+    def __get_operation_representation_json(operation: OperationUnion) -> str:
+        representation: HF26Representation[OperationUnion] = convert_to_representation(operation=operation)
         return representation.json(by_alias=True)

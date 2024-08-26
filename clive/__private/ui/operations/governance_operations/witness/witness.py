@@ -45,7 +45,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.models import Operation
+    from clive.__private.models import OperationUnion
 
 MAX_NUMBER_OF_WITNESSES_IN_TABLE: Final[int] = 150
 
@@ -295,7 +295,7 @@ class Witnesses(GovernanceTabPane):
             yield WitnessesActions()
         yield WitnessManualSearch()
 
-    def _create_operations(self) -> list[Operation] | None:
+    def _create_operations(self) -> list[OperationUnion] | None:
         actual_number_of_votes = self.screen.query_one(WitnessesActions).actual_number_of_votes
 
         if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
