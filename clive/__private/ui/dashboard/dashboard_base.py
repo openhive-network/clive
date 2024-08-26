@@ -18,7 +18,7 @@ from clive.__private.core.formatters.humanize import (
 from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.dashboard.liquid_navigation_screen import LiquidNavigationScreen, auto_switch_working_account
-from clive.__private.ui.dialogs import AddTrackedAccountDialog, SwitchWorkingAccountScreen
+from clive.__private.ui.dialogs import AddTrackedAccountDialog, SwitchWorkingAccountDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations import Savings
 from clive.__private.ui.operations.operations import Operations
@@ -308,7 +308,7 @@ class DashboardBase(BaseScreen):
         if not self.profile.accounts.tracked:
             self.notify("Cannot switch a working account without any account", severity="warning")
             return
-        self.app.push_screen(SwitchWorkingAccountScreen())
+        self.app.push_screen(SwitchWorkingAccountDialog())
 
     def action_add_account(self) -> None:
         self.app.push_screen(AddTrackedAccountDialog())

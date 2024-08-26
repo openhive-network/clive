@@ -19,11 +19,11 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class SwitchWorkingAccountScreenContent(Vertical):
+class SwitchWorkingAccountDialogContent(Vertical):
     BORDER_TITLE = "Switch working account"
 
 
-class SwitchWorkingAccountScreen(ModalScreen[None]):
+class SwitchWorkingAccountDialog(ModalScreen[None]):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [Binding("escape,f3", "cancel", "Quit")]
 
@@ -34,7 +34,7 @@ class SwitchWorkingAccountScreen(ModalScreen[None]):
         self._switch_working_account_container = SwitchWorkingAccountContainer(show_title=False)
 
     def compose(self) -> ComposeResult:
-        with SwitchWorkingAccountScreenContent():
+        with SwitchWorkingAccountDialogContent():
             yield AccountManagementReference()
             yield self._switch_working_account_container
             with Horizontal(id="buttons-container"):
