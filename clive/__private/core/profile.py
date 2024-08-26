@@ -11,7 +11,7 @@ from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.url import Url
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
-from clive.__private.models.aliased import ChainId, OperationBaseClass
+from clive.__private.models.aliased import ChainId, OperationBase
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
@@ -46,7 +46,7 @@ class ProfileInvalidNameError(ProfileError):
         super().__init__(message)
 
 
-class Cart(list[OperationBaseClass]):
+class Cart(list[OperationBase]):
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
 
@@ -164,7 +164,7 @@ class Profile(Context):
         watched_accounts: Iterable[WatchedAccount] | None = None,
         known_accounts: Iterable[KnownAccount] | None = None,
         key_aliases: Iterable[PublicKeyAliased] | None = None,
-        cart_operations: Iterable[OperationBaseClass] | None = None,
+        cart_operations: Iterable[OperationBase] | None = None,
         chain_id: str | None = None,
         node_address: str | Url | None = None,
         *,

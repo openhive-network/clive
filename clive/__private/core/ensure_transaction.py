@@ -3,9 +3,9 @@ from __future__ import annotations
 from collections.abc import Iterable
 from typing import Any, TypeAlias
 
-from clive.__private.models import OperationBaseClass, OperationUnion, Transaction
+from clive.__private.models import OperationBase, OperationUnion, Transaction
 
-TransactionConvertibleType: TypeAlias = OperationBaseClass | Iterable[OperationBaseClass] | Transaction
+TransactionConvertibleType: TypeAlias = OperationBase | Iterable[OperationBase] | Transaction
 
 
 def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
@@ -25,13 +25,13 @@ def ensure_transaction(content: TransactionConvertibleType) -> Transaction:
     """
 
     def __ensure_operation(item: Any) -> OperationUnion:  # noqa: ANN401
-        assert isinstance(item, OperationBaseClass)
+        assert isinstance(item, OperationBase)
         return item  # type: ignore[return-value]
 
     if isinstance(content, Transaction):
         return content
 
-    if isinstance(content, OperationBaseClass):
+    if isinstance(content, OperationBase):
         operations = [content]
     elif isinstance(content, Iterable):
         operations = [__ensure_operation(x) for x in content]

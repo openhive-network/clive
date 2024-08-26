@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.profile import Profile
-    from clive.__private.models import OperationBaseClass
+    from clive.__private.models import OperationBase
 
 
 class DynamicColumn(DynamicLabel):
@@ -165,7 +165,7 @@ class CartItem(ColumnLayout, CliveWidget):
         return self.__idx
 
     @property
-    def operation(self) -> OperationBaseClass:
+    def operation(self) -> OperationBase:
         assert self.is_valid(), "cannot get operation, position is invalid"
         return self.profile.cart[self.__idx]
 

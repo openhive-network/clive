@@ -43,7 +43,7 @@ if TYPE_CHECKING:
         HpAPRProtocol,
         VestsToHpProtocol,
     )
-    from clive.__private.models.aliased import HbdExchangeRate, OperationBaseClass, PriceFeed
+    from clive.__private.models.aliased import HbdExchangeRate, OperationBase, PriceFeed
 
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:
@@ -147,7 +147,7 @@ def humanize_class_name(cls: str | type[Any]) -> str:
     return inflection.humanize(underscore(class_name))
 
 
-def humanize_operation_name(operation: OperationBaseClass) -> str:
+def humanize_operation_name(operation: OperationBase) -> str:
     """
     Return pretty formatted operation name.
 
@@ -158,7 +158,7 @@ def humanize_operation_name(operation: OperationBaseClass) -> str:
     return inflection.humanize(operation.get_name())
 
 
-def humanize_operation_details(operation: OperationBaseClass) -> str:
+def humanize_operation_details(operation: OperationBase) -> str:
     """
     Return pretty formatted operation details (properties).
 

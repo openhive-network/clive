@@ -10,7 +10,7 @@ from clive.__private.core.keys import PublicKeyAliased
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
-    from clive.__private.models import OperationBaseClass
+    from clive.__private.models import OperationBase
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,
@@ -65,7 +65,7 @@ class StorageToRuntimeConverter:
     def _key_aliases_from_profile_storage_model(self) -> set[PublicKeyAliased]:
         return {self._key_alias_from_model(key) for key in self._model.key_aliases}
 
-    def _operations_from_model(self) -> list[OperationBaseClass]:
+    def _operations_from_model(self) -> list[OperationBase]:
         return [op_repr.value for op_repr in self._model.cart_operations]  # type: ignore[attr-defined]
 
     def _working_account_from_model(self, model: TrackedAccountStorageModel) -> WorkingAccount:

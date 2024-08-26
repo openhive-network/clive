@@ -43,7 +43,7 @@ from schemas.fields.hex import Signature as SchemasSignature
 from schemas.fields.hex import TransactionId as SchemasTransactionId
 from schemas.fields.hive_int import HiveInt as SchemasHiveInt
 from schemas.fields.serializable import Serializable as SchemasSerializable
-from schemas.operation import Operation as SchemasBaseOperationType
+from schemas.operation import Operation
 from schemas.operations import AnyOperation
 from schemas.operations import CustomJsonOperation as SchemasCustomJsonOperation
 from schemas.operations import TransferOperation as SchemasTransferOperation
@@ -77,8 +77,8 @@ FindWitnesses = SchemasFindWitnesses
 HardforkProperties = GetHardforkProperties
 HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
 HiveInt = SchemasHiveInt
-OperationBaseClass = SchemasBaseOperationType
-OperationRepresentation = HF26Representation[OperationBaseClass]
+OperationBase = Operation
+OperationRepresentation = HF26Representation[OperationBase]
 OperationRepresentationType = Hf26OperationRepresentationType
 OperationUnion = AnyOperation
 OwnerHistory = OwnerHistoriesFundament

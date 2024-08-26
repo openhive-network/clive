@@ -6,7 +6,7 @@ if not is_tab_completion_active():
     from .aliased import (
         ApiOperationObject,
         ApiVirtualOperationObject,
-        OperationBaseClass,
+        OperationBase,
         OperationRepresentationType,
         OperationUnion,
         Signature,
@@ -23,7 +23,7 @@ if not is_tab_completion_active():
         "ApiVirtualOperationObject",
         "Asset",
         "HpVestsBalance",
-        "OperationBaseClass",
+        "OperationBase",
         "OperationRepresentationType",
         "OperationUnion",
         "Signature",
