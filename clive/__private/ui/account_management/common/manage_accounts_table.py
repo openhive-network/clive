@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Iterable, Literal
 
 from textual import on
 
-from clive.__private.ui.account_list_management.common.header_of_tables import AccountsTableHeader
+from clive.__private.ui.account_management.common.header_of_tables import AccountsTableHeader
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton

@@ -6,7 +6,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static
 
-from clive.__private.ui.account_list_management.account_list_management import AccountListManagement
+from clive.__private.ui.account_management.account_management import AccountManagement
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
@@ -39,7 +39,7 @@ class Config(BaseScreen):
 
     @on(CliveButton.Pressed, "#account-list-management")
     def push_account_list_management_screen(self) -> None:
-        self.app.push_screen(AccountListManagement())
+        self.app.push_screen(AccountManagement())
 
     @CliveScreen.try_again_after_unlock
     @on(CliveButton.Pressed, "#manage-key-aliases")
