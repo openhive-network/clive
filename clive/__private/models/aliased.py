@@ -64,7 +64,7 @@ from schemas.operations.representation_types import Hf26OperationRepresentationT
 from schemas.operations.representations.hf26_representation import HF26Representation
 from schemas.operations.virtual import AnyVirtualOperation
 from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
-from schemas.virtual_operation import VirtualOperation as SchemasBaseVirtualOperationType
+from schemas.virtual_operation import VirtualOperation
 
 Account = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 AccountName = SchemasAccountName
@@ -112,7 +112,7 @@ TransferOperation = SchemasTransferOperation
 Version = GetVersion
 VestingDelegation = VestingDelegationsFundament
 VestingDelegationExpiration = VestingDelegationExpirationsFundament[AssetVestsHF26]
-VirtualOperationBaseClass = SchemasBaseVirtualOperationType
+VirtualOperationBase = VirtualOperation
 VirtualOperationRepresentationType = Hf26VirtualOperationRepresentationType
 VirtualOperationUnion = AnyVirtualOperation
 WithdrawRouteSchema = WithdrawVestingRoutesFundament

@@ -10,7 +10,7 @@ if not is_tab_completion_active():
         OperationRepresentationUnion,
         OperationUnion,
         Signature,
-        VirtualOperationBaseClass,
+        VirtualOperationBase,
         VirtualOperationRepresentationType,
         VirtualOperationUnion,
     )
@@ -29,7 +29,7 @@ if not is_tab_completion_active():
         "Signature",
         "Transaction",
         "TransactionWithHash",
-        "VirtualOperationBaseClass",
+        "VirtualOperationBase",
         "VirtualOperationRepresentationType",
         "VirtualOperationRepresentationType",
         "VirtualOperationUnion",
