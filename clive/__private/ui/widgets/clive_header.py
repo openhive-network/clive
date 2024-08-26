@@ -114,14 +114,14 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
         return isinstance(self.app.screen, DashboardBase)
 
     def _push_switch_working_account_screen(self) -> None:
-        from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (  # noqa: E501
+        from clive.__private.ui.dialogs import (
             SwitchWorkingAccountScreen,
         )
 
         self.app.push_screen(SwitchWorkingAccountScreen())
 
     def _push_add_tracked_account_screen(self) -> None:
-        from clive.__private.ui.account_list_management.common.add_tracked_account_dialog import AddTrackedAccountDialog
+        from clive.__private.ui.dialogs import AddTrackedAccountDialog
 
         self.app.push_screen(AddTrackedAccountDialog())
 

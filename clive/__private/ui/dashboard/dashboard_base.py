@@ -16,12 +16,9 @@ from clive.__private.core.formatters.humanize import (
     humanize_percent,
 )
 from clive.__private.ui.account_details.account_details import AccountDetails
-from clive.__private.ui.account_list_management.common.add_tracked_account_dialog import AddTrackedAccountDialog
-from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_screen import (
-    SwitchWorkingAccountScreen,
-)
 from clive.__private.ui.config.config import Config
 from clive.__private.ui.dashboard.liquid_navigation_screen import LiquidNavigationScreen, auto_switch_working_account
+from clive.__private.ui.dialogs import AddTrackedAccountDialog, SwitchWorkingAccountScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations import Savings
 from clive.__private.ui.operations.operations import Operations
