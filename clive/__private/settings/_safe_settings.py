@@ -228,7 +228,7 @@ class SafeSettings:
 
         def _get_node_chain_id(self) -> str | None:
             from clive.__private.core.validate_schema_field import is_schema_field_valid
-            from clive.__private.models.aliased import ChainIdSchema
+            from clive.__private.models.aliased import ChainId
 
             setting_name = NODE_CHAIN_ID
             value = self._parent._get_value_from_settings(setting_name, "")
@@ -238,8 +238,8 @@ class SafeSettings:
             self._parent._assert_is_string(setting_name, value=value)
             value_ = cast(str, value)
 
-            if not is_schema_field_valid(ChainIdSchema, value_):
-                details = f"Chain ID should be {ChainIdSchema.max_length} characters long."
+            if not is_schema_field_valid(ChainId, value_):
+                details = f"Chain ID should be {ChainId.max_length} characters long."
                 raise SettingsValueError(setting_name=setting_name, value=value_, details=details)
             return value_
 
