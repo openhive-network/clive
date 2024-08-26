@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.node import Node
-    from clive.__private.models.aliased import DynamicGlobalProperties, SchemasAccount
+    from clive.__private.models.aliased import Account, DynamicGlobalProperties
     from schemas.apis.database_api import FindAccounts, FindVestingDelegations, ListWithdrawVestingRoutes
     from schemas.apis.database_api.fundaments_of_reponses import VestingDelegationsFundament as VestingDelegation
     from schemas.apis.database_api.fundaments_of_reponses import WithdrawVestingRoutesFundament as WithdrawRoute
@@ -32,7 +32,7 @@ class HarvestedDataRaw:
 @dataclass
 class SanitizedData:
     gdpo: DynamicGlobalProperties
-    core_account: SchemasAccount
+    core_account: Account
     withdraw_routes: list[WithdrawRoute]
     delegations: list[VestingDelegation[Asset.Vests]]
 
@@ -118,7 +118,7 @@ class HivePowerDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def _assert_core_account(self, data: FindAccounts | None) -> SchemasAccount:
+    def _assert_core_account(self, data: FindAccounts | None) -> Account:
         assert data is not None, "FindAccounts data is missing"
         assert len(data.accounts) == 1, "Invalid amount of accounts"
 

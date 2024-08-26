@@ -30,9 +30,9 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.node.node import Node
     from clive.__private.models.aliased import (
+        Account,
         FindRcAccounts,
         RcAccount,
-        SchemasAccount,
     )
     from schemas.apis.account_history_api import GetAccountHistory
     from schemas.apis.database_api import (
@@ -148,7 +148,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
             return utc_epoch()
         return data.history[0][1].timestamp
 
-    def _calculate_vests_balance(self, account: SchemasAccount) -> int:
+    def _calculate_vests_balance(self, account: Account) -> int:
         return (
             int(account.vesting_shares.amount)
             - int(account.delegated_vesting_shares.amount)
@@ -206,7 +206,7 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         assert data is not None, "GDPO data is missing..."
         return data
 
-    def __assert_core_accounts(self, data: FindAccounts | None) -> list[SchemasAccount]:
+    def __assert_core_accounts(self, data: FindAccounts | None) -> list[Account]:
         assert data is not None, "Core account data is missing..."
         assert len(data.accounts) == len(self.accounts), "Core accounts are missing some accounts..."
         return data.accounts

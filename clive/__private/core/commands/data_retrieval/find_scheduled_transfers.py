@@ -10,7 +10,7 @@ from clive.__private.core.constants.node import VALUE_TO_REMOVE_SCHEDULED_TRANSF
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 
 if TYPE_CHECKING:
-    from clive.__private.models.aliased import FindAccounts, RecurrentTransfer, SchemasAccount
+    from clive.__private.models.aliased import Account, FindAccounts, RecurrentTransfer
     from clive.__private.models.aliased import FindRecurrentTransfers as SchemasFindRecurrentTransfers
 from clive.__private.models.asset import Asset
 
@@ -62,7 +62,7 @@ class _HarvestedDataRaw:
 @dataclass
 class _SanitizedData:
     recurrent_transfers: list[RecurrentTransfer]
-    account_data: SchemasAccount
+    account_data: Account
 
 
 @dataclass
@@ -260,7 +260,7 @@ class FindScheduledTransfers(CommandDataRetrieval[_HarvestedDataRaw, _SanitizedD
         self._assert_from_account(data)
         return data.recurrent_transfers
 
-    def _sanitize_account_data(self, data: FindAccounts) -> SchemasAccount:
+    def _sanitize_account_data(self, data: FindAccounts) -> Account:
         self._assert_account_data(data)
         return data.accounts[0]
 

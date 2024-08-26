@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.models import Asset
-    from clive.__private.models.aliased import DynamicGlobalProperties, SavingsWithdrawal, SchemasAccount
+    from clive.__private.models.aliased import Account, DynamicGlobalProperties, SavingsWithdrawal
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
     from schemas.operations import TransferFromSavingsOperation
 
@@ -27,7 +27,7 @@ class HarvestedDataRaw:
 @dataclass
 class SanitizedData:
     dgpo: DynamicGlobalProperties
-    core_account: SchemasAccount
+    core_account: Account
     pending_transfers: list[SavingsWithdrawal]
 
 
@@ -106,7 +106,7 @@ class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def __assert_core_account(self, data: FindAccounts | None) -> SchemasAccount:
+    def __assert_core_account(self, data: FindAccounts | None) -> Account:
         assert data is not None, "FindAccounts data is missing"
         assert len(data.accounts) == 1, "Invalid amount of accounts"
 

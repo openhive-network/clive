@@ -66,6 +66,7 @@ from schemas.operations.virtual import AnyVirtualOperation
 from schemas.operations.virtual.representation_types import Hf26VirtualOperationRepresentationType
 from schemas.virtual_operation import VirtualOperation as SchemasBaseVirtualOperationType
 
+Account = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 AccountName = SchemasAccountName
 ApiOperationObject = Hf26ApiOperationObject
 ApiVirtualOperationObject = Hf26ApiVirtualOperationObject
@@ -103,7 +104,6 @@ RecurrentTransferOperation = SchemasRecurrentTransferOperation
 RecurrentTransferPairIdOperationExtension = RecurrentTransferPairId
 RecurrentTransferPairIdRepresentation = HF26Representation[RecurrentTransferPairIdOperationExtension]
 SavingsWithdrawal = SavingsWithdrawalsFundament[AssetHiveHF26, AssetHbdHF26]
-SchemasAccount = AccountItemFundament[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Serializable = SchemasSerializable
 Signature = SchemasSignature
 TransactionId = SchemasTransactionId

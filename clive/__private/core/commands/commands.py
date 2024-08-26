@@ -69,9 +69,9 @@ if TYPE_CHECKING:
     from clive.__private.core.world import TextualWorld, World
     from clive.__private.models import Transaction
     from clive.__private.models.aliased import (
+        Account,
         DynamicGlobalProperties,
         Proposal,
-        SchemasAccount,
         TransactionStatus,
         Witness,
     )
@@ -370,7 +370,7 @@ class Commands(Generic[WorldT_co]):
             FindProposal(node=self._world.node, proposal_id=proposal_id)
         )
 
-    async def find_accounts(self, *, accounts: list[str]) -> CommandWithResultWrapper[list[SchemasAccount]]:
+    async def find_accounts(self, *, accounts: list[str]) -> CommandWithResultWrapper[list[Account]]:
         return await self.__surround_with_exception_handlers(FindAccounts(node=self._world.node, accounts=accounts))
 
     async def find_vesting_delegation_expirations(

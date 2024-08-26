@@ -10,14 +10,14 @@ from clive.__private.core.date_utils import utc_epoch
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from clive.__private.models.aliased import DynamicGlobalProperties, FindRcAccounts, RcAccount, SchemasAccount
+    from clive.__private.models.aliased import Account, DynamicGlobalProperties, FindRcAccounts, RcAccount
     from schemas.apis.account_history_api import GetAccountHistory
     from schemas.apis.database_api import FindAccounts
 
 
 @dataclass
 class AccountHarvestedDataRaw:
-    core: SchemasAccount | None = None
+    core: Account | None = None
     rc: RcAccount | None = None
     account_history: GetAccountHistory | None = None
 
@@ -34,7 +34,7 @@ class HarvestedDataRaw:
 
 @dataclass
 class AccountSanitizedData:
-    core: SchemasAccount
+    core: Account
     account_history: GetAccountHistory | None = None
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None
@@ -52,7 +52,7 @@ class SanitizedData:
 
 @dataclass
 class AccountProcessedData:
-    core: SchemasAccount
+    core: Account
     last_history_entry: datetime = field(default_factory=lambda: utc_epoch())
     """Could be missing if account_history_api is not available"""
     rc: RcAccount | None = None

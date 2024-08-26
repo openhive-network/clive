@@ -18,7 +18,7 @@ if TYPE_CHECKING:
         AuthorityType,
         AuthorityUpdateFunction,
     )
-    from clive.__private.models.aliased import SchemasAccount
+    from clive.__private.models.aliased import Account
 
 
 @dataclass(kw_only=True)
@@ -55,7 +55,7 @@ class ProcessAccountUpdate(OperationCommand):
             extensions=[],
         )
 
-    def __create_operation_from_stored_state(self, account: SchemasAccount) -> AccountUpdate2Operation:
+    def __create_operation_from_stored_state(self, account: Account) -> AccountUpdate2Operation:
         return AccountUpdate2Operation(
             account=account.name,
             owner=account.owner,
