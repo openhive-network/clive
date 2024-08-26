@@ -15,6 +15,7 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import WitnessD
 from clive.__private.core.constants.node import MAX_NUMBER_OF_WITNESSES_VOTES
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.ui.data_providers.witnesses_data_provider import WitnessesDataProvider
+from clive.__private.ui.dialogs import WitnessDetailsDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
     GovernanceActionRow,
@@ -28,9 +29,6 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
     GovernanceListWidget,
     GovernanceTable,
     GovernanceTableRow,
-)
-from clive.__private.ui.operations.governance_operations.witness.witness_details_screen import (
-    WitnessDetailsScreen,
 )
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_widget import CliveWidget
@@ -122,7 +120,7 @@ class Witness(GovernanceTableRow[WitnessData]):
 
     @on(WitnessDetailsLabel.Clicked)
     async def action_show_details(self) -> None:
-        await self.app.push_screen(WitnessDetailsScreen(witness_name=self.row_data.name))
+        await self.app.push_screen(WitnessDetailsDialog(witness_name=self.row_data.name))
 
     @property
     def action_identifier(self) -> str:

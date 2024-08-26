@@ -22,7 +22,7 @@ class WitnessDetailsWidget(Static):
     BORDER_TITLE = "WITNESS DETAILS"
 
 
-class WitnessDetailsScreen(ModalScreen[None], CliveWidget):
+class WitnessDetailsDialog(ModalScreen[None], CliveWidget):
     BINDINGS = [Binding("escape,f3", "request_quit", "Close")]
 
     CSS_PATH = [get_relative_css_path(__file__)]
