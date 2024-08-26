@@ -4,14 +4,14 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.models.aliased import FindProposals, ProposalSchema
+from clive.__private.models.aliased import FindProposals, Proposal
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node
 
 
 @dataclass(kw_only=True)
-class FindProposal(CommandWithResult[ProposalSchema]):
+class FindProposal(CommandWithResult[Proposal]):
     node: Node
     proposal_id: int
 

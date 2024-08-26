@@ -37,7 +37,8 @@ from schemas.fields.assets import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from schemas.fields.assets._base import AssetBase as SchemasAssetBase
 from schemas.fields.basic import AccountName as SchemasAccountName
 from schemas.fields.compound import HbdExchangeRate as SchemasHbdExchangeRate
-from schemas.fields.compound import Price, Proposal
+from schemas.fields.compound import Price
+from schemas.fields.compound import Proposal as SchemasProposal
 from schemas.fields.hex import Sha256
 from schemas.fields.hex import Signature as SchemasSignature
 from schemas.fields.hex import TransactionId as SchemasTransactionId
@@ -83,7 +84,7 @@ OperationRepresentationUnion = Hf26OperationRepresentationType
 OperationUnion = AnyOperation
 OwnerHistory = OwnerHistoriesFundament
 PriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
-ProposalSchema = Proposal[AssetHbdHF26]
+Proposal = SchemasProposal[AssetHbdHF26]
 ProposalsList = ListProposals
 ProposalVotes = ListProposalVotes
 RcAccount = SchemasRcAccount[AssetVestsHF26]

@@ -14,7 +14,8 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.core.node.api.database_api import DatabaseApi
-    from clive.__private.models.aliased import DynamicGlobalProperties, ProposalSchema, ProposalsList, ProposalVotes
+    from clive.__private.models.aliased import DynamicGlobalProperties, ProposalsList, ProposalVotes
+    from clive.__private.models.aliased import Proposal as SchemasProposal
 
 
 @dataclass
@@ -49,8 +50,8 @@ class HarvestedDataRaw:
 @dataclass
 class SanitizedData:
     gdpo: DynamicGlobalProperties
-    list_proposals: list[ProposalSchema]
-    list_voted_proposals: list[ProposalSchema]
+    list_proposals: list[SchemasProposal]
+    list_voted_proposals: list[SchemasProposal]
 
 
 @dataclass
@@ -127,7 +128,7 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
             proposals=self.__get_prepared_proposals(data.list_proposals, data),
         )
 
-    def __create_proposal_data(self, proposal: ProposalSchema, data: SanitizedData) -> Proposal:
+    def __create_proposal_data(self, proposal: SchemasProposal, data: SanitizedData) -> Proposal:
         return Proposal(
             title=proposal.subject,
             proposal_id=proposal.proposal_id,
@@ -156,21 +157,21 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
 
         return sorted(combined_proposals, key=lambda proposal: not proposal.voted)
 
-    def __get_prepared_proposals(self, proposals: list[ProposalSchema], data: SanitizedData) -> list[Proposal]:
+    def __get_prepared_proposals(self, proposals: list[SchemasProposal], data: SanitizedData) -> list[Proposal]:
         return [self.__create_proposal_data(proposal, data) for proposal in proposals]
 
-    def __get_proposals_ids(self, proposals: list[ProposalSchema]) -> list[int]:
+    def __get_proposals_ids(self, proposals: list[SchemasProposal]) -> list[int]:
         return [proposal.proposal_id for proposal in proposals]
 
     def __assert_gdpo(self, data: DynamicGlobalProperties | None) -> DynamicGlobalProperties:
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def __assert_proposals_list(self, data: ProposalsList | None) -> list[ProposalSchema]:
+    def __assert_proposals_list(self, data: ProposalsList | None) -> list[SchemasProposal]:
         assert data is not None, "ListProposals data is missing"
         return data.proposals
 
-    def __assert_proposals_votes(self, data: ProposalVotes | None) -> list[ProposalSchema]:
+    def __assert_proposals_votes(self, data: ProposalVotes | None) -> list[SchemasProposal]:
         assert data is not None, "ListProposalsVotes data is missing"
         return [
             proposal_vote.proposal for proposal_vote in data.proposal_votes if proposal_vote.voter == self.account_name

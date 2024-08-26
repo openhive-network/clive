@@ -70,7 +70,7 @@ if TYPE_CHECKING:
     from clive.__private.models import Transaction
     from clive.__private.models.aliased import (
         DynamicGlobalProperties,
-        ProposalSchema,
+        Proposal,
         SchemasAccount,
         TransactionStatus,
         Witness,
@@ -365,7 +365,7 @@ class Commands(Generic[WorldT_co]):
             FindWitness(node=self._world.node, witness_name=witness_name)
         )
 
-    async def find_proposal(self, *, proposal_id: int) -> CommandWithResultWrapper[ProposalSchema]:
+    async def find_proposal(self, *, proposal_id: int) -> CommandWithResultWrapper[Proposal]:
         return await self.__surround_with_exception_handlers(
             FindProposal(node=self._world.node, proposal_id=proposal_id)
         )
