@@ -10,9 +10,9 @@ if not is_tab_completion_active():
         OperationRepresentationUnion,
         OperationUnion,
         Signature,
-        VirtualOperation,
         VirtualOperationBaseClass,
         VirtualOperationRepresentationType,
+        VirtualOperationUnion,
     )
     from .asset import Asset
     from .hp_vests_balance import HpVestsBalance
@@ -29,8 +29,8 @@ if not is_tab_completion_active():
         "Signature",
         "Transaction",
         "TransactionWithHash",
-        "VirtualOperation",
         "VirtualOperationBaseClass",
         "VirtualOperationRepresentationType",
         "VirtualOperationRepresentationType",
+        "VirtualOperationUnion",
     ]
