@@ -7,7 +7,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.ui.account_details.alarms.alarm_fix_details import get_detailed_alarm_fix_details
-from clive.__private.ui.account_details.alarms.alarm_info_screen.alarm_info_screen import AlarmInfoScreen
+from clive.__private.ui.dialogs import AlarmInfoDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
@@ -50,7 +50,7 @@ class AlarmsTableRow(CliveCheckerboardTableRow):
 
     @on(OneLineButton.Pressed, "#alarm-info-button")
     def push_alarm_info_screen(self) -> None:
-        self.app.push_screen(AlarmInfoScreen(self._alarm, self._alarm_fix_details, self._account))
+        self.app.push_screen(AlarmInfoDialog(self._alarm, self._alarm_fix_details, self._account))
 
 
 class AlarmsTable(CliveCheckerboardTable):

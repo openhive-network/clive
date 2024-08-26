@@ -8,7 +8,7 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Static
 
-from clive.__private.ui.account_details.alarms.alarm_info_screen.fix_alarm_info_widget import FixAlarmInfoWidget
+from clive.__private.ui.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.buttons.close_button import CloseButton
 from clive.__private.ui.widgets.clive_checkerboard_table import (
@@ -28,7 +28,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
-class AlarmInfo(Vertical):
+class AlarmInfoDialogContent(Vertical):
     """Stores alarm data and a description of how to fix it."""
 
     BORDER_TITLE = "ALARM INFO"
@@ -60,8 +60,8 @@ class AlarmData(CliveCheckerboardTable):
         return [AlarmDataRow(self._alarm_titled_data.values())]
 
 
-class AlarmInfoScreen(ModalScreen[None]):
-    """Modal screen containing information about the alarm and description of how to fix it."""
+class AlarmInfoDialog(ModalScreen[None]):
+    """Dialog screen containing information about the alarm and description of how to fix it."""
 
     BINDINGS = [Binding("escape,f3", "request_close", "Close")]
 
@@ -74,7 +74,7 @@ class AlarmInfoScreen(ModalScreen[None]):
         self._account = account
 
     def compose(self) -> ComposeResult:
-        with AlarmInfo():
+        with AlarmInfoDialogContent():
             yield SectionTitle(self._alarm.get_alarm_basic_info(), variant="red")
             yield SectionTitle("Details")
             if self._alarm.ALARM_DESCRIPTION:
