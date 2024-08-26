@@ -13,10 +13,18 @@ from schemas.apis.database_api import (
     GetHardforkProperties,
     GetVersion,
     GetWitnessSchedule,
-    ListProposals,
-    ListProposalVotes,
-    ListWitnesses,
-    ListWitnessVotes,
+)
+from schemas.apis.database_api import (
+    ListProposals as SchemasListProposals,
+)
+from schemas.apis.database_api import (
+    ListProposalVotes as SchemasListProposalVotes,
+)
+from schemas.apis.database_api import (
+    ListWitnesses as SchemasListWitnesses,
+)
+from schemas.apis.database_api import (
+    ListWitnessVotes as SchemasListWitnessVotes,
 )
 from schemas.apis.database_api.fundaments_of_reponses import (
     AccountItemFundament,
@@ -78,6 +86,10 @@ FindWitnesses = SchemasFindWitnesses
 HardforkProperties = GetHardforkProperties
 HbdExchangeRate = SchemasHbdExchangeRate[AssetHiveHF26, AssetHbdHF26]
 HiveInt = SchemasHiveInt
+ListProposals = SchemasListProposals
+ListProposalVotes = SchemasListProposalVotes
+ListWitnesses = SchemasListWitnesses
+ListWitnessVotes = SchemasListWitnessVotes
 OperationBase = Operation
 OperationRepresentationBase = HF26Representation[OperationBase]
 OperationRepresentationUnion = Hf26OperationRepresentationType
@@ -85,8 +97,6 @@ OperationUnion = AnyOperation
 OwnerHistory = OwnerHistoriesFundament
 PriceFeed = Price[AssetHiveHF26, AssetHbdHF26, AssetVestsHF26]
 Proposal = SchemasProposal[AssetHbdHF26]
-ProposalsList = ListProposals
-ProposalVotes = ListProposalVotes
 RcAccount = SchemasRcAccount[AssetVestsHF26]
 RecurrentTransfer = FindRecurrentTransfersFundament[AssetHiveHF26, AssetHbdHF26]
 RecurrentTransferOperation = SchemasRecurrentTransferOperation
@@ -107,6 +117,4 @@ VirtualOperationBaseClass = SchemasBaseVirtualOperationType
 VirtualOperationRepresentationType = Hf26VirtualOperationRepresentationType
 WithdrawRouteSchema = WithdrawVestingRoutesFundament
 Witness = WitnessesFundament[AssetHiveHF26, AssetHbdHF26]
-WitnessesList = ListWitnesses
 WitnessSchedule = GetWitnessSchedule
-WitnessVotes = ListWitnessVotes

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.core.node.api.database_api import DatabaseApi
-    from clive.__private.models.aliased import DynamicGlobalProperties, ProposalsList, ProposalVotes
+    from clive.__private.models.aliased import DynamicGlobalProperties, ListProposals, ListProposalVotes
     from clive.__private.models.aliased import Proposal as SchemasProposal
 
 
@@ -43,8 +43,8 @@ class Proposal:
 @dataclass
 class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
-    list_proposals: ProposalsList | None = None
-    list_voted_proposals: ProposalVotes | None = None
+    list_proposals: ListProposals | None = None
+    list_voted_proposals: ListProposalVotes | None = None
 
 
 @dataclass
@@ -167,11 +167,11 @@ class ProposalsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def __assert_proposals_list(self, data: ProposalsList | None) -> list[SchemasProposal]:
+    def __assert_proposals_list(self, data: ListProposals | None) -> list[SchemasProposal]:
         assert data is not None, "ListProposals data is missing"
         return data.proposals
 
-    def __assert_proposals_votes(self, data: ProposalVotes | None) -> list[SchemasProposal]:
+    def __assert_proposals_votes(self, data: ListProposalVotes | None) -> list[SchemasProposal]:
         assert data is not None, "ListProposalsVotes data is missing"
         return [
             proposal_vote.proposal for proposal_vote in data.proposal_votes if proposal_vote.voter == self.account_name

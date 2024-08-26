@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node import Node
-    from clive.__private.models.aliased import DynamicGlobalProperties, Witness, WitnessesList, WitnessVotes
+    from clive.__private.models.aliased import DynamicGlobalProperties, ListWitnesses, ListWitnessVotes, Witness
 
 
 @dataclass
@@ -44,9 +44,9 @@ class WitnessData:
 @dataclass
 class HarvestedDataRaw:
     gdpo: DynamicGlobalProperties | None = None
-    list_witnesses_votes: WitnessVotes | None = None
-    top_witnesses: WitnessesList | None = None
-    witnesses_searched_by_name: WitnessesList | None = None
+    list_witnesses_votes: ListWitnessVotes | None = None
+    top_witnesses: ListWitnesses | None = None
+    witnesses_searched_by_name: ListWitnesses | None = None
 
 
 @dataclass
@@ -119,7 +119,7 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
                 order="by_vote_name",
             )
 
-            witnesses_by_name: WitnessesList | None = None
+            witnesses_by_name: ListWitnesses | None = None
 
             if self.mode == "search_by_pattern":
                 witnesses_by_name = await node.api.database_api.list_witnesses(
@@ -215,10 +215,10 @@ class WitnessesDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedDat
         assert data is not None, "DynamicGlobalProperties data is missing"
         return data
 
-    def __assert_witnesses_votes(self, data: WitnessVotes | None) -> list[str]:
+    def __assert_witnesses_votes(self, data: ListWitnessVotes | None) -> list[str]:
         assert data is not None, "ListWitnessVotes data is missing"
         return [witness_vote.witness for witness_vote in data.votes if witness_vote.account == self.account_name]
 
-    def __assert_list_witnesses(self, data: WitnessesList | None) -> list[Witness]:
+    def __assert_list_witnesses(self, data: ListWitnesses | None) -> list[Witness]:
         assert data is not None, "ListWitnesses data is missing"
         return data.witnesses
