@@ -7,9 +7,9 @@ from textual.binding import Binding
 from textual.containers import Center, Container, Horizontal
 from textual.screen import ModalScreen
 
-from clive.__private.ui.account_list_management.common.account_managament_reference import AccountManagementReference
-from clive.__private.ui.account_list_management.common.add_account_container import AddAccountContainer
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.widgets.account_managament_reference import AccountManagementReference
+from clive.__private.ui.widgets.add_account_container import AddAccountContainer
 from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 

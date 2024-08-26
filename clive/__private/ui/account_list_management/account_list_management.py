@@ -6,15 +6,15 @@ from textual import on
 from textual.binding import Binding
 from textual.events import ScreenSuspend
 
-from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_container import (
-    SwitchWorkingAccountContainer,
-)
 from clive.__private.ui.account_list_management.known_accounts import KnownAccounts
 from clive.__private.ui.account_list_management.tracked_accounts import TrackedAccounts
 from clive.__private.ui.account_list_management.working_account import WorkingAccount
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.switch_working_account_container import (
+    SwitchWorkingAccountContainer,
+)
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

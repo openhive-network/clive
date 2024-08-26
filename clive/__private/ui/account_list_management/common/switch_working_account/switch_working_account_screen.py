@@ -7,13 +7,13 @@ from textual.binding import Binding
 from textual.containers import Horizontal, Vertical
 from textual.screen import ModalScreen
 
-from clive.__private.ui.account_list_management.common.account_managament_reference import AccountManagementReference
-from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_container import (
-    SwitchWorkingAccountContainer,
-)
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.widgets.account_managament_reference import AccountManagementReference
 from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.switch_working_account_container import (
+    SwitchWorkingAccountContainer,
+)
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

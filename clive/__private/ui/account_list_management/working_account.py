@@ -4,12 +4,12 @@ from typing import TYPE_CHECKING, Final
 
 from textual.widgets import TabPane
 
-from clive.__private.ui.account_list_management.common.switch_working_account.switch_working_account_container import (
-    SwitchWorkingAccountContainer,
-)
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.switch_working_account_container import (
+    SwitchWorkingAccountContainer,
+)
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
