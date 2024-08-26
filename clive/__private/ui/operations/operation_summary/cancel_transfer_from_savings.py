@@ -10,13 +10,13 @@ from schemas.operations import CancelTransferFromSavingsOperation
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.aliased import SavingsWithdrawals
+    from clive.__private.models.aliased import SavingsWithdrawal
 
 
 class CancelTransferFromSavings(OperationSummary):
     SECTION_TITLE: ClassVar[str] = "Cancel transfer from savings"
 
-    def __init__(self, transfer: SavingsWithdrawals) -> None:
+    def __init__(self, transfer: SavingsWithdrawal) -> None:
         super().__init__()
         self._transfer = transfer
 

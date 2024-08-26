@@ -52,7 +52,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.__private.models.aliased import SavingsWithdrawals
+    from clive.__private.models.aliased import SavingsWithdrawal
 
 
 TransferType = Literal["from-savings", "to-savings"]
@@ -138,7 +138,7 @@ class PendingTransfersHeader(Horizontal):
 
 
 class PendingTransfer(CliveCheckerboardTableRow):
-    def __init__(self, pending_transfer: SavingsWithdrawals, aligned_amount: str) -> None:
+    def __init__(self, pending_transfer: SavingsWithdrawal, aligned_amount: str) -> None:
         super().__init__(
             CliveCheckerBoardTableCell(pending_transfer.to),
             CliveCheckerBoardTableCell(aligned_amount),
@@ -158,7 +158,7 @@ class PendingTransfers(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(header=PendingTransfersHeader(), title=SectionTitle(""))
-        self._previous_pending_transfers: list[SavingsWithdrawals] | NotUpdatedYet = NotUpdatedYet()
+        self._previous_pending_transfers: list[SavingsWithdrawal] | NotUpdatedYet = NotUpdatedYet()
 
     def create_dynamic_rows(self, content: SavingsData) -> list[PendingTransfer]:
         self._title: Static

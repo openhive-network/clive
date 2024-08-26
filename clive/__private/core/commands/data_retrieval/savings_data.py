@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.models import Asset
-    from clive.__private.models.aliased import DynamicGlobalProperties, SavingsWithdrawals, SchemasAccount
+    from clive.__private.models.aliased import DynamicGlobalProperties, SavingsWithdrawal, SchemasAccount
     from schemas.apis.database_api import FindAccounts, FindSavingsWithdrawals
     from schemas.operations import TransferFromSavingsOperation
 
@@ -28,13 +28,13 @@ class HarvestedDataRaw:
 class SanitizedData:
     dgpo: DynamicGlobalProperties
     core_account: SchemasAccount
-    pending_transfers: list[SavingsWithdrawals]
+    pending_transfers: list[SavingsWithdrawal]
 
 
 @dataclass
 class SavingsData:
     hbd_interest_rate: int
-    pending_transfers: list[SavingsWithdrawals]
+    pending_transfers: list[SavingsWithdrawal]
     last_interest_payment: datetime
     hive_savings_balance: Asset.Hive
     hbd_savings_balance: Asset.Hbd
@@ -114,6 +114,6 @@ class SavingsDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData,
         assert account.name == self.account_name, "Invalid account name"
         return account
 
-    def __assert_pending_transfers(self, data: FindSavingsWithdrawals | None) -> list[SavingsWithdrawals]:
+    def __assert_pending_transfers(self, data: FindSavingsWithdrawals | None) -> list[SavingsWithdrawal]:
         assert data is not None, "FindSavingsWithdrawals data is missing"
         return data.withdrawals

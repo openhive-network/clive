@@ -13,7 +13,7 @@ from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.__private.models.aliased import SavingsWithdrawals
+    from clive.__private.models.aliased import SavingsWithdrawal
 
 
 @dataclass(kw_only=True)
@@ -38,7 +38,7 @@ class ShowPendingWithdrawals(WorldBasedCommand):
         table.add_column("Memo", justify="right", style="green", no_wrap=True)
         table.add_column("RequestId", justify="right", style="green", no_wrap=True)
 
-        transfer: SavingsWithdrawals
+        transfer: SavingsWithdrawal
         for transfer in result.pending_transfers:
             table.add_row(
                 f"{transfer.to}",
