@@ -43,7 +43,7 @@ if TYPE_CHECKING:
         HpAPRProtocol,
         VestsToHpProtocol,
     )
-    from clive.__private.models.aliased import CurrentPriceFeed, HbdExchangeRate, OperationBaseClass
+    from clive.__private.models.aliased import HbdExchangeRate, OperationBaseClass, PriceFeed
 
 
 def _round_to_precision(data: Decimal, precision: int) -> Decimal:
@@ -219,7 +219,7 @@ def humanize_hp_vests_apr(data: HpAPRProtocol | Decimal, *, with_label: bool = F
     return _maybe_labelize(HP_VEST_APR_LABEL, humanize_apr(data), add_label=with_label)
 
 
-def humanize_median_hive_price(current_price_feed: CurrentPriceFeed, *, with_label: bool = False) -> str:
+def humanize_median_hive_price(current_price_feed: PriceFeed, *, with_label: bool = False) -> str:
     """Return formatted median hive price."""
     return _maybe_labelize(MEDIAN_HIVE_PRICE_LABEL, current_price_feed.base.pretty_amount(), add_label=with_label)
 

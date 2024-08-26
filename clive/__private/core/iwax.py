@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.keys import PrivateKey, PublicKey
     from clive.__private.models import Operation
-    from clive.__private.models.aliased import CurrentPriceFeed
+    from clive.__private.models.aliased import PriceFeed
 
 
 class HpAPRProtocol(Protocol):
@@ -183,7 +183,7 @@ def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
     return DecimalConverter.convert(result.result.decode(), precision=HIVE_PERCENT_PRECISION_DOT_PLACES)
 
 
-def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: CurrentPriceFeed) -> Asset.Hive:
+def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: PriceFeed) -> Asset.Hive:
     result = wax.calculate_hbd_to_hive(
         hbd=to_python_json_asset(_hbd),
         base=to_python_json_asset(current_price_feed.base),

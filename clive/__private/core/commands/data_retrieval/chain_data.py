@@ -32,10 +32,10 @@ if TYPE_CHECKING:
     from clive.__private.core.node import Node
     from clive.__private.models import Asset
     from clive.__private.models.aliased import (
-        CurrentPriceFeed,
         DynamicGlobalProperties,
         FeedHistory,
         HardforkProperties,
+        PriceFeed,
         Version,
         WitnessSchedule,
     )
@@ -47,7 +47,7 @@ class HarvestedDataRaw:
     witness_schedule: WitnessSchedule | None
     version: Version | None
     hardfork_properties: HardforkProperties | None
-    current_price_feed: CurrentPriceFeed | None
+    current_price_feed: PriceFeed | None
     feed: FeedHistory | None
 
 
@@ -57,7 +57,7 @@ class SanitizedData:
     witness_schedule: WitnessSchedule
     version: Version
     hardfork_properties: HardforkProperties
-    current_price_feed: CurrentPriceFeed
+    current_price_feed: PriceFeed
     feed: FeedHistory
     account_creation_fee: Asset.Hive
 
@@ -77,13 +77,13 @@ class ChainData:
     head_block_time: datetime
     last_irreversible_block_num: int
     maximum_block_size: int
-    median_hive_price: CurrentPriceFeed
+    median_hive_price: PriceFeed
     participation: int
     vests_apr: Decimal
     vests_to_hive_ratio: Decimal
     witness_majority_version: str
-    _current_median_history: CurrentPriceFeed
-    _market_median_history: CurrentPriceFeed
+    _current_median_history: PriceFeed
+    _market_median_history: PriceFeed
 
     def __post_init__(self) -> None:
         self.__align_financial_data()
@@ -302,7 +302,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
         assert hardfork_properties, "HardforkProperties are missing."
         return hardfork_properties
 
-    def __assert_current_price_feed(self, current_price_feed: CurrentPriceFeed | None) -> CurrentPriceFeed:
+    def __assert_current_price_feed(self, current_price_feed: PriceFeed | None) -> PriceFeed:
         assert current_price_feed, "CurrentPriceFeed is missing."
         return current_price_feed
 
