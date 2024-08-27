@@ -353,7 +353,6 @@ class Cart(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f9", "clear_all", "Clear all"),
         Binding("f6", "summary", "Summary"),
     ]
     BIG_TITLE = "operations cart"
@@ -362,13 +361,5 @@ class Cart(BaseScreen):
         with ScrollablePart():
             yield CartTable()
 
-    async def __rebuild_items(self, from_index: int = 0, to_index: int | None = None) -> None:
-        await self._cart_table.rebuild(starting_from_element=from_index, ending_with_element=to_index)
-
     def action_summary(self) -> None:
         self.app.push_screen(TransactionSummaryFromCart())
-
-    async def action_clear_all(self) -> None:
-        self.profile.cart.clear()
-        self.app.trigger_profile_watchers()
-        await self.__rebuild_items()
