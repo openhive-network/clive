@@ -257,11 +257,13 @@ class Node(BaseNode):
 
         @property
         async def dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
-            """Try to get the dynamic global props or return None instead of error if e.g. node is not available."""
+            """Try to get the dynamic global props or return None when node is not available."""
             try:
                 return await self.dynamic_global_properties
-            except CommunicationError:
-                return None
+            except CommunicationError as error:
+                if not error.is_response_available:
+                    return None
+                raise
 
         @property
         async def network_type(self) -> str:
