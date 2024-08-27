@@ -18,8 +18,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
-    from clive.__private.models import OperationUnion
-    from clive.__private.models.aliased import PriceFeed
+    from clive.__private.models.aliased import OperationUnion, PriceFeed
 
 
 class HpAPRProtocol(Protocol):

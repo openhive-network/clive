@@ -7,7 +7,7 @@ from textual.widgets import Static
 
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import humanize_operation_name, humanize_percent
-from clive.__private.models import Asset, OperationBase
+from clive.__private.models import Asset
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import WorkingAccount
     from clive.__private.core.profile import Profile
+    from clive.__private.models.aliased import OperationBase
 
 
 class Resources(Grid):

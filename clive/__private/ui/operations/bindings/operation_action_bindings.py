@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.keys import PublicKeyAliased
-    from clive.__private.models import OperationUnion
+    from clive.__private.models.aliased import OperationUnion
 
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"

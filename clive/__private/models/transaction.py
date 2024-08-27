@@ -5,11 +5,12 @@ from typing import Any
 
 from pydantic import Field, validator
 
-from clive.__private.models import OperationUnion, Signature  # noqa: TCH001
 from clive.__private.models.aliased import (
     HiveDateTime,
     HiveInt,
     OperationRepresentationUnion,
+    OperationUnion,
+    Signature,
     TransactionId,
     convert_to_representation,
 )

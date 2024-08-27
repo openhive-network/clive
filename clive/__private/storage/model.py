@@ -4,7 +4,7 @@ from hashlib import sha256
 from typing import Any
 
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier  # noqa: TCH001
-from clive.__private.models import OperationRepresentationUnion  # noqa: TCH001
+from clive.__private.models.aliased import OperationRepresentationUnion  # noqa: TCH001
 from clive.__private.models.base import CliveBaseModel
 
 

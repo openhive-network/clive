@@ -24,7 +24,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.profile import Profile
-    from clive.__private.models import OperationBase
+    from clive.__private.models.aliased import OperationBase
 
 
 class DynamicColumn(DynamicLabel):

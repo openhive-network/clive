@@ -7,7 +7,7 @@ from clive.__private.models import Asset, Transaction
 from clive.__private.models.aliased import TransferOperation
 
 if TYPE_CHECKING:
-    from clive.__private.models import OperationUnion
+    from clive.__private.models.aliased import OperationUnion
 
 
 operations: Final[list[OperationUnion]] = [

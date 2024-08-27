@@ -26,8 +26,8 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
 
-    from clive.__private.models import OperationUnion, Transaction
-    from clive.__private.models.aliased import OperationRepresentationBase
+    from clive.__private.models import Transaction
+    from clive.__private.models.aliased import OperationRepresentationBase, OperationUnion
 
 
 class StaticPart(Container):
