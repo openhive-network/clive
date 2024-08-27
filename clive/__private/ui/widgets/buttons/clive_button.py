@@ -27,25 +27,25 @@ class CliveButton(Button, CliveWidget):
             background: $panel-lighten-1;
 
             &:hover {
-                background: rgba(0, 0, 0, 0.2);
+                background: 20%;
             }
         }
 
         &.-success-on-transparent {
-            background: rgba(0, 0, 0, 0);
+            background: 0%;
             color: $success-darken-3;
 
             &:hover {
-                background: rgba(0, 0, 0, 0.2);
+                background: 20%;
             }
         }
 
         &.-error-on-transparent {
-            background: rgba(0, 0, 0, 0);
+            background: 0%;
             color: $error;
 
             &:hover {
-                background: rgba(0, 0, 0, 0.2);
+                background: 20%;
             }
         }
 
