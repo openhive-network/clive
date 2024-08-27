@@ -1,8 +1,8 @@
-LiquidNavigationScreen {
+LiquidNavigationDialog {
   align: center middle;
   background: $background 85%;
 
-  LiquidNavigationScreenContent {
+  LiquidNavigationDialogContent {
     border-title-style: bold;
     border-title-color: $text;
     border-title-background: $primary;

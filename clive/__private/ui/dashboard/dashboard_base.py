@@ -18,8 +18,8 @@ from clive.__private.core.formatters.humanize import (
 from clive.__private.models import Asset
 from clive.__private.ui.account_details.account_details import AccountDetails
 from clive.__private.ui.config.config import Config
-from clive.__private.ui.dashboard.liquid_navigation_screen import LiquidNavigationScreen, auto_switch_working_account
 from clive.__private.ui.dialogs import AddTrackedAccountDialog, SwitchWorkingAccountDialog
+from clive.__private.ui.dialogs.liquid_navigation_dialog import LiquidNavigationDialog, auto_switch_working_account
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations import Savings
 from clive.__private.ui.operations.operations import Operations
@@ -173,7 +173,7 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
     @on(OneLineButton.Pressed, ".balance-button")
     def push_balance_screen(self) -> None:
         if self._balance_type == "liquid":
-            self.app.push_screen(LiquidNavigationScreen(self._account, asset_type=self._asset_type))
+            self.app.push_screen(LiquidNavigationDialog(self._account, asset_type=self._asset_type))
             return
 
         auto_switch_working_account(self, self._account)

@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.section import Section
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-
 ActionType = Literal["transfer-to-account", "transfer-to-savings", "power-up"]
 
 
@@ -30,7 +29,7 @@ def auto_switch_working_account(widget: CliveWidget, account: str | Account) -> 
     widget.app.trigger_profile_watchers()
 
 
-class LiquidNavigationScreenContent(Vertical):
+class LiquidNavigationDialogContent(Vertical):
     pass
 
 
@@ -62,7 +61,7 @@ class LiquidOperationChooseButton(OneLineButton):
         self.app.push_screen(HivePowerManagement())
 
 
-class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
+class LiquidNavigationDialog(ModalScreen[None], CliveWidget):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [Binding("escape", "cancel", "Quit")]
 
@@ -72,7 +71,7 @@ class LiquidNavigationScreen(ModalScreen[None], CliveWidget):
         self._asset_type = asset_type
 
     def compose(self) -> ComposeResult:
-        content = LiquidNavigationScreenContent()
+        content = LiquidNavigationDialogContent()
         content.border_title = f"Choose liquid operation to perform on {Asset.get_symbol(self._asset_type)}"
 
         with content:
