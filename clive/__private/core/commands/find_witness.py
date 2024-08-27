@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
-from clive.__private.models.aliased import FindWitnesses, Witness
+from clive.__private.models.schemas import FindWitnesses, Witness
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node

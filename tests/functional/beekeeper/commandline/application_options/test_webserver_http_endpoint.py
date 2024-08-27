@@ -7,7 +7,7 @@ import pytest
 
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.url import Url
-from clive.__private.models.aliased import get_response_model
+from clive.__private.models.schemas import get_response_model
 from clive_local_tools.beekeeper.network import get_port
 from schemas.apis import beekeeper_api
 

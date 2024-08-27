@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.iwax import validate_transaction
 from clive.__private.models import Asset, Transaction
-from clive.__private.models.aliased import TransferOperation
+from clive.__private.models.schemas import TransferOperation
 
 if TYPE_CHECKING:
-    from clive.__private.models.aliased import OperationUnion
+    from clive.__private.models.schemas import OperationUnion
 
 
 operations: Final[list[OperationUnion]] = [

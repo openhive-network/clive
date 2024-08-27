@@ -9,7 +9,7 @@ from textual.widgets import Checkbox, Static, TabPane
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_bool
 from clive.__private.core.percent_conversions import percent_to_hive_percent
-from clive.__private.models.aliased import SetWithdrawVestingRouteOperation
+from clive.__private.models.schemas import SetWithdrawVestingRouteOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -36,7 +36,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.__private.models.aliased import WithdrawRoute as SchemasWithdrawRoute
+    from clive.__private.models.schemas import WithdrawRoute as SchemasWithdrawRoute
 
 
 class PlaceTaker(Static):

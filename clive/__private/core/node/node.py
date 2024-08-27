@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, Any, Final
 from clive.__private.core.commands.data_retrieval.get_node_basic_info import GetNodeBasicInfo, NodeBasicInfoData
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.api.apis import Apis
-from clive.__private.models.aliased import JSONRPCExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
+from clive.__private.models.schemas import JSONRPCExpectResultT, JSONRPCRequest, JSONRPCResult, get_response_model
 from clive.__private.settings import safe_settings
 from clive.exceptions import CliveError, CommunicationError
 
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.profile import Profile
     from clive.__private.core.url import Url
-    from clive.__private.models.aliased import Config, DynamicGlobalProperties, Version
+    from clive.__private.models.schemas import Config, DynamicGlobalProperties, Version
 
 
 class BatchRequestError(CliveError):

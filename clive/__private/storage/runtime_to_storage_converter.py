@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.models.aliased import convert_to_representation
+from clive.__private.models.schemas import convert_to_representation
 from clive.__private.storage.model import (
     AlarmStorageModel,
     KeyAliasStorageModel,
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
-    from clive.__private.models.aliased import OperationRepresentationBase
+    from clive.__private.models.schemas import OperationRepresentationBase
 
 
 class RuntimeToStorageConverter:

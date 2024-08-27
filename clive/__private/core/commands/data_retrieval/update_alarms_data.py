@@ -9,7 +9,7 @@ from clive.__private.core.commands.abc.command_cached_data_retrieval import Comm
 
 if TYPE_CHECKING:
     from clive.__private.core.node import Node
-    from clive.__private.models.aliased import (
+    from clive.__private.models.schemas import (
         ChangeRecoveryAccountRequest,
         DeclineVotingRightsRequest,
         ListChangeRecoveryAccountRequests,

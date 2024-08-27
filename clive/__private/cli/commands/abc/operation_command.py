@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 from clive.__private.cli.commands.abc.perform_actions_on_transaction_command import PerformActionsOnTransactionCommand
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
-from clive.__private.models.aliased import OperationUnion
+from clive.__private.models.schemas import OperationUnion
 
 
 @dataclass(kw_only=True)

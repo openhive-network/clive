@@ -9,7 +9,7 @@ from textual.widgets import Button, Label, RadioSet, Static, TabPane
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models import Asset
-from clive.__private.models.aliased import (
+from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
@@ -52,7 +52,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.__private.models.aliased import SavingsWithdrawal
+    from clive.__private.models.schemas import SavingsWithdrawal
 
 
 TransferType = Literal["from-savings", "to-savings"]

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.models.aliased import JSONRPCRequest
+from clive.__private.models.schemas import JSONRPCRequest
 from clive_local_tools.beekeeper.network import raw_http_call
 
 if TYPE_CHECKING:

@@ -10,7 +10,7 @@ from clive.__private.core.date_utils import utc_epoch
 if TYPE_CHECKING:
     from datetime import datetime
 
-    from clive.__private.models.aliased import (
+    from clive.__private.models.schemas import (
         Account,
         DynamicGlobalProperties,
         FindAccounts,

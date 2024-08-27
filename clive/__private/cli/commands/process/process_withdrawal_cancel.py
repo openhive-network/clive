@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.models.aliased import CancelTransferFromSavingsOperation
+from clive.__private.models.schemas import CancelTransferFromSavingsOperation
 
 
 @dataclass(kw_only=True)

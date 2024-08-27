@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_DELEGATION
 from clive.__private.models import Asset
-from clive.__private.models.aliased import DelegateVestingSharesOperation
+from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.aliased import VestingDelegation
+    from clive.__private.models.schemas import VestingDelegation
 
 
 class RemoveDelegation(OperationSummary):

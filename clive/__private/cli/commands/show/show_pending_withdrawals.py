@@ -13,7 +13,7 @@ from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData
-    from clive.__private.models.aliased import SavingsWithdrawal
+    from clive.__private.models.schemas import SavingsWithdrawal
 
 
 @dataclass(kw_only=True)

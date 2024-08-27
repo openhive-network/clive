@@ -5,7 +5,7 @@ from typing import Any
 
 from pydantic import Field, validator
 
-from clive.__private.models.aliased import (
+from clive.__private.models.schemas import (
     HiveDateTime,
     HiveInt,
     OperationRepresentationUnion,
@@ -14,7 +14,7 @@ from clive.__private.models.aliased import (
     TransactionId,
     convert_to_representation,
 )
-from clive.__private.models.aliased import Transaction as SchemasTransaction
+from clive.__private.models.schemas import Transaction as SchemasTransaction
 
 
 class Transaction(SchemasTransaction):

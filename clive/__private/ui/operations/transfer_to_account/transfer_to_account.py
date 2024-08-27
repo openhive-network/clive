@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 from textual.containers import Grid
 
 from clive.__private.models import Asset
-from clive.__private.models.aliased import TransferOperation
 from clive.__private.models.asset import AssetAmount
+from clive.__private.models.schemas import TransferOperation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen

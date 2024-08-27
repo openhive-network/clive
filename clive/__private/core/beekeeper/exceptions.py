@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from clive.exceptions import CliveError, CommunicationError
 
 if TYPE_CHECKING:
-    from clive.__private.models.aliased import JSONRPCRequest
+    from clive.__private.models.schemas import JSONRPCRequest
     from clive.exceptions import CommunicationResponseT
 
 

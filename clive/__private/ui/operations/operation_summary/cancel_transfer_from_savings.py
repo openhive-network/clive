@@ -3,14 +3,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.formatters import humanize
-from clive.__private.models.aliased import CancelTransferFromSavingsOperation
+from clive.__private.models.schemas import CancelTransferFromSavingsOperation
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.aliased import SavingsWithdrawal
+    from clive.__private.models.schemas import SavingsWithdrawal
 
 
 class CancelTransferFromSavings(OperationSummary):

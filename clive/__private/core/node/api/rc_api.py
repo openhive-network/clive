@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from clive.__private.core.node.api.api import Api
-from clive.__private.models.aliased import (  # noqa: TCH001
+from clive.__private.models.schemas import (  # noqa: TCH001
     FindRcAccounts,
     GetResourcePool,
     ListRcAccounts,

@@ -7,7 +7,7 @@ from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
-    from clive.__private.models.aliased import DynamicGlobalProperties
+    from clive.__private.models.schemas import DynamicGlobalProperties
 
 
 def ensure_vests(value: Asset.VotingT, gdpo: DynamicGlobalProperties) -> Asset.Vests:

@@ -20,7 +20,7 @@ from clive.__private.core.constants.node import (
 )
 from clive.__private.core.date_utils import timedelta_to_int_hours
 from clive.__private.models import Asset
-from clive.__private.models.aliased import (
+from clive.__private.models.schemas import (
     RecurrentTransferOperation,
     RecurrentTransferPairIdExtension,
     RecurrentTransferPairIdRepresentation,

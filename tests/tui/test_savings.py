@@ -6,7 +6,7 @@ import pytest
 import test_tools as tt
 from textual.widgets import RadioSet
 
-from clive.__private.models.aliased import (
+from clive.__private.models.schemas import (
     CancelTransferFromSavingsOperation,
     TransferFromSavingsOperation,
     TransferToSavingsOperation,

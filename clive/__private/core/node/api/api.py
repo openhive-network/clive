@@ -5,7 +5,7 @@ from functools import wraps
 from typing import TYPE_CHECKING, Any, ParamSpec, TypeVar, get_type_hints
 
 from clive.__private.core.formatters.case import underscore
-from clive.__private.models.aliased import JSONRPCRequest
+from clive.__private.models.schemas import JSONRPCRequest
 
 if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable

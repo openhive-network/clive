@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from clive.__private.core.validate_schema_field import validate_schema_field
-from clive.__private.models.aliased import TransactionId
+from clive.__private.models.schemas import TransactionId
 
 
 def get_transaction_id_from_output(output: str) -> str:

@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.cli.types import AuthorityType
-    from clive.__private.models.aliased import PublicKey
+    from clive.__private.models.schemas import PublicKey
 
     from .exceptions import CLITestCommandError
 

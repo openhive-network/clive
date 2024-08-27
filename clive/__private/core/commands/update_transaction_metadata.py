@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command import Command
-from clive.__private.models.aliased import HiveInt
+from clive.__private.models.schemas import HiveInt
 
 if TYPE_CHECKING:
     from clive.__private.core.node.node import Node

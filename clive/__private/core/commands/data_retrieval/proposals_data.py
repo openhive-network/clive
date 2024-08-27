@@ -14,8 +14,8 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.core.node.api.database_api import DatabaseApi
-    from clive.__private.models.aliased import DynamicGlobalProperties, ListProposals, ListProposalVotes
-    from clive.__private.models.aliased import Proposal as SchemasProposal
+    from clive.__private.models.schemas import DynamicGlobalProperties, ListProposals, ListProposalVotes
+    from clive.__private.models.schemas import Proposal as SchemasProposal
 
 
 @dataclass

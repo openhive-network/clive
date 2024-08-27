@@ -11,8 +11,8 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node.node import Node
-    from clive.__private.models.aliased import DynamicGlobalProperties, VestingDelegationExpiration
-    from clive.__private.models.aliased import (
+    from clive.__private.models.schemas import DynamicGlobalProperties, VestingDelegationExpiration
+    from clive.__private.models.schemas import (
         FindVestingDelegationExpirations as SchemasFindVestingDelegationExpirations,
     )
 

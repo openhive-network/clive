@@ -11,7 +11,7 @@ from clive_local_tools.helpers import get_transaction_id_from_output
 if TYPE_CHECKING:
     import test_tools as tt
 
-    from clive.__private.models.aliased import OperationUnion, RepresentationBase
+    from clive.__private.models.schemas import OperationUnion, RepresentationBase
 
 
 def _ensure_transaction_id(trx_id_or_result: Result | str) -> str:

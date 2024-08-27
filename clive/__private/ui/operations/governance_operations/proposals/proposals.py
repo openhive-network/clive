@@ -12,7 +12,7 @@ from clive.__private.core.commands.data_retrieval.proposals_data import Proposal
 from clive.__private.core.commands.data_retrieval.proposals_data import ProposalsDataRetrieval
 from clive.__private.core.constants.node import MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION
 from clive.__private.core.formatters.humanize import humanize_datetime
-from clive.__private.models.aliased import UpdateProposalVotesOperation
+from clive.__private.models.schemas import UpdateProposalVotesOperation
 from clive.__private.ui.data_providers.proposals_data_provider import ProposalsDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.governance_operations.common_governance.governance_actions import (
@@ -39,7 +39,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.models.aliased import OperationUnion
+    from clive.__private.models.schemas import OperationUnion
 
 
 class ProposalsOrderSelect(CliveSelect[ProposalsDataRetrieval.Orders]):

@@ -7,7 +7,7 @@ from clive.__private.core.hive_vests_conversions import vests_to_hive
 
 if TYPE_CHECKING:
     from clive.__private.models import Asset
-    from clive.__private.models.aliased import DynamicGlobalProperties
+    from clive.__private.models.schemas import DynamicGlobalProperties
 
 
 @dataclass

@@ -7,7 +7,7 @@ import pytest
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID
 from clive.__private.core.profile import InvalidChainIdError, Profile
 from clive.__private.models import Asset, Transaction
-from clive.__private.models.aliased import TransferOperation
+from clive.__private.models.schemas import TransferOperation
 from clive.__private.settings import safe_settings, settings
 from clive_local_tools.data.constants import TESTNET_CHAIN_ID
 

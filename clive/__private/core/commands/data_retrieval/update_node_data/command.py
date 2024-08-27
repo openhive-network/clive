@@ -21,22 +21,22 @@ from clive.__private.core.iwax import (
     calculate_manabar_full_regeneration_time,
 )
 from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
-from clive.__private.models.aliased import (
+from clive.__private.models.disabled_api import DisabledAPI
+from clive.__private.models.schemas import (
     DynamicGlobalProperties,
 )
-from clive.__private.models.disabled_api import DisabledAPI
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.node.node import Node
-    from clive.__private.models.aliased import (
+    from clive.__private.models.schemas import (
         Account,
         FindAccounts,
         FindRcAccounts,
         GetAccountHistory,
         RcAccount,
     )
-    from clive.__private.models.aliased import (
+    from clive.__private.models.schemas import (
         Manabar as SchemasManabar,
     )
 

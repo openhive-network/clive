@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from clive.__private.cli.commands.abc.operation_command import OperationCommand
-from clive.__private.models.aliased import TransferFromSavingsOperation
+from clive.__private.models.schemas import TransferFromSavingsOperation
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.savings_data import SavingsData

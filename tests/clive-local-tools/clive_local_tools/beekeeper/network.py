@@ -7,7 +7,7 @@ import aiohttp
 
 if TYPE_CHECKING:
     from clive.__private.core.url import Url
-    from clive.__private.models.aliased import JSONRPCRequest
+    from clive.__private.models.schemas import JSONRPCRequest
 
 
 async def raw_http_call(*, http_endpoint: Url, data: JSONRPCRequest) -> dict[str, Any]:

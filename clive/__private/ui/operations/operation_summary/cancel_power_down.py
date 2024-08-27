@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, ClassVar
 from clive.__private.core.constants.node import VESTS_TO_REMOVE_POWER_DOWN
 from clive.__private.core.formatters.humanize import humanize_datetime
 from clive.__private.models import Asset
-from clive.__private.models.aliased import WithdrawVestingOperation
+from clive.__private.models.schemas import WithdrawVestingOperation
 from clive.__private.ui.operations.operation_summary.operation_summary import OperationSummary
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 

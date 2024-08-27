@@ -10,7 +10,7 @@ from clive.__private.core.keys import PublicKeyAliased
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
-    from clive.__private.models.aliased import OperationBase
+    from clive.__private.models.schemas import OperationBase
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,

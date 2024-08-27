@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.node import Node
     from clive.__private.models import Asset
-    from clive.__private.models.aliased import (
+    from clive.__private.models.schemas import (
         Account,
         DynamicGlobalProperties,
         FindAccounts,

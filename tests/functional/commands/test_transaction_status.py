@@ -7,7 +7,7 @@ import pytest
 from clive.__private.core.keys import PrivateKeyAliased
 from clive.__private.logger import logger
 from clive.__private.models import Asset
-from clive.__private.models.aliased import TransferOperation
+from clive.__private.models.schemas import TransferOperation
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:

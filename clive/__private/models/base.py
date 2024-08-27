@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable
 from pydantic import BaseModel
 
 from clive.__private.core.constants.date import TIME_FORMAT_WITH_MILLIS
-from clive.__private.models.aliased import Serializable
+from clive.__private.models.schemas import Serializable
 
 if TYPE_CHECKING:
     from pydantic.typing import AbstractSetIntStr, DictStrAny, MappingIntStrAny

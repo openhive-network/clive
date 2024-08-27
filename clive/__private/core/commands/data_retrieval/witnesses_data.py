@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from clive.__private.core.node import Node
-    from clive.__private.models.aliased import DynamicGlobalProperties, ListWitnesses, ListWitnessVotes, Witness
+    from clive.__private.models.schemas import DynamicGlobalProperties, ListWitnesses, ListWitnessVotes, Witness
 
 
 @dataclass

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual.validation import Validator
 
 from clive.__private.core.validate_schema_field import is_schema_field_valid
-from clive.__private.models.aliased import AccountName
+from clive.__private.models.schemas import AccountName
 
 if TYPE_CHECKING:
     from textual.validation import ValidationResult

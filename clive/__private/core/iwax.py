@@ -10,15 +10,15 @@ from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
 from clive.__private.models import Asset, Transaction
-from clive.__private.models.aliased import convert_to_representation
 from clive.__private.models.asset import UnknownAssetTypeError
+from clive.__private.models.schemas import convert_to_representation
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
-    from clive.__private.models.aliased import OperationUnion, PriceFeed
+    from clive.__private.models.schemas import OperationUnion, PriceFeed
 
 
 class HpAPRProtocol(Protocol):

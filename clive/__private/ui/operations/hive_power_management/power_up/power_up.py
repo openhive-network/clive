@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import TabPane
 
-from clive.__private.models.aliased import TransferToVestingOperation
+from clive.__private.models.schemas import TransferToVestingOperation
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.widgets.buttons.generous_button import GenerousButton

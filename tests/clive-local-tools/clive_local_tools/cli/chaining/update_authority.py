@@ -8,7 +8,7 @@ if TYPE_CHECKING:
     from typer.testing import CliRunner
 
     from clive.__private.cli.clive_typer import CliveTyper
-    from clive.__private.models.aliased import PublicKey
+    from clive.__private.models.schemas import PublicKey
     from clive_local_tools.cli.command_options import CliOptionT
 
 

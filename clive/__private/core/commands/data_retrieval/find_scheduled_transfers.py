@@ -10,8 +10,8 @@ from clive.__private.core.constants.node import VALUE_TO_REMOVE_SCHEDULED_TRANSF
 from clive.__private.core.formatters.humanize import align_to_dot, humanize_asset
 
 if TYPE_CHECKING:
-    from clive.__private.models.aliased import Account, FindAccounts, RecurrentTransfer
-    from clive.__private.models.aliased import FindRecurrentTransfers as SchemasFindRecurrentTransfers
+    from clive.__private.models.schemas import Account, FindAccounts, RecurrentTransfer
+    from clive.__private.models.schemas import FindRecurrentTransfers as SchemasFindRecurrentTransfers
 from clive.__private.models.asset import Asset
 
 if TYPE_CHECKING:

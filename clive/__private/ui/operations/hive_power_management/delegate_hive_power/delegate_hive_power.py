@@ -8,7 +8,7 @@ from textual.widgets import Static, TabPane
 
 from clive.__private.core.ensure_vests import ensure_vests
 from clive.__private.models import Asset
-from clive.__private.models.aliased import DelegateVestingSharesOperation
+from clive.__private.models.schemas import DelegateVestingSharesOperation
 from clive.__private.ui.data_providers.hive_power_data_provider import HivePowerDataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -37,7 +37,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-    from clive.__private.models.aliased import VestingDelegation
+    from clive.__private.models.schemas import VestingDelegation
 
 
 class PlaceTaker(Static):

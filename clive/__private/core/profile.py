@@ -11,7 +11,7 @@ from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.url import Url
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
-from clive.__private.models.aliased import ChainId, OperationBase
+from clive.__private.models.schemas import ChainId, OperationBase
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
