@@ -64,6 +64,10 @@ CliveHeader {
       &.-mainnet {
         color: $success-header-color;
       }
+
+      &.-no-connection {
+        color: $error;
+      }
     }
   }
 }

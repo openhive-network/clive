@@ -342,12 +342,20 @@ class CliveHeader(Header, CliveWidget):
         return profile.name
 
     async def _get_node_version(self, node: Node) -> str:
+        def format_network_type(value: str) -> str:
+            return f"({value})"
+
         try:
             network_type = await node.cached.network_type
-        except CommunicationError:
-            network_type = "no connection"
+        except CommunicationError as error:
+            if not error.is_response_available:
+                network_type = "no connection"
+                self._node_version.add_class("-no-connection")
+                return format_network_type(network_type)
+            raise
 
         is_mainnet = network_type == "mainnet"
+        self._node_version.remove_class("-no-connection")
         self._node_version.set_class(is_mainnet, "-mainnet")
         self._node_version.set_class(not is_mainnet, "-not-mainnet")
-        return f"({network_type})"
+        return format_network_type(network_type)
