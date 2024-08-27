@@ -227,6 +227,7 @@ class CliveHeader(Header, CliveWidget):
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self._get_node_version,
+            first_try_callback=lambda: self.node.cached.online_or_none is not None,
             id_="node-type",
         )
 
@@ -341,7 +342,13 @@ class CliveHeader(Header, CliveWidget):
         return profile.name
 
     async def _get_node_version(self, node: Node) -> str:
-        class_to_switch = "-not-mainnet"
+        def _style_widget_for_mainnet() -> None:
+            self._node_version.remove_class("-not-mainnet")
+            self._node_version.add_class("-mainnet")
+
+        def _style_widget_for_not_mainnet() -> None:
+            self._node_version.remove_class("-mainnet")
+            self._node_version.add_class("-not-mainnet")
 
         try:
             network_type = await node.cached.network_type
@@ -349,7 +356,8 @@ class CliveHeader(Header, CliveWidget):
             network_type = "no connection"
 
         if network_type == "mainnet":
-            self._node_version.remove_class(class_to_switch)
+            _style_widget_for_mainnet()
         else:
-            self._node_version.add_class(class_to_switch)
+            _style_widget_for_not_mainnet()
+
         return f"({network_type})"
