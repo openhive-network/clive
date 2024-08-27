@@ -59,6 +59,7 @@ class BlockDisplay(Horizontal, CliveWidget):
             "Block",
             obj_to_watch=self.world,
             attribute_name="node",
+            first_try_callback=lambda: self.node.cached.is_data_available,
             callback=self._get_last_block,
         )
 
