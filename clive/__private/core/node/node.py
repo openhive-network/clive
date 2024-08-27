@@ -240,7 +240,14 @@ class Node(BaseNode):
 
         @property
         async def online(self) -> bool:
-            await self._ensure_basic_info()
+            try:
+                await self._ensure_basic_info()
+            except CommunicationError as error:
+                if not error.is_response_available:
+                    self._set_offline()
+                    return False
+                raise
+
             assert self._online is not None, "online is guaranteed to be set here"
             return self._online
 
