@@ -26,7 +26,7 @@ class DynamicOneLineButton(DynamicWidget[OneLineButton, str]):
         callback: DynamicOneLineButtonCallbackType,
         *,
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
-        variant: CliveButtonVariant = "primary",
+        variant: CliveButtonVariant = "loading-variant",
         init: bool = True,
         id_: str | None = None,
         classes: str | None = None,
@@ -43,6 +43,9 @@ class DynamicOneLineButton(DynamicWidget[OneLineButton, str]):
         )
 
     def update_widget_state(self, result: str) -> None:
+        if self._widget.variant == "loading-variant":
+            self._widget.variant = "primary"
+
         if result != self._widget.label:
             self._widget.update(result)
 

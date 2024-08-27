@@ -32,7 +32,6 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
             first_try_callback=self._first_try_alarms_callback,
             id_=id_,
             classes=classes,
-            variant="error",
         )
         self._widget.id = "alarm-display-button"
 

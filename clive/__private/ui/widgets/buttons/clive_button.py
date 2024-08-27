@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from textual.reactive import reactive
 
 CliveButtonVariant = Literal[
-    "success-on-transparent", "error-on-transparent", "grey-darken", "grey-lighten", ButtonVariant
+    "loading-variant", "success-on-transparent", "error-on-transparent", "grey-darken", "grey-lighten", ButtonVariant
 ]
 
 
@@ -23,6 +23,14 @@ class CliveButton(Button, CliveWidget):
 
     DEFAULT_CSS = """
     CliveButton {
+        &.-loading-variant {
+            background: $panel-lighten-1;
+
+            &:hover {
+                background: rgba(0, 0, 0, 0.2);
+            }
+        }
+
         &.-success-on-transparent {
             background: rgba(0, 0, 0, 0);
             color: $success-darken-3;
