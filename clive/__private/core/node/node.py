@@ -251,8 +251,9 @@ class Node(BaseNode):
             return self._online
 
         @property
-        def online_or_none(self) -> bool | None:
-            return self._online
+        def is_data_available(self) -> bool:
+            """Used to check if the data is available (has been fetched at least once)."""
+            return self._online is not None
 
         @property
         async def dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:

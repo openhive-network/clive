@@ -183,7 +183,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self._update_node_status,
-            first_try_callback=lambda: self.node.cached.online_or_none is not None,
+            first_try_callback=lambda: self.node.cached.is_data_available,
         )
 
     async def _update_node_status(self, node: Node) -> str:
@@ -227,7 +227,7 @@ class CliveHeader(Header, CliveWidget):
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self._get_node_version,
-            first_try_callback=lambda: self.node.cached.online_or_none is not None,
+            first_try_callback=lambda: self.node.cached.is_data_available,
             id_="node-type",
         )
 
