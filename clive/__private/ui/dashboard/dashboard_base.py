@@ -25,7 +25,7 @@ from clive.__private.ui.operations import Savings
 from clive.__private.ui.operations.operations import Operations
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
@@ -180,6 +180,24 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
         self.app.push_screen(Savings("transfer-tab", "from-savings", self._asset_type))
 
 
+class RemoveTrackedAccountButton(OneLineButtonUnfocusable, CliveWidget):
+    """Used to remove account from the tracked list from the dashboard."""
+
+    def __init__(self, account: TrackedAccount) -> None:
+        super().__init__(
+            "X",
+            id_="remove-account-button",
+            variant="error",
+        )
+        self._account = account
+        self.tooltip = "Remove account from tracked"
+
+    @on(OneLineButton.Pressed, "#remove-account-button")
+    def _remove_account(self) -> None:
+        self.profile.accounts.remove_tracked_account(self._account)
+        self.app.trigger_profile_watchers()
+
+
 class BalanceStats(TrackedAccountReferencingWidget):
     def compose(self) -> ComposeResult:
         yield Static("", classes="empty")
@@ -198,7 +216,9 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
         with Vertical(id="account-alarms-and-details"):
             button = OneLineButton(f"{self._account.name}", id_="account-details-button")
             button.tooltip = "See account details"
-            yield button
+            with Horizontal(id="details-remove-buttons-container"):
+                yield button
+                yield RemoveTrackedAccountButton(self._account)
             yield AlarmDisplay(self._account, id_="account-alarms")
         yield Static()
         yield Label("LAST:")

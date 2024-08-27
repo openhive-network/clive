@@ -15,3 +15,7 @@ class OneLineButton(CliveButton):
         }
     }
     """
+
+
+class OneLineButtonUnfocusable(OneLineButton, can_focus=False):
+    """Unfocusable version of `OneLineButton`."""
