@@ -244,7 +244,6 @@ class Node(BaseNode):
                 await self._ensure_basic_info()
             except CommunicationError as error:
                 if not error.is_response_available:
-                    self._set_offline()
                     return False
                 raise
 
@@ -373,4 +372,11 @@ class Node(BaseNode):
         return chain_id_from_node
 
     async def _sync_node_basic_info(self) -> None:
-        self.cached._basic_info = await GetNodeBasicInfo(self).execute_with_result()
+        try:
+            self.cached._basic_info = await GetNodeBasicInfo(self).execute_with_result()
+        except CommunicationError as error:
+            if not error.is_response_available:
+                self.cached._set_offline()
+            raise
+        else:
+            self.cached._set_online()
