@@ -171,6 +171,7 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
         return asset_name_to_value[asset_name]
 
     @on(OneLineButton.Pressed, ".balance-button")
+    @CliveScreen.prevent_action_when_no_accounts_node_data
     def push_balance_screen(self) -> None:
         if self._balance_type == "liquid":
             self.app.push_screen(LiquidNavigationDialog(self._account, asset_type=self._asset_type))
