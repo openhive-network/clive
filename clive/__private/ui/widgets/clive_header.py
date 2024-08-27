@@ -184,7 +184,6 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             attribute_name="node",
             callback=self._update_node_status,
             first_try_callback=lambda: self.node.cached.online_or_none is not None,
-            variant="success-on-transparent",
         )
 
     async def _update_node_status(self, node: Node) -> str:
