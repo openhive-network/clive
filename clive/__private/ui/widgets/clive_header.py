@@ -21,7 +21,6 @@ from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
     DynamicOneLineButtonUnfocusable,
 )
 from clive.__private.ui.widgets.titled_label import TitledLabel
-from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -59,15 +58,15 @@ class BlockDisplay(Horizontal, CliveWidget):
             "Block",
             obj_to_watch=self.world,
             attribute_name="node",
-            first_try_callback=lambda: self.node.cached.is_data_available,
+            first_try_callback=lambda: self.node.cached.is_online_status_known,
             callback=self._get_last_block,
         )
 
-    async def _get_last_block(self) -> str:
-        gdpo = await self.node.cached.dynamic_global_properties_or_none
-        if gdpo is None:
+    def _get_last_block(self) -> str:
+        if not self.node.cached.is_online_with_basic_info_available:
             return NOT_AVAILABLE_LABEL
 
+        gdpo = self.node.cached.dynamic_global_properties_ensure
         block_num = gdpo.head_block_number
         block_time = gdpo.time.time()
         return f"{block_num} ({block_time} UTC)"
@@ -184,16 +183,16 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self._update_node_status,
-            first_try_callback=lambda: self.node.cached.is_data_available,
+            first_try_callback=lambda: self.node.cached.is_online_status_known,
         )
 
-    async def _update_node_status(self, node: Node) -> str:
+    def _update_node_status(self, node: Node) -> str:
         if self.world.is_in_onboarding_mode:
             self.tooltip = None
         else:
             self._widget.tooltip = "Switch node address"
 
-        if not await node.cached.online:
+        if not node.cached.online_or_none:
             self._widget.variant = "error-on-transparent"
             return "offline"
 
@@ -228,7 +227,7 @@ class CliveHeader(Header, CliveWidget):
             obj_to_watch=self.world,
             attribute_name="node",
             callback=self._get_node_version,
-            first_try_callback=lambda: self.node.cached.is_data_available,
+            first_try_callback=lambda: self.node.cached.is_online_status_known,
             id_="node-type",
         )
 
@@ -342,19 +341,15 @@ class CliveHeader(Header, CliveWidget):
     def _get_profile_name(profile: Profile) -> str:
         return profile.name
 
-    async def _get_node_version(self, node: Node) -> str:
+    def _get_node_version(self, node: Node) -> str:
         def format_network_type(value: str) -> str:
             return f"({value})"
 
-        try:
-            network_type = await node.cached.network_type
-        except CommunicationError as error:
-            if not error.is_response_available:
-                network_type = "no connection"
-                self._node_version.add_class("-no-connection")
-                return format_network_type(network_type)
-            raise
+        if not node.cached.is_online_with_basic_info_available:
+            self._node_version.add_class("-no-connection")
+            return format_network_type("no connection")
 
+        network_type = node.cached.network_type_ensure
         is_mainnet = network_type == "mainnet"
         self._node_version.remove_class("-no-connection")
         self._node_version.set_class(is_mainnet, "-mainnet")

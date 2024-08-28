@@ -221,9 +221,29 @@ class Node(BaseNode):
         _lock: asyncio.Lock = field(init=False, default_factory=asyncio.Lock)
 
         @property
+        def is_basic_info_available(self) -> bool:
+            """Check if basic info was fetched."""
+            return self._basic_info is not None
+
+        @property
+        def is_online_status_known(self) -> bool:
+            """Check if online status was fetched."""
+            return self._online is not None
+
+        @property
+        def is_online_with_basic_info_available(self) -> bool:
+            """Return true only when node is online and basic info is already available."""
+            return self.is_online_status_known and self.online_ensure and self.is_basic_info_available
+
+        @property
         async def basic_info(self) -> NodeBasicInfoData:
-            await self._ensure_basic_info()
+            await self._fetch_basic_info()
             assert self._basic_info is not None, "basic_info is guaranteed to be set here"
+            return self._basic_info
+
+        @property
+        def basic_info_ensure(self) -> NodeBasicInfoData:
+            assert self._basic_info is not None, "basic_info is not available"
             return self._basic_info
 
         @property
@@ -231,17 +251,50 @@ class Node(BaseNode):
             return (await self.basic_info).config
 
         @property
+        def config_ensure(self) -> Config:
+            return self.basic_info_ensure.config
+
+        @property
+        def config_or_none(self) -> Config | None:
+            """Get the config or return None when data was not fetched yet."""
+            if self.is_basic_info_available:
+                return self.basic_info_ensure.config
+            return None
+
+        @property
         async def version(self) -> Version:
             return (await self.basic_info).version
+
+        @property
+        def version_ensure(self) -> Version:
+            return self.basic_info_ensure.version
+
+        @property
+        def version_or_none(self) -> Version | None:
+            """Get the version or return None when data was not fetched yet."""
+            if self.is_basic_info_available:
+                return self.basic_info_ensure.version
+            return None
 
         @property
         async def dynamic_global_properties(self) -> DynamicGlobalProperties:
             return (await self.basic_info).dynamic_global_properties
 
         @property
+        def dynamic_global_properties_ensure(self) -> DynamicGlobalProperties:
+            return self.basic_info_ensure.dynamic_global_properties
+
+        @property
+        def dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
+            """Get the dynamic global properties or return None when data was not fetched yet."""
+            if self.is_basic_info_available:
+                return self.basic_info_ensure.dynamic_global_properties
+            return None
+
+        @property
         async def online(self) -> bool:
             try:
-                await self._ensure_basic_info()
+                await self._fetch_basic_info()
             except CommunicationError as error:
                 if not error.is_response_available:
                     return False
@@ -251,27 +304,44 @@ class Node(BaseNode):
             return self._online
 
         @property
-        def is_data_available(self) -> bool:
-            """Used to check if the data is available (has been fetched at least once)."""
-            return self._online is not None
+        def online_ensure(self) -> bool:
+            assert self._online is not None, "online is not available"
+            return self._online
 
         @property
-        async def dynamic_global_properties_or_none(self) -> DynamicGlobalProperties | None:
-            """Try to get the dynamic global props or return None when node is not available."""
-            try:
-                return await self.dynamic_global_properties
-            except CommunicationError as error:
-                if not error.is_response_available:
-                    return None
-                raise
+        def online_or_none(self) -> bool | None:
+            """Get the online status or return None when data was not fetched yet."""
+            return self._online
 
         @property
         async def network_type(self) -> str:
             return (await self.basic_info).network_type
 
         @property
+        def network_type_ensure(self) -> str:
+            return self.basic_info_ensure.network_type
+
+        @property
+        def network_type_or_none(self) -> str | None:
+            """Get the network type or return None when data was not fetched yet."""
+            if self.is_basic_info_available:
+                return self.basic_info_ensure.network_type
+            return None
+
+        @property
         async def chain_id(self) -> str:
             return (await self.basic_info).chain_id
+
+        @property
+        def chain_id_ensure(self) -> str:
+            return self.basic_info_ensure.chain_id
+
+        @property
+        def chain_id_or_none(self) -> str | None:
+            """Get the chain id or return None when data was not fetched yet."""
+            if self.is_basic_info_available:
+                return self.basic_info_ensure.chain_id
+            return None
 
         def clear(self) -> None:
             self._basic_info = None
@@ -299,7 +369,7 @@ class Node(BaseNode):
         def _set_offline(self) -> None:
             self._online = False
 
-        async def _ensure_basic_info(self) -> None:
+        async def _fetch_basic_info(self) -> None:
             async with self._lock:
                 if self._basic_info is None:
                     await self._node._sync_node_basic_info()
