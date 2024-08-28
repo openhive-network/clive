@@ -15,15 +15,15 @@ from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAlias
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.clive_screen import CliveScreen
-from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -79,10 +79,10 @@ class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
 
 class KeyAliasesHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("No.", classes=ODD_CLASS_NAME)
-        yield Static("Alias", classes=EVEN_CLASS_NAME)
-        yield Static("Public key", classes=f"{ODD_CLASS_NAME} public-key")
-        yield Static("Actions", classes=EVEN_CLASS_NAME)
+        yield Static("No.", classes=CLIVE_ODD_CLASS_NAME)
+        yield Static("Alias", classes=CLIVE_EVEN_CLASS_NAME)
+        yield Static("Public key", classes=f"{CLIVE_ODD_CLASS_NAME} public-key")
+        yield Static("Actions", classes=CLIVE_EVEN_CLASS_NAME)
 
 
 class ManageKeyAliasesTable(CliveCheckerboardTable):

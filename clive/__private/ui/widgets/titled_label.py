@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.widgets import Label
 
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import (
     DynamicLabel,
 )

@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING, Final
 from textual.widgets import Static
 
 from clive.__private.ui.styling import colorize_shortcut, colorize_system_text
-from clive.__private.ui.widgets.clive_collapsible import CliveCollapsible
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic import CliveCollapsible
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

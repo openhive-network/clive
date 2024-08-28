@@ -10,8 +10,8 @@ from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.operations.cart import Cart
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.clive_screen import CliveScreen
-from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
 )

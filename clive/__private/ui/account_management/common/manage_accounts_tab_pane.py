@@ -9,7 +9,7 @@ from clive.__private.ui.account_management.common.manage_accounts_table import A
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.add_account_container import AddAccountContainer
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import SectionBody
 

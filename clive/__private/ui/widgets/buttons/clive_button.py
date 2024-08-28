@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Button
 from textual.widgets._button import ButtonVariant
 
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from rich.text import TextType

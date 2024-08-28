@@ -20,14 +20,14 @@ from clive.__private.ui.operations.operation_summary.cancel_power_down import Ca
 from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.generous_button import GenerousButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests import CurrencySelectorHpVests
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
@@ -88,9 +88,9 @@ class WithdrawRoutesDisplay(CliveWidget):
 
 class PendingPowerDownHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("Next power down", classes=ODD_CLASS_NAME)
-        yield Static("Power down [HP]", classes=EVEN_CLASS_NAME)
-        yield Static("Power down [VESTS]", classes=ODD_CLASS_NAME)
+        yield Static("Next power down", classes=CLIVE_ODD_CLASS_NAME)
+        yield Static("Power down [HP]", classes=CLIVE_EVEN_CLASS_NAME)
+        yield Static("Power down [VESTS]", classes=CLIVE_ODD_CLASS_NAME)
         yield PlaceTaker()
 
 

@@ -23,17 +23,18 @@ from clive.__private.ui.operations.operation_summary.cancel_transfer_from_saving
 )
 from clive.__private.ui.widgets.apr import APR
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
+    CliveDataTable,
+    CliveDataTableRow,
+    CliveRadioButton,
+    CliveTabbedContent,
 )
-from clive.__private.ui.widgets.clive_data_table import CliveDataTable, CliveDataTableRow
-from clive.__private.ui.widgets.clive_radio_button import CliveRadioButton
-from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
@@ -130,10 +131,10 @@ class SavingsInterestInfo(TrackedAccountReferencingWidget):
 
 class PendingTransfersHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Label("To", classes=ODD_CLASS_NAME)
-        yield Label("Amount", classes=EVEN_CLASS_NAME)
-        yield Label("Realized on (UTC)", classes=ODD_CLASS_NAME)
-        yield Label("Memo", classes=EVEN_CLASS_NAME)
+        yield Label("To", classes=CLIVE_ODD_CLASS_NAME)
+        yield Label("Amount", classes=CLIVE_EVEN_CLASS_NAME)
+        yield Label("Realized on (UTC)", classes=CLIVE_ODD_CLASS_NAME)
+        yield Label("Memo", classes=CLIVE_EVEN_CLASS_NAME)
         yield Label()
 
 

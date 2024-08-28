@@ -6,7 +6,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_asset
-from clive.__private.ui.widgets.clive_data_table import CliveDataTable, CliveDataTableRow
+from clive.__private.ui.widgets.clive_basic import CliveDataTable, CliveDataTableRow
 
 if TYPE_CHECKING:
     from typing import Final

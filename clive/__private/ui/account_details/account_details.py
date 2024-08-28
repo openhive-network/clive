@@ -7,7 +7,7 @@ from textual.binding import Binding
 from clive.__private.ui.account_details.alarms.alarms import Alarms
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetTabPane
 
 if TYPE_CHECKING:

@@ -13,7 +13,7 @@ from clive.__private.ui.operations.bindings import CartBinding
 from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetButton, NotImplementedYetTabPane
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select_file import SelectFile

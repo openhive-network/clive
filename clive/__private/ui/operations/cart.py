@@ -17,14 +17,14 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -229,10 +229,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
 class CartHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("No.", classes=ODD_CLASS_NAME)
-        yield Static("Operation type", classes=f"{EVEN_CLASS_NAME} operation-name")
-        yield Static("Operation details", classes=f"{ODD_CLASS_NAME} operation-details")
-        yield Static("Actions", classes=f"{EVEN_CLASS_NAME} actions")
+        yield Static("No.", classes=CLIVE_ODD_CLASS_NAME)
+        yield Static("Operation type", classes=f"{CLIVE_EVEN_CLASS_NAME} operation-name")
+        yield Static("Operation details", classes=f"{CLIVE_ODD_CLASS_NAME} operation-details")
+        yield Static("Actions", classes=f"{CLIVE_EVEN_CLASS_NAME} actions")
 
 
 class CartTable(CliveCheckerboardTable):

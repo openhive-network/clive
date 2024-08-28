@@ -7,7 +7,7 @@ from textual.reactive import reactive
 from textual.widgets import Footer
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.clive_header import CliveHeader
+from clive.__private.ui.widgets.clive_basic import CliveHeader
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 

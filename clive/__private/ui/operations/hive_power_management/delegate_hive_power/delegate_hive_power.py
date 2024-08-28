@@ -17,9 +17,9 @@ from clive.__private.ui.operations.hive_power_management.common_hive_power.hp_ve
 from clive.__private.ui.operations.operation_summary.remove_delegation import RemoveDelegation
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
@@ -46,9 +46,9 @@ class PlaceTaker(Static):
 
 class DelegationsTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("Delegate", classes=ODD_CLASS_NAME)
-        yield Static("Shares [HP]", classes=EVEN_CLASS_NAME)
-        yield Static("Shares [VESTS]", classes=ODD_CLASS_NAME)
+        yield Static("Delegate", classes=CLIVE_ODD_CLASS_NAME)
+        yield Static("Shares [HP]", classes=CLIVE_EVEN_CLASS_NAME)
+        yield Static("Shares [VESTS]", classes=CLIVE_ODD_CLASS_NAME)
         yield PlaceTaker()
 
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 from textual.binding import Binding
 
 from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 
 
 class CartBinding(CliveWidget):

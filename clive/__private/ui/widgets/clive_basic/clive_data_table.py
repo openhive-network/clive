@@ -6,7 +6,7 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

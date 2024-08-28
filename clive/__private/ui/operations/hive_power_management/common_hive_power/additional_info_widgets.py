@@ -11,7 +11,7 @@ from clive.__private.core.formatters.humanize import (
     humanize_hp_vests_apr,
 )
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.section_title import SectionTitle
 

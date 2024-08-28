@@ -14,8 +14,8 @@ from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.clive_screen import CliveScreen
-from clive.__private.ui.widgets.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
     DynamicOneLineButtonUnfocusable,

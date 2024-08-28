@@ -11,9 +11,9 @@ from textual.widgets import Static
 from clive.__private.ui.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.widgets.buttons.close_button import CloseButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
@@ -41,7 +41,7 @@ class AlarmDataHeader(Horizontal):
 
     def compose(self) -> ComposeResult:
         for evenness, column in enumerate(self._columns):
-            yield Static(column, classes=EVEN_CLASS_NAME if evenness % 2 else ODD_CLASS_NAME)
+            yield Static(column, classes=CLIVE_EVEN_CLASS_NAME if evenness % 2 else CLIVE_ODD_CLASS_NAME)
 
 
 class AlarmDataRow(CliveCheckerboardTableRow):

@@ -20,7 +20,7 @@ from clive.__private.ui.operations.hive_power_management.power_down.power_down i
 from clive.__private.ui.operations.hive_power_management.power_up.power_up import PowerUp
 from clive.__private.ui.operations.hive_power_management.withdraw_routes.withdraw_routes import WithdrawRoutes
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 
 if TYPE_CHECKING:

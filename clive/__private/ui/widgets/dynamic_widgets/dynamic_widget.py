@@ -8,7 +8,7 @@ from textual.widget import Widget
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.callback import count_parameters
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import Label
 
-from clive.__private.ui.widgets.clive_checkerboard_table import EVEN_CLASS_NAME, ODD_CLASS_NAME
+from clive.__private.ui.widgets.clive_basic import CLIVE_EVEN_CLASS_NAME, CLIVE_ODD_CLASS_NAME
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -29,7 +29,7 @@ class AccountsTableHeader(Horizontal):
         self.show_type_column = show_type_column
 
     def compose(self) -> ComposeResult:
-        yield Label(self._account_column_name, classes=ODD_CLASS_NAME)
+        yield Label(self._account_column_name, classes=CLIVE_ODD_CLASS_NAME)
         if self.show_type_column:
-            yield Label("Account type", classes=EVEN_CLASS_NAME)
-        yield Label("Action", classes=ODD_CLASS_NAME if self.show_type_column else EVEN_CLASS_NAME)
+            yield Label("Account type", classes=CLIVE_EVEN_CLASS_NAME)
+        yield Label("Action", classes=CLIVE_ODD_CLASS_NAME if self.show_type_column else CLIVE_EVEN_CLASS_NAME)

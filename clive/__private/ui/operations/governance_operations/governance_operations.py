@@ -11,7 +11,7 @@ from clive.__private.ui.operations.governance_operations.proposals.proposals imp
 from clive.__private.ui.operations.governance_operations.proxy.proxy import Proxy
 from clive.__private.ui.operations.governance_operations.witness.witness import Witnesses
 from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.widgets.clive_tabbed_content import CliveTabbedContent
+from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

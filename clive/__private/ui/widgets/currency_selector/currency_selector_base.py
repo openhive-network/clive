@@ -10,7 +10,7 @@ from clive.__private.models.asset import (
     AssetFactoryHolder,
     AssetT,
 )
-from clive.__private.ui.widgets.clive_select import CliveSelect
+from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 
 
 class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[AssetT], AbstractClassMessagePump):

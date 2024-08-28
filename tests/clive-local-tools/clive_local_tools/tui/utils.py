@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 from textual.css.query import NoMatches
 
-from clive.__private.ui.widgets.clive_header import LockStatus
+from clive.__private.ui.widgets.clive_basic.clive_header import LockStatus
 from clive.__private.ui.widgets.titled_label import TitledLabel
 
 if TYPE_CHECKING:

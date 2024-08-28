@@ -11,7 +11,7 @@ from textual.screen import Screen, ScreenResultType
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.logger import logger
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.exceptions import CliveError
 
 if TYPE_CHECKING:

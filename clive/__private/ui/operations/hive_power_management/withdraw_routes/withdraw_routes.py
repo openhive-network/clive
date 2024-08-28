@@ -17,9 +17,9 @@ from clive.__private.ui.operations.bindings import OperationActionBindings
 from clive.__private.ui.operations.operation_summary.remove_withdraw_vesting_route import RemoveWithdrawVestingRoute
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
@@ -45,9 +45,9 @@ class PlaceTaker(Static):
 
 class WithdrawRoutesHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("To", classes=ODD_CLASS_NAME)
-        yield Static("Percent", classes=EVEN_CLASS_NAME)
-        yield Static("Auto vest", classes=ODD_CLASS_NAME)
+        yield Static("To", classes=CLIVE_ODD_CLASS_NAME)
+        yield Static("Percent", classes=CLIVE_EVEN_CLASS_NAME)
+        yield Static("Auto vest", classes=CLIVE_ODD_CLASS_NAME)
         yield PlaceTaker()
 
 

@@ -11,14 +11,14 @@ from clive.__private.ui.dialogs import AlarmInfoDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
-    EVEN_CLASS_NAME,
-    ODD_CLASS_NAME,
+from clive.__private.ui.widgets.clive_basic import (
+    CLIVE_EVEN_CLASS_NAME,
+    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
@@ -34,8 +34,8 @@ if TYPE_CHECKING:
 
 class AlarmsTableHeader(Horizontal):
     def compose(self) -> ComposeResult:
-        yield Static("Alarm", classes=ODD_CLASS_NAME)
-        yield Static("Action", classes=EVEN_CLASS_NAME)
+        yield Static("Alarm", classes=CLIVE_ODD_CLASS_NAME)
+        yield Static("Action", classes=CLIVE_EVEN_CLASS_NAME)
 
 
 class AlarmsTableRow(CliveCheckerboardTableRow):

@@ -6,7 +6,7 @@ from textual.containers import Container
 from textual.widget import Widget
 from textual.widgets import Static
 
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 

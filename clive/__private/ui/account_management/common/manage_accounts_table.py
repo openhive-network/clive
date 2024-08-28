@@ -8,7 +8,7 @@ from clive.__private.ui.account_management.common.header_of_tables import Accoun
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.clive_checkerboard_table import (
+from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
 
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.section import Section
 from clive.__private.validators.set_known_account_validator import SetKnownAccountValidator

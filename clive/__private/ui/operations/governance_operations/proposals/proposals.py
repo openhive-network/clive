@@ -28,7 +28,7 @@ from clive.__private.ui.operations.governance_operations.common_governance.gover
     GovernanceTable,
     GovernanceTableRow,
 )
-from clive.__private.ui.widgets.clive_select import CliveSelect
+from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 from clive.__private.ui.widgets.ellipsed_static import EllipsedStatic
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle

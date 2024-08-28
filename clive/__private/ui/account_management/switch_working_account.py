@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual.widgets import TabPane
 
 from clive.__private.ui.get_css import get_css_from_relative_path
-from clive.__private.ui.widgets.clive_widget import CliveWidget
+from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.switch_working_account_container import (
     SwitchWorkingAccountContainer,
