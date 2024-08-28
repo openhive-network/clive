@@ -300,6 +300,9 @@ generate_clive_startup_scripts:
   needs:
     - job: build_and_push_clive_image
       artifacts: true
+  except:
+    - develop
+    - master
   artifacts:
     expire_in: 7 days
 
