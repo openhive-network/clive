@@ -10,7 +10,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.governance_operations.proposals.proposals import Proposals
 from clive.__private.ui.operations.governance_operations.proxy.proxy import Proxy
 from clive.__private.ui.operations.governance_operations.witness.witness import Witnesses
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 
 if TYPE_CHECKING:

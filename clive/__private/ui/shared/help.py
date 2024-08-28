@@ -10,7 +10,7 @@ from textual.widgets import MarkdownViewer
 from clive.__private.core.constants.env import ROOT_DIRECTORY
 from clive.__private.ui.dashboard.dashboard_base import DashboardBase
 from clive.__private.ui.onboarding.onboarding import OnboardingWelcomeScreen
-from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

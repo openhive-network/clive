@@ -15,8 +15,8 @@ from clive.__private.core.date_utils import utc_now
 from clive.__private.core.url import Url
 from clive.__private.models.schemas import JSONRPCRequest
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.shared.form_screen import FormScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
+from clive.__private.ui.screens.form_screen import FormScreen
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section import SectionScrollable

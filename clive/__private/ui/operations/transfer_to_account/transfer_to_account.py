@@ -10,7 +10,7 @@ from clive.__private.models.asset import AssetAmount
 from clive.__private.models.schemas import TransferOperation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput

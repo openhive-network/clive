@@ -23,7 +23,7 @@ from clive.__private.ui.dialogs.liquid_navigation_dialog import LiquidNavigation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations import Savings
 from clive.__private.ui.operations.operations import Operations
-from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget

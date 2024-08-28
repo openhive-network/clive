@@ -14,7 +14,7 @@ from typing_extensions import Self
 
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_basic import (

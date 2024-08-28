@@ -7,9 +7,9 @@ from typing import Final
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextT, Contextual
-from clive.__private.ui.shared.dedicated_form_screens.finish_form_screen import FinishFormScreen
-from clive.__private.ui.shared.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
-from clive.__private.ui.shared.form_screen import FormScreenBase
+from clive.__private.ui.screens.dedicated_form_screens.finish_form_screen import FinishFormScreen
+from clive.__private.ui.screens.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
+from clive.__private.ui.screens.form_screen import FormScreenBase
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]

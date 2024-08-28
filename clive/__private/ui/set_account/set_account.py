@@ -6,8 +6,8 @@ from textual.widgets import Checkbox
 
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.shared.base_screen import BaseScreen
-from clive.__private.ui.shared.form_screen import FormScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
+from clive.__private.ui.screens.form_screen import FormScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.__private.ui.widgets.section import SectionScrollable

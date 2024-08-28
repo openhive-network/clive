@@ -14,7 +14,7 @@ from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
-from clive.__private.ui.shared.form_screen import FormScreen
+from clive.__private.ui.screens.form_screen import FormScreen
 from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,

@@ -9,8 +9,8 @@ from textual.widgets import Static
 from clive.__private.ui.account_management.account_management import AccountManagement
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.manage_key_aliases import ManageKeyAliases
+from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
-from clive.__private.ui.shared.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_screen import CliveScreen, OnlyInUnlockedModeError
 from clive.__private.ui.widgets.dialog_container import DialogContainer

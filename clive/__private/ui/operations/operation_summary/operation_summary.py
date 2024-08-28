@@ -8,7 +8,7 @@ from textual.containers import Grid
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations.bindings import OperationActionBindings
-from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:

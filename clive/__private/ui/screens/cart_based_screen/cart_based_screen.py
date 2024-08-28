@@ -7,8 +7,8 @@ from textual.containers import Container, Horizontal
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.operations.cart_based_screen.cart_overview import CartOverview
-from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
+from clive.__private.ui.screens.cart_based_screen.cart_overview import CartOverview
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

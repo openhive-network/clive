@@ -7,7 +7,7 @@ from textual.binding import Binding
 from textual.widgets import Static
 
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.shared.base_screen import BaseScreen
+from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 

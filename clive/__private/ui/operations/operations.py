@@ -10,7 +10,7 @@ from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.operations import Governance, HivePowerManagement, Savings, TransferToAccount
 from clive.__private.ui.operations.bindings import CartBinding
-from clive.__private.ui.operations.cart_based_screen.cart_based_screen import CartBasedScreen
+from clive.__private.ui.screens.cart_based_screen.cart_based_screen import CartBasedScreen
 from clive.__private.ui.transaction_summary import TransactionSummaryFromFile
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
@@ -22,7 +22,7 @@ if TYPE_CHECKING:
     from rich.text import TextType
     from textual.app import ComposeResult
 
-    from clive.__private.ui.operations.operation_base_screen import OperationBaseScreen
+    from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 
 
 class OperationButton(CliveButton):
