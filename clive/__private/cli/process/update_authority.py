@@ -11,7 +11,8 @@ from clive.__private.cli.common import OperationCommonOptions, options
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import AccountUpdateFunction, AuthorityType
+    from clive.__private.cli.types import AccountUpdateFunction
+    from clive.__private.core.types import AuthorityType
 
 
 @pass_context

@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.models.schemas import convert_to_representation
 from clive.__private.storage.model import (
     AlarmStorageModel,
-    AllAuthoritiesStorageModel,
+    AuthoritiesStorageModel,
     AuthorityStorageModel,
     KeyAliasStorageModel,
     ProfileStorageModel,
@@ -15,7 +15,7 @@ from clive.__private.storage.model import (
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
-    from clive.__private.core.authority import AllAuthorities, Authority
+    from clive.__private.core.types import AuthoritiesT
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
     from clive.__private.models.schemas import OperationRepresentationBase

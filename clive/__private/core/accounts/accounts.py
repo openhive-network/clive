@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from pydantic import ValidationError
 
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
+from clive.__private.core.types import AuthoritiesT  # noqa: TCH001
 from clive.__private.core.validate_schema_field import validate_schema_field
 from clive.__private.models.schemas import AccountName
 from clive.exceptions import CliveError
@@ -94,7 +95,7 @@ class Account:
 @dataclass
 class TrackedAccount(Account):
     _alarms: AlarmsStorage = field(default_factory=AlarmsStorage, compare=False)
-    _authorities: AllAuthorities | None = field(default=None, compare=False)
+    _authorities_cache: AuthoritiesT | None = field(default=None, compare=False)
     _data: NodeData | None = field(default=None, compare=False)
 
     def __hash__(self) -> int:
@@ -113,10 +114,10 @@ class TrackedAccount(Account):
         return self._alarms
 
     @property
-    def authorities(self) -> AllAuthorities:
-        if self._authorities is None:
+    def authorities(self) -> AuthoritiesT:
+        if self._authorities_cache is None:
             raise AuthoritysTooEarlyAccessError
-        return self._authorities
+        return self._authorities_cache.authorities
 
     @property
     def is_node_data_available(self) -> bool:

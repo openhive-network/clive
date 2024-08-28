@@ -9,12 +9,8 @@ from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.models.schemas import AccountName, AccountUpdate2Operation, Authority, HiveInt, PublicKey
 
 if TYPE_CHECKING:
-    from clive.__private.cli.types import (
-        AccountOrKeyT,
-        AccountUpdateFunction,
-        AuthorityType,
-        AuthorityUpdateFunction,
-    )
+    from clive.__private.cli.types import AccountOrKeyT, AccountUpdateFunction, AuthorityUpdateFunction
+    from clive.__private.core.types import AuthorityType
     from clive.__private.models.schemas import Account
 
 

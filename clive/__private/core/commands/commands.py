@@ -61,7 +61,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from clive.__private.core.accounts.accounts import TrackedAccount
-    from clive.__private.core.authority import AllAuthorities
+    from clive.__private.core.types import AuthoritiesT
     from clive.__private.core.commands.abc.command import Command
     from clive.__private.core.ensure_transaction import TransactionConvertibleType
     from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
@@ -304,7 +304,7 @@ class Commands(Generic[WorldT_co]):
             UpdateAlarmsData(accounts=list(accounts) if accounts is not None else [], node=self._world.node)
         )
 
-    async def update_authority_data(self, *, account: TrackedAccount) -> CommandWithResultWrapper[AllAuthorities]:
+    async def update_authority_data(self, *, account: TrackedAccount) -> CommandWithResultWrapper[AuthoritiesT]:
         return await self.__surround_with_exception_handlers(
             UpdateAuthorityData(account=account, node=self._world.node)
         )

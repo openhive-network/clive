@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
 from typing import TYPE_CHECKING
 
-from clive.__private.core.authority import AllAuthorities, Authority
+from clive.__private.core.authority import AccountAuthority
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
+from clive.__private.core.types import AuthoritiesT
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.node import Node
-    from clive.__private.core.types import AuthorityType
-    from clive.models.aliased import FindAccounts
+    from clive.__private.models.schemas import FindAccounts
 
 
 class InvalidAuthorityError(Exception):
@@ -19,7 +18,7 @@ class InvalidAuthorityError(Exception):
 
 
 @dataclass(kw_only=True)
-class UpdateAuthorityData(CommandDataRetrieval[AllAuthorities, AllAuthorities, AllAuthorities]):
+class UpdateAuthorityData(CommandDataRetrieval[AuthoritiesT, AuthoritiesT, AuthoritiesT]):
     node: Node
     account: TrackedAccount
     _depth: int = field(init=False)
@@ -27,65 +26,44 @@ class UpdateAuthorityData(CommandDataRetrieval[AllAuthorities, AllAuthorities, A
     async def _execute(self) -> None:
         await super()._execute()
 
-    async def _harvest_data_from_api(self) -> AllAuthorities:
+    async def _harvest_data_from_api(self) -> AuthoritiesT:
         self._depth = (await self.node.cached.config).HIVE_MAX_SIG_CHECK_DEPTH
         find_accounts_data = await self.node.api.database_api.find_accounts(accounts=[self.account.name])
         self._assert_account_names_matches_in_result([self.account.name], find_accounts_data)
+        account_data = find_accounts_data.accounts[0]
 
-        owner_lut = await self._create_lut(find_accounts_data, "owner")
-        active_lut = await self._create_lut(find_accounts_data, "active")
-        posting_lut = await self._create_lut(find_accounts_data, "posting")
+        authorities = {
+            AccountAuthority.from_schemas_authority(account_data.owner, account_data.name, "owner"),
+            AccountAuthority.from_schemas_authority(account_data.active, account_data.name, "active"),
+            AccountAuthority.from_schemas_authority(account_data.posting, account_data.name, "posting"),
+        }
+        authorities = await self.__fill_look_up_table(authorities)
 
-        return AllAuthorities(
-            owner=Authority.from_schemas_authority(find_accounts_data.accounts[0].owner),
-            active=Authority.from_schemas_authority(find_accounts_data.accounts[0].active),
-            posting=Authority.from_schemas_authority(find_accounts_data.accounts[0].posting),
-            owner_lut=owner_lut,
-            active_lut=active_lut,
-            posting_lut=posting_lut,
-            last_updated=datetime.now(timezone.utc),
-        )
+        return authorities
 
-    def get_next_level_authorities(
-        self, find_accounts_data: FindAccounts, authority_type: AuthorityType
-    ) -> dict[str, Authority]:
-        match authority_type:
-            case "owner":
-                return {
-                    account.name: Authority.from_schemas_authority(account.owner)
-                    for account in find_accounts_data.accounts
-                }
-            case "active":
-                return {
-                    account.name: Authority.from_schemas_authority(account.active)
-                    for account in find_accounts_data.accounts
-                }
-            case "posting":
-                return {
-                    account.name: Authority.from_schemas_authority(account.posting)
-                    for account in find_accounts_data.accounts
-                }
-            case _:
-                raise InvalidAuthorityError
-
-    async def _create_lut(
-        self, find_accounts_data: FindAccounts, authority_type: AuthorityType
-    ) -> dict[str, Authority]:
-        next_level_authorities = self.get_next_level_authorities(find_accounts_data, authority_type)
-        lut = next_level_authorities.copy()
+    async def __fill_look_up_table(self, authorities: AuthoritiesT) -> AuthoritiesT:
+        next_level_authorities: AuthoritiesT = authorities.copy()
         for _ in range(self._depth):
-            next_level_account_names: list[str] = [
-                account_weight_tuple[0]
-                for auth in list(next_level_authorities.values())
-                for account_weight_tuple in auth.account_auths
-            ]
+            next_level_account_names = {authority.account for authority in next_level_authorities}
             if len(next_level_account_names) == 0:
                 break
             find_accounts_data = await self.node.api.database_api.find_accounts(accounts=next_level_account_names)
             self._assert_account_names_matches_in_result(next_level_account_names, find_accounts_data)
-            next_level_authorities = self.get_next_level_authorities(find_accounts_data, authority_type)
-            lut.update(next_level_authorities)
-        return lut
+            next_level_authorities = self.__get_next_level_authorities(find_accounts_data)
+            authorities.update(next_level_authorities)
+        return authorities
+
+    async def __get_next_level_authorities(self, result: FindAccounts) -> AuthoritiesT:
+        next_level_authorities: AuthoritiesT = {}
+        for account_data in result.accounts:
+            next_level_authorities.update(
+                {
+                    AccountAuthority.from_schemas_authority(account_data.owner, account_data.name, "owner"),
+                    AccountAuthority.from_schemas_authority(account_data.active, account_data.name, "active"),
+                    AccountAuthority.from_schemas_authority(account_data.posting, account_data.name, "posting"),
+                }
+            )
+        return next_level_authorities
 
     def _assert_account_names_matches_in_result(self, expected_account_names: list[str], result: FindAccounts) -> None:
         accounts = result.accounts
@@ -94,6 +72,9 @@ class UpdateAuthorityData(CommandDataRetrieval[AllAuthorities, AllAuthorities, A
             account.name in expected_account_names for account in accounts
         ), "Account list mismatch when fetching authority data"
 
-    async def _process_data(self, authorities: AllAuthorities) -> AllAuthorities:
-        self.account._authorities = authorities
+    async def _process_data(self, authorities: AuthoritiesT) -> AuthoritiesT:
+        self.account._authorities = {
+            account_authority for account_authority in authorities if account_authority.name == self.account.name
+        }
+        self.account._authorities_lut = authorities
         return authorities

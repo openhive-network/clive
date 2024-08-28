@@ -5,8 +5,8 @@ from rich.console import Console
 from rich.table import Table
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
-from clive.__private.cli.types import AuthorityType
 from clive.__private.core.accounts.accounts import TrackedAccount
+from clive.__private.core.types import AuthorityType
 
 if TYPE_CHECKING:
     from clive.__private.core.authority import Authority

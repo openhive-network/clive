@@ -7,6 +7,7 @@ from typing import Any
 from pydantic import Field
 
 from clive.__private.core.alarms.alarm_identifier import AlarmIdentifier  # noqa: TCH001
+from clive.__private.core.types import AuthoritiesT  # noqa: TCH001
 from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import OperationRepresentationUnion  # noqa: TCH001
 
@@ -18,26 +19,34 @@ class AlarmStorageModel(CliveBaseModel):
     """Identifies the occurrence of specific alarm among other possible alarms of same type. E.g. end date."""
 
 
-class AuthorityStorageModel(CliveBaseModel):
-    weight_threshold: int
-    account_auths: list[tuple[str, int]]
-    key_auths: list[tuple[str, int]]
+class KeyAliasStorageModel(CliveBaseModel):
+    alias: str
+    public_key: str
 
 
-class AllAuthoritiesStorageModel(CliveBaseModel):
-    owner: AuthorityStorageModel
-    active: AuthorityStorageModel
-    posting: AuthorityStorageModel
-    owner_lut: dict[str, AuthorityStorageModel] = Field(default_factory=dict)
-    active_lut: dict[str, AuthorityStorageModel] = Field(default_factory=dict)
-    posting_lut: dict[str, AuthorityStorageModel] = Field(default_factory=dict)
+class KeyAliasStorageModel(CliveBaseModel):
+    alias: str
+    public_key: str
+
+
+class AccountAuthorityStorageModel(CliveBaseModel):
+    account: str
+    role: str
+    # key_weights: set[KeyWeight] = field(default_factory=set)
+    # authority_weights: set[AuthorityWeight] = field(default_factory=set)
+    required_total_weight: int
+
+
+class AuthoritiesStorageModel(CliveBaseModel):
+    authorities: set[AccountAuthorityStorageModel] = Field(default_factory=set)
+    authorities_lut: set[AccountAuthorityStorageModel] = Field(default_factory=set)
     last_updated: datetime
 
 
 class TrackedAccountStorageModel(CliveBaseModel):
     name: str
     alarms: list[AlarmStorageModel] = []  # noqa: RUF012
-    authorities: AllAuthoritiesStorageModel | None = None
+    authorities: AuthorityesStorageModel | None = None
 
 
 class KeyAliasStorageModel(CliveBaseModel):
