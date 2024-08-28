@@ -66,7 +66,7 @@ if TYPE_CHECKING:
         AnyErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
-    from clive.__private.core.world import TextualWorld, World
+    from clive.__private.core.world import TextualWorld, TyperWorld, World
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
         Account,
@@ -467,6 +467,11 @@ class Commands(Generic[WorldT_co]):
             result = command.result if error is None else ResultNotAvailable(exception=error)
             return CommandWithResultWrapper(command=command, result=result, error=error)
         return CommandWrapper(command=command, error=error)
+
+
+class TyperCommands(Commands["TyperWorld"]):
+    def __init__(self, world: TyperWorld) -> None:
+        super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
 
 class TextualCommands(Commands["TextualWorld"], CliveDOMNode):

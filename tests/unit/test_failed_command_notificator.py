@@ -7,6 +7,7 @@ import pytest
 from clive.__private.core.commands.abc.command import Command, CommandError
 from clive.__private.core.commands.abc.command_in_unlocked import CommandInUnlocked, CommandRequiresUnlockedModeError
 from clive.__private.core.commands.abc.command_restricted import CommandExecutionNotPossibleError
+from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.core.error_handlers.failed_command_notificator import FailedCommandNotificator
 
 
@@ -31,21 +32,33 @@ class MockCommandInUnlocked(CommandInUnlocked):
     "exception", [CommandError, CommandExecutionNotPossibleError, CommandRequiresUnlockedModeError]
 )
 async def test_catching_correct_exception(exception: type[CommandError]) -> None:
-    async with FailedCommandNotificator():
-        raise exception(MockCommand())
+    # ACT & ASSERT
+    with pytest.raises(CannotNotifyError) as error_info:
+        async with FailedCommandNotificator():
+            raise exception(MockCommand())
+
+    assert isinstance(error_info.value.error, exception), "The caught exception is not the expected one."
 
 
 @pytest.mark.parametrize("exception", [Exception, AssertionError, ValueError, TypeError])
 async def test_catching_incorrect_exception(exception: type[Exception]) -> None:
+    # ACT & ASSERT
     with pytest.raises(exception):
         async with FailedCommandNotificator():
             raise exception
 
 
 async def test_catch_only() -> None:
-    async with FailedCommandNotificator(catch_only=CommandRequiresUnlockedModeError):
-        raise CommandRequiresUnlockedModeError(MockCommandInUnlocked())
+    # ARRANGE
+    catch_only = CommandRequiresUnlockedModeError
+
+    # ACT & ASSERT
+    with pytest.raises(CannotNotifyError) as error_info:
+        async with FailedCommandNotificator(catch_only=catch_only):
+            raise catch_only(MockCommandInUnlocked())
+
+    assert isinstance(error_info.value.error, catch_only), "The caught exception is not the expected one."
 
     with pytest.raises(CommandError):
-        async with FailedCommandNotificator(catch_only=CommandRequiresUnlockedModeError):
+        async with FailedCommandNotificator(catch_only=catch_only):
             raise CommandError(MockCommand())

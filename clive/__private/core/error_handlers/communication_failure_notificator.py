@@ -4,7 +4,6 @@ from typing import Final, TypeGuard
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.error_handlers.abc.error_notificator import ErrorNotificator
-from clive.dev import is_in_dev_mode
 from clive.exceptions import CommunicationError, CommunicationTimeoutError
 
 
@@ -27,7 +26,7 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
         url = exception.url
 
         if not error_messages:
-            return cls._get_communication_detailed_error_message(url, "No error details available.")
+            return cls._get_communication_not_available_message(url)
 
         replaced: list[str] = []
         for error_message in error_messages:
@@ -45,26 +44,23 @@ class CommunicationFailureNotificator(ErrorNotificator[CommunicationError]):
         """
         Notify about the error in TUI if it's necessary.
 
-        Presents explicit error message always in dev mode for debugging purposes
-        or if response is available because if there is no response, it indicates general connection issue
-        and no need to notify user about it multiple times and show request details because that causes a lot of long
-        and unreadable notifications.
+        Notifies always only if the error response is available because if there is no response,
+        it indicates general connection issue and no need to notify user about it multiple times
+        because that causes a lot of notifications.
         """
-        error = self.error_ensure
 
-        def should_notify_with_explicit_error() -> bool:
-            return is_in_dev_mode() or error.is_response_available
+        def is_error_response_available() -> bool:
+            return self.error_ensure.is_response_available
 
-        if should_notify_with_explicit_error():
+        if is_error_response_available():
             super()._notify_tui(message)
             return
 
         clive_app = get_clive().app_instance()
-        notification_content = self._get_communication_not_available_message(error.url)
-        if clive_app.is_notification_present(notification_content):
+        if clive_app.is_notification_present(message):
             return
 
-        super()._notify_tui(notification_content)
+        super()._notify_tui(message)
 
     @staticmethod
     def _get_communication_not_available_message(url: str) -> str:

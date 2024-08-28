@@ -8,7 +8,7 @@ from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.commands.commands import Commands, TextualCommands
+from clive.__private.core.commands.commands import Commands, TextualCommands, TyperCommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
@@ -187,5 +187,12 @@ class TextualWorld(World, ManualReactive):
 
 
 class TyperWorld(World):
+    @property
+    def commands(self) -> TyperCommands:
+        return cast(TyperCommands, super().commands)
+
+    def _setup_commands(self) -> TyperCommands:
+        return TyperCommands(self)
+
     def _load_profile(self, profile_name: str | None) -> Profile:
         return Profile.load(profile_name, auto_create=False)
