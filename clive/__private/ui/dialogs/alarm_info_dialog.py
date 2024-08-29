@@ -2,16 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Iterable
 
-from textual import on
-from textual.binding import Binding
-from textual.containers import Container, Horizontal, Vertical
-from textual.screen import ModalScreen
+from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
-from clive.__private.ui.widgets.buttons.close_button import CloseButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -25,12 +22,6 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.ui.screens.account_details.alarms.alarm_fix_details import AlarmFixDetails
-
-
-class AlarmInfoDialogContent(Vertical):
-    """Stores alarm data and a description of how to fix it."""
-
-    BORDER_TITLE = "ALARM INFO"
 
 
 class AlarmDataHeader(Horizontal):
@@ -59,32 +50,20 @@ class AlarmData(CliveCheckerboardTable):
         return [AlarmDataRow(self._alarm_titled_data.values())]
 
 
-class AlarmInfoDialog(ModalScreen[None]):
+class AlarmInfoDialog(CliveInfoDialog):
     """Dialog screen containing information about the alarm and description of how to fix it."""
-
-    BINDINGS = [Binding("escape,f3", "request_close", "Close")]
 
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, alarm: AnyAlarm, alarm_fix_details: AlarmFixDetails, account: TrackedAccount) -> None:
-        super().__init__()
+        super().__init__(border_title=alarm.get_alarm_basic_info(), variant="error")
         self._alarm = alarm
         self._alarm_fix_details = alarm_fix_details
         self._account = account
 
-    def compose(self) -> ComposeResult:
-        with AlarmInfoDialogContent():
-            yield SectionTitle(self._alarm.get_alarm_basic_info(), variant="red")
-            yield SectionTitle("Details")
-            if self._alarm.ALARM_DESCRIPTION:
-                yield Static(self._alarm.ALARM_DESCRIPTION, id="alarm-description")
-            yield AlarmData(alarm=self._alarm)
-            yield FixAlarmInfoWidget(
-                alarm=self._alarm, alarm_fix_details=self._alarm_fix_details, account=self._account
-            )
-            with Container(id="close-button-container"):
-                yield CloseButton()
-
-    @on(CloseButton.Pressed, "#close-button")
-    def action_request_close(self) -> None:
-        self.app.pop_screen()
+    def create_dialog_content(self) -> ComposeResult:
+        yield SectionTitle("Details")
+        if self._alarm.ALARM_DESCRIPTION:
+            yield Static(self._alarm.ALARM_DESCRIPTION, id="alarm-description")
+        yield AlarmData(alarm=self._alarm)
+        yield FixAlarmInfoWidget(alarm=self._alarm, alarm_fix_details=self._alarm_fix_details, account=self._account)

@@ -1,14 +1,9 @@
 AlarmInfoDialog {
-  align: center middle;
-
-  AlarmInfoDialogContent {
-    border: $primary-lighten-3;
+  CliveDialogContent {
     width: 70%;
-    height: auto;
 
-    #close-button-container {
-      align: right bottom;
-      height: 1;
+    OneLineButton {
+      width: 30;
     }
 
     #alarm-description {
@@ -17,6 +12,7 @@ AlarmInfoDialog {
 
     AlarmData {
       align: center top;
+      margin-top: 1;
       margin-bottom: 1;
       height: auto;
 
