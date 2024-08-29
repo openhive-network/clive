@@ -1,31 +1,15 @@
 AddTrackedAccountDialog {
-  align: center middle;
-  background: $background 85%;
-
-  AddTrackedAccountDialogContent {
-    border-title-style: bold;
-    border-title-color: $text;
-    border-title-background: $primary;
-    border: $primary outer;
-    background: $panel 80%;
-    padding: 1;
-    width: 50%;
-    height: auto;
-
-    Section {
-      margin: 0 4;
-    }
-
+  CliveDialogContent {
     AccountManagementReference {
       align: center top;
       margin-bottom: 1;
     }
 
-    #buttons-container {
-      align: center top;
-      margin-top: 1;
-      height: auto;
+    Section {
+      margin: 0 4;
+    }
 
+    #buttons-container {
       OneLineButton {
         margin: 0 2;
         width: 20;
