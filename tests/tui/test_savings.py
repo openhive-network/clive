@@ -11,11 +11,13 @@ from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
-from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
-from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.operation_summary.cancel_transfer_from_savings import CancelTransferFromSavings
-from clive.__private.ui.operations.operations import Operations
-from clive.__private.ui.operations.savings_operations.savings_operations import (
+from clive.__private.ui.screens.cart import Cart
+from clive.__private.ui.screens.dashboard import DashboardUnlocked
+from clive.__private.ui.screens.operations import Operations
+from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
+    CancelTransferFromSavings,
+)
+from clive.__private.ui.screens.operations.savings_operations.savings_operations import (
     PendingTransfer,
     Savings,
 )

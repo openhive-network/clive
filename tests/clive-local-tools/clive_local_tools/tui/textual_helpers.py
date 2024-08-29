@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 
 import test_tools as tt
 
-from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+from clive.__private.ui.screens.dashboard import DashboardBase
 from clive_local_tools.tui.checkers import assert_is_key_binding_active
 from clive_local_tools.tui.constants import TUI_TESTS_GENERAL_TIMEOUT
 

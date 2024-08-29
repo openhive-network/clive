@@ -3,10 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
 )
-from clive.__private.ui.widgets.placeholders_constants import PATH_PLACEHOLDER
 from clive.__private.validators.path_validator import PathValidator
 
 if TYPE_CHECKING:

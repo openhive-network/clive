@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.core.accounts.exceptions import AccountNotFoundError
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 
 if TYPE_CHECKING:

@@ -10,11 +10,11 @@ from textual.containers import Horizontal, VerticalScroll
 from textual.message import Message
 from textual.widgets import DirectoryTree, Label
 
+from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.path_input import PathInput
-from clive.__private.ui.widgets.placeholders_constants import PATH_PLACEHOLDER
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

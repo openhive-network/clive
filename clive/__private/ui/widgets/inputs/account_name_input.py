@@ -5,9 +5,9 @@ from typing import TYPE_CHECKING, Final
 from textual import on
 from textual.containers import Horizontal, Vertical
 
+from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.ui.widgets.known_account import KnownAccount
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PLACEHOLDER
 from clive.__private.validators.account_name_validator import AccountNameValidator
 
 if TYPE_CHECKING:

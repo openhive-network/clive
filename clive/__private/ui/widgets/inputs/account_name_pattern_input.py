@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 from textual.validation import Length
 
+from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_PATTERN_PLACEHOLDER
 from clive.__private.models.schemas import AccountName
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME_PATTERN_PLACEHOLDER
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

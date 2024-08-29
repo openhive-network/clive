@@ -9,9 +9,9 @@ from textual.reactive import var
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
 from clive.__private.core.accounts.exceptions import AccountAlreadyExistsError
 from clive.__private.core.clive_import import get_clive
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.clive_basic import CliveRadioButton, CliveRadioSet
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section import Section, SectionBody
 

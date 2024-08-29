@@ -2,9 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from clive.__private.ui.dashboard.dashboard_locked import DashboardLocked
-from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
-from clive.__private.ui.unlock.unlock import Unlock
+from clive.__private.ui.screens.dashboard import DashboardLocked, DashboardUnlocked
+from clive.__private.ui.screens.unlock import Unlock
 
 from .checkers import assert_is_screen_active
 from .textual_helpers import press_and_wait_for_screen, press_binding, write_text

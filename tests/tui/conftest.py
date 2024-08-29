@@ -13,8 +13,7 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
-from clive.__private.ui.dashboard.dashboard_locked import DashboardLocked
-from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
+from clive.__private.ui.screens.dashboard import DashboardLocked, DashboardUnlocked
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 from clive_local_tools.tui.clive_quit import clive_quit

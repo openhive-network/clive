@@ -2,9 +2,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
-from clive.__private.ui.transaction_summary import TransactionSummaryFromCart
-from clive.__private.ui.unlock.unlock import Unlock
+from clive.__private.ui.screens.dashboard import DashboardUnlocked
+from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
+from clive.__private.ui.screens.unlock import Unlock
 
 from .textual_helpers import press_and_wait_for_screen
 from .unlock import unlock_body

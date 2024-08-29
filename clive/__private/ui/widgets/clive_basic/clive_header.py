@@ -11,11 +11,11 @@ from textual.widgets._header import HeaderIcon as TextualHeaderIcon
 from textual.widgets._header import HeaderTitle
 
 from clive.__private.core.formatters.data_labels import NOT_AVAILABLE_LABEL
+from clive.__private.ui.clive_screen import CliveScreen
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
-from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
     DynamicOneLineButtonUnfocusable,
@@ -109,7 +109,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @property
     def _is_current_screen_dashboard(self) -> bool:
-        from clive.__private.ui.dashboard.dashboard_base import DashboardBase
+        from clive.__private.ui.screens.dashboard import DashboardBase
 
         return isinstance(self.app.screen, DashboardBase)
 
@@ -156,7 +156,7 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def change_wallet_status(self) -> None:
-        from clive.__private.ui.unlock.unlock import Unlock
+        from clive.__private.ui.screens.unlock import Unlock
 
         if isinstance(self.app.screen, Unlock):
             return
@@ -201,7 +201,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def push_select_node_address(self) -> None:
-        from clive.__private.ui.set_node_address.set_node_address import SetNodeAddress
+        from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddress
 
         if isinstance(self.app.screen, SetNodeAddress) or self.world.is_in_onboarding_mode:
             return

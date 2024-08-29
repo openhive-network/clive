@@ -19,13 +19,12 @@ from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WI
 from clive.__private.core.world import TextualWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.ui.dashboard.dashboard_locked import DashboardLocked
-from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.help import Help
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
-from clive.__private.ui.quit.quit import Quit
-from clive.__private.ui.shared.help import Help
+from clive.__private.ui.screens.dashboard import DashboardLocked, DashboardUnlocked
+from clive.__private.ui.screens.quit import Quit
 from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -36,7 +35,7 @@ if TYPE_CHECKING:
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
-    from clive.__private.ui.pilot import ClivePilot
+    from clive.__private.ui.clive_pilot import ClivePilot
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 

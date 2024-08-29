@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Final, Generic
 from textual.widgets import Select, Static
 from textual.widgets._select import NoSelection, SelectOption, SelectType
 
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:

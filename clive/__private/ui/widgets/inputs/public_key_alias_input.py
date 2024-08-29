@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.constants.tui.placeholders import KEY_ALIAS_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.placeholders_constants import KEY_ALIAS_PLACEHOLDER
 from clive.__private.validators.public_key_alias_validator import PublicKeyAliasValidator
 
 if TYPE_CHECKING:

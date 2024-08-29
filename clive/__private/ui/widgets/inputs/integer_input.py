@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.constants.tui.placeholders import INTEGER_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
-from clive.__private.ui.widgets.placeholders_constants import INTEGER_PLACEHOLDER
 
 if TYPE_CHECKING:
     from collections.abc import Iterable

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.containers import Horizontal
 
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.section import Section
 from clive.__private.validators.set_known_account_validator import SetKnownAccountValidator
@@ -13,7 +13,7 @@ from clive.__private.validators.set_tracked_account_validator import SetTrackedA
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.account_management.common.manage_accounts_table import AccountsType
+    from clive.__private.ui.screens.config.account_management.common.manage_accounts_table import AccountsType
 
 
 class AddAccountContainer(Horizontal, CliveWidget):

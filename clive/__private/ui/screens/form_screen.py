@@ -6,11 +6,11 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 
 from clive.__private.core.contextual import ContextT, Contextual
-from clive.__private.ui.widgets.clive_screen import CliveScreen
+from clive.__private.ui.clive_screen import CliveScreen
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
-    from clive.__private.ui.shared.form import Form
+    from clive.__private.ui.onboarding.form import Form
 
 
 class FormScreenBase(CliveScreen[None], Contextual[ContextT]):

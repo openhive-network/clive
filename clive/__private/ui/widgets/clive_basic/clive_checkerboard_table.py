@@ -1,21 +1,18 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Sequence, TypeVar
+from typing import TYPE_CHECKING, Any, ClassVar, Sequence, TypeVar
 
 from textual.containers import Container
 from textual.widget import Widget
 from textual.widgets import Static
 
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
+from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-
-ODD_CLASS_NAME: Final[str] = "-odd-column"
-EVEN_CLASS_NAME: Final[str] = "-even-column"
 
 Content = TypeVar("Content", bound=Any)
 
@@ -297,12 +294,12 @@ class CliveCheckerboardTable(CliveWidget):
                 is_even_row = (row_index + starting_index) % 2 == 0
                 is_even_cell = cell_index % 2 == 0
 
-                cell.remove_class(EVEN_CLASS_NAME, ODD_CLASS_NAME)
+                cell.remove_class(CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME)
 
                 if (is_even_row and is_even_cell) or (not is_even_row and not is_even_cell):
-                    cell.add_class(EVEN_CLASS_NAME)
+                    cell.add_class(CLIVE_EVEN_COLUMN_CLASS_NAME)
                 else:
-                    cell.add_class(ODD_CLASS_NAME)
+                    cell.add_class(CLIVE_ODD_COLUMN_CLASS_NAME)
 
     @property
     def object_to_watch(self) -> Any:  # noqa: ANN401

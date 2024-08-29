@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, Final
 from textual.binding import Binding
 
 from clive.__private.core.profile import Profile
-from clive.__private.ui.create_profile.create_profile import CreateProfileForm
-from clive.__private.ui.manage_key_aliases import NewKeyAliasForm
-from clive.__private.ui.screens.dedicated_form_screens.finish_form_screen import FinishFormScreen
-from clive.__private.ui.screens.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
-from clive.__private.ui.set_account.set_account import SetAccount
-from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
-from clive.__private.ui.shared.form import Form, ScreenBuilder
+from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
+from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
+from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
+from clive.__private.ui.onboarding.form import Form, ScreenBuilder
+from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
+from clive.__private.ui.onboarding.set_account import SetAccount
+from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
 from clive.__private.ui.styling import colorize_shortcut
 from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 

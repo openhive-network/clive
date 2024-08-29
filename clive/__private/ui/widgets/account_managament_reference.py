@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.containers import Center, Vertical
 
-from clive.__private.ui.account_management.account_management import AccountManagement
+from clive.__private.ui.screens.config.account_management import AccountManagement
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 from clive.__private.ui.widgets.notice import Notice
 

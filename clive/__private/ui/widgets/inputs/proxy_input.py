@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME2_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.ui.widgets.placeholders_constants import ACCOUNT_NAME2_PLACEHOLDER
 from clive.__private.validators.proxy_validator import ProxyValidator
 
 if TYPE_CHECKING:

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.operations.operations import Operations
-from clive.__private.ui.unlock.unlock import Unlock
+from clive.__private.ui.screens.operations import Operations
+from clive.__private.ui.screens.unlock import Unlock
 
 from .textual_helpers import press_and_wait_for_screen
 from .unlock import unlock_body

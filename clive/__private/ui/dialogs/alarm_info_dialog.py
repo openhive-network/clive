@@ -8,12 +8,11 @@ from textual.containers import Container, Horizontal, Vertical
 from textual.screen import ModalScreen
 from textual.widgets import Static
 
-from clive.__private.ui.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
+from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.screens.account_details.alarms.fix_alarm_info_widget import FixAlarmInfoWidget
 from clive.__private.ui.widgets.buttons.close_button import CloseButton
 from clive.__private.ui.widgets.clive_basic import (
-    CLIVE_EVEN_CLASS_NAME,
-    CLIVE_ODD_CLASS_NAME,
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
@@ -25,7 +24,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
-    from clive.__private.ui.account_details.alarms.alarm_fix_details import AlarmFixDetails
+    from clive.__private.ui.screens.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
 class AlarmInfoDialogContent(Vertical):
@@ -41,7 +40,7 @@ class AlarmDataHeader(Horizontal):
 
     def compose(self) -> ComposeResult:
         for evenness, column in enumerate(self._columns):
-            yield Static(column, classes=CLIVE_EVEN_CLASS_NAME if evenness % 2 else CLIVE_ODD_CLASS_NAME)
+            yield Static(column, classes=CLIVE_EVEN_COLUMN_CLASS_NAME if evenness % 2 else CLIVE_ODD_COLUMN_CLASS_NAME)
 
 
 class AlarmDataRow(CliveCheckerboardTableRow):

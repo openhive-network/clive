@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.operations import Operations
+from clive.__private.ui.screens.cart import Cart
+from clive.__private.ui.screens.operations import Operations
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.textual_helpers import press_and_wait_for_screen

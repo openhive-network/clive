@@ -11,8 +11,8 @@ from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.settings import safe_settings
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult

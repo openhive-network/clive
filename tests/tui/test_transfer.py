@@ -6,9 +6,8 @@ import pytest
 import test_tools as tt
 
 from clive.__private.models.schemas import TransferOperation
-from clive.__private.ui.operations.cart import Cart
-from clive.__private.ui.operations.operations import Operations
-from clive.__private.ui.operations.transfer_to_account.transfer_to_account import TransferToAccount
+from clive.__private.ui.screens.cart import Cart
+from clive.__private.ui.screens.operations import Operations, TransferToAccount
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput

@@ -5,14 +5,15 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.ui.app import Clive
-from clive.__private.ui.config.config import Config
-from clive.__private.ui.create_profile.create_profile import CreateProfileForm
-from clive.__private.ui.dashboard.dashboard_unlocked import DashboardUnlocked
-from clive.__private.ui.manage_key_aliases.manage_key_aliases import KeyAlias, ManageKeyAliases
-from clive.__private.ui.manage_key_aliases.new_key_alias import NewKeyAliasForm
+from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
+from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.onboarding.onboarding import OnboardingFinishScreen, OnboardingWelcomeScreen
-from clive.__private.ui.set_account.set_account import SetAccount, WorkingAccountCheckbox
-from clive.__private.ui.set_node_address.set_node_address import SetNodeAddressForm
+from clive.__private.ui.onboarding.set_account import SetAccount
+from clive.__private.ui.onboarding.set_account.set_account import WorkingAccountCheckbox
+from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
+from clive.__private.ui.screens.config import Config
+from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAlias, ManageKeyAliases
+from clive.__private.ui.screens.dashboard import DashboardUnlocked
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput

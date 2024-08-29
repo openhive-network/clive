@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from textual import on
 
+from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
-from clive.__private.ui.widgets.clive_screen import CliveScreen
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import DynamicOneLineButtonUnfocusable
 
 if TYPE_CHECKING:
@@ -82,7 +82,7 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
     @CliveScreen.prevent_action_when_no_accounts_node_data
     @on(OneLineButton.Pressed, "#alarm-display-button")
     def push_account_details_screen(self) -> None:
-        from clive.__private.ui.account_details.account_details import AccountDetails
+        from clive.__private.ui.screens.account_details.account_details import AccountDetails
 
         if self._is_in_auto_working_account_mode() and not self.profile.accounts.has_working_account:
             return

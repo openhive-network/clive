@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.constants.tui.placeholders import PROFILE_NAME_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.ui.widgets.placeholders_constants import PROFILE_NAME_PLACEHOLDER
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
 
 if TYPE_CHECKING:

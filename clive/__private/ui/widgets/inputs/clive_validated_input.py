@@ -9,7 +9,7 @@ from textual.widgets import Pretty
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.formatters.humanize import humanize_validation_result
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
+from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.exceptions import CliveError
 

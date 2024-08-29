@@ -3,7 +3,7 @@ from __future__ import annotations
 from textual.containers import VerticalScroll
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.clive_basic.clive_widget import CliveWidget
+from clive.__private.ui.clive_widget import CliveWidget
 
 
 class CanFocusWithScrollbarsOnly(CliveWidget, AbstractClassMessagePump):
