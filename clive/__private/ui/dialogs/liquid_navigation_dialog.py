@@ -3,13 +3,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Callable, Literal
 
 from textual import on
-from textual.binding import Binding
-from textual.containers import Center, Vertical
-from textual.screen import ModalScreen
+from textual.containers import Center
 
 from clive.__private.core.accounts.accounts import Account
 from clive.__private.models import Asset
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operations import HivePowerManagement, Savings, TransferToAccount
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
@@ -17,6 +16,8 @@ from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+    from clive.__private.ui.clive_widget import CliveWidget
 
 ActionType = Literal["transfer-to-account", "transfer-to-savings", "power-up"]
 
@@ -27,10 +28,6 @@ def auto_switch_working_account(widget: CliveWidget, account: str | Account) -> 
     widget.profile.accounts.switch_working_account(account)
     widget.notify(f"Working account automatically switched to {Account.ensure_account_name(account)}")
     widget.app.trigger_profile_watchers()
-
-
-class LiquidNavigationDialogContent(Vertical):
-    pass
 
 
 class LiquidOperationChooseButton(OneLineButton):
@@ -61,31 +58,20 @@ class LiquidOperationChooseButton(OneLineButton):
         self.app.push_screen(HivePowerManagement())
 
 
-class LiquidNavigationDialog(ModalScreen[None], CliveWidget):
+class LiquidNavigationDialog(CliveInfoDialog):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BINDINGS = [Binding("escape", "cancel", "Quit")]
 
     def __init__(self, account: Account, asset_type: type[Asset.LiquidT]) -> None:
-        super().__init__()
+        super().__init__(border_title=f"Choose liquid operation to perform on {Asset.get_symbol(asset_type)}")
         self._account = account
         self._asset_type = asset_type
 
-    def compose(self) -> ComposeResult:
-        content = LiquidNavigationDialogContent()
-        content.border_title = f"Choose liquid operation to perform on {Asset.get_symbol(self._asset_type)}"
-
-        with content:
-            with Center(), Section():
-                yield self._create_liquid_operation_choose_button("Transfer to account", "transfer-to-account")
-                yield self._create_liquid_operation_choose_button("Transfer to savings", "transfer-to-savings")
-                if self._asset_type == Asset.Hive:
-                    yield self._create_liquid_operation_choose_button("Power up", "power-up")
-            with Center():
-                yield OneLineButton("Cancel", id_="cancel-button", variant="error")
-
-    @on(OneLineButton.Pressed, "#cancel-button")
-    def action_cancel(self) -> None:
-        self.app.pop_screen()
+    def create_dialog_content(self) -> ComposeResult:
+        with Center(), Section():
+            yield self._create_liquid_operation_choose_button("Transfer to account", "transfer-to-account")
+            yield self._create_liquid_operation_choose_button("Transfer to savings", "transfer-to-savings")
+            if self._asset_type == Asset.Hive:
+                yield self._create_liquid_operation_choose_button("Power up", "power-up")
 
     def _create_liquid_operation_choose_button(self, label: str, action: ActionType) -> LiquidOperationChooseButton:
         return LiquidOperationChooseButton(label, action, self._account, self._asset_type)

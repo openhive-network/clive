@@ -1,19 +1,6 @@
 LiquidNavigationDialog {
-  align: center middle;
-  background: $background 85%;
-
-  LiquidNavigationDialogContent {
-    border-title-style: bold;
-    border-title-color: $text;
-    border-title-background: $primary;
-    border: $primary outer;
-    background: $panel 80%;
-    padding: 1;
-    width: 50%;
-    height: auto;
-
+  CliveDialogContent {
     OneLineButton {
-      margin-top: 1;
       width: 30;
     }
 
