@@ -3,45 +3,46 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from textual import on, work
+from textual import work
 from textual.binding import Binding
-from textual.events import Click
-from textual.screen import ModalScreen
+from textual.containers import Center
 from textual.widgets import Static
 
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_exchange_rate
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
 class WitnessDetailsWidget(Static):
-    BORDER_TITLE = "WITNESS DETAILS"
+    """Display witness details."""
 
 
-class WitnessDetailsDialog(ModalScreen[None], CliveWidget):
-    BINDINGS = [Binding("escape,f3", "request_quit", "Close")]
-
+class WitnessDetailsDialog(CliveInfoDialog, CliveWidget):
+    BINDINGS = [Binding("escape,f3", "close", "Close")]
     CSS_PATH = [get_relative_css_path(__file__)]
 
     def __init__(self, witness_name: str) -> None:
-        super().__init__()
-        self.__witness_name = witness_name
+        super().__init__(border_title=f"Details for [yellow]{witness_name}[/] witness")
+        self._witness_name = witness_name
+        self._witness_widget = WitnessDetailsWidget()
+        self._witness_widget.loading = True
 
     def on_mount(self) -> None:
         self.set_interval(safe_settings.node.refresh_rate_secs, lambda: self.refresh_witness_data())
 
-    def compose(self) -> ComposeResult:
-        widget = WitnessDetailsWidget()
-        widget.loading = True
-        yield widget
+    def create_dialog_content(self) -> ComposeResult:
+        with Center(), Section():
+            yield self._witness_widget
 
     @work(name="governance update modal details")
     async def refresh_witness_data(self) -> None:
-        wrapper = await self.commands.find_witness(witness_name=self.__witness_name)
+        wrapper = await self.commands.find_witness(witness_name=self._witness_name)
 
         if wrapper.error_occurred:
             new_witness_data = f"Unable to retrieve witness information:\n{wrapper.error}"
@@ -64,13 +65,5 @@ class WitnessDetailsDialog(ModalScreen[None], CliveWidget):
                 version: {version}\
             """
 
-        with self.app.batch_update():
-            await self.query("*").remove()
-            await self.mount(WitnessDetailsWidget(new_witness_data))
-
-    def action_request_quit(self) -> None:
-        self.app.pop_screen()
-
-    @on(Click)
-    def close_screen_by_click(self) -> None:
-        self.app.pop_screen()
+        self._witness_widget.loading = False
+        self._witness_widget.update(new_witness_data)
