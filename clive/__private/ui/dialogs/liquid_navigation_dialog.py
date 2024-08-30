@@ -78,7 +78,8 @@ class LiquidNavigationDialog(ModalScreen[None], CliveWidget):
             with Center(), Section():
                 yield self._create_liquid_operation_choose_button("Transfer to account", "transfer-to-account")
                 yield self._create_liquid_operation_choose_button("Transfer to savings", "transfer-to-savings")
-                yield self._create_liquid_operation_choose_button("Power up", "power-up")
+                if self._asset_type == Asset.Hive:
+                    yield self._create_liquid_operation_choose_button("Power up", "power-up")
             with Center():
                 yield OneLineButton("Cancel", id_="cancel-button", variant="error")
 
