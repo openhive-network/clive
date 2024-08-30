@@ -12,7 +12,7 @@ from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import (
     humanize_datetime,
     humanize_hive_power,
-    humanize_natural_time,
+    humanize_manabar_regeneration_time,
     humanize_percent,
 )
 from clive.__private.models import Asset
@@ -96,8 +96,7 @@ class ManabarRepresentation(TrackedAccountReferencingWidget, CliveWidget):
         if self._is_rc_api_missing:
             return MISSING_API_LABEL
 
-        natural_time = humanize_natural_time(-self.manabar.full_regeneration)
-        return natural_time if natural_time != "now" else "Full!"
+        return humanize_manabar_regeneration_time(self.manabar.full_regeneration)
 
     def _set_rc_api_missing(self) -> None:
         """Set tooltip if rc api is missing."""
