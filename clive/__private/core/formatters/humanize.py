@@ -179,16 +179,20 @@ def humanize_operation_details(operation: OperationBase) -> str:
     return out[:-2]
 
 
-def humanize_hive_power(value: Asset.Hive) -> str:
+def humanize_hive_power(value: Asset.Hive, *, show_unit: bool = True, show_symbol: bool = True) -> str:
     """Return pretty formatted hive power."""
-    formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
-    if "Byte" in formatted_string:
-        return f"{value.pretty_amount()} HP"
+    symbol = "HP" if show_symbol else ""
+    if show_unit:
+        formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
 
-    format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
-    matched = format_fix_regex.match(formatted_string)
-    assert matched is not None, "Given string does not match regex"
-    return f"{matched[1]}{matched[2]} HP".upper()
+        if "Byte" in formatted_string:
+            return f"{value.pretty_amount()} {symbol}"
+
+        format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
+        matched = format_fix_regex.match(formatted_string)
+        assert matched is not None, "Given string does not match regex"
+        return f"{matched[1]}{matched[2]} {symbol}".upper()
+    return f"{value.pretty_amount()} {symbol}"
 
 
 def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label: bool = False) -> str:
