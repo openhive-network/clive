@@ -35,8 +35,6 @@ from clive.__private.core.iwax import calculate_current_inflation_rate, calculat
 from clive.__private.models import Asset
 
 if TYPE_CHECKING:
-    from datetime import timedelta
-
     from textual.validation import ValidationResult
 
     from clive.__private.core.iwax import (
@@ -305,3 +303,14 @@ def humanize_timedelta(value: timedelta) -> str:
     timedelta(days=6720) -> 18 years, 4 months and 28 days
     """
     return humanize.precisedelta(value)
+
+
+def humanize_manabar_regeneration_time(regeneration_time: timedelta) -> str:
+    """Return pretty information about regeneration time."""
+
+    def is_full() -> bool:
+        return regeneration_time == timedelta(seconds=0)
+
+    if is_full():
+        return "Full!"
+    return humanize_natural_time(-regeneration_time)
