@@ -216,7 +216,6 @@ class CliveCheckerboardTable(CliveWidget):
             rows = self.create_dynamic_rows(content)
         else:
             rows = self.create_static_rows()
-
         self._set_evenness_styles(rows)
 
         if self._title is None:
@@ -272,14 +271,16 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidDynamicDefinedError
         return True
 
-    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow]) -> None:
+    def _set_evenness_styles(self, rows: Sequence[CliveCheckerboardTableRow], starting_index: int = 0) -> None:
         for row_index, row in enumerate(rows):
             for cell_index, cell in enumerate(row.cells):
                 if not isinstance(cell, CliveCheckerBoardTableCell):
                     continue
 
-                is_even_row = row_index % 2 == 0
+                is_even_row = (row_index + starting_index) % 2 == 0
                 is_even_cell = cell_index % 2 == 0
+
+                cell.remove_class(EVEN_CLASS_NAME, ODD_CLASS_NAME)
 
                 if (is_even_row and is_even_cell) or (not is_even_row and not is_even_cell):
                     cell.add_class(EVEN_CLASS_NAME)
