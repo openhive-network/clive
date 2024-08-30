@@ -13,6 +13,7 @@ from clive.__private.core.constants.setting_identifiers import (
     BEEKEEPER_INITIALIZATION_TIMEOUT_SECS,
     BEEKEEPER_PATH,
     BEEKEEPER_REMOTE_ADDRESS,
+    BEEKEEPER_SESSION_TOKEN,
     DATA_PATH,
     FORCE_ONBOARDING,
     IS_DEV,
@@ -188,6 +189,14 @@ class SafeSettings:
         def initialization_timeout_secs(self) -> float:
             return self._get_beekeeper_initialization_timeout_secs()
 
+        @property
+        def session_token(self) -> str | None:
+            return self._get_beekeeper_session_token()
+
+        @property
+        def is_session_token_set(self) -> bool:
+            return self.session_token is not None
+
         def _get_beekeeper_path(self) -> Path | None:
             setting_name = BEEKEEPER_PATH
             value = self._parent._get_value_from_settings(setting_name, "")
@@ -207,6 +216,12 @@ class SafeSettings:
 
         def _get_beekeeper_initialization_timeout_secs(self) -> float:
             return self._parent._get_number(BEEKEEPER_INITIALIZATION_TIMEOUT_SECS, default=5, minimum=1)
+
+        def _get_beekeeper_session_token(self) -> str | None:
+            beekeeper_session_token = self._parent._get_value_from_settings(BEEKEEPER_SESSION_TOKEN, None)
+            if beekeeper_session_token:
+                return str(beekeeper_session_token)
+            return None
 
     @dataclass
     class _Node(_Namespace):
