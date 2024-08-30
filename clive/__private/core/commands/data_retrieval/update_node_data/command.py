@@ -4,7 +4,6 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.core.calcluate_hive_power import calculate_hive_power
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
 from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
@@ -22,6 +21,7 @@ from clive.__private.core.iwax import (
 )
 from clive.__private.core.suppress_not_existing_apis import SuppressNotExistingApis
 from clive.__private.models.disabled_api import DisabledAPI
+from clive.__private.models.hp_vests_balance import HpVestsBalance
 from clive.__private.models.schemas import (
     DynamicGlobalProperties,
 )
@@ -120,9 +120,9 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
                 hive_balance=info.core.balance,
                 hive_savings=info.core.savings_balance,
                 hive_unclaimed=info.core.reward_hive_balance,
-                hp_balance=calculate_hive_power(gdpo, self._calculate_vests_balance(info.core)),
+                owned_hp_balance=HpVestsBalance.create(info.core.vesting_shares, gdpo),
+                unclaimed_hp_balance=HpVestsBalance.create(info.core.reward_vesting_balance, gdpo),
                 proxy=info.core.proxy,
-                hp_unclaimed=info.core.reward_vesting_balance,
                 last_refresh=utc_now(),
                 last_history_entry=info.last_history_entry,
                 last_account_update=info.core.last_account_update,
@@ -148,13 +148,6 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         if data is None:
             return utc_epoch()
         return data.history[0][1].timestamp
-
-    def _calculate_vests_balance(self, account: Account) -> int:
-        return (
-            int(account.vesting_shares.amount)
-            - int(account.delegated_vesting_shares.amount)
-            + int(account.received_vesting_shares.amount)
-        )
 
     def __update_manabar(self, gdpo: DynamicGlobalProperties, max_mana: int, manabar: SchemasManabar) -> Manabar:
         head_block_time = gdpo.time

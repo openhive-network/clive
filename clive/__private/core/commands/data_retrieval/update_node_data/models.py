@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
     from clive.__private.models import Asset
+    from clive.__private.models.hp_vests_balance import HpVestsBalance
 
 
 @dataclass
@@ -41,9 +42,9 @@ class NodeData:
     hive_balance: Asset.Hive
     hive_savings: Asset.Hive
     hive_unclaimed: Asset.Hive
-    hp_balance: int
+    owned_hp_balance: HpVestsBalance
+    unclaimed_hp_balance: HpVestsBalance
     proxy: str
-    hp_unclaimed: Asset.Vests
     last_refresh: datetime
     last_history_entry: datetime
     last_account_update: datetime
