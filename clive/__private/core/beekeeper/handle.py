@@ -150,6 +150,8 @@ class Beekeeper:
         ------
         BeekeeperTokenNotAvailableError: If token was not set yet.
         """
+        if safe_settings.beekeeper.is_session_token_set:
+            return str(safe_settings.beekeeper.session_token)
         if self.__token is None:
             raise BeekeeperTokenNotAvailableError
         return self.__token
