@@ -271,6 +271,12 @@ def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
 
 
+def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
+    """Return pretty hive power."""
+    symbol = "HP" if show_symbol else ""
+    return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} {symbol}"
+
+
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
     pretty_asset = Asset.pretty_amount(asset)
     asset_symbol = Asset.get_symbol(asset)
