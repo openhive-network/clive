@@ -82,7 +82,7 @@ class ShowAccount(WorldBasedCommand):
             "Liquid",
             humanize_asset_no_symbol(self._account_data.hbd_balance),
             humanize_asset_no_symbol(self._account_data.hive_balance),
-            humanize_asset_no_symbol(self._account_data.owned_hp_balance.hp_balance),
+            humanize_hive_power_with_comma(self._account_data.owned_hp_balance.hp_balance, show_symbol=False),
         )
         balances_table.add_row(
             "Savings",
