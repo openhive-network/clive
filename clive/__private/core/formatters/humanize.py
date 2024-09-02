@@ -182,17 +182,21 @@ def humanize_operation_details(operation: OperationBase) -> str:
 def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_symbol: bool = True) -> str:
     """Return pretty formatted hive power."""
     symbol = "HP" if show_symbol else ""
-    if use_short_form:
-        formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
 
-        if "Byte" in formatted_string:
-            return f"{value.pretty_amount()} {symbol}"
+    if not use_short_form:
+        return f"{value.pretty_amount()} {symbol}".rstrip()
 
-        format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
-        matched = format_fix_regex.match(formatted_string)
-        assert matched is not None, "Given string does not match regex"
-        return f"{matched[1]}{matched[2]} {symbol}".upper()
-    return f"{value.pretty_amount()} {symbol}"
+    formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
+
+    if "Byte" in formatted_string:
+        return f"{value.pretty_amount()} {symbol}".rstrip()
+
+    format_fix_regex = re.compile(r"(\d+\.\d*) (.)B")
+    matched = format_fix_regex.match(formatted_string)
+    assert matched is not None, "Given string does not match regex"
+    new_value = matched[1]
+    unit = matched[2]
+    return f"{new_value}{unit} {symbol}".upper().rstrip()
 
 
 def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label: bool = False) -> str:
@@ -278,7 +282,8 @@ def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
 def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
     """Return pretty hive power."""
     symbol = "HP" if show_symbol else ""
-    return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} {symbol}"
+    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))
+    return f"{hp_value_with_commas} {symbol}".rstrip()
 
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
