@@ -179,10 +179,10 @@ def humanize_operation_details(operation: OperationBase) -> str:
     return out[:-2]
 
 
-def humanize_hive_power(value: Asset.Hive, *, show_unit: bool = True, show_symbol: bool = True) -> str:
+def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_symbol: bool = True) -> str:
     """Return pretty formatted hive power."""
     symbol = "HP" if show_symbol else ""
-    if show_unit:
+    if use_short_form:
         formatted_string = humanize.naturalsize(value.pretty_amount(), binary=False)
 
         if "Byte" in formatted_string:
