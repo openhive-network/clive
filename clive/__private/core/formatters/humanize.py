@@ -199,6 +199,13 @@ def humanize_hive_power(value: Asset.Hive, *, use_short_form: bool = True, show_
     return f"{new_value}{unit} {symbol}".upper().rstrip()
 
 
+def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
+    """Return pretty hive power."""
+    symbol = "HP" if show_symbol else ""
+    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))
+    return f"{hp_value_with_commas} {symbol}".rstrip()
+
+
 def humanize_hbd_exchange_rate(hbd_exchange_rate: HbdExchangeRate, *, with_label: bool = False) -> str:
     """Return pretty formatted hdb exchange rate (price feed)."""
     return _maybe_labelize(HBD_EXCHANGE_RATE_LABEL, f"{hbd_exchange_rate.base.pretty_amount()} $", add_label=with_label)
@@ -277,13 +284,6 @@ def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
     """Return pretty formatted votes converted to hive power."""
     hive_power = calculate_witness_votes_hp(votes, data)
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
-
-
-def humanize_hive_power_with_comma(hive_power: Asset.Hive, *, show_symbol: bool = True) -> str:
-    """Return pretty hive power."""
-    symbol = "HP" if show_symbol else ""
-    hp_value_with_commas = humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))
-    return f"{hp_value_with_commas} {symbol}".rstrip()
 
 
 def humanize_asset(asset: Asset.AnyT, *, show_symbol: bool = True, sign_prefix: SignPrefixT = "") -> str:
