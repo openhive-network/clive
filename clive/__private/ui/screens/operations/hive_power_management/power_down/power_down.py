@@ -20,7 +20,6 @@ from clive.__private.ui.screens.operations.bindings.operation_action_bindings im
 from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
 from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.buttons.generous_button import GenerousButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
@@ -113,7 +112,7 @@ class PendingPowerDown(CliveCheckerboardTable):
     def get_no_content_available_widget(self) -> Static:
         return NoContentAvailable("You have no current power down process")
 
-    @on(CliveButton.Pressed, "#cancel-button")
+    @on(CancelButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(
             CancelPowerDown(
