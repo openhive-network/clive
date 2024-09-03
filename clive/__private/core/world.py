@@ -12,6 +12,7 @@ from clive.__private.core.commands.commands import CLICommands, Commands, TUICom
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
+from clive.__private.settings import safe_settings
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.exceptions import ScreenNotFoundError
@@ -106,6 +107,9 @@ class World:
     async def setup(self) -> Self:
         if self._use_beekeeper:
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+            if safe_settings.beekeeper.is_session_token_set:
+                await self._commands.sync_state_with_beekeeper()
+
         return self
 
     async def close(self) -> None:
