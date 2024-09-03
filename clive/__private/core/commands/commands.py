@@ -42,6 +42,7 @@ from clive.__private.core.commands.save_transaction import SaveTransaction
 from clive.__private.core.commands.set_timeout import SetTimeout
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode, Sign
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
+from clive.__private.core.commands.sync_state_with_beekeeper import SyncStateWithBeekeeper
 from clive.__private.core.commands.unlock import Unlock
 from clive.__private.core.commands.unsign import UnSign
 from clive.__private.core.commands.update_transaction_metadata import (
@@ -274,6 +275,15 @@ class Commands(Generic[WorldT_co]):
     async def sync_data_with_beekeeper(self) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             SyncDataWithBeekeeper(
+                app_state=self._world.app_state,
+                profile=self._world.profile,
+                beekeeper=self._world.beekeeper,
+            )
+        )
+
+    async def sync_state_with_beekeeper(self) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            SyncStateWithBeekeeper(
                 app_state=self._world.app_state,
                 profile=self._world.profile,
                 beekeeper=self._world.beekeeper,
