@@ -15,16 +15,14 @@ from typing_extensions import Self
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.dialogs.raw_json_dialog import RawJsonDialog
+from clive.__private.ui.widgets.buttons import CliveButton, RemoveButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.scrolling import ScrollablePart
+from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -46,11 +44,14 @@ class ButtonMoveDown(CliveButton):
         super().__init__("↓", id_="move-down-button", disabled=disabled)
 
 
-class ButtonDelete(CliveButton):
-    """Button used for removing the operation from cart."""
+class ButtonRawJson(CliveButton):
+    """Button used for displaying raw json of single operation added to cart."""
+
+    class Pressed(CliveButton.Pressed):
+        """Used to identify exactly that raw json button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__("Remove", id_="delete-button", variant="error")
+        super().__init__("JSON", id_="raw-json-button")
 
 
 @dataclass
@@ -117,8 +118,8 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self.query_one(ButtonMoveDown)
 
     @property
-    def button_delete(self) -> ButtonDelete:
-        return self.query_one(ButtonDelete)
+    def button_delete(self) -> RemoveButton:
+        return self.query_one(RemoveButton)
 
     @property
     def operation(self) -> OperationBase:
@@ -150,8 +151,9 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         self._operation_index = value
         self.operation_number_cell.update_content(self.humanize_operation_number())
 
-    def humanize_operation_number(self) -> str:
-        return f"{self._operation_index + 1}."
+    def humanize_operation_number(self, *, before_removal: bool = False) -> str:
+        cart_items = len(self.profile.cart) - 1 if before_removal else len(self.profile.cart)
+        return f"{self._operation_index + 1}/{cart_items}"
 
     def humanize_operation_name(self) -> str:
         return humanize_operation_name(self.operation)
@@ -199,13 +201,17 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def move_down(self) -> None:
         self._move("down")
 
-    @on(CliveButton.Pressed, "#delete-button")
+    @on(RemoveButton.Pressed)
     def delete(self) -> None:
         if self._action_manager.is_action_disabled:
             return
 
         self._action_manager.disable_action()
         self.post_message(self.Delete(self))
+
+    @on(ButtonRawJson.Pressed)
+    async def show_raw_json(self) -> None:
+        await self.app.push_screen(RawJsonDialog(operation=self.operation))
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
         return [
@@ -218,8 +224,9 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def _create_buttons_container(self) -> Horizontal:
         button_move_up = ButtonMoveUp(disabled=self.is_first)
         button_move_down = ButtonMoveDown(disabled=self.is_last)
-        button_delete = ButtonDelete()
-        return Horizontal(button_move_up, button_move_down, button_delete)
+        button_delete = RemoveButton()
+        button_show_json = ButtonRawJson()
+        return Horizontal(button_show_json, button_move_up, button_move_down, button_delete)
 
     def _is_operation_index_valid(self, value: int) -> bool:
         return value < self.operations_amount
@@ -227,7 +234,6 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def _move(self, direction: Literal["up", "down"]) -> None:
         if self._action_manager.is_action_disabled:
             return
-
         self._action_manager.disable_action()
         index_change = -1 if direction == "up" else 1
         self.post_message(self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change))
@@ -243,6 +249,11 @@ class CartHeader(Horizontal):
 
 class CartTable(CliveCheckerboardTable):
     """Table with CartItems."""
+
+    NO_CONTENT_TEXT = "Cart is empty"
+
+    class Modified(Message):
+        """Message sent when operations in CartTable were reordered or removed."""
 
     def __init__(self) -> None:
         super().__init__(header=CartHeader())
@@ -269,10 +280,14 @@ class CartTable(CliveCheckerboardTable):
             if self._has_cart_items:
                 self._update_cart_items_on_deletion(removed_item=item_to_remove)
                 self._disable_appropriate_button_on_deletion(removed_item=item_to_remove)
+            else:
+                await self.query_one(CartHeader).remove()
+                await self.mount(NoContentAvailable(self.NO_CONTENT_TEXT))
 
         self.profile.cart.remove(item_to_remove.operation)
         self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
+        self.post_message(self.Modified())
 
     @on(CartItem.Move)
     async def move_item(self, event: CartItem.Move) -> None:
@@ -289,6 +304,7 @@ class CartTable(CliveCheckerboardTable):
         self.profile.cart.swap(from_index, to_index)
         self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
+        self.post_message(self.Modified())
 
     @on(CartItem.Focus)
     def focus_item(self, event: CartItem.Focus) -> None:
@@ -298,13 +314,22 @@ class CartTable(CliveCheckerboardTable):
 
     def _update_cart_items_on_deletion(self, removed_item: CartItem) -> None:
         def update_indexes() -> None:
-            for cart_item in cart_items_to_update:
+            for cart_item in cart_items_to_update_index:
                 cart_item.operation_index = cart_item.operation_index - 1
 
+        def update_operation_number() -> None:
+            for cart_item in all_cart_items:
+                cart_item.operation_number_cell.update_content(cart_item.humanize_operation_number(before_removal=True))
+
+        def update_evenness() -> None:
+            self._set_evenness_styles(cart_items_to_update_index, starting_index=start_index)
+
+        all_cart_items = self._cart_items
         start_index = removed_item.operation_index
-        cart_items_to_update = self._cart_items[start_index:]
+        cart_items_to_update_index = all_cart_items[start_index:]
         update_indexes()
-        self._set_evenness_styles(cart_items_to_update, starting_index=start_index)
+        update_evenness()
+        update_operation_number()
 
     def _disable_appropriate_button_on_deletion(self, removed_item: CartItem) -> None:
         if removed_item.is_first:
@@ -353,19 +378,3 @@ class CartTable(CliveCheckerboardTable):
             if target_index == cart_item.operation_index:
                 cart_item.focus()
                 break
-
-
-class Cart(BaseScreen):
-    CSS_PATH = [get_relative_css_path(__file__)]
-    BINDINGS = [
-        Binding("escape", "app.pop_screen", "Back"),
-        Binding("f6", "summary", "Summary"),
-    ]
-    BIG_TITLE = "operations cart"
-
-    def create_main_panel(self) -> ComposeResult:
-        with ScrollablePart():
-            yield CartTable()
-
-    def action_summary(self) -> None:
-        self.app.push_screen(TransactionSummaryFromCart())
