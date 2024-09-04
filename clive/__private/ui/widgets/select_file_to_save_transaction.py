@@ -52,9 +52,9 @@ class SelectFileToSaveTransaction(SelectFile):
             yield self.__signed_checkbox
 
     def _post_saved_message(self) -> None:
-        from clive.__private.ui.screens.transaction_summary.common import TransactionSummaryCommon
+        from clive.__private.ui.screens.transaction_summary.transaction_summary import TransactionSummary
 
-        self.app.post_message_to_screen(TransactionSummaryCommon, self._create_saved_message())
+        self.app.post_message_to_screen(TransactionSummary, self._create_saved_message())
 
     def _create_saved_message(self) -> Saved:
         return self.Saved(

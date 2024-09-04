@@ -11,7 +11,6 @@ from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
-from clive.__private.ui.screens.cart import Cart
 from clive.__private.ui.screens.dashboard import DashboardUnlocked
 from clive.__private.ui.screens.operations import Operations
 from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
@@ -21,6 +20,7 @@ from clive.__private.ui.screens.operations.savings_operations.savings_operations
     PendingTransfer,
     Savings,
 )
+from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
@@ -251,7 +251,7 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
-    await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to Cart
+    await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
     await finalize_transaction(pilot)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)

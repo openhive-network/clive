@@ -19,7 +19,7 @@ from clive.__private.ui.data_providers.savings_data_provider import SavingsDataP
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
-from clive.__private.ui.screens.operations.bindings import CartBinding, OperationActionBindings
+from clive.__private.ui.screens.operations.bindings import OperationActionBindings, TransactionSummaryBinding
 from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
     CancelTransferFromSavings,
 )
@@ -298,7 +298,7 @@ class SavingsAPR(APR):
         return humanize_hbd_savings_apr(hive_percent_to_percent(content.hbd_interest_rate), with_label=True)
 
 
-class Savings(OperationBaseScreen, CartBinding):
+class Savings(OperationBaseScreen, TransactionSummaryBinding):
     CSS_PATH = [
         *OperationBaseScreen.CSS_PATH,
         get_relative_css_path(__file__),

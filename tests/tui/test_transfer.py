@@ -6,8 +6,8 @@ import pytest
 import test_tools as tt
 
 from clive.__private.models.schemas import TransferOperation
-from clive.__private.ui.screens.cart import Cart
 from clive.__private.ui.screens.operations import Operations, TransferToAccount
+from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
@@ -170,7 +170,7 @@ async def test_transfers_finalize_cart(
         await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
         log_current_view(pilot.app)
 
-    await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to cart
+    await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
     await finalize_transaction(pilot, unlocked=unlocked, password=PASS)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
