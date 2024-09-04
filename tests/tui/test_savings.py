@@ -11,7 +11,6 @@ from clive.__private.models.schemas import (
     TransferFromSavingsOperation,
     TransferToSavingsOperation,
 )
-from clive.__private.ui.screens.cart import Cart
 from clive.__private.ui.screens.dashboard import DashboardUnlocked
 from clive.__private.ui.screens.operations import Operations
 from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_from_savings import (
@@ -21,6 +20,7 @@ from clive.__private.ui.screens.operations.savings_operations.savings_operations
     PendingTransfer,
     Savings,
 )
+from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
@@ -29,6 +29,7 @@ from clive_local_tools.testnet_block_log.constants import (
     WATCHED_ACCOUNTS_DATA,
     WORKING_ACCOUNT_DATA,
 )
+from clive_local_tools.tui.broadcast_transaction import broadcast_transaction
 from clive_local_tools.tui.checkers import (
     assert_is_clive_composed_input_focused,
     assert_is_focused,
@@ -36,7 +37,6 @@ from clive_local_tools.tui.checkers import (
 )
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
 from clive_local_tools.tui.fast_broadcast import fast_broadcast
-from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
 from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
@@ -251,8 +251,8 @@ async def test_savings_finalize_cart(
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
-    await press_and_wait_for_screen(pilot, "f2", Cart)  # Go to Cart
-    await finalize_transaction(pilot)
+    await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
+    await broadcast_transaction(pilot)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
