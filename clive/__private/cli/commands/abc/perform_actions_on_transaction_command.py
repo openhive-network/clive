@@ -19,6 +19,7 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
+from clive.__private.settings import safe_settings
 from clive.__private.validators.path_validator import PathValidator
 
 
@@ -40,6 +41,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     def save_file_path(self) -> Path | None:
         return Path(self.save_file) if self.save_file is not None else None
 
+    @property
+    def beekeeper_env_session_token_ensure(self) -> str:
+        assert safe_settings.beekeeper.session_token is not None, "CLIVE_BEEKEEPER__SESSION_TOKEN must be set."
+        return safe_settings.beekeeper.session_token
+
     @abstractmethod
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
@@ -60,7 +66,10 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
 
         if self.__is_beekeeper_required():
-            await self.world.commands.unlock(password=self.password_ensure)
+            if safe_settings.beekeeper.is_session_token_set:
+                await self.world.commands.sync_state_with_beekeeper()
+            else:
+                await self.world.commands.unlock(password=self.password_ensure)
 
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
@@ -93,7 +102,7 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             ) from None
 
     def _validate_if_sign_and_password_are_used_together(self) -> None:
-        if self.sign is not None and self.password is None:
+        if safe_settings.beekeeper.is_session_token_set is False and (self.sign is not None and self.password is None):
             raise CLISigningRequiresAPasswordError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
@@ -101,7 +110,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcast_is_used_with_sign_and_password(self) -> None:
-        if self.broadcast and (self.sign is None or self.password is None):
+        if (
+            safe_settings.beekeeper.is_session_token_set is False
+            and self.broadcast
+            and (self.sign is None or self.password is None)
+        ):
             raise CLIBroadcastRequiresSignKeyAndPasswordError
 
     def _get_transaction_created_message(self) -> str:
@@ -114,4 +127,4 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         rich.print_json(transaction_json)
 
     def __is_beekeeper_required(self) -> bool:
-        return bool(self.sign) and bool(self.password)
+        return bool(self.sign) and (bool(self.password) or safe_settings.beekeeper.is_session_token_set)
