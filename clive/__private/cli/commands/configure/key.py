@@ -15,13 +15,14 @@ from clive.__private.core.keys import (
     PrivateKeyInvalidFormatError,
     PublicKeyAliased,
 )
+from clive.__private.settings import safe_settings
 from clive.__private.validators.private_key_validator import PrivateKeyValidator
 from clive.__private.validators.public_key_alias_validator import PublicKeyAliasValidator
 
 
 @dataclass(kw_only=True)
 class AddKey(WorldBasedCommand):
-    password: str
+    password: str | None
     key_or_path: str | Path
     """str might be a path to a file or a private key value."""
 
@@ -43,6 +44,11 @@ class AddKey(WorldBasedCommand):
     def private_key_aliased(self) -> PrivateKeyAliased:
         private_key = self.private_key
         return private_key.with_alias(self.get_actual_alias(private_key))
+
+    @property
+    def password_ensure(self) -> str:
+        assert self.password, "Password must be set."
+        return self.password
 
     def get_actual_alias(self, private_key: PrivateKey | None = None) -> str:
         private_key = private_key or self.private_key
@@ -72,7 +78,11 @@ class AddKey(WorldBasedCommand):
         profile.keys.add_to_import(self.private_key_aliased)
 
         try:
-            await self.world.commands.unlock(password=self.password)
+            if safe_settings.beekeeper.is_session_token_set:
+                await self.world.commands.sync_state_with_beekeeper()
+            else:
+                await self.world.commands.unlock(password=self.password_ensure)
+
         except (UnlockInvalidPasswordError, WalletDoesNotExistsError):
             profile.skip_saving()
             raise

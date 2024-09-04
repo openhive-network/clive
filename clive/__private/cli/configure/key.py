@@ -19,7 +19,7 @@ async def add_key(
         help="The alias to use for the key. (If not given, calculated public key will be used)",
         show_default=False,
     ),
-    password: str = options.password_option,
+    password: Optional[str] = options.password_optional_option,
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
