@@ -5,9 +5,11 @@ from pathlib import Path
 import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.commands.abc.world_based_with_password_or_token_command import (
+    WorldBasedWithPasswordOrTokenCommand,
+)
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
 from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
-from clive.__private.core.commands.unlock import UnlockInvalidPasswordError, WalletDoesNotExistsError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
     PrivateKey,
@@ -15,17 +17,17 @@ from clive.__private.core.keys import (
     PrivateKeyInvalidFormatError,
     PublicKeyAliased,
 )
+from clive.__private.settings import safe_settings
 from clive.__private.validators.private_key_validator import PrivateKeyValidator
 from clive.__private.validators.public_key_alias_validator import PublicKeyAliasValidator
 
 
 @dataclass(kw_only=True)
-class AddKey(WorldBasedCommand):
-    password: str
-    key_or_path: str | Path
+class AddKey(WorldBasedWithPasswordOrTokenCommand):
     """str might be a path to a file or a private key value."""
 
     alias: str | None = None
+    key_or_path: str | Path
 
     @property
     def private_key(self) -> PrivateKey:
@@ -49,11 +51,18 @@ class AddKey(WorldBasedCommand):
         return self.alias if self.alias else private_key.calculate_public_key().value
 
     async def validate_inside_context_manager(self) -> None:
+        await self._validate_has_working_account()
+        await self._validate_key_alias()
+        await self._validate_private_key()
+        await super().validate_inside_context_manager()
+
+    async def _validate_has_working_account(self) -> None:
         profile = self.world.profile
         if not profile.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile)
 
-        key_manager = profile.keys
+    async def _validate_key_alias(self) -> None:
+        key_manager = self.world.profile.keys
         alias_result = PublicKeyAliasValidator(key_manager, validate_like_adding_new=True).validate(
             self.get_actual_alias()
         )
@@ -61,24 +70,15 @@ class AddKey(WorldBasedCommand):
         if not alias_result.is_valid:
             raise CLIPrettyError(f"Can't add alias: {humanize_validation_result(alias_result)}", errno.EINVAL)
 
+    async def _validate_private_key(self) -> None:
         private_key_result = PrivateKeyValidator().validate(self.private_key_aliased.value)
         if not private_key_result.is_valid:
             raise CLIPrettyError(f"Can't add key: {humanize_validation_result(private_key_result)}", errno.EINVAL)
 
     async def _run(self) -> None:
-        profile = self.world.profile
         typer.echo("Importing key...")
-
-        profile.keys.add_to_import(self.private_key_aliased)
-
-        try:
-            await self.world.commands.unlock(password=self.password)
-        except (UnlockInvalidPasswordError, WalletDoesNotExistsError):
-            profile.skip_saving()
-            raise
-
+        self.world.profile.keys.add_to_import(self.private_key_aliased)
         await self.world.commands.sync_data_with_beekeeper()
-
         typer.echo("Key imported.")
 
 
