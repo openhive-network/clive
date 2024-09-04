@@ -19,6 +19,7 @@ from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
+from clive.__private.settings import safe_settings
 from clive.__private.validators.path_validator import PathValidator
 
 
@@ -52,15 +53,20 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         if not result.is_valid:
             raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
+    async def _configure_inside_context_manager(self) -> None:
+        await self._configure_wallet()
+        await super()._configure_inside_context_manager()
+
     async def _configure(self) -> None:
         self.use_beekeeper = self.__is_beekeeper_required()
+
+    async def _configure_wallet(self) -> None:
+        if self.__is_beekeeper_required() and not safe_settings.beekeeper.is_session_token_set:
+            await self.world.commands.unlock(password=self.password_ensure)
 
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
-
-        if self.__is_beekeeper_required():
-            await self.world.commands.unlock(password=self.password_ensure)
 
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
@@ -92,8 +98,20 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
                 f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT
             ) from None
 
+    async def validate_inside_context_manager(self) -> None:
+        self._validate_if_wallet_is_unlocked()
+        await super().validate_inside_context_manager()
+
+    def _validate_if_wallet_is_unlocked(self) -> None:
+        if (
+            self.__is_beekeeper_required()
+            and safe_settings.beekeeper.is_session_token_set
+            and not self.world.app_state.is_unlocked
+        ):
+            raise CLIWalletIsNotUnlockedError
+
     def _validate_if_sign_and_password_are_used_together(self) -> None:
-        if self.sign is not None and self.password is None:
+        if safe_settings.beekeeper.is_session_token_set is False and (self.sign is not None and self.password is None):
             raise CLISigningRequiresAPasswordError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
@@ -101,7 +119,11 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _validate_if_broadcast_is_used_with_sign_and_password(self) -> None:
-        if self.broadcast and (self.sign is None or self.password is None):
+        if (
+            safe_settings.beekeeper.is_session_token_set is False
+            and self.broadcast
+            and (self.sign is None or self.password is None)
+        ):
             raise CLIBroadcastRequiresSignKeyAndPasswordError
 
     def _get_transaction_created_message(self) -> str:
@@ -114,4 +136,4 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         rich.print_json(transaction_json)
 
     def __is_beekeeper_required(self) -> bool:
-        return bool(self.sign) and bool(self.password)
+        return bool(self.sign) and (bool(self.password) or safe_settings.beekeeper.is_session_token_set)
