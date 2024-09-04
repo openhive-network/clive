@@ -212,7 +212,10 @@ deploy_wheel_to_gitlab:
   extends: .deploy_wheel_to_gitlab_template
   stage: deploy
   <<: *deploy_wheel_needs
-
+  rules:
+    - if: ($CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop")
+      when: on_success
+    - when: manual
 
 deploy_wheel_to_pypi:
   extends: .deploy_wheel_to_pypi_template
