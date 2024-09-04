@@ -18,7 +18,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount
     from clive.__private.core.profile import Profile
-    from clive.__private.core.world import TextualWorld
+    from clive.__private.core.world import TUIWorld
 from clive.__private.core.accounts.accounts import WorkingAccount
 
 AccountsType = Literal["known_accounts", "tracked_accounts"]
@@ -108,7 +108,7 @@ class ManageAccountsTable(CliveCheckerboardTable):
         )
 
     @property
-    def object_to_watch(self) -> TextualWorld:
+    def object_to_watch(self) -> TUIWorld:
         return self.world
 
     def update_previous_state(self, content: Profile) -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 import pytest
 
 from clive.__private.core.profile import Profile
-from clive.__private.core.world import TyperWorld, World
+from clive.__private.core.world import CLIWorld, World
 from clive.__private.storage.service import NoDefaultProfileToLoadError, ProfileDoesNotExistsError
 
 
@@ -76,7 +76,7 @@ async def test_if_default_profile_is_loaded_other_was_saved() -> None:
     assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
 
 
-@pytest.mark.parametrize("world_cls", [World, TyperWorld])
+@pytest.mark.parametrize("world_cls", [World, CLIWorld])
 def test_loading_profile_without_given_name_when_no_default_set(world_cls: type[World]) -> None:
     # ACT & ASSERT
     with pytest.raises(NoDefaultProfileToLoadError):
@@ -90,8 +90,8 @@ def test_loading_non_existing_profile_with_auto_create_disabled() -> None:
 
     # ACT & ASSERT
     with pytest.raises(ProfileDoesNotExistsError) as error:
-        # TyperWorld should have auto_create disabled by default
-        TyperWorld(profile_name)
+        # CLIWorld should have auto_create disabled by default
+        CLIWorld(profile_name)
     assert exception_message in str(error.value)
 
 

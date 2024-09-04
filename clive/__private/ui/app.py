@@ -16,7 +16,7 @@ from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
 from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WIDTH
-from clive.__private.core.world import TextualWorld
+from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.get_css import get_relative_css_path
@@ -75,7 +75,7 @@ class Clive(App[int], ManualReactive):
     is_launched: ClassVar[bool] = False
     """Whether the Clive app is currently launched."""
 
-    world: ClassVar[TextualWorld] = None  # type: ignore[assignment]
+    world: ClassVar[TUIWorld] = None  # type: ignore[assignment]
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
     """A list of all notifications that were displayed."""
@@ -130,7 +130,7 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         try:
-            async with TextualWorld() as world:
+            async with TUIWorld() as world:
                 self.__class__.world = world
                 return await super().run_async(
                     headless=headless,
@@ -157,7 +157,7 @@ class Clive(App[int], ManualReactive):
         message_hook: Callable[[Message], None] | None = None,
     ) -> AsyncGenerator[ClivePilot, None]:
         try:
-            async with TextualWorld() as world:
+            async with TUIWorld() as world:
                 self.__class__.world = world
                 async with super().run_test(
                     headless=headless,

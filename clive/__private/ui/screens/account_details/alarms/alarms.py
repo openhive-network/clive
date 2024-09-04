@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import TrackedAccount
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
-    from clive.__private.core.world import TextualWorld
+    from clive.__private.core.world import TUIWorld
     from clive.__private.ui.screens.account_details.alarms.alarm_fix_details import AlarmFixDetails
 
 
@@ -64,7 +64,7 @@ class AlarmsTable(CliveCheckerboardTable):
         return NoContentAvailable("Account has no alarms")
 
     @property
-    def object_to_watch(self) -> TextualWorld:
+    def object_to_watch(self) -> TUIWorld:
         return self.world
 
     def check_if_should_be_updated(self, content: Profile) -> bool:

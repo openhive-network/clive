@@ -8,7 +8,7 @@ from textual.reactive import var
 
 from clive.__private.core.app_state import AppState
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.commands.commands import Commands, TextualCommands, TyperCommands
+from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
@@ -140,7 +140,7 @@ class World:
         self.app_state.lock()
 
 
-class TextualWorld(World, ManualReactive):
+class TUIWorld(World, ManualReactive):
     profile: Profile = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
@@ -163,8 +163,8 @@ class TextualWorld(World, ManualReactive):
         return profile
 
     @property
-    def commands(self) -> TextualCommands:
-        return cast(TextualCommands, super().commands)
+    def commands(self) -> TUICommands:
+        return cast(TUICommands, super().commands)
 
     @property
     def is_in_onboarding_mode(self) -> bool:
@@ -173,8 +173,8 @@ class TextualWorld(World, ManualReactive):
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
         return profile.name == Onboarding.ONBOARDING_PROFILE_NAME
 
-    def _setup_commands(self) -> TextualCommands:
-        return TextualCommands(self)
+    def _setup_commands(self) -> TUICommands:
+        return TUICommands(self)
 
     def notify_wallet_closing(self) -> None:
         super().notify_wallet_closing()
@@ -186,13 +186,13 @@ class TextualWorld(World, ManualReactive):
         self.app.trigger_app_state_watchers()
 
 
-class TyperWorld(World):
+class CLIWorld(World):
     @property
-    def commands(self) -> TyperCommands:
-        return cast(TyperCommands, super().commands)
+    def commands(self) -> CLICommands:
+        return cast(CLICommands, super().commands)
 
-    def _setup_commands(self) -> TyperCommands:
-        return TyperCommands(self)
+    def _setup_commands(self) -> CLICommands:
+        return CLICommands(self)
 
     def _load_profile(self, profile_name: str | None) -> Profile:
         return Profile.load(profile_name, auto_create=False)

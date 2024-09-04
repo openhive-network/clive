@@ -66,7 +66,7 @@ if TYPE_CHECKING:
         AnyErrorHandlerContextManager,
     )
     from clive.__private.core.keys import PrivateKeyAliased, PublicKey, PublicKeyAliased
-    from clive.__private.core.world import TextualWorld, TyperWorld, World
+    from clive.__private.core.world import CLIWorld, TUIWorld, World
     from clive.__private.models import Transaction
     from clive.__private.models.schemas import (
         Account,
@@ -469,13 +469,13 @@ class Commands(Generic[WorldT_co]):
         return CommandWrapper(command=command, error=error)
 
 
-class TyperCommands(Commands["TyperWorld"]):
-    def __init__(self, world: TyperWorld) -> None:
+class CLICommands(Commands["CLIWorld"]):
+    def __init__(self, world: CLIWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
 
-class TextualCommands(Commands["TextualWorld"], CliveDOMNode):
-    def __init__(self, world: TextualWorld) -> None:
+class TUICommands(Commands["TUIWorld"], CliveDOMNode):
+    def __init__(self, world: TUIWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
 
     async def unlock(self, *, password: str, time: timedelta | None = None, permanent: bool = False) -> CommandWrapper:
