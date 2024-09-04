@@ -101,7 +101,7 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
 
     # ACT
     # chain id should be retrieved from api when needed for the first time and set in profile
-    (await world.commands.sign(transaction=transaction, sign_with=wallet.public_key)).raise_if_error_occurred()
+    await world.commands.sign(transaction=transaction, sign_with=wallet.public_key)
 
     # ASSERT
     assert profile.chain_id == TESTNET_CHAIN_ID

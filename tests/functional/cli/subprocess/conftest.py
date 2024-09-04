@@ -45,7 +45,7 @@ async def alt_world(alt_prepare_profile: Profile) -> World:  # noqa: ARG001
 @pytest.fixture()
 async def alt_prepare_beekeeper_wallet(alt_world: World) -> None:
     async with alt_world as alt_world_cm:
-        (await alt_world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)).raise_if_error_occurred()
+        await alt_world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
 
         alt_world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}"),

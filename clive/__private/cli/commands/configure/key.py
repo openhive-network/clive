@@ -118,7 +118,5 @@ class RemoveKey(WorldBasedCommand):
         self.world.profile.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
-        unlock_wrapper = await self.world.commands.unlock(password=self.password)
-        unlock_wrapper.raise_if_error_occurred()
-        remove_wrapper = await self.world.commands.remove_key(password=self.password, key_to_remove=key)
-        remove_wrapper.raise_if_error_occurred()
+        await self.world.commands.unlock(password=self.password)
+        await self.world.commands.remove_key(password=self.password, key_to_remove=key)

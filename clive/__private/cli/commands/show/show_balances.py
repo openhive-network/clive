@@ -15,7 +15,7 @@ class ShowBalances(WorldBasedCommand):
     async def _run(self) -> None:
         account = TrackedAccount(name=self.account_name)
 
-        (await self.world.commands.update_node_data(accounts=[account])).raise_if_error_occurred()
+        await self.world.commands.update_node_data(accounts=[account])
 
         table = Table(title=f"Balances of `{self.account_name}` account")
 
