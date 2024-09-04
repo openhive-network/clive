@@ -31,7 +31,7 @@ async def add_key(  # noqa: PLR0913
     key_option: Optional[str] = argument_related_options.key,
     alias: Optional[str] = _alias_argument,
     alias_option: Optional[str] = argument_related_options.alias,
-    password: str = options.password,
+    password: Optional[str] = options.password_optional_option,
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
