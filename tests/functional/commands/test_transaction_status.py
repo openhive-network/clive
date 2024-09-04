@@ -52,6 +52,11 @@ async def test_transaction_status_unknown(world: World, init_node_extra_apis: tt
 
 
 async def test_transaction_status_no_api(world: World, init_node: tt.InitNode) -> None:  # noqa: ARG001
+    # ARRANGE
+    expected_message = "Could not find API transaction_status_api"
+
     # ACT & ASSERT
-    with pytest.raises(CommunicationError):
+    with pytest.raises(CommunicationError) as exc_info:
         await world.commands.find_transaction(transaction_id="deadbeef")
+
+    assert expected_message in str(exc_info.value), "Got different error message than expected"
