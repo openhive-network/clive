@@ -1,9 +1,5 @@
 from __future__ import annotations
 
-from .from_cart import TransactionSummaryFromCart
-from .from_file import TransactionSummaryFromFile
+from .transaction_summary import TransactionSummary
 
-__all__ = [
-    "TransactionSummaryFromCart",
-    "TransactionSummaryFromFile",
-]
+__all__ = ["TransactionSummary"]

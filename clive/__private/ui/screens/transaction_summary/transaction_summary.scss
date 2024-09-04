@@ -1,0 +1,119 @@
+$metadata-color: $primary-darken-1;
+
+TransactionSummary {
+  Subtitle {
+    content-align: center middle;
+  }
+
+  StaticPart {
+    height: auto;
+  }
+
+  CartTable {
+    CliveCheckerBoardTableCell {
+      height: 3;
+    }
+
+    CartHeader {
+      height: 1;
+
+      Static {
+        width: 1fr;
+        text-align: center;
+      }
+    }
+
+    CartItem {
+      &:focus-within {
+        opacity: 93%;
+        background: $accent;
+      }
+    }
+
+    NoContentAvailable {
+      content-align: center middle;
+      margin-left: 1;
+      height: 3;
+    }
+
+    .operation-name {
+      width: 2fr;
+    }
+
+    .operation-details {
+      width: 5fr;
+    }
+
+    .actions {
+      width: 3fr;
+    }
+
+    ButtonMoveDown {
+      margin: 0 1;
+    }
+
+    ButtonRawJson {
+      margin-right: 1;
+    }
+
+    CliveButton {
+      width: 24%; /* solution described here: https://gitlab.syncad.com/hive/clive/-/merge_requests/388#note_169849 */
+      min-width: 1;
+    }
+  }
+
+  #actions-container {
+    margin: 1 0;
+    height: 3;
+
+    Horizontal {
+      align: right top;
+      height: auto;
+
+      CliveButton {
+        margin-left: 1;
+        width: 23;
+      }
+    }
+
+    KeyContainer {
+      align: left top;
+      margin-left: 1;
+
+      SelectKey {
+        max-width: 32%;
+      }
+
+      KeyHint {
+        text-style: bold;
+        margin: 1;
+      }
+    }
+  }
+
+  TransactionMetadataContainer {
+    /* this container has bugged margins: setting margin here is affecting other widgets, described here: https://github.com/Textualize/textual/issues/5116 */
+    border-title-background: $metadata-color;
+    border-title-color: $text;
+    border-title-style: bold;
+    border: $metadata-color;
+    height: auto;
+
+    Label {
+      width: 1fr;
+    }
+
+    #no-metadata {
+      text-align: center;
+    }
+  }
+
+  TaposHolder {
+    height: auto;
+
+    #ref-block-num,
+    #ref-block-prefix {
+      margin-left: 1;
+    }
+  }
+}
