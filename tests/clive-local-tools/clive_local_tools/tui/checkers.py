@@ -39,7 +39,7 @@ def assert_is_clive_composed_input_focused(
     pilot: ClivePilot,
     composed_input: type[CliveValidatedInput[Any]] | CliveValidatedInput[Any],
     *,
-    target: Literal["input", "select", "known"] = "input",
+    target: Literal["input", "select"] = "input",
     context: str | None = None,
 ) -> None:
     composed_input_instance = (
@@ -69,8 +69,6 @@ def assert_is_clive_composed_input_focused(
         widget = query_one_in_composed_input(CliveInput)
     elif target == "select":
         widget = query_one_in_composed_input(CurrencySelectorBase)
-    elif target == "known":
-        widget = query_one_in_composed_input("KnownAccount Checkbox")
 
     assert_is_focused(pilot, widget, context)
 

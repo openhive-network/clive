@@ -79,8 +79,6 @@ async def fill_savings_data(
         # clear currently introduced account name and input other_account
         await pilot.press("ctrl+w")
         await write_text(pilot, other_account)
-    await focus_next(pilot)
-    assert_is_clive_composed_input_focused(pilot, AccountNameInput, target="known")
     await focus_next(pilot)  # Go to amount input
     assert_is_clive_composed_input_focused(pilot, LiquidAssetAmountInput)
     await write_text(pilot, amount)

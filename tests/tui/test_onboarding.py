@@ -85,8 +85,6 @@ async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
     assert_is_screen_active(pilot, SetAccount)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput, context="SetAccount should have initial focus")
     await focus_next(pilot)
-    assert_is_clive_composed_input_focused(pilot, AccountNameInput, target="known")
-    await focus_next(pilot)
     assert_is_focused(pilot, WorkingAccountCheckbox)
     await pilot.press("space")  # Uncheck 'Working account?'
     assert (

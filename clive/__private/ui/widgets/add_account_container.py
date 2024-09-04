@@ -37,7 +37,7 @@ class AddAccountContainer(Horizontal, CliveWidget):
                 if accounts_type == "tracked_accounts"
                 else SetKnownAccountValidator(self.profile)
             ),
-            ask_known_account=accounts_type != "known_accounts",
+            show_known_account=accounts_type != "known_accounts",
         )
         self._accounts_type = accounts_type
         self._show_section_title = show_section_title
