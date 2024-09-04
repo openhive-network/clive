@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from clive.__private.ui.screens.dashboard import DashboardUnlocked
-from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.screens.unlock import Unlock
 
 from .textual_helpers import press_and_wait_for_screen
@@ -13,11 +12,9 @@ if TYPE_CHECKING:
     from .types import ClivePilot
 
 
-async def finalize_transaction(pilot: ClivePilot, *, unlocked: bool = True, password: str | None = None) -> None:
-    """Finalize transaction with optional unlock if 'unlocked' == False."""
+async def broadcast_transaction(pilot: ClivePilot, *, unlocked: bool = True, password: str | None = None) -> None:
+    """Broadcast transaction with optional unlock if 'unlocked' == False."""
     broadcast_binding_description = "Broadcast"
-
-    await press_and_wait_for_screen(pilot, "f6", TransactionSummaryFromCart, wait_for_focused=False)
     if unlocked:
         await press_and_wait_for_screen(pilot, "f6", DashboardUnlocked, key_description=broadcast_binding_description)
     else:

@@ -12,8 +12,7 @@ from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.screens.cart.cart import Cart
-from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
+from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
@@ -39,7 +38,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     BINDINGS = [
         Binding("f2", "add_to_cart", "Add to cart"),
         Binding("f5", "fast_broadcast", "Fast broadcast"),
-        Binding("f6", "finalize", "Finalize transaction"),
+        Binding("f6", "finalize_transaction", "Finalize transaction"),
     ]
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
@@ -110,11 +109,10 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def create_operations(self) -> list[OperationUnion] | None:
         return self._validate_and_notify(self._create_operations)
 
-    def action_finalize(self) -> None:
+    def action_finalize_transaction(self) -> None:
         if self._add_to_cart():
             self._add_account_to_known_after_action()
-            self.app.switch_screen(TransactionSummaryFromCart())
-            self.app.push_screen_at(-1, Cart())
+            self.app.switch_screen(TransactionSummary())
 
     def action_add_to_cart(self) -> None:
         if self._add_to_cart():
