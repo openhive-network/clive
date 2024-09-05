@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import signal
 import sys
 
 from pydantic import Extra
@@ -22,7 +23,15 @@ def _is_cli_requested() -> bool:
     return len(sys.argv) > 1
 
 
+def shutdown_gracefully() -> None:
+    for task in asyncio.all_tasks():
+        task.cancel()
+
+
 async def _main() -> None:
+    loop = asyncio.get_event_loop()
+    for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
+        loop.add_signal_handler(signal_number, shutdown_gracefully)
     with thread_pool:
         if is_tab_completion_active():
             cli()
