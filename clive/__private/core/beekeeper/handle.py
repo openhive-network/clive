@@ -36,7 +36,7 @@ from clive.__private.core.beekeeper.notifications import (
     WalletClosingListener,
 )
 from clive.__private.core.communication import Communication
-from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.url import Url
 from clive.__private.logger import logger
 from clive.__private.models.base import CliveBaseModel
@@ -46,7 +46,7 @@ from clive.__private.models.schemas import (
     JSONRPCResult,
     get_response_model,
 )
-from clive.__private.settings import safe_settings, settings
+from clive.__private.settings import clive_prefixed_envvar, safe_settings, settings
 from clive.dev import is_in_dev_mode
 
 if TYPE_CHECKING:
@@ -137,7 +137,8 @@ class Beekeeper:
             webserver_http_endpoint=webserver_http_endpoint,
         )
         await self.__start(arguments=arguments)
-        await self.__set_token()
+        if not safe_settings.beekeeper.is_session_token_set:
+            await self.__set_token()
         assert self.token
         return self
 
@@ -264,6 +265,10 @@ class Beekeeper:
         return self.__executable.get_wallet_dir()
 
     async def close(self) -> None:
+        if safe_settings.beekeeper.is_session_token_set:
+            env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
+            logger.info(f"Environment variable `{env_var}` is set, aborting beekeeper closure.")
+            return
         logger.info("Closing Beekeeper...")
         if self.__token:
             await self.api.close_session()
