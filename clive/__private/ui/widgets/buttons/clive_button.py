@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Literal
 
 from rich.text import Text
+from textual import on
 from textual.binding import Binding
 from textual.widgets import Button
 from textual.widgets._button import ButtonVariant
@@ -20,6 +21,9 @@ CliveButtonVariant = Literal[
 
 class CliveButton(Button, CliveWidget):
     """A regular Textual button which also displays "enter" action binding."""
+
+    class Pressed(Button.Pressed):
+        """Event sent when a `CliveButton` is pressed."""
 
     DEFAULT_CSS = """
     CliveButton {
@@ -94,6 +98,19 @@ class CliveButton(Button, CliveWidget):
     def update(self, new_label: TextType) -> None:
         self.label = self._create_label(new_label)
         self.refresh(layout=True)
+
+    @on(Button.Pressed)
+    def fix_for_textual_button_pressed_namespace(self, event: Button.Pressed) -> None:
+        """
+        Change Button.Pressed namespace to self.Pressed to allow for correct namespace handling.
+
+        Related issues:
+        - https://github.com/Textualize/textual/issues/4967
+        - https://github.com/Textualize/textual/issues/1814
+        """
+        if type(event) == Button.Pressed:
+            event.stop()
+            self.post_message(self.Pressed(self))
 
     def validate_variant(self, variant: str) -> str:
         """No need for runtime validation, as invalid variant will be detected by mypy."""
