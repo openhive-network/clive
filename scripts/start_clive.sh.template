@@ -109,4 +109,17 @@ then
   add_docker_arg "${CLIVE_DATA_LOCATION_DIR}:${CLIVE_DATA_LOCATION_DIR}"
 fi
 
-docker run --detach-keys='ctrl-@,ctrl-q' --rm -it -e CLIVE_UID="$(id -u)" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"
+CONTAINER_NAME="clive-tui-$(date +%s)"
+cleanup () {
+  set +e
+  local retries=30
+  while ! docker ps > /dev/null 2>&1 && [ $retries -gt 0 ];
+  do
+    ((retries--))
+    sleep 1
+  done
+  docker stop "$CONTAINER_NAME"
+}
+trap cleanup HUP INT QUIT TERM
+
+docker run --name="${CONTAINER_NAME}" --detach-keys='ctrl-@,ctrl-q' --rm -it -e CLIVE_UID="$(id -u)" --stop-timeout=180 "${DOCKER_ARGS[@]}" "${IMAGE_NAME}" "${CMD_ARGS[@]}"
