@@ -12,6 +12,7 @@ from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.screens.cart.cart import Cart
 from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
+from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
 )
@@ -109,11 +110,13 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     def action_finalize(self) -> None:
         if self._add_to_cart():
+            self._add_account_to_known_after_action()
             self.app.switch_screen(TransactionSummaryFromCart())
             self.app.push_screen_at(-1, Cart())
 
     def action_add_to_cart(self) -> None:
         if self._add_to_cart():
+            self._add_account_to_known_after_action()
             self._pop_screen_on_successfully_added_to_cart()
 
     def _pop_screen_on_successfully_added_to_cart(self) -> None:
@@ -152,6 +155,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         transaction = wrapper.result_or_raise
         transaction_id = transaction.calculate_transaction_id()
 
+        self._add_account_to_known_after_action()
         self._pop_screen_until_operations_or_dashboard()
         self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
@@ -177,6 +181,15 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         self.profile.cart.extend(operations)
         self.app.trigger_profile_watchers()
         return True
+
+    def _add_account_to_known_after_action(self) -> None:
+        account_inputs = self.query(AccountNameInput)
+
+        for account_input in account_inputs:
+            account_name = account_input.value_or_error
+
+            if not self.profile.accounts.is_account_known(account_name):
+                self.profile.accounts.known.add(account_name)
 
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()
