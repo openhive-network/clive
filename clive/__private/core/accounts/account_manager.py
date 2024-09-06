@@ -198,12 +198,18 @@ class AccountManager:
         if not self.has_working_account:
             first_account_to_add = to_add[0]
             self.set_working_account(first_account_to_add)
+            if not self.is_account_known(first_account_to_add):
+                self.known.add(first_account_to_add)
             to_add = to_add[1:]
 
         # raise AccountAlreadyExistsError if any of the accounts is already a working account
+        # add the account to the known list if it does not already exist there
         for account in to_add:
             if self.is_account_working(account):
                 raise AccountAlreadyExistsError(Account.ensure_account_name(account), "WorkingAccount")
+
+            if not self.is_account_known(account):
+                self.known.add(account)
 
         self.watched.add(*to_add)
 
