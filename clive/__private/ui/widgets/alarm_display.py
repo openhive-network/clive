@@ -84,6 +84,12 @@ class AlarmDisplay(DynamicOneLineButtonUnfocusable):
     def push_account_details_screen(self) -> None:
         from clive.__private.ui.screens.account_details.account_details import AccountDetails
 
+        def is_current_screen_account_details() -> bool:
+            return isinstance(self.app.screen, AccountDetails)
+
+        if is_current_screen_account_details():
+            return
+
         if self._is_in_auto_working_account_mode() and not self.profile.accounts.has_working_account:
             return
 
