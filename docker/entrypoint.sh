@@ -4,17 +4,6 @@ set -euo pipefail
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
-cleanup () {
-  echo "Performing cleanup...."
-  while pkill -INT -P $$
-  do
-    sleep 1
-  done
-  echo "Cleanup actions done."
-}
-trap cleanup HUP INT QUIT TERM
-
-
 if [[ "$EUID" -eq 0 ]]; then
   if [[ -z "${CLIVE_UID:-}" ]]; then
     echo "Warning: variable CLIVE_UID is not set or set to an empty value." >&2
@@ -60,6 +49,7 @@ wait_for_testnet() {
 launch_cli() {
   clive --install-completion >/dev/null 2>&1
   clive beekeeper spawn # Spawn the beekeeper so commands that require it don't have to do it every time
+  trap "clive beekeeper close" HUP INT QUIT TERM
   bash
   clive beekeeper close
 }

@@ -23,6 +23,10 @@ ENV PIP_CACHE_DIR=/var/cache/buildkit/pip
 ENV PYTHON_VENV_PATH="/clive-venv"
 ENV PATH="${PYTHON_VENV_PATH}/bin:$PATH" VIRTUAL_ENV=${PYTHON_VENV_PATH}
 
+ENV TINI_VERSION v0.19.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+
 RUN --mount=type=cache,mode=0777,sharing=locked,target=${APT_CACHE_DIR} \
     apt-get update && \
     apt-get install -y procps sudo && \
@@ -106,7 +110,8 @@ LABEL io.hive.image.commit.date="$GIT_LAST_COMMIT_DATE"
 
 USER root
 STOPSIGNAL SIGINT
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/tini", "--"]
+CMD ["/entrypoint.sh"]
 
 
 # this target should be built using a testnet hived image as a base (to have embedded testnet)
@@ -155,4 +160,5 @@ LABEL org.opencontainers.image.title="Clive with Testnet Image"
 LABEL org.opencontainers.image.description="Runs Clive with embedded Hive Testnet"
 
 USER root
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/tini", "--"]
+CMD ["/entrypoint.sh"]

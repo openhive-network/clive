@@ -73,7 +73,8 @@ while [ $# -gt 0 ]; do
 done
 
 # Collect remaining command line args to pass to the container to run
-CMD_ARGS=("$@")
+CMD_ARGS=("/entrypoint.sh")
+CMD_ARGS+=("$@")
 CMD_ARGS+=("${CLIVE_ARGS[@]}")
 
 if ! command -v docker &> /dev/null
