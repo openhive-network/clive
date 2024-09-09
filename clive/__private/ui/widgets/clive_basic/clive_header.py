@@ -87,7 +87,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     def switch_working_account(self) -> None:
-        if not self._is_current_screen_dashboard:
+        if not self._is_working_account_switch_allowed:
             return
 
         if not self.profile.accounts.has_tracked_accounts:
@@ -97,7 +97,7 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
 
     @on(CliveScreen.Resumed)
     def determine_tooltip(self) -> None:
-        if not self._is_current_screen_dashboard:
+        if not self._is_working_account_switch_allowed:
             self.tooltip = "Go to the dashboard to modify working account"
             return
 
@@ -108,10 +108,20 @@ class WorkingAccountButton(DynamicOneLineButtonUnfocusable):
         self.tooltip = "Switch working account"
 
     @property
+    def _is_working_account_switch_allowed(self) -> bool:
+        return self._is_current_screen_dashboard or self._is_current_screen_account_management
+
+    @property
     def _is_current_screen_dashboard(self) -> bool:
         from clive.__private.ui.screens.dashboard import DashboardBase
 
         return isinstance(self.app.screen, DashboardBase)
+
+    @property
+    def _is_current_screen_account_management(self) -> bool:
+        from clive.__private.ui.screens.config.account_management import AccountManagement
+
+        return isinstance(self.app.screen, AccountManagement)
 
     def _push_switch_working_account_screen(self) -> None:
         from clive.__private.ui.dialogs import SwitchWorkingAccountDialog
