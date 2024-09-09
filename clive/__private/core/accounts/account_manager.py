@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from typing import Iterable
+from pathlib import Path
+from typing import Final, Iterable
 
 from clive.__private.core.accounts.account_container import (
     KnownAccountContainer,
@@ -14,8 +15,25 @@ from clive.__private.core.accounts.exceptions import (
 )
 
 
+def _load_bad_accounts_from_file() -> list[str]:
+    current_dir = Path(__file__).parent
+    bad_accounts_file_path = current_dir / "bad_accounts_list.txt"
+
+    with bad_accounts_file_path.open() as f:
+        account_names = []
+
+        for account_name in f.readlines():
+            name = account_name.strip()
+            Account.validate(name)
+            account_names.append(name)
+
+        return account_names
+
+
 class AccountManager:
     """Class for storing and managing accounts."""
+
+    BAD_ACCOUNT_NAMES: Final[list[str]] = _load_bad_accounts_from_file()
 
     def __init__(
         self,
@@ -126,6 +144,11 @@ class AccountManager:
     def is_account_tracked(self, account: str | Account) -> bool:
         account_name = Account.ensure_account_name(account)
         return account_name in [tracked_account.name for tracked_account in self.tracked]
+
+    @classmethod
+    def is_account_bad(cls, account: str | Account) -> bool:
+        account_name = Account.ensure_account_name(account)
+        return account_name in cls.BAD_ACCOUNT_NAMES
 
     def set_working_account(self, value: str | Account) -> None:
         """
