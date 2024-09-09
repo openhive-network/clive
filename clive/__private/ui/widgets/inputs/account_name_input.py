@@ -6,10 +6,11 @@ from textual import on
 from textual.containers import Vertical
 from textual.events import Mount
 
-from clive.__private.core.accounts.accounts import KnownAccount as KnownAccountModel
+from clive.__private.core.accounts.accounts import Account
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
 from clive.__private.validators.account_name_validator import AccountNameValidator
+from clive.__private.validators.bad_account_validator import BadAccountValidator
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -24,6 +25,7 @@ class AccountNameInput(TextInput):
 
     _KNOWN_ACCOUNT_CLASS: Final[str] = "-known-account"
     _UNKNOWN_ACCOUNT_CLASS: Final[str] = "-unknown-account"
+    _BAD_ACCOUNT_CLASS: Final[str] = "-bad-account"
 
     DEFAULT_CSS = """
     AccountNameInput {
@@ -44,6 +46,11 @@ class AccountNameInput(TextInput):
               border-subtitle-background: $warning-lighten-1;
               border-subtitle-color: black;
             }
+
+            &.-bad-account {
+              border-subtitle-background: $error;
+            }
+
           }
         }
       }
@@ -60,6 +67,7 @@ class AccountNameInput(TextInput):
         show_invalid_reasons: bool = True,
         required: bool = True,
         show_known_account: bool = True,
+        show_bad_account: bool = True,
         validators: Validator | Iterable[Validator] | None = None,
         validate_on: Iterable[InputValidationOn] | None = None,
         valid_empty: bool = False,
@@ -83,7 +91,7 @@ class AccountNameInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            validators=validators or [AccountNameValidator()],
+            validators=validators or [AccountNameValidator(), BadAccountValidator(self.profile.accounts)],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
@@ -91,6 +99,7 @@ class AccountNameInput(TextInput):
             disabled=disabled,
         )
         self._show_known_account = show_known_account
+        self._show_bad_account = show_bad_account
 
     def compose(self) -> ComposeResult:
         with Vertical():
@@ -99,7 +108,7 @@ class AccountNameInput(TextInput):
 
     @on(Mount)
     def _watch_input_value_change(self) -> None:
-        if not self._show_known_account:
+        if not self._show_known_account and not self._show_bad_account:
             return
 
         # >>> start workaround for Textual calling validate on input when self.watch is used. Setting validate_on to
@@ -118,23 +127,35 @@ class AccountNameInput(TextInput):
         if not self.profile.accounts.is_account_known(account_name):
             self.profile.accounts.known.add(account_name)
 
+    def _change_input_style(self, css_class: str, border_subtitle: str) -> None:
+        self.input.remove_class(self._UNKNOWN_ACCOUNT_CLASS, self._KNOWN_ACCOUNT_CLASS, self._BAD_ACCOUNT_CLASS)
+
+        self.input.border_subtitle = border_subtitle
+        self.input.add_class(css_class)
+        self.input.refresh()  # sometimes it's not refreshed automatically without this..
+
     def _update_account_status(self) -> None:
         def handle_invalid_account_name() -> None:
             self.input.border_subtitle = None
-            self.input.refresh()
-
-        def handle_valid_account_name() -> None:
-            known_account_text = "known account"
-            unknown_account_text = "unknown account"
-
-            is_account_known = self.profile.accounts.is_account_known(self.input.value)
-
-            self.input.border_subtitle = known_account_text if is_account_known else unknown_account_text
-            self.input.add_class(self._KNOWN_ACCOUNT_CLASS if is_account_known else self._UNKNOWN_ACCOUNT_CLASS)
-            self.input.remove_class(self._UNKNOWN_ACCOUNT_CLASS if is_account_known else self._KNOWN_ACCOUNT_CLASS)
             self.input.refresh()  # sometimes it's not refreshed automatically without this..
 
-        if not KnownAccountModel.is_valid(self.input.value):
+        def handle_valid_account_name() -> None:
+            if self.profile.accounts.is_account_bad(self.value_raw) and self._show_bad_account:
+                self._change_input_style(self._BAD_ACCOUNT_CLASS, "BAD ACCOUNT!")
+                return
+
+            if not self._show_known_account:
+                self.input.border_subtitle = ""
+                self.input.refresh()  # sometimes it's not refreshed automatically without this..
+                return
+
+            if self.profile.accounts.is_account_known(self.value_raw):
+                self._change_input_style(self._KNOWN_ACCOUNT_CLASS, "known account")
+                return
+
+            self._change_input_style(self._UNKNOWN_ACCOUNT_CLASS, "unknown account")
+
+        if not Account.is_valid(self.value_raw):
             handle_invalid_account_name()
             return
 
