@@ -381,6 +381,21 @@ class Node(BaseNode):
         self.cached = self.CachedData(self)
         self.__network_type = ""
 
+    async def __aenter__(self) -> Self:
+        await self.setup()
+        return self
+
+    async def __aexit__(
+        self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
+    ) -> None:
+        await self.teardown()
+
+    async def setup(self) -> None:
+        await self.__communication.setup()
+
+    async def teardown(self) -> None:
+        await self.__communication.teardown()
+
     def batch(self, *, delay_error_on_data_access: bool = False) -> _BatchNode:
         """
         In this mode all requests will be send as one request.

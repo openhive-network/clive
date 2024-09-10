@@ -123,6 +123,7 @@ class Beekeeper:
         webserver_thread_pool_size: int = BeekeeperDefaults.DEFAULT_WEBSERVER_THREAD_POOL_SIZE,
         webserver_http_endpoint: Url | None = BeekeeperDefaults.DEFAULT_WEBSERVER_HTTP_ENDPOINT,
     ) -> Self:
+        await self.__communication.setup()
         arguments: BeekeeperCLIArguments = BeekeeperCLIArguments(
             help=BeekeeperDefaults.DEFAULT_HELP,
             version=BeekeeperDefaults.DEFAULT_VERSION,
@@ -268,6 +269,7 @@ class Beekeeper:
             self.__token = None
         await self.__close_beekeeper()
         self.is_running = False
+        await self.__communication.teardown()
         logger.info("Beekeeper closed.")
 
     def attach_wallet_closing_listener(self, listener: WalletClosingListener) -> None:

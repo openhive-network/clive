@@ -104,12 +104,14 @@ class World:
             yield
 
     async def setup(self) -> Self:
+        await self._node.setup()
         if self._use_beekeeper:
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
         return self
 
     async def close(self) -> None:
         self.profile.save()
+        await self._node.teardown()
         if self._beekeeper is not None:
             await self._beekeeper.close()
 

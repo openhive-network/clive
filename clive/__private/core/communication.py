@@ -9,6 +9,7 @@ from json import JSONDecodeError
 from typing import TYPE_CHECKING, Any, Final
 
 import aiohttp
+from typing_extensions import Self
 
 from clive.__private.core._async import asyncio_run
 from clive.__private.core.constants.date import TIME_FORMAT_WITH_MILLIS
@@ -17,6 +18,7 @@ from clive.exceptions import CliveError, CommunicationError, CommunicationTimeou
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
+    from types import TracebackType
 
     from clive.__private.core.beekeeper.notification_http_server import JsonT
     from clive.exceptions import CommunicationResponseT
@@ -53,10 +55,34 @@ class Communication:
         self.__max_attempts = max_attempts
         self.__timeout_secs = timeout_secs
         self.__pool_time_secs = pool_time_secs
+        self.__session: aiohttp.ClientSession | None = None
 
         assert self.__max_attempts > 0, "Max attempts must be greater than 0."
         assert self.__timeout_secs > 0, "Timeout must be greater than 0."
         assert self.__pool_time_secs >= 0, "Pool time must be greater or equal to 0."
+
+    async def __aenter__(self) -> Self:
+        await self.setup()
+        return self
+
+    async def __aexit__(
+        self, _: type[BaseException] | None, __: BaseException | None, ___: TracebackType | None
+    ) -> None:
+        await self.teardown()
+
+    async def setup(self) -> None:
+        if self.__session is None:
+            self.__session = aiohttp.ClientSession()
+
+    async def teardown(self) -> None:
+        if self.__session is not None:
+            await self.__session.close()
+            self.__session = None
+
+    @property
+    def _session(self) -> aiohttp.ClientSession:
+        assert self.__session is not None, "Session is not started."
+        return self.__session
 
     @contextmanager
     def modified_connection_details(
@@ -167,45 +193,45 @@ class Communication:
             raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, context) from error_
 
         while attempt < _max_attempts:
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=_timeout_secs)) as session:
+            try:
+                response = await self._session.post(
+                    url,
+                    data=data_serialized,
+                    headers={"Content-Type": "application/json"},
+                    timeout=aiohttp.ClientTimeout(total=_timeout_secs),
+                )
+            except aiohttp.ClientError as error:
+                logger.error(f"ClientError occurred: {error} from {url=}, request={data_serialized}")
+                await next_try(error)
+                continue
+            except asyncio.TimeoutError as error:
+                raise_timeout_error("performing request", error)
+            except Exception as error:  # noqa: BLE001
+                logger.error(f"Unexpected error occurred: {error} from {url=}, request={data_serialized}")
+                await next_try(error)
+                continue
+
+            if response.ok:
                 try:
-                    response = await session.post(
-                        url,
-                        data=data_serialized,
-                        headers={"Content-Type": "application/json"},
-                    )
-                except aiohttp.ClientError as error:
-                    logger.error(f"ClientError occurred: {error} from {url=}, request={data_serialized}")
-                    await next_try(error)
-                    continue
-                except asyncio.TimeoutError as error:
-                    raise_timeout_error("performing request", error)
-                except Exception as error:  # noqa: BLE001
-                    logger.error(f"Unexpected error occurred: {error} from {url=}, request={data_serialized}")
-                    await next_try(error)
-                    continue
-
-                if response.ok:
+                    result = await response.json()
+                except (aiohttp.ContentTypeError, JSONDecodeError) as error:
                     try:
-                        result = await response.json()
-                    except (aiohttp.ContentTypeError, JSONDecodeError) as error:
-                        try:
-                            result = await response.text()
-                        except asyncio.TimeoutError as timeout_error:
-                            raise_timeout_error("reading text response", timeout_error)
-                        else:
-                            await next_try(error)
-                            continue
-                    except asyncio.TimeoutError as error:
-                        raise_timeout_error("reading json response", error)
+                        result = await response.text()
+                    except asyncio.TimeoutError as timeout_error:
+                        raise_timeout_error("reading text response", timeout_error)
+                    else:
+                        await next_try(error)
+                        continue
+                except asyncio.TimeoutError as error:
+                    raise_timeout_error("reading json response", error)
 
-                    with contextlib.suppress(ErrorInResponseJsonError, NullResultInResponseJsonError):
-                        self.__check_response(url=url, request=data_serialized, result=result)
-                        await response.read()  # Ensure response is available outside of the context manager.
-                        return response
-                else:
-                    logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
-                    result = await response.text()
+                with contextlib.suppress(ErrorInResponseJsonError, NullResultInResponseJsonError):
+                    self.__check_response(url=url, request=data_serialized, result=result)
+                    await response.read()  # Ensure response is available outside of the context manager.
+                    return response
+            else:
+                logger.error(f"Received bad status code: {response.status} from {url=}, request={data_serialized}")
+                result = await response.text()
 
             await next_try()
 
