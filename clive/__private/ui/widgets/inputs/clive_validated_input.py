@@ -91,10 +91,10 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
 
         Vertical {
             height: auto;
+        }
 
-            Pretty {
-                margin: 0 1;
-            }
+        Pretty {
+            padding: 0 1; /* workaround for a bug in textual with margins */
         }
     }
     """
