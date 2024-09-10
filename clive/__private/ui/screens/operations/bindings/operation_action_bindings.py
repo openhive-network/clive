@@ -186,10 +186,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         account_inputs = self.query(AccountNameInput)
 
         for account_input in account_inputs:
-            account_name = account_input.value_or_error
-
-            if not self.profile.accounts.is_account_known(account_name):
-                self.profile.accounts.known.add(account_name)
+            account_input.add_account_to_known()
 
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()

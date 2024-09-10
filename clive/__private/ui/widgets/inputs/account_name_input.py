@@ -111,6 +111,13 @@ class AccountNameInput(TextInput):
         self.input.validate_on = before
         # <<< end workaround
 
+    def add_account_to_known(self) -> None:
+        """Add account to known accounts list if it's valid and not already known."""
+        account_name = self.value_or_error
+
+        if not self.profile.accounts.is_account_known(account_name):
+            self.profile.accounts.known.add(account_name)
+
     def _update_account_status(self) -> None:
         def handle_invalid_account_name() -> None:
             self.input.border_subtitle = None
