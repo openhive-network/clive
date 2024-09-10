@@ -50,7 +50,6 @@ from clive.__private.core.commands.update_transaction_metadata import (
 from clive.__private.core.error_handlers.abc.error_handler_context_manager import (
     ResultNotAvailable,
 )
-from clive.__private.core.error_handlers.async_closed import AsyncClosedErrorHandler
 from clive.__private.core.error_handlers.communication_failure_notificator import CommunicationFailureNotificator
 from clive.__private.core.error_handlers.general_error_notificator import GeneralErrorNotificator
 from clive.__private.ui.clive_dom_node import CliveDOMNode
@@ -91,7 +90,7 @@ class Commands(Generic[WorldT_co]):
         super().__init__(*args, **kwargs)
 
         self._world = world
-        self.__exception_handlers = [AsyncClosedErrorHandler, *(exception_handlers or [])]
+        self.__exception_handlers = [*(exception_handlers or [])]
 
     async def create_wallet(self, *, password: str | None) -> CommandWithResultWrapper[str]:
         return await self.__surround_with_exception_handlers(
@@ -406,7 +405,7 @@ class Commands(Generic[WorldT_co]):
 
             return self.__create_command_wrapper(command)
 
-        return await self.__surround_with_exception_handler(command, self.__exception_handlers)  # type: ignore[arg-type]
+        return await self.__surround_with_exception_handler(command, self.__exception_handlers)
 
     @overload
     async def __surround_with_exception_handler(  # type: ignore[overload-overlap]
