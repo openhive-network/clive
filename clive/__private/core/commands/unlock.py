@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class WalletDoesNotExistsError(KnownError, CannotUnlockError):
-    ERROR_MESSAGE: ClassVar[str] = "Assert Exception:wallet->load_wallet_file(): Unable to open file: "
+    ERROR_MESSAGE: ClassVar[str] = "Unable to open file: "
 
 
 class UnlockInvalidPasswordError(InvalidPasswordError, CannotUnlockError):
