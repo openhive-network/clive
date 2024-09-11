@@ -396,3 +396,19 @@ class CLITester:
 
     def show_chain(self, *, profile_name: str | None = None) -> Result:
         return self.__invoke(["show", "chain"], profile_name=profile_name)
+
+    def process_transfer(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+        memo: str | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT,
+    ) -> Result:
+        return self.__invoke(["process", "transfer"], **extract_params(locals()))
