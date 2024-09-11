@@ -112,6 +112,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self.query_one(ButtonDelete)
 
     @property
+    def is_already_deleted(self) -> bool:
+        return self._is_already_deleted
+
+    @property
     def operation(self) -> OperationBase:
         assert self._is_operation_index_valid(self._operation_index), "Cannot get operation, position is invalid."
         return self.profile.cart[self._operation_index]
@@ -219,7 +223,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return value < self.operations_amount
 
     def _move(self, direction: Literal["up", "down"]) -> None:
-        if self._is_already_moving:
+        if self._is_already_moving or self._is_already_deleted:
             return
         self._is_already_moving = True
         index_change = -1 if direction == "up" else 1
@@ -268,8 +272,15 @@ class CartTable(CliveCheckerboardTable):
         from_index = event.from_index
         to_index = event.to_index
 
+        # abort swapping when removal is not finished yet
+        for item in reversed(self._cart_items):
+            if item.is_already_deleted:
+                return
+
+        if to_index >= len(self.profile.cart):
+            return
+
         assert to_index >= 0, "Item cannot be moved to id lower than 0."
-        assert to_index < len(self.profile.cart), "Item cannot be moved to id greater than cart length."
 
         with self.app.batch_update():
             self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
