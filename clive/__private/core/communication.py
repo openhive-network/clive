@@ -49,16 +49,16 @@ class Communication:
         self,
         *,
         max_attempts: int = DEFAULT_ATTEMPTS,
-        timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        timeout_total_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = DEFAULT_POOL_TIME_SECONDS,
     ) -> None:
         self.__max_attempts = max_attempts
-        self.__timeout_secs = timeout_secs
+        self.__timeout_total_secs = timeout_total_secs
         self.__pool_time_secs = pool_time_secs
         self.__session: aiohttp.ClientSession | None = None
 
         assert self.__max_attempts > 0, "Max attempts must be greater than 0."
-        assert self.__timeout_secs > 0, "Timeout must be greater than 0."
+        assert self.__timeout_total_secs > 0, "Timeout must be greater than 0."
         assert self.__pool_time_secs >= 0, "Pool time must be greater or equal to 0."
 
     async def __aenter__(self) -> Self:
@@ -88,23 +88,23 @@ class Communication:
     def modified_connection_details(
         self,
         max_attempts: int = DEFAULT_ATTEMPTS,
-        timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        timeout_total_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = DEFAULT_POOL_TIME_SECONDS,
     ) -> Iterator[None]:
         """Temporarily change connection details."""
         before = {
             "max_attempts": self.__max_attempts,
-            "timeout_secs": self.__timeout_secs,
+            "timeout_total_secs": self.__timeout_total_secs,
             "pool_time_secs": self.__pool_time_secs,
         }
         self.__max_attempts = max_attempts
-        self.__timeout_secs = timeout_secs
+        self.__timeout_total_secs = timeout_total_secs
         self.__pool_time_secs = pool_time_secs
         try:
             yield
         finally:
             self.__max_attempts = before["max_attempts"]  # type: ignore[assignment]
-            self.__timeout_secs = before["timeout_secs"]
+            self.__timeout_total_secs = before["timeout_total_secs"]
             self.__pool_time_secs = before["pool_time_secs"]
 
     def request(  # noqa: PLR0913
@@ -113,7 +113,7 @@ class Communication:
         *,
         data: Any,  # noqa: ANN401
         max_attempts: int | None = None,
-        timeout_secs: float | None = None,
+        timeout_total_secs: float | None = None,
         pool_time_secs: float | None = None,
     ) -> aiohttp.ClientResponse:
         """
@@ -125,12 +125,16 @@ class Communication:
         url: url to send request to.
         data: data to send.
         max_attempts: max attempts to send request (will override the value given during Communication creation)
-        timeout_secs: timeout in seconds (will override the value given during Communication creation)
+        timeout_total_secs: timeout in seconds (will override the value given during Communication creation)
         pool_time_secs: time to wait between attempts (will override the value given during Communication creation)
         """
         return asyncio_run(
             self.__request(
-                url, data=data, max_attempts=max_attempts, timeout_secs=timeout_secs, pool_time_secs=pool_time_secs
+                url,
+                data=data,
+                max_attempts=max_attempts,
+                timeout_total_secs=timeout_total_secs,
+                pool_time_secs=pool_time_secs,
             )
         )
 
@@ -140,7 +144,7 @@ class Communication:
         *,
         data: Any,  # noqa: ANN401
         max_attempts: int | None = None,
-        timeout_secs: float | None = None,
+        timeout_total_secs: float | None = None,
         pool_time_secs: float | None = None,
     ) -> aiohttp.ClientResponse:
         """
@@ -152,11 +156,15 @@ class Communication:
         url: url to send request to.
         data: data to send.
         max_attempts: max attempts to send request (will override the value given during Communication creation)
-        timeout_secs: timeout in seconds (will override the value given during Communication creation)
+        timeout_total_secs: timeout in seconds (will override the value given during Communication creation)
         pool_time_secs: time to wait between attempts (will override the value given during Communication creation)
         """
         return await self.__request(
-            url, data=data, max_attempts=max_attempts, timeout_secs=timeout_secs, pool_time_secs=pool_time_secs
+            url,
+            data=data,
+            max_attempts=max_attempts,
+            timeout_total_secs=timeout_total_secs,
+            pool_time_secs=pool_time_secs,
         )
 
     async def __request(  # noqa: PLR0913, C901, PLR0915
@@ -165,15 +173,15 @@ class Communication:
         *,
         data: Any,  # noqa: ANN401
         max_attempts: int | None = None,
-        timeout_secs: float | None = None,
+        timeout_total_secs: float | None = None,
         pool_time_secs: float | None = None,
     ) -> aiohttp.ClientResponse:
         _max_attempts = max_attempts or self.__max_attempts
-        _timeout_secs = timeout_secs or self.__timeout_secs
+        _timeout_total_secs = timeout_total_secs or self.__timeout_total_secs
         _pool_time_secs = pool_time_secs or self.__pool_time_secs
 
         assert _max_attempts > 0, "Max attempts must be greater than 0."
-        assert _timeout_secs > 0, "Timeout must be greater than 0."
+        assert _timeout_total_secs > 0, "Timeout must be greater than 0."
         assert _pool_time_secs >= 0, "Pool time must be greater or equal to 0."
 
         result: CommunicationResponseT | None = None
@@ -190,7 +198,7 @@ class Communication:
             await asyncio.sleep(_pool_time_secs)
 
         def raise_timeout_error(context: str, error_: asyncio.TimeoutError) -> None:
-            raise CommunicationTimeoutError(url, data_serialized, _timeout_secs, context) from error_
+            raise CommunicationTimeoutError(url, data_serialized, _timeout_total_secs, context) from error_
 
         while attempt < _max_attempts:
             try:
@@ -198,7 +206,7 @@ class Communication:
                     url,
                     data=data_serialized,
                     headers={"Content-Type": "application/json"},
-                    timeout=aiohttp.ClientTimeout(total=_timeout_secs),
+                    timeout=aiohttp.ClientTimeout(total=_timeout_total_secs),
                 )
             except aiohttp.ClientError as error:
                 logger.error(f"ClientError occurred: {error} from {url=}, request={data_serialized}")

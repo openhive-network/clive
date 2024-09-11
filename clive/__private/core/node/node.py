@@ -376,7 +376,7 @@ class Node(BaseNode):
 
     def __init__(self, profile: Profile) -> None:
         self.__profile = profile
-        self.__communication = Communication(timeout_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
+        self.__communication = Communication(timeout_total_secs=self.DEFAULT_TIMEOUT_TOTAL_SECONDS)
         self.api = Apis(self)
         self.cached = self.CachedData(self)
         self.__network_type = ""
@@ -416,11 +416,11 @@ class Node(BaseNode):
     def modified_connection_details(
         self,
         max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        timeout_total_secs: float = DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
     ) -> Iterator[None]:
         """Temporarily change connection details."""
-        with self.__communication.modified_connection_details(max_attempts, timeout_secs, pool_time_secs):
+        with self.__communication.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs):
             yield
 
     @property

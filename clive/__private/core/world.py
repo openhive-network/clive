@@ -85,7 +85,7 @@ class World:
     def modified_connection_details(
         self,
         max_attempts: int = Communication.DEFAULT_ATTEMPTS,
-        timeout_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
+        timeout_total_secs: float = Communication.DEFAULT_TIMEOUT_TOTAL_SECONDS,
         pool_time_secs: float = Communication.DEFAULT_POOL_TIME_SECONDS,
         target: Literal["beekeeper", "node", "all"] = "all",
     ) -> Iterator[None]:
@@ -93,10 +93,12 @@ class World:
         contexts_to_enter = []
         if target in ("beekeeper", "all"):
             contexts_to_enter.append(
-                self.beekeeper.modified_connection_details(max_attempts, timeout_secs, pool_time_secs)
+                self.beekeeper.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs)
             )
         if target in ("node", "all"):
-            contexts_to_enter.append(self.node.modified_connection_details(max_attempts, timeout_secs, pool_time_secs))
+            contexts_to_enter.append(
+                self.node.modified_connection_details(max_attempts, timeout_total_secs, pool_time_secs)
+            )
 
         with contextlib.ExitStack() as stack:
             for context in contexts_to_enter:
