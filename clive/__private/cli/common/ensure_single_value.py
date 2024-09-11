@@ -63,3 +63,5 @@ def ensure_single_value(
 
 
 ensure_single_value_account_name = partial(ensure_single_value, option_name="account-name")
+
+ensure_single_value_profile_name = partial(ensure_single_value, option_name="profile-name")
