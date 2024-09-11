@@ -20,6 +20,10 @@ if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
 
 
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_SESSION_TOKEN
+from clive.__private.settings import clive_prefixed_envvar
+
+
 class CLIPrettyError(ClickException):
     """
     A pretty error to be shown to the user.
@@ -81,6 +85,21 @@ class CLIProfileAlreadyExistsError(CLIPrettyError):
             "If you want to create a new profile - please check the `clive configure profile add -h` command."
         )
         super().__init__(message, errno.EEXIST)
+
+
+class CLIBothBeekeepersPasswordAndSessionTokenSetError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = (
+            f"Both '--password' flag and environment variable {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)} are set."
+            " Please use only one."
+        )
+        super().__init__(message, errno.EINVAL)
+
+
+class CLIWalletIsNotUnlockedError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Wallet is not unlocked."
+        super().__init__(message, errno.EINVAL)
 
 
 class CLISigningRequiresAPasswordError(CLIPrettyError):
