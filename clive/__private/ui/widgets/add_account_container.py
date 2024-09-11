@@ -7,6 +7,7 @@ from textual.containers import Horizontal
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.section import Section
+from clive.__private.validators.bad_account_validator import BadAccountValidator
 from clive.__private.validators.set_known_account_validator import SetKnownAccountValidator
 from clive.__private.validators.set_tracked_account_validator import SetTrackedAccountValidator
 
@@ -33,7 +34,10 @@ class AddAccountContainer(Horizontal, CliveWidget):
         self._account_input = AccountNameInput(
             required=False,
             validators=(
-                SetTrackedAccountValidator(self.profile)
+                [
+                    SetTrackedAccountValidator(self.profile),
+                    BadAccountValidator(self.profile.accounts, pass_if_known=False),
+                ]
                 if accounts_type == "tracked_accounts"
                 else SetKnownAccountValidator(self.profile)
             ),
