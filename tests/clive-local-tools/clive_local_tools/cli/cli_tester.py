@@ -415,3 +415,41 @@ class CLITester:
     def __invoke_command_with_options(self, command: list[str], **cli_options: CliOptionT) -> Result:
         full_command = [*command, *kwargs_to_cli_options(**cli_options)]
         return self.invoke_raw_command(full_command)
+
+    def process_transfer(  # noqa: PLR0913
+        self,
+        *,
+        from_: str | None = None,
+        to: str,
+        profile_name: str | None = None,
+        password: str | None = None,
+        sign: str | None = None,
+        beekeeper_remote: str | None = None,
+        broadcast: bool | None = None,
+        save_file: str | None = None,
+        memo: str | None = None,
+        amount: tt.Asset.HiveT | tt.Asset.HbdT,
+    ) -> Result:
+        return self.__invoke_command_with_options(["process", "transfer"], **extract_params(locals()))
+
+    def configure_key_add(
+        self,
+        *,
+        key: str,
+        alias: str | None = None,
+        password: str | None = None,
+        profile_name: str | None = None,
+        beekeeper_remote: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["configure", "key", "add"], **extract_params(locals()))
+
+    def configure_key_remove(
+        self,
+        *,
+        alias: str,
+        from_beekeeper: bool | None = None,
+        password: str | None = None,
+        profile_name: str | None = None,
+        beekeeper_remote: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
