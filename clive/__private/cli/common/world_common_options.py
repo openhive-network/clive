@@ -7,12 +7,12 @@ from clive.__private.cli.common.parameters import options
 
 @dataclass(kw_only=True)
 class WorldCommonOptions(CommonOptionsBase):
-    profile_name: str = options.profile_name_option
-    beekeeper_remote: Optional[str] = options.beekeeper_remote_option
+    profile_name: str = options.profile_name
+    beekeeper_remote: Optional[str] = options.beekeeper_remote
     use_beekeeper: bool = field(default=True, metadata={"ignore": True})
 
 
 @dataclass(kw_only=True)
 class WorldWithoutBeekeeperCommonOptions(CommonOptionsBase):
-    profile_name: str = options.profile_name_option
+    profile_name: str = options.profile_name
     use_beekeeper: bool = field(default=False, metadata={"ignore": True})

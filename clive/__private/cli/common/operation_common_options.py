@@ -9,10 +9,10 @@ from clive.__private.cli.common.parameters import options
 
 @dataclass(kw_only=True)
 class OperationCommonOptions(CommonOptionsBase):
-    profile_name: str = options.profile_name_option
-    password: Optional[str] = options.password_optional_option
+    profile_name: str = options.profile_name
+    password: Optional[str] = options.password_optional
     sign: Optional[str] = typer.Option(None, help="Key alias to sign the transaction with.", show_default=False)
-    beekeeper_remote: Optional[str] = options.beekeeper_remote_option
+    beekeeper_remote: Optional[str] = options.beekeeper_remote
     broadcast: bool = typer.Option(default=True, help="Whether broadcast the transaction. (i.e. dry-run)")
     save_file: Optional[str] = typer.Option(
         None,

@@ -15,7 +15,7 @@ claim = CliveTyper(name="claim", help="Manage the things you can collect.")
 @claim.command(name="new-account-token", common_options=[OperationCommonOptions])
 async def process_claim_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
-    creator: str = options.account_name_option,
+    creator: str = options.account_name,
     fee: Optional[str] = typer.Option(
         None,
         parser=hive_asset,

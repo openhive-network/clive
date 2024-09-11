@@ -9,7 +9,7 @@ vote_proposal = CliveTyper(name="vote-proposal", help="Vote/unvote for a proposa
 @vote_proposal.command(name="add", common_options=[OperationCommonOptions])
 async def process_vote_proposal_add(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
     proposal_id: list[int] = options.proposal_id,
 ) -> None:
     """Vote for a proposal."""
@@ -27,7 +27,7 @@ async def process_vote_proposal_add(
 @vote_proposal.command(name="remove", common_options=[OperationCommonOptions])
 async def process_vote_proposal_remove(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
     proposal_id: list[int] = options.proposal_id,
 ) -> None:
     """Unvote proposal."""

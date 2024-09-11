@@ -19,9 +19,7 @@ async def add_working_account(
     await AddWorkingAccount(**common.as_dict(), account_name=account_name).run()
 
 
-working_account_name_to_remove_option = modified_param(
-    options.account_name_option, help="The name of the account to unset."
-)
+working_account_name_to_remove_option = modified_param(options.account_name, help="The name of the account to unset.")
 
 
 @working_account.command(name="remove", common_options=[ProfileCommonOptions])

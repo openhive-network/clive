@@ -90,7 +90,7 @@ async def process_transaction(
 @process.command(name="update-memo-key", common_options=[OperationCommonOptions])
 async def process_update_memo_key(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
     memo_key: str = typer.Option(
         ...,
         "--key",

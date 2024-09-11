@@ -9,7 +9,7 @@ proxy = CliveTyper(name="proxy", help="Set, change or remove a proxy.")
 @proxy.command(name="set", common_options=[OperationCommonOptions])
 async def process_proxy_set(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
     proxy: str = typer.Option(..., help="Name of new proxy account."),
 ) -> None:
     """Set a proxy or change an existing proxy."""
@@ -26,7 +26,7 @@ async def process_proxy_set(
 @proxy.command(name="clear", common_options=[OperationCommonOptions])
 async def process_proxy_clear(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
 ) -> None:
     """Remove a proxy."""
     from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear

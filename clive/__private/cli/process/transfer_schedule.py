@@ -13,8 +13,8 @@ if TYPE_CHECKING:
 
 @dataclass(kw_only=True)
 class TransferScheduleCommonOptions(OperationCommonOptions):
-    from_account: str = options.from_account_name_option
-    to: str = options.to_account_name_no_default_option
+    from_account: str = options.from_account_name
+    to: str = options.to_account_name_required
 
 
 transfer_schedule = CliveTyper(name="transfer-schedule", help="Create, modify or remove recurrent transfer.")
@@ -23,11 +23,11 @@ transfer_schedule = CliveTyper(name="transfer-schedule", help="Create, modify or
 @transfer_schedule.command(name="create", common_options=[TransferScheduleCommonOptions])
 async def process_transfer_schedule_create(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
-    amount: str = options.liquid_amount_option,
-    repeat: int = options.repeat_value_option,
-    frequency: timedelta = options.frequency_value_option,
-    memo: str = options.memo_value_option,
-    pair_id: int = options.pair_id_value_option,
+    amount: str = options.liquid_amount,
+    repeat: int = options.repeat_value,
+    frequency: timedelta = options.frequency_value,
+    memo: str = options.memo_value,
+    pair_id: int = options.pair_id_value,
 ) -> None:
     """Create a new recurrent transfer. First recurrent transfer will be sent immediately."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleCreate
@@ -47,11 +47,11 @@ async def process_transfer_schedule_create(  # noqa: PLR0913
 @transfer_schedule.command(name="modify", common_options=[TransferScheduleCommonOptions])
 async def process_transfer_schedule_modify(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
-    amount: str = options.liquid_amount_optional_option,
-    repeat: Optional[int] = options.repeat_value_optional_option,
-    frequency: Optional[timedelta] = options.frequency_value_optional_option,
-    memo: Optional[str] = options.memo_value_optional_option,
-    pair_id: Optional[int] = options.pair_id_value_none_option,
+    amount: str = options.liquid_amount_optional,
+    repeat: Optional[int] = options.repeat_value_optional,
+    frequency: Optional[timedelta] = options.frequency_value_optional,
+    memo: Optional[str] = options.memo_value_optional,
+    pair_id: Optional[int] = options.pair_id_value_none,
 ) -> None:
     """
     Modify an existing recurrent transfer.
@@ -74,7 +74,7 @@ async def process_transfer_schedule_modify(  # noqa: PLR0913
 @transfer_schedule.command(name="remove", common_options=[TransferScheduleCommonOptions])
 async def process_transfer_schedule_remove(
     ctx: typer.Context,  # noqa: ARG001
-    pair_id: Optional[int] = options.pair_id_value_none_option,
+    pair_id: Optional[int] = options.pair_id_value_none,
 ) -> None:
     """Remove an existing recurrent transfer."""
     from clive.__private.cli.commands.process.process_transfer_schedule import ProcessTransferScheduleRemove

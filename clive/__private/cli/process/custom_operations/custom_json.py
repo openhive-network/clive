@@ -10,7 +10,7 @@ custom_json = CliveTyper(name="custom-json", help="Send raw custom json operatio
 async def process_custom_json(
     ctx: typer.Context,  # noqa: ARG001
     authorize: list[str] = modified_param(
-        options.working_account_list_option_template,
+        options.working_account_list_template,
         param_decls=("--authorize",),
         help="Posting authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
         " used, then posting authority of working account is used for authorization.",

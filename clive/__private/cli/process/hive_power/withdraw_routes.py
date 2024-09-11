@@ -11,9 +11,9 @@ withdraw_routes = CliveTyper(name="withdraw-routes", help="Set or remove vesting
 @withdraw_routes.command(name="set", common_options=[OperationCommonOptions])
 async def process_withdraw_routes_set(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
-    to_account: str = options.to_account_name_no_default_option,
-    percent: Decimal = options.percent_option,
+    from_account: str = options.from_account_name,
+    to_account: str = options.to_account_name_required,
+    percent: Decimal = options.percent,
     auto_vest: bool = typer.Option(  # noqa: FBT001
         default=False,
         help="If auto-vest is set, then the amount of the Hive is immediately converted into HP on the balance. "
@@ -33,8 +33,8 @@ async def process_withdraw_routes_set(
 @withdraw_routes.command(name="remove", common_options=[OperationCommonOptions])
 async def process_withdraw_routes_remove(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
-    to_account: str = options.to_account_name_no_default_option,
+    from_account: str = options.from_account_name,
+    to_account: str = options.to_account_name_required,
 ) -> None:
     """Clear withdraw route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutesRemove

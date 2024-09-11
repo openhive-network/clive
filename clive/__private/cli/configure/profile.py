@@ -12,7 +12,7 @@ profile = CliveTyper(name="profile", help="Manage your Clive profile(s).")
 async def create_profile(
     ctx: typer.Context,  # noqa: ARG001
     profile_name: str = typer.Option(..., help="The name of the new profile.", show_default=False),
-    password: str = options.password_option,
+    password: str = options.password,
     working_account_name: Optional[str] = typer.Option(
         None, help="The name of the working account.", show_default=False
     ),

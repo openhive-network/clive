@@ -7,4 +7,4 @@ from clive.__private.cli.common.parameters import options
 
 @dataclass(kw_only=True)
 class BeekeeperCommonOptions(CommonOptionsBase):
-    beekeeper_remote: Optional[str] = options.beekeeper_remote_option
+    beekeeper_remote: Optional[str] = options.beekeeper_remote

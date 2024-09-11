@@ -15,8 +15,8 @@ power_up = CliveTyper(name="power-up", help="Perform power-up by sending transfe
 @power_up.callback(common_options=[OperationCommonOptions], invoke_without_command=True)
 async def process_power_up(
     ctx: typer.Context,  # noqa: ARG001
-    from_account: str = options.from_account_name_option,
-    to_account: str = options.to_account_name_option,
+    from_account: str = options.from_account_name,
+    to_account: str = options.to_account_name,
     amount: str = typer.Option(
         ..., parser=hive_asset, help="The amount to transfer to vesting. (e.g. 2.500 HIVE)", show_default=False
     ),

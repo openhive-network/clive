@@ -31,7 +31,7 @@ async def add_key(  # noqa: PLR0913
     key_option: Optional[str] = make_argument_related_option("--key"),
     alias: Optional[str] = _alias_argument,
     alias_option: Optional[str] = make_argument_related_option("--alias"),
-    password: str = options.password_option,
+    password: str = options.password,
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
@@ -59,7 +59,7 @@ async def remove_key(
         default=False,
         help="Remove the key from the Beekeeper as well.",
     ),
-    password: str = options.password_option,
+    password: str = options.password,
 ) -> None:
     """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
     from clive.__private.cli.commands.configure.key import RemoveKey

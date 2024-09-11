@@ -7,14 +7,14 @@ from clive.__private.cli.common.parameters.utils import get_default_or_make_opti
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD, REQUIRED_AS_ARG_OR_OPTION
 
 # we don't know if account_name_option is required until the profile is loaded
-working_account_argument_template = typer.Argument(
+working_account_template = typer.Argument(
     PERFORM_WORKING_ACCOUNT_LOAD,
     help=f"The account to use. (default is working account of profile, {REQUIRED_AS_ARG_OR_OPTION})",
     show_default=False,
 )
 
-account_name_argument = modified_param(working_account_argument_template)
-profile_name_argument = typer.Argument(
+account_name = modified_param(working_account_template)
+profile_name = typer.Argument(
     get_default_or_make_optional(get_default_profile_name()),
     help=f"The profile to use. (default is name of the default profile, {REQUIRED_AS_ARG_OR_OPTION})",
     show_default=bool(get_default_profile_name()),

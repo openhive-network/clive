@@ -9,7 +9,7 @@ vote_witness = CliveTyper(name="vote-witness", help="Vote/unvote for a witness."
 @vote_witness.command(name="add", common_options=[OperationCommonOptions])
 async def process_vote_witness_add(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
     witness_name: str = typer.Option(..., help="Witness name to vote."),
 ) -> None:
     """Vote for a witness."""
@@ -27,7 +27,7 @@ async def process_vote_witness_add(
 @vote_witness.command(name="remove", common_options=[OperationCommonOptions])
 async def process_vote_witness_remove(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
     witness_name: str = typer.Option(..., help="Witness name to unvote."),
 ) -> None:
     """Unvote witness."""

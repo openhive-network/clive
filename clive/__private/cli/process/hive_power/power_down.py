@@ -14,8 +14,8 @@ power_down = CliveTyper(name="power-down", help="Perform power-down, send withdr
 @power_down.command(name="start", common_options=[OperationCommonOptions])
 async def process_power_down_start(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.from_account_name_option,
-    amount: str = options.voting_amount_option,
+    account_name: str = options.from_account_name,
+    amount: str = options.voting_amount,
 ) -> None:
     """
     Start power down with given amount.
@@ -33,8 +33,8 @@ async def process_power_down_start(
 @power_down.command(name="restart", common_options=[OperationCommonOptions])
 async def process_power_down_restart(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.from_account_name_option,
-    amount: str = options.voting_amount_option,
+    account_name: str = options.from_account_name,
+    amount: str = options.voting_amount,
 ) -> None:
     """
     Restart power down with given amount.
@@ -52,7 +52,7 @@ async def process_power_down_restart(
 @power_down.command(name="cancel", common_options=[OperationCommonOptions])
 async def process_power_down_cancel(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = options.account_name_option,
+    account_name: str = options.account_name,
 ) -> None:
     """Stop power down by setting amount to 0."""
     from clive.__private.cli.commands.process.process_power_down import ProcessPowerDownCancel

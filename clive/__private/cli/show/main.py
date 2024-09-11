@@ -58,8 +58,8 @@ async def show_keys(ctx: typer.Context) -> None:  # noqa: ARG001
 @show.command(name="balances", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_balances(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Show balances of the selected account."""
     from clive.__private.cli.commands.show.show_balances import ShowBalances
@@ -128,8 +128,8 @@ else:
 @show.command(name="proxy", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_proxy(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Show proxy of selected account."""
     from clive.__private.cli.commands.show.show_proxy import ShowProxy
@@ -144,8 +144,8 @@ async def show_proxy(
 @show.command(name="witnesses", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_witnesses(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
     page_size: int = typer.Option(
         30,
         help="The number of witnesses presented on a single page.",
@@ -189,8 +189,8 @@ async def show_witness(
 @show.command(name="proposals", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_proposals(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
     order_by: OrdersEnum = typer.Option(
         DEFAULT_ORDER,
         help="Proposals listing can be ordered by criteria.",
@@ -261,8 +261,8 @@ async def show_proposal(
 @show.command(name="owner-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_owner_authority(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display owner authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -278,8 +278,8 @@ async def show_owner_authority(
 @show.command(name="active-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_active_authority(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display active authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -295,8 +295,8 @@ async def show_active_authority(
 @show.command(name="posting-authority", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_posting_authority(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display posting authority of selected account."""
     from clive.__private.cli.commands.show.show_authority import ShowAuthority
@@ -312,8 +312,8 @@ async def show_posting_authority(
 @show.command(name="memo-key", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_memo_key(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain and display memo key of selected account."""
     from clive.__private.cli.commands.show.show_memo_key import ShowMemoKey
@@ -336,8 +336,8 @@ async def show_chain(ctx: typer.Context) -> None:  # noqa: ARG001
 @show.command(name="hive-power", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_hive_power(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Show info about hive power related to account including delegations and withdraw routes."""
     from clive.__private.cli.commands.show.show_hive_power import ShowHivePower
@@ -351,8 +351,8 @@ async def show_hive_power(
 @show.command(name="new-account-token", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """
     Show number of possessed tokens for account creation.
@@ -370,8 +370,8 @@ async def show_new_account_token(
 @show.command(name="transfer-schedule", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_transfer_schedule(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Fetch from blockchain information about recurrent transfers of selected account."""
     from clive.__private.cli.commands.show.show_transfer_schedule import ShowTransferSchedule
@@ -385,8 +385,8 @@ async def show_transfer_schedule(
 @show.command(name="account", common_options=[WorldWithoutBeekeeperCommonOptions])
 async def show_account(
     ctx: typer.Context,  # noqa: ARG001
-    account_name: str = arguments.account_name_argument,
-    account_name_option: Optional[str] = argument_related_options.account_name_argument_related_option,
+    account_name: str = arguments.account_name,
+    account_name_option: Optional[str] = argument_related_options.account_name,
 ) -> None:
     """Show information about given account."""
     from clive.__private.cli.commands.show.show_account import ShowAccount
