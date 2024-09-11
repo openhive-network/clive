@@ -8,10 +8,12 @@ import typer
 
 from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
+    CLIBothBeekeepersPasswordAndSessionTokenSetError,
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIBroadcastRequiresSignKeyAndPasswordError,
     CLIPrettyError,
     CLISigningRequiresAPasswordError,
+    CLIWalletIsNotUnlockedError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -45,7 +47,13 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     async def _get_transaction_content(self) -> TransactionConvertibleType:
         """Get the transaction content to be processed."""
 
+    def is_both_beekeeper_password_and_session_token_set(self) -> bool:
+        return self.password is not None and safe_settings.beekeeper.is_session_token_set
+
     async def validate(self) -> None:
+        if self.is_both_beekeeper_password_and_session_token_set():
+            raise CLIBothBeekeepersPasswordAndSessionTokenSetError
+
         if not self.save_file:
             return
 
