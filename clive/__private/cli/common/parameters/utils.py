@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from clive.__private.cli.completion import is_tab_completion_active
 
 if TYPE_CHECKING:
-    from typer.models import OptionInfo
+    from typer.models import ArgumentInfo, OptionInfo
 
 
 def get_default_profile_name() -> str | None:
@@ -33,18 +33,18 @@ def get_default_or_make_required(value: Any) -> Any:  # noqa: ANN401
     return ... if value is None else value
 
 
-def modified_option(option: OptionInfo, **kwargs: Any) -> Any:  # noqa: ANN401
+def modified_param(source: OptionInfo | ArgumentInfo, **kwargs: Any) -> Any:  # noqa: ANN401
     """
-    Create option based on another option, but with some attributes modified.
+    Create option/argument based on another option/argument, but with some attributes modified.
 
     Args:
     ----
-    option: The option to modify.
+    source: The option/argument to modify.
     kwargs: The attributes to modify.
     """
-    new_option = deepcopy(option)
+    destination = deepcopy(source)
     for key, value in kwargs.items():
-        if not hasattr(new_option, key):
-            raise ValueError(f"Unknown option attribute: {key}\navailable attributes: {list(option.__dict__)}")
-        setattr(new_option, key, value)
-    return new_option
+        if not hasattr(destination, key):
+            raise ValueError(f"Unknown option attribute: {key}\navailable attributes: {list(source.__dict__)}")
+        setattr(destination, key, value)
+    return destination

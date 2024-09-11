@@ -1,5 +1,5 @@
-from .utils import modified_option
+from .utils import modified_param
 
 __all__ = [
-    "modified_option",
+    "modified_param",
 ]

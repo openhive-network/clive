@@ -6,7 +6,7 @@ from clive.__private.cli.common.parameters.utils import (
     get_default_beekeeper_remote,
     get_default_or_make_required,
     get_default_profile_name,
-    modified_option,
+    modified_param,
 )
 from clive.__private.cli.common.parsers import (
     decimal_percent,
@@ -31,7 +31,7 @@ profile_name_option = typer.Option(
 
 password_option = typer.Option(..., "--password", help="Password to unlock the wallet.", show_default=False)
 
-password_optional_option = modified_option(password_option, default=None)
+password_optional_option = modified_param(password_option, default=None)
 
 
 # we don't know if account_name_option is required until the profile is loaded
@@ -48,18 +48,15 @@ beekeeper_remote_option = typer.Option(
     show_default=bool(get_default_beekeeper_remote()),
 )
 
-account_name_option = modified_option(
-    working_account_option_template,
-    param_decls=("--account-name",),
-)
+account_name_option = modified_param(working_account_option_template, param_decls=("--account-name",))
 
-from_account_name_option = modified_option(
+from_account_name_option = modified_param(
     working_account_option_template,
     param_decls=("--from",),
     help='The account to use as "from" argument. (default is working account of profile)',
 )
 
-to_account_name_option = modified_option(
+to_account_name_option = modified_param(
     working_account_option_template,
     param_decls=("--to",),
     help='The account to use as "to" argument. (default is working account of profile)',
@@ -114,7 +111,7 @@ liquid_amount_option = typer.Option(
     show_default=False,
 )
 
-liquid_amount_optional_option = modified_option(liquid_amount_option, default=None)
+liquid_amount_optional_option = modified_param(liquid_amount_option, default=None)
 
 frequency_value_option = typer.Option(
     ...,
@@ -123,14 +120,14 @@ frequency_value_option = typer.Option(
     help=f"How often the transfer should be executed ({SHORTHAND_TIMEDELTA_EXAMPLE})",
     show_default=False,
 )
-frequency_value_optional_option = modified_option(frequency_value_option, default=None)
+frequency_value_optional_option = modified_param(frequency_value_option, default=None)
 
 memo_value_option = typer.Option(
     "",
     "--memo",
     help="The memo to attach to the transfer.",
 )
-memo_value_optional_option = modified_option(memo_value_option, default=None)
+memo_value_optional_option = modified_param(memo_value_option, default=None)
 
 
 pair_id_value_option = typer.Option(
@@ -143,7 +140,7 @@ pair_id_value_option = typer.Option(
     ),
     show_default=True,
 )
-pair_id_value_none_option = modified_option(pair_id_value_option, default=None, show_default=False)
+pair_id_value_none_option = modified_param(pair_id_value_option, default=None, show_default=False)
 
 repeat_value_option = typer.Option(
     ...,
@@ -152,7 +149,7 @@ repeat_value_option = typer.Option(
     help="How many times the recurrent transfer should be executed. (must be greater than 1)",
     show_default=False,
 )
-repeat_value_optional_option = modified_option(repeat_value_option, default=None)
+repeat_value_optional_option = modified_param(repeat_value_option, default=None)
 
 
 voting_amount_option = typer.Option(
