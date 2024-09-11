@@ -174,6 +174,12 @@ def assert_exit_code(result: Result | pytest.ExceptionInfo[CLITestCommandError] 
     assert actual_exit_code == expected_exit_code, message
 
 
+def assert_show_balances_title(context: CLITester | Result, account_name: str) -> None:
+    output = _get_output(context, CLITester.show_balances)
+    expected_output = f"Balances of `{account_name}` account"
+    assert_output_contains(expected_output, output, "show balances")
+
+
 def _get_output(context: CLITester | Result, function: Callable[[CLITester], Result] | None = None) -> str:
     if isinstance(context, CLITester):
         assert function, "`function` must be provided when `context` is `CLITester`"
