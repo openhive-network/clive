@@ -14,6 +14,26 @@ if TYPE_CHECKING:
     from clive.__private.cli.types import AccountUpdateFunction, AuthorityType
 
 
+_authority_account_name = typer.Option(
+    ...,
+    "--account",
+    help="The account to  add/remove/modify (account must exist).",
+    show_default=False,
+)
+_authority_key = typer.Option(
+    ...,
+    "--key",
+    help="The public key to add/remove/modify",
+    show_default=False,
+)
+_authority_weight = typer.Option(
+    ...,
+    "--weight",
+    help="The new weight of account/key authority",
+    show_default=False,
+)
+
+
 @pass_context
 def send_update(ctx: Context, /, *args: Any, **kwds: Any) -> None:  # noqa: ARG001
     """Create and send account update operation updating authority asynchronously."""
@@ -53,8 +73,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     @update.command(name="add-account", epilog=epilog)
     async def add_account(
         ctx: typer.Context,
-        account: str = options.authority_account_name,
-        weight: int = options.authority_weight,
+        account: str = _authority_account_name,
+        weight: int = _authority_weight,
     ) -> None:
         """Add account authority with weight."""
         from clive.__private.cli.commands.process.process_account_update import add_account, update_authority
@@ -66,8 +86,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     @update.command(name="add-key", epilog=epilog)
     async def add_key(
         ctx: typer.Context,
-        key: str = options.authority_key,
-        weight: int = options.authority_weight,
+        key: str = _authority_key,
+        weight: int = _authority_weight,
     ) -> None:
         """Add key authority with weight."""
         from clive.__private.cli.commands.process.process_account_update import add_key, update_authority
@@ -79,7 +99,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     @update.command(name="remove-account", epilog=epilog)
     async def remove_account(
         ctx: typer.Context,
-        account: str = options.authority_account_name,
+        account: str = _authority_account_name,
     ) -> None:
         """Remove account authority."""
         from clive.__private.cli.commands.process.process_account_update import remove_account, update_authority
@@ -91,7 +111,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     @update.command(name="remove-key", epilog=epilog)
     async def remove_key(
         ctx: typer.Context,
-        key: str = options.authority_key,
+        key: str = _authority_key,
     ) -> None:
         """Remove key authority."""
         from clive.__private.cli.commands.process.process_account_update import remove_key, update_authority
@@ -103,8 +123,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     @update.command(name="modify-account", epilog=epilog)
     async def modify_account(
         ctx: typer.Context,
-        account: str = options.authority_account_name,
-        weight: int = options.authority_weight,
+        account: str = _authority_account_name,
+        weight: int = _authority_weight,
     ) -> None:
         """Modify weight of existing account authority."""
         from clive.__private.cli.commands.process.process_account_update import modify_account, update_authority
@@ -116,8 +136,8 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
     @update.command(name="modify-key", epilog=epilog)
     async def modify_key(
         ctx: typer.Context,
-        key: str = options.authority_key,
-        weight: int = options.authority_weight,
+        key: str = _authority_key,
+        weight: int = _authority_weight,
     ) -> None:
         """Modify weight of existing key authority."""
         from clive.__private.cli.commands.process.process_account_update import modify_key, update_authority

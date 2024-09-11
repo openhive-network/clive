@@ -10,12 +10,19 @@ if TYPE_CHECKING:
 
 delegations = CliveTyper(name="delegations", help="Set or remove vesting delegaton.")
 
+_delegatee_account_name = typer.Option(
+    ...,
+    "--delegatee",
+    help='The account to use as "delegatee" argument.',
+    show_default=False,
+)
+
 
 @delegations.command(name="set", common_options=[OperationCommonOptions])
 async def process_delegations_set(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
-    delegatee: str = options.delegatee_account_name,
+    delegatee: str = _delegatee_account_name,
     amount: str = options.voting_amount,
 ) -> None:
     """Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
@@ -31,7 +38,7 @@ async def process_delegations_set(
 async def process_delegations_remove(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
-    delegatee: str = options.delegatee_account_name,
+    delegatee: str = _delegatee_account_name,
 ) -> None:
     """Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegationsRemove
