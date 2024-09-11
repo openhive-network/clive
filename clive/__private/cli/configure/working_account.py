@@ -1,7 +1,7 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import options
+from clive.__private.cli.common import modified_option, options
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 
 working_account = CliveTyper(name="working-account", help="Manage your working account.")
@@ -19,7 +19,7 @@ async def add_working_account(
     await AddWorkingAccount(**common.as_dict(), account_name=account_name).run()
 
 
-working_account_name_to_remove_option = options.modified_option(
+working_account_name_to_remove_option = modified_option(
     options.account_name_option, help="The name of the account to unset."
 )
 

@@ -1,18 +1,19 @@
 from __future__ import annotations
 
-import contextlib
-from copy import deepcopy
-from typing import TYPE_CHECKING, Any
-
 import typer
 
+from clive.__private.cli.common.parameters.utils import (
+    get_default_beekeeper_remote,
+    get_default_or_make_required,
+    get_default_profile_name,
+    modified_option,
+)
 from clive.__private.cli.common.parsers import (
     decimal_percent,
     liquid_asset,
     scheduled_transfer_frequency_parser,
     voting_asset,
 )
-from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD
 from clive.__private.core.constants.node import (
     MAX_NUMBER_OF_PROPOSAL_IDS_IN_SINGLE_OPERATION,
@@ -21,55 +22,11 @@ from clive.__private.core.constants.node import (
 )
 from clive.__private.core.shorthand_timedelta import SHORTHAND_TIMEDELTA_EXAMPLE
 
-if TYPE_CHECKING:
-    from typer.models import OptionInfo
-
-
-def _get_default_profile_name() -> str | None:
-    if not is_tab_completion_active():
-        from clive.__private.core.profile import Profile
-        from clive.__private.storage.service import NoDefaultProfileToLoadError
-
-        with contextlib.suppress(NoDefaultProfileToLoadError):
-            return Profile.get_default_profile_name()
-    return None
-
-
-def _get_default_beekeeper_remote() -> str | None:
-    if not is_tab_completion_active():
-        from clive.__private.core.beekeeper import Beekeeper
-
-        address = Beekeeper.get_remote_address_from_settings() or Beekeeper.get_remote_address_from_connection_file()
-        return str(address) if address else None
-    return None
-
-
-def get_default_or_make_required(value: Any) -> Any:  # noqa: ANN401
-    return ... if value is None else value
-
-
-def modified_option(option: OptionInfo, **kwargs: Any) -> Any:  # noqa: ANN401
-    """
-    Create option based on another option, but with some attributes modified.
-
-    Args:
-    ----
-    option: The option to modify.
-    kwargs: The attributes to modify.
-    """
-    new_option = deepcopy(option)
-    for key, value in kwargs.items():
-        if not hasattr(new_option, key):
-            raise ValueError(f"Unknown option attribute: {key}\navailable attributes: {list(option.__dict__)}")
-        setattr(new_option, key, value)
-    return new_option
-
-
 profile_name_option = typer.Option(
-    get_default_or_make_required(_get_default_profile_name()),
+    get_default_or_make_required(get_default_profile_name()),
     "--profile-name",
     help="The profile to use.",
-    show_default=bool(_get_default_profile_name()),
+    show_default=bool(get_default_profile_name()),
 )
 
 password_option = typer.Option(..., "--password", help="Password to unlock the wallet.", show_default=False)
@@ -85,10 +42,10 @@ working_account_option_template = typer.Option(
 )
 
 beekeeper_remote_option = typer.Option(
-    _get_default_beekeeper_remote(),
+    get_default_beekeeper_remote(),
     "--beekeeper-remote",
     help="Beekeeper remote endpoint. (starts locally if not provided)",
-    show_default=bool(_get_default_beekeeper_remote()),
+    show_default=bool(get_default_beekeeper_remote()),
 )
 
 account_name_option = modified_option(

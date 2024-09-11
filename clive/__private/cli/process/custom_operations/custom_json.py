@@ -1,7 +1,7 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationCommonOptions, modified_option, options
 
 custom_json = CliveTyper(name="custom-json", help="Send raw custom json operation.")
 
@@ -9,7 +9,7 @@ custom_json = CliveTyper(name="custom-json", help="Send raw custom json operatio
 @custom_json.callback(common_options=[OperationCommonOptions], invoke_without_command=True)
 async def process_custom_json(
     ctx: typer.Context,  # noqa: ARG001
-    authorize: list[str] = options.modified_option(
+    authorize: list[str] = modified_option(
         options.working_account_list_option_template,
         param_decls=("--authorize",),
         help="Posting authorities. Option can be added multiple times. If neither authorize nor authorize-by-active is"
