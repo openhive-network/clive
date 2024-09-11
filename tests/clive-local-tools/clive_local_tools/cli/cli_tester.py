@@ -31,12 +31,11 @@ class CLITester:
         self.__typer = typer
         self.__runner = runner
 
-    def __invoke(self, command: list[str], **cli_options: CliOptionT) -> Result:
-        full_command = [*command, *kwargs_to_cli_options(**cli_options)]
-        tt.logger.info(f"Executing command {full_command}.")
-        result = self.__runner.invoke(self.__typer, full_command)
+    def invoke_raw_command(self, command: list[str]) -> Result:
+        tt.logger.info(f"Executing command {command}.")
+        result = self.__runner.invoke(self.__typer, command)
         if result.exit_code != 0:
-            raise CLITestCommandError(full_command, result.exit_code, result.stdout, result)
+            raise CLITestCommandError(command, result.exit_code, result.stdout, result)
         return result
 
     def show_authority(
@@ -82,25 +81,39 @@ class CLITester:
                 raise ValueError(f"Unknown authority type: '{authority}'")
 
     def show_owner_authority(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "owner-authority"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "owner-authority"], account_name=account_name, profile_name=profile_name
+        )
 
     def show_active_authority(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "active-authority"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "active-authority"], account_name=account_name, profile_name=profile_name
+        )
 
     def show_posting_authority(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "posting-authority"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "posting-authority"], account_name=account_name, profile_name=profile_name
+        )
 
     def show_memo_key(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "memo-key"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "memo-key"], account_name=account_name, profile_name=profile_name
+        )
 
     def show_pending_withdrawals(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "pending", "withdrawals"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "pending", "withdrawals"], account_name=account_name, profile_name=profile_name
+        )
 
     def show_balances(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "balances"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "balances"], account_name=account_name, profile_name=profile_name
+        )
 
     def show_account(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "account"], account_name=account_name, profile_name=profile_name)
+        return self.__invoke_command_with_options(
+            ["show", "account"], account_name=account_name, profile_name=profile_name
+        )
 
     def process_update_owner_authority(  # noqa: PLR0913
         self,
@@ -168,7 +181,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(
+        return self.__invoke_command_with_options(
             ["process", "update-memo-key"],
             **extract_params(locals()),
         )
@@ -187,7 +200,7 @@ class CLITester:
         memo: str | None = None,
         from_: str | None = None,
     ) -> Result:
-        return self.__invoke(
+        return self.__invoke_command_with_options(
             ["process", "savings", "deposit"],
             **extract_params(locals()),
         )
@@ -207,7 +220,7 @@ class CLITester:
         memo: str | None = None,
         from_: str | None = None,
     ) -> Result:
-        return self.__invoke(
+        return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal"],
             **extract_params(locals()),
         )
@@ -224,7 +237,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(
+        return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal-cancel"],
             **extract_params(locals()),
         )
@@ -243,7 +256,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
-        return self.__invoke(
+        return self.__invoke_command_with_options(
             ["process", "custom-json"],
             **extract_params(locals()),
         )
@@ -261,24 +274,26 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: Path | None = None,
     ) -> Result:
-        return self.__invoke(
+        return self.__invoke_command_with_options(
             ["process", "transaction"],
             **extract_params(locals()),
         )
 
     def show_hive_power(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "hive-power"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["show", "hive-power"], **extract_params(locals()))
 
     def show_pending_power_down(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "pending", "power-down"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["show", "pending", "power-down"], **extract_params(locals()))
 
     def show_pending_power_ups(self, *, account_name: str | None = None, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "pending", "power-ups"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["show", "pending", "power-ups"], **extract_params(locals()))
 
     def show_pending_removed_delegations(
         self, *, account_name: str | None = None, profile_name: str | None = None
     ) -> Result:
-        return self.__invoke(["show", "pending", "removed-delegations"], **extract_params(locals()))
+        return self.__invoke_command_with_options(
+            ["show", "pending", "removed-delegations"], **extract_params(locals())
+        )
 
     def process_power_up(  # noqa: PLR0913
         self,
@@ -293,7 +308,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "power-up"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "power-up"], **extract_params(locals()))
 
     def process_power_down_start(  # noqa: PLR0913
         self,
@@ -307,7 +322,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "power-down", "start"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "power-down", "start"], **extract_params(locals()))
 
     def process_power_down_restart(  # noqa: PLR0913
         self,
@@ -321,7 +336,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "power-down", "restart"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "power-down", "restart"], **extract_params(locals()))
 
     def process_power_down_cancel(  # noqa: PLR0913
         self,
@@ -333,7 +348,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "power-down", "cancel"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "power-down", "cancel"], **extract_params(locals()))
 
     def process_delegations_set(  # noqa: PLR0913
         self,
@@ -348,7 +363,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "delegations", "set"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
 
     def process_delegations_remove(  # noqa: PLR0913
         self,
@@ -362,7 +377,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "delegations", "remove"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "delegations", "remove"], **extract_params(locals()))
 
     def process_withdraw_routes_set(  # noqa: PLR0913
         self,
@@ -378,7 +393,7 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "withdraw-routes", "set"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "withdraw-routes", "set"], **extract_params(locals()))
 
     def process_withdraw_routes_remove(  # noqa: PLR0913
         self,
@@ -392,7 +407,11 @@ class CLITester:
         broadcast: bool | None = None,
         save_file: str | None = None,
     ) -> Result:
-        return self.__invoke(["process", "withdraw-routes", "remove"], **extract_params(locals()))
+        return self.__invoke_command_with_options(["process", "withdraw-routes", "remove"], **extract_params(locals()))
 
     def show_chain(self, *, profile_name: str | None = None) -> Result:
-        return self.__invoke(["show", "chain"], profile_name=profile_name)
+        return self.__invoke_command_with_options(["show", "chain"], profile_name=profile_name)
+
+    def __invoke_command_with_options(self, command: list[str], **cli_options: CliOptionT) -> Result:
+        full_command = [*command, *kwargs_to_cli_options(**cli_options)]
+        return self.invoke_raw_command(full_command)
