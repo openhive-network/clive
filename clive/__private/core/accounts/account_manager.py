@@ -12,6 +12,7 @@ from clive.__private.core.accounts.exceptions import (
     AccountAlreadyExistsError,
     AccountNotFoundError,
     NoWorkingAccountError,
+    TryingToAddBadAccountError,
 )
 
 
@@ -205,6 +206,7 @@ class AccountManager:
         Add accounts to the tracked (working + watched) accounts.
 
         When there's no working account, the first account from the list will be set as working account.
+        Each tracked account is added to the known list if it doesn't already exist there.
 
         Args:
         ----
@@ -214,12 +216,16 @@ class AccountManager:
         ------
             AccountAlreadyExistsError: If any of the accounts already exists in tracked accounts
                 (either as working or watched).
+            TryingToAddBadAccountError: If any of the accounts is a bad account.
         """
         if not to_add:
             return
 
         if not self.has_working_account:
             first_account_to_add = to_add[0]
+            if self.is_account_bad(first_account_to_add):
+                raise TryingToAddBadAccountError(Account.ensure_account_name(first_account_to_add))
+
             self.set_working_account(first_account_to_add)
             if not self.is_account_known(first_account_to_add):
                 self.known.add(first_account_to_add)
@@ -230,6 +236,9 @@ class AccountManager:
         for account in to_add:
             if self.is_account_working(account):
                 raise AccountAlreadyExistsError(Account.ensure_account_name(account), "WorkingAccount")
+
+            if self.is_account_bad(account):
+                raise TryingToAddBadAccountError(Account.ensure_account_name(account))
 
             if not self.is_account_known(account):
                 self.known.add(account)

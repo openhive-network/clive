@@ -33,3 +33,10 @@ class AccountAlreadyExistsError(AccountsUpdateError):
         super().__init__(f"Account {account_name} already exists in {place}.")
         self.account_name = account_name
         self.place = place
+
+
+class TryingToAddBadAccountError(AccountsUpdateError):
+    """Raised when trying to add a bad account to tracked accounts."""
+
+    def __init__(self, account_name: str) -> None:
+        super().__init__(f"Trying to add a bad account {account_name} to tracked accounts.")
