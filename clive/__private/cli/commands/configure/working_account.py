@@ -12,7 +12,7 @@ from clive.__private.validators.set_tracked_account_validator import SetTrackedA
 
 
 @dataclass(kw_only=True)
-class AddWorkingAccount(ProfileBasedCommand):
+class SetWorkingAccount(ProfileBasedCommand):
     account_name: str
 
     async def validate_inside_context_manager(self) -> None:
