@@ -98,7 +98,8 @@ class CLIBothBeekeepersPasswordAndSessionTokenSetError(CLIPrettyError):
 
 class CLIWalletIsNotUnlockedError(CLIPrettyError):
     def __init__(self) -> None:
-        message = "Wallet is not unlocked."
+        env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
+        message = f"If you want to use {env_var} envvar, ensure it is in unlocked state."
         super().__init__(message, errno.EINVAL)
 
 
