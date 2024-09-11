@@ -28,7 +28,7 @@ class SetWorkingAccount(ProfileBasedCommand):
 
 
 @dataclass(kw_only=True)
-class RemoveWorkingAccount(ProfileBasedCommand):
+class UnsetWorkingAccount(ProfileBasedCommand):
     account_name: str
 
     async def _run(self) -> None:
