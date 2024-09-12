@@ -4,8 +4,8 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import modified_param
-from clive.__private.cli.common.ensure_single_value import ensure_single_value_account_name
 from clive.__private.cli.common.parameters import argument_related_options
+from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value_account_name
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 

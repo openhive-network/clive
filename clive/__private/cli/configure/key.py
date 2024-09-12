@@ -4,7 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldCommonOptions, options
-from clive.__private.cli.common.ensure_single_value import ensure_single_value
+from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
 from clive.__private.cli.common.parameters.utils import make_argument_related_option
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 

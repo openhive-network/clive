@@ -3,8 +3,8 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common.ensure_single_value import ensure_single_value_account_name
 from clive.__private.cli.common.parameters import argument_related_options, arguments
+from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value_account_name
 from clive.__private.cli.common.world_common_options import WorldWithoutBeekeeperCommonOptions
 
 pending = CliveTyper(name="pending", help="Show operations in progress.")

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing import Optional
 
 from clive.__private.cli.common.common_options_base import CommonOptionsBase
-from clive.__private.cli.common.ensure_single_value import ensure_single_value_profile_name
 from clive.__private.cli.common.parameters import argument_related_options, arguments, options
+from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value_profile_name
 
 
 @dataclass(kw_only=True)

@@ -3,7 +3,7 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common.ensure_single_value import ensure_single_value
+from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
 from clive.__private.cli.common.parameters.utils import make_argument_related_option
 from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 
