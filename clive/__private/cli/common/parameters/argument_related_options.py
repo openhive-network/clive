@@ -1,3 +1,10 @@
+"""
+All argument-related options should be defined here.
+
+Argument related options are not command-specific.
+That's because they don't contain anything command-specific like e.g. help message.
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any

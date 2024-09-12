@@ -1,3 +1,11 @@
+"""
+Only common options (reusable or possibly reusable across multiple commands) should be defined here.
+
+Do not place options that are specific to a single command here.
+Options can have e.g. very command-specific help message and should not be defined here.
+In such a situation, the option should be defined in the command module itself.
+"""
+
 from __future__ import annotations
 
 import typer
