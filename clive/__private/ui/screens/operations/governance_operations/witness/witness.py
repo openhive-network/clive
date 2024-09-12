@@ -44,6 +44,7 @@ if TYPE_CHECKING:
 
     from rich.text import TextType
     from textual.app import ComposeResult
+    from typing_extensions import TypeIs
 
     from clive.__private.models.schemas import OperationUnion
 
@@ -203,13 +204,19 @@ class WitnessActionRow(GovernanceActionRow):
         return f"{convert_witness_name_to_widget_id(identifier)}-witness-action-row"
 
 
-class WitnessesActions(GovernanceActions):
+class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Witness"
 
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.cart:
-            if isinstance(operation, AccountWitnessVoteOperation):
+            if self.should_be_added_to_actions(operation):
                 await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
+
+    def should_be_added_to_actions(self, operation: object) -> TypeIs[AccountWitnessVoteOperation]:
+        return (
+            isinstance(operation, AccountWitnessVoteOperation)
+            and operation.account == self.profile.accounts.working.name
+        )
 
     @staticmethod
     def create_action_row_id(identifier: str) -> str:

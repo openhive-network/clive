@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import contextlib
 from abc import abstractmethod
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, ClassVar, Generic, TypeVar
 
 from textual.containers import Horizontal
 from textual.css.query import NoMatches
@@ -12,9 +12,14 @@ from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.section_title import SectionTitle
+from schemas.operations import AccountWitnessVoteOperation, UpdateProposalVotesOperation
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+    from typing_extensions import TypeIs
+
+
+OperationActionT = TypeVar("OperationActionT", AccountWitnessVoteOperation, UpdateProposalVotesOperation)
 
 
 class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
@@ -63,7 +68,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         pass
 
 
-class GovernanceActions(ScrollablePartFocusable):
+class GovernanceActions(ScrollablePartFocusable, Generic[OperationActionT]):
     """Contains a table of actions to be performed after confirmation."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
@@ -141,6 +146,10 @@ class GovernanceActions(ScrollablePartFocusable):
     @abstractmethod
     async def mount_operations_from_cart(self) -> None:
         """Check cart and mount all appropriate operations."""
+
+    @abstractmethod
+    def should_be_added_to_actions(self, operation: object) -> TypeIs[OperationActionT]:
+        """Check if the action should be added to the actions table."""
 
     @abstractmethod
     def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:

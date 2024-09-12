@@ -38,6 +38,7 @@ if TYPE_CHECKING:
 
     from rich.text import TextType
     from textual.app import ComposeResult
+    from typing_extensions import TypeIs
 
     from clive.__private.models.schemas import OperationUnion
 
@@ -148,14 +149,20 @@ class ProposalActionRow(GovernanceActionRow):
         return f"proposal{identifier}-action-row"
 
 
-class ProposalsActions(GovernanceActions):
+class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Proposal"
 
     async def mount_operations_from_cart(self) -> None:
         for operation in self.profile.cart:
-            if isinstance(operation, UpdateProposalVotesOperation):
+            if self.should_be_added_to_actions(operation):
                 for proposal_id in operation.proposal_ids:
                     await self.add_row(identifier=str(proposal_id), pending=True)
+
+    def should_be_added_to_actions(self, operation: object) -> TypeIs[UpdateProposalVotesOperation]:
+        return (
+            isinstance(operation, UpdateProposalVotesOperation)
+            and operation.voter == self.profile.accounts.working.name
+        )
 
     def create_action_row(self, identifier: str, *, vote: bool, pending: bool) -> GovernanceActionRow:
         return ProposalActionRow(identifier, vote=vote, pending=pending)
