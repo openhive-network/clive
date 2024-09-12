@@ -191,15 +191,23 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#move-up-button")
     def move_up(self) -> None:
+        if self._is_already_deleted or self._is_already_moving:
+            return
+        self._is_already_moving = True
+
         self._move("up")
 
     @on(CliveButton.Pressed, "#move-down-button")
     def move_down(self) -> None:
+        if self._is_already_deleted or self._is_already_moving:
+            return
+        self._is_already_moving = True
+
         self._move("down")
 
     @on(CliveButton.Pressed, "#delete-button")
     def delete(self) -> None:
-        if self._is_already_deleted:
+        if self._is_already_deleted or self._is_already_moving:
             return
 
         self._is_already_deleted = True
@@ -223,9 +231,6 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return value < self.operations_amount
 
     def _move(self, direction: Literal["up", "down"]) -> None:
-        if self._is_already_moving or self._is_already_deleted:
-            return
-        self._is_already_moving = True
         index_change = -1 if direction == "up" else 1
         self.post_message(self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change))
 
@@ -258,13 +263,16 @@ class CartTable(CliveCheckerboardTable):
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
         item_to_remove = event.widget
+
         with self.app.batch_update():
             self._focus_appropriate_item_on_deletion(item_to_remove)
             await item_to_remove.remove()
+            self.profile.cart.remove(item_to_remove.operation)
+
             if self._has_cart_items:
                 self._update_cart_items_on_deletion(removed_item=item_to_remove)
                 self._disable_appropriate_button_on_deletion(removed_item=item_to_remove)
-        self.profile.cart.remove(item_to_remove.operation)
+
         self.app.trigger_profile_watchers()
 
     @on(CartItem.Move)
@@ -272,22 +280,17 @@ class CartTable(CliveCheckerboardTable):
         from_index = event.from_index
         to_index = event.to_index
 
-        # abort swapping when removal is not finished yet
-        for item in reversed(self._cart_items):
-            if item.is_already_deleted:
-                return
-
-        if to_index >= len(self.profile.cart):
-            return
-
         assert to_index >= 0, "Item cannot be moved to id lower than 0."
 
         with self.app.batch_update():
+            last_cart_index = len(self.profile.cart) - 1
+            if to_index > last_cart_index or from_index > last_cart_index:
+                return
             self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
             self._focus_item_on_move(to_index)
-            self._unset_moving_flags()
 
-        self.profile.cart.swap(from_index, to_index)
+            self.profile.cart.swap(from_index, to_index)
+            self._unset_moving_flags()
         self.app.trigger_profile_watchers()
 
     @on(CartItem.Focus)
@@ -313,22 +316,28 @@ class CartTable(CliveCheckerboardTable):
             self._cart_items.last().button_move_down.disabled = True
 
     def _focus_appropriate_item_on_deletion(self, item_to_remove: CartItem) -> None:
-        cart_items = self._cart_items
-        if len(cart_items) < 2:  # noqa: PLR2004
+        if len(self._cart_items) < 2:  # noqa: PLR2004
             # There is no need for special handling, last one will be focused
             return
 
         if item_to_remove.is_last:
             second_last_cart_item_index = -2
-            cart_item_to_focus = cart_items[second_last_cart_item_index]
+            cart_item_to_focus = self._cart_items[second_last_cart_item_index]
         else:
             next_cart_item_index = item_to_remove.operation_index + 1
-            cart_item_to_focus = cart_items[next_cart_item_index]
+
+            if next_cart_item_index >= len(self._cart_items):
+                return
+
+            cart_item_to_focus = self._cart_items[next_cart_item_index]
 
         cart_item_to_focus.focus()
 
     def _update_values_of_swapped_rows(self, from_index: int, to_index: int) -> None:
         def extract_cells_and_data(row_index: int) -> tuple[list[CliveCheckerBoardTableCell], list[str]]:
+            if row_index >= len(self._cart_items):
+                row_index = len(self._cart_items) - 1
+
             row = self._cart_items[row_index]
             cells = row.query(CliveCheckerBoardTableCell)[1:-1]  # Skip "operation number" and "buttons container" cells
             data: list[str] = []
