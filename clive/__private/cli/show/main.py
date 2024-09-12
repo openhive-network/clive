@@ -6,7 +6,6 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileNameArgumentAndOptionGroup, WorldWithoutBeekeeperOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options, arguments
-from clive.__private.cli.common.parameters.argument_related_options import make_argument_related_option
 from clive.__private.cli.common.parameters.ensure_single_value import (
     ensure_single_value,
     ensure_single_value_account_name,
@@ -88,7 +87,7 @@ _transaction_id_argument = typer.Argument(
 async def show_transaction_status(
     ctx: typer.Context,  # noqa: ARG001
     transaction_id: Optional[str] = _transaction_id_argument,
-    transaction_id_option: Optional[str] = make_argument_related_option("--transaction-id"),
+    transaction_id_option: Optional[str] = argument_related_options.transaction_id,
 ) -> None:
     """Print status of a specific transaction."""
     from clive.__private.cli.commands.show.show_transaction_status import ShowTransactionStatus
@@ -174,7 +173,7 @@ _witness_name_argument = typer.Argument(None, help=f"Witness name. ({REQUIRED_AS
 async def show_witness(
     ctx: typer.Context,  # noqa: ARG001
     name: Optional[str] = _witness_name_argument,
-    name_option: Optional[str] = make_argument_related_option("--name"),
+    name_option: Optional[str] = argument_related_options.name,
 ) -> None:
     """Show details of a specified witness."""
     from clive.__private.cli.commands.show.show_witness import ShowWitness
@@ -246,7 +245,7 @@ _proposal_id_argument = typer.Argument(
 async def show_proposal(
     ctx: typer.Context,  # noqa: ARG001
     proposal_id: Optional[int] = _proposal_id_argument,
-    proposal_id_option: Optional[int] = make_argument_related_option("--proposal-id"),
+    proposal_id_option: Optional[int] = argument_related_options.proposal_id,
 ) -> None:
     """Show details of a specified proposal."""
     from clive.__private.cli.commands.show.show_proposal import ShowProposal

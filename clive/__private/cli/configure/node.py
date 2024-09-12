@@ -4,7 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileOptionsGroup
-from clive.__private.cli.common.parameters.argument_related_options import make_argument_related_option
+from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
 
 node = CliveTyper(name="node", help="Manage the node for the profile.")
@@ -20,7 +20,7 @@ _node_address_argument = typer.Argument(
 async def set_node(
     ctx: typer.Context,  # noqa: ARG001
     node_address: Optional[str] = _node_address_argument,
-    node_address_option: Optional[str] = make_argument_related_option("--node-address"),
+    node_address_option: Optional[str] = argument_related_options.node_address,
 ) -> None:
     """Set the node address for the profile."""
     from clive.__private.cli.commands.configure.node import SetNode

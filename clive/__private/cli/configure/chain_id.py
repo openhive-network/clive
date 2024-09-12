@@ -4,7 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileOptionsGroup
-from clive.__private.cli.common.parameters.argument_related_options import make_argument_related_option
+from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
@@ -21,7 +21,7 @@ _chain_id_argument = typer.Argument(
 async def set_chain_id(
     ctx: typer.Context,  # noqa: ARG001
     chain_id: Optional[str] = _chain_id_argument,
-    chain_id_option: Optional[str] = make_argument_related_option("--chain-id"),
+    chain_id_option: Optional[str] = argument_related_options.chain_id,
 ) -> None:
     """
     Set/change the chain ID for the profile.

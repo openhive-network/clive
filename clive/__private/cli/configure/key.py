@@ -4,7 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldOptionsGroup, options
-from clive.__private.cli.common.parameters.argument_related_options import make_argument_related_option
+from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
@@ -28,9 +28,9 @@ _alias_argument = typer.Argument(
 async def add_key(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     key: Optional[str] = _key_argument,
-    key_option: Optional[str] = make_argument_related_option("--key"),
+    key_option: Optional[str] = argument_related_options.key,
     alias: Optional[str] = _alias_argument,
-    alias_option: Optional[str] = make_argument_related_option("--alias"),
+    alias_option: Optional[str] = argument_related_options.alias,
     password: str = options.password,
 ) -> None:
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
@@ -54,7 +54,7 @@ _alias_remove_argument = typer.Argument(
 async def remove_key(
     ctx: typer.Context,  # noqa: ARG001
     alias: Optional[str] = _alias_remove_argument,
-    alias_option: Optional[str] = make_argument_related_option("--alias"),
+    alias_option: Optional[str] = argument_related_options.alias,
     from_beekeeper: bool = typer.Option(  # noqa: FBT001
         default=False,
         help="Remove the key from the Beekeeper as well.",
