@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from asyncio import Event
-from typing import TYPE_CHECKING, Any, Protocol
+from typing import TYPE_CHECKING, Any, Literal, Protocol
 
 from clive.__private.core.beekeeper.notification_http_server import (
     AsyncHttpServer,
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class WalletClosingListener(Protocol):
-    def notify_wallet_closing(self) -> None: ...
+    def lock(self, source: Literal["beekeeper_notification_server"]) -> None: ...
 
 
 class BeekeeperNotificationsServer:
@@ -130,4 +130,4 @@ class BeekeeperNotificationsServer:
     def __notify_listeners_about_wallets_closing(self) -> None:
         logger.debug("Notifying listeners about tracked wallet closing")
         for listener in self.__wallet_closing_listeners:
-            listener.notify_wallet_closing()
+            listener.lock("beekeeper_notification_server")

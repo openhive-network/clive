@@ -486,16 +486,3 @@ class CLICommands(Commands["CLIWorld"]):
 class TUICommands(Commands["TUIWorld"], CliveDOMNode):
     def __init__(self, world: TUIWorld) -> None:
         super().__init__(world, exception_handlers=[CommunicationFailureNotificator, GeneralErrorNotificator])
-
-    async def unlock(self, *, password: str, time: timedelta | None = None, permanent: bool = False) -> CommandWrapper:
-        wrapper = await super().unlock(password=password, time=time, permanent=permanent)
-        if wrapper.success:
-            await self.app.replace_screen("DashboardLocked", "dashboard_unlocked")
-            self.app.trigger_app_state_watchers()
-        return wrapper
-
-    async def lock(self) -> CommandWrapper:
-        wrapper = await super().lock()
-        await self.app.replace_screen("DashboardUnlocked", "dashboard_locked")
-        self.app.trigger_app_state_watchers()
-        return wrapper
