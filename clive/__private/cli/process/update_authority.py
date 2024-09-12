@@ -7,7 +7,7 @@ import typer
 from click import Context, pass_context
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 from clive.__private.core._async import asyncio_run
 
 if TYPE_CHECKING:
@@ -146,7 +146,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
         update_function = partial(update_authority, attribute=authority, callback=modify_key_function)
         add_callback_to_update_command(ctx, update_function)
 
-    @update.callback(common_options=[OperationCommonOptions], invoke_without_command=True, result_callback=send_update)
+    @update.callback(param_groups=[OperationOptionsGroup], invoke_without_command=True, result_callback=send_update)
     async def set_threshold(
         ctx: typer.Context,
         account_name: str = options.account_name,
@@ -163,7 +163,7 @@ def get_update_authority_typer(authority: AuthorityType) -> CliveTyper:
             update_authority,
         )
 
-        operation_common = OperationCommonOptions.get_instance()
+        operation_common = OperationOptionsGroup.get_instance()
         update_command = ProcessAccountUpdate(**operation_common.as_dict(), account_name=account_name)
         if threshold:
             set_threshold_function = partial(set_threshold, threshold=threshold)

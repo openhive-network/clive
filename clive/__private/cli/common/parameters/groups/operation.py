@@ -4,15 +4,15 @@ from typing import Optional
 
 import typer
 
-from clive.__private.cli.common.common_options_base import CommonOptionsBase
 from clive.__private.cli.common.parameters import modified_param, options
+from clive.__private.cli.common.parameters.groups.parameter_group import ParameterGroup
 from clive.__private.core.constants.cli import OPERATION_COMMON_OPTIONS_PANEL_TITLE
 
 operation_common_option = partial(modified_param, rich_help_panel=OPERATION_COMMON_OPTIONS_PANEL_TITLE)
 
 
 @dataclass(kw_only=True)
-class OperationCommonOptions(CommonOptionsBase):
+class OperationOptionsGroup(ParameterGroup):
     profile_name: str = operation_common_option(options.profile_name)
     password: Optional[str] = operation_common_option(options.password_optional)
     sign: Optional[str] = operation_common_option(

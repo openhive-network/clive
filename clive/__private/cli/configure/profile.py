@@ -3,7 +3,7 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import BeekeeperCommonOptions, arguments
+from clive.__private.cli.common import BeekeeperOptionsGroup, arguments
 from clive.__private.cli.common.parameters import argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import (
     ensure_single_value,
@@ -20,7 +20,7 @@ _profile_name_create_argument = typer.Argument(
 )
 
 
-@profile.command(name="add", common_options=[BeekeeperCommonOptions])
+@profile.command(name="add", param_groups=[BeekeeperOptionsGroup])
 async def create_profile(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     profile_name: Optional[str] = _profile_name_create_argument,
@@ -34,7 +34,7 @@ async def create_profile(  # noqa: PLR0913
     """Create a new profile."""
     from clive.__private.cli.commands.configure.profile import CreateProfile
 
-    common = BeekeeperCommonOptions.get_instance()
+    common = BeekeeperOptionsGroup.get_instance()
     await CreateProfile(
         **common.as_dict(),
         profile_name=ensure_single_value_profile_name(profile_name, profile_name_option),

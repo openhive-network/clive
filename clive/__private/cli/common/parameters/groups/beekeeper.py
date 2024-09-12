@@ -1,10 +1,10 @@
 from dataclasses import dataclass
 from typing import Optional
 
-from clive.__private.cli.common.common_options_base import CommonOptionsBase
 from clive.__private.cli.common.parameters import options
+from clive.__private.cli.common.parameters.groups.parameter_group import ParameterGroup
 
 
 @dataclass(kw_only=True)
-class BeekeeperCommonOptions(CommonOptionsBase):
+class BeekeeperOptionsGroup(ParameterGroup):
     beekeeper_remote: Optional[str] = options.beekeeper_remote

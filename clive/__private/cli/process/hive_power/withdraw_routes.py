@@ -3,12 +3,12 @@ from decimal import Decimal
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 
 withdraw_routes = CliveTyper(name="withdraw-routes", help="Set or remove vesting withdraw routes.")
 
 
-@withdraw_routes.command(name="set", common_options=[OperationCommonOptions])
+@withdraw_routes.command(name="set", param_groups=[OperationOptionsGroup])
 async def process_withdraw_routes_set(
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
@@ -23,14 +23,14 @@ async def process_withdraw_routes_set(
     """Add new withdraw route/modify existing route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutes
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     operation = ProcessWithdrawRoutes(
         **common.as_dict(), from_account=from_account, to_account=to_account, percent=percent, auto_vest=auto_vest
     )
     await operation.run()
 
 
-@withdraw_routes.command(name="remove", common_options=[OperationCommonOptions])
+@withdraw_routes.command(name="remove", param_groups=[OperationOptionsGroup])
 async def process_withdraw_routes_remove(
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
@@ -39,6 +39,6 @@ async def process_withdraw_routes_remove(
     """Clear withdraw route for pair of accounts "from" and "to"."""
     from clive.__private.cli.commands.process.process_withdraw_routes import ProcessWithdrawRoutesRemove
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     operation = ProcessWithdrawRoutesRemove(**common.as_dict(), from_account=from_account, to_account=to_account)
     await operation.run()

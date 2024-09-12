@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, Optional, cast
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 from clive.__private.cli.common.parsers import hive_asset
 
 if TYPE_CHECKING:
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 claim = CliveTyper(name="claim", help="Manage the things you can collect.")
 
 
-@claim.command(name="new-account-token", common_options=[OperationCommonOptions])
+@claim.command(name="new-account-token", param_groups=[OperationOptionsGroup])
 async def process_claim_new_account_token(
     ctx: typer.Context,  # noqa: ARG001
     creator: str = options.account_name,
@@ -27,6 +27,6 @@ async def process_claim_new_account_token(
     """Obtain account creation token, pay either with HIVE or RC."""
     from clive.__private.cli.commands.process.process_claim_new_account_token import ProcessClaimNewAccountToken
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     fee_ = cast("Asset.Hive", fee) if fee else None
     await ProcessClaimNewAccountToken(**common.as_dict(), creator=creator, fee=fee_).run()

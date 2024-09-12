@@ -3,9 +3,8 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import argument_related_options, modified_param
+from clive.__private.cli.common import ProfileOptionsGroup, argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value_account_name
-from clive.__private.cli.common.profile_common_options import ProfileCommonOptions
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 watched_account = CliveTyper(name="watched-account", help="Manage your watched account(s).")
@@ -15,7 +14,7 @@ _account_name_add_argument = typer.Argument(
 )
 
 
-@watched_account.command(name="add", common_options=[ProfileCommonOptions])
+@watched_account.command(name="add", param_groups=[ProfileOptionsGroup])
 async def add_watched_account(
     ctx: typer.Context,  # noqa: ARG001
     account_name: Optional[str] = _account_name_add_argument,
@@ -24,7 +23,7 @@ async def add_watched_account(
     """Add an account to the watched accounts."""
     from clive.__private.cli.commands.configure.watched_account import AddWatchedAccount
 
-    common = ProfileCommonOptions.get_instance()
+    common = ProfileOptionsGroup.get_instance()
     await AddWatchedAccount(
         **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
     ).run()
@@ -35,7 +34,7 @@ _account_name_remove_argument = modified_param(
 )
 
 
-@watched_account.command(name="remove", common_options=[ProfileCommonOptions])
+@watched_account.command(name="remove", param_groups=[ProfileOptionsGroup])
 async def remove_watched_account(
     ctx: typer.Context,  # noqa: ARG001
     account_name: Optional[str] = _account_name_remove_argument,
@@ -44,7 +43,7 @@ async def remove_watched_account(
     """Remove an account from the watched accounts."""
     from clive.__private.cli.commands.configure.watched_account import RemoveWatchedAccount
 
-    common = ProfileCommonOptions.get_instance()
+    common = ProfileOptionsGroup.get_instance()
     await RemoveWatchedAccount(
         **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
     ).run()

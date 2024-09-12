@@ -5,7 +5,7 @@ from typing import get_args
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, TransferOptionsGroup, options
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.process.claim import claim
 from clive.__private.cli.process.custom_operations.custom_json import custom_json
@@ -38,7 +38,7 @@ process.add_typer(transfer_schedule)
 process.add_typer(custom_json)
 
 
-@process.command(name="transfer", common_options=[OperationCommonOptions, TransferCommonOptions])
+@process.command(name="transfer", param_groups=[OperationOptionsGroup, TransferOptionsGroup])
 async def transfer(
     ctx: typer.Context,  # noqa: ARG001
     to: str = typer.Option(..., help="The account to transfer to.", show_default=False),
@@ -46,8 +46,8 @@ async def transfer(
     """Transfer some funds to another account."""
     from clive.__private.cli.commands.process.transfer import Transfer
 
-    operation_common = OperationCommonOptions.get_instance()
-    transfer_common = TransferCommonOptions.get_instance()
+    operation_common = OperationOptionsGroup.get_instance()
+    transfer_common = TransferOptionsGroup.get_instance()
     await Transfer(**operation_common.as_dict(), **transfer_common.as_dict(), to=to).run()
 
 
@@ -63,7 +63,7 @@ else:
     )
 
 
-@process.command(name="transaction", common_options=[OperationCommonOptions])
+@process.command(name="transaction", param_groups=[OperationOptionsGroup])
 async def process_transaction(
     ctx: typer.Context,  # noqa: ARG001
     from_file: str = typer.Option(..., help="The file to load the transaction from.", show_default=False),
@@ -78,7 +78,7 @@ async def process_transaction(
     if isinstance(already_signed_mode, Enum):
         already_signed_mode = already_signed_mode.value
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     await ProcessTransaction(
         **common.as_dict(),
         from_file=from_file,
@@ -87,7 +87,7 @@ async def process_transaction(
     ).run()
 
 
-@process.command(name="update-memo-key", common_options=[OperationCommonOptions])
+@process.command(name="update-memo-key", param_groups=[OperationOptionsGroup])
 async def process_update_memo_key(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -103,7 +103,7 @@ async def process_update_memo_key(
 
     update_memo_key_callback = partial(set_memo_key, key=memo_key)
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     operation = ProcessAccountUpdate(**common.as_dict(), account_name=account_name)
     operation.add_callback(update_memo_key_callback)
     await operation.run()

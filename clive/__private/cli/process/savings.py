@@ -3,12 +3,12 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, TransferCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, TransferOptionsGroup, options
 
 savings = CliveTyper(name="savings", help="Manage your savings.")
 
 
-@savings.command(name="deposit", common_options=[OperationCommonOptions, TransferCommonOptions])
+@savings.command(name="deposit", param_groups=[OperationOptionsGroup, TransferOptionsGroup])
 async def process_deposit(
     ctx: typer.Context,  # noqa: ARG001
     to_account: str = options.to_account_name,
@@ -16,8 +16,8 @@ async def process_deposit(
     """Immediately deposit funds to savings account."""
     from clive.__private.cli.commands.process.process_deposit import ProcessDeposit
 
-    operation_common = OperationCommonOptions.get_instance()
-    transfer_common = TransferCommonOptions.get_instance()
+    operation_common = OperationOptionsGroup.get_instance()
+    transfer_common = TransferOptionsGroup.get_instance()
     await ProcessDeposit(
         **operation_common.as_dict(),
         **transfer_common.as_dict(),
@@ -25,7 +25,7 @@ async def process_deposit(
     ).run()
 
 
-@savings.command(name="withdrawal", common_options=[OperationCommonOptions, TransferCommonOptions])
+@savings.command(name="withdrawal", param_groups=[OperationOptionsGroup, TransferOptionsGroup])
 async def process_withdrawal(
     ctx: typer.Context,  # noqa: ARG001
     request_id: Optional[int] = typer.Option(
@@ -38,8 +38,8 @@ async def process_withdrawal(
     """Initiate withdrawal of funds from savings account, it takes 3 days to complete."""
     from clive.__private.cli.commands.process.process_withdrawal import ProcessWithdrawal
 
-    operation_common = OperationCommonOptions.get_instance()
-    transfer_common = TransferCommonOptions.get_instance()
+    operation_common = OperationOptionsGroup.get_instance()
+    transfer_common = TransferOptionsGroup.get_instance()
     await ProcessWithdrawal(
         **operation_common.as_dict(),
         **transfer_common.as_dict(),
@@ -48,7 +48,7 @@ async def process_withdrawal(
     ).run()
 
 
-@savings.command(name="withdrawal-cancel", common_options=[OperationCommonOptions])
+@savings.command(name="withdrawal-cancel", param_groups=[OperationOptionsGroup])
 async def process_withdrawal_cancel(
     ctx: typer.Context,  # noqa: ARG001
     from_account: str = options.from_account_name,
@@ -57,7 +57,7 @@ async def process_withdrawal_cancel(
     """Cancel previously initiated withdrawal from savings account."""
     from clive.__private.cli.commands.process.process_withdrawal_cancel import ProcessWithdrawalCancel
 
-    operation_common = OperationCommonOptions.get_instance()
+    operation_common = OperationOptionsGroup.get_instance()
     await ProcessWithdrawalCancel(
         **operation_common.as_dict(),
         from_account=from_account,

@@ -1,12 +1,12 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, modified_param, options
+from clive.__private.cli.common import OperationOptionsGroup, modified_param, options
 
 custom_json = CliveTyper(name="custom-json", help="Send raw custom json operation.")
 
 
-@custom_json.callback(common_options=[OperationCommonOptions], invoke_without_command=True)
+@custom_json.callback(param_groups=[OperationOptionsGroup], invoke_without_command=True)
 async def process_custom_json(
     ctx: typer.Context,  # noqa: ARG001
     authorize: list[str] = modified_param(
@@ -36,7 +36,7 @@ async def process_custom_json(
     """Send custom json operation, json can be provided as string or file."""
     from clive.__private.cli.commands.process.process_custom_json import ProcessCustomJson
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     operation = ProcessCustomJson(
         **common.as_dict(),
         id_=id_,

@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, Any
 
 import typer
 
-from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.cli.common.parameters import options
+from clive.__private.cli.common.parameters.modified_param import modified_param
 from clive.__private.core.constants.cli import LOOK_INTO_ARGUMENT_OPTION_HELP
 
 if TYPE_CHECKING:

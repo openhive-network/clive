@@ -1,17 +1,17 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common.beekeeper_common_options import BeekeeperCommonOptions
+from clive.__private.cli.common import BeekeeperOptionsGroup
 
 beekeeper = CliveTyper(name="beekeeper", help="Beekeeper-related commands.")
 
 
-@beekeeper.command(common_options=[BeekeeperCommonOptions])
+@beekeeper.command(param_groups=[BeekeeperOptionsGroup])
 async def info(ctx: typer.Context) -> None:  # noqa: ARG001
     """Show the beekeeper info."""
     from clive.__private.cli.commands.beekeeper import BeekeeperInfo
 
-    common = BeekeeperCommonOptions.get_instance()
+    common = BeekeeperOptionsGroup.get_instance()
     await BeekeeperInfo(**common.as_dict()).run()
 
 

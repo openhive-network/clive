@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING, cast
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 
 if TYPE_CHECKING:
     from clive.__private.models import Asset
@@ -18,7 +18,7 @@ _delegatee_account_name = typer.Option(
 )
 
 
-@delegations.command(name="set", common_options=[OperationCommonOptions])
+@delegations.command(name="set", param_groups=[OperationOptionsGroup])
 async def process_delegations_set(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -28,13 +28,13 @@ async def process_delegations_set(
     """Add or modify vesting shares delegation for pair of accounts "account-name" and "delegatee"."""
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegations
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     amount_ = cast("Asset.VotingT", amount)
     operation = ProcessDelegations(**common.as_dict(), delegator=account_name, delegatee=delegatee, amount=amount_)
     await operation.run()
 
 
-@delegations.command(name="remove", common_options=[OperationCommonOptions])
+@delegations.command(name="remove", param_groups=[OperationOptionsGroup])
 async def process_delegations_remove(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -43,6 +43,6 @@ async def process_delegations_remove(
     """Clear vesting shares delegation (by setting it to zero) for pair of accounts "account-name" and "delegatee"."""
     from clive.__private.cli.commands.process.process_delegations import ProcessDelegationsRemove
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     operation = ProcessDelegationsRemove(**common.as_dict(), delegator=account_name, delegatee=delegatee)
     await operation.run()

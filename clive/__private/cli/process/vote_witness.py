@@ -1,12 +1,12 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 
 vote_witness = CliveTyper(name="vote-witness", help="Vote/unvote for a witness.")
 
 
-@vote_witness.command(name="add", common_options=[OperationCommonOptions])
+@vote_witness.command(name="add", param_groups=[OperationOptionsGroup])
 async def process_vote_witness_add(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -15,7 +15,7 @@ async def process_vote_witness_add(
     """Vote for a witness."""
     from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     await ProcessVoteWitness(
         **common.as_dict(),
         account_name=account_name,
@@ -24,7 +24,7 @@ async def process_vote_witness_add(
     ).run()
 
 
-@vote_witness.command(name="remove", common_options=[OperationCommonOptions])
+@vote_witness.command(name="remove", param_groups=[OperationOptionsGroup])
 async def process_vote_witness_remove(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -33,7 +33,7 @@ async def process_vote_witness_remove(
     """Unvote witness."""
     from clive.__private.cli.commands.process.process_vote_witness import ProcessVoteWitness
 
-    common = OperationCommonOptions.get_instance()
+    common = OperationOptionsGroup.get_instance()
     await ProcessVoteWitness(
         **common.as_dict(),
         account_name=account_name,

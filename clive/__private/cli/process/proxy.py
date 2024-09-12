@@ -1,12 +1,12 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import OperationCommonOptions, options
+from clive.__private.cli.common import OperationOptionsGroup, options
 
 proxy = CliveTyper(name="proxy", help="Set, change or remove a proxy.")
 
 
-@proxy.command(name="set", common_options=[OperationCommonOptions])
+@proxy.command(name="set", param_groups=[OperationOptionsGroup])
 async def process_proxy_set(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -15,7 +15,7 @@ async def process_proxy_set(
     """Set a proxy or change an existing proxy."""
     from clive.__private.cli.commands.process.process_proxy_set import ProcessProxySet
 
-    operation_common = OperationCommonOptions.get_instance()
+    operation_common = OperationOptionsGroup.get_instance()
     await ProcessProxySet(
         **operation_common.as_dict(),
         account_name=account_name,
@@ -23,7 +23,7 @@ async def process_proxy_set(
     ).run()
 
 
-@proxy.command(name="clear", common_options=[OperationCommonOptions])
+@proxy.command(name="clear", param_groups=[OperationOptionsGroup])
 async def process_proxy_clear(
     ctx: typer.Context,  # noqa: ARG001
     account_name: str = options.account_name,
@@ -31,5 +31,5 @@ async def process_proxy_clear(
     """Remove a proxy."""
     from clive.__private.cli.commands.process.process_proxy_clear import ProcessProxyClear
 
-    operation_common = OperationCommonOptions.get_instance()
+    operation_common = OperationOptionsGroup.get_instance()
     await ProcessProxyClear(**operation_common.as_dict(), account_name=account_name).run()

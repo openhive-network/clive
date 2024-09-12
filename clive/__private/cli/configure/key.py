@@ -3,7 +3,7 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import WorldCommonOptions, options
+from clive.__private.cli.common import WorldOptionsGroup, options
 from clive.__private.cli.common.parameters.argument_related_options import make_argument_related_option
 from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
@@ -24,7 +24,7 @@ _alias_argument = typer.Argument(
 )
 
 
-@key.command(name="add", common_options=[WorldCommonOptions])
+@key.command(name="add", param_groups=[WorldOptionsGroup])
 async def add_key(  # noqa: PLR0913
     ctx: typer.Context,  # noqa: ARG001
     key: Optional[str] = _key_argument,
@@ -36,7 +36,7 @@ async def add_key(  # noqa: PLR0913
     """Import a key into the Beekeeper, and make it ready to use for Clive."""
     from clive.__private.cli.commands.configure.key import AddKey
 
-    common = WorldCommonOptions.get_instance()
+    common = WorldOptionsGroup.get_instance()
     await AddKey(
         **common.as_dict(),
         password=password,
@@ -50,7 +50,7 @@ _alias_remove_argument = typer.Argument(
 )
 
 
-@key.command(name="remove", common_options=[WorldCommonOptions])
+@key.command(name="remove", param_groups=[WorldOptionsGroup])
 async def remove_key(
     ctx: typer.Context,  # noqa: ARG001
     alias: Optional[str] = _alias_remove_argument,
@@ -64,7 +64,7 @@ async def remove_key(
     """Remove a key alias from the profile and optionally from the Beekeeper storage also."""
     from clive.__private.cli.commands.configure.key import RemoveKey
 
-    common = WorldCommonOptions.get_instance()
+    common = WorldOptionsGroup.get_instance()
     await RemoveKey(
         **common.as_dict(),
         alias=ensure_single_value(alias, alias_option, "alias"),

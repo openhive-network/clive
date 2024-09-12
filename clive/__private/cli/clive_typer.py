@@ -12,7 +12,8 @@ from typer import rich_utils
 from typer.main import _typer_developer_exception_attr_name
 from typer.models import CommandFunctionType, Default, DeveloperExceptionConfig
 
-from clive.__private.cli.common.common_options_base import CommonOptionInstanceNotAvailableError, CommonOptionsBase
+from clive.__private.cli.common import ParameterGroup
+from clive.__private.cli.common.parameters.groups.parameter_group import ParameterGroupInstanceNotAvailableError
 from clive.__private.core._async import asyncio_run
 
 ExceptionT = TypeVar("ExceptionT", bound=Exception)
@@ -83,10 +84,10 @@ class CliveTyper(typer.Typer):
     def __common_decorator(
         self,
         fun: Callable[..., Any],
-        common_options: list[type[CommonOptionsBase]] | None = None,
+        param_groups: list[type[ParameterGroup]] | None = None,
         **kwargs: Any,
     ) -> Callable[[CommandFunctionType], CommandFunctionType]:
-        common_options = common_options or []
+        param_groups = param_groups or []
 
         def decorator(f: CommandFunctionType) -> CommandFunctionType:
             @wraps(f)
@@ -94,16 +95,16 @@ class CliveTyper(typer.Typer):
                 if len(args) > 0:
                     raise RuntimeError("Positional arguments are not supported")
 
-                for common_option in common_options:
-                    _kwargs = self.__patch_wrapper_kwargs(common_option, **_kwargs)
+                for param_group in param_groups:
+                    _kwargs = self.__patch_wrapper_kwargs(param_group, **_kwargs)
 
                 result = f(*args, **_kwargs)
 
                 if isawaitable(result):
                     asyncio_run(result)
 
-            for common_option in common_options:
-                self.__patch_command_sig(wrapper, common_option)
+            for param_group in param_groups:
+                self.__patch_command_sig(wrapper, param_group)
 
             return fun(**kwargs)(wrapper)  # type: ignore[no-any-return]
 
@@ -112,19 +113,17 @@ class CliveTyper(typer.Typer):
     def command(  # type: ignore[override]
         self,
         name: Optional[str] = None,
-        common_options: list[type[CommonOptionsBase]] | None = None,
+        param_groups: list[type[ParameterGroup]] | None = None,
         *,
         help: Optional[str] = None,  # noqa: A002
         epilog: Optional[str] = None,
     ) -> Callable[[CommandFunctionType], CommandFunctionType]:
-        return self.__common_decorator(
-            super().command, name=name, common_options=common_options, help=help, epilog=epilog
-        )
+        return self.__common_decorator(super().command, name=name, param_groups=param_groups, help=help, epilog=epilog)
 
     def callback(  # type: ignore[override]
         self,
         name: Optional[str] = Default(None),
-        common_options: list[type[CommonOptionsBase]] | None = None,
+        param_groups: list[type[ParameterGroup]] | None = None,
         *,
         help: Optional[str] = Default(None),  # noqa: A002
         invoke_without_command: bool = Default(value=False),
@@ -133,7 +132,7 @@ class CliveTyper(typer.Typer):
         return self.__common_decorator(
             super().callback,
             name=name,
-            common_options=common_options,
+            param_groups=param_groups,
             help=help,
             invoke_without_command=invoke_without_command,
             result_callback=result_callback,
@@ -176,16 +175,16 @@ class CliveTyper(typer.Typer):
         raise error  # reraise if no handler is available
 
     @staticmethod
-    def __patch_wrapper_kwargs(common_option: type[CommonOptionsBase], **kwargs: Any) -> dict[str, Any]:
+    def __patch_wrapper_kwargs(param_group_cls: type[ParameterGroup], **kwargs: Any) -> dict[str, Any]:
         if (ctx := kwargs.get("ctx")) is None:
             raise RuntimeError("Context should be provided")
 
-        common_opts_params: dict[str, Any] = {}
+        group_params: dict[str, Any] = {}
 
-        with contextlib.suppress(CommonOptionInstanceNotAvailableError):
-            common_opts_params.update(common_option.get_instance().as_dict())
+        with contextlib.suppress(ParameterGroupInstanceNotAvailableError):
+            group_params.update(param_group_cls.get_instance().as_dict())
 
-        for field in fields(common_option):
+        for field in fields(param_group_cls):
             if field.metadata.get("ignore", False):
                 continue
 
@@ -194,21 +193,21 @@ class CliveTyper(typer.Typer):
             if value == field.default:
                 continue
 
-            common_opts_params[field.name] = value
+            group_params[field.name] = value
 
-        common_option(**common_opts_params)
-        setattr(ctx, common_option.get_name(), common_opts_params)
+        param_group_cls(**group_params)
+        setattr(ctx, param_group_cls.get_name(), group_params)
 
         return {"ctx": ctx, **kwargs}
 
     @staticmethod
-    def __patch_command_sig(wrapper: Any, common_option: type[CommonOptionsBase]) -> None:  # noqa: ANN401
+    def __patch_command_sig(wrapper: Any, param_group_cls: type[ParameterGroup]) -> None:  # noqa: ANN401
         sig = signature(wrapper)
         new_parameters = sig.parameters.copy()
 
-        common_option_fields = fields(common_option)
+        group_fields = fields(param_group_cls)
 
-        for field in common_option_fields:
+        for field in group_fields:
             if field.metadata.get("ignore", False):
                 continue
             new_parameters[field.name] = Parameter(
