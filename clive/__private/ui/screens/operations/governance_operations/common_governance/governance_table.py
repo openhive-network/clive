@@ -9,9 +9,8 @@ from textual import on
 from textual.binding import Binding
 from textual.containers import Grid, Vertical
 from textual.css.query import NoMatches
-from textual.events import Click
 from textual.message import Message
-from textual.widgets import Label, Static
+from textual.widgets import Label
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core.commands.data_retrieval.proposals_data import Proposal as ProposalData
@@ -20,6 +19,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.governance_operations.governance_checkbox import GovernanceCheckbox
+from clive.__private.ui.widgets.buttons.page_switch_buttons import PageDownButton, PageUpButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -28,46 +28,22 @@ GovernanceDataT = TypeVar("GovernanceDataT", ProposalData, WitnessData)
 GovernanceDataProviderT = TypeVar("GovernanceDataProviderT", bound=DataProvider[Any])
 
 
-class ArrowUpWidget(Static):
-    class Clicked(Message):
-        """Message send when WitnessCheckbox is clicked."""
-
-    def __init__(self) -> None:
-        super().__init__(renderable="↑ PgUp")
-
-    @on(Click)
-    async def clicked(self) -> None:
-        self.post_message(self.Clicked())
-
-
-class ArrowDownWidget(Static):
-    class Clicked(Message):
-        """Message send when WitnessCheckbox is clicked."""
-
-    def __init__(self) -> None:
-        super().__init__(renderable="↓ PgDn")
-
-    @on(Click)
-    async def clicked(self) -> None:
-        self.post_message(self.Clicked())
-
-
 class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
     """Widget representing the header of a list that allows page switching using PgUp and PgDn."""
 
     def __init__(self) -> None:
         super().__init__()
 
-        self.arrow_up = ArrowUpWidget()
-        self.arrow_down = ArrowDownWidget()
+        self.button_up = PageUpButton()
+        self.button_down = PageDownButton()
 
-        self.arrow_up.visible = False
+        self.button_up.visible = False
 
     def compose(self) -> ComposeResult:
         yield from self.create_additional_headlines()
-        yield self.arrow_up
+        yield self.button_up
         yield from self.create_custom_columns()
-        yield self.arrow_down
+        yield self.button_down
 
     @abstractmethod
     def create_custom_columns(self) -> ComposeResult:
@@ -280,7 +256,7 @@ class GovernanceTable(
     def set_loaded(self) -> None:
         self.__is_loading = False
 
-    @on(ArrowDownWidget.Clicked)
+    @on(PageDownButton.Pressed)
     async def action_next_page(self) -> None:
         if self.__is_loading:
             return
@@ -292,14 +268,14 @@ class GovernanceTable(
 
         self.__element_index += self.MAX_ELEMENTS_ON_PAGE
 
-        self.__header.arrow_up.visible = True
+        self.__header.button_up.visible = True
 
         if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
-            self.__header.arrow_down.visible = False
+            self.__header.button_down.visible = False
 
         await self.sync_list(focus_first_element=True)
 
-    @on(ArrowUpWidget.Clicked)
+    @on(PageUpButton.Pressed)
     async def action_previous_page(self) -> None:
         if self.__is_loading:
             return
@@ -309,19 +285,19 @@ class GovernanceTable(
             self.notify("No elements on the previous page", severity="warning")
             return
 
-        self.__header.arrow_down.visible = True
+        self.__header.button_down.visible = True
 
         self.__element_index -= self.MAX_ELEMENTS_ON_PAGE
 
         if self.__element_index <= 0:
-            self.__header.arrow_up.visible = False
+            self.__header.button_up.visible = False
 
         await self.sync_list(focus_first_element=True)
 
     async def reset_page(self) -> None:
         self.__element_index = 0
-        self.__header.arrow_up.visible = False
-        self.__header.arrow_down.visible = True
+        self.__header.button_up.visible = False
+        self.__header.button_down.visible = True
 
         if not self.__is_loading:
             await self.sync_list()
