@@ -4,12 +4,11 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import BeekeeperCommonOptions, arguments
-from clive.__private.cli.common.parameters import argument_related_options
+from clive.__private.cli.common.parameters import argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import (
     ensure_single_value,
     ensure_single_value_profile_name,
 )
-from clive.__private.cli.common.parameters.utils import modified_param
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 profile = CliveTyper(name="profile", help="Manage your Clive profile(s).")
