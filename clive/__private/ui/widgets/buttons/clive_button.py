@@ -15,7 +15,13 @@ if TYPE_CHECKING:
     from textual.reactive import reactive
 
 CliveButtonVariant = Literal[
-    "loading-variant", "success-on-transparent", "error-on-transparent", "grey-darken", "grey-lighten", ButtonVariant
+    "loading-variant",
+    "success-on-transparent",
+    "error-on-transparent",
+    "transparent",
+    "grey-darken",
+    "grey-lighten",
+    ButtonVariant,
 ]
 
 
@@ -55,6 +61,14 @@ class CliveButton(Button, CliveWidget):
         &.-error-on-transparent {
             background: 0%;
             color: $error;
+
+            &:hover {
+                background: black 20%;
+            }
+        }
+
+         &.-transparent {
+            background: 0%;
 
             &:hover {
                 background: black 20%;
