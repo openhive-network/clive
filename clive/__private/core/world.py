@@ -2,11 +2,12 @@ from __future__ import annotations
 
 import contextlib
 from contextlib import contextmanager
-from typing import TYPE_CHECKING, Any, cast
+from functools import partial
+from typing import TYPE_CHECKING, Any, Final, cast
 
 from textual.reactive import var
 
-from clive.__private.core.app_state import AppState
+from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.communication import Communication
@@ -117,6 +118,12 @@ class World:
         if self._beekeeper is not None:
             await self._beekeeper.close()
 
+    def on_going_into_locked_mode(self, source: LockSource) -> None:
+        """Triggered when the application is going into the locked mode."""
+
+    def on_going_into_unlocked_mode(self) -> None:
+        """Triggered when the application is going into the unlocked mode."""
+
     def _load_profile(self, profile_name: str | None) -> Profile:
         return Profile.load(profile_name)
 
@@ -128,7 +135,7 @@ class World:
             remote_endpoint=remote_endpoint,
             notify_closing_wallet_name_cb=lambda: self.profile.name,
         )
-        beekeeper.attach_wallet_closing_listener(self)
+        beekeeper.attach_wallet_closing_listener(self.app_state)
         await beekeeper.launch()
         return beekeeper
 
@@ -139,9 +146,6 @@ class World:
     @property
     def app_state(self) -> AppState:
         return self._app_state
-
-    def notify_wallet_closing(self) -> None:
-        self.app_state.lock()
 
 
 class TUIWorld(World, ManualReactive):
@@ -174,20 +178,33 @@ class TUIWorld(World, ManualReactive):
     def is_in_onboarding_mode(self) -> bool:
         return self._is_in_onboarding_mode(self.profile)
 
+    def on_going_into_locked_mode(self, source: LockSource) -> None:
+        base_message: Final[str] = "Switched to the LOCKED mode"
+        if source == "beekeeper_notification_server":
+            send_notification = partial(
+                self.app.notify,
+                f"{base_message} due to inactivity in a temporary unlock mode.",
+                timeout=10,
+            )
+        else:
+            send_notification = partial(self.app.notify, f"{base_message}.")
+
+        with contextlib.suppress(ScreenNotFoundError):
+            self.app.replace_screen("DashboardUnlocked", "dashboard_locked")
+        send_notification()
+        self.app.trigger_app_state_watchers()
+
+    def on_going_into_unlocked_mode(self) -> None:
+        with contextlib.suppress(ScreenNotFoundError):
+            self.app.replace_screen("DashboardLocked", "dashboard_unlocked")
+        self.app.notify("Switched to the UNLOCKED mode.")
+        self.app.trigger_app_state_watchers()
+
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
         return profile.name == Onboarding.ONBOARDING_PROFILE_NAME
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
-
-    def notify_wallet_closing(self) -> None:
-        super().notify_wallet_closing()
-
-        with contextlib.suppress(ScreenNotFoundError):
-            self.app.replace_screen("DashboardUnlocked", "dashboard_locked")
-
-        self.app.notify("Switched to the LOCKED mode.", severity="warning", timeout=5)
-        self.app.trigger_app_state_watchers()
 
 
 class CLIWorld(World):

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from clive.__private.logger import logger
 
 if TYPE_CHECKING:
     from clive.__private.core.world import World
+
+LockSource = Literal["beekeeper_notification_server", "unknown"]
 
 
 @dataclass
@@ -22,10 +24,12 @@ class AppState:
 
     def unlock(self) -> None:
         self._is_unlocked = True
+        self.world.on_going_into_unlocked_mode()
         logger.info("Mode switched to UNLOCKED.")
 
-    def lock(self) -> None:
+    def lock(self, source: LockSource = "unknown") -> None:
         self._is_unlocked = False
+        self.world.on_going_into_locked_mode(source)
         logger.info("Mode switched to LOCKED.")
 
     def __hash__(self) -> int:
