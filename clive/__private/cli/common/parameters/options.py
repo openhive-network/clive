@@ -80,7 +80,7 @@ liquid_amount = typer.Option(
     ...,
     "--amount",
     parser=liquid_asset,
-    help="The liquid asset (HIVE/HBD) amount to transfer. (e.g. 2.500 HIVE)",
+    help="The liquid asset (HIVE/HBD) amount. (e.g. 2.500 HIVE)",
     show_default=False,
 )
 
@@ -90,7 +90,7 @@ voting_amount = typer.Option(
     ...,
     "--amount",
     parser=voting_asset,
-    help="The voting asset (HP/VESTS). (e.g. 2.500 HP)",
+    help="The voting asset (HP/VESTS) amount. (e.g. 2.500 HP)",
     show_default=False,
 )
 
