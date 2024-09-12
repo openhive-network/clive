@@ -3,21 +3,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.commands.abc.command import CommandError
 from clive.__private.core.commands.abc.command_with_result import CommandWithResult
+from clive.__private.core.commands.exceptions import WalletNotFoundError
 from clive.exceptions import CommunicationError
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-
-
-class IsPasswordValidCommandError(CommandError):
-    pass
-
-
-class WalletNotFoundError(IsPasswordValidCommandError):
-    def __init__(self, command: IsPasswordValid, wallet_name: str) -> None:
-        super().__init__(command, f"Wallet `{wallet_name}` not found on the beekeeper.")
 
 
 @dataclass(kw_only=True)
