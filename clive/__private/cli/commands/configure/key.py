@@ -22,7 +22,7 @@ from clive.__private.validators.public_key_alias_validator import PublicKeyAlias
 @dataclass(kw_only=True)
 class AddKey(WorldBasedWithPasswordOrTokenCommand):
     alias: str | None = None
-    key_or_path: str | Path
+    key_or_path: str
     """str might be a path to a file or a private key value."""
 
     @property
