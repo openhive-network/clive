@@ -2,10 +2,12 @@ from __future__ import annotations
 
 import typer
 
-from clive.__private.cli.common.parameters.utils import (
+from clive.__private.cli.common.parameters.get_default import (
     get_default_beekeeper_remote,
     get_default_or_make_required,
     get_default_profile_name,
+)
+from clive.__private.cli.common.parameters.utils import (
     modified_param,
 )
 from clive.__private.cli.common.parsers import (

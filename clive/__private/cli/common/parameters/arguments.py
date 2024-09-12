@@ -3,7 +3,7 @@ from __future__ import annotations
 import typer
 
 from clive.__private.cli.common.parameters import modified_param
-from clive.__private.cli.common.parameters.utils import get_default_or_make_optional, get_default_profile_name
+from clive.__private.cli.common.parameters.get_default import get_default_or_make_optional, get_default_profile_name
 from clive.__private.core.constants.cli import PERFORM_WORKING_ACCOUNT_LOAD, REQUIRED_AS_ARG_OR_OPTION
 
 working_account_template = typer.Argument(
