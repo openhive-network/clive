@@ -53,6 +53,23 @@ class ButtonDelete(CliveButton):
         super().__init__("Remove", id_="delete-button", variant="error")
 
 
+@dataclass
+class CartItemsActionManager:
+    """Object used for disabling actions like move/delete on cart items while another action is in progress."""
+
+    _is_action_disabled: bool = False
+
+    @property
+    def is_action_disabled(self) -> bool:
+        return self._is_action_disabled
+
+    def enable_action(self) -> None:
+        self._is_action_disabled = False
+
+    def disable_action(self) -> None:
+        self._is_action_disabled = True
+
+
 class CartItem(CliveCheckerboardTableRow, CliveWidget):
     """Row of CartTable."""
 
@@ -78,19 +95,11 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
         target_index: int
 
-    def __init__(self, operation_index: int) -> None:
+    def __init__(self, operation_index: int, action_manager: CartItemsActionManager) -> None:
         assert self._is_operation_index_valid(operation_index), "During construction, operation index has to be valid"
         self._operation_index = operation_index
-
-        self._is_already_deleted = False
-        """This could be a situation where the user is trying to delete an operation that is already deleted
-        (textual has not yet deleted the widget visually). This situation is possible if the user clicks so quickly
-        to remove an operation and there are a large number of operations in the shopping basket."""
-
-        self._is_already_moving = False
-        """Used to prevent user from moving item when the previous move is not finished yet."""
-
         super().__init__(*self._create_cells())
+        self._action_manager = action_manager
 
     def __repr__(self) -> str:
         return f"{self.__class__.__name__}(operation_index={self._operation_index})"
@@ -182,9 +191,6 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
             focus_first_focusable_button()
         return self
 
-    def unset_moving_flag(self) -> None:
-        self._is_already_moving = False
-
     @on(CliveButton.Pressed, "#move-up-button")
     def move_up(self) -> None:
         self._move("up")
@@ -195,10 +201,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#delete-button")
     def delete(self) -> None:
-        if self._is_already_deleted:
+        if self._action_manager.is_action_disabled:
             return
 
-        self._is_already_deleted = True
+        self._action_manager.disable_action()
         self.post_message(self.Delete(self))
 
     def _create_cells(self) -> list[CliveCheckerBoardTableCell]:
@@ -219,9 +225,10 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return value < self.operations_amount
 
     def _move(self, direction: Literal["up", "down"]) -> None:
-        if self._is_already_moving:
+        if self._action_manager.is_action_disabled:
             return
-        self._is_already_moving = True
+
+        self._action_manager.disable_action()
         index_change = -1 if direction == "up" else 1
         self.post_message(self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change))
 
@@ -239,6 +246,7 @@ class CartTable(CliveCheckerboardTable):
 
     def __init__(self) -> None:
         super().__init__(header=CartHeader())
+        self._cart_items_action_manager = CartItemsActionManager()
 
     @property
     def _cart_items(self) -> DOMQuery[CartItem]:
@@ -249,18 +257,21 @@ class CartTable(CliveCheckerboardTable):
         return bool(self._cart_items)
 
     def create_static_rows(self) -> list[CartItem]:
-        return [CartItem(index) for index in range(len(self.profile.cart))]
+        return [CartItem(index, self._cart_items_action_manager) for index in range(len(self.profile.cart))]
 
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
         item_to_remove = event.widget
+
         with self.app.batch_update():
             self._focus_appropriate_item_on_deletion(item_to_remove)
             await item_to_remove.remove()
             if self._has_cart_items:
                 self._update_cart_items_on_deletion(removed_item=item_to_remove)
                 self._disable_appropriate_button_on_deletion(removed_item=item_to_remove)
+
         self.profile.cart.remove(item_to_remove.operation)
+        self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
 
     @on(CartItem.Move)
@@ -274,9 +285,9 @@ class CartTable(CliveCheckerboardTable):
         with self.app.batch_update():
             self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
             self._focus_item_on_move(to_index)
-            self._unset_moving_flags()
 
         self.profile.cart.swap(from_index, to_index)
+        self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
 
     @on(CartItem.Focus)
@@ -342,10 +353,6 @@ class CartTable(CliveCheckerboardTable):
             if target_index == cart_item.operation_index:
                 cart_item.focus()
                 break
-
-    def _unset_moving_flags(self) -> None:
-        for cart_item in self._cart_items:
-            cart_item.unset_moving_flag()
 
 
 class Cart(BaseScreen):
