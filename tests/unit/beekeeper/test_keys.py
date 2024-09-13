@@ -83,7 +83,5 @@ async def test_remove_key(
 
     # ACT & ASSERT
     assert_keys((await beekeeper.api.get_public_keys()).keys, [public_key.value])
-    await beekeeper.api.remove_key(
-        wallet_name=wallet_no_keys.name, password=wallet_no_keys.password, public_key=public_key.value
-    )
+    await beekeeper.api.remove_key(wallet_name=wallet_no_keys.name, public_key=public_key.value)
     assert_keys((await beekeeper.api.get_public_keys()).keys, [])

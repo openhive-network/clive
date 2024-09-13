@@ -132,9 +132,7 @@ async def simple_flow(*, wallet_dir: Path, wallets: list[WalletInfo], use_existi
             await assert_number_of_wallets_opened(bk, len(wallets))
             await assert_same_keys(bk, wallet)
             for keys in wallet.keys.pairs:
-                await bk.api.remove_key(
-                    wallet_name=wallet.name, password=wallet.password, public_key=keys.public_key.value
-                )
+                await bk.api.remove_key(wallet_name=wallet.name, public_key=keys.public_key.value)
         await assert_keys_empty(bk)
         await assert_number_of_wallets_opened(bk, len(wallets))
         await bk.api.set_timeout(seconds=1)
