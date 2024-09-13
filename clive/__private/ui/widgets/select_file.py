@@ -15,6 +15,7 @@ from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 from clive.__private.ui.widgets.inputs.path_input import PathInput
+from clive.__private.ui.widgets.notice import Notice
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -55,12 +56,16 @@ class SelectFile(BaseScreen):
         *,
         validator_mode: PathValidator.Modes = "is_file",
         placeholder: str = PATH_PLACEHOLDER,
+        notice: str | None = None,
     ) -> None:
         super().__init__()
         self._file_path_input = PathInput(placeholder=placeholder, validator_mode=validator_mode)
+        self._notice = notice
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer(section_title=self.SECTION_TITLE), Body():
+            if self._notice:
+                yield Notice(self._notice)
             with FilePathInputContainer():
                 yield self._file_path_input
             yield from self.additional_content_after_input()
