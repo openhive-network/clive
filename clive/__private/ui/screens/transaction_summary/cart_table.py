@@ -167,7 +167,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def action_select_next(self) -> None:
         self.post_message(self.Focus(target_index=self._operation_index + 1))
 
-    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002
+    def focus(self, _: bool = True) -> Self:  # noqa: FBT001, FBT002, C901
         def focus_first_focusable_button() -> None:
             buttons = self.query(CliveButton)
             for button in buttons:
@@ -175,20 +175,29 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
                     button.focus()
                     break
 
-        focused = self.app.focused
-        if not focused:
+        def focus_enabled_arrow_button() -> None:
+            for button in [self.button_move_up, self.button_move_down]:
+                if button.focusable:
+                    button.focus()
+
+        def was_arrow_previously_focused() -> bool:
+            return isinstance(previously_focused, (ButtonMoveUp, ButtonMoveDown))
+
+        previously_focused = self.app.focused
+        if not previously_focused:
+            focus_first_focusable_button()
             return self
 
-        assert focused.id, "Previously focused widget has no id!"
         try:
-            previous = self.get_widget_by_id(focused.id, CliveButton)
+            same_button_as_before = self.query_one(type(previously_focused))
         except NoMatches:
             focus_first_focusable_button()
             return self
 
-        if previous.focusable:
-            # Focus button that was focused before
-            previous.focus()
+        if same_button_as_before.focusable:
+            same_button_as_before.focus()
+        elif was_arrow_previously_focused():
+            focus_enabled_arrow_button()
         else:
             focus_first_focusable_button()
         return self
