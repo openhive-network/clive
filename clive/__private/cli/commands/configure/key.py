@@ -95,16 +95,22 @@ class RemoveKey(WorldBasedCommand):
     alias: str
     from_beekeeper: bool = False
     """Indicates whether to remove the key from the Beekeeper as well or just the alias association from the profile."""
-    password: str
+    password: str | None
+
+    @property
+    def password_ensure(self) -> str:
+        assert self.password, "Password must be set."
+        return self.password
 
     async def _run(self) -> None:
         profile = self.world.profile
         if not profile.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile)
 
-        wrapper = await self.world.commands.is_password_valid(password=self.password)
-        if not wrapper.result_or_raise:
-            raise InvalidPasswordError
+        if not safe_settings.beekeeper.is_session_token_set:
+            wrapper = await self.world.commands.is_password_valid(password=self.password_ensure)
+            if not wrapper.result_or_raise:
+                raise InvalidPasswordError
 
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
 
@@ -126,5 +132,6 @@ class RemoveKey(WorldBasedCommand):
         self.world.profile.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
-        await self.world.commands.unlock(password=self.password)
+        if not safe_settings.beekeeper.is_session_token_set:
+            await self.world.commands.unlock(password=self.password_ensure)
         await self.world.commands.remove_key(key_to_remove=key)
