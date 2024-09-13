@@ -261,14 +261,13 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
-    async def remove_key(self, *, password: str, key_to_remove: PublicKey) -> CommandWrapper:
+    async def remove_key(self, *, key_to_remove: PublicKey) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             RemoveKey(
                 app_state=self._world.app_state,
                 wallet=self._world.profile.name,
                 beekeeper=self._world.beekeeper,
                 key_to_remove=key_to_remove,
-                password=password,
             )
         )
 

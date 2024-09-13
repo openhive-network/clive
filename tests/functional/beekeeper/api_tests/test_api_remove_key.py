@@ -22,9 +22,7 @@ async def test_api_remove_key(
         await beekeeper.api.import_key(wallet_name=wallet_no_keys.name, wif_key=pair.private_key.value)
 
         # ACT
-        await beekeeper.api.remove_key(
-            wallet_name=wallet_no_keys.name, password=wallet_no_keys.password, public_key=pair.public_key.value
-        )
+        await beekeeper.api.remove_key(wallet_name=wallet_no_keys.name, public_key=pair.public_key.value)
 
     # ASSERT
     assert len((await beekeeper.api.get_public_keys()).keys) == 0, "There should be no keys left."
@@ -37,9 +35,7 @@ async def test_api_remove_key_from_locked(beekeeper: Beekeeper, wallet: WalletIn
 
     # ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet is locked: {wallet.name}"):
-        await beekeeper.api.remove_key(
-            wallet_name=wallet.name, password=wallet.password, public_key=wallet.keys.pairs[0].public_key.value
-        )
+        await beekeeper.api.remove_key(wallet_name=wallet.name, public_key=wallet.keys.pairs[0].public_key.value)
 
 
 async def test_api_remove_key_from_closed(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
@@ -49,9 +45,7 @@ async def test_api_remove_key_from_closed(beekeeper: Beekeeper, wallet: WalletIn
 
     # ASSERT
     with pytest.raises(CommunicationError, match=f"Wallet not found: {wallet.name}"):
-        await beekeeper.api.remove_key(
-            wallet_name=wallet.name, password=wallet.password, public_key=wallet.keys.pairs[0].public_key.value
-        )
+        await beekeeper.api.remove_key(wallet_name=wallet.name, public_key=wallet.keys.pairs[0].public_key.value)
 
 
 async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
@@ -69,9 +63,7 @@ async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallet
     assert key_to_remove.public_key.value in bk_pub_keys_before, "Check if target key exists."
 
     # ACT
-    await beekeeper.api.remove_key(
-        wallet_name=wallet.name, password=wallet.password, public_key=key_to_remove.public_key.value
-    )
+    await beekeeper.api.remove_key(wallet_name=wallet.name, public_key=key_to_remove.public_key.value)
 
     # ASSERT
     bk_keys_after = (await beekeeper.api.get_public_keys()).keys

@@ -57,9 +57,7 @@ async def test_api_sign_digest_with_deleted_key(beekeeper: Beekeeper, wallet_no_
     signature = (await beekeeper.api.sign_digest(sig_digest=DIGEST_TO_SIGN, public_key=PUBLIC_KEY)).signature
     assert signature == EXPECTED_SIGNATURE, "Signatures should match."
 
-    await beekeeper.api.remove_key(
-        wallet_name=wallet_no_keys.name, password=wallet_no_keys.password, public_key=PUBLIC_KEY
-    )
+    await beekeeper.api.remove_key(wallet_name=wallet_no_keys.name, public_key=PUBLIC_KEY)
 
     # ACT & ASSERT
     with pytest.raises(CommunicationError, match=f"Public key {PUBLIC_KEY} not found in unlocked wallets"):

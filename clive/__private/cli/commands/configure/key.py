@@ -127,4 +127,4 @@ class RemoveKey(WorldBasedCommand):
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
         await self.world.commands.unlock(password=self.password)
-        await self.world.commands.remove_key(password=self.password, key_to_remove=key)
+        await self.world.commands.remove_key(key_to_remove=key)

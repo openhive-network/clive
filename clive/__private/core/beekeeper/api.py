@@ -81,7 +81,7 @@ class BeekeeperApi:
         raise NotImplementedError
 
     @api
-    async def remove_key(self, *, wallet_name: str, password: str, public_key: str) -> model.EmptyResponse:
+    async def remove_key(self, *, wallet_name: str, public_key: str) -> model.EmptyResponse:
         raise NotImplementedError
 
     @api
