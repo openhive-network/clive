@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-async def wait_for(condition: Callable[[], bool], message: str, timeout: float = 10.0) -> None:
+async def wait_for(condition: Callable[[], bool], message: str | Callable[[], str], timeout: float = 10.0) -> None:
     async def __wait_for() -> None:
         while not condition():
             await asyncio.sleep(0.1)
@@ -24,12 +24,16 @@ async def wait_for(condition: Callable[[], bool], message: str, timeout: float =
     try:
         await asyncio.wait_for(__wait_for(), timeout=timeout)
     except asyncio.TimeoutError:
-        raise AssertionError(f"{message}, wait_for timeout is {timeout:.2f}") from None
+        message_ = message if isinstance(message, str) else message()
+        raise AssertionError(f"{message_}, wait_for timeout is {timeout:.2f}") from None
 
 
 @pytest.mark.parametrize("signal_number", [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM])
 async def test_close_on_signal(signal_number: signal.Signals) -> None:
     # ARRANGE
+    def get_process_return_code() -> int | None:
+        return process.returncode
+
     working_directory = tt.context.get_current_directory()
     entry_point: Final[str] = "clive"
     envs = os.environ
@@ -48,4 +52,7 @@ async def test_close_on_signal(signal_number: signal.Signals) -> None:
 
         # ASSERT
         await wait_for(lambda: not beekeeper_pidfile.exists(), "Beekeeper did not close")
-        await wait_for(lambda: process.returncode == 0, "Clive tui process is still running")
+        await wait_for(
+            lambda: get_process_return_code() == 0,
+            lambda: f"Clive tui process not closed properly. Return code is {get_process_return_code()}",
+        )

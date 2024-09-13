@@ -18,7 +18,6 @@ def _hide_never_awaited_warnings_in_non_dev_mode() -> None:
 async def _shutdown_tui_gracefully() -> None:
     app = get_clive().app_instance()
     await app.action_quit()
-    asyncio.get_event_loop().stop()
 
 
 def _handle_close_signals_in_tui() -> None:
