@@ -27,6 +27,14 @@ class CliveButton(Button, CliveWidget):
 
     DEFAULT_CSS = """
     CliveButton {
+        &.-success {
+            background: $success-darken-1;
+
+            &:hover {
+                background: $success-darken-3;
+            }
+        }
+
         &.-loading-variant {
             background: $panel-lighten-2;
 
