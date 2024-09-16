@@ -40,7 +40,7 @@ class DialogContainer(Container, can_focus=False):
 
     def on_mount(self) -> None:
         if self.__big_title:
-            self.query_one(DialogBody).mount(LocationIndicator(self.__big_title), before=0)
+            self.query_exactly_one(DialogBody).mount(LocationIndicator(self.__big_title), before=0)
 
     def compose_add_child(self, widget: Widget) -> None:
         self._dialog_children.append(widget)

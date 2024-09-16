@@ -65,7 +65,7 @@ class WithdrawRoutesDisplay(CliveWidget):
             return
 
         if not content.withdraw_routes:
-            self.query_one("#withdraw-routes-header", Static).update("You have no withdraw routes")
+            self.query_exactly_one("#withdraw-routes-header", Static).update("You have no withdraw routes")
             self._pretty.display = False
             return
 
@@ -73,13 +73,13 @@ class WithdrawRoutesDisplay(CliveWidget):
             withdraw_route.to_account: humanize_percent(hive_percent_to_percent(withdraw_route.percent))
             for withdraw_route in content.withdraw_routes
         }
-        self.query_one("#withdraw-routes-header", Static).update("Your withdraw routes")
+        self.query_exactly_one("#withdraw-routes-header", Static).update("Your withdraw routes")
         self._pretty.update(withdraw_routes)
         self._pretty.display = True
 
     @property
     def provider(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
+        return self.screen.query_exactly_one(HivePowerDataProvider)
 
 
 class PendingPowerDownHeader(Horizontal):
@@ -121,7 +121,7 @@ class PendingPowerDown(CliveCheckerboardTable):
 
     @property
     def object_to_watch(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
+        return self.screen.query_exactly_one(HivePowerDataProvider)
 
     def check_if_should_be_updated(self, content: HivePowerData) -> bool:
         return content.next_vesting_withdrawal != self._previous_next_vesting_withdrawal
@@ -191,7 +191,7 @@ class PowerDown(TabPane, OperationActionBindings):
         """Clear input when shares type was changed and hide factor display when vests selected."""
         self._shares_input.input.clear()
 
-        hp_vests_factor = self.query_one(HpVestsFactor)
+        hp_vests_factor = self.query_exactly_one(HpVestsFactor)
         if self._shares_input.selected_asset_type is Asset.Vests:
             hp_vests_factor.display = False
             return
@@ -210,4 +210,4 @@ class PowerDown(TabPane, OperationActionBindings):
 
     @property
     def provider(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
+        return self.screen.query_exactly_one(HivePowerDataProvider)

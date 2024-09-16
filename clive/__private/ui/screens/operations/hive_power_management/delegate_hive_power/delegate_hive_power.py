@@ -105,7 +105,7 @@ class DelegationsTable(CliveCheckerboardTable):
 
     @property
     def object_to_watch(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
+        return self.screen.query_exactly_one(HivePowerDataProvider)
 
     def update_previous_state(self, content: HivePowerData) -> None:
         self._previous_delegations = content.delegations
@@ -155,7 +155,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
         """Clear input when shares type was changed and hide factor display when vests selected."""
         self._shares_input.input.clear()
 
-        hp_vests_factor = self.query_one(HpVestsFactor)
+        hp_vests_factor = self.query_exactly_one(HpVestsFactor)
         if self._shares_input.selected_asset_type is Asset.Vests:
             hp_vests_factor.display = False
             return
@@ -163,4 +163,4 @@ class DelegateHivePower(TabPane, OperationActionBindings):
 
     @property
     def provider(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
+        return self.screen.query_exactly_one(HivePowerDataProvider)

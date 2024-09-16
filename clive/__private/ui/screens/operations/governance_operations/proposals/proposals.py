@@ -173,7 +173,7 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
 
     @property
     def provider(self) -> ProposalsDataProvider:
-        return self.screen.query_one(ProposalsDataProvider)
+        return self.screen.query_exactly_one(ProposalsDataProvider)
 
 
 class ProposalsList(GovernanceListWidget[ProposalData]):
@@ -208,7 +208,7 @@ class ProposalsTable(GovernanceTable[ProposalData, ProposalsDataProvider]):
 
     @property
     def provider(self) -> ProposalsDataProvider:
-        return self.screen.query_one(ProposalsDataProvider)
+        return self.screen.query_exactly_one(ProposalsDataProvider)
 
     @property
     def data(self) -> list[ProposalData]:
@@ -304,7 +304,7 @@ class Proposals(GovernanceTabPane):
         ]
 
     def __split_proposals(self, *, approve: bool = True) -> list[list[int]]:
-        operations_to_perform = self.screen.query_one(ProposalsActions).actions_to_perform
+        operations_to_perform = self.screen.query_exactly_one(ProposalsActions).actions_to_perform
         proposals_ids_to_return = [
             int(proposal_id)
             for proposal_id, action_approve in operations_to_perform.items()

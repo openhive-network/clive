@@ -249,7 +249,7 @@ class GovernanceTable(
     async def loading_set(self) -> None:
         self._is_loading = True
         with contextlib.suppress(NoMatches):
-            selected_list = self.query_one(GovernanceListWidget)  # type: ignore[type-abstract]
+            selected_list = self.query_exactly_one(GovernanceListWidget)  # type: ignore[type-abstract]
             await selected_list.query("*").remove()
             await selected_list.mount(Label("Loading..."))
 

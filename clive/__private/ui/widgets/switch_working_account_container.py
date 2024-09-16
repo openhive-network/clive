@@ -106,7 +106,7 @@ class SwitchWorkingAccountContainer(Container, CliveWidget):
         self._handle_selected_account_changed(profile)
 
         with self.app.batch_update():
-            section_body = self.query_one(SectionBody)
+            section_body = self.query_exactly_one(SectionBody)
 
             await section_body.query("*").remove()
             await section_body.mount(self._create_tracked_accounts_content(profile))

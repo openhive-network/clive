@@ -111,15 +111,15 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @property
     def button_move_up(self) -> ButtonMoveUp:
-        return self.query_one(ButtonMoveUp)
+        return self.query_exactly_one(ButtonMoveUp)
 
     @property
     def button_move_down(self) -> ButtonMoveDown:
-        return self.query_one(ButtonMoveDown)
+        return self.query_exactly_one(ButtonMoveDown)
 
     @property
     def button_delete(self) -> RemoveButton:
-        return self.query_one(RemoveButton)
+        return self.query_exactly_one(RemoveButton)
 
     @property
     def operation(self) -> OperationBase:
@@ -189,7 +189,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
             return self
 
         try:
-            same_button_as_before = self.query_one(type(previously_focused))
+            same_button_as_before = self.query_exactly_one(type(previously_focused))
         except NoMatches:
             focus_first_focusable_button()
             return self

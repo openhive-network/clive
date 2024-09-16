@@ -20,7 +20,7 @@ class GovernanceTabPane(TabPane, OperationActionBindings):
 
     @on(GovernanceTableRow.ChangeActionStatus)
     async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:
-        actions = self.query_one(GovernanceActions)  # type: ignore[type-abstract]
+        actions = self.query_exactly_one(GovernanceActions)  # type: ignore[type-abstract]
 
         if event.add:
             await actions.add_row(identifier=event.action_identifier, vote=event.vote)

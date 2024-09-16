@@ -141,7 +141,7 @@ class KeyContainer(Horizontal):
         ------
         NoItemSelectedError: When no key was selected.
         """
-        select_key = self.query_one(SelectKey)
+        select_key = self.query_exactly_one(SelectKey)
         try:
             return select_key.value
         except NoItemSelectedError as error:
@@ -178,11 +178,11 @@ class TransactionSummary(BaseScreen):
 
     @property
     def button_save(self) -> CliveButton:
-        return self.query_one(ButtonSave)
+        return self.query_exactly_one(ButtonSave)
 
     @property
     def key_container(self) -> KeyContainer:
-        return self.query_one(KeyContainer)
+        return self.query_exactly_one(KeyContainer)
 
     @property
     def _should_display_warning_notice(self) -> bool:
@@ -228,12 +228,12 @@ class TransactionSummary(BaseScreen):
         self.transaction = await self._build_transaction() if self.profile.cart else None
 
     def watch_transaction(self, transaction: Transaction | None) -> None:
-        self.query_one(TransactionMetadataContainer).transaction = transaction
-        self.query_one(ButtonContainer).transaction = transaction
+        self.query_exactly_one(TransactionMetadataContainer).transaction = transaction
+        self.query_exactly_one(ButtonContainer).transaction = transaction
         self.key_container.transaction = transaction
         self.key_container.display = bool(transaction)
-        self.query_one(Notice).display = self._should_display_warning_notice
-        subtitle = self.query_one(Subtitle)
+        self.query_exactly_one(Notice).display = self._should_display_warning_notice
+        subtitle = self.query_exactly_one(Subtitle)
         if self._transaction_file_path:
             subtitle.update(f"Loaded from [blue]{self._transaction_file_path}[/]")
         subtitle.display = bool(self._transaction_file_path)
@@ -282,7 +282,7 @@ class TransactionSummary(BaseScreen):
 
         self.profile.cart.fill_from_transaction(self.transaction)
         self.app.trigger_profile_watchers()
-        await self.query_one(CartTable).rebuild()
+        await self.query_exactly_one(CartTable).rebuild()
 
     @CliveScreen.try_again_after_unlock
     async def _broadcast(self) -> None:

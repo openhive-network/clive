@@ -315,7 +315,7 @@ class Dashboard(BaseScreen):
             widgets_to_mount.append(NoContentAvailable(self.NO_ACCOUNTS_INFO))
 
         with self.app.batch_update():
-            accounts_container = self.query_one(AccountsContainer)
+            accounts_container = self.query_exactly_one(AccountsContainer)
             await accounts_container.query("*").remove()
             await accounts_container.mount_all(widgets_to_mount)
 

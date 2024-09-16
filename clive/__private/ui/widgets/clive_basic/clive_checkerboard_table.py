@@ -95,7 +95,7 @@ class CliveCheckerBoardTableCell(Container):
         if isinstance(content, Widget):
             raise InvalidContentUpdateError
         self._content = content
-        self.query_one(Static).update(self._content)
+        self.query_exactly_one(Static).update(self._content)
 
 
 class CliveCheckerboardTableRow(CliveWidget):

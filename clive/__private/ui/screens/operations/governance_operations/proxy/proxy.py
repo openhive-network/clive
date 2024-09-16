@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 class ProxyBaseContainer(Container):
-    """Base widget for the ProxyNotSet and ProxySet container to properly catch both by the query_one."""
+    """Base widget for the ProxyNotSet and ProxySet container to properly catch both by the query_exactly_one."""
 
 
 class CurrentProxy(LabelizedInput):
@@ -86,7 +86,7 @@ class Proxy(TabPane, CliveWidget):
 
     @property
     def new_proxy_input(self) -> NewProxyInput:
-        return self.query_one(NewProxyInput)
+        return self.query_exactly_one(NewProxyInput)
 
     def compose(self) -> ComposeResult:
         content = ProxySet(self._current_proxy) if self._current_proxy else ProxyNotSet()
@@ -115,5 +115,5 @@ class Proxy(TabPane, CliveWidget):
             content = ProxySet(self._current_proxy) if self._current_proxy else ProxyNotSet()
 
             with self.app.batch_update():
-                self.query_one(ProxyBaseContainer).remove()
-                self.query_one(ScrollablePart).mount(content)
+                self.query_exactly_one(ProxyBaseContainer).remove()
+                self.query_exactly_one(ScrollablePart).mount(content)

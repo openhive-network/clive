@@ -184,13 +184,13 @@ class BadAccounts(TabPane):
 
     @on(SearchButton.Pressed)
     async def search_pattern_in_list(self) -> None:
-        pattern = self.query_one(AccountNamePatternInput).value_or_none()
+        pattern = self.query_exactly_one(AccountNamePatternInput).value_or_none()
         if pattern is None:
             return
 
-        await self.query_one(BadAccountsTable).set_search_mode(pattern)
+        await self.query_exactly_one(BadAccountsTable).set_search_mode(pattern)
 
     @on(ClearButton.Pressed)
     async def clear_from_searched(self) -> None:
-        await self.query_one(BadAccountsTable).set_full_list_mode()
-        self.query_one(AccountNamePatternInput).input.clear()
+        await self.query_exactly_one(BadAccountsTable).set_full_list_mode()
+        self.query_exactly_one(AccountNamePatternInput).input.clear()

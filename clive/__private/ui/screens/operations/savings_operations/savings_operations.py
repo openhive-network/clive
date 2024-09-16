@@ -100,7 +100,7 @@ class SavingsInterestInfo(TrackedAccountReferencingWidget):
 
     @property
     def provider(self) -> SavingsDataProvider:
-        return self.screen.query_one(SavingsDataProvider)
+        return self.screen.query_exactly_one(SavingsDataProvider)
 
     def compose(self) -> ComposeResult:
         yield SectionTitle("Interest data", variant="dark")
@@ -179,7 +179,7 @@ class PendingTransfers(CliveCheckerboardTable):
 
     @property
     def object_to_watch(self) -> SavingsDataProvider:
-        return self.screen.query_one(SavingsDataProvider)
+        return self.screen.query_exactly_one(SavingsDataProvider)
 
     def update_previous_state(self, content: SavingsData) -> None:
         self._previous_pending_transfers = content.pending_transfers
@@ -234,7 +234,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
 
     @on(RadioSet.Changed)
     def transfer_type_changed(self, event: RadioSet.Changed) -> None:
-        section_title = self.query_one(SectionTitle)
+        section_title = self.query_exactly_one(SectionTitle)
         if event.radio_set.pressed_button.id == "from-savings-choose":  # type: ignore[union-attr]
             self._transfer_time_reminder.visible = True
             section_title.update("Perform a transfer from savings")
@@ -284,7 +284,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         )
 
     def _create_request_id(self) -> int:
-        provider = self.screen.query_one(SavingsDataProvider)
+        provider = self.screen.query_exactly_one(SavingsDataProvider)
         savings_data = provider.content
 
         transfer_from_savings_operations_in_cart = [

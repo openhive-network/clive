@@ -266,7 +266,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             return
 
         with contextlib.suppress(NoMatches):
-            self.query_one(AccountNameInput).add_account_to_known()
+            self.query_exactly_one(AccountNameInput).add_account_to_known()
 
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()

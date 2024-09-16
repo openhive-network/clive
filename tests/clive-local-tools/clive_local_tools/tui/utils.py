@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 def is_header_in_locked_mode(app: CliveApp) -> bool:
     """Do not call while onboarding process."""
     try:
-        widget = app.screen.query_one(LockStatus)
+        widget = app.screen.query_exactly_one(LockStatus)
     except NoMatches as error:
         raise AssertionError(
             "Couldn't get mode from the header. It is not available in the onboarding process."
@@ -33,7 +33,7 @@ def log_current_view(app: CliveApp, *, nodes: bool = False, source: str | None =
 
 def get_profile_name(app: CliveApp) -> str:
     try:
-        widget = app.screen.query_one("#profile-label", TitledLabel)
+        widget = app.screen.query_exactly_one("#profile-label", TitledLabel)
     except NoMatches as error:
         raise AssertionError("Profile couldn't be found. It is not available in the onboarding process.") from error
     return str(widget.value).strip()

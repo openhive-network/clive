@@ -69,4 +69,4 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
             self.context.accounts.watched.add(account_name)
 
     def __is_working_account(self) -> bool:
-        return self.query_one(WorkingAccountCheckbox).value
+        return self.query_exactly_one(WorkingAccountCheckbox).value

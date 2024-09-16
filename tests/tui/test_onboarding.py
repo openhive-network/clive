@@ -86,7 +86,7 @@ async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
     assert_is_focused(pilot, WorkingAccountCheckbox)
     await pilot.press("space")  # Uncheck 'Working account?'
     assert (
-        pilot.app.screen.query_one(WorkingAccountCheckbox).value is False
+        pilot.app.screen.query_exactly_one(WorkingAccountCheckbox).value is False
     ), "Expected 'Working account?' to be unchecked!"
 
 

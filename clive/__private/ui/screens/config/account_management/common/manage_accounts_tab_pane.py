@@ -36,7 +36,7 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
             yield ManageAccountsTable(self._accounts_type)
 
     def on_mount(self) -> None:
-        self._add_account_container.query_one(SectionBody).mount(
+        self._add_account_container.query_exactly_one(SectionBody).mount(
             CliveButton(
                 "Track" if self._accounts_type == "tracked_accounts" else "Add",
                 variant="success",
