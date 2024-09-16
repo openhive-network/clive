@@ -4,7 +4,7 @@ import asyncio
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
+from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from textual import on, work
 from textual._context import active_app
@@ -29,11 +29,9 @@ from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Iterator
-    from typing import Literal
 
     from textual.message import Message
-    from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
-    from textual.widget import AwaitMount
+    from textual.screen import Screen, ScreenResultType
 
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -196,35 +194,6 @@ class Clive(App[int]):
         else:
             self.push_screen(Dashboard())
 
-    @overload
-    def push_screen(
-        self,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: Literal[False] = False,  # noqa: FBT002
-    ) -> AwaitMount: ...
-
-    @overload
-    def push_screen(
-        self,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: Literal[True] = True,  # noqa: FBT002
-    ) -> asyncio.Future[ScreenResultType]: ...
-
-    def push_screen(
-        self,
-        screen: Screen[ScreenResultType] | str,
-        callback: ScreenResultCallbackType[ScreenResultType] | None = None,
-        wait_for_dismiss: bool = False,  # noqa: FBT001, FBT002
-    ) -> AwaitMount | asyncio.Future[ScreenResultType]:
-        fun = super().push_screen
-        return self.__update_screen(lambda: fun(screen=screen, callback=callback, wait_for_dismiss=wait_for_dismiss))  # type: ignore[no-any-return, call-overload]
-
-    def pop_screen(self) -> AwaitComplete:
-        fun = super().pop_screen
-        return self.__update_screen(lambda: fun())
-
     def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> AwaitComplete:
         """
         Pop all screens until one of the given screen is on top of the stack.
@@ -251,21 +220,6 @@ class Clive(App[int]):
                 )
 
         return AwaitComplete(_pop_screen_until()).call_next(self)
-
-    def switch_screen(self, screen: Screen[ScreenResultType] | str) -> AwaitComplete:
-        fun = super().switch_screen
-        return self.__update_screen(lambda: fun(screen))
-
-    def __update_screen(self, callback: Callable[[], UpdateScreenResultT]) -> UpdateScreenResultT:
-        """
-        Auxiliary function to override the default push_screen, switch_screen and pop_screen methods.
-
-        Because of Textual's event ScreenResume not being bubbled up, we can't easily hook on it via
-        `def on_screen_resume` so we have to override the push_screen, switch_screen and pop_screen methods.
-        """
-        reply = callback()
-        self.title = f"{self.__class__.__name__} ({self.screen.__class__.__name__})"
-        return reply
 
     def action_help(self) -> None:
         self.push_screen(Help())
