@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 import shutil
+from contextlib import contextmanager
 from functools import wraps
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Generator
 
 import pytest
 import test_tools as tt
@@ -17,7 +18,7 @@ from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PA
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive_local_tools.data.constants import TESTNET_CHAIN_ID
+from clive_local_tools.data.constants import BEEKEEPER_SESSION_TOKEN_ENV_NAME, TESTNET_CHAIN_ID
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
 
@@ -26,7 +27,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from clive_local_tools.data.types import Wallets, WalletsGeneratorT
+    from clive_local_tools.data.types import SessionTokenContextT, Wallets, WalletsGeneratorT
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -151,3 +152,17 @@ async def wallet_no_keys(setup_wallets: WalletsGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with no keys available."""
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=0)
     return wallets[0]
+
+
+@pytest.fixture
+async def session_token_context(monkeypatch: pytest.MonkeyPatch) -> SessionTokenContextT:
+    @wraps(session_token_context)
+    @contextmanager
+    def __session_token_context(token: str) -> Generator[None]:
+        monkeypatch.setenv(BEEKEEPER_SESSION_TOKEN_ENV_NAME, token)
+        settings.reload()
+        yield
+        monkeypatch.delenv(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
+        settings.reload()
+
+    return __session_token_context
