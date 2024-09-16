@@ -120,10 +120,7 @@ class GovernanceListWidget(Vertical, CliveWidget, Generic[GovernanceDataT], Abst
             #  When _data is None - still waiting for the response.
             return False
 
-        if len(self._data) == 0:
-            return True
-
-        return False
+        return not bool(self._data)
 
 
 class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractClassMessagePump, can_focus=True):

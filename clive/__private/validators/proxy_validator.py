@@ -31,6 +31,7 @@ class ProxyValidator(AccountNameValidator):
         return ValidationResult.merge([super_result] + [validator.validate(value) for validator in validators])
 
     def _validate_set_proxy_to_self(self, value: str) -> bool:
-        if self.working_account_name is not None and self.working_account_name == value:
-            return False
-        return True
+        if self.working_account_name is None:
+            return True  # Validation is successful when no working account name is set
+
+        return self.working_account_name != value
