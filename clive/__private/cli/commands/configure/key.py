@@ -4,12 +4,10 @@ from pathlib import Path
 
 import typer
 
-from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.commands.abc.world_based_with_password_or_token_command import (
     WorldBasedWithPasswordOrTokenCommand,
 )
 from clive.__private.cli.exceptions import CLIPrettyError, CLIWorkingAccountIsNotSetError
-from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.formatters.humanize import humanize_validation_result
 from clive.__private.core.keys import (
     PrivateKey,
@@ -17,17 +15,15 @@ from clive.__private.core.keys import (
     PrivateKeyInvalidFormatError,
     PublicKeyAliased,
 )
-from clive.__private.settings import safe_settings
 from clive.__private.validators.private_key_validator import PrivateKeyValidator
 from clive.__private.validators.public_key_alias_validator import PublicKeyAliasValidator
 
 
 @dataclass(kw_only=True)
 class AddKey(WorldBasedWithPasswordOrTokenCommand):
-    """str might be a path to a file or a private key value."""
-
     alias: str | None = None
     key_or_path: str | Path
+    """str might be a path to a file or a private key value."""
 
     @property
     def private_key(self) -> PrivateKey:
@@ -83,36 +79,26 @@ class AddKey(WorldBasedWithPasswordOrTokenCommand):
 
 
 @dataclass(kw_only=True)
-class RemoveKey(WorldBasedCommand):
+class RemoveKey(WorldBasedWithPasswordOrTokenCommand):
     alias: str
     from_beekeeper: bool = False
     """Indicates whether to remove the key from the Beekeeper as well or just the alias association from the profile."""
-    password: str | None
 
-    @property
-    def password_ensure(self) -> str:
-        assert self.password, "Password must be set."
-        return self.password
+    async def validate_inside_context_manager(self) -> None:
+        await self._validate_working_account()
+        await super().validate_inside_context_manager()
 
-    async def _run(self) -> None:
+    async def _validate_working_account(self) -> None:
         profile = self.world.profile
         if not profile.accounts.has_working_account:
             raise CLIWorkingAccountIsNotSetError(profile)
 
-        if not safe_settings.beekeeper.is_session_token_set:
-            wrapper = await self.world.commands.is_password_valid(password=self.password_ensure)
-            if not wrapper.result_or_raise:
-                raise InvalidPasswordError
-
+    async def _run(self) -> None:
         typer.echo(f"Removing a key aliased with `{self.alias}`...")
-
-        public_key = profile.keys.get(self.alias)
-
+        public_key = self.world.profile.keys.get(self.alias)
         self.__remove_key_association_from_the_profile(public_key)
-
         if self.from_beekeeper:
             await self.__remove_key_from_the_beekeeper(public_key)
-
         message = (
             "Key removed from the profile and the Beekeeper."
             if self.from_beekeeper
@@ -124,6 +110,4 @@ class RemoveKey(WorldBasedCommand):
         self.world.profile.keys.remove(key)
 
     async def __remove_key_from_the_beekeeper(self, key: PublicKeyAliased) -> None:
-        if not safe_settings.beekeeper.is_session_token_set:
-            await self.world.commands.unlock(password=self.password_ensure)
         await self.world.commands.remove_key(key_to_remove=key)
