@@ -270,12 +270,6 @@ class Clive(App[int]):
     def action_help(self) -> None:
         self.push_screen(Help())
 
-    def action_screenshot(self, filename: str | None = None, path: str = "./") -> None:
-        self.bell()
-        path = self.save_screenshot(filename, path)
-        message = f"Screenshot saved to [bold green]'{path}'[/]"
-        self.notify(message)
-
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
