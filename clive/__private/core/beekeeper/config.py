@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from types import UnionType
+from types import NoneType, UnionType
 from typing import TYPE_CHECKING, get_args
 
 from pydantic import Field
@@ -72,7 +72,7 @@ class BeekeeperConfig(CliveBaseModel):
                     config_name, config_value = line.split("=")
                     member_name = cls.__convert_config_name_to_member_name(config_name)
                     member_type = fields[member_name].annotation
-                    if isinstance(member_type, UnionType) and get_args(member_type)[-1] == type(None):
+                    if isinstance(member_type, UnionType) and get_args(member_type)[-1] is NoneType:
                         member_type = get_args(member_type)[0]
                     setattr(
                         result,
@@ -122,7 +122,7 @@ class BeekeeperConfig(CliveBaseModel):
         if expected == Url:
             return Url.parse(config_value)
 
-        if expected == bool:
+        if expected is bool:
             cv_lower = config_value.lower()
             if cv_lower == "yes":
                 return True

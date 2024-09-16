@@ -116,7 +116,7 @@ class CliveButton(Button, CliveWidget):
         - https://github.com/Textualize/textual/issues/4967
         - https://github.com/Textualize/textual/issues/1814
         """
-        if type(event) == Button.Pressed:
+        if type(event) is Button.Pressed:
             event.stop()
             self.post_message(self.Pressed(self))
 
