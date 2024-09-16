@@ -43,35 +43,19 @@ class CliveWidget(CliveDOMNode, Widget):
     def node(self) -> Node:
         return self.world.node
 
-    def bind(self, binding: Binding, before: str | None = None) -> None:
+    def bind(self, binding: Binding) -> None:
         """
         Bind a key to an action.
 
         Args:
         ----
-        binding: The binding to add.
-        before: The key of the binding to add this one before e.g.: "f2".
+            binding: The binding to add.
         """
-
-        def add_before() -> None:
-            new_bindings = {}
-            for key, value in self._bindings.keys.items():
-                if key == before:
-                    new_bindings[binding.key] = binding
-                new_bindings[key] = value
-
-            if binding.key not in new_bindings:  # if the binding was not added before, add it now
-                new_bindings[binding.key] = binding
-            self._bindings.keys = new_bindings
-
-        if before:
-            add_before()
-        else:
-            self._bindings.keys[binding.key] = binding
+        self._bindings.key_to_bindings.setdefault(binding.key, []).append(binding)
         self.refresh_bindings()
 
     def unbind(self, key: str) -> None:
         """Remove a key binding from this widget."""
-        binding = self._bindings.keys.pop(key, None)
+        binding = self._bindings.key_to_bindings.pop(key, None)
         if binding:
             self.refresh_bindings()
