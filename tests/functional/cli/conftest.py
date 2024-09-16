@@ -13,7 +13,10 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive_local_tools.cli.cli_tester import CLITester
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import (
+    WORKING_ACCOUNT_KEY_ALIAS,
+    WORKING_ACCOUNT_PASSWORD,
+)
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 
 if TYPE_CHECKING:
