@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
+    from clive.__private.models import Transaction
 
 
 class ProfileError(CliveError):
@@ -47,6 +48,13 @@ class ProfileInvalidNameError(ProfileError):
 
 
 class Cart(list[OperationBase]):
+    def fill_cart_from_transaction(self, transaction: Transaction, *, clear_current_cart: bool = True) -> None:
+        if clear_current_cart:
+            self.clear()
+        operations = transaction.operations
+        for operation in operations:
+            self.append(operation.value)  # type: ignore[attr-defined]
+
     def swap(self, index_1: int, index_2: int) -> None:
         self[index_1], self[index_2] = self[index_2], self[index_1]
 
