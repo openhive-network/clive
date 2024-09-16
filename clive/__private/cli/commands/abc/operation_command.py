@@ -22,6 +22,5 @@ class OperationCommand(PerformActionsOnTransactionCommand, ABC):
         return await self._create_operation()
 
     async def validate(self) -> None:
-        self._validate_if_sign_and_password_are_used_together()
-        self._validate_if_broadcast_is_used_with_sign_and_password()
+        self._validate_broadcast_sign_password_token()
         await super().validate()

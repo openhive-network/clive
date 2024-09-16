@@ -51,11 +51,10 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
             * if sign_key is not provided, it will be saved as unsigned.
 
         """
-        self._validate_if_sign_and_password_are_used_together()
-        self._validate_if_broadcast_is_used_without_force_unsign()
-
-        transaction = await self.__loaded_transaction
-        self.__validate_signed_transaction() if transaction.is_signed() else self.__validate_unsigned_transaction()
+        transaction_signed = await self.__is_transaction_signed()
+        if transaction_signed:
+            self.__validate_signed_transaction()
+        self._validate_broadcast_sign_password_token(already_signed_transaction=transaction_signed)
 
         self._validate_from_file_argument()
 
@@ -65,8 +64,8 @@ class ProcessTransaction(PerformActionsOnTransactionCommand):
         if self.already_signed_mode == "error" and self.sign:
             raise CLIPrettyError("You cannot sign a transaction that is already signed.", errno.EINVAL)
 
-    def __validate_unsigned_transaction(self) -> None:
-        self._validate_if_broadcast_is_used_with_sign_and_password()
+    async def __is_transaction_signed(self) -> bool:
+        return (await self.__loaded_transaction).is_signed()
 
     def _validate_from_file_argument(self) -> None:
         result = PathValidator(mode="is_file").validate(str(self.from_file))
