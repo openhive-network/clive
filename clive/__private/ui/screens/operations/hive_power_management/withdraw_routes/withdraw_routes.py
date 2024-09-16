@@ -90,7 +90,7 @@ class WithdrawRoutesTable(CliveCheckerboardTable):
 
     @property
     def object_to_watch(self) -> HivePowerDataProvider:
-        return self.screen.query_one(HivePowerDataProvider)
+        return self.screen.query_exactly_one(HivePowerDataProvider)
 
     def check_if_should_be_updated(self, content: HivePowerData) -> bool:
         return content.withdraw_routes != self._previous_withdraw_routes

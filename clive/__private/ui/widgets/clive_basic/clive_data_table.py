@@ -148,4 +148,4 @@ class CliveDataTable(CliveWidget):
 
     @property
     def provider(self) -> DataProvider[Any]:
-        return self.screen.query_one(DataProvider[Any])  # type: ignore[type-abstract]
+        return self.screen.query_exactly_one(DataProvider[Any])  # type: ignore[type-abstract]

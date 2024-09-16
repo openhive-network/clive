@@ -31,8 +31,8 @@ class Governance(OperationBaseScreen):
 
     @on(CliveTabbedContent.TabActivated)
     def change_provider_status(self, event: CliveTabbedContent.TabActivated) -> None:
-        witnesses_provider = self.query_one(WitnessesDataProvider)
-        proposals_provider = self.query_one(ProposalsDataProvider)
+        witnesses_provider = self.query_exactly_one(WitnessesDataProvider)
+        proposals_provider = self.query_exactly_one(ProposalsDataProvider)
 
         active_pane = event.tabbed_content.active_pane
         if isinstance(active_pane, Proposals):

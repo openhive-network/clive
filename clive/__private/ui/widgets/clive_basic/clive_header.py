@@ -329,7 +329,7 @@ class CliveHeader(Header, CliveWidget):
     def _update_alarm_display_showing(self, profile: Profile) -> None:
         """Use to mount/remove the alarm display depends on the current working account."""
         try:
-            left_part = self.query_one("#bar LeftPart", LeftPart)
+            left_part = self.query_exactly_one("#bar LeftPart", LeftPart)
         except NoMatches:
             # Probably due to a textual error, in some situations this widget is not present.
             # related issue: https://github.com/Textualize/textual/pull/4817
@@ -341,7 +341,7 @@ class CliveHeader(Header, CliveWidget):
         if has_working_account and not is_mounted:
             left_part.mount(AlarmDisplay())
         elif not has_working_account and is_mounted:
-            left_part.query_one(AlarmDisplay).remove()
+            left_part.query_exactly_one(AlarmDisplay).remove()
 
     @staticmethod
     def _get_node_address(node: Node) -> str:

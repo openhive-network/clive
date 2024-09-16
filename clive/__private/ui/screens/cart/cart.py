@@ -110,15 +110,15 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @property
     def button_move_up(self) -> ButtonMoveUp:
-        return self.query_one(ButtonMoveUp)
+        return self.query_exactly_one(ButtonMoveUp)
 
     @property
     def button_move_down(self) -> ButtonMoveDown:
-        return self.query_one(ButtonMoveDown)
+        return self.query_exactly_one(ButtonMoveDown)
 
     @property
     def button_delete(self) -> ButtonDelete:
-        return self.query_one(ButtonDelete)
+        return self.query_exactly_one(ButtonDelete)
 
     @property
     def operation(self) -> OperationBase:

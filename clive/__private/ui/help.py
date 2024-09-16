@@ -42,7 +42,7 @@ class Help(BaseScreen):
     @property
     def markdown_viewer(self) -> MarkdownViewer:
         """Get the Markdown widget."""
-        return self.query_one(MarkdownViewer)
+        return self.query_exactly_one(MarkdownViewer)
 
     def create_main_panel(self) -> ComposeResult:
         yield MarkdownViewer()

@@ -59,32 +59,32 @@ def assert_is_clive_composed_input_focused(
     context: str | None = None,
 ) -> None:
     composed_input_instance = (
-        pilot.app.screen.query_one(composed_input) if isinstance(composed_input, type) else composed_input
+        pilot.app.screen.query_exactly_one(composed_input) if isinstance(composed_input, type) else composed_input
     )
 
     context_details = f"Context: {context}" if context else ""
 
-    def query_one_in_composed_input(query: str | type[Widget]) -> Widget:
+    def query_exactly_one_in_composed_input(query: str | type[Widget]) -> Widget:
         try:
-            widget = composed_input_instance.query_one(query)
+            widget = composed_input_instance.query_exactly_one(query)
         except NoMatches as error:
             raise AssertionError(
-                f"{composed_input_instance}.query_one('{query}') failed.\n"
+                f"{composed_input_instance}.query_exactly_one('{query}') failed.\n"
                 f"Expected {target=} couldn't be found in such a composed input. Are you sure it consists of it?\n"
                 f"{context_details}"
             ) from error
         except TooManyMatches as error:
             raise AssertionError(
-                f"{composed_input_instance}.query_one('{query}') with {target=} returns more than one widget.\n"
+                f"{composed_input_instance}.query_exactly_one('{query}') with {target=} returns more than one widget.\n"
                 f"Probably changed structure in such composed input.\n"
                 f"{context_details}"
             ) from error
         return widget
 
     if target == "input":
-        widget = query_one_in_composed_input(CliveInput)
+        widget = query_exactly_one_in_composed_input(CliveInput)
     elif target == "select":
-        widget = query_one_in_composed_input(CurrencySelectorBase)
+        widget = query_exactly_one_in_composed_input(CurrencySelectorBase)
 
     assert_is_focused(pilot, widget, context)
 

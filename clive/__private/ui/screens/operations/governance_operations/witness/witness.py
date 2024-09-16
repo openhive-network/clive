@@ -238,7 +238,7 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
 
     @property
     def provider(self) -> WitnessesDataProvider:
-        return self.screen.query_one(WitnessesDataProvider)
+        return self.screen.query_exactly_one(WitnessesDataProvider)
 
 
 class WitnessesList(GovernanceListWidget[WitnessData]):
@@ -279,7 +279,7 @@ class WitnessesTable(GovernanceTable[WitnessData, WitnessesDataProvider]):
 
     @property
     def provider(self) -> WitnessesDataProvider:
-        return self.screen.query_one(WitnessesDataProvider)
+        return self.screen.query_exactly_one(WitnessesDataProvider)
 
     @property
     def data(self) -> list[WitnessData]:
@@ -303,7 +303,7 @@ class Witnesses(GovernanceTabPane):
         yield WitnessManualSearch()
 
     def _create_operations(self) -> list[OperationUnion] | None:
-        actual_number_of_votes = self.screen.query_one(WitnessesActions).actual_number_of_votes
+        actual_number_of_votes = self.screen.query_exactly_one(WitnessesActions).actual_number_of_votes
 
         if actual_number_of_votes > MAX_NUMBER_OF_WITNESSES_VOTES:
             self.notify(
@@ -312,7 +312,7 @@ class Witnesses(GovernanceTabPane):
             return None
 
         working_account_name = self.profile.accounts.working.name
-        operations_to_perform = self.screen.query_one(WitnessesActions).actions_to_perform
+        operations_to_perform = self.screen.query_exactly_one(WitnessesActions).actions_to_perform
 
         return [
             AccountWitnessVoteOperation(account=working_account_name, witness=witness, approve=approve)

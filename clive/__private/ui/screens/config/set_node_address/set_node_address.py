@@ -63,7 +63,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
             yield self.__nodes_list
 
     async def _valid_and_save_address(self) -> None:
-        address = self.query_one(NodeSelector).value
+        address = self.query_exactly_one(NodeSelector).value
         assert not isinstance(address, NoSelection), "No node was selected."
         await self.node.set_address(address)
         self.app.trigger_node_watchers()
