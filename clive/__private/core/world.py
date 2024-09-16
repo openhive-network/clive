@@ -14,7 +14,7 @@ from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.ui.manual_reactive import ManualReactive
+from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
 
 if TYPE_CHECKING:
@@ -151,7 +151,7 @@ class World:
         return self._app_state
 
 
-class TUIWorld(World, ManualReactive):
+class TUIWorld(World, CliveDOMNode):
     profile: Profile = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]

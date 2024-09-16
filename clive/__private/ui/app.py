@@ -22,7 +22,6 @@ from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
-from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
@@ -40,7 +39,7 @@ if TYPE_CHECKING:
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
 
-class Clive(App[int], ManualReactive):
+class Clive(App[int]):
     """A singleton instance of the Clive app."""
 
     from clive import __version__
@@ -112,7 +111,7 @@ class Clive(App[int], ManualReactive):
     @on(Notify)
     def _store_notification(self, event: Notify) -> None:
         self.notification_history.append(event.notification)
-        self.update_reactive("notification_history")
+        self.mutate_reactive(self.__class__.notification_history)  # type: ignore[arg-type]
 
     @contextmanager
     def suppressed_notifications(self) -> Iterator[None]:
@@ -289,13 +288,13 @@ class Clive(App[int], ManualReactive):
         return isinstance(screen, other)
 
     def trigger_profile_watchers(self) -> None:
-        self.world.update_reactive("profile")
+        self.world.mutate_reactive(TUIWorld.profile)  # type: ignore[arg-type]
 
     def trigger_node_watchers(self) -> None:
-        self.world.update_reactive("node")
+        self.world.mutate_reactive(TUIWorld.node)  # type: ignore[arg-type]
 
     def trigger_app_state_watchers(self) -> None:
-        self.world.update_reactive("app_state")
+        self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]
 
     def update_alarms_data_asap(self) -> None:
         """Update alarms as soon as possible after node data becomes available."""
