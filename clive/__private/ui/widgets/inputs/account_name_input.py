@@ -113,7 +113,7 @@ class AccountNameInput(TextInput):
         # >>> start workaround for Textual calling validate on input when self.watch is used. Setting validate_on to
         # values different from "changed" prevents this.
         before = self.input.validate_on
-        self.input.validate_on = ["blur"]
+        self.input.validate_on = {"blur"}
 
         self.watch(self.input, "value", self._update_account_status)
         self.input.validate_on = before
