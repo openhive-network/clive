@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 async def wait_for(condition: Callable[[], bool], message: str | Callable[[], str], timeout: float = 10.0) -> None:
     async def __wait_for() -> None:
-        while not condition():
+        while not condition():  # noqa: ASYNC110
             await asyncio.sleep(0.1)
 
     try:

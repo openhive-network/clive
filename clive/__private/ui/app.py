@@ -358,7 +358,7 @@ class Clive(App[int], ManualReactive):
 
         async def _update_alarms_data_asap() -> None:
             self._refresh_alarms_data_interval.pause()
-            while not self.world.profile.accounts.is_tracked_accounts_node_data_available:
+            while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
                 await asyncio.sleep(0.1)
             self.update_alarms_data()
             self._refresh_alarms_data_interval.resume()
