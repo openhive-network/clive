@@ -43,7 +43,9 @@ include:
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
     ref: d4e29410ea168096e1a822f77c7ce741d9cfb57a
-    file: '/templates/python_projects.gitlab-ci.yml'
+    file:
+      - '/templates/python_projects.gitlab-ci.yml'
+      - '/templates/docker_image_jobs.gitlab-ci.yml'
 
 image: ${CI_BASE_IMAGE}
 
@@ -342,6 +344,13 @@ build_and_push_clive_testnet_image:
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
+
+# this job is responsible for publishing official docker images specific to protected tags (usually made for release versions)
+build_and_publish_image:
+  stage: build_and_deploy_docker
+  extends: .publish_docker_image_template
+  script:
+    - scripts/ci-helpers/build_and_publish_instance.sh
 
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
