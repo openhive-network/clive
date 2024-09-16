@@ -446,9 +446,9 @@ class Commands(Generic[WorldT_co]):
                 await handler.execute(
                     command.execute_with_result() if isinstance(command, CommandWithResult) else command.execute(),
                 )
-        except Exception as error:  # noqa: BLE001
+        except Exception as exception:  # noqa: BLE001
             # Try to handle the error with the next exception handler
-            return await self.__surround_with_exception_handler(command, exception_handlers[1:], error)
+            return await self.__surround_with_exception_handler(command, exception_handlers[1:], exception)
         return self.__create_command_wrapper(command, handler.error)
 
     @overload

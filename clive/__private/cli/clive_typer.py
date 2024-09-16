@@ -149,16 +149,16 @@ class CliveTyper(typer.Typer):
                 self.__handle_error(error)
 
             sys.exit(exit_code)
-        except ClickException as error:
+        except ClickException as click_exception:
             # See: `typer/core.py` -> `_main` -> `except click.ClickException as e:`
             # If ClickException was raised in the registered error handler, we need to format it like Typer does.
-            rich_utils.rich_format_error(error)
-            sys.exit(error.exit_code)
-        except Exception as error:  # noqa: BLE001
+            rich_utils.rich_format_error(click_exception)
+            sys.exit(click_exception.exit_code)
+        except Exception as exception:  # noqa: BLE001
             # See: `typer/mian.py` -> `Typer.__call__` -> `except Exception as e:`
             # If any other exception was raised in the registered error handler, we need to format it like Typer does.
             setattr(
-                error,
+                exception,
                 _typer_developer_exception_attr_name,
                 DeveloperExceptionConfig(
                     pretty_exceptions_enable=self.pretty_exceptions_enable,
@@ -166,7 +166,7 @@ class CliveTyper(typer.Typer):
                     pretty_exceptions_short=self.pretty_exceptions_short,
                 ),
             )
-            raise error from None
+            raise exception from None
 
     def __get_error_handler(self, error: ExceptionT) -> ErrorHandlingCallback[ExceptionT]:
         for type_ in type(error).mro():
