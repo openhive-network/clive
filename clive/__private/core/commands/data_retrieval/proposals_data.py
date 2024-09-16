@@ -61,7 +61,7 @@ class ProposalsData:
 
 _Orders = Literal["by_total_votes_with_voted_first", "by_total_votes", "by_start_date", "by_end_date", "by_creator"]
 _OrderDirections = Literal["ascending", "descending"]
-_Statuses = Literal["all", "active", "inactive", "votable", "expired", "inactive"]
+_Statuses = Literal["all", "active", "inactive", "votable", "expired"]
 
 
 @dataclass(kw_only=True)
