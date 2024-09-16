@@ -34,7 +34,7 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(Clive, "notify", partialmethod(Clive.notify, timeout=TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT))
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepare_profile() -> Profile:
     profile = Profile(
         WORKING_ACCOUNT_DATA.account.name,
@@ -45,12 +45,12 @@ async def prepare_profile() -> Profile:
     return profile
 
 
-@pytest.fixture()
+@pytest.fixture
 async def world() -> World:
     return World()  # will load last profile by default
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> None:  # noqa: ARG001
     async with world as world_cm:
         await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
@@ -61,7 +61,7 @@ async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> No
         await world_cm.commands.sync_data_with_beekeeper()
 
 
-@pytest.fixture()
+@pytest.fixture
 def node_with_wallet() -> NodeWithWallet:
     node = run_node(use_faketime=True)
 
@@ -76,7 +76,7 @@ def node_with_wallet() -> NodeWithWallet:
     return node, wallet
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepared_env(
     node_with_wallet: NodeWithWallet,
     prepare_beekeeper_wallet: None,  # noqa: ARG001
@@ -94,12 +94,12 @@ async def prepared_env(
         await clive_quit(pilot)
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepared_tui_on_dashboard_locked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     return prepared_env
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepared_tui_on_dashboard_unlocked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
     await pilot.pause()  # required, otherwise next call to self.app inside Commands will fail with NoActiveAppError

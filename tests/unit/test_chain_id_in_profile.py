@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 DEFAULT_CHAIN_ID: Final[str] = "0" * 64
 
 
-@pytest.fixture()
+@pytest.fixture
 def profile_with_default_chain_id_from_settings() -> Iterator[Profile]:
     chain_id_identifier = NODE_CHAIN_ID
     chain_id_before = safe_settings.node.chain_id

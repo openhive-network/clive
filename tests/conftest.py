@@ -57,30 +57,30 @@ def run_prepare_before_launch() -> None:
     prepare_before_launch(enable_stream_handlers=True)
 
 
-@pytest.fixture()
+@pytest.fixture
 def wallet_name() -> str:
     return generate_wallet_name()
 
 
-@pytest.fixture()
+@pytest.fixture
 def wallet_password() -> str:
     return generate_wallet_password()
 
 
-@pytest.fixture()
+@pytest.fixture
 def key_pair() -> tuple[PublicKey, PrivateKey]:
     private_key = iwax.generate_private_key()
     public_key = private_key.calculate_public_key()
     return public_key, private_key
 
 
-@pytest.fixture()
+@pytest.fixture
 async def world(wallet_name: str) -> AsyncIterator[World]:
     async with World(profile_name=wallet_name) as world:
         yield world
 
 
-@pytest.fixture()
+@pytest.fixture
 async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
@@ -89,7 +89,7 @@ async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
     init_node.close()
 
 
-@pytest.fixture()
+@pytest.fixture
 async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.config.plugin.append("transaction_status_api")
@@ -101,12 +101,12 @@ async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
     init_node.close()
 
 
-@pytest.fixture()
+@pytest.fixture
 def beekeeper(world: World) -> Beekeeper:
     return world.beekeeper
 
 
-@pytest.fixture()
+@pytest.fixture
 def setup_wallets(world: World) -> WalletsGeneratorT:
     @wraps(setup_wallets)
     async def __setup_wallets(count: int, *, import_keys: bool = True, keys_per_wallet: int = 1) -> Wallets:
@@ -132,21 +132,21 @@ def setup_wallets(world: World) -> WalletsGeneratorT:
     return __setup_wallets
 
 
-@pytest.fixture()
+@pytest.fixture
 async def wallet(setup_wallets: WalletsGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with 1 key-pair already imported."""
     wallets = await setup_wallets(1, import_keys=True, keys_per_wallet=1)
     return wallets[0]
 
 
-@pytest.fixture()
+@pytest.fixture
 async def wallet_key_to_import(setup_wallets: WalletsGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with 1 key-pair ready to import."""
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=1)
     return wallets[0]
 
 
-@pytest.fixture()
+@pytest.fixture
 async def wallet_no_keys(setup_wallets: WalletsGeneratorT) -> WalletInfo:
     """Will return beekeeper created wallet with no keys available."""
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=0)

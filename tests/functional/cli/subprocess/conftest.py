@@ -19,14 +19,14 @@ from clive_local_tools.testnet_block_log import (
 )
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepare_profile_without_working_account(prepare_profile: Profile) -> Profile:
     prepare_profile.accounts.unset_working_account()
     prepare_profile.save()
     return prepare_profile
 
 
-@pytest.fixture()
+@pytest.fixture
 async def alt_prepare_profile() -> Profile:
     profile = Profile(
         ALT_WORKING_ACCOUNT1_NAME,
@@ -37,12 +37,12 @@ async def alt_prepare_profile() -> Profile:
     return profile
 
 
-@pytest.fixture()
+@pytest.fixture
 async def alt_world(alt_prepare_profile: Profile) -> World:  # noqa: ARG001
     return World(profile_name=ALT_WORKING_ACCOUNT1_NAME)  # we must point to alternative profile
 
 
-@pytest.fixture()
+@pytest.fixture
 async def alt_prepare_beekeeper_wallet(alt_world: World) -> None:
     async with alt_world as alt_world_cm:
         await alt_world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)

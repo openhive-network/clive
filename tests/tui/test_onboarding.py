@@ -47,7 +47,7 @@ PRIVATE_KEY: Final[str] = WORKING_ACCOUNT_DATA.account.private_key
 KEY_ALIAS_NAME: Final[str] = "master@active"
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepared_tui_on_onboarding(
     node_with_wallet: NodeWithWallet,  # noqa: ARG001
 ) -> AsyncIterator[ClivePilot]:

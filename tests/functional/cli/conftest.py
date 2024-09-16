@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     import test_tools as tt
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepare_profile() -> Profile:
     profile = Profile(
         WORKING_ACCOUNT_DATA.account.name,
@@ -31,12 +31,12 @@ async def prepare_profile() -> Profile:
     return profile
 
 
-@pytest.fixture()
+@pytest.fixture
 async def world(prepare_profile: Profile) -> World:  # noqa: ARG001
     return World()  # will load last profile by default
 
 
-@pytest.fixture()
+@pytest.fixture
 async def prepare_beekeeper_wallet(world: World) -> None:
     async with world as world_cm:
         await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
@@ -47,14 +47,14 @@ async def prepare_beekeeper_wallet(world: World) -> None:
         await world_cm.commands.sync_data_with_beekeeper()
 
 
-@pytest.fixture()
+@pytest.fixture
 async def node() -> tt.RawNode:
     node = run_node()
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     return node
 
 
-@pytest.fixture()
+@pytest.fixture
 async def cli_tester(node: tt.RawNode, prepare_beekeeper_wallet: None) -> CLITester:  # noqa: ARG001
     """Will return CliveTyper and CliRunner from typer.testing module.."""
     # import cli after default profile is set, default values for --profile-name option are set during loading

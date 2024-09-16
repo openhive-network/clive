@@ -121,7 +121,7 @@ class CliveTyper(typer.Typer):
             super().command, name=name, common_options=common_options, help=help, epilog=epilog
         )
 
-    def callback(  # type: ignore[override] # noqa: PLR0913
+    def callback(  # type: ignore[override]
         self,
         name: Optional[str] = Default(None),
         common_options: list[type[CommonOptionsBase]] | None = None,

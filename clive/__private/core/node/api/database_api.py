@@ -253,7 +253,7 @@ class DatabaseApi(Api):
         raise NotImplementedError
 
     @Api.method
-    async def list_proposal_votes(  # noqa: PLR0913
+    async def list_proposal_votes(
         self,
         *,
         start: list[str],
@@ -265,7 +265,7 @@ class DatabaseApi(Api):
         raise NotImplementedError
 
     @Api.method
-    async def list_proposals(  # noqa: PLR0913
+    async def list_proposals(
         self,
         *,
         start: list[str] | list[int] | list[datetime],

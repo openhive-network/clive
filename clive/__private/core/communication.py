@@ -107,7 +107,7 @@ class Communication:
             self.__timeout_total_secs = before["timeout_total_secs"]
             self.__pool_time_secs = before["pool_time_secs"]
 
-    def request(  # noqa: PLR0913
+    def request(
         self,
         url: str,
         *,
@@ -138,7 +138,7 @@ class Communication:
             )
         )
 
-    async def arequest(  # noqa: PLR0913
+    async def arequest(
         self,
         url: str,
         *,
@@ -167,7 +167,7 @@ class Communication:
             pool_time_secs=pool_time_secs,
         )
 
-    async def __request(  # noqa: PLR0913, C901, PLR0915
+    async def __request(  # noqa: C901, PLR0915
         self,
         url: str,
         *,
