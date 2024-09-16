@@ -48,7 +48,8 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
 
     @on(CliveButton.Pressed, "#finish-button")
     async def finish(self) -> None:
-        await self.action_finish()
+        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker(self.action_finish())
 
     async def action_finish(self) -> None:
         await self._owner.execute_post_actions()
