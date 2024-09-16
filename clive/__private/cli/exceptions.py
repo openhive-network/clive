@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import errno
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from click import ClickException
 
@@ -22,6 +22,10 @@ if TYPE_CHECKING:
 
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar
+
+BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
+    "You must provide a password or a beekeeper unlocked session token set via envvar"
+)
 
 
 class CLIPrettyError(ClickException):
@@ -96,24 +100,23 @@ class CLIBothBeekeepersPasswordAndSessionTokenSetError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
+class CLIEitherBeekeepersPasswordOrSessionTokenNotSetError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+        super().__init__(message, errno.EINVAL)
+
+
 class CLIWalletIsNotUnlockedError(CLIPrettyError):
-    def __init__(self) -> None:
+    def __init__(self, name: str) -> None:
+        self.name = name
         env_var = clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)
-        message = f"If you want to use {env_var} envvar, ensure it is in unlocked state."
+        message = f"If you want to use {env_var} envvar, ensure it is in unlocked state for wallet {self.name}."
         super().__init__(message, errno.EINVAL)
 
 
-class CLISigningRequiresAPasswordError(CLIPrettyError):
+class CLISigningRequiresAPasswordOrSessionTokenError(CLIPrettyError):
     def __init__(self) -> None:
-        message = "You must provide a password to sign the transaction with."
-        super().__init__(message, errno.EINVAL)
-
-
-class CLIBroadcastRequiresSignKeyAndPasswordError(CLIPrettyError):
-    def __init__(self) -> None:
-        message = (
-            "You must provide a password and a key alias to sign the transaction with if you want to broadcast it."
-        )
+        message = f"{BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE} to sign the transaction with."
         super().__init__(message, errno.EINVAL)
 
 
