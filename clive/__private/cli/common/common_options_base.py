@@ -35,7 +35,7 @@ class CommonOptionsBase:
         if cls not in cls.instances:
             raise CommonOptionInstanceNotAvailableError(cls)
 
-        return cls.instances[cls]  # type: ignore[return-value]
+        return cls.instances[cls]
 
     def as_dict(self) -> dict[str, Any]:
         return self.__dict__

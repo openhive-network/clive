@@ -171,7 +171,7 @@ def humanize_operation_details(operation: OperationBase) -> str:
         value_ = value
 
         # Display assets in legacy format.
-        if isinstance(value, Asset.AnyT):  # type: ignore[arg-type]
+        if isinstance(value, Asset.AnyT):
             value_ = Asset.to_legacy(value)
 
         out += f"{key}='{value_}', "

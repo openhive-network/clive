@@ -221,7 +221,7 @@ class Clive(App[int], ManualReactive):
         return self.__screen_eq(self.screen, screen)
 
     @overload
-    def push_screen(  # type: ignore[overload-overlap]
+    def push_screen(
         self,
         screen: Screen[ScreenResultType] | str,
         callback: ScreenResultCallbackType[ScreenResultType] | None = None,

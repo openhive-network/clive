@@ -21,8 +21,7 @@ def option_to_string(value: StringConvertibleOptionTypes) -> str:
         return str(value)
     if isinstance(value, Path):
         return str(value)
-    # mypy gives false positive here: https://github.com/python/mypy/issues/16707
-    if isinstance(value, tt.Asset.AnyT):  # type: ignore[arg-type]
+    if isinstance(value, tt.Asset.AnyT):
         return value.as_legacy()
     if isinstance(value, PublicKey):
         return str(value)

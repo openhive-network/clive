@@ -22,7 +22,7 @@ def asyncio_run(awaitable: Awaitable[T]) -> T:
     async def await_for_given_awaitable() -> T:
         return await awaitable
 
-    return thread_pool.submit(asyncio.run, await_for_given_awaitable()).result()  # type: ignore[arg-type]
+    return thread_pool.submit(asyncio.run, await_for_given_awaitable()).result()
 
 
 async def event_wait(event: asyncio.Event, timeout: float | None = None) -> bool:
