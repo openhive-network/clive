@@ -64,6 +64,10 @@ verify_poetry_lock_sanity:
 lint_code_with_ruff:
   stage: static_code_analysis
   extends: .lint_code_with_ruff_template
+  script:  # our own script because of newer ruff version
+    - echo -e "${TXT_BLUE}Linting all sources with Ruff...${TXT_CLEAR}" &&
+      ruff check ${MAYBE_EXPLICIT_CONFIG} ${PACKAGES_TO_CHECK}
+
 
 formatting_with_ruff_check:
   stage: static_code_analysis
