@@ -11,6 +11,7 @@ from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.communication import Communication
+from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
@@ -53,6 +54,7 @@ class World:
         super().__init__(*args, **kwargs)
 
         self._profile = self._load_profile(profile_name)
+        self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
@@ -73,6 +75,10 @@ class World:
     @property
     def commands(self) -> Commands[World]:
         return self._commands
+
+    @property
+    def known_exchanges(self) -> KnownExchanges:
+        return self._known_exchanges
 
     @property
     def beekeeper(self) -> Beekeeper:
