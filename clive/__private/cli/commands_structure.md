@@ -138,8 +138,8 @@ flowchart LR
         ConfigureWatchedAccount --> RemoveWatchedAccount[remove]
 
         Configure --> ConfigureWorkingAccount(working-account)
-        ConfigureWorkingAccount --> AddWorkingAccount[add]
-        ConfigureWorkingAccount --> RemoveWorkingAccount[remove]
+        ConfigureWorkingAccount --> SetWorkingAccount[set]
+        ConfigureWorkingAccount --> UnsetWorkingAccount[unset]
 
         Configure --> ConfigureKey(key)
         ConfigureKey --> AddKey[add]
