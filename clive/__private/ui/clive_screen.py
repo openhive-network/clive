@@ -64,6 +64,32 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         return wrapper
 
     @staticmethod
+    def prevent_action_when_no_working_account(func: Callable[P, None]) -> Callable[P, None]:
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+            app_ = get_clive().app_instance()
+            if not app_.world.profile.accounts.has_working_account:
+                logger.debug(f"action {func.__name__} prevented because no working account is set")
+                app_.notify("Cannot perform this action without working account", severity="warning")
+                return
+            func(*args, **kwargs)
+
+        return wrapper
+
+    @staticmethod
+    def prevent_action_when_no_tracked_accounts(func: Callable[P, None]) -> Callable[P, None]:
+        @wraps(func)
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+            app_ = get_clive().app_instance()
+            if not app_.world.profile.accounts.has_tracked_accounts:
+                logger.debug(f"action {func.__name__} prevented because no tracked accounts are present")
+                app_.notify("Cannot perform this action without any tracked accounts", severity="warning")
+                return
+            func(*args, **kwargs)
+
+        return wrapper
+
+    @staticmethod
     def try_again_after_unlock(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
         @wraps(func)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
