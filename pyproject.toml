@@ -35,13 +35,13 @@ dynaconf = "3.1.11"
 loguru = "0.7.2"
 textual = "0.62.0"
 aiohttp = "3.9.1"
-pydantic = "1.10.11"
+pydantic = "1.10.18"
 typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
 
 wax = "0.3.10.dev102+32ca5ac"
-schemas = "0.0.1.dev309+5a8cfff"
+schemas = "0.0.1.dev310+c0550c1"
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
