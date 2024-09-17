@@ -4,6 +4,7 @@ set -euo pipefail
 
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
+
 if [[ "$EUID" -eq 0 ]]; then
   if [[ -z "${CLIVE_UID:-}" ]]; then
     echo "Warning: variable CLIVE_UID is not set or set to an empty value." >&2
@@ -19,7 +20,7 @@ if [[ "$EUID" -eq 0 ]]; then
     fi
 
     echo "Respawning entrypoint as user clive"
-    sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
+    exec sudo -HEnu clive /bin/bash "${SCRIPTPATH}/entrypoint.sh" "$@"
     exit 0
   fi
 fi
@@ -50,6 +51,7 @@ launch_cli() {
   clive --install-completion >/dev/null 2>&1
   clive beekeeper spawn # Spawn the beekeeper so commands that require it don't have to do it every time
   bash
+  clive beekeeper close
 }
 
 INTERACTIVE_CLI_MODE=0
@@ -86,7 +88,7 @@ source "${PYTHON_VENV_PATH}/bin/activate"
 if [ "${TESTNET_MODE}" = "0" ]; then
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
     echo "Launching clive in TUI mode on mainnet"
-    clive
+    exec clive
   else
     echo "Launching clive in CLI mode on mainnet"
     launch_cli
@@ -94,7 +96,7 @@ if [ "${TESTNET_MODE}" = "0" ]; then
 else
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
     echo "Launching clive in TUI mode on testnet"
-    python3 testnet_node.py
+    exec python3 testnet_node.py
   else
     echo "Launching clive in CLI mode on testnet"
 
