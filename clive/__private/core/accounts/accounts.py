@@ -12,6 +12,7 @@ from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from clive.__private.core.commands.data_retrieval.update_node_data import NodeData
+    from clive.__private.core.known_exchanges import ExchangeEntity
 
 
 class AccountError(CliveError):
@@ -82,6 +83,18 @@ class Account:
         except InvalidAccountNameError:
             return False
         return True
+
+
+@dataclass
+class ExchangeAccount(Account):
+    entity: ExchangeEntity
+    hive_deposit: bool = True
+    hbd_deposit: bool = False
+    encrypted_memo: bool = False
+    recurrent_transfers: bool = False
+
+    def __hash__(self) -> int:
+        return super().__hash__()
 
 
 @dataclass
