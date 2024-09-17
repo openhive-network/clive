@@ -47,53 +47,68 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
         """Provides the ability to control the binding order in the footer."""
         return self._sort_bindings(super().active_bindings)
 
-    @staticmethod
-    def prevent_action_when_no_accounts_node_data(func: Callable[P, None]) -> Callable[P, None]:
-        @wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-            app_ = get_clive().app_instance()
-            if (
-                not app_.world.profile.accounts.is_tracked_accounts_node_data_available
-                or not app_.world.profile.accounts.is_tracked_accounts_alarms_data_available
-            ):
-                logger.debug(f"action {func.__name__} prevented because no node or alarms data is available yet")
-                app_.notify("Waiting for data...", severity="warning")
-                return
-            func(*args, **kwargs)
+    @classmethod
+    def prevent_action_when_no_accounts_node_data(
+        cls, message: str = "Waiting for data..."
+    ) -> Callable[[Callable[P, None]], Callable[P, None]]:
+        def decorator(func: Callable[P, None]) -> Callable[P, None]:
+            @wraps(func)
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+                app = get_clive().app_instance()
+                if (
+                    not app.world.profile.accounts.is_tracked_accounts_node_data_available
+                    and not app.world.profile.accounts.is_tracked_accounts_alarms_data_available
+                ):
+                    cls._notify_app_and_logger_on_prevent(func.__name__, message)
+                    return
 
-        return wrapper
+                func(*args, **kwargs)
 
-    @staticmethod
-    def prevent_action_when_no_working_account(func: Callable[P, None]) -> Callable[P, None]:
-        @wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-            app_ = get_clive().app_instance()
-            if not app_.world.profile.accounts.has_working_account:
-                logger.debug(f"action {func.__name__} prevented because no working account is set")
-                app_.notify("Cannot perform this action without working account", severity="warning")
-                return
-            func(*args, **kwargs)
+            return wrapper
 
-        return wrapper
+        return decorator
 
-    @staticmethod
-    def prevent_action_when_no_tracked_accounts(func: Callable[P, None]) -> Callable[P, None]:
-        @wraps(func)
-        def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-            app_ = get_clive().app_instance()
-            if not app_.world.profile.accounts.has_tracked_accounts:
-                logger.debug(f"action {func.__name__} prevented because no tracked accounts are present")
-                app_.notify("Cannot perform this action without any tracked accounts", severity="warning")
-                return
-            func(*args, **kwargs)
+    @classmethod
+    def prevent_action_when_no_working_account(
+        cls, message: str = "Cannot perform this action without working account"
+    ) -> Callable[[Callable[P, None]], Callable[P, None]]:
+        def decorator(func: Callable[P, None]) -> Callable[P, None]:
+            @wraps(func)
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+                app = get_clive().app_instance()
+                if not app.world.profile.accounts.has_working_account:
+                    cls._notify_app_and_logger_on_prevent(func.__name__, message)
+                    return
 
-        return wrapper
+                func(*args, **kwargs)
+
+            return wrapper
+
+        return decorator
+
+    @classmethod
+    def prevent_action_when_no_tracked_accounts(
+        cls, message: str = "Cannot perform this action without tracked accounts"
+    ) -> Callable[[Callable[P, None]], Callable[P, None]]:
+        def decorator(func: Callable[P, None]) -> Callable[P, None]:
+            @wraps(func)
+            def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
+                app = get_clive().app_instance()
+                if not app.world.profile.accounts.has_tracked_accounts:
+                    cls._notify_app_and_logger_on_prevent(func.__name__, message)
+                    return
+
+                func(*args, **kwargs)
+
+            return wrapper
+
+        return decorator
 
     @staticmethod
     def try_again_after_unlock(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
         @wraps(func)
         async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-            app_ = get_clive().app_instance()
+            app = get_clive().app_instance()
 
             try:
                 await func(*args, **kwargs)
@@ -102,15 +117,22 @@ class CliveScreen(Screen[ScreenResultType], CliveWidget):
 
                 async def _on_unlock_result(*, unlocked: bool) -> None:
                     if not unlocked:
-                        app_.notify("Aborted. UNLOCKED mode was required for this action.", severity="warning")
+                        app.notify("Aborted. UNLOCKED mode was required for this action.", severity="warning")
                         return
 
                     await func(*args, **kwargs)
 
-                app_.notify("This action requires Clive to be in UNLOCKED mode. Please unlock...")
-                await app_.push_screen(Unlock(unlock_result_callback=_on_unlock_result))
+                app.notify("This action requires Clive to be in UNLOCKED mode. Please unlock...")
+                await app.push_screen(Unlock(unlock_result_callback=_on_unlock_result))
 
         return wrapper
+
+    @staticmethod
+    def _notify_app_and_logger_on_prevent(func_name: str, message: str) -> None:
+        app = get_clive().app_instance()
+
+        app.notify(message, severity="warning")
+        logger.debug(f"Preventing action: {func_name} with message of: {message}")
 
     @on(ScreenSuspend)
     def _post_suspended(self) -> None:

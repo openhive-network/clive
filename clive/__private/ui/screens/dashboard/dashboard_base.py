@@ -168,8 +168,8 @@ class BalanceStatsButton(DynamicOneLineButtonUnfocusable):
 
         return asset_name_to_value[asset_name]
 
+    @CliveScreen.prevent_action_when_no_accounts_node_data()
     @on(OneLineButton.Pressed, ".balance-button")
-    @CliveScreen.prevent_action_when_no_accounts_node_data
     def push_balance_screen(self) -> None:
         if self._balance_type == "liquid":
             self.app.push_screen(LiquidNavigationDialog(self._account, asset_type=self._asset_type))
@@ -228,7 +228,7 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
             lambda: f"Account update: {humanize_datetime(self._account.data.last_account_update)}",
         )
 
-    @CliveScreen.prevent_action_when_no_accounts_node_data
+    @CliveScreen.prevent_action_when_no_accounts_node_data()
     @on(OneLineButton.Pressed, "#account-details-button")
     def push_account_details_screen(self) -> None:
         self.app.push_screen(AccountDetails(self._account))
@@ -313,15 +313,15 @@ class DashboardBase(BaseScreen):
             await accounts_container.query("*").remove()
             await accounts_container.mount_all(widgets_to_mount)
 
-    @CliveScreen.prevent_action_when_no_working_account
-    @CliveScreen.prevent_action_when_no_accounts_node_data
+    @CliveScreen.prevent_action_when_no_working_account()
+    @CliveScreen.prevent_action_when_no_accounts_node_data()
     def action_operations(self) -> None:
         self.app.push_screen(Operations())
 
     def action_config(self) -> None:
         self.app.push_screen(Config())
 
-    @CliveScreen.prevent_action_when_no_tracked_accounts
+    @CliveScreen.prevent_action_when_no_tracked_accounts()
     def action_switch_working_account(self) -> None:
         self.app.push_screen(SwitchWorkingAccountDialog())
 
