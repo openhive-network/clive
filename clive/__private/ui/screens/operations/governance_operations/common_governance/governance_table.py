@@ -129,15 +129,15 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
         even: Whether the row is even or odd.
         """
         super().__init__()
-        self.__row_data: GovernanceDataT = row_data
-        self.__evenness = "even" if even else "odd"
+        self._row_data: GovernanceDataT = row_data
+        self._evenness = "even" if even else "odd"
 
     def on_mount(self) -> None:
         self.watch(self.governance_checkbox, "disabled", callback=self.dimm_on_disabled_checkbox)
 
     def compose(self) -> ComposeResult:
         self.governance_checkbox = GovernanceCheckbox(
-            is_voted=self.__row_data.voted,
+            is_voted=self._row_data.voted,
             initial_state=self.is_operation_in_cart or self.is_already_in_actions_container,
             disabled=bool(self.profile.accounts.working.data.proxy) or self.is_operation_in_cart,
         )
@@ -169,11 +169,11 @@ class GovernanceTableRow(Grid, CliveWidget, Generic[GovernanceDataT], AbstractCl
 
     @property
     def row_data(self) -> GovernanceDataT:
-        return self.__row_data
+        return self._row_data
 
     @property
     def evenness(self) -> str:
-        return self.__evenness
+        return self._evenness
 
     @abstractmethod
     def create_row_content(self) -> ComposeResult:
@@ -217,10 +217,10 @@ class GovernanceTable(
 
     def __init__(self) -> None:
         super().__init__()
-        self.__element_index = 0
+        self._element_index = 0
 
-        self.__header = self.create_header()
-        self.__is_loading = True
+        self._header = self.create_header()
+        self._is_loading = True
 
     def compose(self) -> ComposeResult:
         yield self.header
@@ -247,59 +247,59 @@ class GovernanceTable(
         self.set_loaded()
 
     async def loading_set(self) -> None:
-        self.__is_loading = True
+        self._is_loading = True
         with contextlib.suppress(NoMatches):
             selected_list = self.query_one(GovernanceListWidget)  # type: ignore[type-abstract]
             await selected_list.query("*").remove()
             await selected_list.mount(Label("Loading..."))
 
     def set_loaded(self) -> None:
-        self.__is_loading = False
+        self._is_loading = False
 
     @on(PageDownButton.Pressed)
     async def action_next_page(self) -> None:
-        if self.__is_loading:
+        if self._is_loading:
             return
 
         # It is used to prevent the user from switching to an empty page by key binding
-        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
+        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self._element_index:
             self.notify("No elements on the next page", severity="warning")
             return
 
-        self.__element_index += self.MAX_ELEMENTS_ON_PAGE
+        self._element_index += self.MAX_ELEMENTS_ON_PAGE
 
-        self.__header.button_up.visible = True
+        self._header.button_up.visible = True
 
-        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self.__element_index:
-            self.__header.button_down.visible = False
+        if self.data_length - self.MAX_ELEMENTS_ON_PAGE <= self._element_index:
+            self._header.button_down.visible = False
 
         await self.sync_list(focus_first_element=True)
 
     @on(PageUpButton.Pressed)
     async def action_previous_page(self) -> None:
-        if self.__is_loading:
+        if self._is_loading:
             return
 
         # It is used to prevent the user going to a page with a negative index by key binding
-        if self.__element_index <= 0:
+        if self._element_index <= 0:
             self.notify("No elements on the previous page", severity="warning")
             return
 
-        self.__header.button_down.visible = True
+        self._header.button_down.visible = True
 
-        self.__element_index -= self.MAX_ELEMENTS_ON_PAGE
+        self._element_index -= self.MAX_ELEMENTS_ON_PAGE
 
-        if self.__element_index <= 0:
-            self.__header.button_up.visible = False
+        if self._element_index <= 0:
+            self._header.button_up.visible = False
 
         await self.sync_list(focus_first_element=True)
 
     async def reset_page(self) -> None:
-        self.__element_index = 0
-        self.__header.button_up.visible = False
-        self.__header.button_down.visible = True
+        self._element_index = 0
+        self._header.button_up.visible = False
+        self._header.button_down.visible = True
 
-        if not self.__is_loading:
+        if not self._is_loading:
             await self.sync_list()
 
     @property
@@ -316,7 +316,7 @@ class GovernanceTable(
         if not self.is_data_available:
             return None
 
-        return self.data[self.__element_index : self.__element_index + self.MAX_ELEMENTS_ON_PAGE]
+        return self.data[self._element_index : self._element_index + self.MAX_ELEMENTS_ON_PAGE]
 
     @property
     def data_length(self) -> int:
@@ -327,11 +327,11 @@ class GovernanceTable(
 
     @property
     def element_index(self) -> int:
-        return self.__element_index
+        return self._element_index
 
     @property
     def header(self) -> GovernanceListHeader:
-        return self.__header
+        return self._header
 
     @property
     def is_proxy_set(self) -> bool:

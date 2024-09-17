@@ -37,17 +37,17 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
         pending: Indicates if the operation with such identifier is already in the cart.
         """
         super().__init__(id=self.create_action_row_id(identifier))
-        self.__identifier = identifier
-        self.__vote = vote
-        self.__pending = pending
+        self._identifier = identifier
+        self._vote = vote
+        self._pending = pending
 
     def compose(self) -> ComposeResult:
-        if self.__pending:
+        if self._pending:
             yield Label("Pending", classes="action-pending action-label")
             yield Label(str(self.action_identifier), classes="action-identifier")
             return
 
-        if self.__vote:
+        if self._vote:
             yield Label("Vote", classes="action-vote action-label")
         else:
             yield Label("Unvote", classes="action-unvote action-label")
@@ -55,7 +55,7 @@ class GovernanceActionRow(Horizontal, AbstractClassMessagePump):
 
     @property
     def action_identifier(self) -> str:
-        return self.__identifier
+        return self._identifier
 
     @staticmethod
     @abstractmethod
@@ -71,9 +71,9 @@ class GovernanceActions(ScrollablePartFocusable):
 
     def __init__(self) -> None:
         super().__init__()
-        self.__actions_to_perform: dict[str, bool] = {}
+        self._actions_to_perform: dict[str, bool] = {}
         """A dict with action identifier as key and action to pe performed as value"""
-        self.__actions_votes = 0
+        self._actions_votes = 0
 
     def compose(self) -> ComposeResult:
         yield SectionTitle("Actions to be performed")
@@ -94,9 +94,9 @@ class GovernanceActions(ScrollablePartFocusable):
         await self.mount(self.create_action_row(identifier, vote=vote, pending=pending))
 
         if vote:
-            self.__actions_votes += 1
+            self._actions_votes += 1
         else:
-            self.__actions_votes -= 1
+            self._actions_votes -= 1
 
         if not pending:
             self.add_to_actions(identifier, vote=vote)
@@ -110,25 +110,25 @@ class GovernanceActions(ScrollablePartFocusable):
             return
 
         if vote:
-            self.__actions_votes -= 1
+            self._actions_votes -= 1
         else:
-            self.__actions_votes += 1
+            self._actions_votes += 1
 
         self.delete_from_actions(identifier)
 
     def add_to_actions(self, identifier: str, *, vote: bool) -> None:
-        self.__actions_to_perform[identifier] = vote
+        self._actions_to_perform[identifier] = vote
 
     def delete_from_actions(self, identifier: str) -> None:
-        self.__actions_to_perform.pop(identifier)
+        self._actions_to_perform.pop(identifier)
 
     @property
     def actions_votes(self) -> int:
-        return self.__actions_votes
+        return self._actions_votes
 
     @property
     def actions_to_perform(self) -> dict[str, bool]:
-        return self.__actions_to_perform
+        return self._actions_to_perform
 
     def hook_on_row_added(self) -> None:
         """Create any action when an action row is added to the action table."""
