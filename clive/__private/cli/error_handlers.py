@@ -2,7 +2,6 @@ import errno
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.exceptions import CLIPrettyError, CLIProfileAlreadyExistsError, CLIProfileDoesNotExistsError
-from clive.__private.core.commands.abc.command_secured import InvalidPasswordError
 from clive.__private.core.commands.unlock import WalletDoesNotExistsError
 from clive.__private.core.error_handlers.abc.error_notificator import CannotNotifyError
 from clive.__private.storage.service import ProfileAlreadyExistsError, ProfileDoesNotExistsError
@@ -26,10 +25,6 @@ def register_error_handlers(cli: CliveTyper) -> None:
     @cli.error_handler(CannotNotifyError)
     def handle_cannot_notify_error(error: CannotNotifyError) -> None:
         raise CLIPrettyError(error.reason, 1) from None
-
-    @cli.error_handler(InvalidPasswordError)
-    def handle_invalid_password_error(_: InvalidPasswordError) -> None:
-        raise CLIPrettyError("Invalid password.", errno.EINVAL) from None
 
     @cli.error_handler(WalletDoesNotExistsError)
     def handle_wallet_does_not_exists_error(_: WalletDoesNotExistsError) -> None:
