@@ -9,6 +9,8 @@ from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.accounts.accounts import Account
+
 
 class AccountWitnessProxy(OperationSummary):
     SECTION_TITLE: ClassVar[str] = "Account witness proxy"
@@ -31,6 +33,9 @@ class AccountWitnessProxy(OperationSummary):
     def content(self) -> ComposeResult:
         yield LabelizedInput("Account name", self.working_account_name)
         yield LabelizedInput("New proxy", self._new_proxy if self._new_proxy is not None else "Proxy will be removed")
+
+    def get_account_to_be_marked_as_known(self) -> str | Account | None:
+        return self._new_proxy
 
     def _create_operation(self) -> AccountWitnessProxyOperation:
         return AccountWitnessProxyOperation(account=self.working_account_name, proxy=self.proxy_to_be_set)
