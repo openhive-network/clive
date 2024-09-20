@@ -9,7 +9,6 @@ from textual.events import Mount
 from clive.__private.core.accounts.accounts import Account
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.text_input import TextInput
-from clive.__private.validators.account_name_validator import AccountNameValidator
 from clive.__private.validators.bad_account_validator import BadAccountValidator
 
 if TYPE_CHECKING:
@@ -91,7 +90,7 @@ class AccountNameInput(TextInput):
             include_title_in_placeholder_when_blurred=include_title_in_placeholder_when_blurred,
             show_invalid_reasons=show_invalid_reasons,
             required=required,
-            validators=validators or [AccountNameValidator(), BadAccountValidator(self.profile.accounts)],
+            validators=validators or [BadAccountValidator(self.profile.accounts)],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
