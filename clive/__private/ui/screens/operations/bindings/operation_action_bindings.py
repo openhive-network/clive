@@ -1,9 +1,11 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal
 
 from pydantic import ValidationError
 from textual.binding import Binding
+from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
@@ -20,9 +22,9 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import (
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from clive.__private.core.accounts.accounts import Account
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.models.schemas import OperationUnion
-
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
 
@@ -132,6 +134,17 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         await self.__fast_broadcast()
 
+    def get_account_to_be_marked_as_known(self) -> str | Account | None:
+        """
+        Return the account (if overwritten) that should have been marked as known after action like add to cart.
+
+        Notice:
+        _______
+        If this method is not overridden, the account from the account name input (action receiver),
+        will be marked as known.
+        """
+        return None
+
     @CliveScreen.try_again_after_unlock
     async def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
@@ -183,10 +196,16 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         return True
 
     def _add_account_to_known_after_action(self) -> None:
-        account_inputs = self.query(AccountNameInput)
+        """Add account that is given via parameter. If not given - add all accounts from the account name inputs."""
+        account = self.get_account_to_be_marked_as_known()
 
-        for account_input in account_inputs:
-            account_input.add_account_to_known()
+        if account is not None:
+            if not self.profile.accounts.is_account_known(account):
+                self.profile.accounts.known.add(account)
+            return
+
+        with contextlib.suppress(NoMatches):
+            self.query_one(AccountNameInput).add_account_to_known()
 
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()
