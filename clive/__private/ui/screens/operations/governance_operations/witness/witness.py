@@ -32,7 +32,7 @@ from clive.__private.ui.screens.operations.governance_operations.common_governan
     GovernanceTable,
     GovernanceTableRow,
 )
-from clive.__private.ui.widgets.buttons.search_operation_buttons import ClearButton, SearchButton
+from clive.__private.ui.widgets.buttons import ClearButton, SearchButton
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput

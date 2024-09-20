@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
+from clive.__private.ui.widgets.buttons import CancelButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
 

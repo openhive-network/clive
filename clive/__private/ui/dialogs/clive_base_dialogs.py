@@ -11,9 +11,7 @@ from textual.reactive import reactive
 from textual.screen import ModalScreen
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
-from clive.__private.ui.widgets.buttons.close_button import CloseButton
-from clive.__private.ui.widgets.buttons.confirm_button import ConfirmButton
+from clive.__private.ui.widgets.buttons import CancelButton, CloseButton, ConfirmButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
