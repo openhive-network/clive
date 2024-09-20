@@ -9,8 +9,7 @@ from textual.containers import Center, Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive.__private.ui.widgets.buttons.page_switch_buttons import PageDownButton, PageUpButton
-from clive.__private.ui.widgets.buttons.search_operation_buttons import ClearButton, SearchButton
+from clive.__private.ui.widgets.buttons import ClearButton, PageDownButton, PageUpButton, SearchButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,

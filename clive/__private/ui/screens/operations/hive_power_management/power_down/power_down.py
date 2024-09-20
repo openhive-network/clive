@@ -19,8 +19,7 @@ from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
-from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
-from clive.__private.ui.widgets.buttons.generous_button import GenerousButton
+from clive.__private.ui.widgets.buttons import CancelButton, GenerousButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,

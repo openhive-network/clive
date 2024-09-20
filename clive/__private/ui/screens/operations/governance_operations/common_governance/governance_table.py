@@ -19,7 +19,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.governance_operations.governance_checkbox import GovernanceCheckbox
-from clive.__private.ui.widgets.buttons.page_switch_buttons import PageDownButton, PageUpButton
+from clive.__private.ui.widgets.buttons import PageDownButton, PageUpButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
