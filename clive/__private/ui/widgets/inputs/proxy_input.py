@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME2_PLACEHOLDER
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
-from clive.__private.validators.bad_account_validator import BadAccountValidator
 from clive.__private.validators.proxy_validator import ProxyValidator
 
 if TYPE_CHECKING:
@@ -41,7 +40,6 @@ class ProxyInput(AccountNameInput):
         ------------------------------------
         setting_proxy: Whether setting proxy or just getting proxy for other purpose.
         """
-        working_account_name = self.profile.accounts.working.name
         super().__init__(
             title=title,
             value=value,
@@ -51,10 +49,7 @@ class ProxyInput(AccountNameInput):
             show_invalid_reasons=show_invalid_reasons,
             required=required,
             show_known_account=show_known_account,
-            validators=[
-                ProxyValidator(working_account_name if setting_proxy else None),
-                BadAccountValidator(self.profile.accounts),
-            ],
+            validators=ProxyValidator(self.profile.accounts, check_is_not_working_account=setting_proxy),
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,

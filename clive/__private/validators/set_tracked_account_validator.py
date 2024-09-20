@@ -5,13 +5,13 @@ from typing import TYPE_CHECKING, ClassVar, Final
 from textual.validation import Function, ValidationResult
 
 from clive.__private.settings import safe_settings
-from clive.__private.validators.account_name_validator import AccountNameValidator
+from clive.__private.validators.bad_account_validator import BadAccountValidator
 
 if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
 
 
-class SetTrackedAccountValidator(AccountNameValidator):
+class SetTrackedAccountValidator(BadAccountValidator):
     MAX_NUMBER_OF_TRACKED_ACCOUNTS: Final[int] = safe_settings.max_number_of_tracked_accounts
     MAX_NUMBER_OF_TRACKED_ACCOUNTS_FAILURE: Final[str] = (
         f"You can only track {MAX_NUMBER_OF_TRACKED_ACCOUNTS} accounts."
@@ -19,7 +19,7 @@ class SetTrackedAccountValidator(AccountNameValidator):
     ACCOUNT_ALREADY_TRACKED_FAILURE: ClassVar[str] = "You cannot track account while its already tracked."
 
     def __init__(self, profile: Profile) -> None:
-        super().__init__()
+        super().__init__(profile.accounts, known_overrides_bad=False)
         self._profile = profile
 
     def validate(self, value: str) -> ValidationResult:
