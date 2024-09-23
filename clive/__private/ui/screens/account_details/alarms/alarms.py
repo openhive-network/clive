@@ -12,7 +12,7 @@ from clive.__private.ui.dialogs import AlarmInfoDialog
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.account_details.alarms.alarm_fix_details import get_detailed_alarm_fix_details
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,

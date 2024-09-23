@@ -10,7 +10,7 @@ from clive.__private.core.contextual import ContextT
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.form_screen import FirstFormScreen
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:

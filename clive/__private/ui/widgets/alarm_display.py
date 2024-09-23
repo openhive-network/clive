@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual import on
 
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import DynamicOneLineButtonUnfocusable
 
 if TYPE_CHECKING:

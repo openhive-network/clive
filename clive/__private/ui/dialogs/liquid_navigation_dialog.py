@@ -11,7 +11,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.clive_base_dialogs import CliveInfoDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operations import HivePowerManagement, Savings, TransferToAccount
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.section import Section
 
 if TYPE_CHECKING:

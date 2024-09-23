@@ -12,7 +12,7 @@ from clive.__private.ui.screens.config.account_management.common.manage_accounts
     ManageAccountsTable,
 )
 from clive.__private.ui.widgets.add_account_container import AddAccountContainer
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import SectionBody
 

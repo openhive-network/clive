@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from textual.widgets import Static, TabPane
 
 from clive.__private.ui.styling import label_future_functionality
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton
 
 if TYPE_CHECKING:
     from rich.text import TextType

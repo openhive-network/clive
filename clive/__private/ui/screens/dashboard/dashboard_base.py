@@ -26,7 +26,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.operations import Operations, Savings
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton, OneLineButtonUnfocusable
+from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
     DynamicOneLineButtonUnfocusable,
 )

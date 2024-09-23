@@ -18,8 +18,7 @@ from clive.__private.ui.screens.operations.bindings import OperationActionBindin
 from clive.__private.ui.screens.operations.operation_summary.remove_withdraw_vesting_route import (
     RemoveWithdrawVestingRoute,
 )
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,

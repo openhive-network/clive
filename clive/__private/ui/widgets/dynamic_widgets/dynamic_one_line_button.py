@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_widget import (
     DynamicWidget,
     DynamicWidgetFirstTryCallbackType,

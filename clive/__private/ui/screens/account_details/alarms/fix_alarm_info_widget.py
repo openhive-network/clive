@@ -8,7 +8,7 @@ from textual.widgets import Static
 
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.screens.confirm_with_password.confirm_with_password import ConfirmWithPassword
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import OneLineButton
 from clive.__private.ui.widgets.section_title import SectionTitle
 
 if TYPE_CHECKING:
