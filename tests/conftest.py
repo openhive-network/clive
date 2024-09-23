@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from clive_local_tools.data.types import SessionTokenContextT, Wallets, WalletsGeneratorT
+    from clive_local_tools.types import SessionTokenContextT, Wallets, WalletsGeneratorT
 
 
 @pytest.fixture(autouse=True, scope="session")

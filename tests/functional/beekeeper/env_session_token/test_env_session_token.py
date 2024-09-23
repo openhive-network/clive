@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.data.types import SessionTokenContextT
+    from clive_local_tools.types import SessionTokenContextT
 
 
 async def test_env_beekeeper_session_token(
