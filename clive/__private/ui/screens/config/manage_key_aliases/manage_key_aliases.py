@@ -17,7 +17,7 @@ from clive.__private.ui.screens.config.manage_key_aliases.edit_key_alias import 
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAlias
 from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.screens.confirm_with_password.confirm_with_password import ConfirmWithPassword
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,

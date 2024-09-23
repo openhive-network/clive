@@ -12,7 +12,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.account_management.account_management import AccountManagement
 from clive.__private.ui.screens.config.manage_key_aliases import ManageKeyAliases
 from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddress
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.dialog_container import DialogContainer
 
 if TYPE_CHECKING:

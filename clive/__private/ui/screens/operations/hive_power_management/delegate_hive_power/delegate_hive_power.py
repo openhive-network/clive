@@ -16,8 +16,7 @@ from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.remove_delegation import RemoveDelegation
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
+from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,

@@ -18,7 +18,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
-from clive.__private.ui.widgets.buttons.clive_button import CliveButton
+from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
