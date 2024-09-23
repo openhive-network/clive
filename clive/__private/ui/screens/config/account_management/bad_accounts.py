@@ -16,7 +16,6 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.inputs.account_name_pattern_input import AccountNamePatternInput
-from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section_title import SectionTitle
 
@@ -101,7 +100,7 @@ class BadAccountsTable(CliveCheckerboardTable):
         if self._current_page_index <= self.FIRST_PAGE_INDEX:
             self._page_up_button.visible = False
 
-        await self._rebuild_rows()
+        await self.rebuild_rows()
 
     @on(PageDownButton.Pressed)
     async def action_next_page(self) -> None:
@@ -114,7 +113,7 @@ class BadAccountsTable(CliveCheckerboardTable):
         if self._current_page_index >= self._last_page_index:
             self._page_down_button.visible = False
 
-        await self._rebuild_rows()
+        await self.rebuild_rows()
 
     async def set_search_mode(self, pattern: str) -> None:
         pattern = rf"^{pattern}"
@@ -135,28 +134,10 @@ class BadAccountsTable(CliveCheckerboardTable):
     async def _reset_table(self) -> None:
         self._current_page_index = self.FIRST_PAGE_INDEX
         self._last_page_index = self._get_last_page_index()
+
         self._page_up_button.visible = False
         self._page_down_button.visible = True
-
-        await self._rebuild_rows()
-
-    async def _rebuild_rows(self) -> None:
-        with self.app.batch_update():
-            await self._remove_rows()
-            await self._mount_new_rows()
-
-    async def _remove_rows(self) -> None:
-        await self.query(CliveCheckerboardTableRow).remove()
-        await self.query(NoContentAvailable).remove()
-
-    async def _mount_new_rows(self) -> None:
-        if len(self._bad_account_names) == 0:
-            await self.mount(NoContentAvailable("No bad accounts found with this pattern"))
-            return
-
-        new_rows = self.create_static_rows()
-        self._set_evenness_styles(new_rows)
-        await self.mount_all(new_rows)
+        await self.rebuild_rows()
 
 
 class BadAccounts(TabPane):

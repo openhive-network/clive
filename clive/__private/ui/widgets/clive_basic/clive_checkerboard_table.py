@@ -8,6 +8,7 @@ from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.section_title import SectionTitle
 from clive.exceptions import CliveDeveloperError
 
@@ -166,6 +167,7 @@ class CliveCheckerboardTable(CliveWidget):
 
     ATTRIBUTE_TO_WATCH: ClassVar[str] = ""
     """attribute name to trigger an update of the table and to download new data"""
+    NO_CONTENT_TEXT: ClassVar[str] = "No content available"
 
     def __init__(self, *, header: Widget, title: Widget | str | None = None) -> None:
         super().__init__()
@@ -212,12 +214,41 @@ class CliveCheckerboardTable(CliveWidget):
         ------
         RebuildStaticTableWithContentError: When table is static and content arg is provided.
         """
-        if not self.should_be_dynamic and content is not None:  # content is given, but table is static
-            raise RebuildStaticTableWithContentError
+        self._assert_rebuild_static_table_with_content(content)  # content is given, but table is static
 
         with self.app.batch_update():
             await self.query("*").remove()
             await self.mount_all(self._create_table_content(content))
+
+    async def rebuild_rows(self, content: Content | None = None) -> None:
+        """
+        Rebuilds table rows - explicit use available for static and dynamic version.
+
+        Raises:  # noqa: D406
+        ------
+        RebuildStaticTableWithContentError: When table is static and content arg is provided.
+        """
+        self._assert_rebuild_static_table_with_content(content)  # content is given, but table is static
+
+        with self.app.batch_update():
+            await self.query(CliveCheckerboardTableRow).remove()
+
+            new_rows = self.create_static_rows() if not self.should_be_dynamic else self.create_dynamic_rows(content)
+            new_rows = self._prepare_rows_to_mount(new_rows)
+
+            await self.mount_all(new_rows)
+
+    def _assert_rebuild_static_table_with_content(self, content: Content | None) -> None:
+        if not self.should_be_dynamic and content is not None:
+            raise RebuildStaticTableWithContentError
+
+    def _prepare_rows_to_mount(self, rows: Sequence[CliveCheckerboardTableRow]) -> Sequence[CliveCheckerboardTableRow]:
+        """Return `NoContentAvailable` if there is no content to display or set evenness styles to rows."""
+        if not rows:
+            return [self.get_no_content_available_widget()]  # type: ignore[list-item]
+
+        self._set_evenness_styles(rows)
+        return rows
 
     def _create_table_content(self, content: Content | None = None) -> list[Widget]:
         if content is not None and not self.is_anything_to_display(
@@ -230,7 +261,8 @@ class CliveCheckerboardTable(CliveWidget):
             rows = self.create_dynamic_rows(content)
         else:
             rows = self.create_static_rows()
-        self._set_evenness_styles(rows)
+
+        rows = self._prepare_rows_to_mount(rows)
 
         if self._title is None:
             return [self._header, *rows]
@@ -248,7 +280,7 @@ class CliveCheckerboardTable(CliveWidget):
         """
         if self.should_be_dynamic:
             raise InvalidDynamicDefinedError
-        return [CliveCheckerboardTableRow(CliveCheckerBoardTableCell("Define `create_dynamic_rows` method!"))]
+        return []
 
     def create_static_rows(self) -> Sequence[CliveCheckerboardTableRow]:
         """
@@ -260,10 +292,10 @@ class CliveCheckerboardTable(CliveWidget):
         """
         if not self.should_be_dynamic:
             raise InvalidStaticDefinedError
-        return [CliveCheckerboardTableRow(CliveCheckerBoardTableCell("Define `create_static_rows` method!"))]
+        return []
 
     def get_no_content_available_widget(self) -> Widget:
-        return Static("No content available")
+        return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
 
     @property
     def should_be_dynamic(self) -> bool:
