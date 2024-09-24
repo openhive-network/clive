@@ -29,7 +29,9 @@ async def test_transaction_status_in_blockchain(
         )
     ).result_or_raise
     operation = TransferOperation(from_="initminer", to="null", amount=Asset.hive(2), memo="for testing")
-    transaction = (await world.commands.fast_broadcast(content=operation, sign_with=pubkey)).result_or_raise
+    transaction = (
+        await world.commands.perform_actions_on_transaction(content=operation, sign_key=pubkey, broadcast=True)
+    ).result_or_raise
     init_node_extra_apis.wait_number_of_blocks(1)
 
     transaction_id = transaction.with_hash().transaction_id

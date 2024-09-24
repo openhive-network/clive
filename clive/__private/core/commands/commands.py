@@ -27,7 +27,6 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesDataRetrieval,
 )
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
-from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
@@ -237,19 +236,6 @@ class Commands(Generic[WorldT_co]):
 
     async def broadcast(self, *, transaction: Transaction) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(Broadcast(node=self._world.node, transaction=transaction))
-
-    async def fast_broadcast(
-        self, *, content: TransactionConvertibleType, sign_with: PublicKey
-    ) -> CommandWithResultWrapper[Transaction]:
-        return await self.__surround_with_exception_handlers(
-            FastBroadcast(
-                app_state=self._world.app_state,
-                node=self._world.node,
-                content=content,
-                beekeeper=self._world.beekeeper,
-                sign_with=sign_with,
-            )
-        )
 
     async def import_key(self, *, key_to_import: PrivateKeyAliased) -> CommandWithResultWrapper[PublicKeyAliased]:
         return await self.__surround_with_exception_handlers(
