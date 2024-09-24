@@ -35,7 +35,6 @@ from clive_local_tools.tui.checkers import (
     assert_is_screen_active,
 )
 from clive_local_tools.tui.choose_asset_token import choose_asset_token
-from clive_local_tools.tui.fast_broadcast import fast_broadcast
 from clive_local_tools.tui.finalize_transaction import finalize_transaction
 from clive_local_tools.tui.notifications import extract_transaction_id_from_notification
 from clive_local_tools.tui.process_operation import process_operation
@@ -139,7 +138,6 @@ async def assert_pending_transfers_from_savings_count(pilot: ClivePilot, expecte
 
 
 TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
-    ("memo1", "FAST_BROADCAST"),
     (None, "FINALIZE_TRANSACTION"),
     ("memo2", "ADD_TO_CART"),
 ]
@@ -161,10 +159,9 @@ async def test_savings(  # noqa: PLR0913
     #110: I-II (create transfer to/from savings).
 
     Clive is unlocked. Then:
-    1. The user an operation in HBD/HIVE with memo (if possible) to own account/another account and Fast broadcasts it.
-    2. The user an operation in HBD/HIVE without memo (if possible) to own account/another account and finalizes
+    1. The user an operation in HBD/HIVE without memo (if possible) to own account/another account and finalizes
        transaction.
-    3. The user an operation in HBD/HIVE to own account/another account, adds to the cart and then broadcasts it.
+    2. The user an operation in HBD/HIVE to own account/another account, adds to the cart and then broadcasts it.
     """
     node, _, pilot = prepared_tui_on_dashboard_unlocked
 
@@ -192,8 +189,6 @@ async def test_savings(  # noqa: PLR0913
     assert_operations_placed_in_blockchain(node, transaction_id, expected_operation)
 
     if operation_type is TransferFromSavingsOperation:
-        if operation_processing == "FAST_BROADCAST":
-            await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
         await assert_pending_transfers_from_savings_count(pilot, 1 + WORKING_ACCOUNT_DATA.from_savings_transfer_count)
         # TODO: check if pending transfer is as expected_operation
 
@@ -303,8 +298,9 @@ async def test_canceling_transfer_from_savings(
         await go_to_savings(pilot)
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
-        await fast_broadcast(pilot)
-        await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
+        await press_and_wait_for_screen(pilot, "f2", Savings)  # add to cart
+        await press_and_wait_for_screen(pilot, "f2", Cart)
+        await finalize_transaction(pilot, inside_cart=True)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
 

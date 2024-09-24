@@ -9,8 +9,6 @@ from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
-from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.screens.transaction_summary.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -22,7 +20,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.accounts.accounts import Account
-    from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.models.schemas import OperationUnion
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
@@ -37,7 +34,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     BINDINGS = [
         Binding("f2", "add_to_cart", "Add to cart"),
-        Binding("f5", "fast_broadcast", "Fast broadcast"),
         Binding("f6", "transaction_summary", "Transaction summary"),
     ]
 
@@ -125,13 +121,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations_or_dashboard":
             self._pop_screen_until_operations_or_dashboard()
 
-    async def action_fast_broadcast(self) -> None:
-        if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
-            self.notify(INVALID_OPERATION_WARNING, severity="warning")
-            return
-
-        await self.__fast_broadcast()
-
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
         """
         Return the account (if overwritten) that should have been marked as known after action like add to cart.
@@ -142,33 +131,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         will be marked as known.
         """
         return None
-
-    @CliveScreen.try_again_after_unlock
-    async def __fast_broadcast(self) -> None:
-        def get_key() -> PublicKeyAliased | None:
-            try:
-                return self.profile.keys.first
-            except KeyNotFoundError:
-                self.notify("No keys found for the working account.", severity="error")
-                return None
-
-        key = get_key()
-
-        operations = self.ensure_operations_list()
-
-        if not key or not operations:
-            return
-
-        wrapper = await self.commands.fast_broadcast(content=operations, sign_with=key)
-        if not wrapper.success:
-            return
-
-        transaction = wrapper.result_or_raise
-        transaction_id = transaction.calculate_transaction_id()
-
-        self._add_account_to_known_after_action()
-        self._pop_screen_until_operations_or_dashboard()
-        self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
     def _add_to_cart(self) -> bool:
         """
