@@ -14,7 +14,6 @@ if TYPE_CHECKING:
 
 class AccountWitnessProxy(OperationSummary):
     SECTION_TITLE: ClassVar[str] = "Account witness proxy"
-    ADD_TO_CART_POP_SCREEN_MODE = "until_operations_or_dashboard"
 
     def __init__(self, *, new_proxy: str | None) -> None:
         super().__init__()
