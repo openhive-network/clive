@@ -13,7 +13,7 @@ if TYPE_CHECKING:
 
 async def choose_asset_token(pilot: ClivePilot, asset_token: LiquidAssetToken) -> None:
     assert_is_focused(pilot, CurrencySelectorLiquid)
-    if asset_token == "HIVE":
+    if asset_token == "HBD":
         await pilot.press("down", "down", "enter")
     selected_asset = pilot.app.screen.query_one(CurrencySelectorLiquid).value
     assert isinstance(

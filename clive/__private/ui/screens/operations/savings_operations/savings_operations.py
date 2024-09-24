@@ -308,7 +308,7 @@ class Savings(OperationBaseScreen, CartBinding):
         self,
         initial_tab: SavingsTabType = "pending-transfers-tab",
         default_transfer_type: TransferType = "to-savings",
-        default_asset_selected: type[Asset.LiquidT] = Asset.Hbd,
+        default_asset_selected: type[Asset.LiquidT] = Asset.Hive,
     ) -> None:
         super().__init__()
         self._default_transfer_type = default_transfer_type

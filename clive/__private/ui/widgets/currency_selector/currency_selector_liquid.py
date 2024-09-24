@@ -11,6 +11,6 @@ class CurrencySelectorLiquid(CurrencySelectorBase[Asset.LiquidT]):
     @staticmethod
     def _create_selectable() -> dict[str, AssetFactoryHolder[Asset.LiquidT]]:
         return {
-            "HBD": AssetFactoryHolder(asset_cls=Asset.Hbd, asset_factory=Asset.hbd),
             "HIVE": AssetFactoryHolder(asset_cls=Asset.Hive, asset_factory=Asset.hive),
+            "HBD": AssetFactoryHolder(asset_cls=Asset.Hbd, asset_factory=Asset.hbd),
         }

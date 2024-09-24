@@ -35,7 +35,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
         get_relative_css_path(__file__),
     ]
 
-    def __init__(self, *, default_asset_selected: type[Asset.LiquidT] = Asset.Hbd) -> None:
+    def __init__(self, *, default_asset_selected: type[Asset.LiquidT] = Asset.Hive) -> None:
         super().__init__()
 
         self._to_input = AccountNameInput("To")
