@@ -15,6 +15,7 @@ if TYPE_CHECKING:
 
 class CancelTransferFromSavings(OperationSummary):
     SECTION_TITLE: ClassVar[str] = "Cancel transfer from savings"
+    ADD_TO_CART_POP_SCREEN_MODE = True
 
     def __init__(self, transfer: SavingsWithdrawal) -> None:
         super().__init__()

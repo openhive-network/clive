@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Final
 
 from pydantic import ValidationError
 from textual.binding import Binding
@@ -13,6 +13,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.screens.transaction_summary.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
+    CliveValidatedInput,
     CliveValidatedInputError,
 )
 
@@ -38,7 +39,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     ]
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
-    ADD_TO_CART_POP_SCREEN_MODE: Literal["pop", "until_operations_or_dashboard"] = "pop"
+    ADD_TO_CART_POP_SCREEN_MODE: bool = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -113,13 +114,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def action_add_to_cart(self) -> None:
         if self._add_to_cart():
             self._add_account_to_known_after_action()
-            self._pop_screen_on_successfully_added_to_cart()
-
-    def _pop_screen_on_successfully_added_to_cart(self) -> None:
-        if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
-            self.app.pop_screen()
-        elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations_or_dashboard":
-            self._pop_screen_until_operations_or_dashboard()
+            if self.ADD_TO_CART_POP_SCREEN_MODE:
+                self.app.pop_screen()
+            self._clear_inputs()
 
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
         """
@@ -167,6 +164,12 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         with contextlib.suppress(NoMatches):
             self.query_one(AccountNameInput).add_account_to_known()
 
+    def _clear_inputs(self) -> None:
+        inputs = self.query(CliveValidatedInput)  # type: ignore[type-abstract]
+        for widget in inputs:
+            widget.input.clear()
+            widget.clear_validation()
+
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()
         if operation is not None:
@@ -191,9 +194,3 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         if sum([create_operation_missing, create_operations_missing]) != 1:
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
-
-    def _pop_screen_until_operations_or_dashboard(self) -> None:
-        from clive.__private.ui.screens.dashboard import DashboardBase
-        from clive.__private.ui.screens.operations import Operations
-
-        self.app.pop_screen_until(Operations, DashboardBase)
