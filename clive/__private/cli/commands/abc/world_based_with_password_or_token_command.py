@@ -24,7 +24,8 @@ class WorldBasedWithPasswordOrTokenCommand(WorldBasedCommand):
         return safe_settings.beekeeper.is_session_token_set
 
     async def validate(self) -> None:
-        self._validate_password_session_token()
+        self._validate_no_both_credentials_given()
+        self._validate_password_or_session_token_set()
         await super().validate()
 
     async def _configure(self) -> None:
@@ -48,18 +49,19 @@ class WorldBasedWithPasswordOrTokenCommand(WorldBasedCommand):
         if self.is_session_token_set() and not self.world.app_state.is_unlocked:
             raise CLIWalletIsNotUnlockedError(self.world.profile.name)
 
-    def _validate_password_session_token(self) -> None:
+    def _validate_no_both_credentials_given(self) -> None:
         if self._is_both_password_and_session_token_set():
             raise CLIBothBeekeepersPasswordAndSessionTokenSetError
 
-        if self._is_either_password_and_session_token_set():
+    def _validate_password_or_session_token_set(self) -> None:
+        if not self._is_beekeeper_required():
+            return  # Skip validation if beekeeper is not required
+
+        if not self._credentials_provided():
             raise CLIEitherBeekeepersPasswordOrSessionTokenNotSetError
 
     def _is_both_password_and_session_token_set(self) -> bool:
         return self.password is not None and self.is_session_token_set()
-
-    def _is_either_password_and_session_token_set(self) -> bool:
-        return self._is_beekeeper_required() and not self._credentials_provided()
 
     def _credentials_provided(self) -> bool:
         return bool(self.password) or self.is_session_token_set()

@@ -11,8 +11,8 @@ from clive.__private.cli.commands.abc.world_based_with_password_or_token_command
 )
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
-    CLIBroadcastRequiresSignKeyAndPasswordOrSessionTokenError,
     CLIPrettyError,
+    CLISigningRequiresAPasswordOrSessionTokenError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -83,18 +83,16 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
             if not result.is_valid:
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
-    def _validate_broadcast_sign_password_token(self, *, already_signed_transaction: bool = False) -> None:
-        """
-        Validate following options.
+    def _validate_if_can_be_signed(self) -> None:
+        if not self._is_beekeeper_required():
+            return  # no need to validate if no signing is required
 
-            1) sign transaction without credential provided,
-            2) broadcasting operation with forced unsigned.
-        """
-        if self._is_beekeeper_required():
-            if self._is_sign_transaction_possible(already_signed_transaction=already_signed_transaction):
-                raise CLIBroadcastRequiresSignKeyAndPasswordOrSessionTokenError
-            if self.force_unsign:
-                raise CLIBroadcastCannotBeUsedWithForceUnsignError
+        if not self._credentials_provided() or self.sign is None:
+            raise CLISigningRequiresAPasswordOrSessionTokenError
+
+    def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
+        if self.broadcast and self.force_unsign:
+            raise CLIBroadcastCannotBeUsedWithForceUnsignError
 
     def _get_transaction_created_message(self) -> str:
         return "created"
@@ -104,9 +102,6 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
-
-    def _is_sign_transaction_possible(self, *, already_signed_transaction: bool) -> bool:
-        return not self._credentials_provided() and not already_signed_transaction or self.sign is None
 
     def _is_beekeeper_required(self) -> bool:
         return self.broadcast or self.sign is not None

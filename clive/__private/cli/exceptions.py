@@ -114,12 +114,9 @@ class CLIWalletIsNotUnlockedError(CLIPrettyError):
         super().__init__(message, errno.EINVAL)
 
 
-class CLIBroadcastRequiresSignKeyAndPasswordOrSessionTokenError(CLIPrettyError):
+class CLISigningRequiresAPasswordOrSessionTokenError(CLIPrettyError):
     def __init__(self) -> None:
-        message = (
-            f"{BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE}"
-            " and a key alias to sign the transaction with if you want to broadcast it."
-        )
+        message = f"{BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE} to sign the transaction with."
         super().__init__(message, errno.EINVAL)
 
 
