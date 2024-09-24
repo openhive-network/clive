@@ -12,7 +12,6 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 
 if TYPE_CHECKING:
     from clive.__private.core.accounts.accounts import Account, KnownAccount, TrackedAccount
@@ -21,6 +20,10 @@ if TYPE_CHECKING:
 from clive.__private.core.accounts.accounts import WorkingAccount
 
 AccountsType = Literal["known_accounts", "tracked_accounts"]
+
+
+def remove_underscore_from_text(text: str) -> str:
+    return text.replace("_", " ")
 
 
 class AccountRow(CliveCheckerboardTableRow):
@@ -74,11 +77,12 @@ class ManageAccountsTable(CliveCheckerboardTable):
     """
 
     ATTRIBUTE_TO_WATCH = "profile"
+    NO_CONTENT_TEXT = "You have no accounts"
 
     def __init__(self, accounts_type: AccountsType) -> None:
         super().__init__(
             header=AccountsTableHeader(show_type_column=accounts_type == "tracked_accounts"),
-            title=f"Your {self.remove_underscore_from_text(accounts_type)}",
+            title=f"Your {remove_underscore_from_text(accounts_type)}",
         )
         self._previous_accounts: list[KnownAccount] | list[TrackedAccount] | NotUpdatedYet = NotUpdatedYet()
         self._accounts_type = accounts_type
@@ -89,11 +93,6 @@ class ManageAccountsTable(CliveCheckerboardTable):
         else:
             accounts = content.accounts.tracked
         return [AccountRow(account, self._accounts_type) for account in accounts]
-
-    def get_no_content_available_widget(self) -> NoContentAvailable:
-        return NoContentAvailable(
-            f"You have no {self.remove_underscore_from_text(self._accounts_type)}",
-        )
 
     def check_if_should_be_updated(self, content: Profile) -> bool:
         actual_accounts = self._get_accounts_from_new_content(content)
@@ -115,6 +114,3 @@ class ManageAccountsTable(CliveCheckerboardTable):
 
     def _get_accounts_from_new_content(self, content: Profile) -> list[KnownAccount] | list[TrackedAccount]:
         return content.accounts.known.content if self._accounts_type == "known_accounts" else content.accounts.tracked
-
-    def remove_underscore_from_text(self, text: str) -> str:
-        return text.replace("_", " ")

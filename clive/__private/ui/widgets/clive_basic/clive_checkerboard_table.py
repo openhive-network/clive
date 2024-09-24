@@ -245,16 +245,15 @@ class CliveCheckerboardTable(CliveWidget):
     def _prepare_rows_to_mount(self, rows: Sequence[CliveCheckerboardTableRow]) -> Sequence[CliveCheckerboardTableRow]:
         """Return `NoContentAvailable` if there is no content to display or set evenness styles to rows."""
         if not rows:
-            return [self.get_no_content_available_widget()]  # type: ignore[list-item]
+            return [self._get_no_content_available_widget()]  # type: ignore[list-item]
 
         self._set_evenness_styles(rows)
         return rows
 
     def _create_table_content(self, content: Content | None = None) -> list[Widget]:
-        if content is not None and not self.is_anything_to_display(
-            content
-        ):  # if content is given, we can check if there is anything to display and return earlier
-            return [self.get_no_content_available_widget()]
+        if content is not None and not self.is_anything_to_display(content):
+            # if content is given, we can check if there is anything to display and return earlier
+            return [self._get_no_content_available_widget()]
 
         if self.should_be_dynamic:
             assert content is not None, "Content must be provided when creating dynamic rows."
@@ -294,7 +293,7 @@ class CliveCheckerboardTable(CliveWidget):
             raise InvalidStaticDefinedError
         return []
 
-    def get_no_content_available_widget(self) -> Widget:
+    def _get_no_content_available_widget(self) -> Widget:
         return CliveCheckerboardTableRow(CliveCheckerBoardTableCell(NoContentAvailable(self.NO_CONTENT_TEXT)))
 
     @property

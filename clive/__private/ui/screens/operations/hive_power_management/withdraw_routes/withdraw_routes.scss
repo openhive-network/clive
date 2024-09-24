@@ -1,6 +1,10 @@
 WithdrawRoutes {
   height: 1fr;
 
+  Section {
+    margin-bottom: 1;
+  }
+
   #input-with-checkbox {
     margin-top: 1;
     height: auto;
@@ -29,10 +33,6 @@ WithdrawRoutes {
         width: 1fr;
         text-align: center;
       }
-    }
-
-    NoContentAvailable {
-      margin-top: 1;
     }
 
     WithdrawRoute {

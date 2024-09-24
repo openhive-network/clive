@@ -3,6 +3,10 @@ DelegateHivePower {
     margin-top: 1;
   }
 
+  Section {
+    margin-bottom: 1;
+  }
+
   HpVestsFactor {
     margin-bottom: 1;
   }
@@ -22,10 +26,6 @@ DelegateHivePower {
     Static {
       width: 1fr;
       text-align: center;
-    }
-
-    NoContentAvailable {
-      margin-top: 1;
     }
 
     Delegation {

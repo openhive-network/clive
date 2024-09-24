@@ -6,6 +6,8 @@ PowerDown {
   }
 
   Section {
+    margin-bottom: 1;
+
     SectionBody {
       layout: horizontal;
     }
@@ -15,7 +17,7 @@ PowerDown {
     height: auto;
 
     Pretty {
-      content-align: center middle;
+      content-align: center top;
       width: 1fr;
     }
 
@@ -30,18 +32,12 @@ PowerDown {
   }
 
   PendingPowerDown {
-    height: auto;
-
     SectionTitle {
       margin-top: 1;
     }
 
     CliveButton {
       width: 1fr;
-    }
-
-    NoContentAvailable {
-      margin-top: 1;
     }
 
     PendingPowerDownHeader {

@@ -40,7 +40,6 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidat
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
-from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
@@ -155,6 +154,7 @@ class PendingTransfer(CliveCheckerboardTableRow):
 
 class PendingTransfers(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "_content"
+    NO_CONTENT_TEXT = "You have no pending transfers"
 
     def __init__(self) -> None:
         super().__init__(header=PendingTransfersHeader(), title=SectionTitle(""))
@@ -170,9 +170,6 @@ class PendingTransfers(CliveCheckerboardTable):
             PendingTransfer(pending_transfer, aligned_amount)
             for pending_transfer, aligned_amount in zip(content.pending_transfers, aligned_amounts, strict=True)
         ]
-
-    def get_no_content_available_widget(self) -> Static:
-        return NoContentAvailable("You have no pending transfers")
 
     def is_anything_to_display(self, content: SavingsData) -> bool:
         return len(content.pending_transfers) != 0

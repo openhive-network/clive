@@ -26,7 +26,6 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests imp
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
-from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 
@@ -84,6 +83,7 @@ class DelegationsTable(CliveCheckerboardTable):
     """Table with delegations."""
 
     ATTRIBUTE_TO_WATCH = "_content"
+    NO_CONTENT_TEXT = "You have no delegations"
 
     def __init__(self) -> None:
         super().__init__(header=DelegationsTableHeader(), title="Current delegations")
@@ -96,9 +96,6 @@ class DelegationsTable(CliveCheckerboardTable):
             Delegation(delegation, hp_value, vests_value)
             for delegation, hp_value, vests_value in zip(content.delegations, aligned_hp, aligned_vests, strict=True)
         ]
-
-    def get_no_content_available_widget(self) -> Static:
-        return NoContentAvailable("You have no delegations")
 
     def check_if_should_be_updated(self, content: HivePowerData) -> bool:
         return self._previous_delegations != content.delegations

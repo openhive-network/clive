@@ -18,7 +18,6 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
-from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 
 if TYPE_CHECKING:
@@ -54,14 +53,12 @@ class AlarmsTableRow(CliveCheckerboardTableRow):
 
 class AlarmsTable(CliveCheckerboardTable):
     ATTRIBUTE_TO_WATCH = "profile"
+    NO_CONTENT_TEXT = "Account has no alarms"
 
     def __init__(self, account: TrackedAccount) -> None:
         super().__init__(header=AlarmsTableHeader(), title="Manage alarms")
         self._account = account
         self._previous_alarms: list[AnyAlarm] | NotUpdatedYet = NotUpdatedYet()
-
-    def get_no_content_available_widget(self) -> NoContentAvailable:
-        return NoContentAvailable("Account has no alarms")
 
     @property
     def object_to_watch(self) -> TUIWorld:
