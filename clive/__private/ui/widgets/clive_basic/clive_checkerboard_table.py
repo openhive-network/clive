@@ -49,13 +49,6 @@ Override it or set the `ATTRIBUTE_TO_WATCH` class-var if you want to create a dy
         super().__init__(self._MESSAGE)
 
 
-class RebuildStaticTableWithContentError(CliveCheckerboardTableError):
-    _MESSAGE = "Cannot rebuild static table with content param given. Maybe you should use dynamic table?"
-
-    def __init__(self) -> None:
-        super().__init__(self._MESSAGE)
-
-
 class PlaceTaker(Static):
     pass
 
@@ -207,61 +200,43 @@ class CliveCheckerboardTable(CliveWidget):
         await self.rebuild(content)
 
     async def rebuild(self, content: Content | None = None) -> None:
-        """
-        Rebuilds whole table - explicit use available for static and dynamic version.
-
-        Raises:  # noqa: D406
-        ------
-        RebuildStaticTableWithContentError: When table is static and content arg is provided.
-        """
-        self._assert_rebuild_static_table_with_content(content)  # content is given, but table is static
-
+        """Rebuilds whole table - explicit use available for static and dynamic version."""
         with self.app.batch_update():
             await self.query("*").remove()
             await self.mount_all(self._create_table_content(content))
 
     async def rebuild_rows(self, content: Content | None = None) -> None:
-        """
-        Rebuilds table rows - explicit use available for static and dynamic version.
-
-        Raises:  # noqa: D406
-        ------
-        RebuildStaticTableWithContentError: When table is static and content arg is provided.
-        """
-        self._assert_rebuild_static_table_with_content(content)  # content is given, but table is static
-
+        """Rebuilds table rows - explicit use available for static and dynamic version."""
         with self.app.batch_update():
             await self.query(CliveCheckerboardTableRow).remove()
 
-            new_rows = self.create_static_rows() if not self.should_be_dynamic else self.create_dynamic_rows(content)
-            new_rows = self._prepare_rows_to_mount(new_rows)
-
+            new_rows = self._create_table_rows(content)
             await self.mount_all(new_rows)
 
-    def _assert_rebuild_static_table_with_content(self, content: Content | None) -> None:
-        if not self.should_be_dynamic and content is not None:
-            raise RebuildStaticTableWithContentError
+    def _create_table_rows(self, content: Content | None = None) -> Sequence[CliveCheckerboardTableRow]:
+        if content is not None and not self.is_anything_to_display(content):
+            # if content is given, we can check if there is anything to display and return earlier
+            return []
 
-    def _prepare_rows_to_mount(self, rows: Sequence[CliveCheckerboardTableRow]) -> Sequence[CliveCheckerboardTableRow]:
-        """Return `NoContentAvailable` if there is no content to display or set evenness styles to rows."""
-        if not rows:
-            return [self._get_no_content_available_widget()]  # type: ignore[list-item]
+        if self.should_be_dynamic:
+            assert (
+                content is not None
+            ), "Content must be provided when creating dynamic rows. Maybe you should use static table?"
+            rows = self.create_dynamic_rows(content)
+        else:
+            assert (
+                content is None
+            ), "Content must not be provided when creating static rows. Maybe you should use dynamic table?"
+            rows = self.create_static_rows()
 
         self._set_evenness_styles(rows)
         return rows
 
     def _create_table_content(self, content: Content | None = None) -> list[Widget]:
-        if content is not None and not self.is_anything_to_display(content):
-            # if content is given, we can check if there is anything to display and return earlier
+        rows = self._create_table_rows(content)
+
+        if not rows:
             return [self._get_no_content_available_widget()]
-
-        if self.should_be_dynamic:
-            assert content is not None, "Content must be provided when creating dynamic rows."
-            rows = self.create_dynamic_rows(content)
-        else:
-            rows = self.create_static_rows()
-
-        rows = self._prepare_rows_to_mount(rows)
 
         if self._title is None:
             return [self._header, *rows]
