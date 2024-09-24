@@ -59,7 +59,6 @@ async def fill_transfer_data(
 
 
 TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
-    ("memo1", "FAST_BROADCAST"),
     (None, "FINALIZE_TRANSACTION"),
     ("memo2", "ADD_TO_CART"),
 ]
@@ -77,12 +76,11 @@ async def test_transfers(
     unlocked: bool,
 ) -> None:
     """
-    #103: I.1..3, II.1..3.
+    #103: I.2..3, II.2..3.
 
     Clive in unlocked/locked modes. Then:
-    1. The user makes a transfer in HBD/HIVE with memo and Fast broadcasts it.
-    2. The user makes a transfer in HBD/HIVE without memo and finalizes transaction.
-    3. The user makes a transfer in HBD/HIVE, adds to the cart and then broadcasts it.
+    1. The user makes a transfer in HBD/HIVE without memo and finalizes transaction.
+    2. The user makes a transfer in HBD/HIVE, adds to the cart and then broadcasts it.
     """
     node, _, pilot = prepared_tui_on_dashboard_locked
 

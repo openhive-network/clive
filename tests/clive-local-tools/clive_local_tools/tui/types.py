@@ -11,4 +11,4 @@ else:
     __all__ = ["LiquidAssetToken", "OperationProcessing"]
 
 LiquidAssetToken: TypeAlias = Literal["HBD", "HIVE"]
-OperationProcessing: TypeAlias = Literal["ADD_TO_CART", "FAST_BROADCAST", "FINALIZE_TRANSACTION"]
+OperationProcessing: TypeAlias = Literal["ADD_TO_CART", "FINALIZE_TRANSACTION"]
