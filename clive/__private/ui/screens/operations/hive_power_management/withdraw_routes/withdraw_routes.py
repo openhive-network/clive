@@ -133,6 +133,10 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                 yield Container(AddToCartButton(), id="button-container")
             yield WithdrawRoutesTable()
 
+    def _actions_after_clearing_inputs(self) -> None:
+        if self._auto_vest_checkbox.value:
+            self._auto_vest_checkbox.toggle()
+
     def _create_operation(self) -> SetWithdrawVestingRouteOperation | None:
         if not CliveValidatedInput.validate_many(self._account_input, self._percent_input):
             return None

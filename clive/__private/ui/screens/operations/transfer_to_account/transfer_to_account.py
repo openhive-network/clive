@@ -68,6 +68,9 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
             yield self._memo_input
             yield Container(AddToCartButton(), id="button-container")
 
+    def _actions_after_clearing_inputs(self) -> None:
+        self.query_exactly_one(LabelizedInput).input.value = "alice"
+
     def _check_is_known_exchange_in_input(self) -> bool:
         """
         Return False, as the transfer screen doesn't support a confirmation mechanism when a known exchange is detected.

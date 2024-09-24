@@ -17,6 +17,7 @@ class GovernanceTabPane(TabPane, OperationActionBindings):
     """TabPane with operation bindings and mechanism to handle with message to mount/unmount action."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
+    ADD_TO_CART_POP_SCREEN_MODE: bool = True
 
     @on(GovernanceTableRow.ChangeActionStatus)
     async def change_action_status(self, event: GovernanceTableRow.ChangeActionStatus) -> None:

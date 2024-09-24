@@ -179,13 +179,10 @@ class PowerDown(TabPane, OperationActionBindings):
 
     def _calculate_one_withdrawal(self) -> str:
         """Calculate and inform the user of the amount of one withdrawal, because it's divided into 13 parts."""
-        shares_input = self._shares_input.value_or_none()
-
-        if shares_input is None:
+        if not self._shares_input.value_raw:
             self._one_withdrawal_display.display = False
             return ""
-
-        one_withdrawal = shares_input / 13
+        one_withdrawal = self._shares_input._value / 13
         self._one_withdrawal_display.display = True
 
         asset = f"{Asset.pretty_amount(one_withdrawal)} {'VESTS' if isinstance(one_withdrawal, Asset.Vests) else 'HP'}"

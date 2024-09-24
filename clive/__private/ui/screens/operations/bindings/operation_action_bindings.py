@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import contextlib
-from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal
+from typing import TYPE_CHECKING, Any, ClassVar, Final
 
 from pydantic import ValidationError
 from textual.binding import Binding
@@ -9,13 +9,17 @@ from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
+from clive.__private.models import Asset
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
+from clive.__private.ui.widgets.currency_selector import CurrencySelectorBase, CurrencySelectorHpVests
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
+    CliveValidatedInput,
     CliveValidatedInputError,
 )
+from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -39,7 +43,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Binding("f6", "finalize_transaction", "Finalize transaction"),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
-    ADD_TO_CART_POP_SCREEN_MODE: Literal["pop", "until_operations_or_dashboard"] = "pop"
+    ADD_TO_CART_POP_SCREEN_MODE: bool = False
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
@@ -134,6 +138,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             if self._add_to_cart():
                 self._add_account_to_known_after_action()
                 self._pop_screen_on_successfully_added_to_cart()
+                self._clear_inputs()
+                self._actions_after_clearing_inputs()
+                self.notify("The operation was added to the cart.")
 
         def add_to_cart_cb(confirm: bool | None) -> None:
             if confirm:
@@ -148,9 +155,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             add_to_cart()
 
     def _pop_screen_on_successfully_added_to_cart(self) -> None:
-        if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
-            self.app.pop_screen()
-        elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations_or_dashboard":
+        if self.ADD_TO_CART_POP_SCREEN_MODE:
             self._pop_screen_until_operations_or_dashboard()
 
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
@@ -180,6 +185,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self.notify(INVALID_OPERATION_WARNING, severity="warning")
             return False
         return True
+
+    def _actions_after_clearing_inputs(self) -> None:
+        """For additional actions after clearing inputs e.g. setting default value again."""
 
     def _add_to_cart(self) -> bool:
         """
@@ -225,6 +233,19 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         with contextlib.suppress(NoMatches):
             self.query_exactly_one(AccountNameInput).add_account_to_known()
+
+    def _clear_inputs(self) -> None:
+        inputs = self.query(CliveValidatedInput)  # type: ignore[type-abstract]
+        for widget in inputs:
+            widget.clear_validation()
+
+        # select default value in asset inputs
+        for asset_input in self.query(LiquidAssetAmountInput):
+            asset_input.select_asset(Asset.Hive)
+
+        for selector in self.query(CurrencySelectorHpVests):
+            with self.prevent(CurrencySelectorBase.Changed):
+                selector.select_asset("HP")
 
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()
