@@ -24,6 +24,8 @@ class OperationSummary(OperationBaseScreen, OperationActionBindings, AbstractCla
 
     CSS_PATH = [get_relative_css_path(__file__)]
 
+    ADD_TO_CART_POP_SCREEN_MODE = True
+
     SECTION_TITLE: ClassVar[str] = "Operation summary"
 
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES = False
