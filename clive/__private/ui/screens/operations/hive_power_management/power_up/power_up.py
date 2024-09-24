@@ -54,6 +54,10 @@ class PowerUp(TabPane, OperationActionBindings):
                     yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
                 yield Center(AddToCartButton())
 
+    def _additional_actions_after_clearing_inputs(self) -> None:
+        receiver_input = self.query_one(KnownExchangeInput)
+        receiver_input.input.value = self.profile.accounts.working.name
+
     def _get_hive_balance(self) -> Asset.Hive:
         return self.profile.accounts.working.data.hive_balance
 

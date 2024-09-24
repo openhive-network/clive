@@ -173,13 +173,17 @@ class PowerDown(TabPane, OperationActionBindings):
 
     def _calculate_one_withdrawal(self) -> str:
         """Calculate and inform the user of the amount of one withdrawal, because it's divided into 13 parts."""
-        shares_input = self._shares_input.value_or_none()
-
-        if shares_input is None:
+        if self._shares_input.is_empty:
+            # validation shouldn't be triggered when this input is cleared when adding to cart
             self._one_withdrawal_display.display = False
             return ""
 
-        one_withdrawal = shares_input / 13
+        value = self._shares_input.value_or_none()
+        if value is None:
+            self._one_withdrawal_display.display = False
+            return ""
+
+        one_withdrawal = value / 13
         self._one_withdrawal_display.display = True
 
         asset = f"{Asset.pretty_amount(one_withdrawal)} {'VESTS' if isinstance(one_withdrawal, Asset.Vests) else 'HP'}"

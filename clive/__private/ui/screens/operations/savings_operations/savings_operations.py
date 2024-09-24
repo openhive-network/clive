@@ -233,6 +233,10 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._memo_input
                 yield Center(AddToCartButton())
 
+    def _additional_actions_after_clearing_inputs(self) -> None:
+        receiver_input = self.query_one(KnownExchangeInput)
+        receiver_input.input.value = self.profile.accounts.working.name
+
     @on(RadioSet.Changed)
     def transfer_type_changed(self, event: RadioSet.Changed) -> None:
         section_title = self.query_exactly_one(SectionTitle)

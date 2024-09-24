@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from textual import on
 from textual.containers import Center, Horizontal
@@ -103,6 +103,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
     """TabPane with all content about setting withdraw routes."""
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
+    DEFAULT_AUTO_VEST: Final[bool] = False
 
     def __init__(self, title: TextType) -> None:
         """
@@ -115,7 +116,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
         super().__init__(title=title)
         self._account_input = KnownExchangeInput()
         self._percent_input = PercentInput()
-        self._auto_vest_checkbox = Checkbox("Auto vest")
+        self._auto_vest_checkbox = Checkbox("Auto vest", value=self.DEFAULT_AUTO_VEST)
 
     def compose(self) -> ComposeResult:
         with ScrollablePart():
@@ -126,6 +127,10 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                     yield self._auto_vest_checkbox
                 yield Center(AddToCartButton())
             yield WithdrawRoutesTable()
+
+    def _additional_actions_after_clearing_inputs(self) -> None:
+        if self._auto_vest_checkbox.value != self.DEFAULT_AUTO_VEST:
+            self._auto_vest_checkbox.toggle()
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation | None:
         if not CliveValidatedInput.validate_many(self._account_input, self._percent_input):
