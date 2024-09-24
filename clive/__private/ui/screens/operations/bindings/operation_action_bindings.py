@@ -9,8 +9,6 @@ from textual.css.query import NoMatches
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
-from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -24,7 +22,6 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from clive.__private.core.accounts.accounts import Account
-    from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.models.schemas import OperationUnion
 
 INVALID_OPERATION_WARNING: Final[str] = "Can't proceed with empty or invalid operation(s)!"
@@ -39,7 +36,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
     BINDINGS = [
         Binding("f2", "add_to_cart", "Add to cart"),
-        Binding("f5", "fast_broadcast", "Fast broadcast"),
         Binding("f6", "finalize_transaction", "Finalize transaction"),
     ]
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
@@ -157,19 +153,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         elif self.ADD_TO_CART_POP_SCREEN_MODE == "until_operations_or_dashboard":
             self._pop_screen_until_operations_or_dashboard()
 
-    async def action_fast_broadcast(self) -> None:
-        async def fast_broadcast_cb(confirm: bool | None) -> None:
-            if confirm:
-                await self.__fast_broadcast()
-
-        if not self._can_proceed_operation():  # For faster validation feedback to the user
-            return
-
-        if self._check_is_known_exchange_in_input():
-            await self.app.push_screen(ConfirmActionDialogWithKnownExchange(), fast_broadcast_cb)
-        else:
-            await self.__fast_broadcast()
-
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
         """
         Return the account (if overwritten) that should have been marked as known after action like add to cart.
@@ -191,33 +174,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         will be checked for being a known exchange.
         """
         return None
-
-    @CliveScreen.try_again_after_unlock
-    async def __fast_broadcast(self) -> None:
-        def get_key() -> PublicKeyAliased | None:
-            try:
-                return self.profile.keys.first
-            except KeyNotFoundError:
-                self.notify("No keys found for the working account.", severity="error")
-                return None
-
-        key = get_key()
-
-        operations = self.ensure_operations_list()
-
-        if not key or not operations:
-            return
-
-        wrapper = await self.commands.fast_broadcast(content=operations, sign_with=key)
-        if not wrapper.success:
-            return
-
-        transaction = wrapper.result_or_raise
-        transaction_id = transaction.calculate_transaction_id()
-
-        self._add_account_to_known_after_action()
-        self._pop_screen_until_operations_or_dashboard()
-        self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
     def _can_proceed_operation(self) -> bool:
         if not self.create_operation() and not self.create_operations():
