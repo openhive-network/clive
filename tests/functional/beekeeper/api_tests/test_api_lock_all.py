@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import WalletsGeneratorT
+    from clive_local_tools.types import SetupWalletsFactory
 
 
-async def test_api_lock_all(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
+async def test_api_lock_all(beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory) -> None:
     """Test test_api_lock_all will test beekeeper_api.lock_all api call."""
     # ARRANGE
     wallets = await setup_wallets(5, import_keys=False, keys_per_wallet=0)

@@ -9,7 +9,7 @@ from clive_local_tools.data.models import Keys, WalletInfo
 
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
-    from clive_local_tools.types import WalletsGeneratorT
+    from clive_local_tools.types import SetupWalletsFactory
 
 
 async def test_api_remove_key(
@@ -48,7 +48,7 @@ async def test_api_remove_key_from_closed(beekeeper: Beekeeper, wallet: WalletIn
         await beekeeper.api.remove_key(wallet_name=wallet.name, public_key=wallet.keys.pairs[0].public_key.value)
 
 
-async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
+async def test_api_remove_key_simple_scenario(beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory) -> None:
     """Test test_api_remove_key_simple_scenario will test simple flow of importing and removing keys."""
     # ARRANGE
     wallets = await setup_wallets(1, import_keys=True, keys_per_wallet=5)

@@ -9,10 +9,10 @@ from clive.exceptions import CommunicationError
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive_local_tools.data.models import WalletInfo
-    from clive_local_tools.types import WalletsGeneratorT
+    from clive_local_tools.types import SetupWalletsFactory
 
 
-async def test_api_import_key(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
+async def test_api_import_key(beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory) -> None:
     """Test test_api_import_key will test beekeeper_api.import_key api call."""
     # ARRANGE
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=5)

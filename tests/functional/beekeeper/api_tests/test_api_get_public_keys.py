@@ -9,7 +9,7 @@ from clive.exceptions import CommunicationError
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive_local_tools.data.models import WalletInfo
-    from clive_local_tools.types import WalletsGeneratorT
+    from clive_local_tools.types import SetupWalletsFactory
 
 
 async def open_and_unlock_wallet(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
@@ -19,7 +19,7 @@ async def open_and_unlock_wallet(beekeeper: Beekeeper, wallet: WalletInfo) -> No
 
 @pytest.mark.parametrize("explicit_wallet_name", [False, True])
 async def test_api_get_public_keys(
-    beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT, *, explicit_wallet_name: bool
+    beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory, *, explicit_wallet_name: bool
 ) -> None:
     """Test test_api_get_public_keys will test beekeeper_api.get_public_keys api call."""
     # ARRANGE
@@ -51,7 +51,7 @@ async def test_api_get_public_keys_with_different_wallet_name(
         await beekeeper.api.get_public_keys(wallet_name=not_existing_wallet_name)
 
 
-async def test_api_get_public_keys_with_many_wallets(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
+async def test_api_get_public_keys_with_many_wallets(beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory) -> None:
     """Will test beekeeper_api.get_public_keys when wallets are being locked."""
     # ARRANGE
     # Prepare wallets
@@ -85,7 +85,7 @@ async def test_api_get_public_keys_with_many_wallets(beekeeper: Beekeeper, setup
 
 
 async def test_api_get_public_keys_with_many_wallets_closed(
-    beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT
+    beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory
 ) -> None:
     """Will test beekeeper_api.get_public_keys when wallets are being closed."""
     # ARRANGE
