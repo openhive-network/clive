@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Literal, TypeVar, overload
+from typing import Callable, Literal, TypeVar, overload
 
 from clive.__private.cli.exceptions import CLIPrettyError
 
@@ -54,6 +54,6 @@ def ensure_single_value(
     return value
 
 
-ensure_single_value_account_name = partial(ensure_single_value, option_name="account-name")  # type: ignore[var-annotated]
+ensure_single_value_account_name: Callable[..., ExpectedT] = partial(ensure_single_value, option_name="account-name")
 
-ensure_single_value_profile_name = partial(ensure_single_value, option_name="profile-name")  # type: ignore[var-annotated]
+ensure_single_value_profile_name: Callable[..., ExpectedT] = partial(ensure_single_value, option_name="profile-name")
