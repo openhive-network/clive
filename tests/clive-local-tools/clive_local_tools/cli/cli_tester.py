@@ -62,7 +62,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> UpdateAuthority:
         match authority:
             case "owner":
@@ -125,7 +125,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> UpdateOwnerAuthority:
         return UpdateOwnerAuthority(
             self.__typer,
@@ -143,7 +143,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> UpdateActiveAuthority:
         return UpdateActiveAuthority(
             self.__typer,
@@ -161,7 +161,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> UpdatePostingAuthority:
         return UpdatePostingAuthority(
             self.__typer,
@@ -179,7 +179,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "update-memo-key"],
@@ -195,7 +195,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
         amount: tt.Asset.AnyT,
         memo: str | None = None,
         from_: str | None = None,
@@ -215,7 +215,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
         amount: tt.Asset.AnyT,
         memo: str | None = None,
         from_: str | None = None,
@@ -235,7 +235,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(
             ["process", "savings", "withdrawal-cancel"],
@@ -306,7 +306,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-up"], **extract_params(locals()))
 
@@ -320,7 +320,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "start"], **extract_params(locals()))
 
@@ -334,7 +334,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "restart"], **extract_params(locals()))
 
@@ -346,7 +346,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "power-down", "cancel"], **extract_params(locals()))
 
@@ -361,7 +361,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "delegations", "set"], **extract_params(locals()))
 
@@ -375,7 +375,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "delegations", "remove"], **extract_params(locals()))
 
@@ -391,7 +391,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "set"], **extract_params(locals()))
 
@@ -405,7 +405,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["process", "withdraw-routes", "remove"], **extract_params(locals()))
 
@@ -426,7 +426,7 @@ class CLITester:
         sign: str | None = None,
         beekeeper_remote: str | None = None,
         broadcast: bool | None = None,
-        save_file: str | None = None,
+        save_file: Path | None = None,
         memo: str | None = None,
         amount: tt.Asset.HiveT | tt.Asset.HbdT,
     ) -> Result:
