@@ -7,8 +7,8 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileNameArgumentAndOptionGroup, WorldWithoutBeekeeperOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options, arguments
 from clive.__private.cli.common.parameters.ensure_single_value import (
-    ensure_single_value,
-    ensure_single_value_account_name,
+    EnsureSingleAccountNameValue,
+    EnsureSingleValue,
 )
 from clive.__private.cli.completion import is_tab_completion_active
 from clive.__private.cli.show.pending import pending
@@ -65,7 +65,7 @@ async def show_balances(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowBalances(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -94,7 +94,7 @@ async def show_transaction_status(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowTransactionStatus(
-        **common.as_dict(), transaction_id=ensure_single_value(transaction_id, transaction_id_option, "transaction-id")
+        **common.as_dict(), transaction_id=EnsureSingleValue("transaction-id").of(transaction_id, transaction_id_option)
     ).run()
 
 
@@ -136,7 +136,7 @@ async def show_proxy(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowProxy(
         **common.as_dict(),
-        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
     ).run()
 
 
@@ -160,7 +160,7 @@ async def show_witnesses(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowWitnesses(
         **common.as_dict(),
-        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         page_size=page_size,
         page_no=page_no,
     ).run()
@@ -181,7 +181,7 @@ async def show_witness(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowWitness(
         **common.as_dict(),
-        name=ensure_single_value(name, name_option, "name"),
+        name=EnsureSingleValue("name").of(name, name_option),
     ).run()
 
 
@@ -225,7 +225,7 @@ async def show_proposals(  # noqa: PLR0913
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowProposals(
         **common.as_dict(),
-        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         order_by=order_by_,
         order_direction=order_direction_,
         status=status_,
@@ -253,7 +253,7 @@ async def show_proposal(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowProposal(
         **common.as_dict(),
-        proposal_id=ensure_single_value(proposal_id, proposal_id_option, "proposal-id"),
+        proposal_id=EnsureSingleValue[int]("proposal-id").of(proposal_id, proposal_id_option),
     ).run()
 
 
@@ -269,7 +269,7 @@ async def show_owner_authority(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowAuthority(
         **common.as_dict(),
-        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         authority="owner",
     ).run()
 
@@ -286,7 +286,7 @@ async def show_active_authority(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowAuthority(
         **common.as_dict(),
-        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         authority="active",
     ).run()
 
@@ -303,7 +303,7 @@ async def show_posting_authority(
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowAuthority(
         **common.as_dict(),
-        account_name=ensure_single_value_account_name(account_name, account_name_option),
+        account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option),
         authority="posting",
     ).run()
 
@@ -319,7 +319,7 @@ async def show_memo_key(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowMemoKey(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -343,7 +343,7 @@ async def show_hive_power(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowHivePower(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -362,7 +362,7 @@ async def show_new_account_token(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowNewAccountToken(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -377,7 +377,7 @@ async def show_transfer_schedule(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowTransferSchedule(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -392,5 +392,5 @@ async def show_account(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowAccount(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()

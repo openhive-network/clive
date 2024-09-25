@@ -5,7 +5,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldOptionsGroup, options
 from clive.__private.cli.common.parameters import argument_related_options
-from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 key = CliveTyper(name="key", help="Manage your key(s).")
@@ -40,8 +40,8 @@ async def add_key(  # noqa: PLR0913
     await AddKey(
         **common.as_dict(),
         password=password,
-        key_or_path=ensure_single_value(key, key_option, "key"),
-        alias=ensure_single_value(alias, alias_option, "alias", allow_none=True),
+        key_or_path=EnsureSingleValue("key").of(key, key_option),
+        alias=EnsureSingleValue("alias").of(alias, alias_option, allow_none=True),
     ).run()
 
 
@@ -67,7 +67,7 @@ async def remove_key(
     common = WorldOptionsGroup.get_instance()
     await RemoveKey(
         **common.as_dict(),
-        alias=ensure_single_value(alias, alias_option, "alias"),
+        alias=EnsureSingleValue("alias").of(alias, alias_option),
         from_beekeeper=from_beekeeper,
         password=password,
     ).run()

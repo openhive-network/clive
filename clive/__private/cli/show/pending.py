@@ -5,7 +5,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import WorldWithoutBeekeeperOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options, arguments
-from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value_account_name
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleAccountNameValue
 
 pending = CliveTyper(name="pending", help="Show operations in progress.")
 
@@ -21,7 +21,7 @@ async def show_pending_withdrawals(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowPendingWithdrawals(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -36,7 +36,7 @@ async def show_pending_power_ups(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowPendingPowerUps(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -51,7 +51,7 @@ async def show_pending_power_down(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowPendingPowerDown(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -66,5 +66,5 @@ async def show_pending_removed_delegations(
 
     common = WorldWithoutBeekeeperOptionsGroup.get_instance()
     await ShowPendingRemovedDelegations(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()

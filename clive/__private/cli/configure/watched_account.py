@@ -4,7 +4,7 @@ import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileOptionsGroup, argument_related_options, modified_param
-from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value_account_name
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleAccountNameValue
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 watched_account = CliveTyper(name="watched-account", help="Manage your watched account(s).")
@@ -25,7 +25,7 @@ async def add_watched_account(
 
     common = ProfileOptionsGroup.get_instance()
     await AddWatchedAccount(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()
 
 
@@ -45,5 +45,5 @@ async def remove_watched_account(
 
     common = ProfileOptionsGroup.get_instance()
     await RemoveWatchedAccount(
-        **common.as_dict(), account_name=ensure_single_value_account_name(account_name, account_name_option)
+        **common.as_dict(), account_name=EnsureSingleAccountNameValue().of(account_name, account_name_option)
     ).run()

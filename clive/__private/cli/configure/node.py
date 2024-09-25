@@ -5,7 +5,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options
-from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 
 node = CliveTyper(name="node", help="Manage the node for the profile.")
 
@@ -27,5 +27,5 @@ async def set_node(
 
     common = ProfileOptionsGroup.get_instance()
     await SetNode(
-        **common.as_dict(), node_address=ensure_single_value(node_address, node_address_option, "node-address")
+        **common.as_dict(), node_address=EnsureSingleValue("node-address").of(node_address, node_address_option)
     ).run()

@@ -6,8 +6,8 @@ from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import BeekeeperOptionsGroup, arguments
 from clive.__private.cli.common.parameters import argument_related_options, modified_param
 from clive.__private.cli.common.parameters.ensure_single_value import (
-    ensure_single_value,
-    ensure_single_value_profile_name,
+    EnsureSingleProfileNameValue,
+    EnsureSingleValue,
 )
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
@@ -37,8 +37,8 @@ async def create_profile(  # noqa: PLR0913
     common = BeekeeperOptionsGroup.get_instance()
     await CreateProfile(
         **common.as_dict(),
-        profile_name=ensure_single_value_profile_name(profile_name, profile_name_option),
-        password=ensure_single_value(password, password_option, "password"),
+        profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option),
+        password=EnsureSingleValue("password").of(password, password_option),
         working_account_name=working_account_name,
     ).run()
 
@@ -56,7 +56,7 @@ async def set_default_profile(
     """Set the profile which will be used by default in all profile-related commands."""
     from clive.__private.cli.commands.configure.profile import SetDefaultProfile
 
-    await SetDefaultProfile(profile_name=ensure_single_value_profile_name(profile_name, profile_name_option)).run()
+    await SetDefaultProfile(profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option)).run()
 
 
 _profile_name_delete_argument = modified_param(
@@ -73,5 +73,5 @@ async def delete_profile(
     from clive.__private.cli.commands.configure.profile import DeleteProfile
 
     await DeleteProfile(
-        profile_name=ensure_single_value_profile_name(profile_name, profile_name_option),
+        profile_name=EnsureSingleProfileNameValue().of(profile_name, profile_name_option),
     ).run()

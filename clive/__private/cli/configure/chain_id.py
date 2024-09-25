@@ -5,7 +5,7 @@ import typer
 from clive.__private.cli.clive_typer import CliveTyper
 from clive.__private.cli.common import ProfileOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options
-from clive.__private.cli.common.parameters.ensure_single_value import ensure_single_value
+from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 from clive.__private.core.constants.cli import REQUIRED_AS_ARG_OR_OPTION
 
 chain_id = CliveTyper(name="chain-id", help="Manage the chain ID for the profile.")
@@ -31,7 +31,7 @@ async def set_chain_id(
     from clive.__private.cli.commands.configure.chain_id import SetChainId
 
     common = ProfileOptionsGroup.get_instance()
-    await SetChainId(**common.as_dict(), chain_id=ensure_single_value(chain_id, chain_id_option, "chain-id")).run()
+    await SetChainId(**common.as_dict(), chain_id=EnsureSingleValue("chain-id").of(chain_id, chain_id_option)).run()
 
 
 @chain_id.command(name="unset", param_groups=[ProfileOptionsGroup])
