@@ -1,7 +1,10 @@
 from functools import partial
 from typing import Callable, Literal, TypeVar, overload
 
-from click import ClickException
+from clive.__private.cli.completion import is_tab_completion_active
+
+if not is_tab_completion_active():
+    from clive.__private.cli.exceptions import CLIPrettyError
 
 ExpectedT = TypeVar("ExpectedT")
 
@@ -50,7 +53,7 @@ def ensure_single_value(
 
     value = option if option is not None else positional
     if value is None:
-        raise ClickException(f"Missing required argument or option: '[{option_name.upper()}]' or '--{option_name}'.")
+        raise CLIPrettyError(f"Missing required argument or option: '[{option_name.upper()}]' or '--{option_name}'.")
     return value
 
 
