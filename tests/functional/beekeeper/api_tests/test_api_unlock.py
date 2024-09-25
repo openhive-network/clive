@@ -9,7 +9,7 @@ from clive.exceptions import CommunicationError
 if TYPE_CHECKING:
     from clive.__private.core.beekeeper import Beekeeper
     from clive_local_tools.data.models import WalletInfo
-    from clive_local_tools.types import WalletsGeneratorT
+    from clive_local_tools.types import SetupWalletsFactory
 
 
 async def test_api_unlock(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
@@ -60,7 +60,7 @@ async def test_api_unlock_unknown_wallet(beekeeper: Beekeeper) -> None:
         await beekeeper.api.unlock(wallet_name="name", password="password")
 
 
-async def test_api_unlock_one_wallet_at_the_time(beekeeper: Beekeeper, setup_wallets: WalletsGeneratorT) -> None:
+async def test_api_unlock_one_wallet_at_the_time(beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory) -> None:
     """Test test_api_unlock_one_wallet_at_the_time will try one wallet at the time."""
     # ARRANGE
     wallets = await setup_wallets(5, import_keys=False, keys_per_wallet=0)

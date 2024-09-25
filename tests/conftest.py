@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
-    from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory, WalletsGeneratorT, Wallets
+    from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory, SetupWalletsFactory, Wallets
 
 
 @pytest.fixture(autouse=True, scope="session")
@@ -108,7 +108,7 @@ def beekeeper(world: World) -> Beekeeper:
 
 
 @pytest.fixture
-def setup_wallets(world: World) -> WalletsGeneratorT:
+def setup_wallets(world: World) -> SetupWalletsFactory:
     @wraps(setup_wallets)
     async def __setup_wallets(count: int, *, import_keys: bool = True, keys_per_wallet: int = 1) -> Wallets:
         wallets = [
@@ -134,21 +134,21 @@ def setup_wallets(world: World) -> WalletsGeneratorT:
 
 
 @pytest.fixture
-async def wallet(setup_wallets: WalletsGeneratorT) -> WalletInfo:
+async def wallet(setup_wallets: SetupWalletsFactory) -> WalletInfo:
     """Will return beekeeper created wallet with 1 key-pair already imported."""
     wallets = await setup_wallets(1, import_keys=True, keys_per_wallet=1)
     return wallets[0]
 
 
 @pytest.fixture
-async def wallet_key_to_import(setup_wallets: WalletsGeneratorT) -> WalletInfo:
+async def wallet_key_to_import(setup_wallets: SetupWalletsFactory) -> WalletInfo:
     """Will return beekeeper created wallet with 1 key-pair ready to import."""
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=1)
     return wallets[0]
 
 
 @pytest.fixture
-async def wallet_no_keys(setup_wallets: WalletsGeneratorT) -> WalletInfo:
+async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
     """Will return beekeeper created wallet with no keys available."""
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=0)
     return wallets[0]
