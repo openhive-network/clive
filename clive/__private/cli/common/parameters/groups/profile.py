@@ -17,4 +17,4 @@ class ProfileNameArgumentAndOptionGroup(ParameterGroup):
     profile_name_option: Optional[str] = argument_related_options.profile_name
 
     def ensure_single_profile_name_value(self) -> str:
-        return ensure_single_value_profile_name(self.profile_name, self.profile_name_option)  # type: ignore[no-any-return]
+        return ensure_single_value_profile_name(self.profile_name, self.profile_name_option)
