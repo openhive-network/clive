@@ -6,12 +6,13 @@ from pathlib import Path
 import rich
 import typer
 
-from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
+from clive.__private.cli.commands.abc.world_based_with_password_or_token_command import (
+    WorldBasedWithPasswordOrTokenCommand,
+)
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
-    CLIBroadcastRequiresSignKeyAndPasswordError,
     CLIPrettyError,
-    CLISigningRequiresAPasswordError,
+    CLISigningRequiresAPasswordOrSessionTokenError,
 )
 from clive.__private.core.commands.sign import ALREADY_SIGNED_MODE_DEFAULT, AlreadySignedMode
 from clive.__private.core.ensure_transaction import TransactionConvertibleType
@@ -23,18 +24,12 @@ from clive.__private.validators.path_validator import PathValidator
 
 
 @dataclass(kw_only=True)
-class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
-    password: str | None = None
+class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, ABC):
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     save_file: str | Path | None = None
     broadcast: bool = False
-
-    @property
-    def password_ensure(self) -> str:
-        assert self.password is not None, "Password is required at this point."
-        return self.password
 
     @property
     def save_file_path(self) -> Path | None:
@@ -45,22 +40,12 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         """Get the transaction content to be processed."""
 
     async def validate(self) -> None:
-        if not self.save_file:
-            return
-
-        result = PathValidator(mode="can_be_file").validate(str(self.save_file))
-        if not result.is_valid:
-            raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
-
-    async def _configure(self) -> None:
-        self.use_beekeeper = self.__is_beekeeper_required()
+        self._validate_save_file_path()
+        await super().validate()
 
     async def _run(self) -> None:
         if not self.broadcast:
             typer.echo("[Performing dry run, because --broadcast is not set.]\n")
-
-        if self.__is_beekeeper_required():
-            await self.world.commands.unlock(password=self.password_ensure)
 
         transaction = (
             await self.world.commands.perform_actions_on_transaction(
@@ -92,17 +77,22 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
                 f"Key `{self.sign}` was not found in the working account keys.", errno.ENOENT
             ) from None
 
-    def _validate_if_sign_and_password_are_used_together(self) -> None:
-        if self.sign is not None and self.password is None:
-            raise CLISigningRequiresAPasswordError
+    def _validate_save_file_path(self) -> None:
+        if self.save_file:
+            result = PathValidator(mode="can_be_file").validate(str(self.save_file))
+            if not result.is_valid:
+                raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
+
+    def _validate_if_can_be_signed(self) -> None:
+        if not self._is_beekeeper_required():
+            return  # no need to validate if no signing is required
+
+        if not self._credentials_provided() or self.sign is None:
+            raise CLISigningRequiresAPasswordOrSessionTokenError
 
     def _validate_if_broadcast_is_used_without_force_unsign(self) -> None:
         if self.broadcast and self.force_unsign:
             raise CLIBroadcastCannotBeUsedWithForceUnsignError
-
-    def _validate_if_broadcast_is_used_with_sign_and_password(self) -> None:
-        if self.broadcast and (self.sign is None or self.password is None):
-            raise CLIBroadcastRequiresSignKeyAndPasswordError
 
     def _get_transaction_created_message(self) -> str:
         return "created"
@@ -113,5 +103,5 @@ class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
 
-    def __is_beekeeper_required(self) -> bool:
-        return bool(self.sign) and bool(self.password)
+    def _is_beekeeper_required(self) -> bool:
+        return self.broadcast or self.sign is not None
