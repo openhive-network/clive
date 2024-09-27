@@ -13,6 +13,7 @@ ACCOUNT_NAME_ONBOARDING_PLACEHOLDER: Final[str] = "Please enter hive account nam
 PROFILE_NAME_PLACEHOLDER: Final[str] = "e.g.: master"
 
 MEMO_PLACEHOLDER: Final[str] = "e.g.: For the coffee!"
+KNOWN_EXCHANGE_MEMO_PLACEHOLDER: Final[str] = "Check the memo of your exchange account!"
 
 KEY_ALIAS_PLACEHOLDER: Final[str] = "e.g.: my-active-key"
 
