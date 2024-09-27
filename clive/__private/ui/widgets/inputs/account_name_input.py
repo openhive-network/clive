@@ -133,29 +133,29 @@ class AccountNameInput(TextInput):
         self.input.add_class(css_class)
         self.input.refresh()  # sometimes it's not refreshed automatically without this..
 
-    def _update_account_status(self) -> None:
-        def handle_invalid_account_name() -> None:
-            self.input.border_subtitle = None
-            self.input.refresh()  # sometimes it's not refreshed automatically without this..
-
-        def handle_valid_account_name() -> None:
-            if self.profile.accounts.is_account_bad(self.value_raw) and self._show_bad_account:
-                self._change_input_style(self._BAD_ACCOUNT_CLASS, "BAD ACCOUNT!")
-                return
-
-            if not self._show_known_account:
-                self.input.border_subtitle = ""
-                self.input.refresh()  # sometimes it's not refreshed automatically without this..
-                return
-
-            if self.profile.accounts.is_account_known(self.value_raw):
-                self._change_input_style(self._KNOWN_ACCOUNT_CLASS, "known account")
-                return
-
-            self._change_input_style(self._UNKNOWN_ACCOUNT_CLASS, "unknown account")
-
-        if not Account.is_valid(self.value_raw):
-            handle_invalid_account_name()
+    def _handle_valid_account_name(self) -> None:
+        if self._show_bad_account and self.profile.accounts.is_account_bad(self.value_raw):
+            self._change_input_style(self._BAD_ACCOUNT_CLASS, "BAD ACCOUNT!")
             return
 
-        handle_valid_account_name()
+        if not self._show_known_account:
+            self.input.border_subtitle = ""
+            self.input.refresh()  # sometimes it's not refreshed automatically without this..
+            return
+
+        if self.profile.accounts.is_account_known(self.value_raw):
+            self._change_input_style(self._KNOWN_ACCOUNT_CLASS, "known account")
+            return
+
+        self._change_input_style(self._UNKNOWN_ACCOUNT_CLASS, "unknown account")
+
+    def _handle_invalid_account_name(self) -> None:
+        self.input.border_subtitle = None
+        self.input.refresh()  # sometimes it's not refreshed automatically without this..
+
+    def _update_account_status(self) -> None:
+        if not Account.is_valid(self.value_raw):
+            self._handle_invalid_account_name()
+            return
+
+        self._handle_valid_account_name()
