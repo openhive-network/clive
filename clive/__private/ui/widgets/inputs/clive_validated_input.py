@@ -156,6 +156,12 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
             yield self.input
             yield self.pretty
 
+    def make_required(self, message: str = CliveInput.DEFAULT_REQUIRED_FAILURE_DESCRIPTION) -> None:
+        self.input.make_required(message)
+
+    def make_optional(self) -> None:
+        self.input.make_optional()
+
     @property
     @abstractmethod
     def _value(self) -> InputReturnT:
