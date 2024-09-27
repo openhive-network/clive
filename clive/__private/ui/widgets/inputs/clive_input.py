@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on, validation
 from textual.events import Blur, Focus
@@ -47,12 +47,16 @@ class CliveInput(Input):
     }
     """
 
+    DEFAULT_REQUIRED_FAILURE_DESCRIPTION: Final[str] = "This field is required"
+
     @dataclass
     class Validated(Message):
         value: str
         result: ValidationResult | None = None
 
     title: str = var("", init=False)  # type: ignore[assignment]
+    required: bool = var(default=False, init=False)  # type: ignore[assignment]
+    required_failure_description: str = var(DEFAULT_REQUIRED_FAILURE_DESCRIPTION, init=False)  # type: ignore[assignment]
 
     def __init__(
         self,
@@ -95,11 +99,7 @@ class CliveInput(Input):
         else:
             _validators = list(validators)
 
-        if required:
-            _validators = [*_validators, validation.Length(minimum=1, failure_description="This field is required")]
-
         self.set_reactive(self.__class__.title, title)  # type: ignore[arg-type]
-        self.required = required
         self._always_show_title = always_show_title
 
         super().__init__(
@@ -119,9 +119,9 @@ class CliveInput(Input):
             classes=classes,
             disabled=disabled,
         )
+        self.required = required
 
         self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
-
         self._unmodified_placeholder = placeholder
 
         self._configure()
@@ -130,7 +130,39 @@ class CliveInput(Input):
         self._unmodified_placeholder = placeholder
         self.placeholder = self._get_placeholder()
 
+    def make_required(self, message: str = DEFAULT_REQUIRED_FAILURE_DESCRIPTION) -> None:
+        self.required_failure_description = message
+        self.required = True
+
+    def make_optional(self) -> None:
+        self.required = False
+
+    def _remove_length_validators(self) -> None:
+        for validator in self.validators:
+            if isinstance(validator, validation.Length):
+                self.validators.remove(validator)
+
     def _watch_title(self) -> None:
+        self._change_border_title()
+
+    def _watch_required(self, required: bool) -> None:  # noqa: FBT001
+        self._change_border_title()
+        self._remove_length_validators()
+
+        if not required:
+            self.clear_validation()
+            return
+
+        self._add_length_validator()
+
+    def _watch_required_failure_description(self) -> None:
+        self._remove_length_validators()
+        self._add_length_validator()
+
+    def _add_length_validator(self) -> None:
+        self.validators.append(validation.Length(minimum=1, failure_description=self.required_failure_description))
+
+    def _change_border_title(self) -> None:
         self.border_title = self._determine_border_title()
 
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
