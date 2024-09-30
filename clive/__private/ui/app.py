@@ -4,10 +4,10 @@ import asyncio
 import math
 import traceback
 from contextlib import asynccontextmanager, contextmanager
-from typing import TYPE_CHECKING, Any, TypeVar, overload
+from typing import TYPE_CHECKING, Any, TypeVar, cast, overload
 
 from textual import on, work
-from textual._context import active_message_pump
+from textual._context import active_app, active_message_pump
 from textual.app import App, AutopilotCallbackType
 from textual.binding import Binding
 from textual.events import ScreenResume
@@ -68,16 +68,23 @@ class Clive(App[int], ManualReactive):
     header_expanded = var(default=False)
     """Synchronize the expanded header state in all created header objects."""
 
-    __app_instance: ClassVar[Clive | None] = None
-    """The singleton instance of the Clive app."""
-
-    is_launched: ClassVar[bool] = False
-    """Whether the Clive app is currently launched."""
-
     world: ClassVar[TUIWorld] = None  # type: ignore[assignment]
+    """The world object that holds all the data and commands."""
 
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
     """A list of all notifications that were displayed."""
+
+    @staticmethod
+    def app_instance() -> Clive:
+        return cast(Clive, active_app.get())
+
+    @classmethod
+    def is_launched(cls) -> bool:
+        try:
+            cls.app_instance()
+        except LookupError:
+            return False
+        return True
 
     def notify(
         self,
@@ -128,19 +135,16 @@ class Clive(App[int], ManualReactive):
         size: tuple[int, int] | None = None,
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
-        try:
-            async with TUIWorld() as world:
-                self.__class__.world = world
-                return await super().run_async(
-                    headless=headless,
-                    inline=inline,
-                    inline_no_clear=inline_no_clear,
-                    mouse=mouse,
-                    size=size,
-                    auto_pilot=auto_pilot,
-                )
-        finally:
-            self.__cleanup()
+        async with TUIWorld() as world:
+            self.__class__.world = world
+            return await super().run_async(
+                headless=headless,
+                inline=inline,
+                inline_no_clear=inline_no_clear,
+                mouse=mouse,
+                size=size,
+                auto_pilot=auto_pilot,
+            )
 
     @asynccontextmanager
     async def run_test(
@@ -152,26 +156,22 @@ class Clive(App[int], ManualReactive):
         notifications: bool = True,
         message_hook: Callable[[Message], None] | None = None,
     ) -> AsyncGenerator[ClivePilot, None]:
-        try:
-            async with TUIWorld() as world:
-                self.__class__.world = world
-                async with super().run_test(
-                    headless=headless,
-                    size=size,
-                    tooltips=tooltips,
-                    notifications=notifications,
-                    message_hook=message_hook,
-                ) as pilot:
-                    yield pilot  # type: ignore[misc]
-        finally:
-            self.__cleanup()
+        async with TUIWorld() as world:
+            self.__class__.world = world
+            async with super().run_test(
+                headless=headless,
+                size=size,
+                tooltips=tooltips,
+                notifications=notifications,
+                message_hook=message_hook,
+            ) as pilot:
+                yield pilot  # type: ignore[misc]
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             should_force_onboarding = safe_settings.dev.should_force_onboarding
             return self.world.is_in_onboarding_mode or should_force_onboarding
 
-        self.__class__.is_launched = True
         self.console.set_window_title("Clive")
 
         self._refresh_node_data_interval = self.set_interval(
@@ -403,26 +403,8 @@ class Clive(App[int], ManualReactive):
 
         logger.debug("=================================================")
 
-    @classmethod
-    def is_app_exist(cls) -> bool:
-        return cls.__app_instance is not None
-
-    @classmethod
-    def app_instance(cls) -> Clive:
-        if not cls.is_app_exist():
-            cls.__app_instance = Clive()
-        assert cls.__app_instance is not None
-        return cls.__app_instance
-
     def _handle_exception(self, error: Exception) -> None:
         # We already had a situation where Textual swallowed an exception without logging it.
         # This is a safeguard to prevent that from happening again.
         logger.error(f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}")
-        self.__cleanup()
         super()._handle_exception(error)
-
-    def __cleanup(self) -> None:
-        logger.debug("Cleaning up...")
-        self.__class__.is_launched = False
-        self.__class__.world = None  # type: ignore[assignment]
-        self.__class__.__app_instance = None

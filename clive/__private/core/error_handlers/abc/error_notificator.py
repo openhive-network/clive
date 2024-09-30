@@ -59,7 +59,7 @@ class ErrorNotificator(ErrorHandlerContextManager[ExceptionT], ABC):
     def _notify(self, exception: ExceptionT) -> None:
         message = self._determine_message(exception)
 
-        if get_clive().is_launched:
+        if get_clive().is_launched():
             self._notify_tui(message)
             return
 

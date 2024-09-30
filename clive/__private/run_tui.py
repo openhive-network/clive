@@ -33,4 +33,4 @@ async def run_tui() -> None:
     _hide_never_awaited_warnings_in_non_dev_mode()
     _handle_close_signals_in_tui()
     prepare_before_launch()
-    sys.exit(await Clive.app_instance().run_async())
+    sys.exit(await Clive().run_async())

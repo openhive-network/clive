@@ -51,10 +51,7 @@ KEY_ALIAS_NAME: Final[str] = "master@active"
 async def prepared_tui_on_onboarding(
     node_with_wallet: NodeWithWallet,  # noqa: ARG001
 ) -> AsyncIterator[ClivePilot]:
-    app = Clive.app_instance()
-
-    pilot: ClivePilot
-    async with app.run_test() as pilot:
+    async with Clive().run_test() as pilot:
         yield pilot
 
         await clive_quit(pilot)

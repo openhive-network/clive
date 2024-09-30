@@ -82,11 +82,7 @@ async def prepared_env(
     prepare_beekeeper_wallet: None,  # noqa: ARG001
 ) -> AsyncIterator[PreparedTuiEnv]:
     node, wallet = node_with_wallet
-
-    app = Clive.app_instance()
-
-    pilot: ClivePilot
-    async with app.run_test() as pilot:
+    async with Clive().run_test() as pilot:
         await wait_for_screen(pilot, DashboardLocked)
 
         yield node, wallet, pilot
