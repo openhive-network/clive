@@ -34,8 +34,8 @@ if TYPE_CHECKING:
 class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
     """Row of ManageKeyAliasesTable."""
 
-    class Changed(Message):
-        """Emitted when key alias have been changed."""
+    class Removed(Message):
+        """Emitted when key alias have been removed."""
 
     def __init__(self, index: int, public_key: PublicKeyAliased) -> None:
         self.__public_key = public_key
@@ -66,7 +66,7 @@ class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
             self.profile.keys.remove(self.__public_key)
 
             self.notify(f"Key alias `{self.__public_key.alias}` was removed.")
-            self.app.post_message_to_screen(ManageKeyAliases, self.Changed())
+            self.post_message(self.Removed())
 
         self.app.push_screen(
             ConfirmWithPassword(
@@ -120,7 +120,7 @@ class ManageKeyAliases(BaseScreen):
     def action_new_key_alias(self) -> None:
         self.app.push_screen(NewKeyAlias())
 
-    @on(KeyAlias.Changed)
+    @on(KeyAlias.Removed)
     @on(KeyAliasForm.Changed)
     async def rebuild_key_aliases(self) -> None:
         await self.query_one(ManageKeyAliasesTable).rebuild()
