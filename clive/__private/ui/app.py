@@ -28,7 +28,7 @@ from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncGenerator, Callable, Iterator
-    from typing import ClassVar, Literal
+    from typing import Literal
 
     from textual.message import Message
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
@@ -68,11 +68,17 @@ class Clive(App[int], ManualReactive):
     header_expanded = var(default=False)
     """Synchronize the expanded header state in all created header objects."""
 
-    world: ClassVar[TUIWorld] = None  # type: ignore[assignment]
-    """The world object that holds all the data and commands."""
-
     notification_history: list[Notification] = var([], init=False)  # type: ignore[assignment]
     """A list of all notifications that were displayed."""
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self._world: TUIWorld | None = None
+
+    @property
+    def world(self) -> TUIWorld:
+        assert self._world is not None, "World is not set yet."
+        return self._world
 
     @staticmethod
     def app_instance() -> Clive:
@@ -136,7 +142,7 @@ class Clive(App[int], ManualReactive):
         auto_pilot: AutopilotCallbackType | None = None,
     ) -> int | None:
         async with TUIWorld() as world:
-            self.__class__.world = world
+            self._world = world
             return await super().run_async(
                 headless=headless,
                 inline=inline,
@@ -157,7 +163,7 @@ class Clive(App[int], ManualReactive):
         message_hook: Callable[[Message], None] | None = None,
     ) -> AsyncGenerator[ClivePilot, None]:
         async with TUIWorld() as world:
-            self.__class__.world = world
+            self._world = world
             async with super().run_test(
                 headless=headless,
                 size=size,
