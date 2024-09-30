@@ -20,6 +20,7 @@ from clive_local_tools.tui.checkers import assert_is_dashboard
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
 from clive_local_tools.tui.textual_helpers import wait_for_screen
+from clive_local_tools.tui.workaround_incompatibility_with_fixtures import event_loop  # noqa: F401
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
@@ -100,7 +101,6 @@ async def prepared_tui_on_dashboard_locked(prepared_env: PreparedTuiEnv) -> Prep
 @pytest.fixture
 async def prepared_tui_on_dashboard_unlocked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
-    await pilot.pause()  # required, otherwise next call to self.app inside Commands will fail with NoActiveAppError
     await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
     await wait_for_screen(pilot, Dashboard)
     assert_is_dashboard(pilot, unlocked=True)
