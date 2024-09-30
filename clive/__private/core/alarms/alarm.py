@@ -22,7 +22,7 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     How to complete handle an alarm in TUI:
     ---------------------------------------
     1. Create an alarm identifier class that inherits from `AlarmIdentifier` or reuse one of existing identifiers when
-       easily distinguishable.
+       easily distinguishable. Update identifiers union placed in all_identifiers.py.
     2. Implement a data class to store alarm data (it must inherit from `BaseAlarmData`).
     3. Create a model of your alarm by creating a class inheriting from `Alarm` (pass the alarm identifier and data in
        a generic way).
@@ -76,7 +76,9 @@ class Alarm(Generic[AlarmIdentifierT, AlarmDataT], ABC):
     def enable_alarm(self, identifier: AlarmIdentifierT, alarm_data: AlarmDataT) -> None:
         if identifier == self.identifier:
             if not self.has_data:
+                # means we're loading the alarm from storage and we need to update the data
                 self.alarm_data = alarm_data
+                self.is_active = True
             return
         self.is_active = True
         self.is_harmless = False
