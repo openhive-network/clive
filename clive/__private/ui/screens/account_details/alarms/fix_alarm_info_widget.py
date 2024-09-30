@@ -61,7 +61,7 @@ class FixAlarmInfoWidget(CliveWidget):
 
     @on(OneLineButton.Pressed, "#harmless-button")
     def mark_alarm_as_harmless(self) -> None:
-        async def _on_confirmation_result(password: str) -> None:
+        def _mark_alarm_as_harmless(password: str | None) -> None:
             if not password:
                 return
 
@@ -70,10 +70,8 @@ class FixAlarmInfoWidget(CliveWidget):
             self.app.pop_screen()
 
         self.app.push_screen(
-            ConfirmWithPassword(
-                result_callback=_on_confirmation_result,
-                title=f"Marking alarm `{self._alarm.get_alarm_basic_info()}` as harmless",
-            )
+            ConfirmWithPassword(title=f"Marking alarm `{self._alarm.get_alarm_basic_info()}` as harmless"),
+            _mark_alarm_as_harmless,
         )
 
     @on(OneLineButton.Pressed, "#fix-alarm-button")

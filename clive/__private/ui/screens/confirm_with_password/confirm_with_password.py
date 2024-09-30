@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
@@ -15,10 +14,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-PasswordResultCallbackType = Callable[[str], Awaitable[None]]
-
-
-class ConfirmWithPassword(BaseScreen):
+class ConfirmWithPassword(BaseScreen[str]):
     CSS_PATH = [get_relative_css_path(__file__)]
 
     BINDINGS = [
@@ -28,10 +24,8 @@ class ConfirmWithPassword(BaseScreen):
 
     def __init__(
         self,
-        result_callback: PasswordResultCallbackType,
         title: str = "",
     ) -> None:
-        self.__result_callback = result_callback
         self._password_input = TextInput("Password", password=True)
         self._title = title
         super().__init__()
@@ -41,9 +35,8 @@ class ConfirmWithPassword(BaseScreen):
             yield Static("Please enter your password to continue.", id="hint")
             yield self._password_input
 
-    async def action_cancel(self) -> None:
-        self.app.pop_screen()
-        await self.__result_callback("")
+    def action_cancel(self) -> None:
+        self.dismiss()
 
     async def action_confirm(self) -> None:
         password = self._password_input.value_or_none()
@@ -55,8 +48,7 @@ class ConfirmWithPassword(BaseScreen):
             return
 
         with self.app.batch_update():
-            self.app.pop_screen()
-            await self.__result_callback(password)
+            self.dismiss(password)
 
     async def _is_password_valid(self, password: str) -> bool:
         wrapper = await self.commands.is_password_valid(password=password)

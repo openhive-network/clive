@@ -57,22 +57,19 @@ class KeyAlias(CliveCheckerboardTableRow, CliveWidget):
         self.app.push_screen(EditKeyAlias(self.__public_key))
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
-    async def remove_key_alias(self) -> None:
+    def remove_key_alias(self) -> None:
         @CliveScreen.try_again_after_unlock
-        async def __on_confirmation_result(result: str) -> None:
-            if not result:
+        async def _remove_key_alias(password: str | None) -> None:
+            if not password:
                 return
 
             self.profile.keys.remove(self.__public_key)
-
             self.notify(f"Key alias `{self.__public_key.alias}` was removed.")
             self.post_message(self.Removed())
 
         self.app.push_screen(
-            ConfirmWithPassword(
-                result_callback=__on_confirmation_result,
-                title=f"Remove a `{self.__public_key.alias}` key alias.",
-            )
+            ConfirmWithPassword(title=f"Remove a `{self.__public_key.alias}` key alias."),
+            _remove_key_alias,
         )
 
 
