@@ -11,11 +11,12 @@ from clive.__private.models.schemas import TransferOperation
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.operation_base_screen import OperationBaseScreen
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
+from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.known_exchange_handler import KnownExchangeHandler
 from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
@@ -38,7 +39,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
     def __init__(self, *, default_asset_selected: type[Asset.LiquidT] = Asset.Hive) -> None:
         super().__init__()
 
-        self._to_input = AccountNameInput("To")
+        self._to_input = KnownExchangeInput("To")
         self._amount_input = LiquidAssetAmountInput()
         self._memo_input = MemoInput(include_title_in_placeholder_when_blurred=True)
         self._default_asset_selected = default_asset_selected
@@ -52,7 +53,7 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
         return self.profile.accounts.working.name
 
     def create_left_panel(self) -> ComposeResult:
-        with SectionScrollable("Perform a transfer to account"), Body():
+        with SectionScrollable("Perform a transfer to account"), KnownExchangeHandler(), Body():
             yield LabelizedInput("From", self.from_account)
             yield self._to_input
             yield self._amount_input
