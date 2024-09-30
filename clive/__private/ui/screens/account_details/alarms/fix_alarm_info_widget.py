@@ -66,6 +66,7 @@ class FixAlarmInfoWidget(CliveWidget):
                 return
 
             self._alarm.is_harmless = True
+            self.notify(f"Alarm `{self._alarm.get_alarm_basic_info()}` was marked as harmless.")
             self.app.trigger_profile_watchers()
             self.app.pop_screen()
 
