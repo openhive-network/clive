@@ -18,6 +18,7 @@ from clive.__private.core.constants.terminal import TERMINAL_HEIGHT, TERMINAL_WI
 from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
+from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
 from clive.__private.ui.manual_reactive import ManualReactive
@@ -34,7 +35,6 @@ if TYPE_CHECKING:
     from textual.screen import Screen, ScreenResultCallbackType, ScreenResultType
     from textual.widget import AwaitMount
 
-    from clive.__private.ui.clive_pilot import ClivePilot
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
 
@@ -161,7 +161,7 @@ class Clive(App[int], ManualReactive):
         tooltips: bool = False,
         notifications: bool = True,
         message_hook: Callable[[Message], None] | None = None,
-    ) -> AsyncGenerator[ClivePilot, None]:
+    ) -> AsyncGenerator[ClivePilot]:
         async with TUIWorld() as world:
             self._world = world
             async with super().run_test(
@@ -171,7 +171,7 @@ class Clive(App[int], ManualReactive):
                 notifications=notifications,
                 message_hook=message_hook,
             ) as pilot:
-                yield pilot  # type: ignore[misc]
+                yield cast(ClivePilot, pilot)
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:

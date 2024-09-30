@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
     from typing_extensions import Self
 
-    from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
+    from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount, WorkingAccount
 
 
 class ProfileError(CliveError):
@@ -55,9 +55,9 @@ class Profile(Context):
     def __init__(
         self,
         name: str,
-        working_account: str | WorkingAccount | None = None,
-        watched_accounts: Iterable[WatchedAccount] | None = None,
-        known_accounts: Iterable[KnownAccount] | None = None,
+        working_account: str | Account | None = None,
+        watched_accounts: Iterable[str | Account] | None = None,
+        known_accounts: Iterable[str | Account] | None = None,
     ) -> None:
         self.validate_profile_name(name)
         self.name = name
