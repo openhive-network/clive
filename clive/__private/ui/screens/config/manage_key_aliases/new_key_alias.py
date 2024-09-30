@@ -18,7 +18,7 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
 )
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
-from clive.__private.ui.widgets.select_file import SelectFile
+from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -75,13 +75,15 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=key_alias)
 
     def action_load_from_file(self) -> None:
-        self.app.push_screen(SelectFile(placeholder="e.g. /home/me/my-active-key.wif"))
+        self.app.push_screen(
+            SelectFile(placeholder="e.g. /home/me/my-active-key.wif"), self._load_private_key_from_file
+        )
 
-    @on(SelectFile.Saved)
-    def load_private_key_from_file(self, event: SelectFile.Saved) -> None:
-        self._key_input.input.value = PrivateKey.read_key_from_file(event.file_path)
-        self.__key_file_path = event.file_path
-        self.notify(f"Private key loaded from `{event.file_path}`")
+    def _load_private_key_from_file(self, result: SaveFileResult) -> None:
+        file_path = result.file_path
+        self._key_input.input.value = PrivateKey.read_key_from_file(file_path)
+        self.__key_file_path = file_path
+        self.notify(f"Private key loaded from `{file_path}`")
 
     @on(Input.Changed, "#key-input Input")
     def recalculate_public_key(self) -> None:

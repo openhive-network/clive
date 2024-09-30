@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal, VerticalScroll
-from textual.message import Message
 from textual.widgets import DirectoryTree, Label
+from typing_extensions import TypeVar
 
 from clive.__private.core.constants.tui.placeholders import PATH_PLACEHOLDER
 from clive.__private.ui.get_css import get_css_from_relative_path
@@ -20,6 +20,13 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.validators.path_validator import PathValidator
+
+SaveFileResultT = TypeVar("SaveFileResultT", default="SaveFileResult", bound="SaveFileResult")
+
+
+@dataclass
+class SaveFileResult:
+    file_path: Path
 
 
 class FilePathInputContainer(Horizontal):
@@ -34,7 +41,7 @@ class Body(VerticalScroll, can_focus=False):
     """Container for widgets."""
 
 
-class SelectFile(BaseScreen):
+class SelectFile(BaseScreen[SaveFileResultT]):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
     BINDINGS = [
@@ -43,12 +50,6 @@ class SelectFile(BaseScreen):
     ]
 
     SECTION_TITLE: ClassVar[str] = "Select file"
-
-    @dataclass
-    class Saved(Message):
-        """Emitted when user saves the form."""
-
-        file_path: Path
 
     def __init__(
         self,
@@ -81,11 +82,8 @@ class SelectFile(BaseScreen):
         if path is None:
             return
 
-        self._post_saved_message()
-        self.app.pop_screen()
+        self.dismiss(self._create_success_save_result())
 
-    def _post_saved_message(self) -> None:
-        self.app.post_message_to_everyone(self._create_saved_message())
-
-    def _create_saved_message(self) -> Saved:
-        return self.Saved(self._file_path_input.value_or_error)  # already validated in action_save
+    def _create_success_save_result(self) -> SaveFileResultT:
+        file_path = self._file_path_input.value_or_error  # already validated in action_save
+        return SaveFileResult(file_path=file_path)  # type: ignore[return-value]

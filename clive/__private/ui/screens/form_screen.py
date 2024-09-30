@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from clive.__private.ui.onboarding.form import Form
 
 
-class FormScreenBase(CliveScreen[None], Contextual[ContextT]):
+class FormScreenBase(CliveScreen, Contextual[ContextT]):
     def __init__(self, owner: Form[ContextT]) -> None:
         self._owner = owner
         super().__init__()

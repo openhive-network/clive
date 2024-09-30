@@ -6,10 +6,16 @@ from typing import TYPE_CHECKING
 from textual.containers import Horizontal
 from textual.widgets import Checkbox
 
-from clive.__private.ui.widgets.select_file import SelectFile
+from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
+
+
+@dataclass
+class SaveTransactionResult(SaveFileResult):
+    save_as_binary: bool = False
+    should_be_signed: bool = False
 
 
 class Switches(Horizontal):
@@ -23,15 +29,8 @@ class Switches(Horizontal):
     """
 
 
-class SelectFileToSaveTransaction(SelectFile):
+class SelectFileToSaveTransaction(SelectFile[SaveTransactionResult]):
     SECTION_TITLE = "Save transaction to file"
-
-    @dataclass
-    class Saved(SelectFile.Saved):
-        """Emitted when user saves the form."""
-
-        save_as_binary: bool = False
-        should_be_signed: bool = False
 
     def __init__(self) -> None:
         super().__init__(validator_mode="is_file_or_can_be_file")
@@ -51,14 +50,9 @@ class SelectFileToSaveTransaction(SelectFile):
             yield self.__binary_checkbox
             yield self.__signed_checkbox
 
-    def _post_saved_message(self) -> None:
-        from clive.__private.ui.screens.transaction_summary.common import TransactionSummaryCommon
-
-        self.app.post_message_to_screen(TransactionSummaryCommon, self._create_saved_message())
-
-    def _create_saved_message(self) -> Saved:
-        return self.Saved(
-            file_path=self._file_path_input.value_or_error,
+    def _create_success_save_result(self) -> SaveTransactionResult:
+        return SaveTransactionResult(
+            file_path=self._file_path_input.value_or_error,  # already validated in action_save
             save_as_binary=self.is_binary_checked,
             should_be_signed=self.is_signed_checked,
-        )  # already validated in action_save
+        )

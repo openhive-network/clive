@@ -6,7 +6,8 @@ from typing import TYPE_CHECKING, ParamSpec
 from textual import on
 from textual.events import ScreenResume, ScreenSuspend
 from textual.message import Message
-from textual.screen import Screen, ScreenResultType
+from textual.screen import Screen
+from typing_extensions import TypeVar
 
 from clive.__private.core.clive_import import get_clive
 from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
@@ -25,12 +26,14 @@ if TYPE_CHECKING:
 
 P = ParamSpec("P")
 
+ScreenResultT = TypeVar("ScreenResultT", default=None)
+
 
 class OnlyInUnlockedModeError(CliveError):
     """Should be raised when some action is only available in unlocked mode."""
 
 
-class CliveScreen(Screen[ScreenResultType], CliveWidget):
+class CliveScreen(Screen[ScreenResultT], CliveWidget):
     """
     An ordinary textual screen that also knows what type of application it belongs to.
 

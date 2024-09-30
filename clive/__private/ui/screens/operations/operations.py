@@ -15,7 +15,7 @@ from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic import CliveTabbedContent
 from clive.__private.ui.widgets.not_implemented_yet import NotImplementedYetButton, NotImplementedYetTabPane
 from clive.__private.ui.widgets.scrolling import ScrollablePart
-from clive.__private.ui.widgets.select_file import SelectFile
+from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
 
 if TYPE_CHECKING:
     from rich.text import TextType
@@ -59,7 +59,7 @@ class Operations(CartBasedScreen, CartBinding):
                 yield NotImplementedYetButton("Account management operations")
 
     def action_load_transaction_from_file(self) -> None:
-        self.app.push_screen(SelectFile())
+        self.app.push_screen(SelectFile(), self._load_transaction_from_file)
         self.notify("Your cart will remain unchanged.")
 
     @on(OperationButton.Pressed, ".operation-button")
@@ -67,9 +67,8 @@ class Operations(CartBasedScreen, CartBinding):
         button: OperationButton = event.button  # type: ignore[assignment]
         self.app.push_screen(button.operation_screen())
 
-    @on(SelectFile.Saved)
-    async def load_transaction_from_file(self, event: SelectFile.Saved) -> None:
-        file_path = event.file_path
+    async def _load_transaction_from_file(self, result: SaveFileResult) -> None:
+        file_path = result.file_path
 
         try:
             transaction = (await self.commands.load_transaction_from_file(path=file_path)).result_or_raise

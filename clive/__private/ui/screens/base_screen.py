@@ -7,7 +7,7 @@ from textual.reactive import reactive
 from textual.widgets import Footer
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.clive_screen import CliveScreen
+from clive.__private.ui.clive_screen import CliveScreen, ScreenResultT
 from clive.__private.ui.widgets.clive_basic import CliveHeader
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 
@@ -15,7 +15,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class BaseScreen(CliveScreen[None], AbstractClassMessagePump):
+class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
     BIG_TITLE: ClassVar[str] = ""
     SUBTITLE: ClassVar[str] = ""
     """Subtitle won't be shown when BIG_TITLE is not set also"""

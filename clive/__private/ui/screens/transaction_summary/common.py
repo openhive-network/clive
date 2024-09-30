@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Label, Select, Static
@@ -18,7 +17,10 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
-from clive.__private.ui.widgets.select_file_to_save_transaction import SelectFileToSaveTransaction
+from clive.__private.ui.widgets.select_file_to_save_transaction import (
+    SaveTransactionResult,
+    SelectFileToSaveTransaction,
+)
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
@@ -158,11 +160,10 @@ class TransactionSummaryCommon(BaseScreen):
         await self.__scrollable_part.mount_all(things_to_mount)
 
     @CliveScreen.try_again_after_unlock
-    @on(SelectFileToSaveTransaction.Saved)
-    async def save_to_file(self, event: SelectFileToSaveTransaction.Saved) -> None:
-        file_path = event.file_path
-        save_as_binary = event.save_as_binary
-        should_be_signed = event.should_be_signed
+    async def _save_to_file(self, result: SaveTransactionResult) -> None:
+        file_path = result.file_path
+        save_as_binary = result.save_as_binary
+        should_be_signed = result.should_be_signed
 
         transaction = self.transaction.copy()
 
@@ -221,7 +222,7 @@ class TransactionSummaryCommon(BaseScreen):
         """Actions that should be performed after the transaction is broadcasted."""
 
     def action_save(self) -> None:
-        self.app.push_screen(SelectFileToSaveTransaction())
+        self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
 
     def __get_key_to_sign(self) -> PublicKey:
         try:
