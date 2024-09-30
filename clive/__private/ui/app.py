@@ -316,24 +316,6 @@ class Clive(App[int], ManualReactive):
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
 
-    def post_message_to_everyone(self, message: Message) -> None:
-        """Post a message to all screens in the stack."""
-        for screen in reversed(self.screen_stack):
-            screen.post_message(message)
-
-    def post_message_to_screen(self, screen: str | type[Screen[ScreenResultType]], message: Message) -> None:
-        """Post a message to a specific screen in the stack."""
-        self.__assert_screen_in_stack(screen)
-        for screen_ in reversed(self.screen_stack):
-            if self.__screen_eq(screen_, screen):
-                screen_.post_message(message)
-
-    def __assert_screen_in_stack(self, screen_to_check: str | type[Screen[ScreenResultType]]) -> None:
-        if not self.__is_screen_in_stack(screen_to_check):
-            raise ScreenNotFoundError(
-                f"Screen {screen_to_check} is not in the screen stack.\nScreen stack: {self.screen_stack}"
-            )
-
     def __is_screen_in_stack(self, screen_to_check: str | type[Screen[ScreenResultType]]) -> bool:
         return any(self.__screen_eq(screen, screen_to_check) for screen in self.screen_stack)
 
