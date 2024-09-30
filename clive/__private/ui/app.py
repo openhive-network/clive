@@ -3,7 +3,6 @@ from __future__ import annotations
 import asyncio
 import math
 import traceback
-from asyncio import CancelledError
 from contextlib import asynccontextmanager, contextmanager
 from typing import TYPE_CHECKING, Any, TypeVar, overload
 
@@ -140,11 +139,8 @@ class Clive(App[int], ManualReactive):
                     size=size,
                     auto_pilot=auto_pilot,
                 )
-        except CancelledError:
-            pass
         finally:
             self.__cleanup()
-        return 1
 
     @asynccontextmanager
     async def run_test(
