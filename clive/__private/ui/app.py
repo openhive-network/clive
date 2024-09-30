@@ -117,19 +117,15 @@ class Clive(App[int], ManualReactive):
     def suppressed_notifications(self) -> Iterator[None]:
         """Suppress all notifications while in context."""
 
-        def dummy_notify(
-            message: str,  # noqa: ARG001
-            *,
-            title: str = "",  # noqa: ARG001
-            severity: SeverityLevel = "information",  # noqa: ARG001
-            timeout: float | None = None,  # noqa: ARG001
-        ) -> None:
-            return
+        def dummy_notify(*_: Any, **__: Any) -> None:
+            pass
 
         old_notify = self.notify
         self.notify = dummy_notify  # type: ignore[method-assign]
-        yield
-        self.notify = old_notify  # type: ignore[method-assign]
+        try:
+            yield
+        finally:
+            self.notify = old_notify  # type: ignore[method-assign]
 
     async def run_async(
         self,
