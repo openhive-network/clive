@@ -47,6 +47,14 @@ class CreateProfileCommon(BaseScreen, Contextual[Profile], ABC):
             yield self._repeat_password_input
             yield from self._additional_content()
 
+    def on_mount(self) -> None:
+        # Validate the repeat password input again when password is changed and repeat was already touched.
+        self.watch(self._password_input.input, "value", self._revalidate_repeat_password_input_when_password_changed)
+
+    def _revalidate_repeat_password_input_when_password_changed(self) -> None:
+        if self._repeat_password_input.value_raw:
+            self._repeat_password_input.validate_passed()
+
     def _additional_content(self) -> ComposeResult:
         """Additional content to be added to the form."""
         return []
