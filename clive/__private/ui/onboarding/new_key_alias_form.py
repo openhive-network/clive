@@ -31,6 +31,9 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
         if not self.should_complete_this_step:
             return
 
+        # We allow just for adding one key during onboarding. Clear old ones because validation could fail.
+        self.context.keys.clear_to_import()
+
         self._validate()
         self.context.keys.set_to_import([self._private_key_aliased])
         logger.debug("New private key is waiting to be imported...")

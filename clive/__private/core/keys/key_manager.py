@@ -100,6 +100,9 @@ class KeyManager:
             self._assert_no_public_alias_conflict(key.alias)
         self.__keys_to_import = set(keys_to_import)
 
+    def clear_to_import(self) -> None:
+        self.__keys_to_import.clear()
+
     async def import_pending_to_beekeeper(self, import_callback: ImportCallbackT) -> None:
         imported_keys = [await import_callback(key) for key in self.__keys_to_import]
         self.__keys_to_import.clear()
