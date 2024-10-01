@@ -23,14 +23,17 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
         super().__init__(owner=owner)
 
     @property
-    def is_key_provided(self) -> bool:
-        return bool(self._key_input.value_raw)
+    def should_complete_this_step(self) -> bool:
+        """NewKeyAliasForm step is optional, to check if it should be skipped use this property."""
+        return bool(self._key_input.value_raw) or bool(self._key_alias_input.value_raw)
 
     async def apply_and_validate(self) -> None:
-        if self.is_key_provided:  # NewKeyAliasForm step is optional, so we can skip it when no key is provided
-            self._validate()
-            self.context.keys.set_to_import([self._private_key_aliased])
-            logger.debug("New private key is waiting to be imported...")
+        if not self.should_complete_this_step:
+            return
+
+        self._validate()
+        self.context.keys.set_to_import([self._private_key_aliased])
+        logger.debug("New private key is waiting to be imported...")
 
     def _validate(self) -> None:
         """
