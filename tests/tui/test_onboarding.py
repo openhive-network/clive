@@ -10,7 +10,6 @@ from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.onboarding.onboarding import OnboardingFinishScreen, OnboardingWelcomeScreen
 from clive.__private.ui.onboarding.set_account import SetAccount
 from clive.__private.ui.onboarding.set_account.set_account import WorkingAccountCheckbox
-from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -73,7 +72,6 @@ async def onboarding_until_set_account(
     await focus_next(pilot)
     assert_is_clive_composed_input_focused(pilot, RepeatPasswordInput)
     await write_text(pilot, profile_password)
-    await press_and_wait_for_screen(pilot, "ctrl+n", SetNodeAddressForm)
     await press_and_wait_for_screen(pilot, "ctrl+n", SetAccount)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput)
     await write_text(pilot, account_name)

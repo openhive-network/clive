@@ -15,7 +15,6 @@ from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen im
 from clive.__private.ui.onboarding.form import Form, ScreenBuilder
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.onboarding.set_account import SetAccount
-from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
 from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
@@ -52,7 +51,6 @@ class Onboarding(Form[OnboardingContext]):
 
     def register_screen_builders(self) -> Iterator[ScreenBuilder[OnboardingContext]]:
         yield CreateProfileForm
-        yield SetNodeAddressForm
         yield SetAccount
         yield NewKeyAliasForm
 
