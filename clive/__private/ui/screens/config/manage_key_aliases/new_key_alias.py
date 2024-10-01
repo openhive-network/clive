@@ -48,6 +48,18 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         self.__key_file_path: Path | None = None
 
     @property
+    def _private_key(self) -> PrivateKey:
+        """
+        Returns a PrivateKey instance with the given private key value.
+
+        Raises
+        ------
+        FailedCliveInputValidationError: When given input is not a valid private key.
+        """
+        self._key_input.validate_with_error()
+        return PrivateKey(value=self._key_input.value_or_error, file_path=self.__key_file_path)
+
+    @property
     def _private_key_aliased(self) -> PrivateKeyAliased:
         """
         Returns a PrivateKeyAliased instance with the given alias and private key value.
@@ -76,7 +88,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
     @on(Input.Changed, "#key-input Input")
     def recalculate_public_key(self) -> None:
         try:
-            private_key = self._private_key_aliased
+            private_key = self._private_key
         except CliveValidatedInputError:
             text = "Cannot calculate public key"
             calculated = False
