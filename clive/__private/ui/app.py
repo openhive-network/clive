@@ -74,6 +74,7 @@ class Clive(App[int], ManualReactive):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._world: TUIWorld | None = None
+        self._register_quit_signals()
 
     @property
     def world(self) -> TUIWorld:
@@ -392,3 +393,13 @@ class Clive(App[int], ManualReactive):
         # This is a safeguard to prevent that from happening again.
         logger.error(f"{error.__class__.__name__}: {error}\n{traceback.format_exc()}")
         super()._handle_exception(error)
+
+    def _register_quit_signals(self) -> None:
+        import signal
+
+        def callback() -> None:
+            self.exit()
+
+        loop = asyncio.get_running_loop()  # can't use self._loop since it's not set yet
+        for signal_number in [signal.SIGHUP, signal.SIGINT, signal.SIGQUIT, signal.SIGTERM]:
+            loop.add_signal_handler(signal_number, callback)
