@@ -36,8 +36,8 @@ async def test_close_on_signal(signal_number: signal.Signals) -> None:
         process.send_signal(signal_number)
 
         # ASSERT
-        await wait_for(lambda: not beekeeper_pidfile.exists(), "Beekeeper did not close")
         await wait_for(
             lambda: get_process_return_code() == 0,
             lambda: f"Clive tui process not closed properly. Return code is {get_process_return_code()}",
         )
+        await wait_for(lambda: not beekeeper_pidfile.exists(), "Beekeeper did not close")
