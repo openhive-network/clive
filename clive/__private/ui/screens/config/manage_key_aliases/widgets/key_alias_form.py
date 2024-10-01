@@ -3,7 +3,6 @@ from __future__ import annotations
 from abc import ABC
 from typing import TYPE_CHECKING, Any, ClassVar
 
-from textual.message import Message
 from textual.widgets import Static
 
 from clive.__private.core.contextual import Contextual
@@ -27,9 +26,6 @@ class KeyAliasForm(BaseScreen, Contextual[Profile], ABC):
 
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = True
     SECTION_TITLE: ClassVar[str] = "Change me in subclass"
-
-    class Changed(Message):
-        """Emitted when key alias have been changed."""
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.

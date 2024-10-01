@@ -2,8 +2,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
-from textual import on
-
 from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
@@ -24,14 +22,15 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
     def __init__(self, owner: Form[Profile]) -> None:
         super().__init__(owner=owner)
 
-    @on(NewKeyAliasBase.Saved)
-    def new_key_alias_base_saved(self, event: NewKeyAliasBase.Saved) -> None:
-        self.context.keys.set_to_import([event.private_key])
-        logger.debug("New private key is waiting to be imported...")
+    @property
+    def is_key_provided(self) -> bool:
+        return bool(self._key_input.value_raw)
 
     async def apply_and_validate(self) -> None:
-        if self._is_key_provided:  # NewKeyAliasForm step is optional, so we can skip it when no key is provided
-            self._save()
+        if self.is_key_provided:  # NewKeyAliasForm step is optional, so we can skip it when no key is provided
+            self._validate()
+            self.context.keys.set_to_import([self._private_key_aliased])
+            logger.debug("New private key is waiting to be imported...")
 
     def _validate(self) -> None:
         """

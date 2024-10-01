@@ -12,7 +12,7 @@ from clive.__private.ui.onboarding.set_account import SetAccount
 from clive.__private.ui.onboarding.set_account.set_account import WorkingAccountCheckbox
 from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
 from clive.__private.ui.screens.config import Config
-from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAlias, ManageKeyAliases
+from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import DashboardUnlocked
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.private_key_input import PrivateKeyInput
@@ -110,7 +110,7 @@ async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "f6", Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)
-    key_aliases = pilot.app.screen.query(KeyAlias)
+    key_aliases = pilot.app.screen.query(KeyAliasRow)
     assert len(key_aliases) == 1, f"Expected 1 key-alias, current count is: {len(key_aliases)}"
 
 

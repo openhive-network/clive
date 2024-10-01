@@ -26,7 +26,7 @@ class EditKeyAlias(KeyAliasForm):
     SECTION_TITLE: ClassVar[str] = "Edit key alias"
 
     def __init__(self, public_key: PublicKeyAliased) -> None:
-        self.public_key = public_key
+        self._public_key = public_key
         super().__init__()
 
     @property
@@ -34,9 +34,6 @@ class EditKeyAlias(KeyAliasForm):
         return self.profile
 
     def action_save(self) -> None:
-        self._save()
-
-    def _save(self) -> None:
         try:
             self._validate()
         except FailedValidationError:
@@ -45,17 +42,16 @@ class EditKeyAlias(KeyAliasForm):
             self.notify(str(error), severity="error")
             return
 
-        old_alias = self.public_key.alias
+        old_alias = self._public_key.alias
         new_alias = self._key_alias_input.value_or_error
         self.profile.keys.rename(old_alias, new_alias)
+        self.notify(f"Key alias `{self._public_key.alias}` was edited.")
 
         self.app.trigger_profile_watchers()
-        self.app.post_message_to_screen("ManageKeyAliases", self.Changed())
-        self.app.pop_screen()
-        self.notify(f"Key alias `{self.public_key.alias}` was edited.")
+        self.dismiss()
 
     def _default_key_alias_name(self) -> str:
-        return self.public_key.alias
+        return self._public_key.alias
 
     def _default_public_key(self) -> str:
-        return self.public_key.value
+        return self._public_key.value
