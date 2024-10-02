@@ -7,6 +7,7 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Input
 
+from clive.__private.core.constants.tui.placeholders import KEY_FILE_PATH_PLACEHOLDER
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_screen import CliveScreen
@@ -75,9 +76,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         return PrivateKeyAliased(value=private_key, file_path=self.__key_file_path, alias=key_alias)
 
     def action_load_from_file(self) -> None:
-        self.app.push_screen(
-            SelectFile(placeholder="e.g. /home/me/my-active-key.wif"), self._load_private_key_from_file
-        )
+        self.app.push_screen(SelectFile(placeholder=KEY_FILE_PATH_PLACEHOLDER), self._load_private_key_from_file)
 
     def _load_private_key_from_file(self, result: SaveFileResult) -> None:
         file_path = result.file_path

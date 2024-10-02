@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from textual.widgets import Checkbox
 
+from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -32,7 +33,7 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
         super().__init__(owner)
 
         self._account_name_input = AccountNameInput(
-            placeholder="Please enter hive account name, without @",
+            placeholder=ACCOUNT_NAME_ONBOARDING_PLACEHOLDER,
             include_title_in_placeholder_when_blurred=False,
             show_known_account=False,
         )
