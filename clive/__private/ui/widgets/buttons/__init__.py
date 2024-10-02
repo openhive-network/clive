@@ -7,6 +7,7 @@ from .confirm_button import ConfirmButton
 from .generous_button import GenerousButton
 from .one_line_button import OneLineButton, OneLineButtonUnfocusable
 from .page_switch_buttons import PageDownButton, PageUpButton
+from .remove_button import RemoveButton
 from .search_operation_buttons import ClearButton, SearchButton
 
 __all__ = [
@@ -20,5 +21,6 @@ __all__ = [
     "OneLineButtonUnfocusable",
     "PageDownButton",
     "PageUpButton",
+    "RemoveButton",
     "SearchButton",
 ]
