@@ -240,7 +240,10 @@ class TransactionSummary(BaseScreen):
         self._handle_bindings()
 
     @CliveScreen.try_again_after_unlock
-    async def _save_to_file(self, result: SaveTransactionResult) -> None:
+    async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
+        if result is None:
+            return
+
         file_path = result.file_path
         save_as_binary = result.save_as_binary
         should_be_signed = result.should_be_signed
@@ -265,7 +268,10 @@ class TransactionSummary(BaseScreen):
             f" {'(signed)' if transaction.is_signed() else ''}"
         )
 
-    async def _load_transaction_from_file(self, result: SaveFileResult) -> None:
+    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
+        if result is None:
+            return
+
         file_path = result.file_path
 
         try:

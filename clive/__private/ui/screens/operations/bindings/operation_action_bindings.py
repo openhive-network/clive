@@ -120,7 +120,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                 )
                 await self.app.switch_screen(TransactionSummary(transaction))
 
-        async def finalize_cb(confirm: bool) -> None:  # noqa: FBT001
+        async def finalize_cb(confirm: bool | None) -> None:
             if confirm:
                 await finalize()
 
@@ -138,7 +138,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                 self._add_account_to_known_after_action()
                 self._pop_screen_on_successfully_added_to_cart()
 
-        def add_to_cart_cb(confirm: bool) -> None:  # noqa: FBT001
+        def add_to_cart_cb(confirm: bool | None) -> None:
             if confirm:
                 add_to_cart()
 
@@ -157,7 +157,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self._pop_screen_until_operations_or_dashboard()
 
     async def action_fast_broadcast(self) -> None:
-        async def fast_broadcast_cb(confirm: bool) -> None:  # noqa: FBT001
+        async def fast_broadcast_cb(confirm: bool | None) -> None:
             if confirm:
                 await self.__fast_broadcast()
 
