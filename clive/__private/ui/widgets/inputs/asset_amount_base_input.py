@@ -121,6 +121,12 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
         with self.prevent(CurrencySelectorBase.Changed):
             self._currency_selector.select_asset(Asset.get_symbol(asset_type))
 
+    def disable_currency_selector(self) -> None:
+        self._currency_selector.disabled = True
+
+    def enable_currency_selector(self) -> None:
+        self._currency_selector.disabled = False
+
     def compose(self) -> ComposeResult:
         with Vertical():
             with Horizontal():
