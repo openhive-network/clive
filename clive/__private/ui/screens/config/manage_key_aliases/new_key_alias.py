@@ -78,7 +78,10 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
     def action_load_from_file(self) -> None:
         self.app.push_screen(SelectFile(placeholder=KEY_FILE_PATH_PLACEHOLDER), self._load_private_key_from_file)
 
-    def _load_private_key_from_file(self, result: SaveFileResult) -> None:
+    def _load_private_key_from_file(self, result: SaveFileResult | None) -> None:
+        if result is None:
+            return
+
         file_path = result.file_path
         self._key_input.input.value = PrivateKey.read_key_from_file(file_path)
         self.__key_file_path = file_path

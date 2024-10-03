@@ -48,7 +48,7 @@ class ConfirmWithPassword(BaseScreen[str]):
             return
 
         with self.app.batch_update():
-            self.dismiss(password)
+            await self.dismiss(password)
 
     async def _is_password_valid(self, password: str) -> bool:
         wrapper = await self.commands.is_password_valid(password=password)

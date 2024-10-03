@@ -67,7 +67,10 @@ class Operations(CartBasedScreen, CartBinding):
         button: OperationButton = event.button  # type: ignore[assignment]
         self.app.push_screen(button.operation_screen())
 
-    async def _load_transaction_from_file(self, result: SaveFileResult) -> None:
+    async def _load_transaction_from_file(self, result: SaveFileResult | None) -> None:
+        if result is None:
+            return
+
         file_path = result.file_path
 
         try:

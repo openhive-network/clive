@@ -160,7 +160,10 @@ class TransactionSummaryCommon(BaseScreen):
         await self.__scrollable_part.mount_all(things_to_mount)
 
     @CliveScreen.try_again_after_unlock
-    async def _save_to_file(self, result: SaveTransactionResult) -> None:
+    async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
+        if result is None:
+            return
+
         file_path = result.file_path
         save_as_binary = result.save_as_binary
         should_be_signed = result.should_be_signed
