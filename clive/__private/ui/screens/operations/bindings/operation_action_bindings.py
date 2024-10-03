@@ -109,10 +109,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def create_operations(self) -> list[OperationUnion] | None:
         return self._validate_and_notify(self._create_operations)
 
-    def action_finalize_transaction(self) -> None:
+    async def action_finalize_transaction(self) -> None:
         if self._add_to_cart():
             self._add_account_to_known_after_action()
-            self.app.switch_screen(TransactionSummary())
+            transaction = (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
+            await self.app.switch_screen(TransactionSummary(transaction))
 
     def action_add_to_cart(self) -> None:
         if self._add_to_cart():

@@ -56,9 +56,9 @@ class TransactionIdLabel(Label):
 class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
-    transaction: Transaction | None = reactive(None, init=False, recompose=True)  # type: ignore[assignment]
+    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None):
+    def __init__(self, transaction: Transaction | None) -> None:
         super().__init__()
         self.transaction = transaction
 
@@ -70,10 +70,6 @@ class TransactionMetadataContainer(Horizontal):
             yield TransactionIdLabel(f"Transaction ID: {self.transaction.calculate_transaction_id()}")
         else:
             yield Label("No operations in cart, can't calculate transaction metadata.", id="no-metadata")
-
-    def watch_transaction(self, _: Transaction | None) -> None:
-        if self.transaction:
-            self.query(TaposHolder).transaction = self.transaction
 
 
 class ButtonMoveUp(CliveButton):
@@ -133,24 +129,15 @@ class ButtonRawJson(CliveButton):
 class TaposHolder(Vertical):
     """Container for the TaPoS metadata."""
 
-    transaction: Transaction | None = reactive(None, init=False)  # type: ignore[assignment]
-
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__()
-        self._ref_block_num_label = Label(f"Ref block num: {self.transaction.ref_block_num}", id="ref-block-num")
-        self._ref_block_prefix_label = Label(
-            f"Ref block prefix: {self.transaction.ref_block_prefix}", id="ref-block-prefix"
-        )
+        self._ref_block_num_label = Label(f"Ref block num: {transaction.ref_block_num}", id="ref-block-num")
+        self._ref_block_prefix_label = Label(f"Ref block prefix: {transaction.ref_block_prefix}", id="ref-block-prefix")
 
     def compose(self) -> ComposeResult:
         yield Label("TaPoS:")
         yield self._ref_block_num_label
         yield self._ref_block_prefix_label
-
-    def watch_transaction(self, _: Transaction) -> None:
-        if self.transaction:
-            self._ref_block_num_label.update(f"Ref block num: {self.transaction.ref_block_num}")
-            self._ref_block_prefix_label.update(f"Ref block prefix: {self.transaction.ref_block_prefix}")
 
 
 class SelectKey(SafeSelect[PublicKey], CliveWidget):
@@ -505,17 +492,11 @@ class TransactionSummary(BaseScreen):
     ]
     BIG_TITLE = "transaction summary"
 
-    transaction: Transaction | None = reactive(None)  # type: ignore[assignment]
-
-    def __init__(self) -> None:
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__()
-        self.run_worker(self._build_transaction())
-        self._transaction_metadata_container = TransactionMetadataContainer(self.transaction)
+        self._transaction_metadata_container = TransactionMetadataContainer(transaction)
         self._select_key = SelectKey()
         self._broadcast_button_exists = False
-
-    def watch_transaction(self, value: Transaction) -> None:
-        self._transaction_metadata_container.transaction = value
 
     @property
     def button_broadcast(self) -> CliveButton:
@@ -537,8 +518,6 @@ class TransactionSummary(BaseScreen):
             yield CartTable()
 
     async def on_mount(self) -> None:
-        self._transaction_metadata_container.compose()
-        self.transaction = await self._build_transaction() if self.profile.cart else None
         await self._handle_action_buttons_and_bindings()
 
     @on(ButtonOpenTransactionFromFile.Pressed)
@@ -556,7 +535,9 @@ class TransactionSummary(BaseScreen):
 
     @on(CartTable.Modified)
     async def transaction_modified(self) -> None:
-        self.transaction = await self._build_transaction() if self.profile.cart else None
+        self._transaction_metadata_container.transaction = (
+            await self._build_transaction() if self.profile.cart else None
+        )
         await self._handle_action_buttons_and_bindings()
 
     @CliveScreen.try_again_after_unlock
