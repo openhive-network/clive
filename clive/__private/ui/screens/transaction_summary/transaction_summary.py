@@ -56,37 +56,24 @@ class TransactionIdLabel(Label):
 class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
-    @property
-    def tapos_holder(self) -> TaposHolder:
-        return self.query_one(TaposHolder)
+    transaction: Transaction | None = reactive(None, init=False, recompose=True)  # type: ignore[assignment]
 
-    @property
-    def expiration(self) -> TransactionExpirationLabel:
-        return self.query_one(TransactionExpirationLabel)
+    def __init__(self, transaction: Transaction | None):
+        super().__init__()
+        self.transaction = transaction
 
-    @property
-    def transaction_id(self) -> TransactionIdLabel:
-        return self.query_one(TransactionIdLabel)
+    def compose(self) -> ComposeResult:
+        if self.transaction:
+            expiration = humanize.humanize_datetime(self.transaction.expiration)
+            yield TaposHolder(self.transaction)
+            yield TransactionExpirationLabel(f"Expiration: {expiration}")
+            yield TransactionIdLabel(f"Transaction ID: {self.transaction.calculate_transaction_id()}")
+        else:
+            yield Label("No operations in cart, can't calculate transaction metadata.", id="no-metadata")
 
-    async def mount_no_metadata_label(self) -> None:
-        await self.mount(Label("No operations in cart, can't calculate transaction metadata.", id="no-metadata"))
-
-    async def mount_transaction_details(self, transaction: Transaction) -> None:
-        expiration = humanize.humanize_datetime(transaction.expiration)
-        things_to_mount = [
-            TaposHolder(transaction.ref_block_num, transaction.ref_block_prefix),
-            TransactionExpirationLabel(f"Expiration: {expiration}"),
-            TransactionIdLabel(f"Transaction ID: {transaction.calculate_transaction_id()}"),
-        ]
-        await self.mount_all(things_to_mount)
-
-    async def rebuild(self, *, cart_empty: bool, transaction: Transaction | None = None) -> None:
-        await self.remove_children("*")
-        if cart_empty:
-            await self.mount_no_metadata_label()
-            return
-        assert transaction is not None, "You have to provide transaction when cart is not empty."
-        await self.mount_transaction_details(transaction)
+    def watch_transaction(self, _: Transaction | None) -> None:
+        if self.transaction:
+            self.query(TaposHolder).transaction = self.transaction
 
 
 class ButtonMoveUp(CliveButton):
@@ -146,19 +133,24 @@ class ButtonRawJson(CliveButton):
 class TaposHolder(Vertical):
     """Container for the TaPoS metadata."""
 
-    def __init__(self, ref_block_num: int, ref_block_prefix: int) -> None:
+    transaction: Transaction | None = reactive(None, init=False)  # type: ignore[assignment]
+
+    def __init__(self, transaction: Transaction | None) -> None:
         super().__init__()
-        self._ref_block_num_label = Label(f"Ref block num: {ref_block_num}", id="ref-block-num")
-        self._ref_block_prefix_label = Label(f"Ref block prefix: {ref_block_prefix}", id="ref-block-prefix")
+        self._ref_block_num_label = Label(f"Ref block num: {self.transaction.ref_block_num}", id="ref-block-num")
+        self._ref_block_prefix_label = Label(
+            f"Ref block prefix: {self.transaction.ref_block_prefix}", id="ref-block-prefix"
+        )
 
     def compose(self) -> ComposeResult:
         yield Label("TaPoS:")
         yield self._ref_block_num_label
         yield self._ref_block_prefix_label
 
-    def update_labels(self, ref_block_num: int, ref_block_prefix: int) -> None:
-        self._ref_block_num_label.update(f"Ref block num: {ref_block_num}")
-        self._ref_block_prefix_label.update(f"Ref block prefix: {ref_block_prefix}")
+    def watch_transaction(self, _: Transaction) -> None:
+        if self.transaction:
+            self._ref_block_num_label.update(f"Ref block num: {self.transaction.ref_block_num}")
+            self._ref_block_prefix_label.update(f"Ref block prefix: {self.transaction.ref_block_prefix}")
 
 
 class SelectKey(SafeSelect[PublicKey], CliveWidget):
@@ -513,17 +505,17 @@ class TransactionSummary(BaseScreen):
     ]
     BIG_TITLE = "transaction summary"
 
+    transaction: Transaction | None = reactive(None)  # type: ignore[assignment]
+
     def __init__(self) -> None:
         super().__init__()
-        self._transaction: Transaction | None = None
-        self._transaction_metadata_container = TransactionMetadataContainer()
+        self.run_worker(self._build_transaction())
+        self._transaction_metadata_container = TransactionMetadataContainer(self.transaction)
         self._select_key = SelectKey()
         self._broadcast_button_exists = False
 
-    @property
-    def transaction(self) -> Transaction:
-        assert self._transaction is not None, "Transaction should be initialized at this point!"
-        return self._transaction
+    def watch_transaction(self, value: Transaction) -> None:
+        self._transaction_metadata_container.transaction = value
 
     @property
     def button_broadcast(self) -> CliveButton:
@@ -545,7 +537,8 @@ class TransactionSummary(BaseScreen):
             yield CartTable()
 
     async def on_mount(self) -> None:
-        await self._mount_transaction_metadata()
+        self._transaction_metadata_container.compose()
+        self.transaction = await self._build_transaction() if self.profile.cart else None
         await self._handle_action_buttons_and_bindings()
 
     @on(ButtonOpenTransactionFromFile.Pressed)
@@ -563,8 +556,7 @@ class TransactionSummary(BaseScreen):
 
     @on(CartTable.Modified)
     async def transaction_modified(self) -> None:
-        self._transaction = await self._build_transaction()
-        await self._update_metadata_container()
+        self.transaction = await self._build_transaction() if self.profile.cart else None
         await self._handle_action_buttons_and_bindings()
 
     @CliveScreen.try_again_after_unlock
@@ -573,7 +565,7 @@ class TransactionSummary(BaseScreen):
         file_path = event.file_path
         save_as_binary = event.save_as_binary
         should_be_signed = event.should_be_signed
-
+        assert self.transaction is not None, "Transaction can't be None while saving to file."
         transaction = self.transaction.copy()
         try:
             transaction = (
@@ -604,7 +596,7 @@ class TransactionSummary(BaseScreen):
         except LoadTransactionError as error:
             self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
             return
-        self._transaction = loaded_transaction
+        self.transaction = loaded_transaction
         if not self.transaction.is_tapos_set():
             self.notify("TaPoS metadata was not set, updating automatically...")
             await self.commands.update_transaction_metadata(transaction=self.transaction)
@@ -612,14 +604,13 @@ class TransactionSummary(BaseScreen):
         self.profile.cart.fill_from_transaction(self.transaction)
         self.app.trigger_profile_watchers()
         await self.query_one(CartTable).rebuild()
-        await self._transaction_metadata_container.rebuild(cart_empty=False, transaction=self.transaction)
 
     @CliveScreen.try_again_after_unlock
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import DashboardBase
 
         transaction = self.transaction
-
+        assert transaction is not None, "Transaction can't be None while broadcasting."
         try:
             (
                 await self.commands.perform_actions_on_transaction(
@@ -638,7 +629,9 @@ class TransactionSummary(BaseScreen):
         self.app.pop_screen_until(DashboardBase)
 
     async def _build_transaction(self) -> Transaction:
-        return (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
+        transaction = (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
+        self.transaction = transaction
+        return transaction
 
     def _get_broadcast_or_open_transaction_button(self) -> ButtonBroadcast | ButtonOpenTransactionFromFile:
         if self.profile.cart:
@@ -650,7 +643,7 @@ class TransactionSummary(BaseScreen):
         return self._select_key.value
 
     async def _handle_action_buttons_and_bindings(self) -> None:
-        if len(self.profile.cart) <= 0:
+        if not self.profile.cart:
             if self._broadcast_button_exists:
                 await self.query_one(ButtonBroadcast).remove()
                 self._broadcast_button_exists = False
@@ -665,24 +658,3 @@ class TransactionSummary(BaseScreen):
             self.button_save.disabled = False
             self.bind(Binding("f6", "broadcast", "Broadcast"))
             self.bind(Binding("f2", "save_to_file", "Save to file"))
-
-    async def _mount_transaction_metadata(self) -> None:
-        if len(self.profile.cart) <= 0:
-            await self._transaction_metadata_container.mount_no_metadata_label()
-        else:
-            self._transaction = await self._build_transaction()
-            await self._transaction_metadata_container.mount_transaction_details(self.transaction)
-
-    async def _update_metadata_container(self) -> None:
-        if len(self.profile.cart) <= 0:
-            await self._transaction_metadata_container.rebuild(cart_empty=True)
-            return
-        self._transaction_metadata_container.tapos_holder.update_labels(
-            self.transaction.ref_block_num, self.transaction.ref_block_prefix
-        )
-        self._transaction_metadata_container.expiration.update(
-            f"Expiration: {humanize.humanize_datetime(self.transaction.expiration)}"
-        )
-        self._transaction_metadata_container.transaction_id.update(
-            f"Transaction ID: {self.transaction.calculate_transaction_id()}"
-        )
