@@ -35,8 +35,8 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveTabbedContent,
 )
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
+from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
@@ -205,7 +205,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self._default_asset_selected = default_asset_selected
         self._amount_input = LiquidAssetAmountInput()
         self._memo_input = MemoInput()
-        self._to_account_input = AccountNameInput("To", value=self.default_receiver)
+        self._to_account_input = KnownExchangeInput("To", value=self.default_receiver)
         self._default_transfer_type = default_transfer_type
 
         self._to_button = self._create_to_savings_button(default_transfer_type)
@@ -241,6 +241,9 @@ class SavingsTransfers(TabPane, OperationActionBindings):
             return
         self._transfer_time_reminder.visible = False
         section_title.update("Perform a transfer to savings")
+
+    def check_is_known_exchange_in_input(self) -> bool:
+        return self._to_account_input.value_raw in self.world.known_exchanges
 
     def _create_operation(
         self,

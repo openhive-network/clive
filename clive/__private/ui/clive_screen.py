@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
 from functools import wraps
+from inspect import isawaitable
 from typing import TYPE_CHECKING, ParamSpec
 
 from textual import on
@@ -45,6 +47,13 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
 
     class Resumed(Message):
         """Message to notify children widgets that the screen they were mounted on, was resumed."""
+
+    @dataclass
+    class ConfirmAction(Message):
+        """Message to notify screen that an action should be confirmed."""
+
+        action_to_confirm: Callable[[], None] | Callable[[], Awaitable[None]]
+        confirm_question: str = "Are you sure?"
 
     @property
     def active_bindings(self) -> ActiveBindingsMap:
@@ -116,6 +125,21 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
             return wrapper
 
         return decorator
+
+    @on(ConfirmAction)
+    def confirm_action(self, event: ConfirmAction) -> None:
+        from clive.__private.ui.dialogs.confirm_action_dialog import ConfirmActionDialog
+
+        async def action(confirm: bool) -> None:  # noqa: FBT001
+            if confirm:
+                result = event.action_to_confirm()
+                if isawaitable(result):
+                    await result
+                return
+
+            self.app.notify("Action cancelled, no changes were made")
+
+        self.app.push_screen(ConfirmActionDialog(confirm_question=event.confirm_question), action)
 
     @on(ScreenSuspend)
     def _post_suspended(self) -> None:

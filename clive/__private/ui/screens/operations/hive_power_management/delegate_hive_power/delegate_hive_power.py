@@ -23,9 +23,9 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests import CurrencySelectorHpVests
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
+from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 
@@ -125,7 +125,7 @@ class DelegateHivePower(TabPane, OperationActionBindings):
         title: Title of the TabPane (will be displayed in a tab label).
         """
         super().__init__(title=title)
-        self._delegate_input = AccountNameInput("Delegate")
+        self._delegate_input = KnownExchangeInput("Delegate")
         self._shares_input = HPVestsAmountInput()
 
     def compose(self) -> ComposeResult:
@@ -135,6 +135,9 @@ class DelegateHivePower(TabPane, OperationActionBindings):
                 yield self._delegate_input
                 yield self._shares_input
             yield DelegationsTable()
+
+    def check_is_known_exchange_in_input(self) -> bool:
+        return self._delegate_input.value_raw in self.world.known_exchanges
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
         if not CliveValidatedInput.validate_many(self._delegate_input, self._shares_input):
