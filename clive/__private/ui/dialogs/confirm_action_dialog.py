@@ -32,6 +32,7 @@ class ConfirmActionDialog(CliveActionDialog[bool]):
             variant=variant,
             id_=id_,
             classes=classes,
+            pop_screen_on_cancel=False,
         )
         self._confirm_question = confirm_question
 

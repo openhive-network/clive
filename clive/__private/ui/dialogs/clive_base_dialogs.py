@@ -112,9 +112,12 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
         variant: CliveDialogVariant = "default",
         id_: str | None = None,
         classes: str | None = None,
+        *,
+        pop_screen_on_cancel: bool = True,
     ) -> None:
         super().__init__(border_title=border_title, variant=variant, id_=id_, classes=classes)
         self._confirm_button_text = confirm_button_label
+        self._pop_screen_on_cancel = pop_screen_on_cancel
 
     def create_buttons_content(self) -> ComposeResult:
         yield ConfirmButton(self._confirm_button_text)
@@ -126,7 +129,8 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
 
     @on(CancelButton.Pressed)
     def action_cancel(self) -> None:
-        self.app.pop_screen()
+        if self._pop_screen_on_cancel:
+            self.app.pop_screen()
 
 
 class CliveInfoDialog(CliveBaseDialog[ScreenResultT]):
