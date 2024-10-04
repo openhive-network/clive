@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 
 from textual import on, work
 from textual._context import active_app
-from textual.app import App, AutopilotCallbackType
+from textual.app import App
 from textual.binding import Binding
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
@@ -123,27 +123,6 @@ class Clive(App[int]):
         finally:
             self.notify = old_notify  # type: ignore[method-assign]
 
-    async def run_async(
-        self,
-        *,
-        headless: bool = False,
-        inline: bool = False,
-        inline_no_clear: bool = False,
-        mouse: bool = True,
-        size: tuple[int, int] | None = None,
-        auto_pilot: AutopilotCallbackType | None = None,
-    ) -> int | None:
-        async with TUIWorld() as world:
-            self._world = world
-            return await super().run_async(
-                headless=headless,
-                inline=inline,
-                inline_no_clear=inline_no_clear,
-                mouse=mouse,
-                size=size,
-                auto_pilot=auto_pilot,
-            )
-
     @asynccontextmanager
     async def run_test(
         self,
@@ -154,23 +133,23 @@ class Clive(App[int]):
         notifications: bool = True,
         message_hook: Callable[[Message], None] | None = None,
     ) -> AsyncGenerator[ClivePilot]:
-        async with TUIWorld() as world:
-            self._world = world
-            async with super().run_test(
-                headless=headless,
-                size=size,
-                tooltips=tooltips,
-                notifications=notifications,
-                message_hook=message_hook,
-            ) as pilot:
-                yield cast(ClivePilot, pilot)
+        async with super().run_test(
+            headless=headless,
+            size=size,
+            tooltips=tooltips,
+            notifications=notifications,
+            message_hook=message_hook,
+        ) as pilot:
+            yield cast(ClivePilot, pilot)
+
+    async def on_load(self) -> None:
+        self.console.set_window_title("Clive")
+        self._world = await TUIWorld().setup()
 
     def on_mount(self) -> None:
         def __should_enter_onboarding() -> bool:
             should_force_onboarding = safe_settings.dev.should_force_onboarding
             return self.world.is_in_onboarding_mode or should_force_onboarding
-
-        self.console.set_window_title("Clive")
 
         self._refresh_node_data_interval = self.set_interval(
             safe_settings.node.refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
@@ -191,6 +170,9 @@ class Clive(App[int]):
             self.push_screen(Onboarding())
         else:
             self.push_screen("dashboard")
+
+    async def on_unmount(self) -> None:
+        await self.world.close()
 
     def get_screen_from_current_stack(self, screen: type[Screen[ScreenResultType]]) -> Screen[ScreenResultType]:
         for current_screen in self.screen_stack:
