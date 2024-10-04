@@ -35,7 +35,9 @@ share/python-wheels/
 .installed.cfg
 *.egg
 MANIFEST
+scripts/templates/base.sh
 scripts/start_clive.sh
+scripts/start_clive_cli.sh
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
