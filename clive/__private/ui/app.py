@@ -9,9 +9,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, cast
 from textual import on, work
 from textual._context import active_app
 from textual.app import App, AutopilotCallbackType
-from textual.await_complete import AwaitComplete
 from textual.binding import Binding
-from textual.events import ScreenResume
 from textual.notifications import Notification, Notify, SeverityLevel
 from textual.reactive import var
 
@@ -192,48 +190,19 @@ class Clive(App[int]):
         if __should_enter_onboarding():
             self.push_screen(Onboarding())
         else:
-            self.push_screen(Dashboard())
+            self.push_screen("dashboard")
 
-    def pop_screen_until(self, *screens: str | type[Screen[ScreenResultType]]) -> AwaitComplete:
-        """
-        Pop all screens until one of the given screen is on top of the stack.
-
-        Raises
-        ------
-        ScreenNotFoundError:  if no screen was found.
-        """
-
-        async def _pop_screen_until() -> None:
-            for screen in screens:
-                if not self.__is_screen_in_stack(screen):
-                    continue  # Screen not found, try next one
-
-                with self.batch_update():
-                    while not self.__screen_eq(self.screen_stack[-1], screen):
-                        with self.prevent(ScreenResume):
-                            await self.pop_screen()
-                    self.screen.post_message(ScreenResume())
-                break  # Screen found and located on top of the stack, stop
-            else:
-                raise ScreenNotFoundError(
-                    f"None of the {screens} screens was found in stack.\nScreen stack: {self.screen_stack}"
-                )
-
-        return AwaitComplete(_pop_screen_until()).call_next(self)
+    def get_screen_from_current_stack(self, screen: type[Screen[ScreenResultType]]) -> Screen[ScreenResultType]:
+        for current_screen in self.screen_stack:
+            if isinstance(current_screen, screen):
+                return current_screen
+        raise ScreenNotFoundError(f"Screen {screen} not found in stack")
 
     def action_help(self) -> None:
         self.push_screen(Help())
 
     def action_clear_notifications(self) -> None:
         self.clear_notifications()
-
-    def __is_screen_in_stack(self, screen_to_check: str | type[Screen[ScreenResultType]]) -> bool:
-        return any(self.__screen_eq(screen, screen_to_check) for screen in self.screen_stack)
-
-    def __screen_eq(self, screen: Screen[ScreenResultType], other: str | type[Screen[ScreenResultType]]) -> bool:
-        if isinstance(other, str):
-            return screen.__class__.__name__ == other
-        return isinstance(screen, other)
 
     def trigger_profile_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.profile)  # type: ignore[arg-type]

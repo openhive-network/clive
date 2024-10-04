@@ -53,4 +53,4 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
 
     async def action_finish(self) -> None:
         await self._owner.execute_post_actions()
-        await self.app.pop_screen_until(WelcomeFormScreen)
+        self.app.get_screen_from_current_stack(WelcomeFormScreen).pop_until_active()
