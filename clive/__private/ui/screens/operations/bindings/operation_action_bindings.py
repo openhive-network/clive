@@ -18,6 +18,7 @@ from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInpu
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
 )
+from clive.exceptions import ScreenNotFoundError
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -294,7 +295,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             raise RuntimeError("One and only one of `_create_operation` or `_create_operations` should be implemented.")
 
     def _pop_screen_until_operations_or_dashboard(self) -> None:
-        from clive.__private.ui.screens.dashboard import Dashboard
         from clive.__private.ui.screens.operations import Operations
 
-        self.app.pop_screen_until(Operations, Dashboard)
+        try:
+            self.app.get_screen_from_current_stack(Operations).pop_until_active()
+        except ScreenNotFoundError:
+            self.app.get_screen("dashboard").pop_until_active()
