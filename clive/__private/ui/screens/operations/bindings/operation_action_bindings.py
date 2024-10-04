@@ -12,6 +12,7 @@ from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.confirm_action_dialog import ConfirmActionDialog
 from clive.__private.ui.screens.cart.cart import Cart
 from clive.__private.ui.screens.transaction_summary import TransactionSummaryFromCart
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -42,6 +43,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         Binding("f6", "finalize", "Finalize transaction"),
     ]
 
+    CONFIRM_QUESTION_KNOWN_EXCHANGE_IN_INPUT: Final[str] = (
+        "Recipient of your operation is a known exchange.\n"
+        "Exchanges usually don't support this operation.\n\n"
+        "Are you sure you want to proceed?"
+    )
     ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES: ClassVar[bool] = True
     ADD_TO_CART_POP_SCREEN_MODE: Literal["pop", "until_operations_or_dashboard"] = "pop"
 
@@ -111,15 +117,39 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         return self._validate_and_notify(self._create_operations)
 
     def action_finalize(self) -> None:
-        if self._add_to_cart():
-            self._add_account_to_known_after_action()
-            self.app.switch_screen(TransactionSummaryFromCart())
-            self.app.push_screen_at(-1, Cart())
+        def finalize(confirm: bool) -> None:  # noqa: FBT001
+            if confirm and self._add_to_cart():
+                self._add_account_to_known_after_action()
+                self.app.switch_screen(TransactionSummaryFromCart())
+                self.app.push_screen_at(-1, Cart())
+
+        if not self._can_proceed_operation():  # For faster validation feedback to the user
+            return
+
+        if self._check_is_known_exchange_in_input():
+            self.app.push_screen(
+                ConfirmActionDialog(confirm_question=self.CONFIRM_QUESTION_KNOWN_EXCHANGE_IN_INPUT), finalize
+            )
+            return
+
+        finalize(confirm=True)
 
     def action_add_to_cart(self) -> None:
-        if self._add_to_cart():
-            self._add_account_to_known_after_action()
-            self._pop_screen_on_successfully_added_to_cart()
+        def add_to_cart(confirm: bool) -> None:  # noqa: FBT001
+            if confirm and self._add_to_cart():
+                self._add_account_to_known_after_action()
+                self._pop_screen_on_successfully_added_to_cart()
+
+        if not self._can_proceed_operation():  # For faster validation feedback to the user
+            return
+
+        if self._check_is_known_exchange_in_input():
+            self.app.push_screen(
+                ConfirmActionDialog(confirm_question=self.CONFIRM_QUESTION_KNOWN_EXCHANGE_IN_INPUT), add_to_cart
+            )
+            return
+
+        add_to_cart(confirm=True)
 
     def _pop_screen_on_successfully_added_to_cart(self) -> None:
         if self.ADD_TO_CART_POP_SCREEN_MODE == "pop":
@@ -128,11 +158,20 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             self._pop_screen_until_operations_or_dashboard()
 
     async def action_fast_broadcast(self) -> None:
-        if not self.create_operation() and not self.create_operations():  # For faster validation feedback to the user
-            self.notify(INVALID_OPERATION_WARNING, severity="warning")
+        async def fast_broadcast(confirm: bool) -> None:  # noqa: FBT001
+            if confirm:
+                await self.__fast_broadcast()
+
+        if not self._can_proceed_operation():  # For faster validation feedback to the user
             return
 
-        await self.__fast_broadcast()
+        if self._check_is_known_exchange_in_input():
+            await self.app.push_screen(
+                ConfirmActionDialog(confirm_question=self.CONFIRM_QUESTION_KNOWN_EXCHANGE_IN_INPUT), fast_broadcast
+            )
+            return
+
+        await fast_broadcast(confirm=True)
 
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
         """
@@ -142,6 +181,17 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         _______
         If this method is not overridden, the account from the account name input (action receiver),
         will be marked as known.
+        """
+        return None
+
+    def check_is_known_exchange_in_input(self) -> bool | None:
+        """
+        Check if the account name input (action receiver) is a known exchange account (if overwritten).
+
+        Notice:
+        _______
+        If this method is not overridden, the account from the account name input (action receiver),
+        will be checked for being a known exchange.
         """
         return None
 
@@ -172,6 +222,12 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         self._pop_screen_until_operations_or_dashboard()
         self.notify(f"Transaction with ID '{transaction_id}' successfully broadcasted!")
 
+    def _can_proceed_operation(self) -> bool:
+        if not self.create_operation() and not self.create_operations():
+            self.notify(INVALID_OPERATION_WARNING, severity="warning")
+            return False
+        return True
+
     def _add_to_cart(self) -> bool:
         """
         Create a new operation and adds it to the cart.
@@ -187,13 +243,20 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
                 return False
 
         operations = self.ensure_operations_list()
-        if not operations:
-            self.notify(INVALID_OPERATION_WARNING, severity="warning")
-            return False
-
         self.profile.cart.extend(operations)
         self.app.trigger_profile_watchers()
         return True
+
+    def _check_is_known_exchange_in_input(self) -> bool:
+        is_known_exchange_in_input = self.check_is_known_exchange_in_input()
+
+        if is_known_exchange_in_input is not None:
+            return is_known_exchange_in_input
+
+        with contextlib.suppress(NoMatches):
+            return self.query_one(AccountNameInput).value_raw in self.world.known_exchanges
+
+        return False
 
     def _add_account_to_known_after_action(self) -> None:
         """Add account that is given via parameter. If not given - add all accounts from the account name inputs."""
