@@ -1,0 +1,21 @@
+<BASE_PLACEHOLDER>
+
+# Start clive script content
+
+# Set the container name for TUI mode
+CONTAINER_NAME="clive-tui-$(date +%s)"
+
+# Print usage information for the script
+print_help() {
+    echo "Usage: $0 [<docker_img>] [OPTION[=VALUE]]... [<clive_option>]..."
+    echo
+    echo "Allows to start Clive application in TUI mode."
+    echo "OPTIONS:"
+    echo "  --data-dir=DIRECTORY_PATH      Points to a Clive data directory to store profile data. Defaults to ${HOME}/.clive directory."
+    echo "  --docker-option=OPTION         Allows specifying additional Docker options to pass to underlying Docker run."
+    echo "  --help                         Display this help screen and exit."
+    echo
+}
+
+# Run the main function defined in the base script
+main "$@"

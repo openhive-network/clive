@@ -1,0 +1,139 @@
+#!/bin/bash
+
+# Base script content
+# Exit immediately on error, unset variables are errors, and fail on any command in a pipeline
+set -euo pipefail
+
+# Default values
+DOCKER_ARGS=()
+CLIVE_ARGS=()
+CLIVE_DATA_DIR="${HOME}/.clive"
+IMAGE_NAME="<IMG_PLACEHOLDER>"
+
+# Add Docker argument to the Docker args array
+add_docker_arg() {
+    local arg="$1"
+    DOCKER_ARGS+=("$arg")
+}
+
+# Add Clive argument to the Clive args array
+add_clive_arg() {
+    local arg="$1"
+    CLIVE_ARGS+=("$arg")
+}
+
+# Check if Docker is installed
+check_docker_installed() {
+    if ! command -v docker &> /dev/null; then
+        echo "Error: Docker is not installed."
+        echo "Please consult Docker installation documentation: https://docs.docker.com/engine/install/ubuntu/"
+        exit 1
+    fi
+}
+
+# Parse command-line arguments
+parse_args() {
+  common_parse_args "$@"
+}
+
+common_parse_args() {
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            --docker-option=*)
+                local options_string="${1#*=}"
+                IFS=" " read -ra options <<< "$options_string"
+                for option in "${options[@]}"; do
+                    add_docker_arg "$option"
+                done
+                ;;
+            --docker-option)
+                shift
+                local options_string="$1"
+                IFS=" " read -ra options <<< "$options_string"
+                for option in "${options[@]}"; do
+                    add_docker_arg "$option"
+                done
+                ;;
+            --data-dir=*)
+                CLIVE_DATA_DIR="${1#*=}"
+                ;;
+            --data-dir)
+                shift
+                CLIVE_DATA_DIR="$1"
+                ;;
+            --help)
+                print_help
+                exit 0
+                ;;
+            -*)
+                add_clive_arg "$1"
+                ;;
+            *)
+                IMAGE_NAME="$1"
+                echo "Using image name: $IMAGE_NAME"
+                ;;
+        esac
+        shift
+    done
+
+    # Collect remaining command-line arguments and Clive-specific arguments
+    CMD_ARGS=("$@")
+    CMD_ARGS+=("${CLIVE_ARGS[@]}")
+}
+
+# Validate and create the Clive data directory
+validate_data_dir() {
+    if [ -z "${CLIVE_DATA_DIR}" ]; then
+        echo "Error: Missing --data-dir argument"
+        exit 2
+    fi
+
+    mkdir -p "${CLIVE_DATA_DIR}"
+    chmod -R 700 "${CLIVE_DATA_DIR}"
+
+    # Get absolute path for the data directory
+    CLIVE_DATA_ABS_DIR=$(realpath "${CLIVE_DATA_DIR}")
+}
+
+# Configure Docker volume mappings based on the Clive data directory
+configure_docker_volumes() {
+    add_docker_arg "--volume"
+    add_docker_arg "${CLIVE_DATA_ABS_DIR}:/clive/.clive/"
+
+    CLIVE_DATA_LOCATION_DIR=$(realpath "${CLIVE_DATA_DIR}/../")
+    HOME_ABS_DIR=$(realpath "${HOME}")
+
+    # If Clive directory is inside the user's home, add an additional volume mapping
+    if [[ "${CLIVE_DATA_LOCATION_DIR}/" = "${HOME_ABS_DIR}"/* ]]; then
+        add_docker_arg "--volume"
+        add_docker_arg "${CLIVE_DATA_LOCATION_DIR}:${CLIVE_DATA_LOCATION_DIR}"
+    fi
+}
+
+# Function to clean up (stop container) on exit signals
+cleanup() {
+    docker stop "$CONTAINER_NAME"
+}
+trap cleanup HUP INT QUIT TERM
+
+# Run the Docker container
+run_docker_container() {
+    docker run \
+        --name="${CONTAINER_NAME}" \
+        --detach-keys='ctrl-@,ctrl-q' \
+        --rm -it \
+        -e CLIVE_UID="$(id -u)" \
+        --stop-timeout=180 \
+        "${DOCKER_ARGS[@]}" \
+        "${IMAGE_NAME}" \
+        "${CMD_ARGS[@]}"
+}
+
+# Main script execution
+main() {
+    check_docker_installed
+    parse_args "$@"
+    validate_data_dir
+    configure_docker_volumes
+    run_docker_container
+}
