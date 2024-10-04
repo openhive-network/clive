@@ -242,6 +242,7 @@ deploy_wheel_to_pypi:
     expose_as: 'startup scripts'
     paths:
       - ./scripts/start_clive.sh
+      - ./scripts/start_clive_cli.sh
 
 .prepare_clive_image:
   extends: .docker_image_builder_job
