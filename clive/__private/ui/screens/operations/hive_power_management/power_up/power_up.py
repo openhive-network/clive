@@ -9,9 +9,9 @@ from clive.__private.models.schemas import TransferToVestingOperation
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.widgets.buttons import GenerousButton
-from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hive_asset_amount_input import HiveAssetAmountInput
+from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
@@ -37,7 +37,7 @@ class PowerUp(TabPane, OperationActionBindings):
         title: Title of the TabPane (will be displayed in a tab label).
         """
         super().__init__(title=title)
-        self._receiver_input = AccountNameInput("Receiver", value=self.working_account_name)
+        self._receiver_input = KnownExchangeInput("Receiver", value=self.working_account_name)
         self._asset_input = HiveAssetAmountInput()
 
     @property
