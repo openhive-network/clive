@@ -34,15 +34,11 @@ class FirstFormScreen(FormScreenBase[ContextT]):
 
 class LastFormScreen(FormScreenBase[ContextT]):
     BINDINGS = [
-        Binding("escape", "start_over", "Start over"),
         Binding("ctrl+p", "previous_screen", "Previous screen"),
     ]
 
     async def action_previous_screen(self) -> None:
         self._owner.action_previous_screen()
-
-    def action_start_over(self) -> None:
-        self._owner.reset()
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):

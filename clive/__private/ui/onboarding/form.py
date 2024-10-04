@@ -86,11 +86,6 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     def __check_valid_range(self, proposed_idx: int) -> bool:
         return (proposed_idx >= 0) and (proposed_idx < len(self.__screens))
 
-    def reset(self) -> None:
-        self.__current_screen_index = 0
-        self._rebuild_context()
-        self.app.pop_screen_until(WelcomeFormScreen)
-
     @abstractmethod
     def _rebuild_context(self) -> None:
         """Create brand new fresh context."""
