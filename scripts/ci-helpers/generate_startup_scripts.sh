@@ -8,5 +8,5 @@ IMAGE_NAME=${1:?"Missing arg #1 to specify built docker image name"}
 
 ESCAPED_IMAGE_NAME=${IMAGE_NAME//\//\\/}
 
-cp -f "${SCRIPTPATH}/../start_clive.sh.template" "${SCRIPTPATH}/../start_clive.sh"
-sed -i -e "s/<IMG_PLACEHOLDER>/${ESCAPED_IMAGE_NAME}/g" "${SCRIPTPATH}/../start_clive.sh"
+cp -f "${SCRIPTPATH}/../templates/base.sh.template" "${SCRIPTPATH}/../base.sh"
+sed -i -e "s/<IMG_PLACEHOLDER>/${ESCAPED_IMAGE_NAME}/g" "${SCRIPTPATH}/../base.sh"
