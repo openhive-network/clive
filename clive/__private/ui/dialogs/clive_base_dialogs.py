@@ -11,6 +11,7 @@ from textual.reactive import reactive
 from textual.screen import ModalScreen
 
 from clive.__private.abstract_class import AbstractClassMessagePump
+from clive.__private.ui.clive_screen import ScreenResultT
 from clive.__private.ui.widgets.buttons import CancelButton, CloseButton, ConfirmButton
 
 if TYPE_CHECKING:
@@ -25,7 +26,7 @@ class CliveDialogContent(Vertical):
     """Contains all the content of the dialog."""
 
 
-class CliveBaseDialog(ModalScreen[None], AbstractClassMessagePump):
+class CliveBaseDialog(ModalScreen[ScreenResultT], AbstractClassMessagePump):
     DEFAULT_CSS = """
     CliveBaseDialog {
         align: center middle;
@@ -98,7 +99,7 @@ class CliveBaseDialog(ModalScreen[None], AbstractClassMessagePump):
         """Yield all the content with buttons."""
 
 
-class CliveActionDialog(CliveBaseDialog):
+class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
     BINDINGS = [Binding("escape", "cancel", "Quit")]
 
     class Confirmed(Message):
@@ -128,7 +129,7 @@ class CliveActionDialog(CliveBaseDialog):
         self.app.pop_screen()
 
 
-class CliveInfoDialog(CliveBaseDialog):
+class CliveInfoDialog(CliveBaseDialog[ScreenResultT]):
     BINDINGS = [Binding("escape", "close", "Quit")]
 
     def create_buttons_content(self) -> ComposeResult:
