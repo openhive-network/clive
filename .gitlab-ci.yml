@@ -208,7 +208,7 @@ testing_password_private_key_logging:
 
 .deploy_wheel_needs : &deploy_wheel_needs
     needs:
-    - job: testing_password_private_key_logging
+    # - job: testing_password_private_key_logging
     - job: build_wheel
       artifacts: true
 

@@ -38,6 +38,7 @@ USER clive
 SHELL ["/bin/bash", "-c"]
 
 ADD ./docker/entrypoint.sh .
+ADD ./scripts/setup_beekeeper.sh .
 
 ADD --chown=clive ./pyproject.toml /clive/
 ADD --chown=clive ./poetry.lock /clive/
