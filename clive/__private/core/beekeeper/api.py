@@ -119,3 +119,15 @@ class BeekeeperApi:
     @api
     async def has_matching_private_key(self, *, wallet_name: str, public_key: str) -> model.HasMatchingPrivateKey:
         raise NotImplementedError
+
+    @api
+    async def encrypt_data(
+        self, *, wallet_name: str, from_public_key: str, to_public_key: str, content: str, nonce: int | None = None
+    ) -> model.EncryptData:
+        raise NotImplementedError
+
+    @api
+    async def decrypt_data(
+        self, *, wallet_name: str, from_public_key: str, to_public_key: str, encrypted_content: str
+    ) -> model.DecryptData:
+        raise NotImplementedError

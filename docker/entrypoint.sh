@@ -48,10 +48,7 @@ wait_for_testnet() {
 }
 
 launch_cli() {
-  clive --install-completion >/dev/null 2>&1
-  clive beekeeper spawn # Spawn the beekeeper so commands that require it don't have to do it every time
-  bash
-  clive beekeeper close
+  bash --init-file /setup_beekeeper.sh
 }
 
 INTERACTIVE_CLI_MODE=0

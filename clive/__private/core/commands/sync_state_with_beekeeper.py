@@ -23,7 +23,7 @@ class SyncStateWithBeekeeper(Command):
 
     async def __sync_state(self) -> None:
         wallets_in_beekeeper = (await self.beekeeper.api.list_created_wallets()).wallets
-        clive_wallet_name = self.profile.name
+        clive_wallet_name = self.profile.name if self.profile else "alice"
         clive_wallet_details = next(
             (wallet for wallet in wallets_in_beekeeper if wallet.name == clive_wallet_name), None
         )

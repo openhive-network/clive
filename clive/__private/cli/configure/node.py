@@ -3,7 +3,7 @@ from typing import Optional
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import ProfileOptionsGroup
+from clive.__private.cli.common import WorldOptionsGroup
 from clive.__private.cli.common.parameters import argument_related_options
 from clive.__private.cli.common.parameters.ensure_single_value import EnsureSingleValue
 
@@ -16,7 +16,7 @@ _node_address_argument = typer.Argument(
 )
 
 
-@node.command(name="set", param_groups=[ProfileOptionsGroup])
+@node.command(name="set", param_groups=[WorldOptionsGroup])
 async def set_node(
     ctx: typer.Context,  # noqa: ARG001
     node_address: Optional[str] = _node_address_argument,
@@ -25,7 +25,7 @@ async def set_node(
     """Set the node address for the profile."""
     from clive.__private.cli.commands.configure.node import SetNode
 
-    common = ProfileOptionsGroup.get_instance()
+    common = WorldOptionsGroup.get_instance()
     await SetNode(
         **common.as_dict(), node_address=EnsureSingleValue("node-address").of(node_address, node_address_option)
     ).run()

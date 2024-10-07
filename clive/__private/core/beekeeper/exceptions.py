@@ -45,6 +45,10 @@ class BeekeeperNotRunningError(BeekeeperError):
     pass
 
 
+class BeekeeperNotUnlockedError(BeekeeperError):
+    pass
+
+
 class BeekeeperDidNotClosedError(BeekeeperError):
     pass
 
