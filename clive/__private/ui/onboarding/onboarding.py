@@ -15,12 +15,9 @@ from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen im
 from clive.__private.ui.onboarding.form import Form, ScreenBuilder
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.onboarding.set_account import SetAccount
-from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-
-    from textual.app import ComposeResult
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[OnboardingContext]):
@@ -28,9 +25,6 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[OnboardingContext]):
 
     def __init__(self, owner: Form[OnboardingContext]) -> None:
         super().__init__(owner, "Let's start onboarding!\n" + PRESS_HELP_MESSAGE)
-
-    def _content_after_description(self) -> ComposeResult:
-        yield SelectCopyPasteHint()
 
 
 class OnboardingFinishScreen(FinishFormScreen[OnboardingContext]):

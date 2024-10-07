@@ -13,6 +13,7 @@ from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswo
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
 from clive.__private.ui.widgets.section import SectionScrollable
+from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -35,6 +36,7 @@ class CreateProfileForm(BaseScreen, FormScreen[OnboardingContext]):
             yield self._profile_name_input
             yield self._password_input
             yield self._repeat_password_input
+        yield SelectCopyPasteHint()
 
     def on_mount(self) -> None:
         # Validate the repeat password input again when password is changed and repeat was already touched.
