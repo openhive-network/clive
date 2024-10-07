@@ -195,13 +195,9 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             callback=self._update_node_status,
             first_try_callback=lambda: self.node.cached.is_online_status_known,
         )
+        self.tooltip = "Switch node address"
 
     def _update_node_status(self, node: Node) -> str:
-        if self.world.is_in_onboarding_mode:
-            self.tooltip = None
-        else:
-            self._widget.tooltip = "Switch node address"
-
         if not node.cached.online_or_none:
             self._widget.variant = "error-on-transparent"
             return "offline"
@@ -213,7 +209,7 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
     async def push_select_node_address(self) -> None:
         from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddress
 
-        if isinstance(self.app.screen, SetNodeAddress) or self.world.is_in_onboarding_mode:
+        if isinstance(self.app.screen, SetNodeAddress):
             return
 
         await self.app.push_screen(SetNodeAddress())
