@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, ClassVar, Final
 
 from clive.__private.core.commands.abc.command_secured import CommandPasswordSecured, InvalidPasswordError
 from clive.__private.core.commands.set_timeout import SetTimeout
+from clive.__private.core.encryption import encryption_wallet_name
 from clive.exceptions import CannotUnlockError, CommunicationError, KnownError
 
 if TYPE_CHECKING:
@@ -24,7 +25,7 @@ class UnlockInvalidPasswordError(InvalidPasswordError, CannotUnlockError):
 
 @dataclass(kw_only=True)
 class Unlock(CommandPasswordSecured):
-    app_state: AppState
+    app_state: AppState | None = None
     beekeeper: Beekeeper
     wallet: str
     time: timedelta | None = None
@@ -35,6 +36,8 @@ class Unlock(CommandPasswordSecured):
     async def _execute(self) -> None:
         try:
             await self.beekeeper.api.unlock(wallet_name=self.wallet, password=self.password)
+            encryption_wallet = encryption_wallet_name(self.wallet)
+            await self.beekeeper.api.unlock(wallet_name=encryption_wallet, password=self.password)
             if unlock_seconds := self.__get_unlock_seconds():
                 await SetTimeout(beekeeper=self.beekeeper, seconds=unlock_seconds).execute()
         except CommunicationError as error:
@@ -43,7 +46,8 @@ class Unlock(CommandPasswordSecured):
                     raise known_error(error) from error
             raise CannotUnlockError(error) from error
 
-        self.app_state.unlock()
+        if self.app_state:
+            self.app_state.unlock()
 
     def __get_unlock_seconds(self) -> int | None:
         if self.permanent:

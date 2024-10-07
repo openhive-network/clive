@@ -17,10 +17,10 @@ ANY_OTHER_ACCOUNT_NAME_IN_BLOCKCHAIN: Final[str] = WATCHED_ACCOUNTS_NAMES[1]
 
 def test_positional_have_default_value(
     cli_tester: CLITester,
-    prepare_profile: Profile,
+    prepare_profile_with_session: Profile,
 ) -> None:
     # ARRANGE
-    profile = prepare_profile
+    profile = prepare_profile_with_session
     working_account_name_default = profile.accounts.working.name
 
     # ACT & ASSERT

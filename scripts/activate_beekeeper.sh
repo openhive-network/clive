@@ -65,29 +65,16 @@ unlock_wallet() {
   read -rsp "Enter password for profile ${SELECTED_PROFILE}: " password
   echo
   password="${password//$'\n'/}"
-  response=$(curl -s --data '{
-    "jsonrpc": "2.0",
-    "method": "beekeeper_api.unlock",
-    "params": {
-      "token": "'"${CLIVE_BEEKEEPER__SESSION_TOKEN}"'",
-      "wallet_name": "'"${SELECTED_PROFILE}"'",
-      "password": "'"${password}"'"
-    },
-    "id": 1
-  }' "${BEEKEEPER_HTTP_ENDPOINT}")
+  CLIVE_PASSWORD="${password}" clive unlock --profile-name "${SELECTED_PROFILE}"
 
-  error=$(echo "${response}" | jq .error)
-  if [[ "${error}" != "null" ]]; then
-    return 1
-  fi
   return 0
 }
 
 # Print info about how to create profile
 how_to_create_profile() {
   echo ""
-  echo "If you want to create profile, please do the following."
-  echo "clive configure profile add --profile-name PROFILE_NAME --password PROFILE_PASSWORD"
+  echo "If you want to create profile, please do the following, new password will be asked with prompt."
+  echo "clive configure profile add --profile-name PROFILE_NAME"
   echo ""
 }
 
@@ -158,7 +145,7 @@ execute_passed_script() {
 
 close_beekeeper() {
   if [[ ${BEEKEEPER_ALREADY_CLOSED} -eq 0 ]]; then
-    clive beekeeper close >/dev/null 2>&1
+    clive beekeeper close
     BEEKEEPER_ALREADY_CLOSED=1
   fi
 }
@@ -178,6 +165,7 @@ clean_up() {
   trap '' SIGINT
   echo "Please wait. Cleaning up..."
   close_beekeeper
+  echo "Cleanup actions done."
   trap - SIGINT
 }
 

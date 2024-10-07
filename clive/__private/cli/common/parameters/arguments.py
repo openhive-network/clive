@@ -27,7 +27,3 @@ profile_name = typer.Argument(
     help=f"The profile to use. (default is name of the default profile, {REQUIRED_AS_ARG_OR_OPTION})",
     show_default=bool(get_default_profile_name()),
 )
-
-password = typer.Argument(
-    None, help=f"Password to unlock the wallet. ({REQUIRED_AS_ARG_OR_OPTION})", show_default=False
-)

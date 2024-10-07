@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual.binding import Binding
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.profile import Profile
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
 from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -37,10 +38,11 @@ class OnboardingFinishScreen(FinishFormScreen[Profile]):
         self._owner.add_post_action(self.app.update_alarms_data_asap)
 
         profile = self.context
-        profile.enable_saving()
         self.world.profile = profile
         await super().action_finish()
-        self.profile.save()
+        # await self.app.switch_screen("dashboard")  # noqa: ERA001
+        encryption_service = await EncryptionService.from_beekeeper(self.world.beekeeper)
+        await profile.save(encryption_service)
 
 
 class Onboarding(Form[Profile]):

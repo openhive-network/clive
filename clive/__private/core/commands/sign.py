@@ -32,6 +32,7 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
     beekeeper: Beekeeper
     transaction: Transaction
     key: PublicKey
+    wallet_name: str
     chain_id: str
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     """How to handle the situation when transaction is already signed."""
@@ -40,7 +41,9 @@ class Sign(CommandInUnlocked, CommandWithResult[Transaction]):
         self.__throw_already_signed_error_when_needed()
 
         sig_digest = calculate_sig_digest(self.transaction, self.chain_id)
-        result = await self.beekeeper.api.sign_digest(sig_digest=sig_digest, public_key=self.key.value)
+        result = await self.beekeeper.api.sign_digest(
+            sig_digest=sig_digest, public_key=self.key.value, wallet_name=self.wallet_name
+        )
 
         self.__set_transaction_signature(Signature(result.signature))
         self._result = self.transaction

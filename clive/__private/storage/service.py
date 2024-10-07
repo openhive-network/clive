@@ -1,11 +1,11 @@
 from __future__ import annotations
 
-import contextlib
 from typing import TYPE_CHECKING, Iterable
 
+from clive.__private.core.constants.profile import PROFILE_FILENAME_EXTENSION
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
-from clive.__private.storage.model import PersistentStorageModel, ProfileStorageModel, calculate_storage_model_revision
+from clive.__private.storage.model import ProfileStorageModel, calculate_storage_model_revision
 from clive.__private.storage.runtime_to_storage_converter import RuntimeToStorageConverter
 from clive.__private.storage.storage_to_runtime_converter import StorageToRuntimeConverter
 from clive.exceptions import CliveError
@@ -13,6 +13,7 @@ from clive.exceptions import CliveError
 if TYPE_CHECKING:
     from pathlib import Path
 
+    from clive.__private.core.encryption import EncryptionService
     from clive.__private.core.profile import Profile
 
 
@@ -43,28 +44,22 @@ class NoDefaultProfileToLoadError(PersistentStorageServiceError):
 
 
 class PersistentStorageService:
-    def __init__(self) -> None:
-        self._cached_storage: PersistentStorageModel | None = None
+    def __init__(self, encryption_service: EncryptionService) -> None:
+        self._encryption_service = encryption_service
+        self._encrypted_storage: dict[str, str] = self._load_storage()
 
     @property
-    def cached_storage(self) -> PersistentStorageModel:
-        if self._cached_storage is None:
-            self._cached_storage = self._load_storage()
-        return self._cached_storage
+    def encrypted_storage(self) -> dict[str, str]:
+        return self._encrypted_storage
 
     def save_storage(self) -> None:
         versioned_storage_dir = self._get_storage_versioned_directory()
-        storage_path = self._get_storage_filepath()
-        serialized_storage = self._serialize_storage_model(self.cached_storage)
-
-        # create data directory if it doesn't exist
         versioned_storage_dir.mkdir(parents=True, exist_ok=True)
-
+        for profile_name, encrypted_profile in self.encrypted_storage.items():
+            (versioned_storage_dir / f"{profile_name}{PROFILE_FILENAME_EXTENSION}").write_text(encrypted_profile)
         self._create_current_storage_symlink()
 
-        storage_path.write_text(serialized_storage)
-
-    def save_profile(self, profile: Profile) -> None:
+    async def _save_profile(self, profile: Profile) -> None:
         """
         Save profile to the storage.
 
@@ -81,16 +76,13 @@ class PersistentStorageService:
         profile.unset_is_newly_created()
 
         model = RuntimeToStorageConverter(profile).create_storage_model()
+        serialized = self._serialize_profile_model(model)
+        encrypted_content = await self._encryption_service.encrypt(serialized)
 
-        if not self.is_default_profile_set():
-            # set first profile as default when no default set yet
-            self._set_default_profile(model.name)
-
-        self._remove_profile_storage_model_by_name(model.name)  # remove old profile if exists
-        self.cached_storage.profiles.append(model)
+        self.encrypted_storage[model.name] = encrypted_content
         self.save_storage()
 
-    def load_profile(self, profile_name: str | None = None) -> Profile:
+    async def load_profile(self, profile_name: str | None = None) -> Profile:
         """
         Load profile with the given name from the storage.
 
@@ -103,12 +95,15 @@ class PersistentStorageService:
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be loaded
             NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
         """
-        profile_name_ = profile_name if profile_name is not None else self.get_default_profile_name()
+        profile_name_ = profile_name or self._encryption_service.profile_name
         self._raise_if_profile_not_stored(profile_name_)
-        profile_storage_model = self._find_profile_storage_model_by_name(profile_name_)
-        return StorageToRuntimeConverter(profile_storage_model).create_profile()
+        encrypted_content = self.encrypted_storage[profile_name_]
+        serialized = await self._encryption_service.decrypt(encrypted_content)
+        model = self._deserialize_profile_model(serialized)
+        return StorageToRuntimeConverter(model).create_profile()
 
-    def remove_profile(self, profile_name: str) -> None:
+    @classmethod
+    def remove_profile(cls, profile_name: str) -> None:
         """
         Remove profile with the given name from the storage.
 
@@ -120,18 +115,24 @@ class PersistentStorageService:
         ------
             ProfileDoesNotExistsError: If profile with given name does not exist, it could not be removed.
         """
-        self._raise_if_profile_not_stored(profile_name)
-        self._remove_profile_storage_model_by_name(profile_name)
-        with contextlib.suppress(NoDefaultProfileToLoadError):
-            if profile_name == self.get_default_profile_name():
-                self._unset_default_profile()
-        self.save_storage()
+        cls._raise_if_profile_not_stored(profile_name)
+        versioned_storage_dir = cls._get_storage_versioned_directory()
+        (versioned_storage_dir / f"{profile_name}{PROFILE_FILENAME_EXTENSION}").unlink()
 
-    def list_stored_profile_names(self) -> list[str]:
+    @classmethod
+    def list_stored_profile_names(cls) -> list[str]:
         """List all stored profile names sorted alphabetically."""
-        return sorted(profile.name for profile in self.cached_storage.profiles)
+        versioned_storage_dir = cls._get_storage_versioned_directory()
+        if not versioned_storage_dir.exists():
+            return []
+        return sorted(
+            file.stem
+            for file in versioned_storage_dir.iterdir()
+            if file.is_file() and file.suffix == PROFILE_FILENAME_EXTENSION
+        )
 
-    def get_default_profile_name(self) -> str:
+    @classmethod
+    def get_default_profile_name(cls) -> str:
         """
         Get the profile name of default profile stored in the storage.
 
@@ -139,32 +140,14 @@ class PersistentStorageService:
         ------
             NoDefaultProfileToLoadError: If no default profile is set, it could not be loaded.
         """
-        self._raise_if_no_default_profile_is_set()
-        storage = self.cached_storage
-        assert storage.default_profile is not None, "Default profile must be set if no error was raised."
-        return storage.default_profile
+        profiles = cls.list_stored_profile_names()
+        if len(profiles) != 1:
+            raise NoDefaultProfileToLoadError
+        return profiles[0]
 
-    def set_default_profile(self, profile_name: str) -> None:
-        """
-        Set profile as default.
-
-        Args:
-        ----
-            profile_name: Name of the profile to be set as default.
-
-        Raises:
-        ------
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be set as default.
-        """
-        self._raise_if_profile_not_stored(profile_name)
-        self._set_default_profile(profile_name)
-        self.save_storage()
-
-    def is_profile_stored(self, profile_name: str) -> bool:
-        return profile_name in self.list_stored_profile_names()
-
-    def is_default_profile_set(self) -> bool:
-        return self.cached_storage.default_profile is not None
+    @classmethod
+    def is_profile_stored(cls, profile_name: str) -> bool:
+        return profile_name in cls.list_stored_profile_names()
 
     @classmethod
     def _get_storage_directory(cls) -> Path:
@@ -175,10 +158,6 @@ class PersistentStorageService:
         """Get the directory where the storage file is stored in a versioned way."""
         revision = calculate_storage_model_revision()
         return cls._get_storage_directory() / revision
-
-    @classmethod
-    def _get_storage_filepath(cls) -> Path:
-        return cls._get_storage_versioned_directory() / "profiles.json"
 
     def _create_current_storage_symlink(self) -> None:
         versioned_storage_dir = self._get_storage_versioned_directory()
@@ -191,58 +170,28 @@ class PersistentStorageService:
         symlink_dir.unlink(missing_ok=True)
         symlink_dir.symlink_to(versioned_storage_dir, target_is_directory=True)
 
-    def _load_storage(self) -> PersistentStorageModel:
-        storage_path = self._get_storage_filepath()
-        if not storage_path.is_file():
-            return PersistentStorageModel()
-
-        storage_serialized = storage_path.read_text()
-        return self._deserialize_storage_model(storage_serialized)
-
-    def _set_default_profile(self, profile_name: str) -> None:
-        self.cached_storage.default_profile = profile_name
-
-    def _unset_default_profile(self) -> None:
-        self.cached_storage.default_profile = None
-
-    def _find_profile_storage_model_by_name(self, profile_name: str) -> ProfileStorageModel:
-        """
-        Find profile storage model by name in the given container of profiles.
-
-        Args:
-        ----
-            profile_name: Name of the profile to be found.
-
-        Raises:
-        ------
-            ProfileDoesNotExistsError: If profile with given name does not exist, it could not be found.
-        """
-        profiles = self.cached_storage.profiles
-        profile_storage_model = next((profile for profile in profiles if profile.name == profile_name), None)
-        if profile_storage_model is None:
-            raise ProfileDoesNotExistsError(profile_name)
-        return profile_storage_model
-
-    def _remove_profile_storage_model_by_name(self, profile_name: str) -> None:
-        storage = self.cached_storage
-        old_profiles = storage.profiles
-        new_profiles = [profile for profile in old_profiles if profile.name != profile_name]
-        storage.profiles = new_profiles
+    @classmethod
+    def _load_storage(cls) -> dict[str, str]:
+        versioned_storage_dir = cls._get_storage_versioned_directory()
+        versioned_storage_dir.mkdir(parents=True, exist_ok=True)
+        encrypted_storage: dict[str, str] = {}
+        for file in versioned_storage_dir.iterdir():
+            if file.is_file() and file.suffix == PROFILE_FILENAME_EXTENSION:
+                profile_name = file.stem
+                encrypted_storage[profile_name] = file.read_text()
+        return encrypted_storage
 
     @classmethod
-    def _serialize_storage_model(cls, storage: PersistentStorageModel) -> str:
+    def _serialize_profile_model(cls, storage: ProfileStorageModel) -> str:
         return storage.json(indent=4)
 
     @classmethod
-    def _deserialize_storage_model(cls, storage_serialized: str) -> PersistentStorageModel:
-        return PersistentStorageModel.parse_raw(storage_serialized)
+    def _deserialize_profile_model(cls, storage_serialized: str) -> ProfileStorageModel:
+        return ProfileStorageModel.parse_raw(storage_serialized)
 
-    def _raise_if_no_default_profile_is_set(self) -> None:
-        if not self.is_default_profile_set():
-            raise NoDefaultProfileToLoadError
-
-    def _raise_if_profile_not_stored(self, profile_name: str) -> None:
-        if not self.is_profile_stored(profile_name):
+    @classmethod
+    def _raise_if_profile_not_stored(cls, profile_name: str) -> None:
+        if not cls.is_profile_stored(profile_name):
             raise ProfileDoesNotExistsError(profile_name)
 
     def _raise_if_profile_with_name_already_exists_on_first_save(self, profile: Profile) -> None:

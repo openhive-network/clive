@@ -39,10 +39,10 @@ async def test_invalid_wallet_names(beekeeper: Beekeeper, invalid_wallet_name: s
 
 async def test_wallet_open(beekeeper: Beekeeper, wallet: WalletInfo) -> None:
     # ARRANGE
-    await beekeeper.restart()  # this will close
+    await beekeeper.api.close(wallet_name=wallet.name)
+    check_wallets(await beekeeper.api.list_wallets(), [])
 
     # ACT & ASSERT
-    check_wallets(await beekeeper.api.list_wallets(), [])
     await beekeeper.api.open(wallet_name=wallet.name)
     check_wallets(await beekeeper.api.list_wallets(), [wallet.name], unlocked=False)
 

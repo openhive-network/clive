@@ -1,56 +1,44 @@
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import pytest
 
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
-from clive_local_tools.data.constants import (
-    ALT_WORKING_ACCOUNT1_KEY_ALIAS,
-    ALT_WORKING_ACCOUNT1_PASSWORD,
-    WORKING_ACCOUNT_KEY_ALIAS,
-)
-from clive_local_tools.testnet_block_log import (
-    ALT_WORKING_ACCOUNT1_DATA,
-    ALT_WORKING_ACCOUNT1_NAME,
-    WATCHED_ACCOUNTS_NAMES,
-    WORKING_ACCOUNT_DATA,
-)
+from clive_local_tools.data.constants import ALT_WORKING_ACCOUNT1_KEY_ALIAS
+from clive_local_tools.data.models import Keys
+from clive_local_tools.testnet_block_log import ALT_WORKING_ACCOUNT1_DATA
+
+if TYPE_CHECKING:
+    from clive.__private.core.beekeeper import Beekeeper
+    from clive.__private.core.profile import Profile
+    from clive_local_tools.data.models import WalletInfo
 
 
 @pytest.fixture
-async def prepare_profile_without_working_account(prepare_profile: Profile) -> Profile:
-    prepare_profile.accounts.unset_working_account()
-    prepare_profile.save()
-    return prepare_profile
-
-
-@pytest.fixture
-async def alt_prepare_profile() -> Profile:
-    profile = Profile(
-        ALT_WORKING_ACCOUNT1_NAME,
-        working_account=WorkingAccount(name=ALT_WORKING_ACCOUNT1_NAME),
-        watched_accounts=[WatchedAccount(name) for name in WATCHED_ACCOUNTS_NAMES],
+async def prepare_wallet_extra_keys(prepare_beekeeper_wallet_with_session: WalletInfo) -> WalletInfo:
+    wallet_info = prepare_beekeeper_wallet_with_session
+    extra_key = PrivateKeyAliased(
+        value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
     )
-    profile.save()
-    return profile
+    pair = Keys.KeysPair(
+        public_key=extra_key.calculate_public_key(),
+        private_key=extra_key,
+    )
+    wallet_info.keys.pairs.append(pair)
+    async with World() as world_cm:
+        world_cm.profile.keys.add_to_import(extra_key)
+        await world_cm.commands.sync_data_with_beekeeper()
+    return wallet_info
 
 
 @pytest.fixture
-async def alt_world(alt_prepare_profile: Profile) -> World:  # noqa: ARG001
-    return World(profile_name=ALT_WORKING_ACCOUNT1_NAME)  # we must point to alternative profile
-
-
-@pytest.fixture
-async def alt_prepare_beekeeper_wallet(alt_world: World) -> None:
-    async with alt_world as alt_world_cm:
-        await alt_world_cm.commands.create_wallet(password=ALT_WORKING_ACCOUNT1_PASSWORD)
-
-        alt_world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}"),
-            PrivateKeyAliased(
-                value=ALT_WORKING_ACCOUNT1_DATA.account.private_key, alias=f"{ALT_WORKING_ACCOUNT1_KEY_ALIAS}"
-            ),
-        )
-        await alt_world_cm.commands.sync_data_with_beekeeper()
+async def prepare_profile_without_working_account(
+    prepare_profile_with_session: Profile, beekeeper: Beekeeper
+) -> Profile:
+    prepare_profile_with_session.accounts.unset_working_account()
+    encryption_service = await EncryptionService.from_beekeeper(beekeeper)
+    await prepare_profile_with_session.save(encryption_service)
+    return prepare_profile_with_session

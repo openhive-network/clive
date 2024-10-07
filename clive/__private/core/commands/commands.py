@@ -6,6 +6,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandResultT
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
@@ -26,16 +27,20 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
+from clive.__private.core.commands.decrypt_with_profile_key import DecryptWithProfileKey
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
+from clive.__private.core.commands.encrypt_with_profile_key import EncryptWithProfileKey
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
 from clive.__private.core.commands.find_transaction import FindTransaction
 from clive.__private.core.commands.find_witness import FindWitness
+from clive.__private.core.commands.get_unlocked_profile_name import GetUnlockedProfileName
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.commands.is_password_valid import IsPasswordValid
 from clive.__private.core.commands.load_transaction import LoadTransaction
 from clive.__private.core.commands.lock import Lock
+from clive.__private.core.commands.lock_all import LockAll
 from clive.__private.core.commands.perform_actions_on_transaction import PerformActionsOnTransaction
 from clive.__private.core.commands.remove_key import RemoveKey
 from clive.__private.core.commands.save_transaction import SaveTransaction
@@ -103,6 +108,36 @@ class Commands(Generic[WorldT_co]):
             )
         )
 
+    async def create_profile_encryption_key(self, *, password: str | None) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            CreateProfileEncryptionWallet(
+                beekeeper=self._world.beekeeper,
+                profile_name=self._world.profile.name,
+                password=password,
+            )
+        )
+
+    async def get_unlocked_profile_name(self) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(GetUnlockedProfileName(beekeeper=self._world.beekeeper))
+
+    async def decrypt_with_profile_key(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            DecryptWithProfileKey(
+                beekeeper=self._world.beekeeper,
+                profile_name=self._world.profile.name,
+                encrypted_content=encrypted_content,
+            )
+        )
+
+    async def encrypt_with_profile_key(self, *, content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            EncryptWithProfileKey(
+                beekeeper=self._world.beekeeper,
+                profile_name=self._world.profile.name,
+                content=content,
+            )
+        )
+
     async def does_account_exists_in_node(self, *, account_name: str) -> CommandWithResultWrapper[bool]:
         return await self.__surround_with_exception_handlers(
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
@@ -128,6 +163,14 @@ class Commands(Generic[WorldT_co]):
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
                 wallet=self._world.profile.name,
+            )
+        )
+
+    async def lock_all(self) -> CommandWrapper:
+        return await self.__surround_with_exception_handlers(
+            LockAll(
+                app_state=self._world.app_state,
+                beekeeper=self._world.beekeeper,
             )
         )
 
@@ -164,6 +207,7 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper if sign_key else None,
                 content=content,
                 sign_key=sign_key,
+                wallet_name=self._world.profile.name,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 chain_id=chain_id,
@@ -215,6 +259,7 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper,
                 transaction=transaction,
                 key=sign_with,
+                wallet_name=self._world.profile.name,
                 chain_id=chain_id or await self._world.node.chain_id,
                 already_signed_mode=already_signed_mode,
             )
@@ -250,6 +295,7 @@ class Commands(Generic[WorldT_co]):
                 content=content,
                 beekeeper=self._world.beekeeper,
                 sign_with=sign_with,
+                wallet_name=self._world.profile.name,
             )
         )
 

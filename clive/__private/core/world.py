@@ -7,13 +7,18 @@ from typing import TYPE_CHECKING, Any, Final, cast
 
 from textual.reactive import var
 
+from clive.__private.cli.exceptions import CLIMultipleWalletsUnlockedError, CLIProfileNotUnlockedError
+from clive.__private.core._async import asyncio_run
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
+from clive.__private.core.commands.exceptions import MultipleWalletsUnlockedError, ProfileNotUnlockedError
 from clive.__private.core.communication import Communication
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
+from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
@@ -38,32 +43,29 @@ class World:
 
     Args:
     ----
-    profile_name: Name of the profile to load. If None is passed, the default profile is loaded.
-    use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
     beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
     """
 
     def __init__(
         self,
-        profile_name: str | None = None,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
-        use_beekeeper: bool = True,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
+        self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
 
-        self._profile = self._load_profile(profile_name)
         self._known_exchanges = KnownExchanges()
-        self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
-        self._use_beekeeper = use_beekeeper
-        self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
+        self._profile: Profile | None = None
+        self._node: Node | None = None
 
-        self._node = Node(self._profile)
+        self._app_state: AppState
+        app_state = AppState(self)
+        self.set_app_state(app_state)
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -72,6 +74,10 @@ class World:
         self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
     ) -> None:
         await self.close()
+
+    @property
+    def app_state(self) -> AppState:
+        return self._app_state
 
     @property
     def commands(self) -> Commands[World]:
@@ -87,7 +93,13 @@ class World:
         return self._beekeeper
 
     @property
+    def profile(self) -> Profile:
+        assert self._profile is not None, "Profile is not initialized"
+        return self._profile
+
+    @property
     def node(self) -> Node:
+        assert self._node is not None, "Node is not initialized"
         return self._node
 
     @contextmanager
@@ -115,19 +127,29 @@ class World:
             yield
 
     async def setup(self) -> Self:
-        await self._node.setup()
-        if self._use_beekeeper:
-            self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-            if safe_settings.beekeeper.is_session_token_set:
-                await self._commands.sync_state_with_beekeeper()
-
+        self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+        profile = await self._load_profile()
+        self.set_profile(profile)
+        if safe_settings.beekeeper.is_session_token_set:
+            await self._commands.sync_state_with_beekeeper()
+        node = Node(self.profile)
+        self.set_node(node)
+        await self.node.setup()
         return self
 
+    def set_app_state(self, app_state: AppState) -> None:
+        self._app_state = app_state
+
+    def set_node(self, node: Node) -> None:
+        self._node = node
+
+    def set_profile(self, profile: Profile) -> None:
+        self._profile = profile
+
     async def close(self) -> None:
-        self.profile.save()
-        await self._node.teardown()
-        if self._beekeeper is not None:
-            await self._beekeeper.close()
+        await self.node.teardown()
+        await self._save_profile(self.profile)
+        await self.beekeeper.close()
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
@@ -135,8 +157,9 @@ class World:
     def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        return Profile.load(profile_name)
+    async def _load_profile(self) -> Profile:
+        encryption_service = await EncryptionService.from_beekeeper(self.beekeeper)
+        return await Profile.load(encryption_service)
 
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
@@ -150,13 +173,14 @@ class World:
         await beekeeper.launch()
         return beekeeper
 
-    @property
-    def profile(self) -> Profile:
-        return self._profile
-
-    @property
-    def app_state(self) -> AppState:
-        return self._app_state
+    async def _save_profile(self, profile: Profile) -> None:
+        try:
+            encryption_service = await EncryptionService.from_beekeeper(self.beekeeper)
+            await profile.save(encryption_service)
+        except ProfileNotUnlockedError:
+            logger.warning(
+                "Profile is not saved because beekeeper session is not unlocked, maybe beekeeper session expired."
+            )
 
 
 class TUIWorld(World, CliveDOMNode):
@@ -164,17 +188,23 @@ class TUIWorld(World, CliveDOMNode):
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
-    def __init__(self) -> None:
-        profile_name = Onboarding.ONBOARDING_PROFILE_NAME
-        super().__init__(profile_name)
-        self.profile = self._profile
-        self.app_state = self._app_state
-        self.node = self._node
+    def set_app_state(self, app_state: AppState) -> None:
+        super().set_app_state(app_state)
+        self.app_state = app_state
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        profile = super()._load_profile(profile_name)
-        if self._is_in_onboarding_mode(profile):
-            profile.skip_saving()
+    def set_node(self, node: Node) -> None:
+        super().set_node(node)
+        self.node = node
+
+    def set_profile(self, profile: Profile) -> None:
+        super().set_profile(profile)
+        self.profile = profile
+
+    async def _load_profile(self) -> Profile:
+        try:
+            return await super()._load_profile()
+        except ProfileNotUnlockedError:
+            profile = Profile(name=Onboarding.ONBOARDING_PROFILE_NAME)
         return profile
 
     @property
@@ -187,7 +217,7 @@ class TUIWorld(World, CliveDOMNode):
 
     def clear_profile(self, *, trigger_profile_watchers: bool = False) -> None:
         """Set the profile to default (Onboarding) with optional triggering of profile watchers."""
-        profile = self._load_profile(Onboarding.ONBOARDING_PROFILE_NAME)
+        profile = Profile(name=Onboarding.ONBOARDING_PROFILE_NAME)
         if trigger_profile_watchers:
             self.profile = profile
             return
@@ -209,7 +239,7 @@ class TUIWorld(World, CliveDOMNode):
         if self.app.is_world_set:
             self.app.trigger_app_state_watchers()
 
-        self.profile.save()
+        asyncio_run(self._save_profile(self.profile))
         self.clear_profile()
 
         self._add_welcome_modes()
@@ -235,6 +265,10 @@ class TUIWorld(World, CliveDOMNode):
         self.app.remove_mode("dashboard")
         self.app.add_mode("dashboard", Dashboard)
 
+    async def _save_profile(self, profile: Profile) -> None:
+        if not self.is_in_onboarding_mode:
+            await super()._save_profile(profile)
+
 
 class CLIWorld(World):
     @property
@@ -244,5 +278,10 @@ class CLIWorld(World):
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        return Profile.load(profile_name, auto_create=False)
+    async def _load_profile(self) -> Profile:
+        try:
+            return await super()._load_profile()
+        except ProfileNotUnlockedError as error:
+            raise CLIProfileNotUnlockedError from error
+        except MultipleWalletsUnlockedError as error:
+            raise CLIMultipleWalletsUnlockedError from error

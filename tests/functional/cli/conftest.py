@@ -5,49 +5,21 @@ from typing import TYPE_CHECKING
 import pytest
 from typer.testing import CliRunner
 
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.commands.lock import Lock
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
-from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile import Profile
-from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive_local_tools.cli.cli_tester import CLITester
-from clive_local_tools.data.constants import (
-    WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
+from clive_local_tools.testnet_block_log import (
+    run_node,
 )
-from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 
 if TYPE_CHECKING:
     import test_tools as tt
 
-
-@pytest.fixture
-async def prepare_profile() -> Profile:
-    profile = Profile(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
-    )
-    profile.save()
-    return profile
-
-
-@pytest.fixture
-async def world(prepare_profile: Profile) -> World:  # noqa: ARG001
-    return World()  # will load last profile by default
-
-
-@pytest.fixture
-async def prepare_beekeeper_wallet(world: World) -> None:
-    async with world as world_cm:
-        await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
-
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
-        )
-        await world_cm.commands.sync_data_with_beekeeper()
+    from clive.__private.core.beekeeper import Beekeeper
+    from clive.__private.core.profile import Profile
+    from clive_local_tools.data.models import WalletInfo
 
 
 @pytest.fixture
@@ -58,11 +30,28 @@ async def node() -> tt.RawNode:
 
 
 @pytest.fixture
-async def cli_tester(node: tt.RawNode, prepare_beekeeper_wallet: None) -> CLITester:  # noqa: ARG001
-    """Will return CliveTyper and CliRunner from typer.testing module.."""
-    # import cli after default profile is set, default values for --profile-name option are set during loading
+async def cli_tester(
+    node: tt.RawNode,  # noqa: ARG001
+    beekeeper: Beekeeper,  # noqa: ARG001
+    prepare_profile_with_session: Profile,  # noqa: ARG001
+    prepare_beekeeper_wallet_with_session: WalletInfo,  # noqa: ARG001
+) -> CLITester:
+    """Will return CliveTyper and CliRunner from typer.testing module, beekeeper is unlocked."""
+    # import cli after profile is set prepared, default values for options are set during loading
     from clive.__private.cli.main import cli
 
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
     runner = CliRunner(env=env)
     return CLITester(cli, runner)
+
+
+@pytest.fixture
+async def cli_tester_with_session_token_locked(
+    cli_tester: CLITester,
+    beekeeper: Beekeeper,
+    prepare_profile_with_session: Profile,
+) -> CLITester:
+    """Will return CliveTyper and CliRunner from typer.testing module, beekeeper is locked."""
+    wallet_name = prepare_profile_with_session.name
+    await Lock(beekeeper=beekeeper, wallet=wallet_name).execute()
+    return cli_tester

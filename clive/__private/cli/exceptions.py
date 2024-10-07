@@ -23,8 +23,8 @@ if TYPE_CHECKING:
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_SESSION_TOKEN
 from clive.__private.settings import clive_prefixed_envvar
 
-BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
-    "You must provide a password or a beekeeper unlocked session token set via envvar"
+BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE: Final[str] = (
+    "You must provide a beekeeper unlocked session token set via envvar"
 )
 
 
@@ -91,18 +91,9 @@ class CLIProfileAlreadyExistsError(CLIPrettyError):
         super().__init__(message, errno.EEXIST)
 
 
-class CLIBothBeekeepersPasswordAndSessionTokenSetError(CLIPrettyError):
+class CLIEitherBeekeepersSessionTokenNotSetError(CLIPrettyError):
     def __init__(self) -> None:
-        message = (
-            f"Both '--password' flag and environment variable {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)} are set."
-            " Please use only one."
-        )
-        super().__init__(message, errno.EINVAL)
-
-
-class CLIEitherBeekeepersPasswordOrSessionTokenNotSetError(CLIPrettyError):
-    def __init__(self) -> None:
-        message = BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+        message = BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
         super().__init__(message, errno.EINVAL)
 
 
@@ -116,7 +107,7 @@ class CLIWalletIsNotUnlockedError(CLIPrettyError):
 
 class CLISigningRequiresAPasswordOrSessionTokenError(CLIPrettyError):
     def __init__(self) -> None:
-        message = f"{BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE} to sign the transaction with."
+        message = f"{BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE} to sign the transaction with."
         super().__init__(message, errno.EINVAL)
 
 
@@ -202,3 +193,15 @@ class ProcessTransferScheduleTooLongLifetimeError(CLIPrettyError):
             f"Maximum available lifetime is {humanize_timedelta(SCHEDULED_TRANSFER_MAX_LIFETIME)}."
         )
         super().__init__(message, errno.EPERM)
+
+
+class CLIMultipleWalletsUnlockedError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Beekeeper session must be unlocked for at most one profile."
+        super().__init__(message, errno.EEXIST)
+
+
+class CLIProfileNotUnlockedError(CLIPrettyError):
+    def __init__(self) -> None:
+        message = "Beekeeper session must be unlocked for one profile."
+        super().__init__(message, errno.EEXIST)

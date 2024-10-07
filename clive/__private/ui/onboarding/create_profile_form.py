@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.profile import Profile
@@ -70,13 +71,16 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
             wallet=profile_name,
             password=password,
         )
+        create_profile_encryption_wallet = CreateProfileEncryptionWallet(
+            beekeeper=self.world.beekeeper, profile_name=profile_name, password=password
+        )
         write_data = SyncDataWithBeekeeper(
             app_state=self.app_state,
             profile=self.context,
             beekeeper=self.world.beekeeper,
         )
 
-        self._owner.add_post_action(create_wallet, write_data)
+        self._owner.add_post_action(create_wallet, create_profile_encryption_wallet, write_data)
 
     def _revalidate_repeat_password_input_when_password_changed(self) -> None:
         if self._repeat_password_input.value_raw:

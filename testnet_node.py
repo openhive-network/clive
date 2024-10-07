@@ -9,19 +9,24 @@ from typing import TYPE_CHECKING
 
 import test_tools as tt
 
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
+from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
+from clive.__private.core.encryption import EncryptionService
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
-from clive.__private.core.world import World
 from clive.__private.run_tui import run_tui
 from clive.__private.settings import safe_settings, settings
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
+    ALT_WORKING_ACCOUNT1_PASSWORD,
     TESTNET_CHAIN_ID,
     WORKING_ACCOUNT_KEY_ALIAS,
+    WORKING_ACCOUNT_PASSWORD,
 )
+from clive_local_tools.test_doubles.app_state import AppStateUnlocked
 from clive_local_tools.testnet_block_log import run_node
 from clive_local_tools.testnet_block_log.constants import (
     ALT_WORKING_ACCOUNT1_DATA,
@@ -69,48 +74,46 @@ async def prepare_profiles(node: tt.RawNode) -> None:
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
-    _create_profile(
+    await _create_profile_and_wallet(
         profile_name=WORKING_ACCOUNT_NAME,
+        password=WORKING_ACCOUNT_PASSWORD,
         working_account_name=WORKING_ACCOUNT_NAME,
         watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
-    )
-    _create_profile(
-        profile_name=ALT_WORKING_ACCOUNT1_NAME,
-        working_account_name=ALT_WORKING_ACCOUNT1_NAME,
-        watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
-    )
-    await _create_wallet(
-        working_account_name=WORKING_ACCOUNT_NAME,
         private_key=WORKING_ACCOUNT_DATA.account.private_key,
         key_alias=WORKING_ACCOUNT_KEY_ALIAS,
     )
-    await _create_wallet(
+    await _create_profile_and_wallet(
+        profile_name=ALT_WORKING_ACCOUNT1_NAME,
+        password=ALT_WORKING_ACCOUNT1_PASSWORD,
         working_account_name=ALT_WORKING_ACCOUNT1_NAME,
+        watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
         private_key=ALT_WORKING_ACCOUNT1_DATA.account.private_key,
         key_alias=ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     )
 
 
-def _create_profile(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
-    Profile(
-        profile_name,
-        working_account=WorkingAccount(name=working_account_name),
-        watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],
-    ).save()
+async def _create_profile_and_wallet(  # noqa: PLR0913
+    profile_name: str,
+    password: str,
+    working_account_name: str,
+    watched_accounts_names: list[str],
+    private_key: str,
+    key_alias: str,
+) -> None:
+    async with Beekeeper() as beekeeper_cm:
+        profile = Profile(name=profile_name)
+        profile.accounts.set_working_account(working_account_name)
+        profile.accounts.watched.add(*watched_accounts_names)
+        await CreateProfileEncryptionWallet(
+            beekeeper=beekeeper_cm, profile_name=profile.name, password=password
+        ).execute()
+        await CreateWallet(beekeeper=beekeeper_cm, wallet=profile.name, password=password).execute()
+        tt.logger.info(f"password for profile `{profile_name}` is: `{password}`")
 
-
-async def _create_wallet(working_account_name: str, private_key: str, key_alias: str) -> None:
-    async with World(working_account_name) as world_cm:
-        password = await CreateWallet(
-            app_state=world_cm.app_state,
-            beekeeper=world_cm.beekeeper,
-            wallet=working_account_name,
-            password=working_account_name * 2,
-        ).execute_with_result()
-
-        tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
-        world_cm.profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
-        await world_cm.commands.sync_data_with_beekeeper()
+        profile.keys.add_to_import(PrivateKeyAliased(value=private_key, alias=key_alias))
+        await SyncDataWithBeekeeper(app_state=AppStateUnlocked(), profile=profile, beekeeper=beekeeper_cm).execute()
+        encryption_service = await EncryptionService.from_beekeeper(beekeeper_cm)
+        await profile.save(encryption_service)
 
 
 def create_proposal(wallet: tt.Wallet) -> None:
@@ -161,6 +164,7 @@ async def prepare(*, recreate_profiles: bool) -> None:
 
     if recreate_profiles:
         shutil.rmtree(safe_settings.data_path, ignore_errors=True)
+        safe_settings.data_path.mkdir()
         await prepare_profiles(node)
 
 

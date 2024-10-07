@@ -9,6 +9,8 @@ from textual.validation import Integer
 from textual.widgets import Button, Checkbox, Static
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.encryption import EncryptionService
+from clive.__private.core.profile import Profile
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -85,8 +87,9 @@ class UnlockScreen(BaseScreen):
         ).success:
             return
 
-        self.world.profile = self.profile.load(select_profile.value_ensure)
-        await self.node.set_address(self.profile.node_address)
+        encryption_service = await EncryptionService.from_beekeeper(self.world.beekeeper)
+        profile = await Profile.load(encryption_service)
+        self.world.set_profile(profile)
         await self.app.switch_mode("dashboard")
 
         self._remove_welcome_modes()
