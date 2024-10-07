@@ -23,6 +23,7 @@ class RuntimeToStorageConverter:
         self._profile = profile
 
     def create_storage_model(self) -> ProfileStorageModel:
+        key = self._key_alias_to_model(self._profile.encryption_key)
         return ProfileStorageModel(
             name=self._profile.name,
             working_account=self._working_account_to_model_representation(),
@@ -32,6 +33,7 @@ class RuntimeToStorageConverter:
             cart_operations=self._operations_to_model_container(),
             chain_id=self._profile.chain_id,
             node_address=str(self._profile.node_address),
+            encryption_key=key,
         )
 
     def _working_account_to_model_representation(self) -> str | None:

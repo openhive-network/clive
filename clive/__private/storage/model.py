@@ -34,6 +34,7 @@ class ProfileStorageModel(CliveBaseModel):
     cart_operations: list[OperationRepresentationUnion] = []  # noqa: RUF012
     chain_id: str | None = None
     node_address: str
+    encryption_key: KeyAliasStorageModel
 
 
 class PersistentStorageModel(CliveBaseModel):

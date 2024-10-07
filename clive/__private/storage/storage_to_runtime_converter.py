@@ -26,7 +26,7 @@ class StorageToRuntimeConverter:
     def create_profile(self) -> Profile:
         from clive.__private.core.profile import Profile
 
-        return Profile.create(
+        profile = Profile.create(
             name=self._model.name,
             working_account=self._working_account_from_profile_storage_model(),
             watched_accounts=self._watched_accounts_from_profile_storage_model(),
@@ -37,6 +37,9 @@ class StorageToRuntimeConverter:
             node_address=self._model.node_address,
             is_newly_created=False,
         )
+        key = self._key_alias_from_model(self._model.encryption_key)
+        profile.set_encryption_key(key)
+        return profile
 
     def _working_account_from_profile_storage_model(self) -> WorkingAccount | None:
         working_account_name = self._model.working_account

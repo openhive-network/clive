@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Final
 
-from clive.__private.cli.exceptions import BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+from clive.__private.cli.exceptions import BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
 from clive_local_tools.data.constants import (
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
     WORKING_ACCOUNT_KEY_ALIAS,
@@ -29,11 +29,11 @@ MEMO: Final[str] = "test-process-transfer-session-token-memo"
 
 async def test_process_transfer_with_beekeeper_session_token(
     node: tt.RawNode,
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
 ) -> None:
     """Check if clive process transfer doesn't require --password when CLIVE_BEEKEEPER__SESSION_TOKEN is set."""
     # ACT
-    result = cli_tester_with_session_token_unlocked.process_transfer(
+    result = cli_tester.process_transfer(
         from_=WORKING_ACCOUNT_NAME, amount=AMOUNT, to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS, memo=MEMO
     )
 
@@ -43,12 +43,12 @@ async def test_process_transfer_with_beekeeper_session_token(
 
 async def test_process_multiple_transfers_with_beekeeper_session_token(
     node: tt.RawNode,
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
 ) -> None:
     """Check if multiple clive process doesn't require --password when CLIVE_BEEKEEPER__SESSION_TOKEN is set."""
     # ACT
     for _ in range(2):
-        result = cli_tester_with_session_token_unlocked.process_transfer(
+        result = cli_tester.process_transfer(
             from_=WORKING_ACCOUNT_NAME, amount=AMOUNT, to=RECEIVER, sign=WORKING_ACCOUNT_KEY_ALIAS, memo=MEMO
         )
 
@@ -91,7 +91,7 @@ async def test_process_transfer_with_beekeeper_either_session_token_or_password_
     """Check if clive process transfer throws exception when there is not pass or CLIVE_BEEKEEPER_SESSION_TOKEN set."""
     # ARRANGE
     message = (
-        f"{BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE}"
+        f"{BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE}"
         " and a key alias to sign the transaction with if |\n| you want to broadcast it."
     )
 
@@ -123,14 +123,12 @@ async def test_process_transfer_with_beekeeper_session_token_not_unlocked(
 
 
 async def test_process_transfer_with_beekeeper_session_token_unlocked_without_sign(
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
 ) -> None:
     """Check if clive process transfer without sign throws exception when wallet is unlocked."""
     # ARRANGE
-    message = BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE
+    message = BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester_with_session_token_unlocked.process_transfer(
-            from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER
-        )
+        cli_tester.process_transfer(from_=WORKING_ACCOUNT_NAME, amount=tt.Asset.Hive(1), to=RECEIVER)

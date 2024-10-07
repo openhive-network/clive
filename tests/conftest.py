@@ -15,12 +15,17 @@ from clive.__private.core._thread import thread_pool
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH, NODE_CHAIN_ID
+from clive.__private.core.keys import PrivateKeyAliased
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive_local_tools.data.constants import BEEKEEPER_SESSION_TOKEN_ENV_NAME, TESTNET_CHAIN_ID
+from clive_local_tools.data.constants import (
+    TESTNET_CHAIN_ID,
+    WORKING_ACCOUNT_KEY_ALIAS,
+)
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
+from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
@@ -73,6 +78,11 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
     private_key = iwax.generate_private_key()
     public_key = private_key.calculate_public_key()
     return public_key, private_key
+
+
+@pytest.fixture
+def working_account_private_key() -> PrivateKeyAliased:
+    return PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
 
 
 @pytest.fixture
@@ -155,16 +165,31 @@ async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
 
 
 @pytest.fixture
-async def beekeeper_session_token_env_context(
+async def wallet_working_account_key(
+    wallet: WalletInfo, working_account_private_key: PrivateKeyAliased, world: World
+) -> WalletInfo:
+    """Will return beekeeper created wallet with working account key available."""
+    await ImportKey(
+        app_state=world.app_state,
+        wallet=wallet.name,
+        key_to_import=working_account_private_key,
+        beekeeper=world.beekeeper,
+    ).execute()
+
+    return wallet
+
+
+@pytest.fixture
+async def env_variable_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> BeekeeperSessionTokenEnvContextFactory:
-    @wraps(beekeeper_session_token_env_context)
+    @wraps(env_variable_context)
     @contextmanager
-    def __beekeeper_session_token_env_context(token: str) -> Generator[None]:
-        monkeypatch.setenv(BEEKEEPER_SESSION_TOKEN_ENV_NAME, token)
+    def __env_variable_context(name: str, value: str) -> Generator[None]:
+        monkeypatch.setenv(name, value)
         settings.reload()
         yield
-        monkeypatch.delenv(BEEKEEPER_SESSION_TOKEN_ENV_NAME)
+        monkeypatch.delenv(name)
         settings.reload()
 
-    return __beekeeper_session_token_env_context
+    return __env_variable_context

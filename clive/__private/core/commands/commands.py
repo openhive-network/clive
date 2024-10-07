@@ -6,6 +6,7 @@ from clive.__private.core.commands.abc.command_with_result import CommandResultT
 from clive.__private.core.commands.broadcast import Broadcast
 from clive.__private.core.commands.build_transaction import BuildTransaction
 from clive.__private.core.commands.command_wrappers import CommandWithResultWrapper, CommandWrapper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.data_retrieval.chain_data import ChainData, ChainDataRetrieval
 from clive.__private.core.commands.data_retrieval.find_scheduled_transfers import (
@@ -26,7 +27,9 @@ from clive.__private.core.commands.data_retrieval.witnesses_data import (
     WitnessesData,
     WitnessesDataRetrieval,
 )
+from clive.__private.core.commands.decrypt_with_profile_key import DecryptWithProfileKey
 from clive.__private.core.commands.does_account_exist_in_node import DoesAccountExistsInNode
+from clive.__private.core.commands.encrypt_with_profile_key import EncryptWithProfileKey
 from clive.__private.core.commands.fast_broadcast import FastBroadcast
 from clive.__private.core.commands.find_accounts import FindAccounts
 from clive.__private.core.commands.find_proposal import FindProposal
@@ -100,6 +103,33 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper,
                 wallet=self._world.profile.name,
                 password=password,
+            )
+        )
+
+    async def create_profile_encryption_key(self, *, password: str | None) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            CreateProfileEncryptionWallet(
+                beekeeper=self._world.beekeeper,
+                profile=self._world.profile,
+                password=password,
+            )
+        )
+
+    async def decrypt_with_profile_key(self, *, encrypted_content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            DecryptWithProfileKey(
+                beekeeper=self._world.beekeeper,
+                profile_name=self._world.profile.name,
+                encrypted_content=encrypted_content,
+            )
+        )
+
+    async def encrypt_with_profile_key(self, *, content: str) -> CommandWithResultWrapper[str]:
+        return await self.__surround_with_exception_handlers(
+            EncryptWithProfileKey(
+                beekeeper=self._world.beekeeper,
+                profile=self._world.profile,
+                content=content,
             )
         )
 

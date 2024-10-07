@@ -10,12 +10,15 @@ from typing import TYPE_CHECKING
 import test_tools as tt
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
+from clive.__private.storage.service import PersistentStorageService
 from clive.main import _main as clive_main
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
@@ -73,12 +76,12 @@ async def prepare_profiles(node: tt.RawNode) -> None:
     settings.set(SECRETS_NODE_ADDRESS, node.http_endpoint.as_string())
     settings.set(NODE_CHAIN_ID, TESTNET_CHAIN_ID)
 
-    _create_profile(
+    await _create_profile(
         profile_name=WORKING_ACCOUNT_NAME,
         working_account_name=WORKING_ACCOUNT_NAME,
         watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
     )
-    _create_profile(
+    await _create_profile(
         profile_name=ALT_WORKING_ACCOUNT1_NAME,
         working_account_name=ALT_WORKING_ACCOUNT1_NAME,
         watched_accounts_names=WATCHED_ACCOUNTS_NAMES,
@@ -95,16 +98,23 @@ async def prepare_profiles(node: tt.RawNode) -> None:
     )
 
 
-def _create_profile(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
-    Profile(
-        profile_name,
-        working_account=WorkingAccount(name=working_account_name),
-        watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],
-    ).save()
+async def _create_profile(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
+    async with Beekeeper() as beekeeper_cm:
+        profile = Profile(
+            profile_name,
+            working_account=WorkingAccount(name=working_account_name),
+            watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],
+        )
+        await CreateProfileEncryptionWallet(
+            beekeeper=beekeeper_cm,
+            profile=profile,
+            password=working_account_name,
+        ).execute_with_result()
+        await PersistentStorageService(beekeeper_cm).save_profile(profile)
 
 
 async def _create_wallet(working_account_name: str, private_key: str, key_alias: str) -> None:
-    async with World(working_account_name) as world_cm:
+    async with World() as world_cm:
         password = await CreateWallet(
             app_state=world_cm.app_state,
             beekeeper=world_cm.beekeeper,

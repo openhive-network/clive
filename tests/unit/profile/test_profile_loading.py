@@ -2,9 +2,14 @@ from __future__ import annotations
 
 import pytest
 
+from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import CLIWorld, World
-from clive.__private.storage.service import NoDefaultProfileToLoadError, ProfileDoesNotExistsError
+from clive.__private.storage.service import (
+    NoDefaultProfileToLoadError,
+    PersistentStorageService,
+    ProfileDoesNotExistsError,
+)
 
 
 def test_if_profile_is_loaded(world: World, wallet_name: str) -> None:
@@ -16,9 +21,10 @@ async def test_if_first_profile_is_saved_as_a_default_one() -> None:
     # ARRANGE
     expected_profile_name = "first"
 
-    # This profile should be saved as a default one
-    async with World(expected_profile_name, use_beekeeper=False):
-        pass  # save should be called on exit
+    # This profile should be saved as a only one which makes this profile default
+    profile = Profile(expected_profile_name)
+    async with Beekeeper() as beekeeper_cm:
+        await PersistentStorageService(beekeeper_cm).save_profile(profile)
 
     # ACT
     # Creating world without given profile name should load the default one
@@ -27,8 +33,8 @@ async def test_if_first_profile_is_saved_as_a_default_one() -> None:
 
     # ASSERT
     assert loaded_profile_name == expected_profile_name
-    assert Profile.get_default_profile_name() == expected_profile_name
-    assert Profile.list_profiles() == [expected_profile_name]
+    assert PersistentStorageService.get_default_profile_name() == expected_profile_name
+    assert PersistentStorageService.list_stored_profile_names() == [expected_profile_name]
 
 
 async def test_if_correct_profile_is_loaded_when_default_is_stored() -> None:
@@ -47,8 +53,8 @@ async def test_if_correct_profile_is_loaded_when_default_is_stored() -> None:
 
     # ASSERT
     assert loaded_profile_name == default_profile_name
-    assert Profile.get_default_profile_name() == additional_profile_name
-    assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
+    assert PersistentStorageService.get_default_profile_name() == additional_profile_name
+    assert PersistentStorageService.list_stored_profile_names() == [default_profile_name, additional_profile_name]
 
 
 async def test_if_default_profile_is_loaded_other_was_saved() -> None:
@@ -72,8 +78,8 @@ async def test_if_default_profile_is_loaded_other_was_saved() -> None:
     # ASSERT
     assert explicitly_loaded_profile_name == additional_profile_name
     assert default_loaded_profile_name == default_profile_name
-    assert Profile.get_default_profile_name() == default_profile_name
-    assert Profile.list_profiles() == [default_profile_name, additional_profile_name]
+    assert PersistentStorageService.get_default_profile_name() == additional_profile_name
+    assert PersistentStorageService.list_stored_profile_names() == [default_profile_name, additional_profile_name]
 
 
 @pytest.mark.parametrize("world_cls", [World, CLIWorld])
@@ -109,5 +115,5 @@ async def test_loading_existing_profile_with_auto_create_disabled() -> None:
 
     # ASSERT
     assert loaded_profile_name == profile_name
-    assert Profile.get_default_profile_name() == profile_name
-    assert Profile.list_profiles() == [profile_name]
+    assert PersistentStorageService.get_default_profile_name() == profile_name
+    assert PersistentStorageService.list_stored_profile_names() == [profile_name]

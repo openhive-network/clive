@@ -11,6 +11,8 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.profile import encryption_wallet_name
+from clive.__private.storage.service import PersistentStorageService
 
 
 @dataclass(kw_only=True)
@@ -35,6 +37,8 @@ class BeekeeperSpawn(ExternalCLICommand):
 
         async with Beekeeper(run_in_background=self.background) as beekeeper:
             typer.echo(f"Beekeeper started on {beekeeper.http_endpoint} with pid {beekeeper.pid}.")
+            typer.echo(f"{beekeeper.http_endpoint}")
+            typer.echo(f"{beekeeper.token}")
 
             if not self.background:
                 self.__serve_forever()
@@ -98,3 +102,25 @@ class BeekeeperClose(ExternalCLICommand):
             if err.errno == errno.ESRCH:
                 return False
         return True
+
+
+@dataclass(kw_only=True)
+class BeekeeperUnlock(BeekeeperBasedCommand):
+    profile_name: str | None
+    password: str
+
+    async def _run(self) -> None:
+        profile_name = self.profile_name or PersistentStorageService.get_default_profile_name()
+        assert all(
+            wallet.unlocked is False for wallet in (await self.beekeeper.api.list_wallets()).wallets
+        ), "All wallets in session should be locked."
+        await self.beekeeper.api.unlock(wallet_name=profile_name, password=self.password)
+        await self.beekeeper.api.unlock(wallet_name=encryption_wallet_name(profile_name), password=self.password)
+        typer.echo(f"Wallet of {profile_name} is unlocked.")
+
+
+@dataclass(kw_only=True)
+class BeekeeperLock(BeekeeperBasedCommand):
+    async def _run(self) -> None:
+        await self.beekeeper.api.lock_all()
+        typer.echo("All wallets have been locked.")

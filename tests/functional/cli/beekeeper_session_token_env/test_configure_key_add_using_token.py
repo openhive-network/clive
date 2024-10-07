@@ -15,14 +15,14 @@ if TYPE_CHECKING:
 
 
 async def test_configure_key_add_using_beekeeper_session_token(
-    cli_tester_with_session_token_unlocked: CLITester,
+    cli_tester: CLITester,
 ) -> None:
     """Add key using CLIVE_BEEKEEPER_SESSION_TOKEN."""
     # ARRANGE
     pk = PrivateKey.create()
 
     # ACT & ASSERT
-    cli_tester_with_session_token_unlocked.configure_key_add(key=pk.value, alias="add_key")
+    cli_tester.configure_key_add(key=pk.value, alias="add_key")
 
 
 @pytest.mark.parametrize("unlocked", [True, False])

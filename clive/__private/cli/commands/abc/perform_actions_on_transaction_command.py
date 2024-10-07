@@ -6,9 +6,7 @@ from pathlib import Path
 import rich
 import typer
 
-from clive.__private.cli.commands.abc.world_based_with_password_or_token_command import (
-    WorldBasedWithPasswordOrTokenCommand,
-)
+from clive.__private.cli.commands.abc.world_based_command import WorldBasedCommand
 from clive.__private.cli.exceptions import (
     CLIBroadcastCannotBeUsedWithForceUnsignError,
     CLIPrettyError,
@@ -24,7 +22,7 @@ from clive.__private.validators.path_validator import PathValidator
 
 
 @dataclass(kw_only=True)
-class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, ABC):
+class PerformActionsOnTransactionCommand(WorldBasedCommand, ABC):
     sign: str | None = None
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
@@ -84,9 +82,6 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
                 raise CLIPrettyError(f"Can't save to file: {humanize_validation_result(result)}", errno.EINVAL)
 
     def _validate_if_can_be_signed(self) -> None:
-        if not self._is_beekeeper_required():
-            return  # no need to validate if no signing is required
-
         if not self._credentials_provided() or self.sign is None:
             raise CLISigningRequiresAPasswordOrSessionTokenError
 
@@ -102,6 +97,3 @@ class PerformActionsOnTransactionCommand(WorldBasedWithPasswordOrTokenCommand, A
         message = self._get_transaction_created_message().capitalize()
         typer.echo(f"{message} transaction:")
         rich.print_json(transaction_json)
-
-    def _is_beekeeper_required(self) -> bool:
-        return self.broadcast or self.sign is not None
