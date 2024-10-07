@@ -12,6 +12,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
 from clive.__private.ui.widgets.section import SectionScrollable
+from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -47,6 +48,7 @@ class KeyAliasForm(BaseScreen, Contextual[Profile], ABC):
             yield self._key_alias_input
             yield from self._content_after_alias_input()
             yield self._public_key_input
+        yield SelectCopyPasteHint()
 
     def _content_after_big_title(self) -> ComposeResult:
         return []

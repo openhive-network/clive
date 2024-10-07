@@ -12,6 +12,7 @@ from clive.__private.ui.screens.form_screen import FormScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.__private.ui.widgets.section import SectionScrollable
+from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
@@ -43,6 +44,7 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
         with SectionScrollable("Set account name"):
             yield self._account_name_input
             yield self._working_account_checkbox
+        yield SelectCopyPasteHint()
 
     async def apply_and_validate(self) -> None:
         try:
