@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
-    BIG_TITLE = "Onboarding"
+    BIG_TITLE = "create profile"
     SUBTITLE = "Optional step, could be done later"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False

@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 
 
 class CreateProfileForm(CreateProfileCommon, FormScreen[Profile]):
-    BIG_TITLE = "onboarding"
+    BIG_TITLE = "create profile"
 
     async def apply_and_validate(self) -> None:
         self._owner.clear_post_actions()  # create profile form is a first form, so clear all previously stored actions

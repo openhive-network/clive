@@ -28,7 +28,7 @@ class WorkingAccountCheckbox(Checkbox):
 
 class SetAccount(BaseScreen, FormScreen[Profile]):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BIG_TITLE = "onboarding"
+    BIG_TITLE = "create profile"
 
     def __init__(self, owner: Form[Profile]) -> None:
         super().__init__(owner)
