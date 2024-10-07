@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
@@ -38,8 +39,8 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
         return self.query_exactly_one(AccountNameInput).value_or_error
 
     @property
-    def should_be_working_account(self) -> bool:
-        return self.query_exactly_one(WorkingAccountCheckbox).value
+    def working_account_checkbox(self) -> WorkingAccountCheckbox:
+        return self.app.query_exactly_one(WorkingAccountCheckbox)
 
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Set account name"):
@@ -74,7 +75,11 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
         account_name = self.account_name
 
         self.context.profile.accounts.known.add(account_name)
-        if self.should_be_working_account:
+        if self.working_account_checkbox.value:
             self.context.profile.accounts.set_working_account(account_name)
         else:
             self.context.profile.accounts.watched.add(account_name)
+
+    @on(WorkingAccountCheckbox.Changed)
+    def _change_finish_screen_status(self, event: WorkingAccountCheckbox.Changed) -> None:
+        self.should_finish = not event.value

@@ -26,9 +26,10 @@ class NewKeyAliasForm(NewKeyAliasBase[OnboardingContext], FormScreen[OnboardingC
         await super().action_previous_screen()
 
     async def action_next_screen(self) -> None:
+        self.should_finish = True
         if not self.should_complete_this_step:
             # skip validation and apply part
-            self._owner.action_next_screen()
+            await self.finish()
             return
 
         await super().action_next_screen()

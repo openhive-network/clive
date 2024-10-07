@@ -10,7 +10,6 @@ from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
-from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.onboarding.form import Form, ScreenBuilder
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
@@ -27,17 +26,6 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[OnboardingContext]):
         super().__init__(owner, "Let's start onboarding!\n" + PRESS_HELP_MESSAGE)
 
 
-class OnboardingFinishScreen(FinishFormScreen[OnboardingContext]):
-    async def action_finish(self) -> None:
-        self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
-
-        profile = self.context.profile
-        profile.enable_saving()
-        self.world.profile = profile
-        await super().action_finish()
-        self.profile.save()
-
-
 class Onboarding(Form[OnboardingContext]):
     @property
     def context(self) -> OnboardingContext:
@@ -50,9 +38,6 @@ class Onboarding(Form[OnboardingContext]):
 
     def create_welcome_screen(self) -> ScreenBuilder[OnboardingContext]:
         return lambda owner: OnboardingWelcomeScreen(owner)
-
-    def create_finish_screen(self) -> ScreenBuilder[OnboardingContext]:
-        return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
         profile = Profile.create(WELCOME_PROFILE_NAME)

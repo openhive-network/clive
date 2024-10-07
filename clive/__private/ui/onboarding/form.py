@@ -8,7 +8,6 @@ from typing import Any, Final
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.onboarding.form_screen import FormScreenBase
 
@@ -17,14 +16,13 @@ PostAction = Command | Callable[[], Any]
 
 
 class Form(Contextual[ContextT], CliveScreen[None]):
-    AMOUNT_OF_DEFAULT_SCREENS: Final[int] = 2
+    AMOUNT_OF_DEFAULT_SCREENS: Final[int] = 1
 
     def __init__(self) -> None:
         self.__current_screen_index = 0
         self.__screens: list[ScreenBuilder[ContextT]] = [
             self.create_welcome_screen(),
             *list(self.register_screen_builders()),
-            self.create_finish_screen(),
         ]
         self.__skipped_screens: set[ScreenBuilder[ContextT]] = set()
         assert len(self.__screens) > self.AMOUNT_OF_DEFAULT_SCREENS, "no screen given to display"
@@ -97,9 +95,6 @@ class Form(Contextual[ContextT], CliveScreen[None]):
 
     def create_welcome_screen(self) -> ScreenBuilder[ContextT]:
         return lambda owner: WelcomeFormScreen(owner, "Let's fill some fields")
-
-    def create_finish_screen(self) -> ScreenBuilder[ContextT]:
-        return lambda owner: FinishFormScreen(owner, "Hope it didn't take too long")
 
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:
