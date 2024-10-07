@@ -3,8 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on
-from textual.containers import Grid, Horizontal
-from textual.widgets import Button, Label, RadioSet, Static, TabPane
+from textual.binding import Binding
+from textual.containers import Container, Grid, Horizontal
+from textual.widgets import Label, RadioSet, Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
@@ -24,7 +25,7 @@ from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_fro
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.buttons import AddToCartButton, CancelButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -35,6 +36,7 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveTabbedContent,
 )
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
@@ -143,11 +145,11 @@ class PendingTransfer(CliveCheckerboardTableRow):
             CliveCheckerBoardTableCell(aligned_amount),
             CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete)),
             CliveCheckerBoardTableCell(pending_transfer.memo),
-            CliveCheckerBoardTableCell(CliveButton("Cancel", variant="error", id_="delete-transfer-button")),
+            CliveCheckerBoardTableCell(CancelButton()),
         )
         self._pending_transfer = pending_transfer
 
-    @on(Button.Pressed, "#delete-transfer-button")
+    @on(CancelButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(CancelTransferFromSavings(self._pending_transfer))
 
@@ -199,6 +201,8 @@ class PendingTransfersPane(TabPane, CliveWidget):
 class SavingsTransfers(TabPane, OperationActionBindings):
     TITLE: Final[str] = "transfer"
 
+    BINDINGS = [Binding("a", "add_to_cart", "Add to cart")]
+
     def __init__(self, default_transfer_type: TransferType, default_asset_selected: type[Asset.LiquidT]) -> None:
         super().__init__(title=self.TITLE, id="transfer-tab")
 
@@ -212,6 +216,11 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self._from_button = self._create_from_savings_button(default_transfer_type)
 
         self._transfer_time_reminder = self._create_transfer_time_reminder()
+
+    @on(AddToCartButton.Pressed)
+    @on(CliveInput.Submitted)
+    def action_add_to_cart(self) -> None:
+        super().action_add_to_cart()
 
     def on_mount(self) -> None:
         self._amount_input.select_asset(self._default_asset_selected)
@@ -231,6 +240,8 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input
+                with Container(id="button-container"):
+                    yield AddToCartButton()
 
     @on(RadioSet.Changed)
     def transfer_type_changed(self, event: RadioSet.Changed) -> None:

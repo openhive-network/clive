@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal
+from textual.binding import Binding
+from textual.containers import Container, Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
@@ -16,13 +17,14 @@ from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.remove_delegation import RemoveDelegation
-from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
+from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests import CurrencySelectorHpVests
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
@@ -116,6 +118,8 @@ class DelegateHivePower(TabPane, OperationActionBindings):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
+    BINDINGS = [Binding("a", "add_to_cart", "Add to cart")]
+
     def __init__(self, title: TextType) -> None:
         """
         Initialize a TabPane.
@@ -128,12 +132,18 @@ class DelegateHivePower(TabPane, OperationActionBindings):
         self._delegate_input = KnownExchangeInput("Delegate")
         self._shares_input = HPVestsAmountInput()
 
+    @on(AddToCartButton.Pressed)
+    @on(CliveInput.Submitted)
+    def action_add_to_cart(self) -> None:
+        super().action_add_to_cart()
+
     def compose(self) -> ComposeResult:
         with ScrollablePart():
             yield HpVestsFactor(self.provider)
             with Section("Delegate your shares"):
                 yield self._delegate_input
                 yield self._shares_input
+                yield Container(AddToCartButton(), id="button-container")
             yield DelegationsTable()
 
     def _create_operation(self) -> DelegateVestingSharesOperation | None:
