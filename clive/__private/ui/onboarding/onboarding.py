@@ -12,12 +12,9 @@ from clive.__private.ui.onboarding.form import Form, ScreenBuilder
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.onboarding.set_account import SetAccount
 from clive.__private.ui.styling import colorize_shortcut
-from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
-
-    from textual.app import ComposeResult
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
@@ -32,9 +29,6 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
             f"Let's start onboarding!\n"
             f"In any moment you can press the {colorize_shortcut('F1')} button to see the Help page.",
         )
-
-    def _content_after_description(self) -> ComposeResult:
-        yield SelectCopyPasteHint()
 
 
 class OnboardingFinishScreen(FinishFormScreen[Profile]):
