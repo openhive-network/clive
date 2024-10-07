@@ -6,7 +6,6 @@ from textual.binding import Binding
 
 from clive.__private.core.profile import Profile
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
-from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.onboarding.form import Form, ScreenBuilder
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
@@ -31,17 +30,6 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
         )
 
 
-class OnboardingFinishScreen(FinishFormScreen[Profile]):
-    async def action_finish(self) -> None:
-        self._owner.add_post_action(self.app.update_data_from_node_asap)
-
-        profile = self.context
-        profile.enable_saving()
-        self.world.profile = profile
-        await super().action_finish()
-        self.profile.save()
-
-
 class Onboarding(Form[Profile]):
     ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
 
@@ -56,9 +44,6 @@ class Onboarding(Form[Profile]):
 
     def create_welcome_screen(self) -> ScreenBuilder[Profile]:
         return lambda owner: OnboardingWelcomeScreen(owner)
-
-    def create_finish_screen(self) -> ScreenBuilder[Profile]:
-        return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
         self.__context = Profile(self.ONBOARDING_PROFILE_NAME)
