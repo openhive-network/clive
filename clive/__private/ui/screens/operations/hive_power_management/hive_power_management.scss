@@ -1,6 +1,12 @@
 $table-header-color: $primary-background;
 
 HivePowerManagement {
+  #button-container {
+    align: center top;
+    margin-top: 1;
+    height: auto;
+  }
+
   Tab {
     width: 1fr;
   }
