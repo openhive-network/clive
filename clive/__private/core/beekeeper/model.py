@@ -75,3 +75,11 @@ class GetInfo(BeekeeperResponse):
 
 class HasMatchingPrivateKey(BeekeeperResponse):
     exists: bool
+
+
+class EncryptData(BeekeeperResponse):
+    encrypted_content: str
+
+
+class DecryptData(BeekeeperResponse):
+    decrypted_content: str

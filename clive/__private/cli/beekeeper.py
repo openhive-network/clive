@@ -1,7 +1,7 @@
 import typer
 
 from clive.__private.cli.clive_typer import CliveTyper
-from clive.__private.cli.common import BeekeeperOptionsGroup
+from clive.__private.cli.common import BeekeeperOptionsGroup, options
 
 beekeeper = CliveTyper(name="beekeeper", help="Beekeeper-related commands.")
 
@@ -31,3 +31,27 @@ async def close() -> None:
     from clive.__private.cli.commands.beekeeper import BeekeeperClose
 
     await BeekeeperClose().run()
+
+
+@beekeeper.command(param_groups=[BeekeeperOptionsGroup])
+async def unlock(
+    ctx: typer.Context,  # noqa: ARG001
+    profile_name: str = options.profile_name_optional,
+    password: str = options.password,
+) -> None:
+    """Unlock beekeeper session, session token must be set."""
+    from clive.__private.cli.commands.beekeeper import BeekeeperUnlock
+
+    common = BeekeeperOptionsGroup.get_instance()
+    await BeekeeperUnlock(**common.as_dict(), profile_name=profile_name, password=password).run()
+
+
+@beekeeper.command(param_groups=[BeekeeperOptionsGroup])
+async def lock(
+    ctx: typer.Context,  # noqa: ARG001
+) -> None:
+    """Lock all beekeeper sessions, session token must be set."""
+    from clive.__private.cli.commands.beekeeper import BeekeeperLock
+
+    common = BeekeeperOptionsGroup.get_instance()
+    await BeekeeperLock(**common.as_dict()).run()

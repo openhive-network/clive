@@ -26,6 +26,7 @@ from clive.__private.core.beekeeper.exceptions import (
     BeekeeperNotificationServerNotSetError,
     BeekeeperNotMatchingIdJsonRPCError,
     BeekeeperNotRunningError,
+    BeekeeperNotUnlockedError,
     BeekeeperResponseError,
     BeekeeperTokenNotAvailableError,
     BeekeeperUrlNotSetError,
@@ -36,6 +37,7 @@ from clive.__private.core.beekeeper.notifications import (
     WalletClosingListener,
 )
 from clive.__private.core.communication import Communication
+from clive.__private.core.constants.profile import PROFILE_ENCRYPTION_WALLET_SUFFIX
 from clive.__private.core.constants.setting_identifiers import BEEKEEPER_REMOTE_ADDRESS, BEEKEEPER_SESSION_TOKEN
 from clive.__private.core.url import Url
 from clive.__private.logger import logger
@@ -425,3 +427,21 @@ class Beekeeper:
                     shutil.move(wallet_path, extract_to)
                 keys: ExportedKeys = json.load(keys_file)
                 return keys
+
+    async def get_unlocked_profile_name(self) -> str:
+        assert self.is_running, "Unlocked profile name can only be retrieved when beekeeper is running."
+        wallets = (await self.api.list_wallets()).wallets
+        unlocked_names = [wallet.name for wallet in wallets if wallet.unlocked]
+        profile_encryption_wallet_names = [
+            name for name in unlocked_names if name.endswith(PROFILE_ENCRYPTION_WALLET_SUFFIX)
+        ]
+        blockchain_key_wallet_names = [
+            name for name in unlocked_names if not name.endswith(PROFILE_ENCRYPTION_WALLET_SUFFIX)
+        ]
+        if len(profile_encryption_wallet_names) != 1:
+            error_msg = "There must be exactly one unlocked wallet with profile encryption key"
+            error_msg += f" (with suffix {PROFILE_ENCRYPTION_WALLET_SUFFIX})"
+            raise BeekeeperNotUnlockedError(error_msg)
+        if len(blockchain_key_wallet_names) != 1:
+            raise BeekeeperNotUnlockedError("There must be exactly one unlocked wallet with blockchain keys")
+        return blockchain_key_wallet_names[0]

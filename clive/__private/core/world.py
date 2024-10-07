@@ -9,12 +9,15 @@ from textual.reactive import var
 
 from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.beekeeper.exceptions import BeekeeperNotUnlockedError
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.communication import Communication
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
+from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
+from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
 
@@ -36,32 +39,27 @@ class World:
 
     Args:
     ----
-    profile_name: Name of the profile to load. If None is passed, the default profile is loaded.
-    use_beekeeper: If True, there will be access to beekeeper. If False, beekeeper will not be available.
     beekeeper_remote_endpoint: If given, remote beekeeper will be used. If not given, local beekeeper will start.
     """
 
     def __init__(
         self,
-        profile_name: str | None = None,
         beekeeper_remote_endpoint: Url | None = None,
         *args: Any,
-        use_beekeeper: bool = True,
         **kwargs: Any,
     ) -> None:
         # Multiple inheritance friendly, passes arguments to next object in MRO.
         super().__init__(*args, **kwargs)
+        self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
 
-        self._profile = self._load_profile(profile_name)
         self._known_exchanges = KnownExchanges()
         self._app_state = AppState(self)
         self._commands = self._setup_commands()
 
-        self._use_beekeeper = use_beekeeper
-        self._beekeeper_remote_endpoint = beekeeper_remote_endpoint
         self._beekeeper: Beekeeper | None = None
-
-        self._node = Node(self._profile)
+        self._persistent_storage_service: PersistentStorageService | None = None
+        self._profile: Profile | None = None
+        self._node: Node | None = None
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -70,6 +68,10 @@ class World:
         self, _: type[BaseException] | None, ex: BaseException | None, ___: TracebackType | None
     ) -> None:
         await self.close()
+
+    @property
+    def app_state(self) -> AppState:
+        return self._app_state
 
     @property
     def commands(self) -> Commands[World]:
@@ -85,7 +87,18 @@ class World:
         return self._beekeeper
 
     @property
+    def persistent_storage_service(self) -> PersistentStorageService:
+        assert self._persistent_storage_service is not None, "PersistentStorageService is not initialized"
+        return self._persistent_storage_service
+
+    @property
+    def profile(self) -> Profile:
+        assert self._profile is not None, "Profile is not initialized"
+        return self._profile
+
+    @property
     def node(self) -> Node:
+        assert self._node is not None, "Node is not initialized"
         return self._node
 
     @contextmanager
@@ -113,17 +126,30 @@ class World:
             yield
 
     async def setup(self) -> Self:
-        await self._node.setup()
-        if self._use_beekeeper:
-            self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-            if safe_settings.beekeeper.is_session_token_set:
-                await self._commands.sync_state_with_beekeeper()
-
+        self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+        self._persistent_storage_service = PersistentStorageService(self.beekeeper)
+        try:
+            profile = await self._load_profile()
+            await self.set_profile(profile)
+        except (BeekeeperNotUnlockedError, ProfileDoesNotExistsError):
+            logger.warning("Clive is starting without profile")
         return self
 
+    async def set_profile(self, profile: Profile) -> None:
+        self._profile = profile
+        if safe_settings.beekeeper.is_session_token_set:
+            await self._commands.sync_state_with_beekeeper()
+        self._node = Node(self._profile)
+        await self._node.setup()
+
+    async def save_profile_of_world(self) -> None:
+        await self.persistent_storage_service.save_profile(self.profile)
+
     async def close(self) -> None:
-        self.profile.save()
-        await self._node.teardown()
+        if self._node is not None:
+            await self._node.teardown()
+        if self._app_state.is_unlocked and self._profile is not None:
+            await self.save_profile_of_world()
         if self._beekeeper is not None:
             await self._beekeeper.close()
 
@@ -133,8 +159,9 @@ class World:
     def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
 
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        return Profile.load(profile_name)
+    async def _load_profile(self) -> Profile:
+        profile_name = await self.beekeeper.get_unlocked_profile_name()
+        return await self.persistent_storage_service.load_profile(profile_name)
 
     def _setup_commands(self) -> Commands[World]:
         return Commands(self)
@@ -148,35 +175,17 @@ class World:
         await beekeeper.launch()
         return beekeeper
 
-    @property
-    def profile(self) -> Profile:
-        return self._profile
-
-    @property
-    def app_state(self) -> AppState:
-        return self._app_state
-
 
 class TUIWorld(World, CliveDOMNode):
     profile: Profile = var(None)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
-    def __init__(self) -> None:
-        profile_name = (
-            Profile.get_default_profile_name()
-            if Profile.is_default_profile_set()
-            else Onboarding.ONBOARDING_PROFILE_NAME
-        )
-        super().__init__(profile_name)
-        self.profile = self._profile
-        self.app_state = self._app_state
-        self.node = self._node
-
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        profile = super()._load_profile(profile_name)
-        if self._is_in_onboarding_mode(profile):
-            profile.skip_saving()
+    async def _load_profile(self) -> Profile:
+        try:
+            return await super()._load_profile()
+        except (BeekeeperNotUnlockedError, ProfileDoesNotExistsError):
+            profile = Profile(name=Onboarding.ONBOARDING_PROFILE_NAME)
         return profile
 
     @property
@@ -205,6 +214,20 @@ class TUIWorld(World, CliveDOMNode):
         self.app.notify("Switched to the UNLOCKED mode.")
         self.app.trigger_app_state_watchers()
 
+    async def setup(self) -> Self:
+        await super().setup()
+        assert self._profile is not None, "Profile is not initialized"
+        self.profile = self._profile
+        assert self._app_state is not None, "AppState is not initialized"
+        self.app_state = self._app_state
+        assert self._node is not None, "Node is not initialized"
+        self.node = self._node
+        return self
+
+    async def save_profile_of_world(self) -> None:
+        if not self.is_in_onboarding_mode:
+            await super().save_profile_of_world()
+
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
         return profile.name == Onboarding.ONBOARDING_PROFILE_NAME
 
@@ -219,6 +242,3 @@ class CLIWorld(World):
 
     def _setup_commands(self) -> CLICommands:
         return CLICommands(self)
-
-    def _load_profile(self, profile_name: str | None) -> Profile:
-        return Profile.load(profile_name, auto_create=False)

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, Final
 from textual.binding import Binding
 
 from clive.__private.core.profile import Profile
+from clive.__private.storage.service import PersistentStorageService
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
 from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
@@ -43,11 +44,10 @@ class OnboardingFinishScreen(FinishFormScreen[Profile]):
         self._owner.add_post_action(self.app.update_data_from_node_asap)
 
         profile = self.context
-        profile.enable_saving()
         self.world.profile = profile
         await super().action_finish()
         await self.app.switch_screen("dashboard")
-        self.profile.save()
+        await PersistentStorageService(self.world.beekeeper).save_profile(profile)
 
 
 class Onboarding(Form[Profile]):
