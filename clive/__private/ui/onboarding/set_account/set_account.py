@@ -12,6 +12,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedValidationError
 from clive.__private.ui.widgets.section import SectionScrollable
+from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -48,6 +49,7 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
                 show_known_account=False,
             )
             yield WorkingAccountCheckbox()
+        yield SelectCopyPasteHint()
 
     async def validate(self) -> SetAccount.ValidationFail | None:
         try:
