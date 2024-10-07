@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from .add_to_cart_button import AddToCartButton
-from .cancel_button import CancelButton
+from .cancel_button import CancelButton, CancelOneLineButton
 from .clive_button import CliveButton
 from .close_button import CloseButton
 from .confirm_button import ConfirmButton
@@ -14,6 +14,7 @@ from .search_operation_buttons import ClearButton, SearchButton
 __all__ = [
     "AddToCartButton",
     "CancelButton",
+    "CancelOneLineButton",
     "ClearButton",
     "CliveButton",
     "CloseButton",
