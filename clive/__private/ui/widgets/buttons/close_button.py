@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-from clive.__private.ui.widgets.buttons.cancel_button import CancelButton
+from clive.__private.ui.widgets.buttons.cancel_button import CancelOneLineButton
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
 
-class CloseButton(CancelButton):
+class CloseButton(CancelOneLineButton):
     class Pressed(OneLineButton.Pressed):
         """Used to identify exactly that close button was pressed."""
 
