@@ -1,6 +1,11 @@
 TransferToAccount {
   Section {
     margin: 0 4;
+
+    #button-container {
+      align: center top;
+      height: auto;
+    }
   }
 
   Body {

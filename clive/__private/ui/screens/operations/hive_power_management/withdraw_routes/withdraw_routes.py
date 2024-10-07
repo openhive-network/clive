@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
-from textual.containers import Horizontal
+from textual.binding import Binding
+from textual.containers import Container, Horizontal
 from textual.widgets import Checkbox, Static, TabPane
 
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION
@@ -18,13 +19,14 @@ from clive.__private.ui.screens.operations.bindings import OperationActionBindin
 from clive.__private.ui.screens.operations.operation_summary.remove_withdraw_vesting_route import (
     RemoveWithdrawVestingRoute,
 )
-from clive.__private.ui.widgets.buttons import CliveButton, OneLineButton
+from clive.__private.ui.widgets.buttons import AddToCartButton, CliveButton, OneLineButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
 from clive.__private.ui.widgets.scrolling import ScrollablePart
@@ -107,6 +109,8 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
 
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
+    BINDINGS = [Binding("a", "add_to_cart", "Add to cart")]
+
     def __init__(self, title: TextType) -> None:
         """
         Initialize a TabPane.
@@ -120,6 +124,11 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
         self._percent_input = PercentInput()
         self._auto_vest_checkbox = Checkbox("Auto vest")
 
+    @on(AddToCartButton.Pressed)
+    @on(CliveInput.Submitted)
+    def action_add_to_cart(self) -> None:
+        super().action_add_to_cart()
+
     def compose(self) -> ComposeResult:
         with ScrollablePart():
             with Section("Set withdraw route"):
@@ -127,6 +136,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-checkbox"):
                     yield self._percent_input
                     yield self._auto_vest_checkbox
+                yield Container(AddToCartButton(), id="button-container")
             yield WithdrawRoutesTable()
 
     def _create_operation(self) -> SetWithdrawVestingRouteOperation | None:
