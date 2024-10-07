@@ -7,7 +7,7 @@ import pytest
 from clive.__private.ui.app import Clive
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
-from clive.__private.ui.onboarding.onboarding import OnboardingFinishScreen, OnboardingWelcomeScreen
+from clive.__private.ui.onboarding.onboarding import OnboardingWelcomeScreen
 from clive.__private.ui.onboarding.set_account import SetAccount
 from clive.__private.ui.onboarding.set_account.set_account import WorkingAccountCheckbox
 from clive.__private.ui.screens.config import Config
@@ -100,8 +100,7 @@ async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, 
 
 
 async def onboarding_finish(pilot: ClivePilot) -> None:
-    await press_and_wait_for_screen(pilot, "ctrl+n", OnboardingFinishScreen)
-    await press_and_wait_for_screen(pilot, "enter", Dashboard)
+    await press_and_wait_for_screen(pilot, "ctrl+n", Dashboard)
     assert_is_dashboard(pilot)
 
 

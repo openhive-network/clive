@@ -2,12 +2,14 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from textual.binding import Binding
+from textual.reactive import var
 
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
+from clive.__private.ui.onboarding.context import OnboardingContext
 
 if TYPE_CHECKING:
     from clive.__private.ui.onboarding.form import Form
@@ -42,6 +44,8 @@ class LastFormScreen(FormScreenBase[ContextT]):
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
+    should_finish: bool = var(default=False)  # type: ignore[assignment]
+
     @dataclass
     class ValidationSuccess:
         """Used to determine that form validation passed and next screen should be displayed."""
@@ -62,7 +66,16 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
             return
 
         await self.apply()
+
+        if self.should_finish:
+            await self.finish()
+            return
+
         await super().action_next_screen()
+
+    async def finish(self) -> None:
+        # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
+        self.app.run_worker(self._action_finish())
 
     @abstractmethod
     async def validate(self) -> ValidationFail | ValidationSuccess | None:
@@ -71,3 +84,20 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
     @abstractmethod
     async def apply(self) -> None:
         """Apply the form data."""
+
+    async def _action_finish(self) -> None:
+        self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
+        context = cast(OnboardingContext, self.context)  # TODO: remove cast, resolve type
+
+        profile = context.profile
+        profile.enable_saving()
+        self.world.profile = profile
+
+        await self._owner.execute_post_actions()
+        await self._handle_modes_on_finish()
+        self.profile.save()
+
+    async def _handle_modes_on_finish(self) -> None:
+        await self.app.switch_mode("dashboard")
+        await self.app.remove_mode("onboarding")
+        await self.app.remove_mode("unlock")
