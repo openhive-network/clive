@@ -11,7 +11,7 @@ from textual.reactive import reactive
 from textual.screen import ModalScreen
 
 from clive.__private.abstract_class import AbstractClassMessagePump
-from clive.__private.ui.widgets.buttons import CancelButton, CloseButton, ConfirmButton
+from clive.__private.ui.widgets.buttons import CancelOneLineButton, CloseButton, ConfirmButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -117,13 +117,13 @@ class CliveActionDialog(CliveBaseDialog):
 
     def create_buttons_content(self) -> ComposeResult:
         yield ConfirmButton(self._confirm_button_text)
-        yield CancelButton()
+        yield CancelOneLineButton()
 
     @on(ConfirmButton.Pressed)
     async def confirm_dialog(self) -> None:
         self.post_message(self.Confirmed())
 
-    @on(CancelButton.Pressed)
+    @on(CancelOneLineButton.Pressed)
     def action_cancel(self) -> None:
         self.app.pop_screen()
 
