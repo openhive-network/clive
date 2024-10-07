@@ -5,10 +5,9 @@ from typing import TYPE_CHECKING
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
-from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.form_screen import FormScreen
+from clive.__private.ui.screens.form_screen import FinishOnboardingFormScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.__private.ui.widgets.section import SectionScrollable
@@ -18,6 +17,7 @@ from clive.exceptions import FormValidationError
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.profile import Profile
     from clive.__private.ui.onboarding.form import Form
 
 
@@ -26,7 +26,7 @@ class WorkingAccountCheckbox(Checkbox):
         super().__init__("Working account?", value=True)
 
 
-class SetAccount(BaseScreen, FormScreen[Profile]):
+class SetAccount(BaseScreen, FinishOnboardingFormScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "create profile"
 
@@ -69,6 +69,18 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
             self.context.accounts.set_working_account(account_name)
         else:
             self.context.accounts.watched.add(account_name)
+
+    async def action_next_screen(self) -> None:
+        try:
+            await self.apply_and_validate()
+        except FormValidationError as e:
+            self.validation_failure(e)
+        else:
+            if not self.context.accounts.has_working_account:
+                await self.action_finish()
+            else:
+                await super().action_next_screen()
+            self.validation_success()
 
     def __is_working_account(self) -> bool:
         return self.query_exactly_one(WorkingAccountCheckbox).value

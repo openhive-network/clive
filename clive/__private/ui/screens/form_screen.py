@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 from textual.binding import Binding
 
 from clive.__private.core.contextual import ContextT, Contextual
+from clive.__private.core.profile import Profile
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.exceptions import FormValidationError
 
@@ -60,3 +61,20 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
     @abstractmethod
     async def apply_and_validate(self) -> None:
         """Perform its actions and raise FormValidationError if some input is invalid."""
+
+
+class FinishOnboardingFormScreen(FormScreen[Profile]):
+    async def action_finish(self) -> None:
+        self._owner.add_post_action(self.app.update_data_from_node_asap)
+
+        profile = self.context
+        profile.enable_saving()
+        self.world.profile = profile
+        await self._owner.execute_post_actions()
+
+        if self.app_state.is_unlocked:
+            await self.app.switch_screen("dashboard_unlocked")
+        else:
+            await self.app.switch_screen("dashboard_locked")
+
+        self.profile.save()
