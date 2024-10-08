@@ -6,17 +6,12 @@ from typing import TYPE_CHECKING
 import pytest
 from typer.testing import CliRunner
 
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.beekeeper import Beekeeper
-from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
-from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.constants.terminal import TERMINAL_WIDTH
 from clive.__private.core.keys.keys import PrivateKeyAliased
-from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
-from clive.__private.storage.service import PersistentStorageService
 from clive_local_tools.cli.cli_tester import CLITester
 from clive_local_tools.data.constants import (
     BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
@@ -25,7 +20,7 @@ from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.testnet_block_log import (
-    WATCHED_ACCOUNTS_DATA,
+    WATCHED_ACCOUNTS_NAMES,
     WORKING_ACCOUNT_DATA,
     run_node,
 )
@@ -35,6 +30,7 @@ if TYPE_CHECKING:
 
     import test_tools as tt
 
+    from clive.__private.core.profile import Profile
     from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory
 
 
@@ -52,38 +48,20 @@ async def beekeeper_remote(
 
 
 @pytest.fixture
-async def prepare_profile(beekeeper_remote: Beekeeper) -> Profile:
-    profile = Profile(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
-    )
-    await CreateProfileEncryptionWallet(
-        beekeeper=beekeeper_remote,
-        profile=profile,
-        password=WORKING_ACCOUNT_PASSWORD,
-    ).execute_with_result()
-    await CreateWallet(
-        beekeeper=beekeeper_remote,
-        wallet=profile.name,
-        password=WORKING_ACCOUNT_PASSWORD,
-    ).execute_with_result()
-    await PersistentStorageService(beekeeper_remote).save_profile(profile)
-    return profile
-
-
-@pytest.fixture
-async def world(beekeeper_remote: Beekeeper, prepare_profile: Profile) -> World:
-    return World(profile_name=prepare_profile.name, beekeeper_remote_endpoint=beekeeper_remote.http_endpoint)
-
-
-@pytest.fixture
-async def prepare_beekeeper_wallet(world: World) -> None:
-    async with world as world_cm:
+async def prepare_profile_and_wallet(beekeeper_remote: Beekeeper) -> Profile:
+    async with World(
+        profile_name=WORKING_ACCOUNT_DATA.account.name, beekeeper_remote_endpoint=beekeeper_remote.http_endpoint
+    ) as world_cm:
+        profile = world_cm.profile
+        profile.accounts.set_working_account(WORKING_ACCOUNT_DATA.account.name)
+        profile.accounts.watched.add(*WATCHED_ACCOUNTS_NAMES)
+        await world_cm.commands.create_profile_encryption_key(password=WORKING_ACCOUNT_PASSWORD)
+        await world_cm.commands.create_wallet(password=WORKING_ACCOUNT_PASSWORD)
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
         )
         await world_cm.commands.sync_data_with_beekeeper()
+    return profile
 
 
 @pytest.fixture
@@ -96,8 +74,7 @@ async def node() -> tt.RawNode:
 @pytest.fixture
 async def cli_tester(
     node: tt.RawNode,  # noqa: ARG001
-    prepare_profile: Profile,  # noqa: ARG001
-    prepare_beekeeper_wallet: None,  # noqa: ARG001
+    prepare_profile_and_wallet: Profile,  # noqa: ARG001
 ) -> CLITester:
     """Will return CliveTyper and CliRunner from typer.testing module.."""
     # import cli after default profile is set, default values for --profile-name option are set during loading

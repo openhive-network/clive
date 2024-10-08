@@ -7,7 +7,7 @@ import test_tools as tt
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.profile import Profile
-from clive.__private.storage.model import PersistentStorageModelSchema, calculate_storage_model_revision
+from clive.__private.storage.model import ProfileStorageModelSchema, calculate_storage_model_revision
 from clive.__private.storage.service import PersistentStorageService
 
 if TYPE_CHECKING:
@@ -82,7 +82,7 @@ async def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: 
         await PersistentStorageService(beekeeper_cm).save_profile(profile)
 
     # stimulate the situation when the schema has changed, causing different revision
-    monkeypatch.setattr(PersistentStorageModelSchema, "schema_json", mock_schema_json)
+    monkeypatch.setattr(ProfileStorageModelSchema, "schema_json", mock_schema_json)
 
     assert not new_revision_dir.is_dir(), "New revision dir should not yet exist."
     assert (

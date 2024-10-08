@@ -14,7 +14,6 @@ from clive.__private.core.commands.commands import CLICommands, Commands, TUICom
 from clive.__private.core.communication import Communication
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
-from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
@@ -125,17 +124,23 @@ class World:
     async def setup(self) -> Self:
         self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
         self._persistent_storage_service = PersistentStorageService(self.beekeeper)
-        self._profile = await self._load_profile()
-        if safe_settings.beekeeper.is_session_token_set:
+        self._profile = await self._create_or_load_profile()
+        if not self._profile.is_newly_created:
             await self._commands.sync_state_with_beekeeper()
-        self._node = Node(self.profile)
-        await self.node.setup()
+        self._node = Node(self._profile)
+        await self._node.setup()
         return self
 
+    async def save_profile_of_world(self) -> None:
+        if self._profile is not None:
+            await self.persistent_storage_service.save_profile(self._profile)
+
     async def close(self) -> None:
-        await self.node.teardown()
-        await self.persistent_storage_service.save_profile(self.profile)
-        await self.beekeeper.close()
+        if self._node is not None:
+            await self._node.teardown()
+        await self.save_profile_of_world()
+        if self._beekeeper is not None:
+            await self._beekeeper.close()
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
@@ -143,9 +148,9 @@ class World:
     def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
 
-    async def _load_profile(self) -> Profile:
+    async def _create_or_load_profile(self) -> Profile:
         if self._profile_name is not None:
-            return await self.persistent_storage_service.load_profile(self._profile_name)
+            return Profile(name=self._profile_name)
         profile_name = await self.beekeeper.get_unlocked_profile_name()
         return await self.persistent_storage_service.load_profile(profile_name)
 
@@ -167,13 +172,9 @@ class TUIWorld(World, ManualReactive):
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.app_state = self._app_state
-
-    async def _load_profile(self) -> Profile:
+    async def _create_or_load_profile(self) -> Profile:
         try:
-            return await super()._load_profile()
+            return await super()._create_or_load_profile()
         except (BeekeeperNotUnlockedError, ProfileDoesNotExistsError):
             profile = Profile(name=Onboarding.ONBOARDING_PROFILE_NAME)
         return profile
@@ -207,6 +208,20 @@ class TUIWorld(World, ManualReactive):
             self.app.replace_screen("DashboardLocked", "dashboard_unlocked")
         self.app.notify("Switched to the UNLOCKED mode.")
         self.app.trigger_app_state_watchers()
+
+    async def setup(self) -> Self:
+        await super().setup()
+        assert self._profile is not None, "Profile is not initialized"
+        self.profile = self._profile
+        assert self._app_state is not None, "AppState is not initialized"
+        self.app_state = self._app_state
+        assert self._node is not None, "Node is not initialized"
+        self.node = self._node
+        return self
+
+    async def save_profile_of_world(self) -> None:
+        if not self.is_in_onboarding_mode:
+            await super().save_profile_of_world()
 
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
         return profile.name == Onboarding.ONBOARDING_PROFILE_NAME

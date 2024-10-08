@@ -22,6 +22,8 @@ flowchart LR
     subgraph BeekeeperRelated[Beekeeper related commands]
         Beekeeper(beekeeper) --> BeekeeperSpawn[spawn]
         Beekeeper --> BeekeeperClose[close]
+        Beekeeper --> BeekeeperUnlock[unlock]
+        Beekeeper --> BeekeeperLock[lock]
         Beekeeper --> BeekeeperInfo[info]
     end
 

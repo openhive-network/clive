@@ -70,7 +70,6 @@ class Profile(Context):
         self.cart = Cart()
         self.keys = KeyManager()
 
-        self._encryption_key: PublicKeyAliased | None = None
         self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
         self._backup_node_addresses = self._default_node_address()
         self._set_node_address(self._initial_node_address())
@@ -115,14 +114,6 @@ class Profile(Context):
             raise InvalidChainIdError
 
         self._chain_id = value
-
-    @property
-    def encryption_key(self) -> PublicKeyAliased:
-        assert self._encryption_key, "encryption_key is not set"
-        return self._encryption_key
-
-    def set_encryption_key(self, key: PublicKeyAliased) -> None:
-        self._encryption_key = key
 
     def unset_chain_id(self) -> None:
         """When no chain_id is set, it should be fetched from the node api."""

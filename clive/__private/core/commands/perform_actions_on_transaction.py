@@ -55,6 +55,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
     beekeeper: Beekeeper | None = None
     """Required if transaction needs to be signed - when sign_key is provided."""
     sign_key: PublicKey | None = None
+    wallet_name: str
     already_signed_mode: AlreadySignedMode = ALREADY_SIGNED_MODE_DEFAULT
     force_unsign: bool = False
     chain_id: str | None = None
@@ -73,6 +74,7 @@ class PerformActionsOnTransaction(CommandWithResult[Transaction]):
                 beekeeper=self.beekeeper,
                 transaction=transaction,
                 key=self.sign_key,
+                wallet_name=self.wallet_name,
                 chain_id=self.chain_id or await self.node.chain_id,
                 already_signed_mode=self.already_signed_mode,
             ).execute_with_result()

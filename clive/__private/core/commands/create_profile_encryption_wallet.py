@@ -24,4 +24,3 @@ class CreateProfileEncryptionWallet(CommandWithResult[str]):
         private_key = iwax.generate_private_key()
         private_key_aliased = private_key.with_alias(alias)
         await self.beekeeper.api.import_key(wallet_name=wallet_name, wif_key=private_key_aliased.value)
-        self.profile.set_encryption_key(private_key_aliased.calculate_public_key())

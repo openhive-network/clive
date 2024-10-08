@@ -192,6 +192,7 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper if sign_key else None,
                 content=content,
                 sign_key=sign_key,
+                wallet_name=self._world.profile.name,
                 already_signed_mode=already_signed_mode,
                 force_unsign=force_unsign,
                 chain_id=chain_id,
@@ -243,6 +244,7 @@ class Commands(Generic[WorldT_co]):
                 beekeeper=self._world.beekeeper,
                 transaction=transaction,
                 key=sign_with,
+                wallet_name=self._world.profile.name,
                 chain_id=chain_id or await self._world.node.chain_id,
                 already_signed_mode=already_signed_mode,
             )
@@ -278,6 +280,7 @@ class Commands(Generic[WorldT_co]):
                 content=content,
                 beekeeper=self._world.beekeeper,
                 sign_with=sign_with,
+                wallet_name=self._world.profile.name,
             )
         )
 

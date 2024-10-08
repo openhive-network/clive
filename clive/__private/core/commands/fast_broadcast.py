@@ -21,6 +21,7 @@ class FastBroadcast(CommandInUnlocked, CommandWithResult[Transaction]):
     content: TransactionConvertibleType
     beekeeper: Beekeeper
     sign_with: PublicKey
+    wallet_name: str
 
     async def _execute(self) -> None:
         self._result = await PerformActionsOnTransaction(
@@ -29,6 +30,7 @@ class FastBroadcast(CommandInUnlocked, CommandWithResult[Transaction]):
             node=self.node,
             beekeeper=self.beekeeper,
             sign_key=self.sign_with,
+            wallet_name=self.wallet_name,
             save_file_path=None,
             broadcast=True,
         ).execute_with_result()

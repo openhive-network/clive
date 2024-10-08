@@ -18,11 +18,13 @@ class EncryptWithProfileKey(CommandWithResult[str]):
 
     async def _execute(self) -> None:
         wallet_name = encryption_wallet_name(self.profile.name)
-        key = self.profile.encryption_key
+        get_public_keys_wrapper = await self.beekeeper.api.get_public_keys(wallet_name=wallet_name)
+        assert len(get_public_keys_wrapper.keys) == 1, "Wallet with profile encryption key should contain one key."
+        key_value = get_public_keys_wrapper.keys[0].public_key
         wrapper = await self.beekeeper.api.encrypt_data(
             wallet_name=wallet_name,
-            from_public_key=key.value,
-            to_public_key=key.value,
+            from_public_key=key_value,
+            to_public_key=key_value,
             content=self.content,
         )
         self._result = wrapper.encrypted_content
