@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from clive.__private.ui.screens.operations import Operations
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive_local_tools.tui.broadcast_transaction import broadcast_transaction
-from clive_local_tools.tui.textual_helpers import press_and_wait_for_screen
+from clive_local_tools.tui.textual_helpers import focus_next, press_and_wait_for_screen, press_binding
 
 if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot, OperationProcessing
@@ -19,9 +19,10 @@ async def process_operation(
     password: str | None = None,
 ) -> None:
     if operation_processing == "ADD_TO_CART":
-        await press_and_wait_for_screen(pilot, "f2", Operations)  # add to cart
+        await focus_next(pilot)  # binding can't be pressed if input is focused
+        await press_binding(pilot, "a", "Add to cart")
+        await press_and_wait_for_screen(pilot, "escape", Operations)
         await press_and_wait_for_screen(pilot, "f2", TransactionSummary)
-        await broadcast_transaction(pilot, unlocked=unlocked, password=password)
     else:
         await press_and_wait_for_screen(pilot, "f6", TransactionSummary)
-        await broadcast_transaction(pilot, unlocked=unlocked, password=password)
+    await broadcast_transaction(pilot, unlocked=unlocked, password=password)

@@ -253,6 +253,9 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         self._transfer_time_reminder.visible = False
         section_title.update("Perform a transfer to savings")
 
+    def _actions_after_clearing_inputs(self) -> None:
+        self._to_account_input.input.value = "alice"
+
     def _create_operation(
         self,
     ) -> TransferToSavingsOperation | TransferFromSavingsOperation | None:

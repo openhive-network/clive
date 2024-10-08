@@ -124,6 +124,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             if self.ADD_TO_CART_POP_SCREEN_MODE:
                 self._pop_screen_until_operations_or_dashboard()
             self._clear_inputs()
+            self._actions_after_clearing_inputs()
             self.notify("The operation was added to the cart.")
 
     def get_account_to_be_marked_as_known(self) -> str | Account | None:
@@ -136,6 +137,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         will be marked as known.
         """
         return None
+
+    def _actions_after_clearing_inputs(self) -> None:
+        """For additional actions after clearing inputs e.g. setting default value again."""
 
     def _add_to_cart(self) -> bool:
         """

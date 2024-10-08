@@ -41,6 +41,7 @@ from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
     focus_next,
     press_and_wait_for_screen,
+    press_binding,
     write_text,
 )
 from clive_local_tools.tui.utils import log_current_view
@@ -233,19 +234,20 @@ async def test_savings_finalize_cart(
     # ACT
     ### Create transfers
     # Choose savings operation
+    await go_to_savings(pilot)
+    await pilot.press("right")
     for i in range(TRANSFERS_COUNT):
         # Fill transfer savings data
-        await go_to_savings(pilot)
-        await pilot.press("right")
         log_current_view(pilot.app, nodes=True, source=f"before fill_savings_data({i})")
         await fill_savings_data(pilot, operation_type, other_account, TRANSFERS_DATA[i][0], TRANSFERS_DATA[i][1])
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
-        await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
-        await press_and_wait_for_screen(pilot, "escape", DashboardUnlocked)
+        await focus_next(pilot)
+        await press_binding(pilot, "a", "Add to cart")
+        await focus_next(pilot)
         log_current_view(pilot.app)
 
-    await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
+    await press_and_wait_for_screen(pilot, "escape", Operations)
     await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
     await broadcast_transaction(pilot)
 
@@ -298,7 +300,7 @@ async def test_canceling_transfer_from_savings(
         await go_to_savings(pilot)
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
-        await press_and_wait_for_screen(pilot, "f2", Savings)  # add to cart
+        await press_and_wait_for_screen(pilot, "f2", Operations)  # add to cart
         await press_and_wait_for_screen(pilot, "f2", TransactionSummary)
         await broadcast_transaction(pilot)
 
