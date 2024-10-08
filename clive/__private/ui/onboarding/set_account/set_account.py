@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
@@ -9,6 +10,7 @@ from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.form_screen import FinishOnboardingFormScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.__private.ui.widgets.section import SectionScrollable
 from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
@@ -70,6 +72,7 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
         else:
             self.context.accounts.watched.add(account_name)
 
+    @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
