@@ -67,7 +67,7 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
         self.context.accounts.unset_working_account()
 
         self.context.accounts.known.add(account_name)
-        if self.__is_working_account():
+        if self._working_account_checkbox.value:
             self.context.accounts.set_working_account(account_name)
         else:
             self.context.accounts.watched.add(account_name)
@@ -84,6 +84,3 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
             else:
                 await super().action_next_screen()
             self.validation_success()
-
-    def __is_working_account(self) -> bool:
-        return self.query_one(WorkingAccountCheckbox).value
