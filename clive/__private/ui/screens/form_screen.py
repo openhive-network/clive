@@ -17,6 +17,8 @@ if TYPE_CHECKING:
 
 
 class FormScreenBase(CliveScreen, Contextual[ContextT]):
+    BINDINGS = [Binding("f1", "help", "Help")]
+
     def __init__(self, owner: Form[ContextT]) -> None:
         self._owner = owner
         super().__init__()
