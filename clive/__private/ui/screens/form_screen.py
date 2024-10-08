@@ -3,11 +3,13 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
+from textual import on
 from textual.binding import Binding
 
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.core.profile import Profile
 from clive.__private.ui.clive_screen import CliveScreen
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
@@ -25,10 +27,6 @@ class FormScreenBase(CliveScreen, Contextual[ContextT]):
 
 
 class FirstFormScreen(FormScreenBase[ContextT]):
-    BINDINGS = [
-        Binding("ctrl+n", "next_screen", "Next screen"),
-    ]
-
     async def action_next_screen(self) -> None:
         self._owner.action_next_screen()
 
@@ -41,6 +39,7 @@ class LastFormScreen(FormScreenBase[ContextT]):
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
+    @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()

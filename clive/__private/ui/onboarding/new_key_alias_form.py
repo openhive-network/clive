@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, ClassVar
 
+from textual import on
+
 from clive.__private.logger import logger
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.screens.form_screen import FinishOnboardingFormScreen
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 from clive.exceptions import FormValidationError
 
@@ -53,6 +56,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FinishOnboardingFormScreen):
         except FailedManyValidationError as error:
             raise FormValidationError(str(error)) from error
 
+    @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
