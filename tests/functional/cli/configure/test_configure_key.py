@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from clive_local_tools.data.constants import WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log.constants import WORKING_ACCOUNT_NAME
 
 if TYPE_CHECKING:
@@ -13,7 +14,6 @@ if TYPE_CHECKING:
 
 
 from clive.__private.core.keys.keys import PrivateKey
-from clive_local_tools.data.constants import WORKING_ACCOUNT_PASSWORD
 
 
 async def assert_key_exists(beekeeper: Beekeeper, private_key: PrivateKey, *, should_exists: bool) -> None:
@@ -39,7 +39,7 @@ async def test_configure_key_add(world: World, cli_tester: CLITester) -> None:
         await assert_key_exists(world_cm.beekeeper, pk, should_exists=False)
 
         # ACT
-        cli_tester.configure_key_add(key=pk.value, alias="add_key", password=WORKING_ACCOUNT_PASSWORD)
+        cli_tester.configure_key_add(key=pk.value, alias="add_key")
 
         # ASSERT
         await assert_key_exists(world_cm.beekeeper, pk, should_exists=True)
@@ -53,11 +53,11 @@ async def test_configure_key_remove(world: World, cli_tester: CLITester, *, from
     async with world as world_cm:
         await world_cm.beekeeper.api.unlock(wallet_name=WORKING_ACCOUNT_NAME, password=WORKING_ACCOUNT_PASSWORD)
         await assert_key_exists(world_cm.beekeeper, pk, should_exists=False)
-        cli_tester.configure_key_add(key=pk.value, alias="key", password=WORKING_ACCOUNT_PASSWORD)
+        cli_tester.configure_key_add(key=pk.value, alias="key")
         await assert_key_exists(world_cm.beekeeper, pk, should_exists=True)
 
         # ACT
-        cli_tester.configure_key_remove(alias="key", password=WORKING_ACCOUNT_PASSWORD, from_beekeeper=from_beekeeper)
+        cli_tester.configure_key_remove(alias="key", from_beekeeper=from_beekeeper)
 
         # ASSERT
         await assert_key_exists(world_cm.beekeeper, pk, should_exists=not from_beekeeper)

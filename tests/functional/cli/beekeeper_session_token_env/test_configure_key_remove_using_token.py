@@ -44,7 +44,7 @@ async def test_configure_key_remove_with_beekeeper_session_token_and_password_bo
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):
-        cli_tester.configure_key_remove(alias="doesnt-matter", password="doesnt-matter")
+        cli_tester.configure_key_remove(alias="doesnt-matter")
 
 
 async def test_configure_key_remove_with_beekeeper_session_token_not_unlocked(

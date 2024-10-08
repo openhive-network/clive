@@ -6,7 +6,6 @@ from clive.__private.cli.exceptions import BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_M
 from clive_local_tools.data.constants import (
     BEEKEEPER_SESSION_TOKEN_ENV_NAME,
     WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
 )
 
 if TYPE_CHECKING:
@@ -81,7 +80,6 @@ async def test_process_transfer_with_beekeeper_session_token_and_password_both_s
             amount=tt.Asset.Hive(1),
             to=RECEIVER,
             sign=WORKING_ACCOUNT_KEY_ALIAS,
-            password=WORKING_ACCOUNT_PASSWORD,
         )
 
 

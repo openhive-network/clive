@@ -7,7 +7,7 @@ import pytest
 from clive.__private.cli.exceptions import BEEKEEPER_SESSION_TOKEN_MUST_BE_SET_MESSAGE
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
 from clive_local_tools.cli.exceptions import CLITestCommandError
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_NAME
 from schemas.operations import TransferOperation
 
@@ -40,7 +40,6 @@ async def test_process_transfer(
         amount=tt.Asset.Hive(1),
         to=RECEIVER,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
-        password=WORKING_ACCOUNT_PASSWORD,
         memo=MEMO,
     )
 
