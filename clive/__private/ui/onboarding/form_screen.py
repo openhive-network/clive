@@ -4,12 +4,14 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, cast
 
+from textual import on
 from textual.binding import Binding
 from textual.reactive import var
 
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.onboarding.context import OnboardingContext
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
     from clive.__private.ui.onboarding.form import Form
@@ -58,6 +60,7 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
         notification_message: str | None = None
         """Message to be displayed in the notification."""
 
+    @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
         validation_result = await self.validate()
         if isinstance(validation_result, self.ValidationFail):
