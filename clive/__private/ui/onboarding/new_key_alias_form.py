@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from typing import ClassVar
 
+from textual import on
+
 from clive.__private.logger import logger
 from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.form_screen import FormScreen
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
 
@@ -25,6 +28,7 @@ class NewKeyAliasForm(NewKeyAliasBase[OnboardingContext], FormScreen[OnboardingC
         self.context.profile.keys.clear_to_import()
         await super().action_previous_screen()
 
+    @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
         self.should_finish = True
         if not self.should_complete_this_step:

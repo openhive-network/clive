@@ -6,8 +6,8 @@ import pytest
 
 from clive.__private.ui.app import Clive
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
+from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
-from clive.__private.ui.onboarding.onboarding import OnboardingWelcomeScreen
 from clive.__private.ui.onboarding.set_account import SetAccount
 from clive.__private.ui.onboarding.set_account.set_account import WorkingAccountCheckbox
 from clive.__private.ui.screens.config import Config
@@ -60,8 +60,8 @@ async def prepared_tui_on_onboarding(
 async def onboarding_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
-    assert_is_screen_active(pilot, OnboardingWelcomeScreen)
-    await press_and_wait_for_screen(pilot, "ctrl+n", CreateProfileForm)
+    assert_is_screen_active(pilot, WelcomeFormScreen)
+    await press_and_wait_for_screen(pilot, "enter", CreateProfileForm)
     assert_is_clive_composed_input_focused(
         pilot, SetProfileNameInput, context="CreateProfileForm should have initial focus"
     )
@@ -72,7 +72,7 @@ async def onboarding_until_set_account(
     await focus_next(pilot)
     assert_is_clive_composed_input_focused(pilot, RepeatPasswordInput)
     await write_text(pilot, profile_password)
-    await press_and_wait_for_screen(pilot, "ctrl+n", SetAccount)
+    await press_and_wait_for_screen(pilot, "enter", SetAccount)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput)
     await write_text(pilot, account_name)
 
@@ -138,6 +138,7 @@ async def test_onboarding_watched_account_creation(prepared_tui_on_onboarding: C
     # ACT
     await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await onboarding_mark_account_as_watched(pilot)
+    await pilot.press("tab")
     await onboarding_finish(pilot)
 
     # ASSERT
@@ -151,7 +152,7 @@ async def test_onboarding_working_account_creation(prepared_tui_on_onboarding: C
 
     # ACT
     await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
-    await press_and_wait_for_screen(pilot, "ctrl+n", NewKeyAliasForm)
+    await press_and_wait_for_screen(pilot, "enter", NewKeyAliasForm)
     await onboarding_set_key_and_alias_name(pilot, KEY_ALIAS_NAME, PRIVATE_KEY)
     await onboarding_finish(pilot)
 
@@ -167,7 +168,7 @@ async def test_onboarding_working_account_creation_no_key(prepared_tui_on_onboar
 
     # ACT
     await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
-    await press_and_wait_for_screen(pilot, "ctrl+n", NewKeyAliasForm)
+    await press_and_wait_for_screen(pilot, "enter", NewKeyAliasForm)
     await onboarding_finish(pilot)
 
     # ASSERT
