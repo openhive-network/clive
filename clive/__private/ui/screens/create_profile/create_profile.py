@@ -46,6 +46,7 @@ class CreateProfileCommon(BaseScreen, Contextual[Profile], ABC):
             yield self._password_input
             yield self._repeat_password_input
             yield from self._additional_content()
+        yield from self._additional_content_not_scrollable()
 
     def on_mount(self) -> None:
         # Validate the repeat password input again when password is changed and repeat was already touched.
@@ -57,6 +58,10 @@ class CreateProfileCommon(BaseScreen, Contextual[Profile], ABC):
 
     def _additional_content(self) -> ComposeResult:
         """Additional content to be added to the form."""
+        return []
+
+    def _additional_content_not_scrollable(self) -> ComposeResult:
+        """Additional content to be added to the form, outside the scrollable part."""
         return []
 
     def _get_valid_args(self) -> tuple[str, str]:
