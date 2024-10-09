@@ -16,7 +16,7 @@ from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import safe_settings, settings
-from clive.main import _main as clive_main
+from clive.main import main as clive_main
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     TESTNET_CHAIN_ID,
@@ -147,9 +147,9 @@ def print_working_account_keys() -> None:
     tt.logger.info(f"{WORKING_ACCOUNT_NAME} private key: {WORKING_ACCOUNT_DATA.account.private_key}")
 
 
-async def launch_clive() -> None:
+def launch_clive() -> None:
     tt.logger.info("Attempting to start a clive interactive mode - exit to finish")
-    await clive_main()
+    clive_main()
 
 
 def serve_forever() -> None:
@@ -159,23 +159,27 @@ def serve_forever() -> None:
         time.sleep(1)
 
 
-async def main() -> None:
+async def prepare(*, recreate_profiles: bool) -> None:
+    node = prepare_node()
+    print_working_account_keys()
+
+    if recreate_profiles:
+        shutil.rmtree(safe_settings.data_path, ignore_errors=True)
+        await prepare_profiles(node)
+
+
+def main() -> None:
     args = init_argparse(sys.argv[1:])
     enable_clive_onboarding = args.perform_onboarding
     disable_tui = args.no_tui
 
-    node = prepare_node()
-    print_working_account_keys()
-
-    if not enable_clive_onboarding:
-        shutil.rmtree(safe_settings.data_path, ignore_errors=True)
-        await prepare_profiles(node)
+    asyncio.run(prepare(recreate_profiles=not enable_clive_onboarding))
 
     if disable_tui:
         serve_forever()
     else:
-        await launch_clive()
+        launch_clive()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

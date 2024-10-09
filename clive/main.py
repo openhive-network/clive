@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import asyncio
 import sys
 
 from pydantic import Extra
@@ -22,7 +21,7 @@ def _is_cli_requested() -> bool:
     return len(sys.argv) > 1
 
 
-async def _main() -> None:
+def main() -> None:
     with thread_pool:
         if is_tab_completion_active():
             cli()
@@ -31,14 +30,10 @@ async def _main() -> None:
         __disable_schemas_extra_fields_check()
 
         if not _is_cli_requested():
-            await run_tui()
+            run_tui()
             return
 
         run_cli()
-
-
-def main() -> None:
-    asyncio.run(_main())
 
 
 if __name__ == "__main__":
