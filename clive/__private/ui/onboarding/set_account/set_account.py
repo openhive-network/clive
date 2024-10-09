@@ -7,6 +7,11 @@ from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.onboarding.navigation_buttons import (
+    FINISH_ONBOARDING_BUTTON_LABEL,
+    NavigationButtons,
+    NextScreenButton,
+)
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.form_screen import FinishOnboardingFormScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -46,7 +51,11 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
         with SectionScrollable("Set account name"):
             yield self._account_name_input
             yield self._working_account_checkbox
+            yield NavigationButtons()
         yield SelectCopyPasteHint()
+
+    def on_mount(self) -> None:
+        self.watch(self._working_account_checkbox, "value", self._change_next_screen_button_label)
 
     async def apply_and_validate(self) -> None:
         try:
@@ -73,6 +82,7 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
             self.context.accounts.watched.add(account_name)
 
     @on(CliveInput.Submitted)
+    @on(NextScreenButton.Pressed)
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
@@ -84,3 +94,9 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
             else:
                 await super().action_next_screen()
             self.validation_success()
+
+    def _change_next_screen_button_label(self) -> None:
+        if self._working_account_checkbox.value:
+            self.query_one(NextScreenButton).label = NextScreenButton.DEFAULT_NEXT_BUTTON_LABEL
+            return
+        self.query_one(NextScreenButton).label = FINISH_ONBOARDING_BUTTON_LABEL

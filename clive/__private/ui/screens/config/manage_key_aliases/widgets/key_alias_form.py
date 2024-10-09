@@ -8,6 +8,7 @@ from textual.widgets import Static
 from clive.__private.core.contextual import Contextual
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.onboarding.navigation_buttons import FINISH_ONBOARDING_BUTTON_LABEL, NavigationButtons
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.labelized_input import LabelizedInput
 from clive.__private.ui.widgets.inputs.public_key_alias_input import PublicKeyAliasInput
@@ -48,6 +49,8 @@ class KeyAliasForm(BaseScreen, Contextual[Profile], ABC):
             yield self._key_alias_input
             yield from self._content_after_alias_input()
             yield self._public_key_input
+            if self.world.is_in_onboarding_mode:
+                yield NavigationButtons(next_button_label=FINISH_ONBOARDING_BUTTON_LABEL)
         yield SelectCopyPasteHint()
 
     def _content_after_big_title(self) -> ComposeResult:
