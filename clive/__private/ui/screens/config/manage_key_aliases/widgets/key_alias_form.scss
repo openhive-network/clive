@@ -2,6 +2,10 @@ KeyAliasForm {
   Section {
     margin: 1 4 0 4;
 
+    NavigationButtons {
+      margin-top: 1;
+    }
+
     #key-input,
     #public-key {
       margin-top: 1;

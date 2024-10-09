@@ -7,6 +7,7 @@ from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithB
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.form_screen import FormScreen
+from clive.__private.ui.onboarding.navigation_buttons import NavigationButtons
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
@@ -36,6 +37,7 @@ class CreateProfileForm(BaseScreen, FormScreen[OnboardingContext]):
             yield self._profile_name_input
             yield self._password_input
             yield self._repeat_password_input
+            yield NavigationButtons()
         yield SelectCopyPasteHint()
 
     def on_mount(self) -> None:
