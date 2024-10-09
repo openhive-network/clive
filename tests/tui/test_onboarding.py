@@ -83,6 +83,7 @@ async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
     await focus_next(pilot)
     assert_is_focused(pilot, WorkingAccountCheckbox)
     await pilot.press("space")  # Uncheck 'Working account?'
+    await pilot.press("shift+tab")  # Focus again on input
     assert (
         pilot.app.screen.query_exactly_one(WorkingAccountCheckbox).value is False
     ), "Expected 'Working account?' to be unchecked!"
@@ -138,7 +139,6 @@ async def test_onboarding_watched_account_creation(prepared_tui_on_onboarding: C
     # ACT
     await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await onboarding_mark_account_as_watched(pilot)
-    await pilot.press("tab")
     await onboarding_finish(pilot)
 
     # ASSERT

@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING, ClassVar
 from textual import on
 
 from clive.__private.logger import logger
+from clive.__private.ui.onboarding.navigation_buttons import NextScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.screens.form_screen import FinishOnboardingFormScreen
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
@@ -57,6 +58,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FinishOnboardingFormScreen):
             raise FormValidationError(str(error)) from error
 
     @on(CliveInput.Submitted)
+    @on(NextScreenButton.Pressed)
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
