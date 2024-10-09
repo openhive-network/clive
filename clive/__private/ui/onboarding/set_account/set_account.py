@@ -9,6 +9,9 @@ from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARD
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.form_screen import FormScreen
+from clive.__private.ui.onboarding.navigation_buttons import (
+    NavigationButtons,
+)
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedValidationError
@@ -50,6 +53,7 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
                 show_known_account=False,
             )
             yield WorkingAccountCheckbox()
+            yield NavigationButtons()
         yield SelectCopyPasteHint()
 
     async def validate(self) -> SetAccount.ValidationFail | None:
@@ -83,3 +87,8 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
     @on(WorkingAccountCheckbox.Changed)
     def _change_finish_screen_status(self, event: WorkingAccountCheckbox.Changed) -> None:
         self.should_finish = not event.value
+
+        if self.should_finish:
+            self.query_exactly_one(NavigationButtons).set_finish_button()
+            return
+        self.query_exactly_one(NavigationButtons).set_next_screen_button()

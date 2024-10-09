@@ -8,9 +8,11 @@ from textual import on
 from textual.binding import Binding
 from textual.reactive import var
 
+from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.onboarding.context import OnboardingContext
+from clive.__private.ui.onboarding.navigation_buttons import NextScreenButton, PreviousScreenButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
@@ -29,7 +31,7 @@ class FormScreenBase(CliveScreen, Contextual[ContextT]):
 
 class FirstFormScreen(FormScreenBase[ContextT]):
     BINDINGS = [
-        Binding("ctrl+n", "next_screen", "Next screen"),
+        Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
     ]
 
     async def action_next_screen(self) -> None:
@@ -39,9 +41,10 @@ class FirstFormScreen(FormScreenBase[ContextT]):
 class LastFormScreen(FormScreenBase[ContextT]):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
-        Binding("ctrl+p", "previous_screen", "Previous screen"),
+        Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"),
     ]
 
+    @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:
         self._owner.action_previous_screen()
 
@@ -60,6 +63,7 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
         notification_message: str | None = None
         """Message to be displayed in the notification."""
 
+    @on(NextScreenButton.Pressed)
     @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
         validation_result = await self.validate()

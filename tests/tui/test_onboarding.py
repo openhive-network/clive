@@ -138,7 +138,6 @@ async def test_onboarding_watched_account_creation(prepared_tui_on_onboarding: C
     # ACT
     await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await onboarding_mark_account_as_watched(pilot)
-    await pilot.press("tab")
     await onboarding_finish(pilot)
 
     # ASSERT
