@@ -62,8 +62,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FinishOnboardingFormScreen):
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
-        except FormValidationError as e:
-            self.validation_failure(e)
+        except FormValidationError:
+            pass  # handled in the super class
         else:
             await self.action_finish()
-            self.validation_success()
