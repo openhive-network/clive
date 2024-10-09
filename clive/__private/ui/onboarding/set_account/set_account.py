@@ -86,14 +86,13 @@ class SetAccount(BaseScreen, FinishOnboardingFormScreen):
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
-        except FormValidationError as e:
-            self.validation_failure(e)
+        except FormValidationError:
+            pass  # handled in the super class
         else:
             if not self.context.accounts.has_working_account:
                 await self.action_finish()
             else:
                 await super().action_next_screen()
-            self.validation_success()
 
     def _change_next_screen_button_label(self) -> None:
         if self._working_account_checkbox.value:
