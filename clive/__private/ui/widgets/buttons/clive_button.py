@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Literal
 
 from rich.text import Text
 from textual import on
-from textual.binding import Binding
 from textual.widgets import Button
 from textual.widgets._button import ButtonVariant
 
@@ -113,9 +112,6 @@ class CliveButton(Button, CliveWidget):
             classes=classes,
             disabled=disabled,
         )
-
-    def on_focus(self) -> None:
-        self.bind(Binding("enter", "press", str(self.label)))
 
     def update(self, new_label: TextType) -> None:
         self.label = self._create_label(new_label)
