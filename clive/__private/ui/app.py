@@ -69,7 +69,6 @@ class Clive(App[int]):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self._world: TUIWorld | None = None
-        self._register_quit_signals()
 
     @property
     def world(self) -> TUIWorld:
@@ -144,6 +143,7 @@ class Clive(App[int]):
 
     async def on_load(self) -> None:
         self.console.set_window_title("Clive")
+        self._register_quit_signals()
         self._world = await TUIWorld().setup()
 
     def on_mount(self) -> None:
