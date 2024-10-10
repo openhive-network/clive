@@ -137,6 +137,9 @@ class CliveInput(Input):
         self._unmodified_placeholder = placeholder
         self.placeholder = self._get_placeholder()
 
+    def set_placeholder_to_unmodified(self) -> None:
+        self.placeholder = self._unmodified_placeholder
+
     def make_required(self, message: str = DEFAULT_REQUIRED_FAILURE_DESCRIPTION) -> None:
         self.required_failure_description = message
         self.required = True
