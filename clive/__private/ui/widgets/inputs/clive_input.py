@@ -57,6 +57,7 @@ class CliveInput(Input):
     title: str = var("", init=False)  # type: ignore[assignment]
     required: bool = var(default=False, init=False)  # type: ignore[assignment]
     required_failure_description: str = var(DEFAULT_REQUIRED_FAILURE_DESCRIPTION, init=False)  # type: ignore[assignment]
+    always_show_title: bool = var(default=False, init=False)  # type: ignore[assignment]
 
     def __init__(
         self,
@@ -100,7 +101,6 @@ class CliveInput(Input):
             _validators = list(validators)
 
         self.set_reactive(self.__class__.title, title)  # type: ignore[arg-type]
-        self._always_show_title = always_show_title
 
         super().__init__(
             value=value,
@@ -120,6 +120,7 @@ class CliveInput(Input):
             disabled=disabled,
         )
         self.required = required
+        self.always_show_title = always_show_title
 
         self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
         self._unmodified_placeholder = placeholder
@@ -162,6 +163,9 @@ class CliveInput(Input):
     def _add_length_validator(self) -> None:
         self.validators.append(validation.Length(minimum=1, failure_description=self.required_failure_description))
 
+    def _watch_always_show_title(self) -> None:
+        self._change_border_title()
+
     def _change_border_title(self) -> None:
         self.border_title = self._determine_border_title()
 
@@ -186,14 +190,14 @@ class CliveInput(Input):
 
     @property
     def _should_include_title_in_placeholder(self) -> bool:
-        return bool(self.title) and self._include_title_in_placeholder_when_blurred and not self._always_show_title
+        return bool(self.title) and self._include_title_in_placeholder_when_blurred and not self.always_show_title
 
     def _configure(self) -> None:
         self.border_title = self._determine_border_title()
         self.placeholder = self._get_placeholder()
 
     def _determine_border_title(self) -> str:
-        if self._always_show_title or self.value:
+        if self.always_show_title or self.value:
             return self._get_title_with_required()
         return self._get_required_symbol()
 
@@ -214,7 +218,7 @@ class CliveInput(Input):
 
     @on(Focus)
     def _show_border_title(self) -> None:
-        if self._always_show_title:
+        if self.always_show_title:
             return
 
         self.border_title = self._get_title_with_required()
@@ -223,7 +227,7 @@ class CliveInput(Input):
 
     @on(Blur)
     def _hide_border_title(self) -> None:
-        if self._always_show_title:
+        if self.always_show_title:
             return
 
         if not self.value:
@@ -236,7 +240,7 @@ class CliveInput(Input):
 
     def _watch_value(self, value: str) -> None:
         # value can be set programmatically, so we need to update the border title accordingly
-        if self._always_show_title:
+        if self.always_show_title:
             return super()._watch_value(value)
 
         should_show_title = bool(value) or self.has_focus
