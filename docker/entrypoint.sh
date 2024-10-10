@@ -96,11 +96,11 @@ if [ "${TESTNET_MODE}" = "0" ]; then
 else
   if [ "${INTERACTIVE_CLI_MODE}" = "0" ]; then
     echo "Launching clive in TUI mode on testnet"
-    exec python3 testnet_node.py
+    exec python3 testnet_node.py -p -t
   else
     echo "Launching clive in CLI mode on testnet"
 
-    python3 testnet_node.py --no-tui >${TESTNET_NODE_LOG_FILE} 2>&1 &
+    python3 testnet_node.py -p >${TESTNET_NODE_LOG_FILE} 2>&1 &
     wait_for_testnet
     launch_cli
   fi
