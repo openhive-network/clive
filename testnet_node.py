@@ -15,8 +15,8 @@ from clive.__private.core.constants.setting_identifiers import NODE_CHAIN_ID, SE
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
+from clive.__private.run_tui import run_tui
 from clive.__private.settings import safe_settings, settings
-from clive.main import main as clive_main
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     TESTNET_CHAIN_ID,
@@ -42,21 +42,17 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
 
     add(
         "-p",
-        "--perform-onboarding",
-        nargs="?",
-        type=bool,
-        const=True,
+        "--prepare-profiles",
+        action="store_true",
         default=False,
-        help="if not set, pregenerated profile will be used, otherwise clive onboarding will be launched",
+        help="When set, pregenerated profiles will be created. Otherwise clive onboarding will be launched.",
     )
     add(
-        "-n",
-        "--no-tui",
-        nargs="?",
-        type=bool,
-        const=True,
+        "-t",
+        "--tui",
+        action="store_true",
         default=False,
-        help="if not set, TUI will will be launched, otherwise only testnet will be configured",
+        help="When set, TUI will be launched. Otherwise only testnet node will be configured and launched.",
     )
 
     return parser.parse_args(args)
@@ -147,9 +143,9 @@ def print_working_account_keys() -> None:
     tt.logger.info(f"{WORKING_ACCOUNT_NAME} private key: {WORKING_ACCOUNT_DATA.account.private_key}")
 
 
-def launch_clive() -> None:
+def launch_tui() -> None:
     tt.logger.info("Attempting to start a clive interactive mode - exit to finish")
-    clive_main()
+    run_tui()
 
 
 def serve_forever() -> None:
@@ -170,15 +166,15 @@ async def prepare(*, recreate_profiles: bool) -> None:
 
 def main() -> None:
     args = init_argparse(sys.argv[1:])
-    enable_clive_onboarding = args.perform_onboarding
-    disable_tui = args.no_tui
+    should_prepare_profiles = args.prepare_profiles
+    should_launch_tui = args.tui
 
-    asyncio.run(prepare(recreate_profiles=not enable_clive_onboarding))
+    asyncio.run(prepare(recreate_profiles=should_prepare_profiles))
 
-    if disable_tui:
-        serve_forever()
+    if should_launch_tui:
+        launch_tui()
     else:
-        launch_clive()
+        serve_forever()
 
 
 if __name__ == "__main__":
