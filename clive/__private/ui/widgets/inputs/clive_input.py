@@ -101,6 +101,7 @@ class CliveInput(Input):
             _validators = list(validators)
 
         self.set_reactive(self.__class__.title, title)  # type: ignore[arg-type]
+        self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
 
         super().__init__(
             value=value,
@@ -121,8 +122,6 @@ class CliveInput(Input):
         )
         self.required = required
         self.always_show_title = always_show_title
-
-        self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
         self._unmodified_placeholder = placeholder
 
         self._configure()
@@ -145,6 +144,7 @@ class CliveInput(Input):
 
     def _watch_title(self) -> None:
         self._change_border_title()
+        self._update_placeholder_with_current_state()
 
     def _watch_required(self, required: bool) -> None:  # noqa: FBT001
         self._change_border_title()
@@ -155,6 +155,10 @@ class CliveInput(Input):
             return
 
         self._add_length_validator()
+
+    def _validate_placeholder(self, placeholder: str) -> str:
+        self._unmodified_placeholder = placeholder
+        return self._get_placeholder()
 
     def _watch_required_failure_description(self) -> None:
         self._remove_length_validators()
@@ -189,12 +193,21 @@ class CliveInput(Input):
         self.post_message(self.Validated("", None))
 
     @property
+    def unmodified_placeholder(self) -> str:
+        return self._unmodified_placeholder
+
+    @property
     def _should_include_title_in_placeholder(self) -> bool:
-        return bool(self.title) and self._include_title_in_placeholder_when_blurred and not self.always_show_title
+        return (
+            bool(self.title)
+            and self._include_title_in_placeholder_when_blurred
+            and not self.always_show_title
+            and not self.has_focus
+        )
 
     def _configure(self) -> None:
         self.border_title = self._determine_border_title()
-        self.placeholder = self._get_placeholder()
+        self._update_placeholder_with_current_state()
 
     def _determine_border_title(self) -> str:
         if self.always_show_title or self.value:
@@ -209,24 +222,30 @@ class CliveInput(Input):
         return f"{prefix} {self.title}".strip()
 
     def _get_modified_placeholder(self) -> str:
-        return f"{self.title} {self._unmodified_placeholder}"
+        return f"{self.title} {self._unmodified_placeholder}".strip()
 
     def _get_placeholder(self) -> str:
         if self._should_include_title_in_placeholder:
             return self._get_modified_placeholder()
         return self._unmodified_placeholder
 
+    def _update_placeholder_with_current_state(self) -> None:
+        self.set_reactive(self.__class__.placeholder, self._get_placeholder())
+
     @on(Focus)
     def _show_border_title(self) -> None:
+        self.has_focus = True
+
         if self.always_show_title:
             return
 
         self.border_title = self._get_title_with_required()
-
         self.placeholder = self._unmodified_placeholder
 
     @on(Blur)
     def _hide_border_title(self) -> None:
+        self.has_focus = False
+
         if self.always_show_title:
             return
 
@@ -236,7 +255,7 @@ class CliveInput(Input):
             # So when there is value, the user can still see the title.
             self.border_title = self._get_required_symbol()
 
-        self.placeholder = self._get_placeholder()
+        self._update_placeholder_with_current_state()
 
     def _watch_value(self, value: str) -> None:
         # value can be set programmatically, so we need to update the border title accordingly
