@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual import on
+from textual.containers import Center
 from textual.widgets import TabPane
 
 from clive.__private.ui.clive_widget import CliveWidget
@@ -31,9 +32,10 @@ class ManageAccountsTabPane(TabPane, CliveWidget):
         self._add_account_container = AddAccountContainer(accounts_type)
 
     def compose(self) -> ComposeResult:
-        with ScrollablePart():
+        with Center():
             yield self._add_account_container
-            yield ManageAccountsTable(self._accounts_type)
+            with ScrollablePart():
+                yield ManageAccountsTable(self._accounts_type)
 
     def on_mount(self) -> None:
         self._add_account_container.query_exactly_one(SectionBody).mount(
