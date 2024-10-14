@@ -49,13 +49,9 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
             self.validation_failure(e)
         else:
             await super().action_next_screen()
-            self.validation_success()
 
     def validation_failure(self, exception: FormValidationError) -> None:
         self.notify(f"Data validated with error, reason: {exception.reason}", severity="error")
-
-    def validation_success(self) -> None:
-        self.notify("Data validated successfully")
 
     @abstractmethod
     async def apply_and_validate(self) -> None:
