@@ -8,7 +8,7 @@ from textual.binding import Binding
 from textual.containers import Container
 from textual.widgets import Static
 
-from clive.__private.core.url import Url, UrlError
+from clive.__private.core.url import Url
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -68,15 +68,8 @@ class SetNodeAddressBase(BaseScreen, ABC):
 
     @on(NodeSelector.Changed)
     async def save_node_address_with_gui_support(self) -> None:
-        try:
-            await self._valid_and_save_address()
-        except UrlError:
-            self.notify(
-                "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
-                severity="error",
-            )
-        else:
-            self.notify(f"Node address set to `{self.node.address}`.")
+        await self._valid_and_save_address()
+        self.notify(f"Node address set to `{self.node.address}`.")
 
 
 class SetNodeAddress(SetNodeAddressBase):
