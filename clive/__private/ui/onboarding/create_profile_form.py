@@ -7,13 +7,12 @@ from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithB
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.form_screen import FormScreen
+from clive.__private.ui.screens.form_screen import FormScreen, FormValidationError
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
 from clive.__private.ui.widgets.inputs.set_password_input import SetPasswordInput
 from clive.__private.ui.widgets.inputs.set_profile_name_input import SetProfileNameInput
 from clive.__private.ui.widgets.section import SectionScrollable
-from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -55,8 +54,8 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
             CliveValidatedInput.validate_many_with_error(
                 self._profile_name_input, self._password_input, self._repeat_password_input
             )
-        except CliveValidatedInputError as error:
-            raise FormValidationError(str(error)) from None
+        except CliveValidatedInputError:
+            raise FormValidationError from None
 
         # all inputs are valid, so we can safely get the values
         profile_name = self._profile_name_input.value_or_error

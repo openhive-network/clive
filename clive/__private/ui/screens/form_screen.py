@@ -7,10 +7,14 @@ from textual.binding import Binding
 
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.exceptions import FormValidationError
+from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from clive.__private.ui.onboarding.form import Form
+
+
+class FormValidationError(CliveError):
+    """Used to determine that form validation failed so next screen should not be displayed."""
 
 
 class FormScreenBase(CliveScreen, Contextual[ContextT]):
@@ -45,13 +49,10 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
     async def action_next_screen(self) -> None:
         try:
             await self.apply_and_validate()
-        except FormValidationError as e:
-            self.validation_failure(e)
+        except FormValidationError:
+            pass
         else:
             await super().action_next_screen()
-
-    def validation_failure(self, exception: FormValidationError) -> None:
-        self.notify(f"Data validated with error, reason: {exception.reason}", severity="error")
 
     @abstractmethod
     async def apply_and_validate(self) -> None:

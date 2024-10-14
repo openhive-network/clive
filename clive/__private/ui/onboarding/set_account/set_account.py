@@ -8,11 +8,10 @@ from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARD
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.form_screen import FormScreen
+from clive.__private.ui.screens.form_screen import FormScreen, FormValidationError
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.__private.ui.widgets.section import SectionScrollable
-from clive.exceptions import FormValidationError
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -47,15 +46,17 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
     async def apply_and_validate(self) -> None:
         try:
             account_name = self._account_name_input.value_or_error
-        except CliveValidatedInputError as error:
-            raise FormValidationError(str(error)) from error
+        except CliveValidatedInputError:
+            raise FormValidationError from None
 
         wrapper = await self.commands.does_account_exists_in_node(account_name=account_name)
         if wrapper.error_occurred:
-            raise FormValidationError(f"Failed to check if account {account_name} exists in the node.")
+            self.notify(f"Failed to check if account {account_name} exists in the node.", severity="error")
+            raise FormValidationError
 
         if not wrapper.result_or_raise:
-            raise FormValidationError(f"Account {account_name} does not exist in the node.")
+            self.notify(f"Account {account_name} does not exist in the node.", severity="error")
+            raise FormValidationError
 
         # allow only for adding one account
         self.context.accounts.watched.clear()
