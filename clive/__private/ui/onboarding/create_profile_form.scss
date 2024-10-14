@@ -1,0 +1,11 @@
+CreateProfileForm {
+  SectionScrollable {
+    margin: 1 4 0 4;
+
+    SectionBody {
+      layout: grid;
+      grid-gutter: 1;
+      grid-rows: auto;
+    }
+  }
+}
