@@ -36,42 +36,35 @@ get_workdir() {
     docker inspect --format='{{.Config.WorkingDir}}' "$IMAGE_NAME"
 }
 
+# Helper function for exec argument
+handle_exec_option() {
+    local file_to_mount="$1"
+
+    WORKDIR=$(get_workdir)
+    if [ -z "$WORKDIR" ]; then
+        echo "Error: Could not retrieve WORKDIR for image: $IMAGE_NAME"
+        exit 1
+    fi
+
+    FILE_TO_MOUNT_NAME=$(basename "$file_to_mount")
+
+    MOUNT_TARGET="${WORKDIR}/${FILE_TO_MOUNT_NAME}"
+    add_docker_arg "--volume"
+    add_docker_arg "${file_to_mount}:${MOUNT_TARGET}"
+    add_clive_arg "--exec"
+    add_clive_arg "${FILE_TO_MOUNT_NAME}"
+}
+
 # Override parse_args to handle --exec flag specifically for CLI mode
 parse_args() {
     while [ $# -gt 0 ]; do
         case "$1" in
             --exec)
                 shift
-                FILE_TO_MOUNT="${1}"
-                WORKDIR=$(get_workdir)
-                if [ -z "$WORKDIR" ]; then
-                    echo "Error: Could not retrieve WORKDIR for image: $IMAGE_NAME"
-                    exit 1
-                fi
-
-                FILE_TO_MOUNT_NAME=$(basename "$FILE_TO_MOUNT")
-
-                MOUNT_TARGET="${WORKDIR}/${FILE_TO_MOUNT_NAME}"
-                add_docker_arg "--volume"
-                add_docker_arg "${FILE_TO_MOUNT}:${MOUNT_TARGET}"
-                add_clive_arg "--exec"
-                add_clive_arg "${FILE_TO_MOUNT_NAME}"
+                handle_exec_option "${1}"
                 ;;
             --exec=*)
-                FILE_TO_MOUNT="${1#*=}"
-                WORKDIR=$(get_workdir)
-                if [ -z "$WORKDIR" ]; then
-                    echo "Error: Could not retrieve WORKDIR for image: $IMAGE_NAME"
-                    exit 1
-                fi
-
-                FILE_TO_MOUNT_NAME=$(basename "$FILE_TO_MOUNT")
-
-                MOUNT_TARGET="${WORKDIR}/${FILE_TO_MOUNT_NAME}"
-                add_docker_arg "--volume"
-                add_docker_arg "${FILE_TO_MOUNT}:${MOUNT_TARGET}"
-                add_clive_arg "--exec"
-                add_clive_arg "${FILE_TO_MOUNT_NAME}"
+                handle_exec_option "${1#*=}"
                 ;;
             *)
             new_args+=("$1")
