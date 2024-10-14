@@ -6,7 +6,7 @@ from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.onboarding.form_screen import FormScreen, FormValidationError
+from clive.__private.ui.onboarding.form_screen import FormScreen
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
@@ -40,37 +40,24 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
         # Validate the repeat password input again when password is changed and repeat was already touched.
         self.watch(self._password_input.input, "value", self._revalidate_repeat_password_input_when_password_changed)
 
-    async def apply_and_validate(self) -> None:
-        self._owner.clear_post_actions()  # create profile form is a first form, so clear all previously stored actions
-        self._owner.add_post_action(*self._create_profile())
-
-    def _revalidate_repeat_password_input_when_password_changed(self) -> None:
-        if self._repeat_password_input.value_raw:
-            self._repeat_password_input.validate_passed()
-
-    def _get_valid_args(self) -> tuple[str, str]:
-        """Select all input fields and validate them, if something is invalid throws an exception."""
+    async def validate(self) -> CreateProfileForm.ValidationFail | None:
         try:
             CliveValidatedInput.validate_many_with_error(
                 self._profile_name_input, self._password_input, self._repeat_password_input
             )
         except CliveValidatedInputError:
-            raise FormValidationError from None
+            return self.ValidationFail()
+        return None
 
-        # all inputs are valid, so we can safely get the values
+    async def apply(self) -> None:
+        self._owner.clear_post_actions()
+        self._schedule_profile_creation()
+
+    def _schedule_profile_creation(self) -> None:
+        # all inputs are validated first, so we can safely get the values
         profile_name = self._profile_name_input.value_or_error
         password = self._password_input.value_or_error
-        return profile_name, password
 
-    def _create_profile(self) -> tuple[CreateWallet, SyncDataWithBeekeeper]:
-        """
-        Collect the data from the form and create a profile.
-
-        Returns
-        -------
-        True if the profile was created successfully, False otherwise.
-        """
-        profile_name, password = self._get_valid_args()
         self.context.name = profile_name
 
         create_wallet = CreateWallet(
@@ -84,4 +71,9 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
             profile=self.context,
             beekeeper=self.world.beekeeper,
         )
-        return create_wallet, write_data
+
+        self._owner.add_post_action(create_wallet, write_data)
+
+    def _revalidate_repeat_password_input_when_password_changed(self) -> None:
+        if self._repeat_password_input.value_raw:
+            self._repeat_password_input.validate_passed()

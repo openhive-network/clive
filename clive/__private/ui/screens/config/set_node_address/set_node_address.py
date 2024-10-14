@@ -60,15 +60,12 @@ class SetNodeAddressBase(BaseScreen, ABC):
             yield self.__selected_node
             yield self.__nodes_list
 
-    async def _valid_and_save_address(self) -> None:
+    @on(NodeSelector.Changed)
+    async def save_selected_node_address(self) -> None:
         address = self.query_exactly_one(NodeSelector).value_ensure
         await self.node.set_address(address)
         self.app.trigger_node_watchers()
         self.__selected_node.refresh()
-
-    @on(NodeSelector.Changed)
-    async def save_node_address_with_gui_support(self) -> None:
-        await self._valid_and_save_address()
         self.notify(f"Node address set to `{self.node.address}`.")
 
 

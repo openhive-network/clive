@@ -1,20 +1,16 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from clive.__private.ui.onboarding.form import Form
-
-
-class FormValidationError(CliveError):
-    """Used to determine that form validation failed so next screen should not be displayed."""
 
 
 class FormScreenBase(CliveScreen, Contextual[ContextT]):
@@ -46,14 +42,32 @@ class LastFormScreen(FormScreenBase[ContextT]):
 
 
 class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
+    @dataclass
+    class ValidationSuccess:
+        """Used to determine that form validation passed and next screen should be displayed."""
+
+    @dataclass
+    class ValidationFail:
+        """Used to determine that form validation failed so next screen should not be displayed."""
+
+        notification_message: str | None = None
+        """Message to be displayed in the notification."""
+
     async def action_next_screen(self) -> None:
-        try:
-            await self.apply_and_validate()
-        except FormValidationError:
-            pass
-        else:
-            await super().action_next_screen()
+        validation_result = await self.validate()
+        if isinstance(validation_result, self.ValidationFail):
+            notification_message = validation_result.notification_message
+            if notification_message:
+                self.notify(notification_message, severity="error")
+            return
+
+        await self.apply()
+        await super().action_next_screen()
 
     @abstractmethod
-    async def apply_and_validate(self) -> None:
-        """Perform its actions and raise FormValidationError if some input is invalid."""
+    async def validate(self) -> ValidationFail | ValidationSuccess | None:
+        """Validate the form. None is same as ValidationSuccess."""
+
+    @abstractmethod
+    async def apply(self) -> None:
+        """Apply the form data."""
