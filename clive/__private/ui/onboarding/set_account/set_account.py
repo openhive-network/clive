@@ -7,8 +7,8 @@ from textual.widgets import Checkbox
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
 from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.onboarding.form_screen import FormScreen, FormValidationError
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.screens.form_screen import FormScreen, FormValidationError
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInputError
 from clive.__private.ui.widgets.section import SectionScrollable

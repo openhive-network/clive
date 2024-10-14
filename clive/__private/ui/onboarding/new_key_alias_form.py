@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING, ClassVar
 
 from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
+from clive.__private.ui.onboarding.form_screen import FormScreen, FormValidationError
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
-from clive.__private.ui.screens.form_screen import FormScreen, FormValidationError
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
 if TYPE_CHECKING:

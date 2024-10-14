@@ -10,7 +10,7 @@ from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
-from clive.__private.ui.screens.form_screen import FormScreenBase
+from clive.__private.ui.onboarding.form_screen import FormScreenBase
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
 PostAction = Command | Callable[[], None]
