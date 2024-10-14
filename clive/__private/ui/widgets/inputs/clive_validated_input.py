@@ -183,8 +183,8 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
 
         Raises:  # noqa: D406
         ------
-        FailedCliveInputValidationError: Raised when validation fails.
-        CliveInputValueError: Raised when cannot get the value of the input.
+        FailedValidationError: Raised when validation fails.
+        InputValueError: Raised when cannot get the value of the input.
         """
         self.validate_with_error(treat_as_required=False)
         return self._value
