@@ -9,13 +9,12 @@ from textual.containers import Container
 from textual.widgets import Select, Static
 from textual.widgets._select import NoSelection
 
-from clive.__private.core.url import Url
+from clive.__private.core.url import Url, URLError
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.section import SectionScrollable
-from clive.exceptions import NodeAddressError
 
 if TYPE_CHECKING:
     from rich.console import RenderableType
@@ -74,7 +73,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
     async def save_node_address_with_gui_support(self) -> None:
         try:
             await self._valid_and_save_address()
-        except NodeAddressError:
+        except URLError:
             self.notify(
                 "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
                 severity="error",
