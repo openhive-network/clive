@@ -28,6 +28,7 @@ from clive.__private.ui.widgets.clive_basic import (
 from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests import CurrencySelectorHpVests
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.notice import Notice
+from clive.__private.ui.widgets.place_taker import PlaceTaker
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 
@@ -38,10 +39,6 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
-
-
-class PlaceTaker(Static):
-    pass
 
 
 class WithdrawRoutesDisplay(CliveWidget):

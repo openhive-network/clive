@@ -26,6 +26,7 @@ from clive.__private.ui.widgets.currency_selector.currency_selector_hp_vests imp
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hp_vests_amount_input import HPVestsAmountInput
 from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
+from clive.__private.ui.widgets.place_taker import PlaceTaker
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 
@@ -35,10 +36,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
     from clive.__private.models.schemas import VestingDelegation
-
-
-class PlaceTaker(Static):
-    pass
 
 
 class DelegationsTableHeader(Horizontal):

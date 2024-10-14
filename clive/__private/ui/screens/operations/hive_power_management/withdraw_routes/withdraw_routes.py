@@ -27,6 +27,7 @@ from clive.__private.ui.widgets.clive_basic import (
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
+from clive.__private.ui.widgets.place_taker import PlaceTaker
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
 
@@ -36,10 +37,6 @@ if TYPE_CHECKING:
 
     from clive.__private.core.commands.data_retrieval.hive_power_data import HivePowerData
     from clive.__private.models.schemas import WithdrawRoute as SchemasWithdrawRoute
-
-
-class PlaceTaker(Static):
-    pass
 
 
 class WithdrawRoutesHeader(Horizontal):
