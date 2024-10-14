@@ -15,6 +15,7 @@ print_help() {
     echo "  --data-dir=DIRECTORY_PATH      Points to a Clive data directory to store profile data. Defaults to ${HOME}/.clive directory."
     echo "  --docker-option=OPTION         Allows specifying additional Docker options to pass to underlying Docker run."
     echo "  --exec=PATH_TO_FILE            Path to bash script to be executed."
+    echo "  --profile-name=PROFILE_NAME    Name of profile that will be used."
     echo "  --help                         Display this help screen and exit."
     echo
 }
@@ -43,6 +44,13 @@ handle_exec_option() {
     add_clive_arg "${FILE_TO_MOUNT_NAME}"
 }
 
+# Helper function for --profile-name argument
+handle_profile_name_option() {
+    local profile_name="$1"
+    add_clive_arg "--profile-name"
+    add_clive_arg "${profile_name}"
+}
+
 # Override parse_args to handle --exec flag specifically for CLI mode
 parse_args() {
     while [ $# -gt 0 ]; do
@@ -53,6 +61,13 @@ parse_args() {
                 ;;
             --exec=*)
                 handle_exec_option "${1#*=}"
+                ;;
+            --profile-name)
+                shift
+                handle_profile_name_option "${1}"
+                ;;
+            --profile-name=*)
+                handle_profile_name_option "${1#*=}"
                 ;;
             *)
             new_args+=("$1")
