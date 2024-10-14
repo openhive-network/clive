@@ -6,14 +6,14 @@ from typing import TYPE_CHECKING, Any
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container
-from textual.widgets import Select, Static
-from textual.widgets._select import NoSelection
+from textual.widgets import Static
 
-from clive.__private.core.url import Url, URLError
+from clive.__private.core.url import Url, UrlError
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 from clive.__private.ui.widgets.section import SectionScrollable
 
 if TYPE_CHECKING:
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class NodeSelector(Select[Url], CliveWidget):
+class NodeSelector(CliveSelect[Url], CliveWidget):
     """Select for the node address."""
 
     def __init__(self) -> None:
@@ -62,8 +62,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
             yield self.__nodes_list
 
     async def _valid_and_save_address(self) -> None:
-        address = self.query_exactly_one(NodeSelector).value
-        assert not isinstance(address, NoSelection), "No node was selected."
+        address = self.query_exactly_one(NodeSelector).value_ensure
         await self.node.set_address(address)
         self.app.trigger_node_watchers()
         self.__selected_node.refresh()
@@ -73,7 +72,7 @@ class SetNodeAddressBase(BaseScreen, ABC):
     async def save_node_address_with_gui_support(self) -> None:
         try:
             await self._valid_and_save_address()
-        except URLError:
+        except UrlError:
             self.notify(
                 "Invalid node address. Please enter it in a valid format (e.g. https://api.hive.blog)",
                 severity="error",
