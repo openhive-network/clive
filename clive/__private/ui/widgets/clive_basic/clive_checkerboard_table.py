@@ -49,10 +49,6 @@ Override it or set the `ATTRIBUTE_TO_WATCH` class-var if you want to create a dy
         super().__init__(self._MESSAGE)
 
 
-class PlaceTaker(Static):
-    pass
-
-
 class CliveCheckerBoardTableCell(Container):
     """Cell of the checkerboard-table."""
 
