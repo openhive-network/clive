@@ -138,7 +138,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
     def _asset_changed(self) -> None:
         # update placeholder
         if self._dynamic_placeholder:
-            self.input.set_unmodified_placeholder(self._get_dynamic_placeholder(self.selected_asset_precision))
+            self.input._set_unmodified_placeholder(self._get_dynamic_placeholder(self.selected_asset_precision))
 
         # update input restrict
         self.input.restrict = self._create_restriction(self.selected_asset_precision)
