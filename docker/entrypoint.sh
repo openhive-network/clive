@@ -16,6 +16,11 @@ clean_up() {
   close_beekeeper
 }
 
+# Add Clive argument to the Clive args array
+add_clive_arg() {
+    CLIVE_ARGS+=("$1")
+}
+
 # Start Beekeeper with prepared session token
 start_beekeeper_with_prepared_session_token() {
   echo "Starting beekeeper with prepared session token"
@@ -131,6 +136,7 @@ print_help() {
   echo "  --cli                Launch Clive in the interactive CLI mode (default is TUI)"
   echo "  --exec FILE          Path to bash script to be executed."
   echo "  -h, --help           Display this help screen and exit"
+  echo "  -*                   Pass argument that will be used with init Clive command"
   echo
 }
 
@@ -182,6 +188,9 @@ execute_passed_script() {
 # Run shell with prepared Clive
 run_clive() {
   clive --install-completion >/dev/null 2>&1
+  if [ ${#CLIVE_ARGS[@]} -ne 0 ]; then
+    clive "${CLIVE_ARGS[@]}"
+  fi
   bash
 }
 
@@ -211,10 +220,8 @@ parse_arguments() {
         exit 0
         ;;
       -*)
-        echo "ERROR: '$1' is not a valid option"
-        echo
-        print_help
-        exit 1
+        local arg="${1#-}"
+        add_clive_arg "$arg"
         ;;
       *)
         echo "ERROR: '$1' is not a valid argument"
