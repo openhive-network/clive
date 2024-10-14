@@ -43,6 +43,13 @@ handle_exec_option() {
     add_clive_arg "${FILE_TO_MOUNT_NAME}"
 }
 
+# Helper function for --profile-name argument
+handle_profile_name_option() {
+    local profile_name="$1"
+    add_clive_arg "--profile-name"
+    add_clive_arg "${profile_name}"
+}
+
 # Override parse_args to handle --exec flag specifically for CLI mode
 parse_args() {
     while [ $# -gt 0 ]; do
@@ -53,6 +60,13 @@ parse_args() {
                 ;;
             --exec=*)
                 handle_exec_option "${1#*=}"
+                ;;
+            --profile-name)
+                shift
+                handle_profile_name_option "${1}"
+                ;;
+            --profile-name=*)
+                handle_profile_name_option "${1#*=}"
                 ;;
             *)
             new_args+=("$1")

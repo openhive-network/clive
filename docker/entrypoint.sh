@@ -16,6 +16,11 @@ clean_up() {
   close_beekeeper
 }
 
+# Add Clive argument to the Clive args array
+add_clive_arg() {
+    CLIVE_ARGS+=("$1")
+}
+
 # Start Beekeeper with prepared session token
 start_beekeeper_with_prepared_session_token() {
   echo "Starting beekeeper with prepared session token"
@@ -92,6 +97,12 @@ select_profile(){
   profiles=$(echo "$output" | grep -oP "\[\K[^\]]+")
   IFS=',' read -ra profile_array <<< "$profiles"
 
+  if [[ -n "${SELECTED_PROFILE:-}" ]]; then
+      echo "You have pass profile name ${SELECTED_PROFILE} using '--profile' flag."
+      unlock_wallet
+      return
+  fi
+
   if [ ${#profile_array[@]} -eq 0 ]; then
     echo "There are no profiles."
     how_to_create_profile
@@ -128,9 +139,10 @@ print_help() {
   echo
   echo "An entrypoint script for the Clive Docker container."
   echo "OPTIONS:"
-  echo "  --cli                Launch Clive in the interactive CLI mode (default is TUI)"
-  echo "  --exec FILE          Path to bash script to be executed."
-  echo "  -h, --help           Display this help screen and exit"
+  echo "  --cli                 Launch Clive in the interactive CLI mode (default is TUI)"
+  echo "  --profile-name NAME   Pass argument that will be used with init Clive command."
+  echo "  --exec FILE           Path to bash script to be executed."
+  echo "  -h, --help            Display this help screen and exit"
   echo
 }
 
@@ -182,6 +194,9 @@ execute_passed_script() {
 # Run shell with prepared Clive
 run_clive() {
   clive --install-completion >/dev/null 2>&1
+  if [ ${#CLIVE_ARGS[@]} -ne 0 ]; then
+    clive "${CLIVE_ARGS[@]}"
+  fi
   bash
 }
 
@@ -206,15 +221,18 @@ parse_arguments() {
         FILE_TO_EXECUTE="$1"
         export FILE_TO_EXECUTE
         ;;
+      --profile-name)
+        shift
+        SELECTED_PROFILE="$1"
+        export SELECTED_PROFILE
+        ;;
       -h|--help)
         print_help
         exit 0
         ;;
       -*)
-        echo "ERROR: '$1' is not a valid option"
-        echo
-        print_help
-        exit 1
+        local arg="${1#-}"
+        add_clive_arg "$arg"
         ;;
       *)
         echo "ERROR: '$1' is not a valid argument"
