@@ -121,13 +121,6 @@ class ScreenNotFoundError(ScreenError):
     """Raised when screen is not found."""
 
 
-class FormValidationError(CliveError):
-    def __init__(self, reason: str, *, given_value: str | None = None) -> None:
-        self.reason = reason
-        self.given_value = given_value
-        super().__init__()
-
-
 class CannotUnlockError(CliveError):
     pass
 
