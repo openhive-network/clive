@@ -5,7 +5,11 @@ from urllib.parse import urlparse
 
 from typing_extensions import Self
 
-from clive.exceptions import NodeAddressError
+from clive.exceptions import CliveError
+
+
+class UrlError(CliveError):
+    """Base class for all Url exceptions."""
 
 
 @dataclass(frozen=True)
@@ -25,7 +29,7 @@ class Url:
             parsed_url = urlparse(f"//{url}", scheme=protocol)
 
         if not parsed_url.hostname:
-            raise NodeAddressError("Address was not specified.")
+            raise UrlError("Hostname is not specified.")
 
         return Url(parsed_url.scheme, parsed_url.hostname, parsed_url.port)
 

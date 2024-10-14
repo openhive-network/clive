@@ -128,10 +128,6 @@ class FormValidationError(CliveError):
         super().__init__()
 
 
-class NodeAddressError(FormValidationError):
-    """Base class for all node address exceptions."""
-
-
 class CannotUnlockError(CliveError):
     pass
 
