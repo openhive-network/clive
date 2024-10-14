@@ -12,7 +12,6 @@ from clive.__private.core.url import Url, UrlError
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
-from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 from clive.__private.ui.widgets.section import SectionScrollable
 
@@ -68,7 +67,6 @@ class SetNodeAddressBase(BaseScreen, ABC):
         self.__selected_node.refresh()
 
     @on(NodeSelector.Changed)
-    @on(CliveButton.Pressed, "#save-node-address-button")
     async def save_node_address_with_gui_support(self) -> None:
         try:
             await self._valid_and_save_address()
