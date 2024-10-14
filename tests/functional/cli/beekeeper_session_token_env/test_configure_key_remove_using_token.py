@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 async def test_configure_key_remove_using_beekeeper_session_token(
     cli_tester_with_session_token_unlocked: CLITester,
 ) -> None:
-    """Remove key using CLIVE_BEEKEEPER_SESSION_TOKEN."""
+    """Remove key using CLIVE_BEEKEEPER__SESSION_TOKEN."""
     # ARRANGE
     pk = PrivateKey.create()
     cli_tester_with_session_token_unlocked.configure_key_add(key=pk.value, alias="key")

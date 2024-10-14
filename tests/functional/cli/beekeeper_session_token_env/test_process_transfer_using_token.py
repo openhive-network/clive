@@ -65,7 +65,7 @@ async def test_process_transfer_with_beekeeper_session_token_and_password_both_s
     """
     Check if clive process transfer throws exception.
 
-    When there is password and CLIVE_BEEKEEPER_SESSION_TOKEN set while wallet is locked/unlocked.
+    When there is password and CLIVE_BEEKEEPER__SESSION_TOKEN set while wallet is locked/unlocked.
     """
     # ARRANGE
     cli_tester = cli_tester_with_session_token(unlocked=unlocked)
@@ -88,7 +88,7 @@ async def test_process_transfer_with_beekeeper_session_token_and_password_both_s
 async def test_process_transfer_with_beekeeper_either_session_token_or_password_are_missing(
     cli_tester: CLITester,
 ) -> None:
-    """Check if clive process transfer throws exception when there is not pass or CLIVE_BEEKEEPER_SESSION_TOKEN set."""
+    """Check if clive process transfer throws exception when there is no pass or CLIVE_BEEKEEPER__SESSION_TOKEN set."""
     # ARRANGE
     message = (
         f"{BEEKEEPER_PASSWORD_OR_SESSION_TOKEN_MUST_BE_SET_MESSAGE}"
