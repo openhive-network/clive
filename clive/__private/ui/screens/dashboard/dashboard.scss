@@ -61,6 +61,7 @@ Dashboard {
     width: 3fr;
 
     #account-alarms-and-details {
+      margin-bottom: 1;
       width: 1fr;
       height: auto;
 
@@ -73,6 +74,7 @@ Dashboard {
   ManabarStats {
     layout: grid;
     grid-size: 3 1;
+    margin-bottom: 1;
     margin-left: 2;
     height: 2;
 

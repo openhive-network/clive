@@ -222,7 +222,6 @@ class TrackedAccountInfo(Container, TrackedAccountReferencingWidget):
                 yield button
                 yield RemoveTrackedAccountButton(self._account)
             yield AlarmDisplay(self._account, id_="account-alarms")
-        yield Static()
         yield Label("LAST:")
         yield self.create_dynamic_label(
             lambda: f"History entry: {humanize_datetime(self._account.data.last_history_entry)}",
@@ -244,7 +243,6 @@ class TrackedAccountRow(TrackedAccountReferencingWidget):
             yield TrackedAccountInfo(self._account)
             with Container(id="tables"):
                 yield ManabarStats(self._account)
-                yield Static()
                 yield BalanceStats(self._account)
 
 
