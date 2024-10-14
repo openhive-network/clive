@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from clive.__private.ui.onboarding.form_screen import FormScreen
 from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddressBase
-from clive.__private.ui.screens.form_screen import FormScreen
 
 if TYPE_CHECKING:
     from clive.__private.core.profile import Profile
