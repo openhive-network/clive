@@ -35,13 +35,16 @@ dynaconf = "3.1.11"
 loguru = "0.7.2"
 textual = "0.62.0"
 aiohttp = "3.9.1"
-pydantic = "1.10.18"
 typer = { extras = ["all"], version = "0.9.0" }
 inflection = "0.5.1"
 humanize = "4.6.0"
 
-wax = "0.3.10.dev102+32ca5ac"
+# remember to keep this version adequate to these specified in
+# dependency chain from test-tools to schema/wax
+helpy = "0.0.1.dev256+262b91d"
 schemas = "0.0.1.dev310+c0550c1"
+wax = "0.3.10.dev196+de24f0e"
+
 
 
 [tool.poetry.group.embeddedtestnet.dependencies]
