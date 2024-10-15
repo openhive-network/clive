@@ -207,12 +207,13 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
 
     @on(OneLineButton.Pressed)
     async def push_select_node_address(self) -> None:
+        from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
         from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddress
 
-        if isinstance(self.app.screen, SetNodeAddress):
+        if isinstance(self.app.screen, SwitchNodeAddressDialog | SetNodeAddress):
             return
 
-        await self.app.push_screen(SetNodeAddress())
+        await self.app.push_screen(SwitchNodeAddressDialog())
 
 
 class RightPart(Horizontal):
