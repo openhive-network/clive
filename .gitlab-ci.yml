@@ -349,8 +349,23 @@ build_and_push_clive_stable_image:
 build_and_publish_image:
   stage: build_and_deploy_docker
   extends: .publish_docker_image_template
+  needs:
+    - job: pre_commit_checks
+    - job: prepare_mainnet_hived_image
+      artifacts: true
+    - job: deploy_wheel_to_gitlab
+      artifacts: true
+  when: manual
+
+  variables:
+    GIT_DEPTH: 0
+    BASE_IMAGE: "python:3.10-slim-bookworm"
+
   script:
     - scripts/ci-helpers/build_and_publish_instance.sh
+        --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}"
+        --build-instance-arg="--base-image=${BASE_IMAGE}"
+        --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
 
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
