@@ -49,15 +49,15 @@ class CliveInput(Input):
 
     DEFAULT_REQUIRED_FAILURE_DESCRIPTION: Final[str] = "This field is required"
 
-    @dataclass
-    class Validated(Message):
-        value: str
-        result: ValidationResult | None = None
-
     title: str = var("", init=False)  # type: ignore[assignment]
     required: bool = var(default=False, init=False)  # type: ignore[assignment]
     required_failure_description: str = var(DEFAULT_REQUIRED_FAILURE_DESCRIPTION, init=False)  # type: ignore[assignment]
     always_show_title: bool = var(default=False, init=False)  # type: ignore[assignment]
+
+    @dataclass
+    class Validated(Message):
+        value: str
+        result: ValidationResult | None = None
 
     def __init__(
         self,
@@ -178,37 +178,21 @@ class CliveInput(Input):
             and not self.has_focus
         )
 
-    def _remove_length_validators(self) -> None:
-        for validator in self.validators:
-            if isinstance(validator, validation.Length):
-                self.validators.remove(validator)
+    def _configure(self) -> None:
+        self._update_border_title_with_current_sate()
+        self._update_placeholder_with_current_state()
 
-    def _add_length_validator(self) -> None:
-        self.validators.append(validation.Length(minimum=1, failure_description=self.required_failure_description))
-
-    def _get_required_symbol(self) -> str:
-        return "*" if self.required else ""
-
-    def _get_title_with_required(self) -> str:
-        prefix = self._get_required_symbol()
-        return f"{prefix} {self.title}".strip()
-
-    def _get_modified_placeholder(self) -> str:
-        return f"{self.title} {self._unmodified_placeholder}".strip()
-
-    def _get_placeholder(self) -> str:
-        if self._should_include_title_in_placeholder:
-            return self._get_modified_placeholder()
-        return self._unmodified_placeholder
-
-    def _set_unmodified_placeholder(self, placeholder: str) -> None:
+    def _validate_placeholder(self, placeholder: str) -> str:
         self._unmodified_placeholder = placeholder
-        self.placeholder = self._get_placeholder()
+        return self._determine_placeholder()
 
-    def _determine_border_title(self) -> str:
-        if self.always_show_title or self.value or self.has_focus:
-            return self._get_title_with_required()
-        return self._get_required_symbol()
+    def _watch_required_failure_description(self) -> None:
+        self._remove_length_validators()
+        self._add_length_validator()
+
+    def _watch_always_show_title(self) -> None:
+        self._update_border_title_with_current_sate()
+        self._update_placeholder_with_current_state()
 
     def _watch_title(self) -> None:
         self._update_border_title_with_current_sate()
@@ -224,18 +208,6 @@ class CliveInput(Input):
 
         self._add_length_validator()
 
-    def _validate_placeholder(self, placeholder: str) -> str:
-        self._unmodified_placeholder = placeholder
-        return self._get_placeholder()
-
-    def _watch_required_failure_description(self) -> None:
-        self._remove_length_validators()
-        self._add_length_validator()
-
-    def _watch_always_show_title(self) -> None:
-        self._update_border_title_with_current_sate()
-        self._update_placeholder_with_current_state()
-
     def _watch_value(self, value: str) -> None:
         # value can be set programmatically, so we need to update the border title accordingly
         if self.always_show_title:
@@ -243,16 +215,6 @@ class CliveInput(Input):
 
         self._update_border_title_with_current_sate()
         return super()._watch_value(value)
-
-    def _update_border_title_with_current_sate(self) -> None:
-        self.border_title = self._determine_border_title()
-
-    def _update_placeholder_with_current_state(self) -> None:
-        self.set_reactive(self.__class__.placeholder, self._get_placeholder())
-
-    def _configure(self) -> None:
-        self._update_border_title_with_current_sate()
-        self._update_placeholder_with_current_state()
 
     @on(Focus)
     def _show_border_title(self) -> None:
@@ -278,3 +240,37 @@ class CliveInput(Input):
             self.border_title = self._get_required_symbol()
 
         self._update_placeholder_with_current_state()
+
+    def _remove_length_validators(self) -> None:
+        for validator in self.validators:
+            if isinstance(validator, validation.Length):
+                self.validators.remove(validator)
+
+    def _add_length_validator(self) -> None:
+        self.validators.append(validation.Length(minimum=1, failure_description=self.required_failure_description))
+
+    def _update_border_title_with_current_sate(self) -> None:
+        self.border_title = self._determine_border_title()
+
+    def _update_placeholder_with_current_state(self) -> None:
+        self.set_reactive(self.__class__.placeholder, self._determine_placeholder())
+
+    def _determine_placeholder(self) -> str:
+        if self._should_include_title_in_placeholder:
+            return self._get_modified_placeholder()
+        return self._unmodified_placeholder
+
+    def _determine_border_title(self) -> str:
+        if self.always_show_title or self.value or self.has_focus:
+            return self._get_title_with_required()
+        return self._get_required_symbol()
+
+    def _get_modified_placeholder(self) -> str:
+        return f"{self.title} {self._unmodified_placeholder}".strip()
+
+    def _get_required_symbol(self) -> str:
+        return "*" if self.required else ""
+
+    def _get_title_with_required(self) -> str:
+        prefix = self._get_required_symbol()
+        return f"{prefix} {self.title}".strip()
