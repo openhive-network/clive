@@ -211,11 +211,11 @@ class CliveInput(Input):
         return self._get_required_symbol()
 
     def _watch_title(self) -> None:
-        self._change_border_title()
+        self._update_border_title_with_current_sate()
         self._update_placeholder_with_current_state()
 
     def _watch_required(self, required: bool) -> None:  # noqa: FBT001
-        self._change_border_title()
+        self._update_border_title_with_current_sate()
         self._remove_length_validators()
 
         if not required:
@@ -233,7 +233,7 @@ class CliveInput(Input):
         self._add_length_validator()
 
     def _watch_always_show_title(self) -> None:
-        self._change_border_title()
+        self._update_border_title_with_current_sate()
         self._update_placeholder_with_current_state()
 
     def _watch_value(self, value: str) -> None:
@@ -241,17 +241,17 @@ class CliveInput(Input):
         if self.always_show_title:
             return super()._watch_value(value)
 
-        self._change_border_title()
+        self._update_border_title_with_current_sate()
         return super()._watch_value(value)
 
-    def _change_border_title(self) -> None:
+    def _update_border_title_with_current_sate(self) -> None:
         self.border_title = self._determine_border_title()
 
     def _update_placeholder_with_current_state(self) -> None:
         self.set_reactive(self.__class__.placeholder, self._get_placeholder())
 
     def _configure(self) -> None:
-        self.border_title = self._determine_border_title()
+        self._update_border_title_with_current_sate()
         self._update_placeholder_with_current_state()
 
     @on(Focus)
