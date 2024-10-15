@@ -47,11 +47,21 @@ class SelectedNodeAddress(Static):
         return f"Selected node address: {self.node_address}"
 
 
-class NodesList(Container):
+class NodesList(Container, CliveWidget):
+    def __init__(self, node: Node) -> None:
+        super().__init__()
+        self._node = node
+
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
         with self.prevent(NodeSelector.Changed):
             yield NodeSelector()
+
+    async def save_selected_node_address(self) -> None:
+        address = self.query_exactly_one(NodeSelector).value_ensure
+        await self._node.set_address(address)
+        self.app.trigger_node_watchers()
+        self.notify(f"Node address set to `{self._node.address}`.")
 
 
 class SetNodeAddressBase(BaseScreen, ABC):
@@ -65,15 +75,12 @@ class SetNodeAddressBase(BaseScreen, ABC):
         # Section is focusable bcs it's not possible to use scrolling via keyboard when Select is focused
         with SectionScrollable("Set node address", focusable=True):
             yield SelectedNodeAddress(self._node.address)
-            yield NodesList()
+            yield NodesList(self._node)
 
     @on(NodeSelector.Changed)
     async def save_selected_node_address(self) -> None:
-        address = self.query_exactly_one(NodeSelector).value_ensure
-        await self._node.set_address(address)
-        self.app.trigger_node_watchers()
-        self.query_exactly_one(SelectedNodeAddress).node_address = address
-        self.notify(f"Node address set to `{self._node.address}`.")
+        self.query_exactly_one(SelectedNodeAddress).node_address = self.query_exactly_one(NodeSelector).value_ensure
+        await self.query_exactly_one(NodesList).save_selected_node_address()
 
     def get_node(self) -> Node:
         """Override this method if widget should operate on node other than node from the world."""

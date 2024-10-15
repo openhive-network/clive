@@ -176,6 +176,9 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
 
 
 class NodeStatus(DynamicOneLineButtonUnfocusable):
+    class ChangeNodeAddress(Message):
+        """Posted when the user wants to change the node address."""
+
     def __init__(self) -> None:
         super().__init__(
             obj_to_watch=self.world,
@@ -183,13 +186,9 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
             callback=self._update_node_status,
             first_try_callback=lambda: self.node.cached.is_online_status_known,
         )
+        self.tooltip = "Switch node address"
 
     def _update_node_status(self, node: Node) -> str:
-        if self.world.is_in_onboarding_mode:
-            self.tooltip = None
-        else:
-            self._widget.tooltip = "Switch node address"
-
         if not node.cached.online_or_none:
             self._widget.variant = "error-on-transparent"
             return "offline"
@@ -198,13 +197,14 @@ class NodeStatus(DynamicOneLineButtonUnfocusable):
         return "online"
 
     @on(OneLineButton.Pressed)
-    async def push_select_node_address(self) -> None:
+    async def post_message_to_change_node_address(self) -> None:
+        from clive.__private.ui.dialogs.switch_node_address_dialog import SwitchNodeAddressDialog
         from clive.__private.ui.screens.config.set_node_address.set_node_address import SetNodeAddress
 
-        if isinstance(self.app.screen, SetNodeAddress) or self.world.is_in_onboarding_mode:
+        if isinstance(self.app.screen, SwitchNodeAddressDialog | SetNodeAddress):
             return
 
-        await self.app.push_screen(SetNodeAddress())
+        self.screen.post_message(self.ChangeNodeAddress())
 
 
 class RightPart(Horizontal):

@@ -21,6 +21,8 @@ from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHin
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.node import Node
+
 
 class WorkingAccountCheckbox(Checkbox):
     def __init__(self) -> None:
@@ -83,6 +85,9 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
             self.context.profile.accounts.set_working_account(account_name)
         else:
             self.context.profile.accounts.watched.add(account_name)
+
+    def get_node(self) -> Node:
+        return self.context.node
 
     @on(WorkingAccountCheckbox.Changed)
     def _change_finish_screen_status(self, event: WorkingAccountCheckbox.Changed) -> None:
