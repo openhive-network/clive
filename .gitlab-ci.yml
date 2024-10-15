@@ -39,7 +39,7 @@ variables:
 
 include:
   - project: 'hive/hive'
-    ref: 8039e32fb584fbf06f4bd0bf5eae3a7b360dae1b
+    ref: a3e53c6150c0d7fd412c4f5be2705d7d98b73a1a
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
     ref: d4e29410ea168096e1a822f77c7ce741d9cfb57a

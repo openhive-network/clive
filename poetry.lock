@@ -173,6 +173,24 @@ tests = ["attrs[tests-no-zope]", "zope-interface"]
 tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
+name = "beekeepy"
+version = "0.0.1.dev256+262b91d"
+description = "All in one package for beekeeper interaction via Python interface."
+optional = false
+python-versions = ">=3.10,<4.0"
+files = [
+    {file = "beekeepy-0.0.1.dev256+262b91d-py3-none-any.whl", hash = "sha256:be43316469750504ce393f8af8b8f1a424fdb34ee217b7067e6a8d8bfe663e63"},
+]
+
+[package.dependencies]
+helpy = "0.0.1.dev256+262b91d"
+
+[package.source]
+type = "legacy"
+url = "https://gitlab.syncad.com/api/v4/projects/434/packages/pypi/simple"
+reference = "gitlab-helpy"
+
+[[package]]
 name = "certifi"
 version = "2023.11.17"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -420,23 +438,22 @@ hyperframe = ">=6.0,<7"
 
 [[package]]
 name = "helpy"
-version = "0.0.1.dev212+8871fe7"
+version = "0.0.1.dev256+262b91d"
 description = "Easily interact with the Hive blockchain using Python."
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "helpy-0.0.1.dev212+8871fe7-py3-none-any.whl", hash = "sha256:50fa01ffc7c3e92773011570b89de3c93bd513ad101bcb39961b0a4f2c9a0da9"},
+    {file = "helpy-0.0.1.dev256+262b91d-py3-none-any.whl", hash = "sha256:d6515d1082fbc9ce974ac6ae4d80a07c9a0f12eb8c8b7025e9884c19398c435a"},
 ]
 
 [package.dependencies]
 aiohttp = "3.9.1"
 httpx = {version = "0.23.3", extras = ["http2"]}
 loguru = "0.7.2"
-pytest-is-running = "1.5.0"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
 schemas = "0.0.1.dev310+c0550c1"
-wax = "0.3.10.dev102+32ca5ac"
+wax = "0.3.10.dev196+de24f0e"
 
 [package.source]
 type = "legacy"
@@ -1083,17 +1100,6 @@ docs = ["sphinx (>=5.3)", "sphinx-rtd-theme (>=1.0)"]
 testing = ["coverage (>=6.2)", "flaky (>=3.5.0)", "hypothesis (>=5.7.1)", "mypy (>=0.931)", "pytest-trio (>=0.7.0)"]
 
 [[package]]
-name = "pytest-is-running"
-version = "1.5.0"
-description = "pytest plugin providing a function to check if pytest is running."
-optional = false
-python-versions = ">=3.8"
-files = [
-    {file = "pytest_is_running-1.5.0-py3-none-any.whl", hash = "sha256:2bba7f7f4343bf8fbd5eb7ebb895ab21083b2779b89475211deba2d9bfa40f49"},
-    {file = "pytest_is_running-1.5.0.tar.gz", hash = "sha256:dc227f6d33f76c003c2e5b408734fb2cae02dbd627a1018f78d6196a796943e2"},
-]
-
-[[package]]
 name = "pytest-timeout"
 version = "2.3.1"
 description = "pytest plugin to abort hanging tests"
@@ -1362,7 +1368,7 @@ develop = false
 
 [package.dependencies]
 abstractcp = "0.9.9"
-helpy = "0.0.1.dev212+8871fe7"
+beekeepy = "0.0.1.dev256+262b91d"
 loguru = "0.7.2"
 python-dateutil = "2.8.2"
 requests = "2.27.1"
@@ -1518,12 +1524,12 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 
 [[package]]
 name = "wax"
-version = "0.3.10.dev102+32ca5ac"
+version = "0.3.10.dev196+de24f0e"
 description = ""
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "wax-0.3.10.dev102+32ca5ac-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:6a3d8d3625d7c34dd7c906ba62dfa83850c895a1d9ce85d662df58f35bd78309"},
+    {file = "wax-0.3.10.dev196+de24f0e-cp310-cp310-manylinux_2_35_x86_64.whl", hash = "sha256:1cb6c7b6b230c7cb0893bee675ed850653df58b8016e79d58989a7fa7bfbda19"},
 ]
 
 [package.dependencies]
@@ -1654,4 +1660,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "d6d5754b63688c7bf468fc03ca046f5d5b2db302595b72510816ef5f6d71df3f"
+content-hash = "9ef186228d7c3d887ddc0e0b1fc99096d62d7445d0c07aa134d23901f843b50c"
