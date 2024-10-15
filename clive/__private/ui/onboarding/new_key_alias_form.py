@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import ClassVar
+from typing import TYPE_CHECKING, ClassVar
 
 from textual import on
 
@@ -11,6 +11,9 @@ from clive.__private.ui.onboarding.navigation_buttons import NextScreenButton, P
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
+
+if TYPE_CHECKING:
+    from clive.__private.core.node import Node
 
 
 class NewKeyAliasForm(NewKeyAliasBase[OnboardingContext], FormScreen[OnboardingContext]):
@@ -51,3 +54,6 @@ class NewKeyAliasForm(NewKeyAliasBase[OnboardingContext], FormScreen[OnboardingC
     async def apply(self) -> None:
         self.context.profile.keys.set_to_import([self._private_key_aliased])
         logger.debug("New private key is waiting to be imported...")
+
+    def get_node(self) -> Node:
+        return self.context.node
