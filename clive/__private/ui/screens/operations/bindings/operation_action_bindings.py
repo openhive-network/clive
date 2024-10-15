@@ -237,10 +237,13 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         True if the operation was added to the cart successfully, False otherwise.
         """
         if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES:
-            operation = self.create_operation()
-            if operation is not None and operation in self.profile.cart:
-                self.notify("Operation already in the cart", severity="error")
-                return False
+            operations = self.ensure_operations_list()
+            assert operations, "when calling '_add_to_cart', operations must not be empty"
+
+            for operation in operations:
+                if operation in self.profile.cart:
+                    self.notify("Operation already in the cart", severity="error")
+                    return False
 
         operations = self.ensure_operations_list()
         self.profile.cart.extend(operations)
