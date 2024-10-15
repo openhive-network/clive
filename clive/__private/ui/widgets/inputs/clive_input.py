@@ -121,7 +121,7 @@ class CliveInput(Input):
             disabled=disabled,
         )
         self.required = required
-        self.always_show_title = always_show_title
+        self.set_reactive(self.__class__.always_show_title, always_show_title)  # type: ignore[arg-type]
         self._unmodified_placeholder = placeholder
 
         self._configure()
@@ -139,11 +139,11 @@ class CliveInput(Input):
                 self.validators.remove(validator)
 
     def _watch_title(self) -> None:
-        self._change_border_title()
+        self._update_border_title_with_current_state()
         self._update_placeholder_with_current_state()
 
     def _watch_required(self, required: bool) -> None:  # noqa: FBT001
-        self._change_border_title()
+        self._update_border_title_with_current_state()
         self._remove_length_validators()
 
         if not required:
@@ -164,9 +164,9 @@ class CliveInput(Input):
         self.validators.append(validation.Length(minimum=1, failure_description=self.required_failure_description))
 
     def _watch_always_show_title(self) -> None:
-        self._change_border_title()
+        self._update_border_title_with_current_state()
 
-    def _change_border_title(self) -> None:
+    def _update_border_title_with_current_state(self) -> None:
         self.border_title = self._determine_border_title()
 
     def validate(self, value: str, *, treat_as_required: bool = False) -> ValidationResult | None:
