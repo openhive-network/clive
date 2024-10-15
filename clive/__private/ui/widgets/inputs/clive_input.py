@@ -109,7 +109,7 @@ class CliveInput(Input):
             classes=classes,
             disabled=disabled,
         )
-        self.required = required
+        self.set_reactive(self.__class__.required, required)  # type: ignore[arg-type]
         self.set_reactive(self.__class__.always_show_title, always_show_title)  # type: ignore[arg-type]
         self.set_reactive(self.__class__.title, title)  # type: ignore[arg-type]
         self._include_title_in_placeholder_when_blurred = include_title_in_placeholder_when_blurred
@@ -170,6 +170,9 @@ class CliveInput(Input):
         )
 
     def _configure(self) -> None:
+        if self.required:
+            self._add_length_validator()
+
         self._update_border_title_with_current_sate()
         self._update_placeholder_with_current_state()
 
