@@ -193,9 +193,10 @@ class TransactionSummary(BaseScreen):
         yield TransactionMetadataContainer(self.transaction)
 
         notice = Notice(
-            "If you leave screen or edit the transaction, the signatures will be lost and transaction metadata "
-            "recalculated."
+            "If you leave this screen or edit this transaction, the signatures \nwill be lost and the transaction "
+            "metadata will be recalculated."
         )
+        notice.shrink = True
         notice.display = self._should_display_warning_notice
         yield notice
         with Horizontal(id="actions-container"):
@@ -211,7 +212,9 @@ class TransactionSummary(BaseScreen):
 
     @on(ButtonOpenTransactionFromFile.Pressed)
     def action_load_transaction_from_file(self) -> None:
-        notify_text = "Loading transaction from file will clear current cart content." if self.profile.cart else None
+        notify_text = (
+            "Loading a transaction from file will \nclear the current cart contents." if self.profile.cart else None
+        )
         self.app.push_screen(SelectFile(notice=notify_text), self._load_transaction_from_file)
 
     @on(ButtonBroadcast.Pressed)
