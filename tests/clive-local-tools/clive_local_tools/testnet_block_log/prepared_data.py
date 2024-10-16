@@ -12,7 +12,7 @@ def get_alternate_chain_spec_path() -> Path:
 
 
 def get_block_log() -> BlockLog:
-    path = Path(__file__).parent.absolute() / "blockchain" / "block_log"
+    path = Path(__file__).parent.absolute() / "blockchain"
     return BlockLog(path)
 
 
