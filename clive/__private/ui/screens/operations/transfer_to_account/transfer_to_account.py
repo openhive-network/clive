@@ -59,6 +59,14 @@ class TransferToAccount(OperationBaseScreen, OperationActionBindings):
             yield self._amount_input
             yield self._memo_input
 
+    def _check_is_known_exchange_in_input(self) -> bool:
+        """
+        Return False, as the transfer screen doesn't support a confirmation mechanism when a known exchange is detected.
+
+        This is because the transfer is the only operation that should be sent to a known exchange.
+        """
+        return False
+
     def _create_operation(self) -> TransferOperation | None:
         # So all inputs are validated together, and not one by one.
         if not CliveValidatedInput.validate_many(self._to_input, self._amount_input, self._memo_input):
