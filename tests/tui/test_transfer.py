@@ -21,6 +21,7 @@ from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
     focus_next,
     press_and_wait_for_screen,
+    press_binding,
     write_text,
 )
 from clive_local_tools.tui.unlock import unlock
@@ -158,16 +159,19 @@ async def test_transfers_finalize_cart(
     # Choose transfer operation
     await press_and_wait_for_screen(pilot, "f2", Operations)
     await focus_next(pilot)
+    await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
 
     for i in range(TRANSFERS_COUNT):
         # Fill transfer data
-        await press_and_wait_for_screen(pilot, "enter", TransferToAccount)
         await fill_transfer_data(pilot, RECEIVER, TRANSFERS_DATA[i][0], TRANSFERS_DATA[i][1])
         log_current_view(pilot.app, nodes=True)
 
-        await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
+        await press_binding(pilot, "f2", "Add to cart")
+        await focus_next(pilot)  # focus on add to cart button
+        await focus_next(pilot)  # focus on receiver input
         log_current_view(pilot.app)
 
+    await press_and_wait_for_screen(pilot, "escape", Operations)
     await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
     await broadcast_transaction(pilot, unlocked=unlocked, password=PASS)
 

@@ -21,6 +21,7 @@ from clive.__private.ui.screens.operations.savings_operations.savings_operations
     Savings,
 )
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
+from clive.__private.ui.widgets.clive_basic import CliveRadioButton
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
@@ -42,6 +43,7 @@ from clive_local_tools.tui.process_operation import process_operation
 from clive_local_tools.tui.textual_helpers import (
     focus_next,
     press_and_wait_for_screen,
+    press_binding,
     write_text,
 )
 from clive_local_tools.tui.utils import log_current_view
@@ -58,6 +60,11 @@ PASS: Final[str] = WORKING_ACCOUNT_DATA.account.name
 OTHER_RECEIVER: Final[str] = WATCHED_ACCOUNTS_DATA[0].account.name
 
 
+def is_to_savings_radio_button_checked(pilot: ClivePilot) -> bool:
+    radio_buttons = pilot.app.query_one(CliveRadioButton)
+    return radio_buttons.value
+
+
 async def fill_savings_data(
     pilot: ClivePilot,
     operation_type: type[TransferFromSavingsOperation | TransferToSavingsOperation],
@@ -71,9 +78,9 @@ async def fill_savings_data(
     asset_token: LiquidAssetToken = asset.token()  # type: ignore[assignment]
     await focus_next(pilot)  # Go to choose operation type
     assert_is_focused(pilot, RadioSet)
-    if operation_type is TransferFromSavingsOperation:
-        await pilot.press("right", "space")  # Mark 'transfer from savings'
-    await focus_next(pilot)  # Go to choose beneficient account
+    if (operation_type is TransferToSavingsOperation) != is_to_savings_radio_button_checked(pilot):
+        await pilot.press("right", "space")  # Mark the other option
+    await focus_next(pilot)  # Go to choose beneficent account
     assert_is_clive_composed_input_focused(pilot, AccountNameInput)
     if other_account is not None:
         # clear currently introduced account name and input other_account
@@ -235,20 +242,21 @@ async def test_savings_finalize_cart(
     # ACT
     ### Create transfers
     # Choose savings operation
+    await go_to_savings(pilot)
+    await pilot.press("right")
+
     for i in range(TRANSFERS_COUNT):
         # Fill transfer savings data
-        await go_to_savings(pilot)
-        await pilot.press("right")
         log_current_view(pilot.app, nodes=True, source=f"before fill_savings_data({i})")
         await fill_savings_data(pilot, operation_type, other_account, TRANSFERS_DATA[i][0], TRANSFERS_DATA[i][1])
         log_current_view(pilot.app, nodes=True, source=f"after fill_savings_data({i})")
 
-        await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
-        await press_and_wait_for_screen(pilot, "escape", Dashboard)
-        assert_is_dashboard(pilot, unlocked=True)
+        await focus_next(pilot)  # focus add to cart button
+        await press_binding(pilot, "f2", "Add to cart")
+        await focus_next(pilot)  # focus transfer tab pane
         log_current_view(pilot.app)
 
-    await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
+    await press_and_wait_for_screen(pilot, "escape", Operations)
     await press_and_wait_for_screen(pilot, "f2", TransactionSummary)  # Go to transaction summary
     await broadcast_transaction(pilot)
 
@@ -301,8 +309,7 @@ async def test_canceling_transfer_from_savings(
         await go_to_savings(pilot)
         await focus_next(pilot)
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
-        await press_and_wait_for_screen(pilot, "f2", Savings)  # add to cart
-        await press_and_wait_for_screen(pilot, "f2", TransactionSummary)
+        await press_and_wait_for_screen(pilot, "f6", TransactionSummary)  # Finalize transaction
         await broadcast_transaction(pilot)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
