@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import warnings
 from pathlib import Path
 from types import NoneType, UnionType
 from typing import TYPE_CHECKING, get_args
@@ -39,7 +40,7 @@ class BeekeeperConfig(CliveBaseModel):
     webserver_unix_endpoint: Url | None = None
     webserver_ws_endpoint: Url | None = None
     webserver_ws_deflate: int = 0
-    webserver_thread_pool_size: int = 1
+    webserver_thread_pool_size: int = BeekeeperDefaults.DEFAULT_WEBSERVER_THREAD_POOL_SIZE
     notifications_endpoint: Url | None = BeekeeperDefaults.DEFAULT_NOTIFICATIONS_ENDPOINT
     backtrace: str = BeekeeperDefaults.DEFAULT_BACKTRACE
     plugin: list[str] = Field(default_factory=lambda: ["json_rpc", "webserver"])
@@ -67,7 +68,8 @@ class BeekeeperConfig(CliveBaseModel):
         result = BeekeeperConfig()
         fields = BeekeeperConfig.__fields__
         with source.open("rt", encoding="utf-8") as in_file:
-            for line in in_file:
+            for line_from_file in in_file:
+                line = cls.__handle_workaround_for_wallet_dir_default_config_value(line_from_file)
                 if (line := line.strip("\n")) and not line.startswith("#"):
                     config_name, config_value = line.split("=")
                     member_name = cls.__convert_config_name_to_member_name(config_name)
@@ -80,6 +82,21 @@ class BeekeeperConfig(CliveBaseModel):
                         cls.__convert_config_value_to_member_value(config_value, expected=member_type),
                     )
         return result
+
+    @classmethod
+    def __handle_workaround_for_wallet_dir_default_config_value(cls, line: str) -> str:
+        """
+        Workaround function.
+
+        This workaround is because in new version of config all default fields are commented
+        and instead of loading "." as default, value that is loaded is return from _wallet_dir_default
+        function, which is different than "." value.
+        """
+        commented_wallet_dir_entry = "# wallet-dir = .\n"
+        if line == commented_wallet_dir_entry is not None:
+            warnings.warn("__handle_workaround_for_wallet_dir_default_config_value applied!", stacklevel=1)
+            return line.strip("# ")
+        return line
 
     @classmethod
     def __convert_member_name_to_config_name(cls, member_name: str) -> str:
