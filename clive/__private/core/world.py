@@ -131,14 +131,14 @@ class World:
         self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
         self._persistent_storage_service = PersistentStorageService(self.beekeeper)
         self._profile = await self._create_or_load_profile()
-        if not self._profile.is_newly_created:
-            await self._commands.sync_state_with_beekeeper()
+        await self._commands.sync_state_with_beekeeper()
         self._node = Node(self._profile)
         await self._node.setup()
         return self
 
     async def save_profile_of_world(self) -> None:
-        if self._profile is not None:
+        if self._app_state.is_unlocked:
+            assert self._profile is not None, "profile must be created when entering world context manager"
             await self.persistent_storage_service.save_profile(self._profile)
 
     async def close(self) -> None:

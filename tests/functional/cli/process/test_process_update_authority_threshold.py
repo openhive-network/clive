@@ -6,7 +6,7 @@ import pytest
 
 from clive.__private.cli.types import AuthorityType
 from clive_local_tools.cli.checkers import assert_weight_threshold
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 
 if TYPE_CHECKING:
     from clive_local_tools.cli.cli_tester import CLITester
@@ -18,9 +18,7 @@ async def test_set_threshold(cli_tester: CLITester, authority: AuthorityType) ->
     weight_threshold = 3
 
     # ACT
-    cli_tester.process_update_authority(
-        authority, password=WORKING_ACCOUNT_PASSWORD, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold
-    ).fire()
+    cli_tester.process_update_authority(authority, sign=WORKING_ACCOUNT_KEY_ALIAS, threshold=weight_threshold).fire()
 
     # ASSERT
     assert_weight_threshold(cli_tester, authority, weight_threshold)

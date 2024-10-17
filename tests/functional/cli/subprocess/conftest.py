@@ -3,9 +3,12 @@ from __future__ import annotations
 import pytest
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
+from clive.__private.storage.service import PersistentStorageService
 from clive_local_tools.data.constants import (
     ALT_WORKING_ACCOUNT1_KEY_ALIAS,
     ALT_WORKING_ACCOUNT1_PASSWORD,
@@ -20,21 +23,29 @@ from clive_local_tools.testnet_block_log import (
 
 
 @pytest.fixture
-async def prepare_profile_without_working_account(prepare_profile: Profile) -> Profile:
-    prepare_profile.accounts.unset_working_account()
-    prepare_profile.save()
-    return prepare_profile
+async def prepare_profile_and_wallet_without_working_account(
+    prepare_profile_and_wallet: Profile, beekeeper_unlocked: Beekeeper
+) -> Profile:
+    prepare_profile_and_wallet.accounts.unset_working_account()
+    await PersistentStorageService(beekeeper_unlocked).save_profile(prepare_profile_and_wallet)
+    return prepare_profile_and_wallet
 
 
 @pytest.fixture
 async def alt_prepare_profile() -> Profile:
-    profile = Profile(
-        ALT_WORKING_ACCOUNT1_NAME,
-        working_account=WorkingAccount(name=ALT_WORKING_ACCOUNT1_NAME),
-        watched_accounts=[WatchedAccount(name) for name in WATCHED_ACCOUNTS_NAMES],
-    )
-    profile.save()
-    return profile
+    async with Beekeeper() as beekeeper_cm:
+        profile = Profile(
+            ALT_WORKING_ACCOUNT1_NAME,
+            working_account=WorkingAccount(name=ALT_WORKING_ACCOUNT1_NAME),
+            watched_accounts=[WatchedAccount(name) for name in WATCHED_ACCOUNTS_NAMES],
+        )
+        await CreateProfileEncryptionWallet(
+            beekeeper=beekeeper_cm,
+            profile_name=profile.name,
+            password=ALT_WORKING_ACCOUNT1_PASSWORD,
+        ).execute_with_result()
+        await PersistentStorageService(beekeeper_cm).save_profile(profile)
+        return profile
 
 
 @pytest.fixture
