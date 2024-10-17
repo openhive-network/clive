@@ -113,7 +113,9 @@ configure_docker_volumes() {
 
 # Function to clean up (stop container) on exit signals
 cleanup() {
+    echo "Stopping container ${CONTAINER_NAME}...."
     docker stop "$CONTAINER_NAME"
+    echo "Cleanup actions done."
 }
 trap cleanup HUP INT QUIT TERM
 
