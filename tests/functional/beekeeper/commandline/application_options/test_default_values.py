@@ -1,11 +1,15 @@
 from __future__ import annotations
 
+import test_tools as tt
+
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.beekeeper.config import BeekeeperConfig, webserver_default
 from clive.__private.core.beekeeper.defaults import BeekeeperDefaults
 
 
 def check_default_values_from_config(default_config: BeekeeperConfig) -> None:
+    tt.logger.info(f"default_config.wallet_dir={default_config.wallet_dir.resolve().as_posix()}")
+    tt.logger.info(f"BeekeeperDefaults.DEFAULT_WALLET_DIR={BeekeeperDefaults.DEFAULT_WALLET_DIR.resolve().as_posix()}")
     assert default_config.wallet_dir.resolve() == BeekeeperDefaults.DEFAULT_WALLET_DIR.resolve()
     assert default_config.unlock_timeout == BeekeeperDefaults.DEFAULT_UNLOCK_TIMEOUT
     assert default_config.unlock_interval == BeekeeperDefaults.DEFAULT_UNLOCK_INTERVAL
@@ -20,7 +24,9 @@ def check_default_values_from_config(default_config: BeekeeperConfig) -> None:
 async def test_default_values() -> None:
     """Test will check default values of Beekeeper."""
     # ARRANGE & ACT
-    default_config = Beekeeper().generate_beekeepers_default_config()
+    default_config = Beekeeper().generate_beekeepers_default_config(
+        copy_config_to=tt.context.get_current_directory() / "config_generated.ini"
+    )
 
     # ASSERT
     check_default_values_from_config(default_config)
