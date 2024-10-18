@@ -7,11 +7,14 @@ import pytest
 import test_tools as tt
 
 from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
+from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.constants.setting_identifiers import SECRETS_NODE_ADDRESS
 from clive.__private.core.keys.keys import PrivateKeyAliased
 from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
+from clive.__private.storage.service import PersistentStorageService
 from clive.__private.ui.app import Clive
 from clive.__private.ui.screens.dashboard import DashboardLocked, DashboardUnlocked
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
@@ -36,13 +39,19 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 async def prepare_profile() -> Profile:
-    profile = Profile(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
-    )
-    profile.save()
-    return profile
+    async with Beekeeper() as beekeeper_cm:
+        profile = Profile(
+            WORKING_ACCOUNT_DATA.account.name,
+            working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+            watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],
+        )
+        await CreateProfileEncryptionWallet(
+            beekeeper=beekeeper_cm,
+            profile_name=profile.name,
+            password=WORKING_ACCOUNT_PASSWORD,
+        ).execute_with_result()
+        await PersistentStorageService(beekeeper_cm).save_profile(profile)
+        return profile
 
 
 @pytest.fixture

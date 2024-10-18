@@ -4,7 +4,12 @@ import os
 import subprocess
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.setting_identifiers import DATA_PATH, SECRETS_NODE_ADDRESS
+from clive.__private.core.constants.setting_identifiers import (
+    BEEKEEPER_REMOTE_ADDRESS,
+    BEEKEEPER_SESSION_TOKEN,
+    DATA_PATH,
+    SECRETS_NODE_ADDRESS,
+)
 from clive.__private.settings import clive_prefixed_envvar, safe_settings
 from clive_local_tools.helpers import get_transaction_id_from_output
 
@@ -22,6 +27,10 @@ def run_clive_in_subprocess(command: list[str]) -> str:
     secret_node_address = safe_settings.secrets.node_address
     assert secret_node_address is not None, "Secrets node address is not set"
     env[clive_prefixed_envvar(SECRETS_NODE_ADDRESS)] = str(secret_node_address)
+
+    # pass beekeeper address and token to subprocess
+    env[clive_prefixed_envvar(BEEKEEPER_REMOTE_ADDRESS)] = str(safe_settings.beekeeper.remote_address)
+    env[clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)] = str(safe_settings.beekeeper.session_token)
 
     try:
         completed_process = subprocess.run(
