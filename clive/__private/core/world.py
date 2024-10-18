@@ -15,6 +15,7 @@ from clive.__private.core.communication import Communication
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
+from clive.__private.logger import logger
 from clive.__private.storage.service import PersistentStorageService, ProfileDoesNotExistsError
 from clive.__private.ui.manual_reactive import ManualReactive
 from clive.__private.ui.onboarding.onboarding import Onboarding
@@ -127,11 +128,18 @@ class World:
     async def setup(self) -> Self:
         self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
         self._persistent_storage_service = PersistentStorageService(self.beekeeper)
-        self._profile = await self._load_profile()
+        try:
+            profile = await self._load_profile()
+            await self.set_profile(profile)
+        except (BeekeeperNotUnlockedError, ProfileDoesNotExistsError):
+            logger.warning("Clive is starting without profile")
+        return self
+
+    async def set_profile(self, profile: Profile) -> None:
+        self._profile = profile
         await self._commands.sync_state_with_beekeeper()
         self._node = Node(self._profile)
         await self._node.setup()
-        return self
 
     async def save_profile_of_world(self) -> None:
         await self.persistent_storage_service.save_profile(self.profile)

@@ -12,7 +12,7 @@ from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 from clive.__private.before_launch import prepare_before_launch
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
-from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
+from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.import_key import ImportKey
 from clive.__private.core.constants.setting_identifiers import DATA_PATH, LOG_PATH, NODE_CHAIN_ID
@@ -87,9 +87,9 @@ def working_account_private_key() -> PrivateKeyAliased:
 
 
 @pytest.fixture
-async def world(wallet_name: str) -> AsyncIterator[World]:
-    async with World(profile_name=wallet_name) as world:
-        yield world
+async def world() -> AsyncIterator[World]:
+    async with World() as world_cm:
+        yield world_cm
 
 
 @pytest.fixture
@@ -127,9 +127,6 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
             for i in range(count)
         ]
         for wallet in wallets:
-            await CreateProfileEncryptionWallet(
-                beekeeper=world.beekeeper, profile_name=world.profile.name, password=wallet.password
-            ).execute()
             await CreateWallet(
                 app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet.name, password=wallet.password
             ).execute()
