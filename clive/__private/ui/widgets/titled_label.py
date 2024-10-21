@@ -72,4 +72,4 @@ class TitledLabel(CliveWidget):
         yield self._value_label
 
     def _formatted_value(self) -> str:
-        return f" {self._value}"
+        return f"{self._value}"
