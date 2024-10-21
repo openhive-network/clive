@@ -47,6 +47,10 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
             )
         except CliveValidatedInputError:
             return self.ValidationFail()
+
+        if self._profile_name_input.value_or_error in self.profile.list_profiles():
+            return self.ValidationFail("Profile with this name already exists.")
+
         return None
 
     async def apply(self) -> None:
