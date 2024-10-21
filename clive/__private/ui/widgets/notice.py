@@ -25,8 +25,13 @@ class Notice(TitledLabel):
     Notice {
         color: $text;
         align: center middle;
-        height: 1;
+        height: auto;
         width: 1fr;
+        padding: 0 1;
+
+        #value {
+            width: 1fr;
+        }
 
         &.-default {
             background: $warning;
@@ -49,6 +54,7 @@ class Notice(TitledLabel):
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
         variant: NoticeVariant = "default",
+        shrink: bool = True,
     ) -> None:
         super().__init__(
             "[bold]Notice[/bold]",
@@ -58,6 +64,7 @@ class Notice(TitledLabel):
             callback=callback,
             first_try_callback=first_try_callback,
             init=init,
+            shrink=shrink,
         )
         self.variant = variant
 

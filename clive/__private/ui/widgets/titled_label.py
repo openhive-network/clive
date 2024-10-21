@@ -44,6 +44,7 @@ class TitledLabel(CliveWidget):
         first_try_callback: DynamicWidgetFirstTryCallbackType = lambda: True,
         init: bool = True,
         id_: str | None = None,
+        shrink: bool = False,
     ) -> None:
         super().__init__(id=id_)
         self.title = title
@@ -58,9 +59,10 @@ class TitledLabel(CliveWidget):
                 first_try_callback=first_try_callback,
                 init=init,
                 id_="value",
+                shrink=shrink,
             )
             if obj_to_watch and attribute_name and callback
-            else Label(self._formatted_value(), id="value")
+            else Label(self._formatted_value(), id="value", shrink=shrink)
         )
 
     @property
