@@ -106,6 +106,7 @@ class PersistentStorageService:
         profile_name_ = profile_name if profile_name is not None else self.get_default_profile_name()
         self._raise_if_profile_not_stored(profile_name_)
         profile_storage_model = self._find_profile_storage_model_by_name(profile_name_)
+
         return StorageToRuntimeConverter(profile_storage_model).create_profile()
 
     def remove_profile(self, profile_name: str) -> None:

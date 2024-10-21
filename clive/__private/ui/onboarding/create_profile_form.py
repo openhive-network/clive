@@ -47,6 +47,7 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
             )
         except CliveValidatedInputError:
             return self.ValidationFail()
+
         return None
 
     async def apply(self) -> None:
