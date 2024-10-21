@@ -11,7 +11,7 @@ repos:
         args: [ "--autofix" ]
         exclude: ".*alternate-chain-spec.json"
       - id: trailing-whitespace
-        exclude: ".*_pattern.txt|.*wallet"
+        exclude: ".*_pattern.txt|.*wallet|.*config.ini"
       - id: end-of-file-fixer
         exclude: ".*_pattern.txt|.*config.ini|.*alternate-chain-spec.json|.*timestamp|.*wallet"
   - repo: https://github.com/python-poetry/poetry

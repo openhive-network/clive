@@ -105,8 +105,9 @@ class BeekeeperExecutable:
             self.__config.wallet_dir = arguments.wallet_dir
         if not self.__config.wallet_dir.exists():
             self.__config.wallet_dir.mkdir()
-        config_filename = self.__config.wallet_dir / "config.ini"
-        self.__config.save(config_filename)
+        if arguments and not arguments.dump_config:
+            config_filename = self.__config.wallet_dir / "config.ini"
+            self.__config.save(config_filename)
         if allow_empty_notification_server and (arguments and arguments.notifications_endpoint):
             self.__config.notifications_endpoint = arguments.notifications_endpoint
 

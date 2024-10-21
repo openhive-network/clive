@@ -389,7 +389,7 @@ class Beekeeper:
         )
         return BeekeeperConfig.load(Path(paths["config"]))
 
-    def generate_beekeepers_default_config(self) -> BeekeeperConfig:
+    def generate_beekeepers_default_config(self, destination: Path) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
             arguments = BeekeeperCLIArguments(
                 backtrace=None,
@@ -403,7 +403,7 @@ class Beekeeper:
                 dump_config=True,
             )
             self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
-            return BeekeeperConfig.load(Path(tmpdirname) / "config.ini")
+            shutil.copyfile(Path(tmpdirname) / "config.ini", destination)
 
     async def export_keys_wallet(
         self, *, wallet_name: str, wallet_password: str, extract_to: Path | None = None
