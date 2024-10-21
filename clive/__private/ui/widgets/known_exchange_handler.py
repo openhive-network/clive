@@ -45,11 +45,11 @@ class KnownExchangeHandler(CliveWidget):
         self._change_memo_requirement(required=False)
 
     def on_mount(self) -> None:
-        self._previous_memo_placeholder = self.query_one(MemoInput).input.unmodified_placeholder
+        self._previous_memo_placeholder = self.query_exactly_one(MemoInput).input.unmodified_placeholder
 
     def _change_selector_state(self, *, disable: bool) -> None:
         """Disables/enables the selector from `LiquidAssetAmountInput`."""
-        amount_input = self.query_one(LiquidAssetAmountInput)
+        amount_input = self.query_exactly_one(LiquidAssetAmountInput)
 
         if disable:
             amount_input.disable_currency_selector()
@@ -61,7 +61,7 @@ class KnownExchangeHandler(CliveWidget):
 
     def _change_memo_requirement(self, *, required: bool) -> None:
         """Make memo input required or optional."""
-        memo_input = self.query_one(MemoInput)
+        memo_input = self.query_exactly_one(MemoInput)
 
         if required:
             # This won't work correctly when the memo was required BEFORE the exchange is detected

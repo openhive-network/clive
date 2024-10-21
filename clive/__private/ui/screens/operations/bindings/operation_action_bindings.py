@@ -253,7 +253,8 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
             return is_known_exchange_in_input
 
         with contextlib.suppress(NoMatches):
-            return self.query_one(AccountNameInput).value_raw in self.world.known_exchanges
+            input_value = self.query_exactly_one(AccountNameInput).value_raw
+            return input_value in self.world.known_exchanges
 
         return False
 

@@ -290,7 +290,7 @@ class CartTable(CliveCheckerboardTable):
                 self._update_cart_items_on_deletion(removed_item=item_to_remove)
                 self._disable_appropriate_button_on_deletion(removed_item=item_to_remove)
             else:
-                await self.query_one(CartHeader).remove()
+                await self.query_exactly_one(CartHeader).remove()
                 await self.mount(NoContentAvailable(self.NO_CONTENT_TEXT))
 
         self.profile.cart.remove(item_to_remove.operation)
