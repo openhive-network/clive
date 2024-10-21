@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from textual import on
 from textual.binding import Binding
@@ -38,7 +38,7 @@ class SelectedNodeAddress(Static, CliveWidget):
         return f"Selected node address: {self.node.address}"
 
 
-class NodesList(Container, CliveWidget):
+class NodesList(Container):
     def compose(self) -> ComposeResult:
         yield Static("Please select the node you want to connect to from the predefined list below.")
         with self.prevent(NodeSelector.Changed):
@@ -48,24 +48,18 @@ class NodesList(Container, CliveWidget):
 class SetNodeAddressBase(BaseScreen, ABC):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    def __init__(self, *args: Any, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
-
-        self.__selected_node = SelectedNodeAddress()
-        self.__nodes_list = NodesList()
-
     def create_main_panel(self) -> ComposeResult:
         # Section is focusable bcs it's not possible to use scrolling via keyboard when Select is focused
         with SectionScrollable("Set node address", focusable=True):
-            yield self.__selected_node
-            yield self.__nodes_list
+            yield SelectedNodeAddress()
+            yield NodesList()
 
     @on(NodeSelector.Changed)
     async def save_selected_node_address(self) -> None:
         address = self.query_exactly_one(NodeSelector).value_ensure
         await self.node.set_address(address)
         self.app.trigger_node_watchers()
-        self.__selected_node.refresh()
+        self.query_exactly_one(SelectedNodeAddress).refresh()
         self.notify(f"Node address set to `{self.node.address}`.")
 
 
