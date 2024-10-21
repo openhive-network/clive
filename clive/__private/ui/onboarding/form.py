@@ -72,7 +72,8 @@ class Form(Contextual[ContextT], CliveScreen[None]):
             self.action_previous_screen()
             return
 
-        self.dismiss()
+        # self.dismiss() won't work here because self is Form and not FormScreen
+        self.app.pop_screen()
 
     def __is_current_screen_to_skip(self) -> bool:
         return self.current_screen in self._skip_during_push_screen()
