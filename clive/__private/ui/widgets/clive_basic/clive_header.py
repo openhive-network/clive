@@ -150,7 +150,9 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
             attribute_name="app_state",
             callback=self.mode_callback,
             id_="status-icon",
+            variant="success",
         )
+        self.tooltip = "Lock wallet"
 
     @property
     def is_locked(self) -> bool:
@@ -165,26 +167,14 @@ class LockStatus(DynamicOneLineButtonUnfocusable):
         return self.LOCKED_LABEL
 
     @on(OneLineButton.Pressed)
-    async def change_wallet_status(self) -> None:
-        from clive.__private.ui.screens.unlock import Unlock
-
-        if isinstance(self.app.screen, Unlock):
-            return
-
-        if self.is_locked:
-            await self.app.push_screen(Unlock())
-        else:
-            await self.commands.lock()
+    async def lock_wallet(self) -> None:
+        await self.commands.lock()
 
     def _wallet_to_locked_changed(self) -> None:
         self.post_message(self.WalletLocked())
-        self._widget.variant = "error"
-        self.tooltip = "Unlock wallet"
 
     def _wallet_to_unlocked_changed(self) -> None:
         self.post_message(self.WalletUnlocked())
-        self._widget.variant = "success"
-        self.tooltip = "Lock wallet"
 
 
 class NodeStatus(DynamicOneLineButtonUnfocusable):
