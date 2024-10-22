@@ -203,6 +203,10 @@ class CliveInput(Input):
         self._add_length_validator()
 
     def _watch_value(self, value: str) -> None:
+        # Textual does not update the cursor position when the value changes dynamically, so we place the cursor
+        # all the way to the right
+        self.action_end()
+
         # value can be set programmatically, so we need to update the border title accordingly
         if self.always_show_title:
             return super()._watch_value(value)
