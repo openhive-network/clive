@@ -108,12 +108,14 @@ class Commands(Generic[WorldT_co]):
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
         )
 
-    async def unlock(self, *, password: str, time: timedelta | None = None, permanent: bool = False) -> CommandWrapper:
+    async def unlock(
+        self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = False
+    ) -> CommandWrapper:
         return await self.__surround_with_exception_handlers(
             Unlock(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
-                wallet=self._world.profile.name,
+                wallet=profile_name or self._world.profile.name,
                 password=password,
                 time=time,
                 permanent=permanent,
