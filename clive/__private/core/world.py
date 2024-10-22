@@ -17,6 +17,9 @@ from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
+from clive.__private.ui.screens.dashboard import Dashboard
+from clive.__private.ui.screens.unlock import Unlock
+from clive.__private.ui.widgets.clive_basic.clive_header import LeftPart, LockStatus
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -188,11 +191,7 @@ class TUIWorld(World, CliveDOMNode):
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
-        profile_name = (
-            Profile.get_default_profile_name()
-            if Profile.is_default_profile_set()
-            else Onboarding.ONBOARDING_PROFILE_NAME
-        )
+        profile_name = Onboarding.ONBOARDING_PROFILE_NAME
         super().__init__(profile_name)
         self.profile = self._profile
         self.app_state = self._app_state
@@ -212,6 +211,10 @@ class TUIWorld(World, CliveDOMNode):
     def is_in_onboarding_mode(self) -> bool:
         return self._is_in_onboarding_mode(self.profile)
 
+    def _switch_to_welcome_profile(self) -> None:
+        """Set the profile to default (Onboarding)."""
+        self.profile = self._load_profile(Onboarding.ONBOARDING_PROFILE_NAME)
+
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         base_message: Final[str] = "Switched to the LOCKED mode"
         if source == "beekeeper_notification_server":
@@ -223,8 +226,24 @@ class TUIWorld(World, CliveDOMNode):
         else:
             send_notification = partial(self.app.notify, f"{base_message}.")
 
-        send_notification()
-        self.app.trigger_app_state_watchers()
+        self.profile.save()
+
+        def workaround_header_displaying_issue() -> None:
+            """Will be resolved with CliveHeader implementation that won't show node/chain info in the locked mode."""
+            self.app.screen.query_one(LeftPart).display = False
+            self.app.screen.query_one(LockStatus).display = False
+
+        async def lock() -> None:
+            nonlocal send_notification
+
+            self._add_welcome_modes()
+            await self.app.switch_mode("unlock")
+            workaround_header_displaying_issue()
+            await self._restart_dashboard_mode()
+            self._switch_to_welcome_profile()
+            send_notification()
+
+        self.app.run_worker(lock())
 
     def _on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
@@ -239,6 +258,14 @@ class TUIWorld(World, CliveDOMNode):
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
+
+    def _add_welcome_modes(self) -> None:
+        self.app.add_mode("onboarding", Onboarding)
+        self.app.add_mode("unlock", Unlock)
+
+    async def _restart_dashboard_mode(self) -> None:
+        await self.app.remove_mode("dashboard")
+        self.app.add_mode("dashboard", Dashboard)
 
 
 class CLIWorld(World):
