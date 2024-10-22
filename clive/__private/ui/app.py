@@ -21,6 +21,7 @@ from clive.__private.ui.clive_pilot import ClivePilot
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
 from clive.__private.ui.onboarding.onboarding import Onboarding
+from clive.__private.ui.onboarding.unlock_screen import UnlockScreen
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.exceptions import CommunicationError, ScreenNotFoundError
@@ -147,10 +148,6 @@ class Clive(App[int]):
         self._world = await TUIWorld().setup()
 
     def on_mount(self) -> None:
-        def __should_enter_onboarding() -> bool:
-            should_force_onboarding = safe_settings.dev.should_force_onboarding
-            return self.world.is_in_onboarding_mode or should_force_onboarding
-
         self._refresh_node_data_interval = self.set_interval(
             safe_settings.node.refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
         )
@@ -166,10 +163,10 @@ class Clive(App[int]):
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
             self.set_interval(debug_loop_period_secs, self.__debug_log)
 
-        if __should_enter_onboarding():
+        if not self.world.profile.list_profiles():
             self.push_screen(Onboarding())
         else:
-            self.push_screen("dashboard")
+            self.push_screen(UnlockScreen())
 
     async def on_unmount(self) -> None:
         await self.world.close()
