@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import shutil
-from contextlib import contextmanager
+from contextlib import ExitStack, contextmanager
 from functools import wraps
 from typing import TYPE_CHECKING, Generator
 
@@ -10,6 +10,7 @@ import test_tools as tt
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import prepare_before_launch
+from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
 from clive.__private.core.beekeeper.handle import Beekeeper
@@ -22,18 +23,37 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.url import Url
 from clive.__private.core.world import World
 from clive.__private.settings import settings
+from clive.__private.storage.service import PersistentStorageService
 from clive_local_tools.data.constants import (
+    BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
+    BEEKEEPER_SESSION_TOKEN_ENV_NAME,
+    NODE_CHAIN_ID_ENV_NAME,
     TESTNET_CHAIN_ID,
     WORKING_ACCOUNT_KEY_ALIAS,
 )
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
-from clive_local_tools.testnet_block_log import WORKING_ACCOUNT_DATA
+from clive_local_tools.testnet_block_log import (
+    WORKING_ACCOUNT_DATA
+)
+from clive_local_tools.data.constants import (
+    BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
+    BEEKEEPER_SESSION_TOKEN_ENV_NAME,
+    NODE_CHAIN_ID_ENV_NAME,
+    TESTNET_CHAIN_ID,
+    WORKING_ACCOUNT_KEY_ALIAS,
+    WORKING_ACCOUNT_PASSWORD,
+)
+from clive_local_tools.testnet_block_log import (
+    WATCHED_ACCOUNTS_NAMES,
+    WORKING_ACCOUNT_NAME,
+    WORKING_ACCOUNT_DATA,
+    run_node,
+)
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterator
 
-    from clive.__private.core.beekeeper import Beekeeper
     from clive.__private.core.keys.keys import PrivateKey, PublicKey
     from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory, SetupWalletsFactory, Wallets
 
@@ -89,39 +109,68 @@ def working_account_private_key() -> PrivateKeyAliased:
 
 
 @pytest.fixture
-async def world() -> AsyncIterator[World]:
+async def env_variable_context(
+    monkeypatch: pytest.MonkeyPatch,
+) -> BeekeeperSessionTokenEnvContextFactory:
+    @wraps(env_variable_context)
+    @contextmanager
+    def __env_variable_context(name: str, value: str) -> Generator[None]:
+        monkeypatch.setenv(name, value)
+        settings.reload()
+        yield
+        monkeypatch.delenv(name, raising=False)
+        settings.reload()
+
+    return __env_variable_context
+
+
+@pytest.fixture
+async def beekeeper(env_variable_context: BeekeeperSessionTokenEnvContextFactory) -> AsyncIterator[Beekeeper]:
+    async with Beekeeper() as beekeeper_cm:
+        with ExitStack() as stack:
+            stack.enter_context(env_variable_context(NODE_CHAIN_ID_ENV_NAME, TESTNET_CHAIN_ID))
+            stack.enter_context(env_variable_context(BEEKEEPER_SESSION_TOKEN_ENV_NAME, beekeeper_cm.token))
+            stack.enter_context(
+                env_variable_context(BEEKEEPER_REMOTE_ADDRESS_ENV_NAME, str(beekeeper_cm.http_endpoint))
+            )
+            yield beekeeper_cm
+
+
+@pytest.fixture
+async def prepare_profile(beekeeper: Beekeeper) -> Profile:
+    profile = Profile(
+        WORKING_ACCOUNT_DATA.account.name,
+        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
+        watched_accounts=[WatchedAccount(name) for name in WATCHED_ACCOUNTS_NAMES],
+    )
+    await CreateProfileEncryptionWallet(
+        beekeeper=beekeeper, profile_name=profile.name, password=WORKING_ACCOUNT_PASSWORD
+    ).execute()
+    await CreateWallet(
+        beekeeper=beekeeper, wallet=profile.name, password=WORKING_ACCOUNT_PASSWORD
+    ).execute()
+    await PersistentStorageService(beekeeper).save_profile(profile)
+    return profile
+
+
+@pytest.fixture
+async def prepare_wallet(beekeeper: Beekeeper, prepare_profile: Profile) -> None:  # noqa: ARG001
+    async with World(beekeeper_remote_endpoint=beekeeper.http_endpoint) as world_cm:
+        world_cm.profile.keys.add_to_import(
+            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
+        )
+        await world_cm.commands.sync_data_with_beekeeper()
+
+
+# World always needs profile prepared, TUIWorld performs onboarding when profile is not found
+@pytest.fixture
+async def world(prepare_profile: Profile, prepare_wallet: None) -> AsyncIterator[World]:  # noqa: ARG001
     async with World() as world_cm:
         yield world_cm
 
 
 @pytest.fixture
-async def prepare_wallet_of_profile(world: World, wallet_name: str) -> WalletInfo:
-    wallet_info = WalletInfo(name=generate_wallet_name(), password=generate_wallet_password(), keys=Keys(1))
-    await CreateProfileEncryptionWallet(
-        beekeeper=world.beekeeper, profile_name=wallet_name, password=wallet_info.password
-    ).execute()
-    await CreateWallet(
-        app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet_name, password=wallet_info.password
-    ).execute()
-    keys_pair = wallet_info.keys.pairs[0]
-    await ImportKey(
-        app_state=world.app_state,
-        wallet=wallet_name,
-        key_to_import=keys_pair.private_key,
-        beekeeper=world.beekeeper,
-    ).execute()
-    return wallet_info
-
-
-@pytest.fixture
-async def prepare_profile(world: World, prepare_wallet_of_profile: WalletInfo) -> Profile:
-    profile = Profile(prepare_wallet_of_profile.name)
-    await world.set_profile(profile)
-    return profile
-
-
-@pytest.fixture
-async def init_node(world: World, prepare_profile: Profile) -> AsyncIterator[tt.InitNode]:  # noqa: ARG001
+async def init_node(world: World) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.run()
     await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
@@ -130,7 +179,7 @@ async def init_node(world: World, prepare_profile: Profile) -> AsyncIterator[tt.
 
 
 @pytest.fixture
-async def init_node_extra_apis(world: World, prepare_profile: Profile) -> AsyncIterator[tt.InitNode]:  # noqa: ARG001
+async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
     init_node = tt.InitNode()
     init_node.config.plugin.append("transaction_status_api")
     init_node.config.plugin.append("account_history_api")
@@ -139,11 +188,6 @@ async def init_node_extra_apis(world: World, prepare_profile: Profile) -> AsyncI
     await world.node.set_address(Url.parse(init_node.http_endpoint.as_string()))
     yield init_node
     init_node.close()
-
-
-@pytest.fixture
-def beekeeper(world: World) -> Beekeeper:
-    return world.beekeeper
 
 
 @pytest.fixture
@@ -206,19 +250,3 @@ async def wallet_working_account_key(
     ).execute()
 
     return wallet
-
-
-@pytest.fixture
-async def env_variable_context(
-    monkeypatch: pytest.MonkeyPatch,
-) -> BeekeeperSessionTokenEnvContextFactory:
-    @wraps(env_variable_context)
-    @contextmanager
-    def __env_variable_context(name: str, value: str) -> Generator[None]:
-        monkeypatch.setenv(name, value)
-        settings.reload()
-        yield
-        monkeypatch.delenv(name, raising=False)
-        settings.reload()
-
-    return __env_variable_context

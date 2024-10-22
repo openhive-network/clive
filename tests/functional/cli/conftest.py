@@ -29,79 +29,11 @@ from clive_local_tools.data.constants import (
     WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.testnet_block_log import (
-    WATCHED_ACCOUNTS_NAMES,
-    WORKING_ACCOUNT_DATA,
     run_node,
 )
 
 if TYPE_CHECKING:
-    from typing import AsyncIterator
-
     import test_tools as tt
-
-    from clive_local_tools.types import BeekeeperSessionTokenEnvContextFactory
-
-
-@pytest.fixture
-async def beekeeper_with_session(
-    env_variable_context: BeekeeperSessionTokenEnvContextFactory,
-) -> AsyncIterator[Beekeeper]:
-    async with Beekeeper() as beekeeper_cm:
-        with contextlib.ExitStack() as stack:
-            stack.enter_context(env_variable_context(NODE_CHAIN_ID_ENV_NAME, TESTNET_CHAIN_ID))
-            stack.enter_context(env_variable_context(BEEKEEPER_SESSION_TOKEN_ENV_NAME, beekeeper_cm.token))
-            stack.enter_context(
-                env_variable_context(BEEKEEPER_REMOTE_ADDRESS_ENV_NAME, str(beekeeper_cm.http_endpoint))
-            )
-            yield beekeeper_cm
-
-
-@pytest.fixture
-async def prepare_profile(beekeeper_with_session: Beekeeper) -> Profile:
-    profile = Profile(
-        WORKING_ACCOUNT_DATA.account.name,
-        working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
-        watched_accounts=[WatchedAccount(name) for name in WATCHED_ACCOUNTS_NAMES],
-    )
-    await CreateProfileEncryptionWallet(
-        beekeeper=beekeeper_with_session, profile_name=profile.name, password=WORKING_ACCOUNT_PASSWORD
-    ).execute()
-    await CreateWallet(
-        beekeeper=beekeeper_with_session, wallet=profile.name, password=WORKING_ACCOUNT_PASSWORD
-    ).execute()
-    await PersistentStorageService(beekeeper_with_session).save_profile(profile)
-    return profile
-
-
-@pytest.fixture
-async def prepare_wallet(beekeeper_with_session: Beekeeper, prepare_profile: Profile) -> None:  # noqa: ARG001
-    async with World(beekeeper_remote_endpoint=beekeeper_with_session.http_endpoint) as world_cm:
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
-        )
-        await world_cm.commands.sync_data_with_beekeeper()
-
-
-@pytest.fixture
-async def _beekeeper_locked(
-    prepare_profile: Profile,
-    prepare_wallet: None,  # noqa: ARG001
-    beekeeper_with_session: Beekeeper,
-) -> Beekeeper:
-    wallet_name = prepare_profile.name
-    await Lock(beekeeper=beekeeper_with_session, wallet=wallet_name).execute()
-    return beekeeper_with_session
-
-
-@pytest.fixture
-async def _beekeeper_unlocked(
-    prepare_profile: Profile,
-    prepare_wallet: None,  # noqa: ARG001
-    _beekeeper_locked: Beekeeper,
-) -> Beekeeper:
-    wallet_name = prepare_profile.name
-    await Unlock(beekeeper=_beekeeper_locked, wallet=wallet_name, password=WORKING_ACCOUNT_PASSWORD).execute()
-    return _beekeeper_locked
 
 
 @pytest.fixture
@@ -112,14 +44,14 @@ async def node() -> tt.RawNode:
 
 
 @pytest.fixture
-async def cli_tester_with_session_token_locked(
+async def cli_tester(
     node: tt.RawNode,  # noqa: ARG001
+    beekeeper: Beekeeper,  # noqa: ARG001
     prepare_profile: Profile,  # noqa: ARG001
     prepare_wallet: None,  # noqa: ARG001
-    _beekeeper_locked: Beekeeper,
 ) -> CLITester:
-    """Will return CliveTyper and CliRunner from typer.testing module, beekeeper is locked."""
-    # import cli after default profile is set, default values for --profile-name option are set during loading
+    """Will return CliveTyper and CliRunner from typer.testing module, beekeeper is unlocked."""
+    # import cli after profile is set prepared, default values for options are set during loading
     from clive.__private.cli.main import cli
 
     env = {"COLUMNS": f"{TERMINAL_WIDTH}"}
@@ -128,9 +60,12 @@ async def cli_tester_with_session_token_locked(
 
 
 @pytest.fixture
-async def cli_tester(
-    cli_tester_with_session_token_locked: CLITester,
-    _beekeeper_unlocked: Beekeeper,
+async def cli_tester_with_session_token_locked(
+    cli_tester: CLITester,
+    beekeeper: Beekeeper,
+    prepare_profile: Profile,
 ) -> CLITester:
-    """Will return CliveTyper and CliRunner from typer.testing module, beekeeper is unlocked."""
-    return cli_tester_with_session_token_locked
+    """Will return CliveTyper and CliRunner from typer.testing module, beekeeper is locked."""
+    wallet_name = prepare_profile.name
+    await Lock(beekeeper=beekeeper, wallet=wallet_name).execute()
+    return cli_tester
