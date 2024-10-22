@@ -107,12 +107,24 @@ class Commands(Generic[WorldT_co]):
             DoesAccountExistsInNode(node=self._world.node, account_name=account_name)
         )
 
-    async def unlock(self, *, password: str, time: timedelta | None = None, permanent: bool = False) -> CommandWrapper:
+    async def unlock(
+        self, *, profile_name: str | None = None, password: str, time: timedelta | None = None, permanent: bool = False
+    ) -> CommandWrapper:
+        """
+        Return a CommandWrapper instance to unlock the wallet with given parameters.
+
+        Args:
+        ----
+        profile_name: Name of the wallet to unlock. If None, the world wallet will be unlocked.
+        password: Password to unlock the wallet.
+        time: Time to unlock the wallet. Do not need to pass when unlocking permanently.
+        permanent: Whether to unlock the wallet permanently.
+        """
         return await self.__surround_with_exception_handlers(
             Unlock(
                 app_state=self._world.app_state,
                 beekeeper=self._world.beekeeper,
-                wallet=self._world.profile.name,
+                wallet=profile_name or self._world.profile.name,
                 password=password,
                 time=time,
                 permanent=permanent,
