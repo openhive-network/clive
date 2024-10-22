@@ -208,6 +208,7 @@ class CliveInput(Input):
             return super()._watch_value(value)
 
         self._update_border_title_with_current_sate()
+        self.cursor_position = len(self.value)
         return super()._watch_value(value)
 
     @on(Focus)
