@@ -63,7 +63,7 @@ async def test_batch_node_mixed_request_delayed(
         _ = bad_response.accounts[0].name
 
 
-async def test_batch_node_nothing_to_send(world: World) -> None:
+async def test_batch_node_nothing_to_send(init_node: tt.InitNode, world: World) -> None:  # noqa: ARG001
     with pytest.raises(NothingToSendError):
         async with world.node.batch():
             pass

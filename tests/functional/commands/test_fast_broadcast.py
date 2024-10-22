@@ -10,14 +10,9 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.core.world import World
-    from clive_local_tools.data.models import WalletInfo
 
 
-async def test_fast_broadcast_smoke_test(
-    world: World,
-    init_node: tt.InitNode,
-    wallet: WalletInfo,  # noqa: ARG001
-) -> None:
+async def test_fast_broadcast_smoke_test(world: World, init_node: tt.InitNode) -> None:
     # ARRANGE
     pubkey = (
         await world.commands.import_key(

@@ -14,14 +14,9 @@ if TYPE_CHECKING:
     import test_tools as tt
 
     from clive.__private.core.world import World
-    from clive_local_tools.data.models import WalletInfo
 
 
-async def test_transaction_status_in_blockchain(
-    world: World,
-    init_node_extra_apis: tt.InitNode,
-    wallet: WalletInfo,  # noqa: ARG001
-) -> None:
+async def test_transaction_status_in_blockchain(world: World, init_node_extra_apis: tt.InitNode) -> None:
     # ARRANGE
     pubkey = (
         await world.commands.import_key(

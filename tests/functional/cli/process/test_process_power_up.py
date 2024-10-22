@@ -5,13 +5,14 @@ from typing import TYPE_CHECKING, Final
 import test_tools as tt
 
 from clive.__private.core.keys.keys import PrivateKeyAliased
+from clive.__private.core.world import World
 from clive.__private.models.schemas import TransferToVestingOperation
 from clive_local_tools.checkers import assert_operations_placed_in_blockchain
-from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
+from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS
 from clive_local_tools.testnet_block_log.constants import ALT_WORKING_ACCOUNT1_DATA, EMPTY_ACCOUNT, WORKING_ACCOUNT_DATA
 
 if TYPE_CHECKING:
-    from clive.__private.core.world import World
+    from clive.__private.core.beekeeper.handle import Beekeeper
     from clive_local_tools.cli.cli_tester import CLITester
 
 
@@ -31,7 +32,6 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     result = cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=operation.to,
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 
@@ -39,11 +39,12 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_tester: CLITester) -> None:
+async def test_power_up_no_default_account(
+    beekeeper_with_session: Beekeeper, node: tt.RawNode, cli_tester: CLITester
+) -> None:
     # ARRANGE
     other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
-    async with world as world_cm:
-        await world_cm.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
+    async with World(beekeeper_remote_endpoint=beekeeper_with_session.http_endpoint) as world_cm:
         world_cm.profile.keys.add_to_import(
             PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias),
         )
@@ -59,7 +60,6 @@ async def test_power_up_no_default_account(world: World, node: tt.RawNode, cli_t
         amount=AMOUNT_TO_POWER_UP,
         from_=operation.from_,
         to=operation.to,
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=other_account_key_alias,
     )
 
@@ -78,7 +78,6 @@ async def test_power_up_default_account(node: tt.RawNode, cli_tester: CLITester)
     # ACT
     result = cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
-        password=WORKING_ACCOUNT_PASSWORD,
         sign=WORKING_ACCOUNT_KEY_ALIAS,
     )
 

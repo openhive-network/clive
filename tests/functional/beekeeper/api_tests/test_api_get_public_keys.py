@@ -17,16 +17,13 @@ async def open_and_unlock_wallet(beekeeper: Beekeeper, wallet: WalletInfo) -> No
     await beekeeper.api.unlock(wallet_name=wallet.name, password=wallet.password)
 
 
-@pytest.mark.parametrize("explicit_wallet_name", [False, True])
-async def test_api_get_public_keys(
-    beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory, *, explicit_wallet_name: bool
-) -> None:
+async def test_api_get_public_keys(beekeeper: Beekeeper, setup_wallets: SetupWalletsFactory) -> None:
     """Test test_api_get_public_keys will test beekeeper_api.get_public_keys api call."""
     # ARRANGE
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=5)
     wallet = wallets[0]
 
-    explicit_wallet_name_param = {"wallet_name": wallet.name} if explicit_wallet_name else {}
+    explicit_wallet_name_param = {"wallet_name": wallet.name}
 
     for pair in wallet.keys.pairs:
         await beekeeper.api.import_key(wallet_name=wallet.name, wif_key=pair.private_key.value)
