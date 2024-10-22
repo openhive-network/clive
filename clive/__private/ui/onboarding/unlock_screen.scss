@@ -1,0 +1,36 @@
+UnlockScreen {
+  DialogContainer {
+    DialogBody {
+      max-height: 43;
+    }
+
+    CliveButton,
+    #or-static {
+      width: 1fr;
+    }
+
+    SetPasswordInput,
+    #or-static {
+      margin: 1 0 1 0;
+    }
+
+    #or-static {
+      text-style: bold;
+      text-align: center;
+    }
+
+    #press-help-message {
+      margin-bottom: 1;
+      text-align: center;
+    }
+
+    #lock-after-time-container {
+      margin-bottom: 1;
+      height: auto;
+
+      Checkbox {
+        width: 30;
+      }
+    }
+  }
+}
