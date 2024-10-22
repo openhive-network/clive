@@ -17,6 +17,7 @@ from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
+from clive.__private.ui.onboarding.unlock_screen import UnlockScreen
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -163,11 +164,7 @@ class TUIWorld(World, CliveDOMNode):
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
-        profile_name = (
-            Profile.get_default_profile_name()
-            if Profile.is_default_profile_set()
-            else Onboarding.ONBOARDING_PROFILE_NAME
-        )
+        profile_name = Onboarding.ONBOARDING_PROFILE_NAME
         super().__init__(profile_name)
         self.profile = self._profile
         self.app_state = self._app_state
@@ -187,6 +184,11 @@ class TUIWorld(World, CliveDOMNode):
     def is_in_onboarding_mode(self) -> bool:
         return self._is_in_onboarding_mode(self.profile)
 
+    def clear_profile(self) -> None:
+        profile = super()._load_profile(Onboarding.ONBOARDING_PROFILE_NAME)
+        profile.skip_saving()
+        self.profile = profile
+
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         base_message: Final[str] = "Switched to the LOCKED mode"
         if source == "beekeeper_notification_server":
@@ -200,6 +202,8 @@ class TUIWorld(World, CliveDOMNode):
 
         send_notification()
         self.app.trigger_app_state_watchers()
+        self.clear_profile()
+        self.app.push_screen(UnlockScreen())
 
     def on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
