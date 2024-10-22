@@ -35,26 +35,7 @@ start_beekeeper_with_prepared_session_token() {
 
 # Unlock wallet for selected profile
 unlock_wallet() {
-  read -rsp "Enter password for profile ${SELECTED_PROFILE}: " password
-  echo
-  password="${password//$'\n'/}"
-  response=$(curl -s --data '{
-    "jsonrpc": "2.0",
-    "method": "beekeeper_api.unlock",
-    "params": {
-      "token": "'"${CLIVE_BEEKEEPER__SESSION_TOKEN}"'",
-      "wallet_name": "'"${SELECTED_PROFILE}"'",
-      "password": "'"${password}"'"
-    },
-    "id": 1
-  }' "${BEEKEEPER_HTTP_ENDPOINT}")
-
-  error=$(echo "${response}" | jq .error)
-  if [[ "${error}" != "null" ]]; then
-    error_message=$(echo "${error}" | jq .message)
-    echo "Error: ${error_message}."
-    exit 1
-  fi
+  clive beekeeper unlock --profile-name "${SELECTED_PROFILE}"
 }
 
 # Print info about how to create profile
