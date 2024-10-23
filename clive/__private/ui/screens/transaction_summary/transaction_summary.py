@@ -8,11 +8,9 @@ from textual.containers import Horizontal
 from textual.reactive import reactive
 from textual.widgets import Label, Select, Static
 
-from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -243,7 +241,6 @@ class TransactionSummary(BaseScreen):
         subtitle.display = bool(self._transaction_file_path)
         self._handle_bindings()
 
-    @CliveScreen.try_again_after_unlock
     async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
         if result is None:
             return
@@ -262,8 +259,6 @@ class TransactionSummary(BaseScreen):
                     force_save_format="bin" if save_as_binary else "json",
                 )
             ).result_or_raise
-        except CommandRequiresUnlockedModeError:
-            raise  # reraise so try_again_after_unlock decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
@@ -294,7 +289,6 @@ class TransactionSummary(BaseScreen):
         self.app.trigger_profile_watchers()
         await self.query_exactly_one(CartTable).rebuild()
 
-    @CliveScreen.try_again_after_unlock
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard
 
@@ -307,8 +301,6 @@ class TransactionSummary(BaseScreen):
                     broadcast=True,
                 )
             ).raise_if_error_occurred()
-        except CommandRequiresUnlockedModeError:
-            raise  # reraise so try_again_after_unlock decorator can handle it
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return

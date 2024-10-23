@@ -6,7 +6,6 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static
 
-from clive.__private.ui.clive_screen import CliveScreen, OnlyInUnlockedModeError
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config.account_management.account_management import AccountManagement
@@ -41,15 +40,11 @@ class Config(BaseScreen):
     def push_account_list_management_screen(self) -> None:
         self.app.push_screen(AccountManagement())
 
-    @CliveScreen.try_again_after_unlock
     @on(CliveButton.Pressed, "#manage-key-aliases")
     async def push_manage_key_aliases_screen(self) -> None:
         if not self._has_working_account():
             self.notify("Cannot manage key aliases without working account", severity="error")
             return
-
-        if not self.app_state.is_unlocked:
-            raise OnlyInUnlockedModeError
 
         await self.app.push_screen(ManageKeyAliases())
 

@@ -10,7 +10,6 @@ from textual.widgets import Input
 from clive.__private.core.constants.tui.placeholders import KEY_FILE_PATH_PLACEHOLDER
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
 from clive.__private.settings import safe_settings
-from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
@@ -138,10 +137,9 @@ class NewKeyAlias(NewKeyAliasBase):
 
         self.context.keys.set_to_import([self._private_key_aliased])
         await self._import_new_key()
+        await self.dismiss()
 
-    @CliveScreen.try_again_after_unlock
     async def _import_new_key(self) -> None:
         await self.commands.sync_data_with_beekeeper()
         self.notify("New key alias was created.")
         self.app.trigger_profile_watchers()
-        self.dismiss()
