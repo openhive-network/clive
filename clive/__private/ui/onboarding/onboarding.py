@@ -33,7 +33,7 @@ class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
 
 class OnboardingFinishScreen(FinishFormScreen[Profile]):
     async def action_finish(self) -> None:
-        self._owner.add_post_action(self.app.update_data_from_node_asap)
+        self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
 
         profile = self.context
         profile.enable_saving()
