@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar, Final, Literal
+from typing import TYPE_CHECKING, ClassVar, Literal
 
 from textual import on
 from textual.binding import Binding
 from textual.containers import Container, Horizontal, ScrollableContainer, Vertical
-from textual.reactive import var
 from textual.widgets import Label, Static
 
 from clive.__private.core.accounts.accounts import TrackedAccount, WorkingAccount
@@ -26,7 +25,6 @@ from clive.__private.ui.screens.account_details.account_details import AccountDe
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.operations import Operations, Savings
-from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
@@ -272,10 +270,9 @@ class Dashboard(BaseScreen):
         Binding("f2", "operations", "Operations"),
         Binding("f3", "switch_working_account", "Switch working account"),
         Binding("f4", "add_account", "Add account"),
+        Binding("f5", "switch_mode_into_locked", "Lock wallet"),
         Binding("f6", "config", "Config"),
     ]
-
-    is_unlocked: bool = var(default=False)  # type: ignore[assignment]
 
     def __init__(self) -> None:
         super().__init__()
@@ -320,13 +317,6 @@ class Dashboard(BaseScreen):
     def _update_mode(self, app_state: AppState) -> None:
         self.is_unlocked = app_state.is_unlocked
 
-    def watch_is_unlocked(self, unlocked: bool) -> None:  # noqa: FBT001
-        lock_unlock_binding: Final[str] = "f5"
-        self.unbind(lock_unlock_binding)
-        binding_description = "Lock" if unlocked else "Unlock"
-        self.bind(Binding(lock_unlock_binding, "switch_mode", binding_description))
-        self.refresh_bindings()
-
     @CliveScreen.prevent_action_when_no_working_account()
     @CliveScreen.prevent_action_when_no_accounts_node_data()
     def action_operations(self) -> None:
@@ -342,11 +332,8 @@ class Dashboard(BaseScreen):
     def action_add_account(self) -> None:
         self.app.push_screen(AddTrackedAccountDialog())
 
-    async def action_switch_mode(self) -> None:
-        if self.is_unlocked:
-            await self.app.world.commands.lock()
-        else:
-            await self.app.push_screen(Unlock())
+    async def action_switch_mode_into_locked(self) -> None:
+        await self.app.world.commands.lock()
 
     @property
     def has_working_account(self) -> bool:

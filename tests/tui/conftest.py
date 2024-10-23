@@ -86,7 +86,7 @@ async def prepared_env(
     node, wallet = node_with_wallet
     async with Clive().run_test() as pilot:
         await wait_for_screen(pilot, Dashboard)
-        assert_is_dashboard(pilot, unlocked=False)
+        assert_is_dashboard(pilot)
 
         yield node, wallet, pilot
 
@@ -103,5 +103,5 @@ async def prepared_tui_on_dashboard_unlocked(prepared_env: PreparedTuiEnv) -> Pr
     node, wallet, pilot = prepared_env
     await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
     await wait_for_screen(pilot, Dashboard)
-    assert_is_dashboard(pilot, unlocked=True)
+    assert_is_dashboard(pilot)
     return prepared_env

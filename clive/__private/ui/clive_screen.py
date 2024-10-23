@@ -10,13 +10,11 @@ from textual.screen import Screen
 from typing_extensions import TypeVar
 
 from clive.__private.core.clive_import import get_clive
-from clive.__private.core.commands.abc.command_in_unlocked import CommandRequiresUnlockedModeError
 from clive.__private.logger import logger
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
-    from collections.abc import Awaitable, Callable
+    from collections.abc import Callable
 
     from textual.widget import Widget
 
@@ -27,10 +25,6 @@ if TYPE_CHECKING:
 P = ParamSpec("P")
 
 ScreenResultT = TypeVar("ScreenResultT", default=None)
-
-
-class OnlyInUnlockedModeError(CliveError):
-    """Should be raised when some action is only available in unlocked mode."""
 
 
 class CliveScreen(Screen[ScreenResultT], CliveWidget):
@@ -74,29 +68,6 @@ class CliveScreen(Screen[ScreenResultT], CliveWidget):
         cls, message: str = "Cannot perform this action without tracked accounts"
     ) -> Callable[[Callable[P, None]], Callable[P, None]]:
         return cls._create_prevent_decorator(lambda app: app.world.profile.accounts.has_tracked_accounts, message)
-
-    @staticmethod
-    def try_again_after_unlock(func: Callable[P, Awaitable[None]]) -> Callable[P, Awaitable[None]]:
-        @wraps(func)
-        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> None:
-            app = get_clive().app_instance()
-
-            try:
-                await func(*args, **kwargs)
-            except (CommandRequiresUnlockedModeError, OnlyInUnlockedModeError):
-                from clive.__private.ui.screens.unlock.unlock import Unlock
-
-                async def _on_unlock_result(*, unlocked: bool) -> None:
-                    if not unlocked:
-                        app.notify("Aborted. UNLOCKED mode was required for this action.", severity="warning")
-                        return
-
-                    await func(*args, **kwargs)
-
-                app.notify("This action requires Clive to be in UNLOCKED mode. Please unlock...")
-                await app.push_screen(Unlock(unlock_result_callback=_on_unlock_result))
-
-        return wrapper
 
     @classmethod
     def _create_prevent_decorator(

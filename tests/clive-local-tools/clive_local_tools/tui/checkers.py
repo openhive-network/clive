@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Literal, cast
+from typing import TYPE_CHECKING, Any, Literal
 
 from textual.css.query import NoMatches, TooManyMatches
 
@@ -23,19 +23,15 @@ def assert_is_screen_active(pilot: ClivePilot, expected_screen: type[Screen[Any]
     ), f"Expected screen '{expected_screen}' is not active. Current screen is '{pilot.app.screen}'."
 
 
-def assert_is_dashboard(pilot: ClivePilot, *, unlocked: bool | None) -> None:
+def assert_is_dashboard(pilot: ClivePilot) -> None:
     """
-    Assert that the dashboard is the active screen and optionally check if it's unlocked.
+    Assert that the dashboard is the active screen.
 
     Args:
     ----
         pilot: ClivePilot instance.
-        unlocked: Expected state of the dashboard or doesn't matter if None.
     """
     assert_is_screen_active(pilot, Dashboard)
-    if unlocked is not None:
-        dashboard = cast(Dashboard, pilot.app.screen)
-        assert dashboard.is_unlocked == unlocked, f"Expected dashboard to be {'unlocked' if unlocked else 'locked'}."
 
 
 def assert_is_focused(pilot: ClivePilot, widget: type[Widget] | Widget, context: str | None = None) -> None:
