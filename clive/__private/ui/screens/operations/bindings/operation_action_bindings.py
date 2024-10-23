@@ -10,7 +10,6 @@ from textual.css.query import NoMatches
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.core import iwax
 from clive.__private.core.keys.key_manager import KeyNotFoundError
-from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
@@ -192,7 +191,6 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         """
         return None
 
-    @CliveScreen.try_again_after_unlock
     async def __fast_broadcast(self) -> None:
         def get_key() -> PublicKeyAliased | None:
             try:

@@ -26,7 +26,6 @@ from clive.__private.ui.screens.account_details.account_details import AccountDe
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.operations import Operations, Savings
-from clive.__private.ui.screens.unlock import Unlock
 from clive.__private.ui.widgets.alarm_display import AlarmDisplay
 from clive.__private.ui.widgets.buttons import OneLineButton, OneLineButtonUnfocusable
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_one_line_button import (
@@ -343,10 +342,7 @@ class Dashboard(BaseScreen):
         self.app.push_screen(AddTrackedAccountDialog())
 
     async def action_switch_mode(self) -> None:
-        if self.is_unlocked:
-            await self.app.world.commands.lock()
-        else:
-            await self.app.push_screen(Unlock())
+        await self.app.world.commands.lock()
 
     @property
     def has_working_account(self) -> bool:

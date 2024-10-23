@@ -113,7 +113,7 @@ def prepare_expected_operation(
 
 
 async def go_to_savings(pilot: ClivePilot) -> None:
-    assert_is_dashboard(pilot, unlocked=True)
+    assert_is_dashboard(pilot)
     await press_and_wait_for_screen(pilot, "f2", Operations)
     await focus_next(pilot)
     await focus_next(pilot)
@@ -127,7 +127,7 @@ async def get_pending_transfers_from_savings_count(pilot: ClivePilot) -> int:
     tt.logger.debug(f"get_pending_transfers_from_savings_count: {len(pending_transfers)}")
     await press_and_wait_for_screen(pilot, "escape", Operations)
     await press_and_wait_for_screen(pilot, "escape", Dashboard)
-    assert_is_dashboard(pilot, unlocked=True)
+    assert_is_dashboard(pilot)
     return len(pending_transfers)
 
 
@@ -162,7 +162,6 @@ async def test_savings(  # noqa: PLR0913
     """
     #110: I-II (create transfer to/from savings).
 
-    Clive is unlocked. Then:
     1. The user an operation in HBD/HIVE with memo (if possible) to own account/another account and Fast broadcasts it.
     2. The user an operation in HBD/HIVE without memo (if possible) to own account/another account and finalizes
        transaction.
@@ -186,7 +185,7 @@ async def test_savings(  # noqa: PLR0913
     await fill_savings_data(pilot, operation_type, other_account, asset, memo)
     log_current_view(pilot.app, nodes=True)
 
-    await process_operation(pilot, operation_processing, unlocked=True)
+    await process_operation(pilot, operation_processing)
 
     transaction_id = await extract_transaction_id_from_notification(pilot)
 
@@ -196,7 +195,7 @@ async def test_savings(  # noqa: PLR0913
     if operation_type is TransferFromSavingsOperation:
         if operation_processing == "FAST_BROADCAST":
             await press_and_wait_for_screen(pilot, "escape", Dashboard)
-            assert_is_dashboard(pilot, unlocked=True)
+            assert_is_dashboard(pilot)
         await assert_pending_transfers_from_savings_count(pilot, 1 + WORKING_ACCOUNT_DATA.from_savings_transfer_count)
         # TODO: check if pending transfer is as expected_operation
 
@@ -218,7 +217,6 @@ async def test_savings_finalize_cart(
     """
     #110: I-II (create transfer to/from savings).
 
-    Clive is unlocked. Then:
     4. The user makes two operations to own account/another account, the first in HBD, the second in HIVE,
        adds them to cart and then broadcasts.
     """
@@ -251,7 +249,7 @@ async def test_savings_finalize_cart(
 
         await press_and_wait_for_screen(pilot, "f2", Operations)  # Add to cart
         await press_and_wait_for_screen(pilot, "escape", Dashboard)
-        assert_is_dashboard(pilot, unlocked=True)
+        assert_is_dashboard(pilot)
         log_current_view(pilot.app)
 
     await press_and_wait_for_screen(pilot, "f2", Operations)  # Go to Operations
@@ -264,7 +262,7 @@ async def test_savings_finalize_cart(
     assert_operations_placed_in_blockchain(node, transaction_id, *expected_operations)
 
     if operation_type is TransferFromSavingsOperation:
-        assert_is_dashboard(pilot, unlocked=True)
+        assert_is_dashboard(pilot)
         await assert_pending_transfers_from_savings_count(
             pilot, TRANSFERS_COUNT + WORKING_ACCOUNT_DATA.from_savings_transfer_count
         )
@@ -309,7 +307,7 @@ async def test_canceling_transfer_from_savings(
         await press_and_wait_for_screen(pilot, "enter", CancelTransferFromSavings)  # Cancel transfer
         await fast_broadcast(pilot)
         await press_and_wait_for_screen(pilot, "escape", Dashboard)
-        assert_is_dashboard(pilot, unlocked=True)
+        assert_is_dashboard(pilot)
 
         transaction_id = await extract_transaction_id_from_notification(pilot)
 
