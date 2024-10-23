@@ -81,8 +81,8 @@ def test_setting_wrong_chain_id_raises_exception(profile_with_default_chain_id_f
 
 
 async def test_chain_id_is_retrieved_from_api_if_not_set(
+    prepare_wallet: WalletInfo,
     world: World,
-    prepare_wallet_of_profile: WalletInfo,
     init_node: tt.InitNode,  # noqa: ARG001
 ) -> None:
     # ARRANGE
@@ -101,7 +101,7 @@ async def test_chain_id_is_retrieved_from_api_if_not_set(
 
     # ACT
     # chain id should be retrieved from api when needed for the first time and set in profile
-    await world.commands.sign(transaction=transaction, sign_with=prepare_wallet_of_profile.public_key)
+    await world.commands.sign(transaction=transaction, sign_with=prepare_wallet.public_key)
 
     # ASSERT
     assert profile.chain_id == TESTNET_CHAIN_ID

@@ -39,15 +39,12 @@ async def test_power_up_to_other_account(node: tt.RawNode, cli_tester: CLITester
     assert_operations_placed_in_blockchain(node, result, operation)
 
 
-async def test_power_up_no_default_account(
-    beekeeper_with_session: Beekeeper, node: tt.RawNode, cli_tester: CLITester
-) -> None:
+async def test_power_up_no_default_account(beekeeper: Beekeeper, node: tt.RawNode, cli_tester: CLITester) -> None:
     # ARRANGE
     other_account_key_alias: Final[str] = f"{OTHER_ACCOUNT.name}_key"
-    async with World(beekeeper_remote_endpoint=beekeeper_with_session.http_endpoint) as world_cm:
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias),
-        )
+    async with World(beekeeper_remote_endpoint=beekeeper.http_endpoint) as world_cm:
+        key = PrivateKeyAliased(value=OTHER_ACCOUNT.private_key, alias=other_account_key_alias)
+        world_cm.profile.keys.add_to_import(key)
         await world_cm.commands.sync_data_with_beekeeper()
     operation = TransferToVestingOperation(
         from_=OTHER_ACCOUNT.name,

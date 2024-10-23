@@ -10,9 +10,9 @@ import test_tools as tt
 from test_tools.__private.scope.scope_fixtures import *  # noqa: F403
 
 from clive.__private.before_launch import prepare_before_launch
-from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core import iwax
 from clive.__private.core._thread import thread_pool
+from clive.__private.core.accounts.accounts import WatchedAccount, WorkingAccount
 from clive.__private.core.beekeeper.handle import Beekeeper
 from clive.__private.core.commands.create_profile_encryption_wallet import CreateProfileEncryptionWallet
 from clive.__private.core.commands.create_wallet import CreateWallet
@@ -30,25 +30,14 @@ from clive_local_tools.data.constants import (
     NODE_CHAIN_ID_ENV_NAME,
     TESTNET_CHAIN_ID,
     WORKING_ACCOUNT_KEY_ALIAS,
+    WORKING_ACCOUNT_PASSWORD,
 )
 from clive_local_tools.data.generates import generate_wallet_name, generate_wallet_password
 from clive_local_tools.data.models import Keys, WalletInfo
-from clive_local_tools.testnet_block_log import (
-    WORKING_ACCOUNT_DATA
-)
-from clive_local_tools.data.constants import (
-    BEEKEEPER_REMOTE_ADDRESS_ENV_NAME,
-    BEEKEEPER_SESSION_TOKEN_ENV_NAME,
-    NODE_CHAIN_ID_ENV_NAME,
-    TESTNET_CHAIN_ID,
-    WORKING_ACCOUNT_KEY_ALIAS,
-    WORKING_ACCOUNT_PASSWORD,
-)
+from clive_local_tools.test_doubles.app_state import AppStateUnlocked
 from clive_local_tools.testnet_block_log import (
     WATCHED_ACCOUNTS_NAMES,
-    WORKING_ACCOUNT_NAME,
     WORKING_ACCOUNT_DATA,
-    run_node,
 )
 
 if TYPE_CHECKING:
@@ -104,11 +93,6 @@ def key_pair() -> tuple[PublicKey, PrivateKey]:
 
 
 @pytest.fixture
-def working_account_private_key() -> PrivateKeyAliased:
-    return PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=WORKING_ACCOUNT_KEY_ALIAS)
-
-
-@pytest.fixture
 async def env_variable_context(
     monkeypatch: pytest.MonkeyPatch,
 ) -> BeekeeperSessionTokenEnvContextFactory:
@@ -146,26 +130,29 @@ async def prepare_profile(beekeeper: Beekeeper) -> Profile:
     await CreateProfileEncryptionWallet(
         beekeeper=beekeeper, profile_name=profile.name, password=WORKING_ACCOUNT_PASSWORD
     ).execute()
-    await CreateWallet(
-        beekeeper=beekeeper, wallet=profile.name, password=WORKING_ACCOUNT_PASSWORD
-    ).execute()
+    await CreateWallet(beekeeper=beekeeper, wallet=profile.name, password=WORKING_ACCOUNT_PASSWORD).execute()
     await PersistentStorageService(beekeeper).save_profile(profile)
     return profile
 
 
 @pytest.fixture
-async def prepare_wallet(beekeeper: Beekeeper, prepare_profile: Profile) -> None:  # noqa: ARG001
-    async with World(beekeeper_remote_endpoint=beekeeper.http_endpoint) as world_cm:
-        world_cm.profile.keys.add_to_import(
-            PrivateKeyAliased(value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}")
-        )
+async def prepare_wallet(prepare_profile: Profile) -> WalletInfo:
+    private_key = PrivateKeyAliased(
+        value=WORKING_ACCOUNT_DATA.account.private_key, alias=f"{WORKING_ACCOUNT_KEY_ALIAS}"
+    )
+    wallet_info = WalletInfo(
+        name=prepare_profile.name, password=WORKING_ACCOUNT_PASSWORD, keys=Keys.from_private_key(private_key)
+    )
+    async with World() as world_cm:
+        world_cm.profile.keys.add_to_import(wallet_info.private_key)
         await world_cm.commands.sync_data_with_beekeeper()
+    return wallet_info
 
 
 # World always needs profile prepared, TUIWorld performs onboarding when profile is not found
 @pytest.fixture
-async def world(prepare_profile: Profile, prepare_wallet: None) -> AsyncIterator[World]:  # noqa: ARG001
-    async with World() as world_cm:
+async def world(beekeeper: Beekeeper, prepare_profile: Profile, prepare_wallet: WalletInfo) -> AsyncIterator[World]:  # noqa: ARG001
+    async with World(beekeeper_remote_endpoint=beekeeper.http_endpoint) as world_cm:
         yield world_cm
 
 
@@ -191,7 +178,7 @@ async def init_node_extra_apis(world: World) -> AsyncIterator[tt.InitNode]:
 
 
 @pytest.fixture
-def setup_wallets(world: World) -> SetupWalletsFactory:
+def setup_wallets(beekeeper: Beekeeper) -> SetupWalletsFactory:
     @wraps(setup_wallets)
     async def __setup_wallets(count: int, *, import_keys: bool = True, keys_per_wallet: int = 1) -> Wallets:
         wallets = [
@@ -199,17 +186,15 @@ def setup_wallets(world: World) -> SetupWalletsFactory:
             for i in range(count)
         ]
         for wallet in wallets:
-            await CreateWallet(
-                app_state=world.app_state, beekeeper=world.beekeeper, wallet=wallet.name, password=wallet.password
-            ).execute()
+            await CreateWallet(beekeeper=beekeeper, wallet=wallet.name, password=wallet.password).execute()
 
             if import_keys:
                 for pairs in wallet.keys.pairs:
                     await ImportKey(
-                        app_state=world.app_state,
+                        app_state=AppStateUnlocked(),
                         wallet=wallet.name,
                         key_to_import=pairs.private_key,
-                        beekeeper=world.beekeeper,
+                        beekeeper=beekeeper,
                     ).execute()
         return wallets
 
@@ -235,18 +220,3 @@ async def wallet_no_keys(setup_wallets: SetupWalletsFactory) -> WalletInfo:
     """Will return beekeeper created wallet with no keys available."""
     wallets = await setup_wallets(1, import_keys=False, keys_per_wallet=0)
     return wallets[0]
-
-
-@pytest.fixture
-async def wallet_working_account_key(
-    wallet: WalletInfo, working_account_private_key: PrivateKeyAliased, world: World
-) -> WalletInfo:
-    """Will return beekeeper created wallet with working account key available."""
-    await ImportKey(
-        app_state=world.app_state,
-        wallet=wallet.name,
-        key_to_import=working_account_private_key,
-        beekeeper=world.beekeeper,
-    ).execute()
-
-    return wallet

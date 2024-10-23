@@ -28,7 +28,7 @@ async def test_configure_key_add_with_beekeeper_session_token_not_unlocked(
     """Check if clive configure add_key command throws exception when wallet is not unlocked using session token."""
     # ARRANGE
     pk = PrivateKey.create()
-    message = "Profile is not initialized"
+    message = "There must be exactly one unlocked wallet with profile encryption key"
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

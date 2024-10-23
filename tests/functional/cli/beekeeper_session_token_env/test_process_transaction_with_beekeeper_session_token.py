@@ -82,21 +82,21 @@ async def test_process_unsigned_transaction(
 
 
 async def test_session_token_not_unlocked(
-    beekeeper_with_session: Beekeeper,
+    beekeeper: Beekeeper,
     prepare_profile: Profile,
     cli_tester: CLITester,
     tmp_path: Path,
 ) -> None:
     """Check if clive process transfer throws exception when wallet is not unlocked."""
     # ARRANGE
-    message = "Profile is not initialized"
+    message = "There must be exactly one unlocked wallet with profile encryption key"
     cli_tester.process_power_up(
         amount=AMOUNT_TO_POWER_UP,
         to=RECEIVER,
         broadcast=False,
         save_file=trx_file(tmp_path),
     )
-    await Lock(beekeeper=beekeeper_with_session, wallet=prepare_profile.name).execute()
+    await Lock(beekeeper=beekeeper, wallet=prepare_profile.name).execute()
 
     # ACT & ASSERT
     with pytest.raises(CLITestCommandError, match=message):

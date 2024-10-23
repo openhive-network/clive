@@ -27,34 +27,32 @@ async def assert_key_exists(beekeeper: Beekeeper, private_key: PrivateKey, *, sh
         assert not exists, "Beekeeper should not have given private key."
 
 
-async def test_configure_key_add(beekeeper_with_session: Beekeeper, cli_tester: CLITester) -> None:
+async def test_configure_key_add(beekeeper: Beekeeper, cli_tester: CLITester) -> None:
     """Check clive configure key add command."""
     # ARRANGE
     pk = PrivateKey.create()
 
-    await assert_key_exists(beekeeper_with_session, pk, should_exists=False)
+    await assert_key_exists(beekeeper, pk, should_exists=False)
 
     # ACT
     cli_tester.configure_key_add(key=pk.value, alias="add_key")
 
     # ASSERT
-    await assert_key_exists(beekeeper_with_session, pk, should_exists=True)
+    await assert_key_exists(beekeeper, pk, should_exists=True)
 
 
 @pytest.mark.parametrize("from_beekeeper", [True, False])
-async def test_configure_key_remove(
-    beekeeper_with_session: Beekeeper, cli_tester: CLITester, *, from_beekeeper: bool
-) -> None:
+async def test_configure_key_remove(beekeeper: Beekeeper, cli_tester: CLITester, *, from_beekeeper: bool) -> None:
     """Check clive configure key remove command."""
     # ARRANGE
     pk = PrivateKey.create()
 
-    await assert_key_exists(beekeeper_with_session, pk, should_exists=False)
+    await assert_key_exists(beekeeper, pk, should_exists=False)
     cli_tester.configure_key_add(key=pk.value, alias="key")
-    await assert_key_exists(beekeeper_with_session, pk, should_exists=True)
+    await assert_key_exists(beekeeper, pk, should_exists=True)
 
     # ACT
     cli_tester.configure_key_remove(alias="key", from_beekeeper=from_beekeeper)
 
     # ASSERT
-    await assert_key_exists(beekeeper_with_session, pk, should_exists=not from_beekeeper)
+    await assert_key_exists(beekeeper, pk, should_exists=not from_beekeeper)

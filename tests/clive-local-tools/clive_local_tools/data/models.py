@@ -21,6 +21,16 @@ class Keys:
         for _ in range(count):
             self.pairs.append(self.generate_key_pair())
 
+    @staticmethod
+    def from_private_key(private_key: PrivateKeyAliased) -> Keys:
+        keys = Keys()
+        pair = Keys.KeysPair(
+            public_key=private_key.calculate_public_key(),
+            private_key=private_key,
+        )
+        keys.pairs.append(pair)
+        return keys
+
     def get_public_keys(self, *, sort: bool = True) -> list[str]:
         pub_keys = [pair.public_key.value for pair in self.pairs]
         if sort:

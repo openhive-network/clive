@@ -41,7 +41,7 @@ async def test_negative_no_unlocked_profile(
     cli_tester_with_session_token_locked: CLITester,  # noqa: ARG001
 ) -> None:
     # ARRANGE
-    expected_error = "Profile is not initialized"
+    expected_error = "BeekeeperNotUnlockedError"
 
     # ACT
     with pytest.raises(AssertionError) as exception_info:

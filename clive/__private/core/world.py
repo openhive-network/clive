@@ -142,12 +142,10 @@ class World:
         await self.persistent_storage_service.save_profile(self.profile)
 
     async def close(self) -> None:
-        if self._node is not None:
-            await self._node.teardown()
-        if self._app_state.is_unlocked and self._profile is not None:
+        await self.node.teardown()
+        if self._app_state.is_unlocked:
             await self.save_profile_of_world()
-        if self._beekeeper is not None:
-            await self._beekeeper.close()
+        await self.beekeeper.close()
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""

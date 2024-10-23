@@ -432,3 +432,6 @@ class CLITester:
         beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["configure", "key", "remove"], **extract_params(locals()))
+
+    def show_keys(self, *, profile_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "keys"], **extract_params(locals()))

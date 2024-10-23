@@ -59,11 +59,11 @@ async def call_and_raise_if_error(http_endpoint: Url, data: JSONRPCRequest) -> N
 
 
 @pytest.mark.parametrize("force_error", [True, False])
-async def test_wallet_blocking_timeout(beekeeper: Beekeeper, wallet: WalletInfo, *, force_error: bool) -> None:
+async def test_wallet_blocking_timeout(beekeeper: Beekeeper, prepare_wallet: WalletInfo, *, force_error: bool) -> None:
     """Test test_wallet_blocking_timeout will test wallet blocking 500ms interval."""
     # ARRANGE
     wallets = (await beekeeper.api.list_wallets()).wallets
-    assert wallets[0].name == wallet.name
+    assert wallets[0].name == prepare_wallet.name
 
     unlock_jsons = []
     for i in range(5):
@@ -77,8 +77,8 @@ async def test_wallet_blocking_timeout(beekeeper: Beekeeper, wallet: WalletInfo,
             method="beekeeper_api.unlock",
             params={
                 "token": session,
-                "wallet_name": wallet.name,
-                "password": wallet.password if i > 0 else "WRONG_PASSWORD",
+                "wallet_name": prepare_wallet.name,
+                "password": prepare_wallet.password if i > 0 else "WRONG_PASSWORD",
             },
         )
         unlock_jsons.append(unlock_json)
