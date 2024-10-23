@@ -8,7 +8,6 @@ from textual.containers import Horizontal
 from textual.widgets import Static
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
-from clive.__private.ui.clive_screen import CliveScreen
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.not_updated_yet import NotUpdatedYet
@@ -46,7 +45,6 @@ class KeyAliasRow(CliveCheckerboardTableRow, CliveWidget):
 
     @on(CliveButton.Pressed, "#remove-key-alias-button")
     def remove_key_alias(self) -> None:
-        @CliveScreen.try_again_after_unlock
         async def _remove_key_alias(password: str | None) -> None:
             if not password:
                 return
