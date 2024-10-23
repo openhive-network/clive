@@ -22,10 +22,7 @@ if TYPE_CHECKING:
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
-    BINDINGS = [
-        Binding("escape", "dummy", show=False),
-        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
-    ]
+    BINDINGS = [Binding("f1", "help", "Help")]  # help is a hidden global binding, but we want to show it here
 
     def __init__(self, owner: Form[Profile]) -> None:
         super().__init__(owner, "Let's start onboarding!\n" + PRESS_HELP_MESSAGE)
