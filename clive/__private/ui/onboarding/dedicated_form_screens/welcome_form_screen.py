@@ -26,7 +26,7 @@ class Description(Static):
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
+    BINDINGS = [Binding("escape", "back", "Back", show=False)]
 
     def __init__(self, owner: Form[ContextT], description: str) -> None:
         self.__description = description
@@ -41,6 +41,12 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
             yield Description(self.__description)
             yield from self._content_after_description()
             yield CliveButton("Start!", id_="welcome-button-start")
+
+    def action_back(self) -> None:
+        from clive.__private.ui.onboarding.login_screen import LoginScreen
+
+        if self.world.profile.list_profiles():
+            self.app.push_screen(LoginScreen())
 
     @on(CliveButton.Pressed, "#welcome-button-start")
     async def begin(self) -> None:
