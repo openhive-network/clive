@@ -382,13 +382,6 @@ class Beekeeper:
         arguments = BeekeeperCLIArguments(version=True)
         return self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
 
-    def dump_config(self) -> BeekeeperConfig:
-        arguments = BeekeeperCLIArguments(dump_config=True)
-        paths = json.loads(
-            self.__executable.run_and_get_output(allow_empty_notification_server=True, arguments=arguments)
-        )
-        return BeekeeperConfig.load(Path(paths["config"]))
-
     def generate_beekeepers_default_config(self, destination: Path) -> None:
         with tempfile.TemporaryDirectory() as tmpdirname:
             arguments = BeekeeperCLIArguments(

@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from types import NoneType, UnionType
-from typing import TYPE_CHECKING, get_args
+from typing import TYPE_CHECKING
 
 from pydantic import Field
 
@@ -62,32 +61,8 @@ class BeekeeperConfig(CliveBaseModel):
                     )
 
     @classmethod
-    def load(cls, source: Path) -> BeekeeperConfig:
-        assert source.exists()
-        result = BeekeeperConfig()
-        fields = BeekeeperConfig.__fields__
-        with source.open("rt", encoding="utf-8") as in_file:
-            for line in in_file:
-                if (line := line.strip("\n")) and not line.startswith("#"):
-                    config_name, config_value = line.split("=")
-                    member_name = cls.__convert_config_name_to_member_name(config_name)
-                    member_type = fields[member_name].annotation
-                    if isinstance(member_type, UnionType) and get_args(member_type)[-1] is NoneType:
-                        member_type = get_args(member_type)[0]
-                    setattr(
-                        result,
-                        member_name,
-                        cls.__convert_config_value_to_member_value(config_value, expected=member_type),
-                    )
-        return result
-
-    @classmethod
     def __convert_member_name_to_config_name(cls, member_name: str) -> str:
         return member_name.replace("_", "-")
-
-    @classmethod
-    def __convert_config_name_to_member_name(cls, config_name: str) -> str:
-        return config_name.strip().replace("-", "_")
 
     @classmethod
     def __convert_member_value_to_config_value(cls, member_value: AllowedTypesT) -> str:
@@ -104,32 +79,3 @@ class BeekeeperConfig(CliveBaseModel):
             return member_value.as_posix()
 
         return str(member_value)
-
-    @classmethod
-    def __convert_config_value_to_member_value(  # noqa: PLR0911
-        cls, config_value: str, *, expected: type[AllowedTypesT]
-    ) -> AllowedTypesT | None:
-        config_value = config_value.strip()
-        if not config_value:
-            return None
-
-        if expected == Path:
-            return Path(config_value.replace('"', ""))
-
-        if expected == list[str]:
-            return config_value.split()
-
-        if expected == Url:
-            return Url.parse(config_value)
-
-        if expected is bool:
-            cv_lower = config_value.lower()
-            if cv_lower == "yes":
-                return True
-
-            if cv_lower == "no":
-                return False
-
-            raise InvalidOptionError(f"Expected `yes` or `no`, got: `{config_value}`")
-
-        return expected(config_value) if expected is not None else None  # type: ignore[call-arg]
