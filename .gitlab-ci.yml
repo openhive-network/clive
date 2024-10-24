@@ -88,6 +88,8 @@ type_check_with_mypy:
   extends: .prepare_hived_image
   stage: build
   variables:
+    GIT_SUBMODULE_DEPTH: 20
+
     REGISTRY_USER: "$HIVED_CI_IMGBUILDER_USER"
     REGISTRY_PASS: $HIVED_CI_IMGBUILDER_PASSWORD
     SUBMODULE_DIR: "${CI_PROJECT_DIR}/hive/"
