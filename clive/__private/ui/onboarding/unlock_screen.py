@@ -11,7 +11,6 @@ from textual.widgets import Button, Checkbox, Static
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
@@ -72,8 +71,6 @@ class UnlockScreen(BaseScreen):
 
     @on(Button.Pressed, "#unlock-button")
     async def unlock(self) -> None:
-        from clive.__private.ui.screens.dashboard import Dashboard
-
         password_input = self.query_one(SetPasswordInput)
         select_profile = self.query_one(SelectProfile)
         lock_after_time = self._lock_checkbox.value
@@ -99,12 +96,14 @@ class UnlockScreen(BaseScreen):
             return
 
         self.world.profile = self.profile.load(select_profile.value_ensure)
-        await self.app.push_screen(Dashboard())
+        await self.app.switch_mode("dashboard")
+
+        self._remove_welcome_modes()
         self._update_data_after_unlock()
 
     @on(Button.Pressed, "#new-profile-button")
-    def create_new_profile(self) -> None:
-        self.app.push_screen(Onboarding())
+    async def create_new_profile(self) -> None:
+        await self.app.switch_mode("onboarding")
 
     def _change_input_state(self) -> None:
         self._lock_after_time_input.display = self._lock_checkbox.value
@@ -112,3 +111,7 @@ class UnlockScreen(BaseScreen):
     def _update_data_after_unlock(self) -> None:
         self.app.update_alarms_data_asap()
         self.app.update_data_from_node_asap()
+
+    def _remove_welcome_modes(self) -> None:
+        self.app.remove_mode("unlock")
+        self.app.remove_mode("onboarding")

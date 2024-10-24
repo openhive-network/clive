@@ -203,7 +203,11 @@ class TUIWorld(World, CliveDOMNode):
         send_notification()
         self.app.trigger_app_state_watchers()
         self.clear_profile()
-        self.app.push_screen(UnlockScreen())
+
+        self.app.add_mode("onboarding", Onboarding)
+        self.app.add_mode("unlock", UnlockScreen)
+
+        self.app.switch_mode("unlock")
 
     def on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")

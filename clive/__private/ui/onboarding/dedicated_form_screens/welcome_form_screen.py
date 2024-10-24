@@ -42,11 +42,8 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
             yield from self._content_after_description()
             yield CliveButton("Start!", id_="welcome-button-start")
 
-    def action_back(self) -> None:
-        from clive.__private.ui.onboarding.login_screen import LoginScreen
-
-        if self.world.profile.list_profiles():
-            self.app.push_screen(LoginScreen())
+    async def action_back(self) -> None:
+        await self.app.switch_mode("unlock")
 
     @on(CliveButton.Pressed, "#welcome-button-start")
     async def begin(self) -> None:
