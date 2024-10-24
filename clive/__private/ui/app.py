@@ -60,6 +60,11 @@ class Clive(App[int]):
         "dashboard": Dashboard,
     }
 
+    MODES = {
+        "onboarding": Onboarding,
+        "dashboard": Dashboard,
+    }
+
     header_expanded = var(default=False)
     """Synchronize the expanded header state in all created header objects."""
 
@@ -167,9 +172,9 @@ class Clive(App[int]):
             self.set_interval(debug_loop_period_secs, self.__debug_log)
 
         if __should_enter_onboarding():
-            self.push_screen(Onboarding())
+            self.switch_mode("dashboard")
         else:
-            self.push_screen("dashboard")
+            self.switch_mode("onboarding")
 
     async def on_unmount(self) -> None:
         await self.world.close()

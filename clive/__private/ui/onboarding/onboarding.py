@@ -46,7 +46,6 @@ class OnboardingFinishScreen(FinishFormScreen[Profile]):
         profile.enable_saving()
         self.world.profile = profile
         await super().action_finish()
-        await self.app.switch_screen("dashboard")
         self.profile.save()
 
 
