@@ -67,7 +67,7 @@ TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
 @pytest.mark.parametrize("asset", [tt.Asset.Hive(1.03), tt.Asset.Hbd(2)])
 @pytest.mark.parametrize(("memo", "operation_processing"), TESTDATA)
 async def test_transfers(
-    prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
     asset: tt.Asset.HbdT | tt.Asset.HiveT,
     memo: str | None,
     operation_processing: OperationProcessing,
@@ -79,7 +79,7 @@ async def test_transfers(
     2. The user makes a transfer in HBD/HIVE without memo and finalizes transaction.
     3. The user makes a transfer in HBD/HIVE, adds to the cart and then broadcasts it.
     """
-    node, _, pilot = prepared_tui_on_dashboard_locked
+    node, _, pilot = prepared_tui_on_dashboard
 
     # ARRANGE
     log_current_view(pilot.app, nodes=True)
@@ -122,18 +122,17 @@ TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 
 
 async def test_transfers_finalize_cart(
-    prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
 ) -> None:
     """
     #103: I.4, II.4.
 
     4. The user makes two transfers, the first in HBD, the second in HIVE, adds them to cart and then broadcasts.
     """
-    node, _, pilot = prepared_tui_on_dashboard_locked
+    node, _, pilot = prepared_tui_on_dashboard
 
     # ARRANGE
     log_current_view(pilot.app, nodes=True)
-    assert is_header_in_locked_mode(pilot.app), "Expected locked mode!"
 
     expected_operations = [
         TransferOperation(from_=SENDER, to=RECEIVER, amount=TRANSFERS_DATA[i][0], memo=TRANSFERS_DATA[i][1])

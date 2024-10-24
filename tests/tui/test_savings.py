@@ -152,7 +152,7 @@ TESTDATA: Final[list[tuple[str | None, OperationProcessing]]] = [
 @pytest.mark.parametrize("other_account", [None, OTHER_RECEIVER])
 @pytest.mark.parametrize("operation_type", [TransferFromSavingsOperation, TransferToSavingsOperation])
 async def test_savings(  # noqa: PLR0913
-    prepared_tui_on_dashboard_unlocked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
     operation_type: type[TransferFromSavingsOperation | TransferToSavingsOperation],
     other_account: str | None,  # None means using current profile account name
     asset: tt.Asset.HbdT | tt.Asset.HiveT,
@@ -167,7 +167,7 @@ async def test_savings(  # noqa: PLR0913
        transaction.
     3. The user an operation in HBD/HIVE to own account/another account, adds to the cart and then broadcasts it.
     """
-    node, _, pilot = prepared_tui_on_dashboard_unlocked
+    node, _, pilot = prepared_tui_on_dashboard
 
     # ARRANGE
     expected_operation = prepare_expected_operation(
@@ -210,7 +210,7 @@ TRANSFERS_COUNT: Final[int] = len(TRANSFERS_DATA)
 @pytest.mark.parametrize("other_account", [None, OTHER_RECEIVER])
 @pytest.mark.parametrize("operation_type", [TransferFromSavingsOperation, TransferToSavingsOperation])
 async def test_savings_finalize_cart(
-    prepared_tui_on_dashboard_unlocked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
     operation_type: type[TransferFromSavingsOperation | TransferToSavingsOperation],
     other_account: str | None,  # None means using current profile account name
 ) -> None:
@@ -220,7 +220,7 @@ async def test_savings_finalize_cart(
     4. The user makes two operations to own account/another account, the first in HBD, the second in HIVE,
        adds them to cart and then broadcasts.
     """
-    node, _, pilot = prepared_tui_on_dashboard_unlocked
+    node, _, pilot = prepared_tui_on_dashboard
 
     # ARRANGE
     expected_operations = [
@@ -270,10 +270,10 @@ async def test_savings_finalize_cart(
 
 
 async def test_canceling_transfer_from_savings(
-    prepared_tui_on_dashboard_unlocked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
 ) -> None:
     """#110: III (cancel transfer from savings)."""
-    node, wallet, pilot = prepared_tui_on_dashboard_unlocked
+    node, wallet, pilot = prepared_tui_on_dashboard
 
     # ARRANGE
     expected_operations = [

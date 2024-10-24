@@ -53,9 +53,8 @@ async def prepared_tui_on_onboarding(
     node_with_wallet: NodeWithWallet,  # noqa: ARG001
 ) -> AsyncIterator[ClivePilot]:
     async with Clive().run_test() as pilot:
-        yield pilot
-
         await clive_quit(pilot)
+        yield pilot
 
 
 async def onboarding_until_set_account(

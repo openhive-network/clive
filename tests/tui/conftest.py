@@ -13,13 +13,14 @@ from clive.__private.core.profile import Profile
 from clive.__private.core.world import World
 from clive.__private.settings import settings
 from clive.__private.ui.app import Clive
+from clive.__private.ui.onboarding.unlock_screen import UnlockScreen
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive_local_tools.data.constants import WORKING_ACCOUNT_KEY_ALIAS, WORKING_ACCOUNT_PASSWORD
 from clive_local_tools.testnet_block_log import WATCHED_ACCOUNTS_DATA, WORKING_ACCOUNT_DATA, run_node
 from clive_local_tools.tui.checkers import assert_is_dashboard
 from clive_local_tools.tui.clive_quit import clive_quit
 from clive_local_tools.tui.constants import TUI_TESTS_PATCHED_NOTIFICATION_TIMEOUT
-from clive_local_tools.tui.textual_helpers import wait_for_screen
+from clive_local_tools.tui.textual_helpers import wait_for_screen, write_text
 from clive_local_tools.tui.workaround_incompatibility_with_fixtures import event_loop  # noqa: F401
 
 if TYPE_CHECKING:
@@ -94,14 +95,15 @@ async def prepared_env(
 
 
 @pytest.fixture
-async def prepared_tui_on_dashboard_locked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
-    return prepared_env
-
-
-@pytest.fixture
-async def prepared_tui_on_dashboard_unlocked(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
+async def prepared_tui_on_dashboard(prepared_env: PreparedTuiEnv) -> PreparedTuiEnv:
     node, wallet, pilot = prepared_env
-    await pilot.app.world.commands.unlock(password=WORKING_ACCOUNT_PASSWORD)
+
+    await wait_for_screen(pilot, UnlockScreen)
+    await pilot.press("tab")
+    await write_text(pilot, WORKING_ACCOUNT_PASSWORD)
+    await pilot.press("tab")
+    await pilot.press("tab")
+    await pilot.press("enter")
     await wait_for_screen(pilot, Dashboard)
     assert_is_dashboard(pilot)
     return prepared_env
