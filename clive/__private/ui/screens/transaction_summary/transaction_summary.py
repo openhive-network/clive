@@ -293,6 +293,8 @@ class TransactionSummary(BaseScreen):
         await self.query_exactly_one(CartTable).rebuild()
 
     async def _broadcast(self) -> None:
+        from clive.__private.ui.screens.dashboard import Dashboard
+
         transaction = self.transaction_ensure
         try:
             (
@@ -307,9 +309,10 @@ class TransactionSummary(BaseScreen):
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return
+
         self.profile.cart.clear()
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
-        self.app.get_screen("dashboard").pop_until_active()
+        self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
 
     async def _build_transaction(self) -> Transaction:
         return (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise

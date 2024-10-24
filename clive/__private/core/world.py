@@ -18,6 +18,7 @@ from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.onboarding.unlock_screen import UnlockScreen
+from clive.__private.ui.screens.dashboard import Dashboard
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -209,7 +210,10 @@ class TUIWorld(World, CliveDOMNode):
 
         self.profile.save()
         self.clear_profile()
-        self.app.push_screen(UnlockScreen())
+
+        self._add_welcome_modes()
+        self.app.switch_mode("unlock")
+        self._restart_dashboard_mode()
 
     def on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
@@ -220,6 +224,14 @@ class TUIWorld(World, CliveDOMNode):
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
+
+    def _add_welcome_modes(self) -> None:
+        self.app.add_mode("onboarding", Onboarding)
+        self.app.add_mode("unlock", UnlockScreen)
+
+    def _restart_dashboard_mode(self) -> None:
+        self.app.remove_mode("dashboard")
+        self.app.add_mode("dashboard", Dashboard)
 
 
 class CLIWorld(World):
