@@ -11,7 +11,8 @@ from clive.__private.core.keys import KeyManager, PublicKeyAliased
 from clive.__private.core.url import Url
 from clive.__private.core.validate_schema_field import is_schema_field_valid
 from clive.__private.logger import logger
-from clive.__private.models.schemas import ChainId, OperationBase
+from clive.__private.models import Transaction
+from clive.__private.models.schemas import ChainId, OperationRepresentationUnion, OperationUnion
 from clive.__private.settings import safe_settings
 from clive.__private.storage.service import PersistentStorageService
 from clive.__private.validators.profile_name_validator import ProfileNameValidator
@@ -19,12 +20,12 @@ from clive.exceptions import CliveError
 
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator, Iterable
+    from pathlib import Path
     from types import TracebackType
 
     from typing_extensions import Self
 
     from clive.__private.core.accounts.accounts import Account, KnownAccount, WatchedAccount, WorkingAccount
-    from clive.__private.models import Transaction
 
 
 class ProfileError(CliveError):
@@ -47,16 +48,6 @@ class ProfileInvalidNameError(ProfileError):
         super().__init__(message)
 
 
-class Cart(list[OperationBase]):
-    def fill_from_transaction(self, transaction: Transaction, *, clear_current_cart: bool = True) -> None:
-        if clear_current_cart:
-            self.clear()
-        self.extend(transaction.operations_models)
-
-    def swap(self, index_1: int, index_2: int) -> None:
-        self[index_1], self[index_2] = self[index_2], self[index_1]
-
-
 class Profile(Context):
     _INIT_KEY: Final[object] = object()
     """Used to prevent direct initialization of the class. Instead factory methods should be used."""
@@ -69,7 +60,8 @@ class Profile(Context):
         watched_accounts: Iterable[str | Account] | None = None,
         known_accounts: Iterable[str | Account] | None = None,
         key_aliases: Iterable[PublicKeyAliased] | None = None,
-        cart_operations: Iterable[OperationBase] | None = None,
+        transaction: Transaction | None = None,
+        transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | Url | None = None,
         *,
@@ -78,11 +70,10 @@ class Profile(Context):
         self._assert_no_direct_initialization(init_key)
 
         self.name = name
-
-        self.cart = Cart(cart_operations or [])
-
         self.keys = KeyManager()
         self.keys.add(*key_aliases or [])
+        self.transaction = transaction if transaction else Transaction()
+        self.transaction_file_path = transaction_file_path if transaction_file_path else None
 
         self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
 
@@ -136,6 +127,20 @@ class Profile(Context):
     @property
     def chain_id(self) -> str | None:
         return self._chain_id
+
+    @property
+    def operations(self) -> list[OperationUnion]:
+        return self.transaction.operations_models
+
+    @property
+    def operation_representations(self) -> list[OperationRepresentationUnion]:
+        return self.transaction.operations
+
+    def add_operation(self, *operations: OperationUnion) -> None:
+        self.transaction.add_operation(*operations)
+
+    def remove_operation(self, *operations: OperationUnion) -> None:
+        self.transaction.remove_operation(*operations)
 
     def set_chain_id(self, value: str | None) -> None:
         """
@@ -204,7 +209,8 @@ class Profile(Context):
         watched_accounts: Iterable[WatchedAccount] | None = None,
         known_accounts: Iterable[KnownAccount] | None = None,
         key_aliases: Iterable[PublicKeyAliased] | None = None,
-        cart_operations: Iterable[OperationBase] | None = None,
+        transaction: Transaction | None = None,
+        transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | Url | None = None,
     ) -> Profile:
@@ -215,7 +221,8 @@ class Profile(Context):
             watched_accounts,
             known_accounts,
             key_aliases,
-            cart_operations,
+            transaction,
+            transaction_file_path,
             chain_id,
             node_address,
             is_newly_created=True,
@@ -266,7 +273,8 @@ class Profile(Context):
         watched_accounts: Iterable[WatchedAccount] | None = None,
         known_accounts: Iterable[KnownAccount] | None = None,
         key_aliases: Iterable[PublicKeyAliased] | None = None,
-        cart_operations: Iterable[OperationBase] | None = None,
+        transaction: Transaction | None = None,
+        transaction_file_path: Path | None = None,
         chain_id: str | None = None,
         node_address: str | Url | None = None,
         *,
@@ -280,7 +288,8 @@ class Profile(Context):
             watched_accounts,
             known_accounts,
             key_aliases,
-            cart_operations,
+            transaction,
+            transaction_file_path,
             chain_id,
             node_address,
             is_newly_created=is_newly_created,

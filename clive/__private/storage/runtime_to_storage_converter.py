@@ -1,13 +1,15 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
-from clive.__private.models.schemas import convert_to_representation
 from clive.__private.storage.model import (
     AlarmStorageModel,
     KeyAliasStorageModel,
     ProfileStorageModel,
     TrackedAccountStorageModel,
+    TransactionCoreStorageModel,
+    TransactionStorageModel,
 )
 
 if TYPE_CHECKING:
@@ -15,7 +17,6 @@ if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.keys import PublicKeyAliased
     from clive.__private.core.profile import Profile
-    from clive.__private.models.schemas import OperationRepresentationBase
 
 
 class RuntimeToStorageConverter:
@@ -29,7 +30,7 @@ class RuntimeToStorageConverter:
             tracked_accounts=self._tracked_accounts_to_model_container(),
             known_accounts=self._known_accounts_to_model_container(),
             key_aliases=self._key_aliases_to_model_container(),
-            cart_operations=self._operations_to_model_container(),
+            transaction=self._transaction_to_model(),
             chain_id=self._profile.chain_id,
             node_address=str(self._profile.node_address),
         )
@@ -47,8 +48,18 @@ class RuntimeToStorageConverter:
     def _key_aliases_to_model_container(self) -> list[KeyAliasStorageModel]:
         return [self._key_alias_to_model(key) for key in self._profile.keys]
 
-    def _operations_to_model_container(self) -> list[OperationRepresentationBase]:
-        return [convert_to_representation(operation) for operation in self._profile.cart]
+    def _transaction_to_model(self) -> TransactionStorageModel:
+        transaction_core = TransactionCoreStorageModel(
+            operations=deepcopy(self._profile.operation_representations),
+            ref_block_num=self._profile.transaction.ref_block_num,
+            ref_block_prefix=self._profile.transaction.ref_block_prefix,
+            expiration=self._profile.transaction.expiration,
+            extensions=deepcopy(self._profile.transaction.extensions),
+            signatures=deepcopy(self._profile.transaction.signatures),
+        )
+        return TransactionStorageModel(
+            transaction_core=transaction_core, transaction_file_path=self._profile.transaction_file_path
+        )
 
     def _tracked_account_to_model(self, account: TrackedAccount) -> TrackedAccountStorageModel:
         alarms = [self._alarm_to_model(alarm) for alarm in account._alarms.all_alarms if alarm.has_identifier]
