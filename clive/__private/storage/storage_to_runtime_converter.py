@@ -1,16 +1,17 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
 from clive.__private.core.keys import PublicKeyAliased
+from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
-    from clive.__private.models.schemas import OperationBase
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,
@@ -32,7 +33,7 @@ class StorageToRuntimeConverter:
             watched_accounts=self._watched_accounts_from_profile_storage_model(),
             known_accounts=self._known_accounts_from_profile_storage_model(),
             key_aliases=self._key_aliases_from_profile_storage_model(),
-            cart_operations=self._operations_from_model(),
+            transaction=self._transaction_from_storage_model(),
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
             is_newly_created=False,
@@ -65,8 +66,15 @@ class StorageToRuntimeConverter:
     def _key_aliases_from_profile_storage_model(self) -> set[PublicKeyAliased]:
         return {self._key_alias_from_model(key) for key in self._model.key_aliases}
 
-    def _operations_from_model(self) -> list[OperationBase]:
-        return [op_repr.value for op_repr in self._model.cart_operations]  # type: ignore[attr-defined]
+    def _transaction_from_storage_model(self) -> Transaction:
+        return Transaction(
+            operations=deepcopy(self._model.transaction.operations),
+            ref_block_num=self._model.transaction.ref_block_num,
+            ref_block_prefix=self._model.transaction.ref_block_prefix,
+            expiration=self._model.transaction.expiration,
+            extensions=deepcopy(self._model.transaction.extensions),
+            signatures=deepcopy(self._model.transaction.signatures),
+        )
 
     def _working_account_from_model(self, model: TrackedAccountStorageModel) -> WorkingAccount:
         return WorkingAccount(model.name, self._alarms_storage_from_model(model))
