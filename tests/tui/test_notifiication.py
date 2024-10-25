@@ -11,18 +11,20 @@ if TYPE_CHECKING:
 
 
 async def test_patched_notification_timeout(
-    prepared_tui_on_dashboard_locked: tuple[tt.RawNode, tt.Wallet, ClivePilot],
+    prepared_tui_on_dashboard: tuple[tt.RawNode, tt.Wallet, ClivePilot],
 ) -> None:
     # ARRANGE
     notification_message = "test notification"
-    _, _, pilot = prepared_tui_on_dashboard_locked
+    _, _, pilot = prepared_tui_on_dashboard
 
     # ACT
-
     pilot.app.notify(notification_message)
     await pilot.pause()  # wait for notification
 
-    notification = next(iter(pilot.app._notifications))
+    notifications = iter(pilot.app._notifications)
+    notification = next(notifications)
+    if "mode" in notification.message:  # ignore the UNLOCKED mode notification
+        notification = next(notifications)
 
     # ASSERT
     assert notification.message == notification_message, "Notification message differs from the expected"

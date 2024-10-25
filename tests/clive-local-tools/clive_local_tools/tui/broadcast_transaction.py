@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.ui.screens.dashboard import Dashboard
 
-from .checkers import assert_is_dashboard
+from .checkers import assert_is_screen_active
 from .textual_helpers import press_and_wait_for_screen
 
 if TYPE_CHECKING:
@@ -14,4 +14,4 @@ if TYPE_CHECKING:
 async def broadcast_transaction(pilot: ClivePilot) -> None:
     broadcast_binding_description = "Broadcast"
     await press_and_wait_for_screen(pilot, "f6", Dashboard, key_description=broadcast_binding_description)
-    assert_is_dashboard(pilot)
+    assert_is_screen_active(pilot, Dashboard)
