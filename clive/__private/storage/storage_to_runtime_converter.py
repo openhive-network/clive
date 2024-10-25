@@ -1,16 +1,19 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import TYPE_CHECKING
 
 from clive.__private.core.accounts.accounts import KnownAccount, WatchedAccount, WorkingAccount
 from clive.__private.core.alarms.alarm import Alarm
 from clive.__private.core.alarms.alarms_storage import AlarmsStorage
 from clive.__private.core.keys import PublicKeyAliased
+from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
+    from pathlib import Path
+
     from clive.__private.core.alarms.alarm import AnyAlarm
     from clive.__private.core.profile import Profile
-    from clive.__private.models.schemas import OperationBase
     from clive.__private.storage.model import (
         AlarmStorageModel,
         KeyAliasStorageModel,
@@ -32,7 +35,8 @@ class StorageToRuntimeConverter:
             watched_accounts=self._watched_accounts_from_profile_storage_model(),
             known_accounts=self._known_accounts_from_profile_storage_model(),
             key_aliases=self._key_aliases_from_profile_storage_model(),
-            cart_operations=self._operations_from_model(),
+            transaction=self._transaction_core_from_storage_model(),
+            transaction_file_path=self._transaction_file_path_from_storage_model(),
             chain_id=self._model.chain_id,
             node_address=self._model.node_address,
             is_newly_created=False,
@@ -65,8 +69,28 @@ class StorageToRuntimeConverter:
     def _key_aliases_from_profile_storage_model(self) -> set[PublicKeyAliased]:
         return {self._key_alias_from_model(key) for key in self._model.key_aliases}
 
-    def _operations_from_model(self) -> list[OperationBase]:
-        return [op_repr.value for op_repr in self._model.cart_operations]  # type: ignore[attr-defined]
+    def _transaction_core_from_storage_model(self) -> Transaction | None:
+        transaction_storage_model = self._model.transaction
+
+        if transaction_storage_model is None:
+            return None
+
+        transaction_core = transaction_storage_model.transaction_core
+        return Transaction(
+            operations=deepcopy(transaction_core.operations),
+            ref_block_num=transaction_core.ref_block_num,
+            ref_block_prefix=transaction_core.ref_block_prefix,
+            expiration=transaction_core.expiration,
+            extensions=deepcopy(transaction_core.extensions),
+            signatures=deepcopy(transaction_core.signatures),
+        )
+
+    def _transaction_file_path_from_storage_model(self) -> Path | None:
+        transaction_storage_model = self._model.transaction
+
+        if transaction_storage_model:
+            return transaction_storage_model.transaction_file_path
+        return None
 
     def _working_account_from_model(self, model: TrackedAccountStorageModel) -> WorkingAccount:
         return WorkingAccount(model.name, self._alarms_storage_from_model(model))
