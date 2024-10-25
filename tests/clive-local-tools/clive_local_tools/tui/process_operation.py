@@ -11,17 +11,11 @@ if TYPE_CHECKING:
     from clive_local_tools.tui.types import ClivePilot, OperationProcessing
 
 
-async def process_operation(
-    pilot: ClivePilot,
-    operation_processing: OperationProcessing,
-    *,
-    unlocked: bool = True,
-    password: str | None = None,
-) -> None:
+async def process_operation(pilot: ClivePilot, operation_processing: OperationProcessing) -> None:
     if operation_processing == "ADD_TO_CART":
         await press_binding(pilot, "f2", "Add to cart")
         await press_and_wait_for_screen(pilot, "escape", Operations)
         await press_and_wait_for_screen(pilot, "f2", TransactionSummary)
     else:
         await press_and_wait_for_screen(pilot, "f6", TransactionSummary)
-    await broadcast_transaction(pilot, unlocked=unlocked, password=password)
+    await broadcast_transaction(pilot)

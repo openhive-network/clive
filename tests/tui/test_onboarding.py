@@ -104,11 +104,11 @@ async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, 
 async def onboarding_finish(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "ctrl+n", OnboardingFinishScreen)
     await press_and_wait_for_screen(pilot, "enter", Dashboard)
-    assert_is_dashboard(pilot, unlocked=True)
+    assert_is_dashboard(pilot)
 
 
 async def assert_tui_key_alias_exists(pilot: ClivePilot) -> None:
-    assert_is_dashboard(pilot, unlocked=True)
+    assert_is_dashboard(pilot)
     await press_and_wait_for_screen(pilot, "f6", Config)
     await focus_next(pilot)
     await press_and_wait_for_screen(pilot, "enter", ManageKeyAliases)
