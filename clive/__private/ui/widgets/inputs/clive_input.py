@@ -49,6 +49,10 @@ class CliveInput(Input):
 
     DEFAULT_REQUIRED_FAILURE_DESCRIPTION: Final[str] = "This field is required"
 
+    _DEFAULT_VALIDATE_ON: Final[set[Literal[InputValidationOn]]] = {"submitted", "changed"}
+    """To avoid validation while focusing other element (without filling input),
+    more details: https://github.com/Textualize/textual/issues/5130"""
+
     title: str = var("", init=False)  # type: ignore[assignment]
     required: bool = var(default=False, init=False)  # type: ignore[assignment]
     required_failure_description: str = var(DEFAULT_REQUIRED_FAILURE_DESCRIPTION, init=False)  # type: ignore[assignment]
@@ -102,7 +106,7 @@ class CliveInput(Input):
             highlighter=highlighter,
             suggester=suggester,
             validators=validators,
-            validate_on=validate_on,
+            validate_on=validate_on if validate_on is not None else self._DEFAULT_VALIDATE_ON,
             valid_empty=valid_empty,
             name=name,
             id=id,
