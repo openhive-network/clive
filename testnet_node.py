@@ -105,7 +105,7 @@ async def _create_wallet(working_account_name: str, private_key: str, key_alias:
             app_state=world_cm.app_state,
             beekeeper=world_cm.beekeeper,
             wallet=working_account_name,
-            password=working_account_name,
+            password=working_account_name * 2,
         ).execute_with_result()
 
         tt.logger.info(f"password for profile `{working_account_name}` is: `{password}`")
