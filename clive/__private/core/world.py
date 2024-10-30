@@ -206,7 +206,8 @@ class TUIWorld(World, CliveDOMNode):
             send_notification = partial(self.app.notify, f"{base_message}.")
 
         send_notification()
-        self.app.trigger_app_state_watchers()
+        if self.app.is_world_set:
+            self.app.trigger_app_state_watchers()
 
         self.profile.save()
         self.clear_profile()
@@ -216,8 +217,9 @@ class TUIWorld(World, CliveDOMNode):
         self._restart_dashboard_mode()
 
     def on_going_into_unlocked_mode(self) -> None:
-        self.app.notify("Switched to the UNLOCKED mode.")
-        self.app.trigger_app_state_watchers()
+        if self.app.is_world_set:
+            self.app.notify("Switched to the UNLOCKED mode.")
+            self.app.trigger_app_state_watchers()
 
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
         return profile.name == Onboarding.ONBOARDING_PROFILE_NAME

@@ -81,6 +81,10 @@ class Clive(App[int]):
         assert self._world is not None, "World is not set yet."
         return self._world
 
+    @property
+    def is_world_set(self) -> bool:
+        return self._world is not None
+
     @staticmethod
     def app_instance() -> Clive:
         return cast(Clive, active_app.get())
