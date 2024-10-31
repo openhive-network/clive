@@ -294,8 +294,9 @@ class SavingsTransfers(TabPane, OperationActionBindings):
         savings_data = provider.content
 
         transfer_from_savings_operations_in_cart = [
-            operation for operation in self.profile.cart if isinstance(operation, TransferFromSavingsOperation)
+            operation for operation in self.profile.transaction if isinstance(operation, TransferFromSavingsOperation)
         ]
+
         return savings_data.create_request_id(future_transfers=transfer_from_savings_operations_in_cart)
 
 

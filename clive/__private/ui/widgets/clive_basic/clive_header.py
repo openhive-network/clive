@@ -88,7 +88,7 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
     @staticmethod
     def cart_status_callback(profile: Profile) -> str:
-        operation_amount = len(profile.cart)
+        operation_amount = len(profile.transaction)
         amount_text = (
             "empty" if operation_amount <= 0 else f"{operation_amount} op{'s' if operation_amount > 1 else ''}"
         )
@@ -100,13 +100,7 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
         if isinstance(self.app.screen, TransactionSummary):
             return
-
-        transaction = (
-            (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
-            if self.profile.cart
-            else None
-        )
-        await self.app.push_screen(TransactionSummary(transaction))
+        await self.app.push_screen(TransactionSummary())
 
 
 class DashboardButton(OneLineButtonUnfocusable):
