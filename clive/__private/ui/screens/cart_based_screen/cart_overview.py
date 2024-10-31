@@ -43,7 +43,7 @@ class CartItemsAmount(DynamicLabel):
         super().__init__(self.world, "profile", self._get_cart_item_count)
 
     def _get_cart_item_count(self, profile: Profile) -> str:
-        amount = len(profile.cart)
+        amount = len(profile.transaction)
         if amount > 0:
             return f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART"
         return "CART IS EMPTY"
@@ -110,4 +110,4 @@ class CartOverview(CliveWidget):
         return Asset.pretty_amount(profile.accounts.working.data.hbd_balance)
 
     def _create_cart_items(self, profile: Profile) -> list[CartItem]:
-        return [CartItem(index + 1, operation) for index, operation in enumerate(profile.cart)]
+        return [CartItem(index + 1, operation) for index, operation in enumerate(profile.transaction)]

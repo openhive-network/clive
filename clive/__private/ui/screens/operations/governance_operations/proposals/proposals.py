@@ -134,7 +134,7 @@ class Proposal(GovernanceTableRow[ProposalData]):
 
     @property
     def is_operation_in_cart(self) -> bool:
-        for operation in self.profile.cart:
+        for operation in self.profile.transaction:
             if (
                 isinstance(operation, UpdateProposalVotesOperation)
                 and self.row_data.proposal_id in operation.proposal_ids
@@ -153,7 +153,7 @@ class ProposalsActions(GovernanceActions[UpdateProposalVotesOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Proposal"
 
     async def mount_operations_from_cart(self) -> None:
-        for operation in self.profile.cart:
+        for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
                 for proposal_id in operation.proposal_ids:
                     await self.add_row(identifier=str(proposal_id), pending=True)

@@ -132,14 +132,12 @@ class Witness(GovernanceTableRow[WitnessData]):
 
     @property
     def is_operation_in_cart(self) -> bool:
-        return (
-            AccountWitnessVoteOperation(
-                account=self.profile.accounts.working.name,
-                witness=self.row_data.name,
-                approve=not self.row_data.voted,
-            )
-            in self.profile.cart
+        expected_operation = AccountWitnessVoteOperation(
+            account=self.profile.accounts.working.name,
+            witness=self.row_data.name,
+            approve=not self.row_data.voted,
         )
+        return expected_operation in self.profile.transaction
 
 
 class WitnessManualSearch(Grid):
@@ -208,7 +206,7 @@ class WitnessesActions(GovernanceActions[AccountWitnessVoteOperation]):
     NAME_OF_ACTION: ClassVar[str] = "Witness"
 
     async def mount_operations_from_cart(self) -> None:
-        for operation in self.profile.cart:
+        for operation in self.profile.transaction:
             if self.should_be_added_to_actions(operation):
                 await self.add_row(identifier=operation.witness, vote=operation.approve, pending=True)
 
