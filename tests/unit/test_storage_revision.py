@@ -10,7 +10,7 @@ from clive.__private.storage.model import PersistentStorageModelSchema, calculat
 if TYPE_CHECKING:
     from _pytest.monkeypatch import MonkeyPatch
 
-EXPECTED_REVISION: Final[str] = "94ca1f15"
+EXPECTED_REVISION: Final[str] = "d8efcab9"
 FIRST_PROFILE_NAME: Final[str] = "first"
 
 
