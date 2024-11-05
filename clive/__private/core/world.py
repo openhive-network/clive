@@ -3,7 +3,7 @@ from __future__ import annotations
 import contextlib
 from contextlib import contextmanager
 from functools import partial
-from typing import TYPE_CHECKING, Any, Final, cast
+from typing import TYPE_CHECKING, Any, Final, Generator, cast
 
 from textual.reactive import var
 
@@ -62,6 +62,7 @@ class World:
         self._beekeeper: Beekeeper | None = None
 
         self._node = Node(self._profile)
+        self._is_during_setup = False
 
     async def __aenter__(self) -> Self:
         return await self.setup()
@@ -116,13 +117,21 @@ class World:
                 stack.enter_context(context)
             yield
 
-    async def setup(self) -> Self:
-        await self._node.setup()
-        if self._use_beekeeper:
-            self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-            if self._should_sync_with_beekeeper:
-                await self._commands.sync_state_with_beekeeper()
+    @contextmanager
+    def during_setup(self) -> Generator[None, None]:
+        self._is_during_setup = True
+        try:
+            yield
+        finally:
+            self._is_during_setup = False
 
+    async def setup(self) -> Self:
+        with self.during_setup():
+            await self._node.setup()
+            if self._use_beekeeper:
+                self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
+                if self._should_sync_with_beekeeper:
+                    await self._commands.sync_state_with_beekeeper()
         return self
 
     async def close(self) -> None:
@@ -133,9 +142,21 @@ class World:
 
     def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
+        if self._is_during_setup:
+            return
+        self._on_going_into_locked_mode(source)
 
     def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
+        if self._is_during_setup:
+            return
+        self._on_going_into_unlocked_mode()
+
+    def _on_going_into_locked_mode(self, _: LockSource) -> None:
+        """Override this method to hook when clive goes into the locked mode."""
+
+    def _on_going_into_unlocked_mode(self) -> None:
+        """Override this method to hook when clive goes into the unlocked mode."""
 
     def _load_profile(self, profile_name: str | None) -> Profile:
         return Profile.load(profile_name)
@@ -191,7 +212,7 @@ class TUIWorld(World, CliveDOMNode):
     def is_in_onboarding_mode(self) -> bool:
         return self._is_in_onboarding_mode(self.profile)
 
-    def on_going_into_locked_mode(self, source: LockSource) -> None:
+    def _on_going_into_locked_mode(self, source: LockSource) -> None:
         base_message: Final[str] = "Switched to the LOCKED mode"
         if source == "beekeeper_notification_server":
             send_notification = partial(
@@ -205,7 +226,7 @@ class TUIWorld(World, CliveDOMNode):
         send_notification()
         self.app.trigger_app_state_watchers()
 
-    def on_going_into_unlocked_mode(self) -> None:
+    def _on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
         self.app.trigger_app_state_watchers()
 
