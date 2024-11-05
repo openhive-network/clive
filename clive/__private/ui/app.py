@@ -155,10 +155,6 @@ class Clive(App[int]):
         self._world = await TUIWorld().setup()
 
     def on_mount(self) -> None:
-        def __should_enter_onboarding() -> bool:
-            should_force_onboarding = safe_settings.dev.should_force_onboarding
-            return self.world.is_in_onboarding_mode or should_force_onboarding
-
         self._refresh_node_data_interval = self.set_interval(
             safe_settings.node.refresh_rate_secs, lambda: self.update_data_from_node(), pause=True
         )
@@ -174,8 +170,8 @@ class Clive(App[int]):
             debug_loop_period_secs = safe_settings.dev.debug_loop_period_secs
             self.set_interval(debug_loop_period_secs, self.__debug_log)
 
-        if __should_enter_onboarding():
-            self.switch_mode("dashboard")
+        if self.world.profile.is_any_profile_saved:
+            self.switch_mode("unlock")
         else:
             self.switch_mode("onboarding")
 
