@@ -185,16 +185,16 @@ class World:
 
 
 class TUIWorld(World, CliveDOMNode):
-    profile: Profile = var(None)  # type: ignore[assignment]
+    profile: Profile = var(None, init=False)  # type: ignore[assignment]
     app_state: AppState = var(None)  # type: ignore[assignment]
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
         profile_name = Onboarding.ONBOARDING_PROFILE_NAME
         super().__init__(profile_name)
+        self.node = self._node
         self.profile = self._profile
         self.app_state = self._app_state
-        self.node = self._node
 
     def _load_profile(self, profile_name: str | None) -> Profile:
         profile = super()._load_profile(profile_name)
@@ -224,6 +224,9 @@ class TUIWorld(World, CliveDOMNode):
             return
 
         self.set_reactive(self.__class__.profile, profile)  # type: ignore[arg-type]
+
+    def _watch_profile(self, profile: Profile) -> None:
+        self.node.change_related_profile(profile)
 
     def _on_going_into_locked_mode(self, source: LockSource) -> None:
         base_message: Final[str] = "Switched to the LOCKED mode"

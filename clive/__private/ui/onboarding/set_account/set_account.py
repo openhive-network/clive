@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 from textual.widgets import Checkbox
 
 from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
-from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.form_screen import FormScreen
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
@@ -22,7 +22,7 @@ class WorkingAccountCheckbox(Checkbox):
         super().__init__("Working account?", value=True)
 
 
-class SetAccount(BaseScreen, FormScreen[Profile]):
+class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "onboarding"
 
@@ -65,14 +65,14 @@ class SetAccount(BaseScreen, FormScreen[Profile]):
 
     async def apply(self) -> None:
         # allow only for adding one account
-        self.context.accounts.unset_working_account()
-        self.context.accounts.watched.clear()
-        self.context.accounts.known.clear()
+        self.context.profile.accounts.unset_working_account()
+        self.context.profile.accounts.watched.clear()
+        self.context.profile.accounts.known.clear()
 
         account_name = self.account_name
 
-        self.context.accounts.known.add(account_name)
+        self.context.profile.accounts.known.add(account_name)
         if self.should_be_working_account:
-            self.context.accounts.set_working_account(account_name)
+            self.context.profile.accounts.set_working_account(account_name)
         else:
-            self.context.accounts.watched.add(account_name)
+            self.context.profile.accounts.watched.add(account_name)

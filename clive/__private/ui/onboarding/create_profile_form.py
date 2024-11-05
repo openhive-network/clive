@@ -4,8 +4,8 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
-from clive.__private.core.profile import Profile
 from clive.__private.ui.get_css import get_relative_css_path
+from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.form_screen import FormScreen
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
@@ -20,11 +20,11 @@ if TYPE_CHECKING:
     from clive.__private.ui.onboarding.form import Form
 
 
-class CreateProfileForm(BaseScreen, FormScreen[Profile]):
+class CreateProfileForm(BaseScreen, FormScreen[OnboardingContext]):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "onboarding"
 
-    def __init__(self, owner: Form[Profile]) -> None:
+    def __init__(self, owner: Form[OnboardingContext]) -> None:
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)
@@ -59,7 +59,7 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
         profile_name = self._profile_name_input.value_or_error
         password = self._password_input.value_or_error
 
-        self.context.name = profile_name
+        self.context.profile.name = profile_name
 
         create_wallet = CreateWallet(
             app_state=self.app_state,
@@ -69,7 +69,7 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
         )
         write_data = SyncDataWithBeekeeper(
             app_state=self.app_state,
-            profile=self.context,
+            profile=self.context.profile,
             beekeeper=self.world.beekeeper,
         )
 

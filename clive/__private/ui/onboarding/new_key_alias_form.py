@@ -2,14 +2,14 @@ from __future__ import annotations
 
 from typing import ClassVar
 
-from clive.__private.core.profile import Profile
 from clive.__private.logger import logger
+from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.form_screen import FormScreen
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
 
-class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
+class NewKeyAliasForm(NewKeyAliasBase[OnboardingContext], FormScreen[OnboardingContext]):
     BIG_TITLE = "Onboarding"
     SUBTITLE = "Optional step, could be done later"
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
@@ -22,7 +22,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
 
     async def action_previous_screen(self) -> None:
         # We allow just for adding one key during onboarding. Clear old ones because validation could fail.
-        self.context.keys.clear_to_import()
+        self.context.profile.keys.clear_to_import()
         await super().action_previous_screen()
 
     async def action_next_screen(self) -> None:
@@ -41,5 +41,5 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
         return None
 
     async def apply(self) -> None:
-        self.context.keys.set_to_import([self._private_key_aliased])
+        self.context.profile.keys.set_to_import([self._private_key_aliased])
         logger.debug("New private key is waiting to be imported...")
