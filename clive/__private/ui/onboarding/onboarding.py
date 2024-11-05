@@ -5,7 +5,9 @@ from typing import TYPE_CHECKING, Final
 from textual.binding import Binding
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
+from clive.__private.ui.onboarding.context import OnboardingContext
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
 from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
 from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
@@ -21,54 +23,55 @@ if TYPE_CHECKING:
     from textual.app import ComposeResult
 
 
-class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
+class OnboardingWelcomeScreen(WelcomeFormScreen[OnboardingContext]):
     BINDINGS = [Binding("f1", "help", "Help")]  # help is a hidden global binding, but we want to show it here
 
-    def __init__(self, owner: Form[Profile]) -> None:
+    def __init__(self, owner: Form[OnboardingContext]) -> None:
         super().__init__(owner, "Let's start onboarding!\n" + PRESS_HELP_MESSAGE)
 
     def _content_after_description(self) -> ComposeResult:
         yield SelectCopyPasteHint()
 
 
-class OnboardingFinishScreen(FinishFormScreen[Profile]):
+class OnboardingFinishScreen(FinishFormScreen[OnboardingContext]):
     async def action_finish(self) -> None:
         self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
 
-        profile = self.context
+        profile = self.context.profile
         profile.enable_saving()
         self.world.profile = profile
         await super().action_finish()
         self.profile.save()
 
 
-class Onboarding(Form[Profile]):
+class Onboarding(Form[OnboardingContext]):
     ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
 
     @property
-    def context(self) -> Profile:
+    def context(self) -> OnboardingContext:
         return self.__context
 
-    def register_screen_builders(self) -> Iterator[ScreenBuilder[Profile]]:
+    def register_screen_builders(self) -> Iterator[ScreenBuilder[OnboardingContext]]:
         yield CreateProfileForm
         yield SetNodeAddressForm
         yield SetAccount
         yield NewKeyAliasForm
 
-    def create_welcome_screen(self) -> ScreenBuilder[Profile]:
+    def create_welcome_screen(self) -> ScreenBuilder[OnboardingContext]:
         return lambda owner: OnboardingWelcomeScreen(owner)
 
-    def create_finish_screen(self) -> ScreenBuilder[Profile]:
+    def create_finish_screen(self) -> ScreenBuilder[OnboardingContext]:
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
-        self.__context = Profile.create(self.ONBOARDING_PROFILE_NAME)
+        profile = Profile.create(self.ONBOARDING_PROFILE_NAME)
+        self.__context = OnboardingContext(profile, Node(profile))
 
-    def _skip_during_push_screen(self) -> list[ScreenBuilder[Profile]]:
-        screens_to_skip: list[ScreenBuilder[Profile]] = []
+    def _skip_during_push_screen(self) -> list[ScreenBuilder[OnboardingContext]]:
+        screens_to_skip: list[ScreenBuilder[OnboardingContext]] = []
 
         # skip NewKeyAliasForm if there is no working account set
-        if not self.context.accounts.has_working_account:
+        if not self.context.profile.accounts.has_working_account:
             screens_to_skip.append(NewKeyAliasForm)
 
         return screens_to_skip

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, ClassVar
 
 from textual.binding import Binding
 
+from clive.__private.core.profile import Profile
 from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     FailedValidationError,
@@ -12,10 +13,9 @@ from clive.__private.ui.widgets.inputs.clive_validated_input import (
 
 if TYPE_CHECKING:
     from clive.__private.core.keys import PublicKeyAliased
-    from clive.__private.core.profile import Profile
 
 
-class EditKeyAlias(KeyAliasForm):
+class EditKeyAlias(KeyAliasForm[Profile]):
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
         Binding("f6", "save", "Save"),

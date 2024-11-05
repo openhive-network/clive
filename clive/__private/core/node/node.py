@@ -431,6 +431,9 @@ class Node(BaseNode):
         self.__profile._set_node_address(address)
         self.cached.clear()
 
+    def change_related_profile(self, profile: Profile) -> None:
+        self.__profile = profile
+
     async def handle_request(
         self, request: JSONRPCRequest, *, expect_type: type[JSONRPCExpectResultT]
     ) -> JSONRPCExpectResultT:

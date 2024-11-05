@@ -9,8 +9,12 @@ from textual.widgets import Input
 
 from clive.__private.core.constants.tui.placeholders import KEY_FILE_PATH_PLACEHOLDER
 from clive.__private.core.keys import PrivateKey, PrivateKeyAliased
+from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
-from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import KeyAliasForm
+from clive.__private.ui.screens.config.manage_key_aliases.widgets.key_alias_form import (
+    KeyAliasForm,
+    KeyAliasFormContextT,
+)
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInput,
     CliveValidatedInputError,
@@ -24,10 +28,8 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-    from clive.__private.core.profile import Profile
 
-
-class NewKeyAliasBase(KeyAliasForm, ABC):
+class NewKeyAliasBase(KeyAliasForm[KeyAliasFormContextT], ABC):
     BINDINGS = [
         Binding("f2", "load_from_file", "Load from file"),
     ]
@@ -117,7 +119,7 @@ class NewKeyAliasBase(KeyAliasForm, ABC):
         return safe_settings.secrets.default_private_key or ""
 
 
-class NewKeyAlias(NewKeyAliasBase):
+class NewKeyAlias(NewKeyAliasBase[Profile]):
     BIG_TITLE = "Configuration"
     SUBTITLE = "Manage key aliases"
     BINDINGS = [
