@@ -88,6 +88,10 @@ class World:
     def node(self) -> Node:
         return self._node
 
+    @property
+    def _should_sync_with_beekeeper(self) -> bool:
+        return safe_settings.beekeeper.is_session_token_set
+
     @contextmanager
     def modified_connection_details(
         self,
@@ -116,7 +120,7 @@ class World:
         await self._node.setup()
         if self._use_beekeeper:
             self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
-            if safe_settings.beekeeper.is_session_token_set:
+            if self._should_sync_with_beekeeper:
                 await self._commands.sync_state_with_beekeeper()
 
         return self
@@ -204,6 +208,10 @@ class TUIWorld(World, CliveDOMNode):
     def on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
         self.app.trigger_app_state_watchers()
+
+    @property
+    def _should_sync_with_beekeeper(self) -> bool:
+        return super()._should_sync_with_beekeeper and not self.is_in_onboarding_mode
 
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
         return profile.name == Onboarding.ONBOARDING_PROFILE_NAME
