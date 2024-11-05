@@ -15,7 +15,6 @@ from clive.__private.core.constants.setting_identifiers import (
     BEEKEEPER_REMOTE_ADDRESS,
     BEEKEEPER_SESSION_TOKEN,
     DATA_PATH,
-    FORCE_ONBOARDING,
     IS_DEV,
     LOG_DEBUG_LOOP,
     LOG_DEBUG_PERIOD_SECS,
@@ -81,10 +80,6 @@ class SafeSettings:
         @property
         def is_set(self) -> bool:
             return self._parent._get_or_default_false(IS_DEV)
-
-        @property
-        def should_force_onboarding(self) -> bool:
-            return self._parent._get_or_default_false(FORCE_ONBOARDING)
 
         @property
         def should_enable_debug_loop(self) -> bool:
