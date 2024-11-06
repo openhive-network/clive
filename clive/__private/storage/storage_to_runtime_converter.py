@@ -26,7 +26,7 @@ class StorageToRuntimeConverter:
     def create_profile(self) -> Profile:
         from clive.__private.core.profile import Profile
 
-        return Profile.create(
+        return Profile._create_instance(
             name=self._model.name,
             working_account=self._working_account_from_profile_storage_model(),
             watched_accounts=self._watched_accounts_from_profile_storage_model(),

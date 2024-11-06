@@ -27,7 +27,7 @@ def profile_with_default_chain_id_from_settings() -> Iterator[Profile]:
     chain_id_identifier = NODE_CHAIN_ID
     chain_id_before = safe_settings.node.chain_id
     settings.set(chain_id_identifier, DEFAULT_CHAIN_ID)
-    yield Profile(name="test")
+    yield Profile.create(name="test")
     settings.set(chain_id_identifier, chain_id_before)
 
 

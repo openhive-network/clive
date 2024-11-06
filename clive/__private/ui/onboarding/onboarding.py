@@ -70,7 +70,7 @@ class Onboarding(Form[Profile]):
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
-        self.__context = Profile(self.ONBOARDING_PROFILE_NAME)
+        self.__context = Profile.create(self.ONBOARDING_PROFILE_NAME)
 
     def _skip_during_push_screen(self) -> list[ScreenBuilder[Profile]]:
         screens_to_skip: list[ScreenBuilder[Profile]] = []

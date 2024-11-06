@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from copy import deepcopy
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Final
 
 from clive.__private.core.accounts.account_manager import AccountManager
 from clive.__private.core.contextual import Context
@@ -58,14 +58,25 @@ class Cart(list[OperationBase]):
 
 
 class Profile(Context):
-    def __init__(
+    _INIT_KEY: Final[object] = object()
+    """Used to prevent direct initialization of the class. Instead factory methods should be used."""
+
+    def __init__(  # noqa: PLR0913
         self,
+        init_key: object,
         name: str,
         working_account: str | Account | None = None,
         watched_accounts: Iterable[str | Account] | None = None,
         known_accounts: Iterable[str | Account] | None = None,
+        key_aliases: Iterable[PublicKeyAliased] | None = None,
+        cart_operations: Iterable[OperationBase] | None = None,
+        chain_id: str | None = None,
+        node_address: str | Url | None = None,
+        *,
+        is_newly_created: bool = True,
     ) -> None:
-        self.validate_profile_name(name)
+        self._assert_no_direct_initialization(init_key)
+
         self.name = name
         self.cart = Cart()
         self.keys = KeyManager()
@@ -76,7 +87,15 @@ class Profile(Context):
         self._chain_id = self._default_chain_id()
 
         self._skip_save = False
-        self._is_newly_created = True
+
+        self.keys.add(*key_aliases or [])
+        self.cart.extend(cart_operations or [])
+        if chain_id is not None:
+            self.set_chain_id(chain_id)
+        if node_address is not None:
+            secret_node_address = self._get_secret_node_address()
+            self._set_node_address(secret_node_address or Url.parse(node_address))
+        self._is_newly_created = is_newly_created
 
     async def __aenter__(self) -> Self:
         return self
@@ -173,19 +192,19 @@ class Profile(Context):
         cart_operations: Iterable[OperationBase] | None = None,
         chain_id: str | None = None,
         node_address: str | Url | None = None,
-        *,
-        is_newly_created: bool = True,
     ) -> Profile:
-        profile = cls(name, working_account, watched_accounts, known_accounts)
-        profile.keys.add(*key_aliases or [])
-        profile.cart.extend(cart_operations or [])
-        if chain_id is not None:
-            profile.set_chain_id(chain_id)
-        if node_address is not None:
-            secret_node_address = cls._get_secret_node_address()
-            profile._set_node_address(secret_node_address or Url.parse(node_address))
-        profile._is_newly_created = is_newly_created
-        return profile
+        cls.validate_profile_name(name)
+        return cls._create_instance(
+            name,
+            working_account,
+            watched_accounts,
+            known_accounts,
+            key_aliases,
+            cart_operations,
+            chain_id,
+            node_address,
+            is_newly_created=True,
+        )
 
     @classmethod
     def list_profiles(cls) -> list[str]:
@@ -249,7 +268,7 @@ class Profile(Context):
         """
 
         def create_new_profile(new_profile_name: str) -> Profile:
-            return cls(new_profile_name)
+            return cls.create(new_profile_name)
 
         _name = name or cls.get_default_profile_name()
 
@@ -281,6 +300,34 @@ class Profile(Context):
         """
         PersistentStorageService().remove_profile(profile_name)
 
+    @classmethod
+    def _create_instance(  # noqa: PLR0913
+        cls,
+        name: str,
+        working_account: str | WorkingAccount | None = None,
+        watched_accounts: Iterable[WatchedAccount] | None = None,
+        known_accounts: Iterable[KnownAccount] | None = None,
+        key_aliases: Iterable[PublicKeyAliased] | None = None,
+        cart_operations: Iterable[OperationBase] | None = None,
+        chain_id: str | None = None,
+        node_address: str | Url | None = None,
+        *,
+        is_newly_created: bool = True,
+    ) -> Self:
+        """Create new instance bypassing blocked direct initializer call."""
+        return cls(
+            cls._INIT_KEY,
+            name,
+            working_account,
+            watched_accounts,
+            known_accounts,
+            key_aliases,
+            cart_operations,
+            chain_id,
+            node_address,
+            is_newly_created=is_newly_created,
+        )
+
     def _initial_node_address(self) -> Url:
         secret_node_address = self._get_secret_node_address()
         if secret_node_address:
@@ -297,6 +344,10 @@ class Profile(Context):
         if value not in self._backup_node_addresses:
             # allow newly seen node address to be used as backup
             self._backup_node_addresses.insert(0, value)
+
+    def _assert_no_direct_initialization(self, init_key: object) -> None:
+        message = f"Please use {self.create} to create a new profile or {self.load} to load an existing one."
+        assert init_key is self._INIT_KEY, message
 
     @staticmethod
     def _default_chain_id() -> str | None:
