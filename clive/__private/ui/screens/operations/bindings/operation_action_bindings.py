@@ -4,6 +4,7 @@ import contextlib
 from typing import TYPE_CHECKING, Any, ClassVar, Final, Literal
 
 from pydantic import ValidationError
+from textual import on
 from textual.binding import Binding
 from textual.css.query import NoMatches
 
@@ -13,6 +14,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.dialogs.confirm_action_dialog_with_known_exchange import ConfirmActionDialogWithKnownExchange
 from clive.__private.ui.screens.transaction_summary import TransactionSummary
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import (
     CliveValidatedInputError,
 )
@@ -129,6 +131,7 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         else:
             await finalize()
 
+    @on(CliveInput.Submitted)
     def action_add_to_cart(self) -> None:
         def add_to_cart() -> None:
             if self._add_to_cart():
