@@ -83,6 +83,9 @@ class Transaction(SchemasTransaction):
         self.extensions: list[Any] = []
         self.signatures: list[Signature] = []
 
+    def swap_operations(self, index_1: int, index_2: int) -> None:
+        self.operations[index_1], self.operations[index_2] = self.operations[index_2], self.operations[index_1]
+
     def with_hash(self) -> TransactionWithHash:
         return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
 

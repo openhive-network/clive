@@ -114,12 +114,9 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         async def finalize() -> None:
             if self._add_to_cart():
                 self._add_account_to_known_after_action()
-                transaction = (
-                    (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
-                    if self.profile.cart
-                    else None
-                )
-                await self.app.switch_screen(TransactionSummary(transaction))
+                if not self.profile.transaction.is_signed():
+                    await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+                await self.app.switch_screen(TransactionSummary())
 
         async def finalize_cb(confirm: bool | None) -> None:
             if confirm:
@@ -208,11 +205,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES:
             for operation in operations:
-                if operation in self.profile.cart:
+                if operation in self.profile.transaction:
                     self.notify("Operation already in the cart", severity="error")
                     return False
 
-        self.profile.cart.extend(operations)
+        self.profile.add_operation(*operations)
         self.app.trigger_profile_watchers()
         return True
 

@@ -11,6 +11,7 @@ from textual.widgets import Label, Select, Static
 from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
+from clive.__private.models import Transaction
 from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -32,8 +33,6 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
-
-    from clive.__private.models import Transaction
 
 
 class AlreadySignedHint(Label):
@@ -83,9 +82,9 @@ class ButtonOpenTransactionFromFile(CliveButton):
 class ButtonContainer(Horizontal):
     """Container for storing ButtonBroadcast, ButtonOpenTransactionFromFile and ButtonSave."""
 
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
+    transaction: Transaction = reactive(Transaction(), recompose=True)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__()
         self.transaction = transaction
 
@@ -124,9 +123,9 @@ class KeyHint(Label):
 class KeyContainer(Horizontal):
     """Container for storing widgets connected with keys."""
 
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
+    transaction: Transaction = reactive(Transaction(), recompose=True)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__()
         self.transaction = transaction
 
@@ -146,7 +145,7 @@ class KeyContainer(Horizontal):
             raise NoItemSelectedError("No key was selected!") from error
 
     def compose(self) -> ComposeResult:
-        if self.transaction and self.transaction.is_signed():
+        if self.transaction.is_signed():
             yield AlreadySignedHint()
         else:
             yield KeyHint("Sign with key:")
@@ -162,16 +161,17 @@ class TransactionSummary(BaseScreen):
         Binding("f2", "save_to_file", "Save to file"),
     ]
     BIG_TITLE = "transaction summary"
-    transaction: Transaction | None = reactive(None, init=False)  # type: ignore[assignment]
+    transaction: Transaction = reactive(Transaction(), init=False)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.set_reactive(self.__class__.transaction, transaction)  # type: ignore[arg-type]
+        self.set_reactive(self.__class__.transaction, self.profile.transaction)  # type: ignore[arg-type]
         self._transaction_file_path: Path | None = None
 
     @property
     def transaction_ensure(self) -> Transaction:
-        assert self.transaction is not None, "Transaction should be initialized at this point!"
+        assert self.transaction, "Transaction should have operations filled at this point!"
+        assert self.transaction.is_tapos_set(), "Tapos should be set at this point!"
         return self.transaction
 
     @property
@@ -184,15 +184,15 @@ class TransactionSummary(BaseScreen):
 
     @property
     def _should_display_warning_notice(self) -> bool:
-        return self.transaction is not None and self.transaction.is_signed()
+        return self.is_transaction_filled_with_operations and self.transaction.is_signed()
 
     def create_main_panel(self) -> ComposeResult:
         yield Subtitle()
         yield TransactionMetadataContainer(self.transaction)
 
         notice = Notice(
-            "If you leave this screen or edit the transaction, the signatures will be lost and the transaction "
-            "metadata will be recalculated.",
+            "If you edit the transaction, the signatures will be lost and the transaction metadata"
+            " will be recalculated.",
         )
         notice.display = self._should_display_warning_notice
         yield notice
@@ -211,7 +211,7 @@ class TransactionSummary(BaseScreen):
     def action_load_transaction_from_file(self) -> None:
         notify_text = (
             "Loading the transaction from the file will clear the current content of the cart."
-            if self.profile.cart
+            if self.transaction
             else None
         )
         self.app.push_screen(SelectFile(notice=notify_text), self._load_transaction_from_file)
@@ -226,13 +226,19 @@ class TransactionSummary(BaseScreen):
 
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:
-        self._transaction_file_path = None
-        self.transaction = await self._build_transaction() if self.profile.cart else None
+        # sync self.transaction with profile.transaction (it was modified by cart_table - swap/remove)
+        self.transaction = self.profile.transaction
+        await self._update_transaction_metadata()
 
-    def watch_transaction(self, transaction: Transaction | None) -> None:
-        self.query_exactly_one(TransactionMetadataContainer).transaction = transaction
-        self.query_exactly_one(ButtonContainer).transaction = transaction
+    def watch_transaction(self, transaction: Transaction) -> None:
+        transaction_metadata_container = self.query_exactly_one(TransactionMetadataContainer)
+        transaction_metadata_container.transaction = transaction
+        transaction_metadata_container.mutate_reactive(transaction_metadata_container.__class__.transaction)  # type: ignore[arg-type]
+        button_container = self.query_exactly_one(ButtonContainer)
+        button_container.transaction = transaction
+        button_container.mutate_reactive(button_container.__class__.transaction)  # type: ignore[arg-type]
         self.key_container.transaction = transaction
+        self.key_container.mutate_reactive(self.key_container.__class__.transaction)  # type: ignore[arg-type]
         self.key_container.display = bool(transaction)
         self.query_exactly_one(Notice).display = self._should_display_warning_notice
         subtitle = self.query_exactly_one(Subtitle)
@@ -240,6 +246,7 @@ class TransactionSummary(BaseScreen):
             subtitle.update(f"Loaded from [blue]{self._transaction_file_path}[/]")
         subtitle.display = bool(self._transaction_file_path)
         self._handle_bindings()
+        self.profile.transaction = transaction  # update transaction from profile
 
     async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
         if result is None:
@@ -262,7 +269,7 @@ class TransactionSummary(BaseScreen):
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
-        self.profile.cart.clear()
+        self.profile.transaction.reset()
         await self.handle_cart_update()
         await self.query_exactly_one(CartTable).rebuild()
         self.notify(
@@ -288,7 +295,6 @@ class TransactionSummary(BaseScreen):
             self.notify("TaPoS metadata was not set, updating automatically...")
             await self.commands.update_transaction_metadata(transaction=self.transaction)
 
-        self.profile.cart.fill_from_transaction(self.transaction)
         self.app.trigger_profile_watchers()
         await self.query_exactly_one(CartTable).rebuild()
 
@@ -308,12 +314,15 @@ class TransactionSummary(BaseScreen):
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return
 
-        self.profile.cart.clear()
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
+        self.profile.transaction.reset()
         self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
 
-    async def _build_transaction(self) -> Transaction:
-        return (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
+    async def _update_transaction_metadata(self) -> None:
+        self._transaction_file_path = None
+        self.transaction.signatures.clear()
+        await self.commands.update_transaction_metadata(transaction=self.transaction)
+        self.mutate_reactive(self.__class__.transaction)  # type: ignore[arg-type]
 
     def _get_key_to_sign(self) -> PublicKey:
         return self.key_container.selected_key

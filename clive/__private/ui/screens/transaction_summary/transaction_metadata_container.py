@@ -7,11 +7,10 @@ from textual.reactive import reactive
 from textual.widgets import Label
 
 from clive.__private.core.formatters import humanize
+from clive.__private.models import Transaction
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
-
-    from clive.__private.models import Transaction
 
 
 class TaposHolder(Vertical):
@@ -38,9 +37,9 @@ class TransactionIdLabel(Label):
 class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
+    transaction: Transaction = reactive(Transaction(), recompose=True)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__()
         self.transaction = transaction
 

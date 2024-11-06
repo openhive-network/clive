@@ -12,9 +12,6 @@ class TransactionSummaryBinding(CliveWidget):
     ]
 
     async def action_transaction_summary(self) -> None:
-        transaction = (
-            (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
-            if self.profile.cart
-            else None
-        )
-        await self.app.push_screen(TransactionSummary(transaction))
+        if not self.profile.transaction.is_signed():
+            await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+        await self.app.push_screen(TransactionSummary())
