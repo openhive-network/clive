@@ -78,23 +78,22 @@ class Profile(Context):
         self._assert_no_direct_initialization(init_key)
 
         self.name = name
-        self.cart = Cart()
+
+        self.cart = Cart(cart_operations or [])
+
         self.keys = KeyManager()
+        self.keys.add(*key_aliases or [])
 
         self._accounts = AccountManager(working_account, watched_accounts, known_accounts)
-        self._backup_node_addresses = self._default_node_address()
-        self._set_node_address(self._initial_node_address())
-        self._chain_id = self._default_chain_id()
+
+        self._backup_node_addresses = self._default_node_addresses()
+        self._node_address: Url | None = None
+        self._set_node_address(self._get_initial_node_address(node_address))
+
+        self._chain_id: str | None = None
+        self.set_chain_id(chain_id or self._default_chain_id())
 
         self._skip_save = False
-
-        self.keys.add(*key_aliases or [])
-        self.cart.extend(cart_operations or [])
-        if chain_id is not None:
-            self.set_chain_id(chain_id)
-        if node_address is not None:
-            secret_node_address = self._get_secret_node_address()
-            self._set_node_address(secret_node_address or Url.parse(node_address))
         self._is_newly_created = is_newly_created
 
     async def __aenter__(self) -> Self:
@@ -123,6 +122,7 @@ class Profile(Context):
 
     @property
     def node_address(self) -> Url:
+        assert self._node_address is not None, "Node address is not set."
         return self._node_address
 
     @property
@@ -133,7 +133,14 @@ class Profile(Context):
     def chain_id(self) -> str | None:
         return self._chain_id
 
-    def set_chain_id(self, value: str) -> None:
+    def set_chain_id(self, value: str | None) -> None:
+        """
+        Set the chain id.
+
+        Args:
+        ----
+            value: Chain id to be set. If None, it will be fetched from the node api.
+        """
         if not is_schema_field_valid(ChainId, value):
             raise InvalidChainIdError
 
@@ -332,10 +339,12 @@ class Profile(Context):
             is_newly_created=is_newly_created,
         )
 
-    def _initial_node_address(self) -> Url:
+    def _get_initial_node_address(self, given_node_address: str | Url | None = None) -> Url:
         secret_node_address = self._get_secret_node_address()
         if secret_node_address:
             return secret_node_address
+        if given_node_address:
+            return Url.parse(given_node_address)
         return self._backup_node_addresses[0]
 
     def _set_node_address(self, value: Url) -> None:
@@ -358,7 +367,7 @@ class Profile(Context):
         return safe_settings.node.chain_id
 
     @staticmethod
-    def _default_node_address() -> list[Url]:
+    def _default_node_addresses() -> list[Url]:
         return [
             Url("https", "api.hive.blog"),
             Url("https", "api.openhive.network"),
