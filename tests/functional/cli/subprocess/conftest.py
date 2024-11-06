@@ -28,7 +28,7 @@ async def prepare_profile_without_working_account(prepare_profile: Profile) -> P
 
 @pytest.fixture
 async def alt_prepare_profile() -> Profile:
-    profile = Profile(
+    profile = Profile.create(
         ALT_WORKING_ACCOUNT1_NAME,
         working_account=WorkingAccount(name=ALT_WORKING_ACCOUNT1_NAME),
         watched_accounts=[WatchedAccount(name) for name in WATCHED_ACCOUNTS_NAMES],

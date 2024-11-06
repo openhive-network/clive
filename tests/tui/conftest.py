@@ -38,7 +38,7 @@ def _patch_notification_timeout(monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 async def prepare_profile() -> Profile:
-    profile = Profile(
+    profile = Profile.create(
         WORKING_ACCOUNT_DATA.account.name,
         working_account=WorkingAccount(name=WORKING_ACCOUNT_DATA.account.name),
         watched_accounts=[WatchedAccount(data.account.name) for data in WATCHED_ACCOUNTS_DATA],

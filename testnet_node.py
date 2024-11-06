@@ -92,7 +92,7 @@ async def prepare_profiles(node: tt.RawNode) -> None:
 
 
 def _create_profile(profile_name: str, working_account_name: str, watched_accounts_names: list[str]) -> None:
-    Profile(
+    Profile.create(
         profile_name,
         working_account=WorkingAccount(name=working_account_name),
         watched_accounts=[WatchedAccount(name) for name in watched_accounts_names],

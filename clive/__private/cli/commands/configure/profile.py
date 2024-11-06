@@ -32,7 +32,7 @@ class CreateProfile(BeekeeperBasedCommand):
             )
 
     async def _run(self) -> None:
-        profile = Profile(self.profile_name, self.working_account_name)
+        profile = Profile.create(self.profile_name, self.working_account_name)
 
         profile.save()
 

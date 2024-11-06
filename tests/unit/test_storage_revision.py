@@ -35,7 +35,7 @@ def test_storage_dir_contains_expected_files() -> None:
 
     # ACT
     # saving a profile will cause persisting storage data to be saved
-    Profile(FIRST_PROFILE_NAME).save()
+    Profile.create(FIRST_PROFILE_NAME).save()
 
     # ASSERT
     assert storage_data_dir.is_dir(), "Storage data path is not a directory or is missing."
@@ -61,7 +61,7 @@ def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: Monkey
 
     # ACT & ASSERT
     # we need to have more than one revision of profile data for this test
-    Profile(FIRST_PROFILE_NAME).save()
+    Profile.create(FIRST_PROFILE_NAME).save()
 
     # stimulate the situation when the schema has changed, causing different revision
     monkeypatch.setattr(PersistentStorageModelSchema, "schema_json", mock_schema_json)
@@ -69,7 +69,7 @@ def test_correct_revision_is_loaded_when_multiple_ones_exist(monkeypatch: Monkey
     assert not new_revision_dir.is_dir(), "New revision dir should not yet exist."
     assert Profile.list_profiles() == [], "There should be no profiles yet in new revision."
 
-    Profile(profile_name_in_new_revision).save()
+    Profile.create(profile_name_in_new_revision).save()
 
     assert new_revision_dir.is_dir(), "New revision dir should exist."
 
