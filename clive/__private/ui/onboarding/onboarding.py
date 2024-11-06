@@ -1,10 +1,11 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Final
+from typing import TYPE_CHECKING
 
 from textual.binding import Binding
 
 from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.ui.onboarding.context import OnboardingContext
@@ -45,8 +46,6 @@ class OnboardingFinishScreen(FinishFormScreen[OnboardingContext]):
 
 
 class Onboarding(Form[OnboardingContext]):
-    ONBOARDING_PROFILE_NAME: Final[str] = "onboarding"
-
     @property
     def context(self) -> OnboardingContext:
         return self.__context
@@ -64,7 +63,7 @@ class Onboarding(Form[OnboardingContext]):
         return lambda owner: OnboardingFinishScreen(owner, "Now you are ready to enter Clive, enjoy!")
 
     def _rebuild_context(self) -> None:
-        profile = Profile.create(self.ONBOARDING_PROFILE_NAME)
+        profile = Profile.create(WELCOME_PROFILE_NAME)
         self.__context = OnboardingContext(profile, Node(profile))
 
     def _skip_during_push_screen(self) -> list[ScreenBuilder[OnboardingContext]]:

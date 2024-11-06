@@ -11,6 +11,7 @@ from clive.__private.core.app_state import AppState, LockSource
 from clive.__private.core.beekeeper import Beekeeper
 from clive.__private.core.commands.commands import CLICommands, Commands, TUICommands
 from clive.__private.core.communication import Communication
+from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.known_exchanges import KnownExchanges
 from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
@@ -190,7 +191,7 @@ class TUIWorld(World, CliveDOMNode):
     node: Node = var(None)  # type: ignore[assignment]
 
     def __init__(self) -> None:
-        profile_name = Onboarding.ONBOARDING_PROFILE_NAME
+        profile_name = WELCOME_PROFILE_NAME
         super().__init__(profile_name)
         self.node = self._node
         self.profile = self._profile
@@ -212,13 +213,13 @@ class TUIWorld(World, CliveDOMNode):
 
     def switch_to_welcome_profile(self, *, trigger_profile_watchers: bool = False) -> None:
         """
-        Set the profile to default (Onboarding) with optional triggering of profile watchers.
+        Set the profile to default (welcome) with optional triggering of profile watchers.
 
         Args:
         ----
         trigger_profile_watchers: If True, triggers profile watchers.
         """
-        profile = self._load_profile(Onboarding.ONBOARDING_PROFILE_NAME)
+        profile = self._load_profile(WELCOME_PROFILE_NAME)
         if trigger_profile_watchers:
             self.profile = profile
             return
@@ -258,7 +259,7 @@ class TUIWorld(World, CliveDOMNode):
         return super()._should_sync_with_beekeeper and not self.is_in_onboarding_mode
 
     def _is_in_onboarding_mode(self, profile: Profile) -> bool:
-        return profile.name == Onboarding.ONBOARDING_PROFILE_NAME
+        return profile.name == WELCOME_PROFILE_NAME
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)

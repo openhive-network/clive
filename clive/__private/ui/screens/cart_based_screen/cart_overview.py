@@ -6,11 +6,11 @@ from textual.containers import Container, Grid, Horizontal
 from textual.reactive import reactive
 from textual.widgets import Static
 
+from clive.__private.core.constants.tui.profile import WELCOME_PROFILE_NAME
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
 from clive.__private.core.formatters.humanize import humanize_operation_name, humanize_percent
 from clive.__private.models import Asset
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.widgets.dynamic_widgets.dynamic_label import DynamicLabel
 from clive.__private.ui.widgets.scrolling import ScrollablePartFocusable
 
@@ -91,7 +91,7 @@ class CartOverview(CliveWidget):
         return self.local_profile is not None
 
     def _sync_local_profile(self, profile: Profile) -> None:
-        if profile.name == Onboarding.ONBOARDING_PROFILE_NAME:
+        if profile.name == WELCOME_PROFILE_NAME:
             return
 
         self.local_profile = profile
