@@ -9,7 +9,7 @@ from textual.containers import Center, Horizontal
 from textual.widgets import Static, TabPane
 
 from clive.__private.core.accounts.account_manager import AccountManager
-from clive.__private.ui.widgets.buttons import ClearButton, PageDownButton, PageUpButton, SearchButton
+from clive.__private.ui.widgets.buttons import ClearButton, PageDownOneLineButton, PageUpOneLineButton, SearchButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -64,8 +64,8 @@ class BadAccountsTable(CliveCheckerboardTable):
     FIRST_PAGE_INDEX: Final[int] = 0
 
     def __init__(self) -> None:
-        self._page_up_button = PageUpButton()
-        self._page_down_button = PageDownButton()
+        self._page_up_button = PageUpOneLineButton()
+        self._page_down_button = PageDownOneLineButton()
         self._page_up_button.visible = False
 
         super().__init__(
@@ -89,7 +89,7 @@ class BadAccountsTable(CliveCheckerboardTable):
             for account in self._bad_account_names[start_index:end_index]
         ]
 
-    @on(PageUpButton.Pressed)
+    @on(PageUpOneLineButton.Pressed)
     async def action_previous_page(self) -> None:
         if self._current_page_index == self.FIRST_PAGE_INDEX:
             return
@@ -102,7 +102,7 @@ class BadAccountsTable(CliveCheckerboardTable):
 
         await self.rebuild_rows()
 
-    @on(PageDownButton.Pressed)
+    @on(PageDownOneLineButton.Pressed)
     async def action_next_page(self) -> None:
         if self._current_page_index == self._last_page_index:
             return

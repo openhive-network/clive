@@ -5,9 +5,9 @@ from typing import ClassVar
 from clive.__private.ui.widgets.buttons.one_line_button import OneLineButton
 
 
-class ConfirmButton(OneLineButton):
+class ConfirmOneLineButton(OneLineButton):
     class Pressed(OneLineButton.Pressed):
-        """Used to identify exactly that confirm button was pressed."""
+        """Used to identify exactly that ConfirmOneLineButton was pressed."""
 
     DEFAULT_LABEL: ClassVar[str] = "Confirm"
 

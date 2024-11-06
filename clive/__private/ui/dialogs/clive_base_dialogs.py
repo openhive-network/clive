@@ -12,7 +12,7 @@ from textual.screen import ModalScreen
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import ScreenResultT
-from clive.__private.ui.widgets.buttons import CancelButton, CloseButton, ConfirmButton
+from clive.__private.ui.widgets.buttons import CancelOneLineButton, CloseOneLineButton, ConfirmOneLineButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -108,7 +108,7 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
     def __init__(
         self,
         border_title: str,
-        confirm_button_label: str = ConfirmButton.DEFAULT_LABEL,
+        confirm_button_label: str = ConfirmOneLineButton.DEFAULT_LABEL,
         variant: CliveDialogVariant = "default",
         id_: str | None = None,
         classes: str | None = None,
@@ -117,14 +117,14 @@ class CliveActionDialog(CliveBaseDialog[ScreenResultT]):
         self._confirm_button_text = confirm_button_label
 
     def create_buttons_content(self) -> ComposeResult:
-        yield ConfirmButton(self._confirm_button_text)
-        yield CancelButton()
+        yield ConfirmOneLineButton(self._confirm_button_text)
+        yield CancelOneLineButton()
 
-    @on(ConfirmButton.Pressed)
+    @on(ConfirmOneLineButton.Pressed)
     async def confirm_dialog(self) -> None:
         self.post_message(self.Confirmed())
 
-    @on(CancelButton.Pressed)
+    @on(CancelOneLineButton.Pressed)
     def action_cancel(self) -> None:
         self.app.pop_screen()
 
@@ -133,8 +133,8 @@ class CliveInfoDialog(CliveBaseDialog[ScreenResultT]):
     BINDINGS = [Binding("escape", "close", "Quit")]
 
     def create_buttons_content(self) -> ComposeResult:
-        yield CloseButton()
+        yield CloseOneLineButton()
 
-    @on(CloseButton.Pressed)
+    @on(CloseOneLineButton.Pressed)
     def action_close(self) -> None:
         self.app.pop_screen()

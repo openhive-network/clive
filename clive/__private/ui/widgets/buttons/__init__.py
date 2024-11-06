@@ -1,28 +1,28 @@
 from __future__ import annotations
 
 from .add_to_cart_button import AddToCartButton
-from .cancel_button import CancelButton
+from .cancel_button import CancelOneLineButton
 from .clive_button import CliveButton
-from .close_button import CloseButton
-from .confirm_button import ConfirmButton
+from .close_button import CloseOneLineButton
+from .confirm_button import ConfirmOneLineButton
 from .generous_button import GenerousButton
 from .one_line_button import OneLineButton, OneLineButtonUnfocusable
-from .page_switch_buttons import PageDownButton, PageUpButton
+from .page_switch_buttons import PageDownOneLineButton, PageUpOneLineButton
 from .remove_button import RemoveButton
 from .search_operation_buttons import ClearButton, SearchButton
 
 __all__ = [
     "AddToCartButton",
-    "CancelButton",
+    "CancelOneLineButton",
     "ClearButton",
     "CliveButton",
-    "CloseButton",
-    "ConfirmButton",
+    "CloseOneLineButton",
+    "ConfirmOneLineButton",
     "GenerousButton",
     "OneLineButton",
     "OneLineButtonUnfocusable",
-    "PageDownButton",
-    "PageUpButton",
+    "PageDownOneLineButton",
+    "PageUpOneLineButton",
     "RemoveButton",
     "SearchButton",
 ]

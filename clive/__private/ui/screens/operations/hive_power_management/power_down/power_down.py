@@ -19,7 +19,7 @@ from clive.__private.ui.not_updated_yet import NotUpdatedYet
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
 from clive.__private.ui.screens.operations.hive_power_management.common_hive_power.hp_vests_factor import HpVestsFactor
 from clive.__private.ui.screens.operations.operation_summary.cancel_power_down import CancelPowerDown
-from clive.__private.ui.widgets.buttons import CancelButton, GenerousButton
+from clive.__private.ui.widgets.buttons import CancelOneLineButton, GenerousButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -101,11 +101,11 @@ class PendingPowerDown(CliveCheckerboardTable):
                 CliveCheckerBoardTableCell(humanize_datetime(content.next_vesting_withdrawal)),
                 CliveCheckerBoardTableCell(Asset.pretty_amount(content.next_power_down.hp_balance)),
                 CliveCheckerBoardTableCell(Asset.pretty_amount(content.next_power_down.vests_balance)),
-                CliveCheckerBoardTableCell(CancelButton()),
+                CliveCheckerBoardTableCell(CancelOneLineButton()),
             )
         ]
 
-    @on(CancelButton.Pressed)
+    @on(CancelOneLineButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(
             CancelPowerDown(

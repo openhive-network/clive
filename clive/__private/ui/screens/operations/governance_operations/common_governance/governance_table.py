@@ -19,7 +19,7 @@ from clive.__private.ui.clive_widget import CliveWidget
 from clive.__private.ui.data_providers.abc.data_provider import DataProvider
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.governance_operations.governance_checkbox import GovernanceCheckbox
-from clive.__private.ui.widgets.buttons import PageDownButton, PageUpButton
+from clive.__private.ui.widgets.buttons import PageDownOneLineButton, PageUpOneLineButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -34,8 +34,8 @@ class GovernanceListHeader(Grid, CliveWidget, AbstractClassMessagePump):
     def __init__(self) -> None:
         super().__init__()
 
-        self.button_up = PageUpButton()
-        self.button_down = PageDownButton()
+        self.button_up = PageUpOneLineButton()
+        self.button_down = PageDownOneLineButton()
 
         self.button_up.visible = False
 
@@ -256,7 +256,7 @@ class GovernanceTable(
     def set_loaded(self) -> None:
         self._is_loading = False
 
-    @on(PageDownButton.Pressed)
+    @on(PageDownOneLineButton.Pressed)
     async def action_next_page(self) -> None:
         if self._is_loading:
             return
@@ -275,7 +275,7 @@ class GovernanceTable(
 
         await self.sync_list(focus_first_element=True)
 
-    @on(PageUpButton.Pressed)
+    @on(PageUpOneLineButton.Pressed)
     async def action_previous_page(self) -> None:
         if self._is_loading:
             return
