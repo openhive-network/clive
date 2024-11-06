@@ -100,6 +100,9 @@ class CartStatus(DynamicOneLineButtonUnfocusable):
 
         if isinstance(self.app.screen, TransactionSummary):
             return
+
+        if not self.profile.transaction.is_signed:
+            await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
         await self.app.push_screen(TransactionSummary())
 
 

@@ -116,12 +116,13 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         async def finalize() -> None:
             if self._add_to_cart():
                 self._add_account_to_known_after_action()
-                transaction = (
-                    (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
-                    if self.profile.cart
-                    else None
-                )
-                self.app.switch_screen(TransactionSummary(transaction))
+                self.profile.transaction_file_path = None
+                if self.profile.transaction.is_signed:
+                    self._send_cleared_signatures_notification()
+                await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+                self._clear_inputs()
+                self._actions_after_clearing_inputs()
+                await self.app.push_screen(TransactionSummary())
 
         async def finalize_cb(confirm: bool | None) -> None:
             if confirm:
@@ -140,6 +141,10 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
     def action_add_to_cart(self) -> None:
         def add_to_cart() -> None:
             if self._add_to_cart():
+                if self.profile.transaction.is_signed:
+                    self.profile.transaction.unsign()
+                    self._send_cleared_signatures_notification()
+                self.profile.transaction_file_path = None
                 self._add_account_to_known_after_action()
                 if self.POP_SCREEN_AFTER_ADDING_TO_CART:
                     self.app.pop_screen()
@@ -210,11 +215,11 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
 
         if not self.ALLOW_THE_SAME_OPERATION_IN_CART_MULTIPLE_TIMES:
             for operation in operations:
-                if operation in self.profile.cart:
+                if operation in self.profile.transaction:
                     self.notify("Operation already in the cart", severity="error")
                     return False
 
-        self.profile.cart.extend(operations)
+        self.profile.add_operation(*operations)
         self.app.trigger_profile_watchers()
         return True
 
@@ -246,6 +251,12 @@ class OperationActionBindings(CliveWidget, AbstractClassMessagePump):
         inputs = self.query(CliveValidatedInput)  # type: ignore[type-abstract]
         for widget in inputs:
             widget.clear_validation()
+
+    def _send_cleared_signatures_notification(self) -> None:
+        self.notify(
+            "Transaction signatures were removed since you changed the transaction content.",
+            severity="warning",
+        )
 
     def ensure_operations_list(self) -> list[OperationUnion]:
         operation = self.create_operation()

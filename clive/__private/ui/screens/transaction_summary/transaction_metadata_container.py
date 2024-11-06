@@ -2,15 +2,18 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, Vertical
-from textual.reactive import reactive
+from textual.containers import Container, Horizontal, Vertical
 from textual.widgets import Label
 
+from clive.__private.core.constants.tui.bindings import REFRESH_TRANSACTION_METADATA_BINDING_KEY
 from clive.__private.core.formatters import humanize
+from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.widgets.buttons import RefreshOneLineButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
+    from clive.__private.core.node import Node
     from clive.__private.models import Transaction
 
 
@@ -35,20 +38,25 @@ class TransactionIdLabel(Label):
     """Label for displaying transaction id."""
 
 
-class TransactionMetadataContainer(Horizontal):
+class RefreshMetadataButton(RefreshOneLineButton):
+    def __init__(self) -> None:
+        super().__init__(f"Refresh ({REFRESH_TRANSACTION_METADATA_BINDING_KEY.upper()})")
+        self.watch(self.world, "node", self._handle_display)
+
+    def _handle_display(self, node: Node) -> None:
+        self.display = bool(node.cached.online_or_none)  # don't display refresh button when node is offline
+
+
+class TransactionMetadataContainer(Horizontal, CliveWidget):
     """Container for the transaction metadata."""
 
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
-
-    def __init__(self, transaction: Transaction | None) -> None:
-        super().__init__()
-        self.transaction = transaction
-
     def compose(self) -> ComposeResult:
-        if self.transaction:
-            expiration = humanize.humanize_datetime(self.transaction.expiration)
-            yield TaposHolder(self.transaction)
+        if self.profile.transaction:
+            expiration = humanize.humanize_datetime(self.profile.transaction.expiration)
+            yield TaposHolder(self.profile.transaction)
             yield TransactionExpirationLabel(f"Expiration: {expiration}")
-            yield TransactionIdLabel(f"Transaction ID: {self.transaction.calculate_transaction_id()}")
+            with Vertical(id="label-and-button-container"):
+                yield TransactionIdLabel(f"Transaction ID: {self.profile.transaction.calculate_transaction_id()}")
+                yield Container(RefreshMetadataButton())
         else:
             yield Label("No operations in cart, can't calculate transaction metadata.", id="no-metadata")

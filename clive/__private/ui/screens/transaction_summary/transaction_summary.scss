@@ -66,13 +66,20 @@ TransactionSummary {
     margin: 1 0;
     height: 3;
 
-    Horizontal {
+    ButtonContainer {
       align: right top;
-      height: auto;
+      min-width: 71;
 
       CliveButton {
-        margin-left: 1;
         width: 23;
+      }
+
+      ButtonBroadcast {
+        margin-left: 1;
+      }
+
+      ButtonSave {
+        margin-right: 1;
       }
     }
 
@@ -105,6 +112,16 @@ TransactionSummary {
 
     #no-metadata {
       text-align: center;
+    }
+
+    #label-and-button-container {
+      height: auto;
+
+      Container {
+        align-horizontal: right;
+        margin-top: 1;
+        height: auto;
+      }
     }
   }
 

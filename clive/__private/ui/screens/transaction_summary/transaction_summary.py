@@ -5,19 +5,27 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.binding import Binding
 from textual.containers import Horizontal
-from textual.reactive import reactive
 from textual.widgets import Label, Select, Static
 
 from clive.__private.core.commands.load_transaction import LoadTransactionError
+from clive.__private.core.constants.tui.bindings import (
+    BROADCAST_TRANSACTION_BINDING_KEY,
+    LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
+    REFRESH_TRANSACTION_METADATA_BINDING_KEY,
+    SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
+)
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
-from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import TransactionMetadataContainer
+from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
+    RefreshMetadataButton,
+    TransactionMetadataContainer,
+)
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
@@ -28,12 +36,8 @@ from clive.__private.ui.widgets.select_file_to_save_transaction import (
 from clive.exceptions import NoItemSelectedError
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from textual.app import ComposeResult
     from textual.widgets._select import NoSelection
-
-    from clive.__private.models import Transaction
 
 
 class AlreadySignedHint(Label):
@@ -57,7 +61,7 @@ class ButtonBroadcast(CliveButton):
         """Used to identify exactly that broadcast button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__("Broadcast (F6)", variant="success")
+        super().__init__(f"Broadcast ({BROADCAST_TRANSACTION_BINDING_KEY.upper()})", variant="success")
 
 
 class ButtonSave(CliveButton):
@@ -67,7 +71,7 @@ class ButtonSave(CliveButton):
         """Used to identify exactly that save button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__("Save to file (F2)")
+        super().__init__(f"Save to file ({SAVE_TRANSACTION_TO_FILE_BINDING_KEY.upper()})")
 
 
 class ButtonOpenTransactionFromFile(CliveButton):
@@ -77,22 +81,17 @@ class ButtonOpenTransactionFromFile(CliveButton):
         """Used to identify exactly that open from file button was pressed."""
 
     def __init__(self) -> None:
-        super().__init__("Open from file (F3)")
+        super().__init__(f"Open from file ({LOAD_TRANSACTION_FROM_FILE_BINDING_KEY.upper()})")
 
 
-class ButtonContainer(Horizontal):
+class ButtonContainer(Horizontal, CliveWidget):
     """Container for storing ButtonBroadcast, ButtonOpenTransactionFromFile and ButtonSave."""
 
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
-
-    def __init__(self, transaction: Transaction | None) -> None:
-        super().__init__()
-        self.transaction = transaction
-
     def compose(self) -> ComposeResult:
-        if self.transaction:
-            yield ButtonBroadcast()
+        if self.profile.transaction:
             yield ButtonSave()
+            yield ButtonOpenTransactionFromFile()
+            yield ButtonBroadcast()
         else:
             yield ButtonOpenTransactionFromFile()
 
@@ -121,14 +120,8 @@ class KeyHint(Label):
     """Hint for the key."""
 
 
-class KeyContainer(Horizontal):
+class KeyContainer(Horizontal, CliveWidget):
     """Container for storing widgets connected with keys."""
-
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
-
-    def __init__(self, transaction: Transaction | None) -> None:
-        super().__init__()
-        self.transaction = transaction
 
     @property
     def selected_key(self) -> PublicKey:
@@ -146,72 +139,56 @@ class KeyContainer(Horizontal):
             raise NoItemSelectedError("No key was selected!") from error
 
     def compose(self) -> ComposeResult:
-        if self.transaction and self.transaction.is_signed():
+        if self.profile.transaction.is_signed():
             yield AlreadySignedHint()
         else:
             yield KeyHint("Sign with key:")
             yield SelectKey()
+        self.display = bool(self.profile.transaction)
 
 
 class TransactionSummary(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
     BINDINGS = [
         Binding("escape", "app.pop_screen", "Back"),
-        Binding("f3", "load_transaction_from_file", "Open transaction file"),
-        Binding("f6", "broadcast", "Broadcast"),
-        Binding("f2", "save_to_file", "Save to file"),
+        Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
+        Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
+        Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
+        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
     ]
     BIG_TITLE = "transaction summary"
-    transaction: Transaction | None = reactive(None, init=False)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self) -> None:
         super().__init__()
-        self.set_reactive(self.__class__.transaction, transaction)  # type: ignore[arg-type]
-        self._transaction_file_path: Path | None = None
-
-    @property
-    def transaction_ensure(self) -> Transaction:
-        assert self.transaction is not None, "Transaction should be initialized at this point!"
-        return self.transaction
-
-    @property
-    def button_save(self) -> CliveButton:
-        return self.query_exactly_one(ButtonSave)
+        self._update_bindings()
 
     @property
     def key_container(self) -> KeyContainer:
         return self.query_exactly_one(KeyContainer)
 
     @property
-    def _should_display_warning_notice(self) -> bool:
-        return self.transaction is not None and self.transaction.is_signed()
+    def button_container(self) -> ButtonContainer:
+        return self.query_exactly_one(ButtonContainer)
+
+    @property
+    def transaction_metadata_container(self) -> TransactionMetadataContainer:
+        return self.query_exactly_one(TransactionMetadataContainer)
 
     def create_main_panel(self) -> ComposeResult:
-        yield Subtitle()
-        yield TransactionMetadataContainer(self.transaction)
-
-        notice = Notice(
-            "If you leave this screen or edit the transaction, the signatures will be lost and the transaction "
-            "metadata will be recalculated.",
-        )
-        notice.display = self._should_display_warning_notice
-        yield notice
+        yield Subtitle(self._create_subtitle_content())
+        yield TransactionMetadataContainer()
         with Horizontal(id="actions-container"):
-            key_container = KeyContainer(self.transaction)
-            key_container.display = bool(self.transaction)
+            key_container = KeyContainer()
             yield key_container
-            yield ButtonContainer(self.transaction)
+            yield ButtonContainer()
         with ScrollablePart():
             yield CartTable()
-
-    def on_mount(self) -> None:
-        self._handle_bindings()
 
     @on(ButtonOpenTransactionFromFile.Pressed)
     def action_load_transaction_from_file(self) -> None:
         notify_text = (
             "Loading the transaction from the file will clear the current content of the cart."
-            if self.profile.cart
+            if self.profile.transaction
             else None
         )
         self.app.push_screen(SelectFile(notice=notify_text), self._load_transaction_from_file)
@@ -224,22 +201,34 @@ class TransactionSummary(BaseScreen):
     def action_save_to_file(self) -> None:
         self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
 
+    @on(RefreshMetadataButton.Pressed)
+    async def action_refresh_metadata(self) -> None:
+        async def refresh() -> None:
+            await self._update_transaction_metadata()
+            await self._rebuild_signatures_changed()
+            self._update_subtitle()
+
+        async def refresh_metadata_cb(confirm: bool | None) -> None:
+            if confirm:
+                await refresh()
+
+        if self.profile.transaction.is_signed():
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
+        else:
+            await refresh()
+
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:
-        self._transaction_file_path = None
-        self.transaction = await self._build_transaction() if self.profile.cart else None
+        await self._update_transaction_metadata()
+        await self._rebuild_signatures_changed()
+        await self.button_container.recompose()
+        self._update_subtitle()
+        self._update_bindings()
 
-    def watch_transaction(self, transaction: Transaction | None) -> None:
-        self.query_exactly_one(TransactionMetadataContainer).transaction = transaction
-        self.query_exactly_one(ButtonContainer).transaction = transaction
-        self.key_container.transaction = transaction
-        self.key_container.display = bool(transaction)
-        self.query_exactly_one(Notice).display = self._should_display_warning_notice
-        subtitle = self.query_exactly_one(Subtitle)
-        if self._transaction_file_path:
-            subtitle.update(f"Loaded from [blue]{self._transaction_file_path}[/]")
-        subtitle.display = bool(self._transaction_file_path)
-        self._handle_bindings()
+    def _create_subtitle_content(self) -> str:
+        if self.profile.transaction_file_path:
+            return f"Loaded from [blue]{self.profile.transaction_file_path}[/]"
+        return ""
 
     async def _save_to_file(self, result: SaveTransactionResult | None) -> None:
         if result is None:
@@ -248,12 +237,14 @@ class TransactionSummary(BaseScreen):
         file_path = result.file_path
         save_as_binary = result.save_as_binary
         should_be_signed = result.should_be_signed
-        transaction = self.transaction_ensure.copy()
+        transaction = self.profile.transaction.copy()
         try:
             transaction = (
                 await self.commands.perform_actions_on_transaction(
                     content=transaction,
-                    sign_key=self._get_key_to_sign() if should_be_signed else None,
+                    sign_key=self._get_key_to_sign()
+                    if should_be_signed and not self.profile.transaction.is_signed
+                    else None,
                     force_unsign=not should_be_signed,
                     save_file_path=file_path,
                     force_save_format="bin" if save_as_binary else "json",
@@ -262,9 +253,10 @@ class TransactionSummary(BaseScreen):
         except Exception as error:  # noqa: BLE001
             self.notify(f"Transaction save failed. Reason: {error}", severity="error")
             return
-        self.profile.cart.clear()
-        await self.handle_cart_update()
-        await self.query_exactly_one(CartTable).rebuild()
+        self.profile.transaction.reset()
+        self.profile.transaction_file_path = None
+        self.app.trigger_profile_watchers()
+        await self._rebuild()
         self.notify(
             f"Transaction ({'binary' if save_as_binary else 'json'}) saved to [bold green]'{file_path}'[/]"
             f" {'(signed)' if transaction.is_signed() else ''}"
@@ -281,21 +273,20 @@ class TransactionSummary(BaseScreen):
         except LoadTransactionError as error:
             self.notify(f"Error occurred while loading transaction from file: {error}", severity="error")
             return
-        self._transaction_file_path = file_path
-        self.transaction = loaded_transaction
 
-        if not self.transaction.is_tapos_set():
+        if not loaded_transaction.is_tapos_set():
             self.notify("TaPoS metadata was not set, updating automatically...")
-            await self.commands.update_transaction_metadata(transaction=self.transaction)
+            await self._update_transaction_metadata()
 
-        self.profile.cart.fill_from_transaction(self.transaction)
+        self.profile.transaction_file_path = file_path
+        self.profile.transaction = loaded_transaction
         self.app.trigger_profile_watchers()
-        await self.query_exactly_one(CartTable).rebuild()
+        await self._rebuild()
 
     async def _broadcast(self) -> None:
         from clive.__private.ui.screens.dashboard import Dashboard
 
-        transaction = self.transaction_ensure
+        transaction = self.profile.transaction
         try:
             (
                 await self.commands.perform_actions_on_transaction(
@@ -308,20 +299,41 @@ class TransactionSummary(BaseScreen):
             self.notify(f"Transaction broadcast failed! Reason: {error}", severity="error")
             return
 
-        self.profile.cart.clear()
         self.notify(f"Transaction with ID '{transaction.calculate_transaction_id()}' successfully broadcasted!")
+        self.profile.transaction.reset()
+        self.app.trigger_profile_watchers()
         self.app.get_screen_from_current_stack(Dashboard).pop_until_active()
 
-    async def _build_transaction(self) -> Transaction:
-        return (await self.commands.build_transaction(content=self.profile.cart)).result_or_raise
+    async def _update_transaction_metadata(self) -> None:
+        self.profile.transaction_file_path = None
+        await self.commands.update_transaction_metadata(transaction=self.profile.transaction)
+        self.app.trigger_profile_watchers()
+
+    async def _rebuild_signatures_changed(self) -> None:
+        await self.transaction_metadata_container.recompose()
+        await self.key_container.recompose()
 
     def _get_key_to_sign(self) -> PublicKey:
         return self.key_container.selected_key
 
-    def _handle_bindings(self) -> None:
-        if not self.transaction:
-            self.unbind("f6")
-            self.unbind("f2")
+    def _update_bindings(self) -> None:
+        if not self.profile.transaction:
+            self.unbind(BROADCAST_TRANSACTION_BINDING_KEY)
+            self.unbind(SAVE_TRANSACTION_TO_FILE_BINDING_KEY)
+            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
         else:
-            self.bind(Binding("f6", "broadcast", "Broadcast"))
-            self.bind(Binding("f2", "save_to_file", "Save to file"))
+            self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
+            self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
+            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
+
+    def _update_subtitle(self) -> None:
+        subtitle = self.query_exactly_one(Subtitle)
+        subtitle.update(self._create_subtitle_content())
+        subtitle.display = bool(self.profile.transaction_file_path)
+
+    async def _rebuild(self) -> None:
+        await self.query_exactly_one(CartTable).rebuild()
+        await self._rebuild_signatures_changed()
+        await self.button_container.recompose()
+        self._update_subtitle()
+        self._update_bindings()

@@ -15,6 +15,7 @@ from typing_extensions import Self
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.dialogs.raw_json_dialog import RawJsonDialog
 from clive.__private.ui.widgets.buttons import CliveButton, RemoveButton
 from clive.__private.ui.widgets.clive_basic import (
@@ -27,7 +28,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.schemas import OperationBase
+    from clive.__private.models.schemas import OperationUnion
 
 
 class ButtonMoveUp(CliveButton):
@@ -122,13 +123,13 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self.query_exactly_one(RemoveButton)
 
     @property
-    def operation(self) -> OperationBase:
+    def operation(self) -> OperationUnion:
         assert self._is_operation_index_valid(self._operation_index), "Cannot get operation, position is invalid."
-        return self.profile.cart[self._operation_index]
+        return self.profile.operations[self._operation_index]
 
     @property
     def operations_amount(self) -> int:
-        return len(self.profile.cart)
+        return len(self.profile.transaction)
 
     @property
     def is_first(self) -> bool:
@@ -152,7 +153,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         self.operation_number_cell.update_content(self.humanize_operation_number())
 
     def humanize_operation_number(self, *, before_removal: bool = False) -> str:
-        cart_items = len(self.profile.cart) - 1 if before_removal else len(self.profile.cart)
+        cart_items = self.operations_amount - 1 if before_removal else self.operations_amount
         return f"{self._operation_index + 1}/{cart_items}"
 
     def humanize_operation_name(self) -> str:
@@ -212,11 +213,21 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
 
     @on(RemoveButton.Pressed)
     def delete(self) -> None:
+        def post_message_and_disable_action() -> None:
+            self._action_manager.disable_action()
+            self.post_message(self.Delete(self))
+
+        async def cb(confirm: bool | None) -> None:
+            if confirm:
+                post_message_and_disable_action()
+
         if self._action_manager.is_action_disabled:
             return
 
-        self._action_manager.disable_action()
-        self.post_message(self.Delete(self))
+        if self.profile.transaction.is_signed():
+            self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
+        else:
+            post_message_and_disable_action()
 
     @on(ButtonRawJson.Pressed)
     async def show_raw_json(self) -> None:
@@ -241,11 +252,24 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return value < self.operations_amount
 
     def _move(self, direction: Literal["up", "down"]) -> None:
+        def post_message_and_disable_action() -> None:
+            self._action_manager.disable_action()
+            index_change = -1 if direction == "up" else 1
+            self.post_message(
+                self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change)
+            )
+
+        async def cb(confirm: bool | None) -> None:
+            if confirm:
+                post_message_and_disable_action()
+
         if self._action_manager.is_action_disabled:
             return
-        self._action_manager.disable_action()
-        index_change = -1 if direction == "up" else 1
-        self.post_message(self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change))
+
+        if self.profile.transaction.is_signed():
+            self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
+        else:
+            post_message_and_disable_action()
 
 
 class CartHeader(Horizontal):
@@ -277,7 +301,7 @@ class CartTable(CliveCheckerboardTable):
         return bool(self._cart_items)
 
     def create_static_rows(self) -> list[CartItem]:
-        return [CartItem(index, self._cart_items_action_manager) for index in range(len(self.profile.cart))]
+        return [CartItem(index, self._cart_items_action_manager) for index in range(len(self.profile.transaction))]
 
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
@@ -293,7 +317,7 @@ class CartTable(CliveCheckerboardTable):
                 await self.query_exactly_one(CartHeader).remove()
                 await self.mount(NoContentAvailable(self.NO_CONTENT_TEXT))
 
-        self.profile.cart.remove(item_to_remove.operation)
+        self.profile.remove_operation(item_to_remove.operation)
         self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
         self.post_message(self.Modified())
@@ -304,13 +328,13 @@ class CartTable(CliveCheckerboardTable):
         to_index = event.to_index
 
         assert to_index >= 0, "Item cannot be moved to id lower than 0."
-        assert to_index < len(self.profile.cart), "Item cannot be moved to id greater than cart length."
+        assert to_index < len(self.profile.transaction), "Item cannot be moved to id greater than cart length."
 
         with self.app.batch_update():
             self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
             self._focus_item_on_move(to_index)
 
-        self.profile.cart.swap(from_index, to_index)
+        self.profile.transaction.swap_operations(from_index, to_index)
         self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
         self.post_message(self.Modified())
