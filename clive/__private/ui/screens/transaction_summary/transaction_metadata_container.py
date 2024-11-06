@@ -38,9 +38,9 @@ class TransactionIdLabel(Label):
 class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
-    transaction: Transaction | None = reactive(None, recompose=True)  # type: ignore[assignment]
+    transaction: Transaction = reactive(None, recompose=True, always_update=True)  # type: ignore[assignment]
 
-    def __init__(self, transaction: Transaction | None) -> None:
+    def __init__(self, transaction: Transaction) -> None:
         super().__init__()
         self.transaction = transaction
 

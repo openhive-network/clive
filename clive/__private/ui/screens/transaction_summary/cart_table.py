@@ -27,7 +27,7 @@ from clive.__private.ui.widgets.no_content_available import NoContentAvailable
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.models.schemas import OperationBase
+    from clive.__private.models.schemas import OperationUnion
 
 
 class ButtonMoveUp(CliveButton):
@@ -122,13 +122,13 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self.query_exactly_one(RemoveButton)
 
     @property
-    def operation(self) -> OperationBase:
+    def operation(self) -> OperationUnion:
         assert self._is_operation_index_valid(self._operation_index), "Cannot get operation, position is invalid."
-        return self.profile.cart[self._operation_index]
+        return self.profile.operations[self._operation_index]
 
     @property
     def operations_amount(self) -> int:
-        return len(self.profile.cart)
+        return len(self.profile.transaction)
 
     @property
     def is_first(self) -> bool:
@@ -152,7 +152,7 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         self.operation_number_cell.update_content(self.humanize_operation_number())
 
     def humanize_operation_number(self, *, before_removal: bool = False) -> str:
-        cart_items = len(self.profile.cart) - 1 if before_removal else len(self.profile.cart)
+        cart_items = self.operations_amount - 1 if before_removal else self.operations_amount
         return f"{self._operation_index + 1}/{cart_items}"
 
     def humanize_operation_name(self) -> str:
@@ -277,7 +277,7 @@ class CartTable(CliveCheckerboardTable):
         return bool(self._cart_items)
 
     def create_static_rows(self) -> list[CartItem]:
-        return [CartItem(index, self._cart_items_action_manager) for index in range(len(self.profile.cart))]
+        return [CartItem(index, self._cart_items_action_manager) for index in range(len(self.profile.transaction))]
 
     @on(CartItem.Delete)
     async def remove_item(self, event: CartItem.Delete) -> None:
@@ -293,7 +293,7 @@ class CartTable(CliveCheckerboardTable):
                 await self.query_exactly_one(CartHeader).remove()
                 await self.mount(NoContentAvailable(self.NO_CONTENT_TEXT))
 
-        self.profile.cart.remove(item_to_remove.operation)
+        self.profile.remove_operation(item_to_remove.operation)
         self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
         self.post_message(self.Modified())
@@ -304,13 +304,13 @@ class CartTable(CliveCheckerboardTable):
         to_index = event.to_index
 
         assert to_index >= 0, "Item cannot be moved to id lower than 0."
-        assert to_index < len(self.profile.cart), "Item cannot be moved to id greater than cart length."
+        assert to_index < len(self.profile.transaction), "Item cannot be moved to id greater than cart length."
 
         with self.app.batch_update():
             self._update_values_of_swapped_rows(from_index=from_index, to_index=to_index)
             self._focus_item_on_move(to_index)
 
-        self.profile.cart.swap(from_index, to_index)
+        self.profile.transaction.swap_operations(from_index, to_index)
         self._cart_items_action_manager.enable_action()
         self.app.trigger_profile_watchers()
         self.post_message(self.Modified())
