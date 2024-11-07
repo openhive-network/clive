@@ -119,7 +119,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
 
     def select_asset(self, asset_type: type[AssetInputT]) -> None:
         with self.prevent(CurrencySelectorBase.Changed):
-            self._currency_selector.select_asset(Asset.get_symbol(asset_type))
+            self._currency_selector.select_asset(asset_type)
 
     def disable_currency_selector(self) -> None:
         self._currency_selector.disabled = True

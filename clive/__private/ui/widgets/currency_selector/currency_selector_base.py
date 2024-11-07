@@ -48,9 +48,15 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
         """Return selected asset factory."""
         return self.value_ensure.asset_factory
 
-    def select_asset(self, asset: str) -> None:
-        """Select asset by name."""
-        self.value = self._get_selectable(asset)
+    def select_asset(self, asset_type: type[AssetT]) -> None:
+        """
+        Select asset by its type.
+
+        Args:
+        ----
+            asset_type: Type of asset to select.
+        """
+        self.value = self._get_selectable(asset_type)
 
     def create_asset(self, amount: AssetAmount) -> AssetT:
         """
@@ -67,5 +73,8 @@ class CurrencySelectorBase(CliveSelect[AssetFactoryHolder[AssetT]], Generic[Asse
         asset_factory = self.asset_factory
         return asset_factory(amount)
 
-    def _get_selectable(self, asset: str) -> AssetFactoryHolder[AssetT]:
-        return self._selectable[asset]
+    def _get_selectable(self, asset_type: type[AssetT]) -> AssetFactoryHolder[AssetT]:
+        for asset_factory_holder in self._selectable.values():
+            if asset_factory_holder.asset_cls == asset_type:
+                return asset_factory_holder
+        raise AssertionError(f"Asset type {asset_type} is not selectable")
