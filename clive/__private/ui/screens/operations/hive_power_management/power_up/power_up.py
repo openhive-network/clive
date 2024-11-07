@@ -2,13 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal
+from textual.containers import Center, Horizontal
 from textual.widgets import TabPane
 
 from clive.__private.models.schemas import TransferToVestingOperation
 from clive.__private.ui.get_css import get_css_from_relative_path
 from clive.__private.ui.screens.operations.bindings.operation_action_bindings import OperationActionBindings
-from clive.__private.ui.widgets.buttons import GenerousButton
+from clive.__private.ui.widgets.buttons import AddToCartButton, GenerousButton
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
 from clive.__private.ui.widgets.inputs.hive_asset_amount_input import HiveAssetAmountInput
 from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
@@ -52,6 +52,7 @@ class PowerUp(TabPane, OperationActionBindings):
                 with Horizontal(id="input-with-button"):
                     yield self._asset_input
                     yield GenerousButton(self._asset_input, self._get_hive_balance)  # type: ignore[arg-type]
+                yield Center(AddToCartButton())
 
     def _get_hive_balance(self) -> Asset.Hive:
         return self.profile.accounts.working.data.hive_balance

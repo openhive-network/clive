@@ -8,8 +8,8 @@ PowerDown {
   Section {
     margin-bottom: 1;
 
-    SectionBody {
-      layout: horizontal;
+    Horizontal {
+      height: auto;
     }
   }
 

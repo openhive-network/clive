@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Final, Literal
 
 from textual import on
-from textual.containers import Grid, Horizontal
-from textual.widgets import Button, Label, RadioSet, Static, TabPane
+from textual.containers import Center, Grid, Horizontal
+from textual.widgets import Label, RadioSet, Static, TabPane
 
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_datetime, humanize_hbd_savings_apr
@@ -24,7 +24,7 @@ from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_fro
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.buttons import CancelButton
+from clive.__private.ui.widgets.buttons import AddToCartButton, CancelButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -231,6 +231,7 @@ class SavingsTransfers(TabPane, OperationActionBindings):
                 yield self._to_account_input
                 yield self._amount_input
                 yield self._memo_input
+                yield Center(AddToCartButton())
 
     @on(RadioSet.Changed)
     def transfer_type_changed(self, event: RadioSet.Changed) -> None:
