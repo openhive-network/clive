@@ -24,7 +24,7 @@ from clive.__private.ui.screens.operations.operation_summary.cancel_transfer_fro
     CancelTransferFromSavings,
 )
 from clive.__private.ui.widgets.apr import APR
-from clive.__private.ui.widgets.buttons import CliveButton
+from clive.__private.ui.widgets.buttons import CancelButton
 from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTable,
     CliveCheckerBoardTableCell,
@@ -143,11 +143,11 @@ class PendingTransfer(CliveCheckerboardTableRow):
             CliveCheckerBoardTableCell(aligned_amount),
             CliveCheckerBoardTableCell(humanize_datetime(pending_transfer.complete)),
             CliveCheckerBoardTableCell(pending_transfer.memo),
-            CliveCheckerBoardTableCell(CliveButton("Cancel", variant="error", id_="delete-transfer-button")),
+            CliveCheckerBoardTableCell(CancelButton()),
         )
         self._pending_transfer = pending_transfer
 
-    @on(Button.Pressed, "#delete-transfer-button")
+    @on(CancelButton.Pressed)
     def push_operation_summary_screen(self) -> None:
         self.app.push_screen(CancelTransferFromSavings(self._pending_transfer))
 
