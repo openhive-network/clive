@@ -8,7 +8,7 @@ from clive.__private.validators.set_tracked_account_validator import SetTrackedA
 
 
 @dataclass(kw_only=True)
-class AddWatchedAccount(ProfileBasedCommand):
+class AddTrackedAccount(ProfileBasedCommand):
     account_name: str
 
     async def validate_inside_context_manager(self) -> None:
@@ -21,7 +21,7 @@ class AddWatchedAccount(ProfileBasedCommand):
 
 
 @dataclass(kw_only=True)
-class RemoveWatchedAccount(ProfileBasedCommand):
+class RemoveTrackedAccount(ProfileBasedCommand):
     account_name: str
 
     async def _run(self) -> None:

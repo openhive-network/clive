@@ -16,5 +16,5 @@ class ShowAccounts(ProfileBasedCommand):
             typer.echo(f"Working account: {profile.accounts.working.name}")
         else:
             typer.echo("Working account is not set.")
-        typer.echo(f"Watched accounts: {[account.name for account in profile.accounts.watched]}")
+        typer.echo(f"Tracked accounts: {[account.name for account in profile.accounts.tracked]}")
         typer.echo(f"Known accounts: {[account.name for account in profile.accounts.known]}")

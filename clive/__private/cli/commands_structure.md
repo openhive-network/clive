@@ -133,9 +133,9 @@ flowchart LR
         ConfigureProfile --> DeleteProfile[remove]
         ConfigureProfile --> SetDefaultProfile[set-default]
 
-        Configure --> ConfigureWatchedAccount(watched-account)
-        ConfigureWatchedAccount --> AddWatchedAccount[add]
-        ConfigureWatchedAccount --> RemoveWatchedAccount[remove]
+        Configure --> ConfigureTrackedAccount(tracked-account)
+        ConfigureTrackedAccount --> AddTrackedAccount[add]
+        ConfigureTrackedAccount --> RemoveTrackedAccount[remove]
 
         Configure --> ConfigureWorkingAccount(working-account)
         ConfigureWorkingAccount --> SetWorkingAccount[set]
