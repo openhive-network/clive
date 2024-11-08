@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
 from queue import Queue
-from typing import Final
+from typing import Any, Final
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextT, Contextual
@@ -13,7 +13,7 @@ from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen im
 from clive.__private.ui.onboarding.form_screen import FormScreenBase
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
-PostAction = Command | Callable[[], None]
+PostAction = Command | Callable[[], Any]
 
 
 class Form(Contextual[ContextT], CliveScreen[None]):
