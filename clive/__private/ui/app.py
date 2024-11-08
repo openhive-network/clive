@@ -30,6 +30,7 @@ if TYPE_CHECKING:
 
     from textual.message import Message
     from textual.screen import Screen, ScreenResultType
+    from textual.worker import Worker
 
 
 UpdateScreenResultT = TypeVar("UpdateScreenResultT")
@@ -200,22 +201,34 @@ class Clive(App[int]):
     def trigger_app_state_watchers(self) -> None:
         self.world.mutate_reactive(TUIWorld.app_state)  # type: ignore[arg-type]
 
-    def update_alarms_data_asap(self) -> None:
+    def update_alarms_data_asap(self) -> Worker[None]:
         """Update alarms as soon as possible after node data becomes available."""
 
         async def _update_alarms_data_asap() -> None:
             self._refresh_alarms_data_interval.pause()
             while not self.world.profile.accounts.is_tracked_accounts_node_data_available:  # noqa: ASYNC110
                 await asyncio.sleep(0.1)
-            self.update_alarms_data()
+            await self.update_alarms_data().wait()
             self._refresh_alarms_data_interval.resume()
 
-        self.run_worker(_update_alarms_data_asap())
+        return self.run_worker(_update_alarms_data_asap())
 
-    def update_data_from_node_asap(self) -> None:
-        self._refresh_node_data_interval.pause()
-        self.update_data_from_node()
-        self._refresh_node_data_interval.resume()
+    def update_data_from_node_asap(self) -> Worker[None]:
+        async def _update_data_from_node_asap() -> None:
+            self._refresh_node_data_interval.pause()
+            await self.update_data_from_node().wait()
+            self._refresh_node_data_interval.resume()
+
+        return self.run_worker(_update_data_from_node_asap())
+
+    def update_alarms_data_asap_on_newest_node_data(self) -> Worker[None]:
+        """Update alarms on the newest possible node data."""
+
+        async def _update_alarms_data_asap_on_newest_node_data() -> None:
+            await self.update_data_from_node_asap().wait()
+            await self.update_alarms_data_asap().wait()
+
+        return self.run_worker(_update_alarms_data_asap_on_newest_node_data())
 
     @work(name="alarms data update worker")
     async def update_alarms_data(self) -> None:
