@@ -73,8 +73,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
         """
         with self.prevent(CurrencySelectorBase.Changed):
             self._currency_selector: CurrencySelectorBase[AssetInputT] = self.create_currency_selector()
-        default_asset_type = self._currency_selector.default_asset_cls
-        default_asset_precision = Asset.get_precision(default_asset_type)
+        default_asset_precision = Asset.get_precision(self.default_asset_type)
 
         super().__init__(
             title=title,
@@ -86,7 +85,7 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
             required=required,
             restrict=self._create_restriction(default_asset_precision),
             type="number",
-            validators=[AssetAmountValidator(default_asset_type)],
+            validators=[AssetAmountValidator(self.default_asset_type)],
             validate_on=validate_on,
             valid_empty=valid_empty,
             id=id,
@@ -108,6 +107,10 @@ class AssetAmountInput(CliveValidatedInput[AssetInputT], Generic[AssetInputT], A
         AssetAmountInvalidFormatError: Raised when given amount is in invalid format.
         """
         return self._currency_selector.create_asset(self.value_raw)
+
+    @property
+    def default_asset_type(self) -> type[AssetInputT]:
+        return self._currency_selector.default_asset_cls
 
     @property
     def selected_asset_type(self) -> type[AssetInputT]:
