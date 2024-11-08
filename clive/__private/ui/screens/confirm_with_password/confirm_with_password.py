@@ -8,7 +8,7 @@ from textual.widgets import Static
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.dialog_container import DialogContainer
-from clive.__private.ui.widgets.inputs.text_input import TextInput
+from clive.__private.ui.widgets.inputs.password_input import PasswordInput
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -26,7 +26,7 @@ class ConfirmWithPassword(BaseScreen[str]):
         self,
         title: str = "",
     ) -> None:
-        self._password_input = TextInput("Password", password=True)
+        self._password_input = PasswordInput()
         self._title = title
         super().__init__()
 
