@@ -18,7 +18,7 @@ class NewKeyAliasForm(NewKeyAliasBase, FormScreen[Profile]):
     @property
     def should_complete_this_step(self) -> bool:
         """NewKeyAliasForm step is optional, to check if it should be skipped use this property."""
-        return bool(self._key_input.value_raw) or bool(self._key_alias_input.value_raw)
+        return not self._key_input.is_empty or not self._key_alias_input.is_empty
 
     async def action_previous_screen(self) -> None:
         # We allow just for adding one key during onboarding. Clear old ones because validation could fail.

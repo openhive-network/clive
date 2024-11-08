@@ -189,6 +189,10 @@ class CliveValidatedInput(CliveWidget, Generic[InputReturnT], AbstractClassMessa
         self.validate_with_error(treat_as_required=False)
         return self._value
 
+    @property
+    def is_empty(self) -> bool:
+        return not bool(self.value_raw)
+
     def value_or_none(
         self,
         *,

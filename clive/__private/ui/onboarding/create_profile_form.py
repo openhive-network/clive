@@ -75,5 +75,5 @@ class CreateProfileForm(BaseScreen, FormScreen[Profile]):
         self._owner.add_post_action(create_wallet, write_data)
 
     def _revalidate_repeat_password_input_when_password_changed(self) -> None:
-        if self._repeat_password_input.value_raw:
+        if not self._repeat_password_input.is_empty:
             self._repeat_password_input.validate_passed()
