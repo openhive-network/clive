@@ -25,8 +25,8 @@ from clive.__private.ui.widgets.clive_basic import (
     CliveCheckerboardTableRow,
 )
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput
-from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.inputs.percent_input import PercentInput
+from clive.__private.ui.widgets.inputs.receiver_input import ReceiverInput
 from clive.__private.ui.widgets.place_taker import PlaceTaker
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.section import Section
@@ -114,7 +114,7 @@ class WithdrawRoutes(TabPane, OperationActionBindings):
         title: Title of the TabPane (will be displayed in a tab label).
         """
         super().__init__(title=title)
-        self._account_input = KnownExchangeInput()
+        self._account_input = ReceiverInput()
         self._percent_input = PercentInput()
         self._auto_vest_checkbox = Checkbox("Auto vest", value=self.DEFAULT_AUTO_VEST)
 

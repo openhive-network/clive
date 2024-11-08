@@ -13,8 +13,8 @@ if TYPE_CHECKING:
     from textual.widgets._input import InputValidationOn
 
 
-class KnownExchangeInput(AccountNameInput):
-    """An input for a known exchange account."""
+class ReceiverInput(AccountNameInput):
+    """An input for a receiver that support additionally known exchange accounts."""
 
     class KnownExchangeDetected(Message):
         """Sent when a known exchange account is detected in the input."""

@@ -7,9 +7,9 @@ from textual import on
 from clive.__private.core.constants.tui.placeholders import KNOWN_EXCHANGE_MEMO_PLACEHOLDER
 from clive.__private.models import Asset
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.widgets.inputs.known_exchange_input import KnownExchangeInput
 from clive.__private.ui.widgets.inputs.liquid_asset_amount_input import LiquidAssetAmountInput
 from clive.__private.ui.widgets.inputs.memo_input import MemoInput
+from clive.__private.ui.widgets.inputs.receiver_input import ReceiverInput
 
 
 class KnownExchangeHandler(CliveWidget):
@@ -34,12 +34,12 @@ class KnownExchangeHandler(CliveWidget):
     """
     MEMO_REQUIRED_VALIDATION_MESSAGE: Final[str] = "Memo is required by the known exchange account!"
 
-    @on(KnownExchangeInput.KnownExchangeDetected)
+    @on(ReceiverInput.KnownExchangeDetected)
     def set_known_exchange_mode(self) -> None:
         self._change_selector_state(disable=True)
         self._change_memo_requirement(required=True)
 
-    @on(KnownExchangeInput.KnownExchangeGone)
+    @on(ReceiverInput.KnownExchangeGone)
     def unset_known_exchange_mode(self) -> None:
         self._change_selector_state(disable=False)
         self._change_memo_requirement(required=False)
