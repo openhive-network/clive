@@ -15,6 +15,7 @@ from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.buttons import CliveButton
 from clive.__private.ui.widgets.clive_basic.clive_select import CliveSelect
 from clive.__private.ui.widgets.dialog_container import DialogContainer
+from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.integer_input import IntegerInput
 from clive.__private.ui.widgets.inputs.password_input import PasswordInput
 
@@ -89,6 +90,7 @@ class Unlock(BaseScreen):
             yield Static("OR", id="or-static")
             yield CliveButton("Create a new profile", id_="new-profile-button")
 
+    @on(CliveInput.Submitted)
     @on(Button.Pressed, "#unlock-button")
     async def unlock(self) -> None:
         password_input = self.query_exactly_one(PasswordInput)

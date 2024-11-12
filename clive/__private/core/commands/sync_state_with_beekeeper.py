@@ -31,4 +31,4 @@ class SyncStateWithBeekeeper(Command):
         if clive_wallet_details is None:
             raise WalletNotFoundError(self, wallet_name=clive_wallet_name)
 
-        self.app_state.unlock() if clive_wallet_details.unlocked else self.app_state.lock()
+        self.app_state.unlock() if clive_wallet_details.unlocked else await self.app_state.lock()

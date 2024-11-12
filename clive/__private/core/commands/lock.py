@@ -18,4 +18,4 @@ class Lock(Command):
 
     async def _execute(self) -> None:
         await self.beekeeper.api.lock(wallet_name=self.wallet)
-        self.app_state.lock()
+        await self.app_state.lock()

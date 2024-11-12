@@ -143,11 +143,11 @@ class World:
         if self._beekeeper is not None:
             await self._beekeeper.close()
 
-    def on_going_into_locked_mode(self, source: LockSource) -> None:
+    async def on_going_into_locked_mode(self, source: LockSource) -> None:
         """Triggered when the application is going into the locked mode."""
         if self._is_during_setup:
             return
-        self._on_going_into_locked_mode(source)
+        await self._on_going_into_locked_mode(source)
 
     def on_going_into_unlocked_mode(self) -> None:
         """Triggered when the application is going into the unlocked mode."""
@@ -155,7 +155,7 @@ class World:
             return
         self._on_going_into_unlocked_mode()
 
-    def _on_going_into_locked_mode(self, _: LockSource) -> None:
+    async def _on_going_into_locked_mode(self, _: LockSource) -> None:
         """Override this method to hook when clive goes into the locked mode."""
 
     def _on_going_into_unlocked_mode(self) -> None:
@@ -229,7 +229,7 @@ class TUIWorld(World, CliveDOMNode):
     def _watch_profile(self, profile: Profile) -> None:
         self.node.change_related_profile(profile)
 
-    def _on_going_into_locked_mode(self, source: LockSource) -> None:
+    async def _on_going_into_locked_mode(self, source: LockSource) -> None:
         base_message: Final[str] = "Switched to the LOCKED mode"
         if source == "beekeeper_notification_server":
             send_notification = partial(
@@ -247,8 +247,8 @@ class TUIWorld(World, CliveDOMNode):
         self.switch_to_welcome_profile()
 
         self._add_welcome_modes()
-        self.app.switch_mode("unlock")
-        self._restart_dashboard_mode()
+        await self.app.switch_mode("unlock")
+        await self._restart_dashboard_mode()
 
     def _on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
@@ -268,8 +268,8 @@ class TUIWorld(World, CliveDOMNode):
         self.app.add_mode("onboarding", Onboarding)
         self.app.add_mode("unlock", Unlock)
 
-    def _restart_dashboard_mode(self) -> None:
-        self.app.remove_mode("dashboard")
+    async def _restart_dashboard_mode(self) -> None:
+        await self.app.remove_mode("dashboard")
         self.app.add_mode("dashboard", Dashboard)
 
 

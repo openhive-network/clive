@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 
 class WalletClosingListener(Protocol):
-    def lock(self, source: Literal["beekeeper_notification_server"]) -> None: ...
+    async def lock(self, source: Literal["beekeeper_notification_server"]) -> None: ...
 
 
 class BeekeeperNotificationsServer:
@@ -49,7 +49,7 @@ class BeekeeperNotificationsServer:
         logger.debug(f"Notifications server is listening on {self.server.port}...")
         return self.http_endpoint
 
-    def notify(self, message: JsonT) -> None:
+    async def notify(self, message: JsonT) -> None:
         logger.debug(f"Got notification: {message}")
         name = message["name"]
         details = message["value"]
@@ -76,7 +76,7 @@ class BeekeeperNotificationsServer:
         elif name == "Attempt of closing all wallets":
             logger.debug("Got notification about closing all wallets")
             if self.__is_tracked_wallet_closing(details):
-                self.__notify_listeners_about_wallets_closing()
+                await self.__notify_listeners_about_wallets_closing()
             else:
                 logger.debug("The tracked wallet is not closing, ignoring notification")
         else:
@@ -127,7 +127,7 @@ class BeekeeperNotificationsServer:
 
         return False
 
-    def __notify_listeners_about_wallets_closing(self) -> None:
+    async def __notify_listeners_about_wallets_closing(self) -> None:
         logger.debug("Notifying listeners about tracked wallet closing")
         for listener in self.__wallet_closing_listeners:
-            listener.lock("beekeeper_notification_server")
+            await listener.lock("beekeeper_notification_server")

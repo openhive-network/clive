@@ -26,7 +26,7 @@ class ServerAlreadyRunningError(AsyncHttpServerError):
 
 
 class Notifiable(Protocol):
-    def notify(self, message: JsonT) -> None: ...
+    async def notify(self, message: JsonT) -> None: ...
 
 
 class AsyncHttpServer:
@@ -66,7 +66,7 @@ class AsyncHttpServer:
 
     async def __do_put(self, request: web.Request) -> web.Response:
         data = await request.json()
-        self.__observer.notify(data)
+        await self.__observer.notify(data)
         return web.Response(status=HTTPStatus.NO_CONTENT)
 
     def __assert_running(self) -> None:
