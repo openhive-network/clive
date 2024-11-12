@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from clive.__private.core.iwax import TotalVestingProtocol
 
 
-def calulcate_vests_to_hive_ratio(data: TotalVestingProtocol) -> Decimal:
+def calculate_vests_to_hive_ratio(data: TotalVestingProtocol) -> Decimal:
     value = int(int(data.total_vesting_shares.amount) / int(data.total_vesting_fund_hive.amount))
     return (
         DecimalConverter.convert(value, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)

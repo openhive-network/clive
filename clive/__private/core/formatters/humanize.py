@@ -9,7 +9,7 @@ import humanize
 import inflection
 
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
-from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
+from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
 from clive.__private.core.constants.date import TIME_FORMAT_DAYS, TIME_FORMAT_WITH_SECONDS
 from clive.__private.core.constants.node import NULL_ACCOUNT_KEY_VALUE
 from clive.__private.core.constants.precision import (
@@ -255,7 +255,7 @@ def humanize_vest_to_hive_ratio(
     data: TotalVestingProtocol | Decimal, *, with_label: bool = False, show_symbol: bool = False
 ) -> str:
     """Return pretty formatted vest to hive ratio."""
-    calculated = data if isinstance(data, Decimal) else calulcate_vests_to_hive_ratio(data)
+    calculated = data if isinstance(data, Decimal) else calculate_vests_to_hive_ratio(data)
     symbol = f" {Asset.get_symbol(Asset.Vests)}" if show_symbol else ""
     return _maybe_labelize(
         VEST_HIVE_RATIO_LABEL,

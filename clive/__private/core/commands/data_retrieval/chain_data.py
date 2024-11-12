@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from clive.__private.cli.styling import colorize_error, colorize_ok, colorize_warning
 from clive.__private.core.calculate_participation_count import calculate_participation_count_percent
-from clive.__private.core.calculate_vests_to_hive_ratio import calulcate_vests_to_hive_ratio
+from clive.__private.core.calculate_vests_to_hive_ratio import calculate_vests_to_hive_ratio
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.formatters.humanize import (
     align_to_dot,
@@ -276,7 +276,7 @@ class ChainDataRetrieval(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, C
             median_hive_price=data.current_price_feed,
             participation=data.gdpo.participation_count,
             vests_apr=calculate_hp_apr(data.gdpo),
-            vests_to_hive_ratio=calulcate_vests_to_hive_ratio(data.gdpo),
+            vests_to_hive_ratio=calculate_vests_to_hive_ratio(data.gdpo),
             witness_majority_version=data.witness_schedule.majority_version,
             _current_median_history=data.feed.current_median_history,
             _market_median_history=data.feed.market_median_history,
