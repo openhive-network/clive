@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.hive_vests_conversions import hive_to_vests
+from clive.__private.core import iwax
 from clive.__private.models import Asset
 
 if TYPE_CHECKING:
@@ -15,7 +15,7 @@ def ensure_vests(value: Asset.VotingT, gdpo: DynamicGlobalProperties) -> Asset.V
     if isinstance(value, Asset.Vests):
         return value
 
-    return hive_to_vests(value, gdpo)
+    return iwax.calculate_hp_to_vests(value, gdpo)
 
 
 async def ensure_vests_async(value: Asset.VotingT, world: World) -> Asset.Vests:
@@ -24,4 +24,4 @@ async def ensure_vests_async(value: Asset.VotingT, world: World) -> Asset.Vests:
         return value
 
     gdpo = await world.node.cached.dynamic_global_properties
-    return hive_to_vests(value, gdpo)
+    return iwax.calculate_hp_to_vests(value, gdpo)
