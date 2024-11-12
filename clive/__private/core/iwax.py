@@ -9,8 +9,6 @@ from clive.__private.core.communication import CustomJSONEncoder
 from clive.__private.core.constants.precision import HIVE_PERCENT_PRECISION_DOT_PLACES
 from clive.__private.core.decimal_conventer import DecimalConverter
 from clive.__private.core.percent_conversions import hive_percent_to_percent
-from clive.__private.models import Asset, Transaction
-from clive.__private.models.asset import UnknownAssetTypeError
 from clive.__private.models.schemas import convert_to_representation
 from clive.exceptions import CliveError
 
@@ -18,6 +16,7 @@ if TYPE_CHECKING:
     from decimal import Decimal
 
     from clive.__private.core.keys import PrivateKey, PublicKey
+    from clive.__private.models import Asset, Transaction
     from clive.__private.models.schemas import OperationUnion, PriceFeed
 
 
@@ -46,11 +45,15 @@ class WaxOperationFailedError(CliveError):
 
 
 def from_python_json_asset(result: wax.python_json_asset) -> Asset.AnyT:
+    from clive.__private.models.asset import Asset
+
     asset_cls = Asset.resolve_nai(result.nai.decode())
     return asset_cls(amount=int(result.amount.decode()))
 
 
 def to_python_json_asset(asset: Asset.AnyT) -> wax.python_json_asset:
+    from clive.__private.models.asset import Asset, UnknownAssetTypeError
+
     match Asset.get_symbol(asset):
         case "HIVE" | "TESTS":
             return wax.hive(amount=int(asset.amount))
@@ -68,6 +71,8 @@ def __validate_wax_response(response: wax.python_result) -> None:
 
 
 def __as_binary_json(item: OperationUnion | Transaction | dict[str, Any]) -> bytes:
+    from clive.__private.models import Transaction
+
     if isinstance(item, dict):
         return json.dumps(item, cls=CustomJSONEncoder).encode()
 
@@ -112,6 +117,8 @@ def serialize_transaction(transaction: Transaction) -> bytes:
 
 
 def deserialize_transaction(transaction: bytes) -> Transaction:
+    from clive.__private.models import Transaction
+
     result = wax.deserialize_transaction(transaction)
     __validate_wax_response(result)
     return Transaction.parse_raw(result.result.decode())
@@ -160,15 +167,15 @@ def get_tapos_data(block_id: str) -> wax.python_ref_block_data:
 
 
 def hive(amount: int) -> Asset.Hive:
-    return cast(Asset.Hive, from_python_json_asset(wax.hive(amount)))
+    return cast("Asset.Hive", from_python_json_asset(wax.hive(amount)))
 
 
 def hbd(amount: int) -> Asset.Hbd:
-    return cast(Asset.Hbd, from_python_json_asset(wax.hbd(amount)))
+    return cast("Asset.Hbd", from_python_json_asset(wax.hbd(amount)))
 
 
 def vests(amount: int) -> Asset.Vests:
-    return cast(Asset.Vests, from_python_json_asset(wax.vests(amount)))
+    return cast("Asset.Vests", from_python_json_asset(wax.vests(amount)))
 
 
 def calculate_hp_apr(data: HpAPRProtocol) -> Decimal:
@@ -188,7 +195,7 @@ def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: PriceFeed) -> Ass
         base=to_python_json_asset(current_price_feed.base),
         quote=to_python_json_asset(current_price_feed.quote),
     )
-    return cast(Asset.Hive, from_python_json_asset(result))
+    return cast("Asset.Hive", from_python_json_asset(result))
 
 
 def calculate_vests_to_hp(_vests: int | Asset.Vests, data: TotalVestingProtocol) -> Asset.Hive:
@@ -198,7 +205,7 @@ def calculate_vests_to_hp(_vests: int | Asset.Vests, data: TotalVestingProtocol)
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
-    return cast(Asset.Hive, from_python_json_asset(result))
+    return cast("Asset.Hive", from_python_json_asset(result))
 
 
 def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asset.Vests:
@@ -207,7 +214,7 @@ def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asse
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
-    return cast(Asset.Vests, from_python_json_asset(result))
+    return cast("Asset.Vests", from_python_json_asset(result))
 
 
 def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
@@ -222,4 +229,4 @@ def calculate_witness_votes_hp(votes: int, data: TotalVestingProtocol) -> Asset.
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
-    return cast(Asset.Hive, from_python_json_asset(result))
+    return cast("Asset.Hive", from_python_json_asset(result))
