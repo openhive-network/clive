@@ -54,3 +54,4 @@ class FinishFormScreen(BaseScreen, LastFormScreen[ContextT]):
         await self._owner.execute_post_actions()
         await self.app.switch_mode("dashboard")
         await self.app.remove_mode("onboarding")
+        await self.app.remove_mode("unlock")
