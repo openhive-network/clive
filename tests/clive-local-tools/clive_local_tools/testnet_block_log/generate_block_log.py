@@ -204,7 +204,7 @@ def main() -> None:
         ],
         time_control="+0h x5",
     )
-    wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
+    wallet = tt.Wallet(attach_to=node)
 
     create_witnesses(wallet)
     create_proposals(wallet)

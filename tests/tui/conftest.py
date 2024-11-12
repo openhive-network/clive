@@ -67,7 +67,7 @@ async def prepare_beekeeper_wallet(prepare_profile: Profile, world: World) -> No
 def node_with_wallet() -> NodeWithWallet:
     node = run_node(use_faketime=True)
 
-    wallet = tt.Wallet(attach_to=node, additional_arguments=["--transaction-serialization", "hf26"])
+    wallet = tt.Wallet(attach_to=node)
     wallet.api.import_key(node.config.private_key[0])
     wallet.api.import_key(WORKING_ACCOUNT_DATA.account.private_key)
     account = wallet.api.get_account(WORKING_ACCOUNT_DATA.account.name)
