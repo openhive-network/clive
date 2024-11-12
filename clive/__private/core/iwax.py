@@ -191,9 +191,10 @@ def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: PriceFeed) -> Ass
     return cast(Asset.Hive, from_python_json_asset(result))
 
 
-def calculate_vests_to_hp(_vests: Asset.Vests, data: TotalVestingProtocol) -> Asset.Hive:
+def calculate_vests_to_hp(_vests: int | Asset.Vests, data: TotalVestingProtocol) -> Asset.Hive:
+    vests_json_asset = wax.vests(_vests) if isinstance(_vests, int) else to_python_json_asset(_vests)
     result = wax.calculate_vests_to_hp(
-        vests=to_python_json_asset(_vests),
+        vests=vests_json_asset,
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
         total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
     )
