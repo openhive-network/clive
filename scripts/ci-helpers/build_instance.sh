@@ -13,7 +13,6 @@ REGISTRY=""
 SRCROOTDIR=""
 
 IMAGE_TAG_PREFIX=""
-IMAGE_PATH_SUFFIX=""
 
 HIVED_IMAGE=""
 BASE_IMAGE=""
@@ -26,12 +25,14 @@ print_help () {
     echo "Usage: $0 <image_tag> <src_dir> <registry_url> [OPTION[=VALUE]]..."
     echo
     echo "Allows to build docker image containing clive installation"
+    echo "For example:, produced mainnet image will be named: registry.gitlab.syncad.com/hive/clive:<image_tag>"
+    echo "  - produced mainnet image will be named: registry.gitlab.syncad.com/hive/clive:<image_tag>"
+    echo "  - produced testnet image will be named: registry.gitlab.syncad.com/hive/clive:testnet-<image_tag>"
     echo "OPTIONS:"
     echo "  --hived-source-image=image_name     Allows to specify image name containing a prebuilt hived"
     echo "  --base-image=image_name             Allows to specify an image name being use as a base of the one to be built"
     echo "  --clive-version=version             Allows to specify a version of clive to be installed in the image"
     echo "  --embedded-testnet                  Allows to build a clive image having embedded a hived testnet inside (ready for immediate sanboxing run)"
-    echo "  --image-path-suffix                 Allows to specify a suffix to be added to the image path, to organize images in a more structured directory-like way"
     echo "  --help                              Display this help screen and exit"
     echo
 }
@@ -40,19 +41,19 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --hived-source-image=*)
       HIVED_IMAGE="${1#*=}"
+      echo "Specified Hived source image: ${HIVED_IMAGE}"
       ;;
     --base-image=*)
       BASE_IMAGE="${1#*=}"
+      echo "Specified base image: ${BASE_IMAGE}"
       ;;
     --clive-version=*)
       CLIVE_VERSION="${1#*=}"
+      echo "Specified clive version: ${CLIVE_VERSION}"
       ;;
     --embedded-testnet)
       DOCKER_TARGET="embedded_testnet_instance"
       IMAGE_TAG_PREFIX="testnet-"
-      ;;
-    --image-path-suffix=*)
-      IMAGE_PATH_SUFFIX="${1#*=}"
       ;;
     --help)
         print_help
@@ -87,16 +88,19 @@ _TST_HIVED_IMAGE=${HIVED_IMAGE:?"Missing --hived-source-image to specify source 
 _TST_BASE_IMAGE=${BASE_IMAGE:?"Missing --base-image option to specify base image"}
 _TST_CLIVE_VERSION=${CLIVE_VERSION:?"Missing --clive-version option to specify clive version to be installed"}
 
+# STRIP a registry path from optional trailing slash (if needed) to use it as an image base pathname
+CLIVE_IMAGE_PATH="${REGISTRY}"
+[[ "${REGISTRY}" == */ ]] && CLIVE_IMAGE_PATH="${REGISTRY%/}"
+
 # Supplement a registry path by trailing slash (if needed)
 [[ "${REGISTRY}" != */ ]] && REGISTRY="${REGISTRY}/"
 
+echo "Using an image pathname: ${CLIVE_IMAGE_PATH}"
 echo "Moving into source root directory: ${SRCROOTDIR}"
 
 pushd "$SRCROOTDIR"
 
-CLIVE_IMAGE_TAG_PREFIX="${IMAGE_TAG_PREFIX}instance"
-CLIVE_IMAGE_PATH="${REGISTRY}${CLIVE_IMAGE_TAG_PREFIX}${IMAGE_PATH_SUFFIX}"
-CLIVE_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-${BUILD_IMAGE_TAG}"
+CLIVE_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}"
 
 BUILD_TIME="$(date -uIseconds)"
 
@@ -140,10 +144,11 @@ docker buildx build --target="${DOCKER_TARGET}" \
   --build-arg GIT_LAST_COMMITTER="${GIT_LAST_COMMITTER}" \
   --build-arg GIT_LAST_COMMIT_DATE="${GIT_LAST_COMMIT_DATE}" \
   --tag "${CLIVE_IMAGE_NAME}" \
+  --tag "${REGISTRY}minimal-instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
+  --tag "${REGISTRY}instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
   --file docker/Dockerfile .
 
 popd
 
-echo "CLIVE_IMAGE_TAG_PREFIX=${CLIVE_IMAGE_TAG_PREFIX}" > docker_image_name.env
 echo "CLIVE_IMAGE_PATH=${CLIVE_IMAGE_PATH}" >> docker_image_name.env
 echo "CLIVE_IMAGE_NAME=${CLIVE_IMAGE_NAME}" >> docker_image_name.env
