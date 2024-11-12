@@ -41,12 +41,15 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --hived-source-image=*)
       HIVED_IMAGE="${1#*=}"
+      echo "Specified Hived source image: ${HIVED_IMAGE}"
       ;;
     --base-image=*)
       BASE_IMAGE="${1#*=}"
+      echo "Specified base image: ${BASE_IMAGE}"
       ;;
     --clive-version=*)
       CLIVE_VERSION="${1#*=}"
+      echo "Specified clive version: ${CLIVE_VERSION}"
       ;;
     --embedded-testnet)
       DOCKER_TARGET="embedded_testnet_instance"
@@ -141,6 +144,8 @@ docker buildx build --target="${DOCKER_TARGET}" \
   --build-arg GIT_LAST_COMMITTER="${GIT_LAST_COMMITTER}" \
   --build-arg GIT_LAST_COMMIT_DATE="${GIT_LAST_COMMIT_DATE}" \
   --tag "${CLIVE_IMAGE_NAME}" \
+  --tag "${REGISTRY}minimal-instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
+  --tag "${REGISTRY}instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
   --file docker/Dockerfile .
 
 popd
