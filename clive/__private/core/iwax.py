@@ -200,6 +200,15 @@ def calculate_vests_to_hp(_vests: Asset.Vests, data: VestsToHpProtocol) -> Asset
     return cast(Asset.Hive, from_python_json_asset(result))
 
 
+def calculate_hp_to_vests(_hive: Asset.Hive, data: VestsToHpProtocol) -> Asset.Vests:
+    result = wax.calculate_hp_to_vests(
+        hive=to_python_json_asset(_hive),
+        total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
+        total_vesting_shares=to_python_json_asset(data.total_vesting_shares),
+    )
+    return cast(Asset.Vests, from_python_json_asset(result))
+
+
 def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
     result = wax.calculate_inflation_rate_for_block(head_block_num)
     __validate_wax_response(result)
