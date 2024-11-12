@@ -266,7 +266,7 @@ deploy_wheel_to_pypi:
     BASE_IMAGE: "python:3.10-slim-bookworm"
     BUILD_INSTANCE_ARGS: ""
 
-    TAG_COMMIT: ${BUILD_SUFFIX}${CI_COMMIT_SHORT_SHA}
+    TAG_COMMIT: ${CI_COMMIT_SHORT_SHA}
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
 
   script:
@@ -282,14 +282,6 @@ deploy_wheel_to_pypi:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
-    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${CLIVE_IMAGE_NAME}${TXT_CLEAR}"
-    - |
-      if [[ -n "$CI_COMMIT_TAG" ]]; then
-        GIT_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-${CI_COMMIT_TAG}"
-        echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${GIT_IMAGE_TAG}${TXT_CLEAR}"
-        docker tag "${CLIVE_IMAGE_NAME}" "${GIT_IMAGE_TAG}"
-        docker push "${GIT_IMAGE_TAG}"
-      fi
   artifacts:
     reports:
       dotenv: docker_image_name.env
@@ -325,6 +317,7 @@ build_and_push_clive_testnet_image:
     BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
+# extends standard build procedure by additional tagging to branch name based tag
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
   when: on_success
@@ -332,15 +325,13 @@ build_and_push_clive_testnet_image:
   only:
     - develop
     - master
-  variables:
-    BUILD_INSTANCE_ARGS: "--image-path-suffix=-${CI_COMMIT_REF_NAME}"
   after_script:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
-    - export LATEST_IMAGE_TAG="${CLIVE_IMAGE_PATH}:${CLIVE_IMAGE_TAG_PREFIX}-latest"
-    - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${LATEST_IMAGE_TAG}${TXT_CLEAR}"
-    - docker tag ${CLIVE_IMAGE_NAME} ${LATEST_IMAGE_TAG}
-    - docker push ${LATEST_IMAGE_TAG}
-    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${LATEST_IMAGE_TAG}${TXT_CLEAR}"
+    - export BRANCH_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${CI_COMMIT_REF_NAME}"
+    - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
+    - docker tag ${CLIVE_IMAGE_NAME} ${BRANCH_IMAGE_NAME}
+    - docker push ${BRANCH_IMAGE_NAME}
+    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
@@ -365,8 +356,7 @@ build_and_publish_image:
     - scripts/ci-helpers/build_and_publish_instance.sh \
         --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}" \
         --build-instance-arg="--base-image=${BASE_IMAGE}" \
-        --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}" \
-        --build-instance-arg="--image-path-suffix=-${CI_COMMIT_REF_NAME}"
+        --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
 
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
@@ -393,6 +383,6 @@ build_and_push_clive_stable_testnet_image:
   <<: *clive_testnet_needs
   variables:
     BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
-    BUILD_INSTANCE_ARGS: "--embedded-testnet --image-path-suffix=-${CI_COMMIT_REF_NAME}"
+    BUILD_INSTANCE_ARGS: "--embedded-testnet"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
