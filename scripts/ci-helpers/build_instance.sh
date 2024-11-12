@@ -141,6 +141,7 @@ docker buildx build --target="${DOCKER_TARGET}" \
   --build-arg GIT_LAST_COMMITTER="${GIT_LAST_COMMITTER}" \
   --build-arg GIT_LAST_COMMIT_DATE="${GIT_LAST_COMMIT_DATE}" \
   --tag "${CLIVE_IMAGE_NAME}" \
+  --tag "${REGISTRY}minimal-instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
   --file docker/Dockerfile .
 
 popd
