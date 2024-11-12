@@ -34,8 +34,8 @@ class HpAPRProtocol(Protocol):
     total_vesting_fund_hive: Asset.Hive
 
 
-class VestsToHpProtocol(Protocol):
-    """Simply pass gdpo, or object that provides required information needed to calculate Vests to Hp."""
+class TotalVestingProtocol(Protocol):
+    """Simply pass gdpo, or object that provides required information."""
 
     total_vesting_fund_hive: Asset.Hive
     total_vesting_shares: Asset.Vests
@@ -191,7 +191,7 @@ def calculate_hbd_to_hive(_hbd: Asset.Hbd, current_price_feed: PriceFeed) -> Ass
     return cast(Asset.Hive, from_python_json_asset(result))
 
 
-def calculate_vests_to_hp(_vests: Asset.Vests, data: VestsToHpProtocol) -> Asset.Hive:
+def calculate_vests_to_hp(_vests: Asset.Vests, data: TotalVestingProtocol) -> Asset.Hive:
     result = wax.calculate_vests_to_hp(
         vests=to_python_json_asset(_vests),
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
@@ -200,7 +200,7 @@ def calculate_vests_to_hp(_vests: Asset.Vests, data: VestsToHpProtocol) -> Asset
     return cast(Asset.Hive, from_python_json_asset(result))
 
 
-def calculate_hp_to_vests(_hive: Asset.Hive, data: VestsToHpProtocol) -> Asset.Vests:
+def calculate_hp_to_vests(_hive: Asset.Hive, data: TotalVestingProtocol) -> Asset.Vests:
     result = wax.calculate_hp_to_vests(
         hive=to_python_json_asset(_hive),
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),
@@ -215,7 +215,7 @@ def calculate_current_inflation_rate(head_block_num: int) -> Decimal:
     return hive_percent_to_percent(result.result.decode())
 
 
-def calculate_witness_votes_hp(votes: int, data: VestsToHpProtocol) -> Asset.Hive:
+def calculate_witness_votes_hp(votes: int, data: TotalVestingProtocol) -> Asset.Hive:
     result = wax.calculate_witness_votes_hp(
         votes=votes,
         total_vesting_fund_hive=to_python_json_asset(data.total_vesting_fund_hive),

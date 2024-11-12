@@ -39,7 +39,7 @@ if TYPE_CHECKING:
 
     from clive.__private.core.iwax import (
         HpAPRProtocol,
-        VestsToHpProtocol,
+        TotalVestingProtocol,
     )
     from clive.__private.models.schemas import HbdExchangeRate, OperationBase, PriceFeed
 
@@ -252,7 +252,7 @@ def humanize_participation_count(participation_count: int, *, with_label: bool =
 
 
 def humanize_vest_to_hive_ratio(
-    data: VestsToHpProtocol | Decimal, *, with_label: bool = False, show_symbol: bool = False
+    data: TotalVestingProtocol | Decimal, *, with_label: bool = False, show_symbol: bool = False
 ) -> str:
     """Return pretty formatted vest to hive ratio."""
     calculated = data if isinstance(data, Decimal) else calulcate_vests_to_hive_ratio(data)
@@ -274,13 +274,13 @@ def humanize_witness_status(signing_key: str) -> str:
     return "active" if signing_key != NULL_ACCOUNT_KEY_VALUE else "inactive"
 
 
-def humanize_votes_with_suffix(votes: int, data: VestsToHpProtocol) -> str:
+def humanize_votes_with_suffix(votes: int, data: TotalVestingProtocol) -> str:
     """Return pretty formatted votes converted to hive power with K, M etc. suffix."""
     hive_power = calculate_witness_votes_hp(votes, data)
     return humanize_hive_power(hive_power)
 
 
-def humanize_votes_with_comma(votes: int, data: VestsToHpProtocol) -> str:
+def humanize_votes_with_comma(votes: int, data: TotalVestingProtocol) -> str:
     """Return pretty formatted votes converted to hive power."""
     hive_power = calculate_witness_votes_hp(votes, data)
     return f"{humanize.intcomma(hive_power.as_float(), ndigits=Asset.get_precision(Asset.Hive))} HP"
