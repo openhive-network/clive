@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from clive.__private.core.hive_vests_conversions import vests_to_hive
+from clive.__private.core import iwax
 
 if TYPE_CHECKING:
     from clive.__private.models import Asset
@@ -19,4 +19,4 @@ class HpVestsBalance:
 
     @classmethod
     def create(cls, vests: Asset.Vests, gdpo: DynamicGlobalProperties) -> HpVestsBalance:
-        return cls(hp_balance=vests_to_hive(vests, gdpo), vests_balance=vests)
+        return cls(hp_balance=iwax.calculate_vests_to_hp(vests, gdpo), vests_balance=vests)

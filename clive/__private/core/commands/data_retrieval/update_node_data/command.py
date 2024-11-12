@@ -4,6 +4,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import TYPE_CHECKING, Final
 
+from clive.__private.core import iwax
 from clive.__private.core.commands.abc.command_data_retrieval import CommandDataRetrieval
 from clive.__private.core.commands.data_retrieval.update_node_data.models import Manabar, NodeData
 from clive.__private.core.commands.data_retrieval.update_node_data.temporary_models import (
@@ -14,7 +15,6 @@ from clive.__private.core.commands.data_retrieval.update_node_data.temporary_mod
     SanitizedData,
 )
 from clive.__private.core.date_utils import utc_epoch, utc_now
-from clive.__private.core.hive_vests_conversions import vests_to_hive
 from clive.__private.core.iwax import (
     calculate_current_manabar_value,
     calculate_manabar_full_regeneration_time,
@@ -154,8 +154,8 @@ class UpdateNodeData(CommandDataRetrieval[HarvestedDataRaw, SanitizedData, Dynam
         head_block_timestamp = int(head_block_time.timestamp())
         last_update_timestamp = manabar.last_update_time
         power_from_api = manabar.current_mana
-        max_mana_value = vests_to_hive(max_mana, gdpo)
-        mana_value = vests_to_hive(
+        max_mana_value = iwax.calculate_vests_to_hp(max_mana, gdpo)
+        mana_value = iwax.calculate_vests_to_hp(
             calculate_current_manabar_value(
                 now=head_block_timestamp,
                 max_mana=max_mana,
