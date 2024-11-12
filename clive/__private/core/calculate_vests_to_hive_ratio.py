@@ -2,11 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from clive.__private.core.constants.precision import (
-    VESTS_TO_HIVE_RATIO_PRECISION,
-    VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES,
-)
-from clive.__private.core.decimal_conventer import DecimalConverter
+from clive.__private.core import iwax
+from clive.__private.models import Asset
 
 if TYPE_CHECKING:
     from decimal import Decimal
@@ -15,8 +12,5 @@ if TYPE_CHECKING:
 
 
 def calculate_vests_to_hive_ratio(data: TotalVestingProtocol) -> Decimal:
-    value = int(int(data.total_vesting_shares.amount) / int(data.total_vesting_fund_hive.amount))
-    return (
-        DecimalConverter.convert(value, precision=VESTS_TO_HIVE_RATIO_PRECISION_DOT_PLACES)
-        / VESTS_TO_HIVE_RATIO_PRECISION
-    )
+    ratio = iwax.calculate_hp_to_vests(Asset.hive(1), data)
+    return Asset.as_decimal(ratio)

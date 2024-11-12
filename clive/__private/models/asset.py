@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from collections.abc import Callable
-from typing import Generic, TypeAlias, TypeVar
+from typing import TYPE_CHECKING, Generic, TypeAlias, TypeVar
 
 from pydantic.generics import GenericModel
 
@@ -14,6 +14,9 @@ from clive.__private.core.decimal_conventer import (
 from clive.__private.models.base import CliveBaseModel
 from clive.__private.models.schemas import AssetHbdHF26, AssetHiveHF26, AssetVestsHF26
 from clive.exceptions import CliveError
+
+if TYPE_CHECKING:
+    from decimal import Decimal
 
 AssetT = TypeVar("AssetT", bound=AssetHiveHF26 | AssetHbdHF26 | AssetVestsHF26)
 AssetExplicitT = TypeVar("AssetExplicitT", AssetHiveHF26, AssetHbdHF26, AssetVestsHF26)
@@ -188,6 +191,11 @@ class Asset:
     @classmethod
     def pretty_amount(cls, asset: Asset.AnyT) -> str:
         return f"{int(asset.amount) / 10 ** asset.precision :.{asset.precision}f}"
+
+    @classmethod
+    def as_decimal(cls, asset: Asset.AnyT) -> Decimal:
+        precision = cls.get_precision(asset)
+        return DecimalConverter.convert(asset.amount) / DecimalConverter.convert(10**precision)
 
     @classmethod
     def __convert_amount_to_internal_representation(cls, amount: AssetAmount, precision: int | type[Asset.AnyT]) -> int:
