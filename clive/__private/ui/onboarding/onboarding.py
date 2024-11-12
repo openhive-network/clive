@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Final
 
 from textual.binding import Binding
 
+from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
 from clive.__private.core.profile import Profile
 from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
 from clive.__private.ui.onboarding.dedicated_form_screens.finish_form_screen import FinishFormScreen
@@ -12,7 +13,6 @@ from clive.__private.ui.onboarding.form import Form, ScreenBuilder
 from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.onboarding.set_account import SetAccount
 from clive.__private.ui.onboarding.set_node_address_form import SetNodeAddressForm
-from clive.__private.ui.styling import colorize_shortcut
 from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHint
 
 if TYPE_CHECKING:
@@ -22,17 +22,10 @@ if TYPE_CHECKING:
 
 
 class OnboardingWelcomeScreen(WelcomeFormScreen[Profile]):
-    BINDINGS = [
-        Binding("escape", "dummy", show=False),
-        Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
-    ]
+    BINDINGS = [Binding("f1", "help", "Help")]  # help is a hidden global binding, but we want to show it here
 
     def __init__(self, owner: Form[Profile]) -> None:
-        super().__init__(
-            owner,
-            f"Let's start onboarding!\n"
-            f"In any moment you can press the {colorize_shortcut('F1')} button to see the Help page.",
-        )
+        super().__init__(owner, "Let's start onboarding!\n" + PRESS_HELP_MESSAGE)
 
     def _content_after_description(self) -> ComposeResult:
         yield SelectCopyPasteHint()

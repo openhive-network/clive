@@ -1,22 +1,27 @@
 Unlock {
-  LabelizedInput {
-    margin-bottom: 1;
-  }
+  DialogContainer {
+    DialogBody {
+      max-height: 43;
+    }
 
-  UnlockModeTimeContainer {
-    margin: 1 0;
-    height: auto;
-  }
-
-  ButtonsContainer {
-    height: auto;
-
-    Button {
+    CliveButton,
+    #or-static {
       width: 1fr;
     }
 
-    #unlock-button {
-      margin-right: 1;
+    PasswordInput,
+    #or-static {
+      margin: 1 0;
+    }
+
+    #or-static {
+      text-style: bold;
+      text-align: center;
+    }
+
+    #press-help-message {
+      margin-bottom: 1;
+      text-align: center;
     }
   }
 }

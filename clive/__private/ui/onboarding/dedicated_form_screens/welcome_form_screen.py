@@ -26,8 +26,6 @@ class Description(Static):
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     CSS_PATH = [get_relative_css_path(__file__)]
 
-    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
-
     def __init__(self, owner: Form[ContextT], description: str) -> None:
         self.__description = description
         super().__init__(owner)
@@ -41,6 +39,15 @@ class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
             yield Description(self.__description)
             yield from self._content_after_description()
             yield CliveButton("Start!", id_="welcome-button-start")
+
+    def on_mount(self) -> None:
+        if self.profile.is_any_profile_saved:
+            # If the user requested profile creation from a `Unlock` screen, it is possible to back to the `Unlock`
+            # screen otherwise, during first time profile creation there is NO screen to go back to
+            self.bind(Binding("escape", "back", "Back"))
+
+    async def action_back(self) -> None:
+        await self.app.switch_mode("unlock")
 
     @on(CliveButton.Pressed, "#welcome-button-start")
     async def begin(self) -> None:

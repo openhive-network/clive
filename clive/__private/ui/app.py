@@ -23,6 +23,7 @@ from clive.__private.ui.help import Help
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
+from clive.__private.ui.screens.unlock import Unlock
 from clive.exceptions import CommunicationError, ScreenNotFoundError
 
 if TYPE_CHECKING:
@@ -62,6 +63,7 @@ class Clive(App[int]):
     }
 
     MODES = {
+        "unlock": Unlock,
         "onboarding": Onboarding,
         "dashboard": Dashboard,
     }
