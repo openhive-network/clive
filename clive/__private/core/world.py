@@ -211,20 +211,9 @@ class TUIWorld(World, CliveDOMNode):
     def is_in_onboarding_mode(self) -> bool:
         return self._is_in_onboarding_mode(self.profile)
 
-    def switch_to_welcome_profile(self, *, trigger_profile_watchers: bool = False) -> None:
-        """
-        Set the profile to default (welcome) with optional triggering of profile watchers.
-
-        Args:
-        ----
-        trigger_profile_watchers: If True, triggers profile watchers.
-        """
-        profile = self._load_profile(WELCOME_PROFILE_NAME)
-        if trigger_profile_watchers:
-            self.profile = profile
-            return
-
-        self.set_reactive(self.__class__.profile, profile)  # type: ignore[arg-type]
+    def _switch_to_welcome_profile(self, ) -> None:
+        """Set the profile to default (welcome)."""
+        self.profile = self._load_profile(WELCOME_PROFILE_NAME)
 
     def _watch_profile(self, profile: Profile) -> None:
         self.node.change_related_profile(profile)
@@ -240,15 +229,18 @@ class TUIWorld(World, CliveDOMNode):
         else:
             send_notification = partial(self.app.notify, f"{base_message}.")
 
-        send_notification()
-        self.app.trigger_app_state_watchers()
-
         self.profile.save()
-        self.switch_to_welcome_profile()
 
-        self._add_welcome_modes()
-        await self.app.switch_mode("unlock")
-        await self._restart_dashboard_mode()
+        async def logout() -> None:
+            nonlocal send_notification
+
+            self._add_welcome_modes()
+            await self.app.switch_mode("unlock")
+            await self._restart_dashboard_mode()
+            self._switch_to_welcome_profile()
+            send_notification()
+
+        self.app.run_worker(logout())
 
     def _on_going_into_unlocked_mode(self) -> None:
         self.app.notify("Switched to the UNLOCKED mode.")
