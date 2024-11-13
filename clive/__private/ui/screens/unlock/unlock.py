@@ -79,6 +79,7 @@ class LockAfterTime(Horizontal):
 
 class Unlock(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__)]
+    SHOW_RAW_HEADER = True
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome again!"):

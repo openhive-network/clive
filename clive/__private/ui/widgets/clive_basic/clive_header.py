@@ -216,28 +216,41 @@ class LeftPart(Horizontal):
     """Left part of the header or expandable."""
 
 
-class CliveHeader(Header, CliveWidget):
+class Bar(Horizontal):
+    DEFAULT_CSS = """
+    Bar {
+        background: $panel;
+        height: 1;
+    }
+    """
+
+
+class CliveRawHeader(Header, CliveWidget):
     DEFAULT_CSS = get_css_from_relative_path(__file__)
 
-    def __init__(self) -> None:
-        self._header_title = HeaderTitle()
-        super().__init__()
-        self._node_version = DynamicLabel(
-            obj_to_watch=self.world,
-            attribute_name="node",
-            callback=self._get_node_version,
-            first_try_callback=lambda: self.node.cached.is_online_status_known,
-            id_="node-type",
-        )
+    def compose(self) -> ComposeResult:
+        yield HeaderIcon()
+        yield Bar()
+        with Horizontal():
+            yield HeaderTitle()
+
+    def _on_click(self, event: events.Click) -> None:  # type: ignore[override]
+        """
+        Override this method to prevent expanding header on click.
+
+        Default behavior of the textual header is to expand on click.
+        We do not want behavior like that, so we had to override the `_on_click` method.
+        """
+        event.prevent_default()
 
     def on_mount(self, event: Mount) -> None:
         # >>> start workaround for query_one(HeaderTitle) raising NoMatches error when title reactive is updated right
         # after pop_screen happens
         def set_title() -> None:
-            self._header_title.text = self.screen_title
+            self.query_exactly_one(HeaderTitle).text = self.screen_title
 
         def set_sub_title() -> None:
-            self._header_title.sub_text = self.screen_sub_title
+            self.query_exactly_one(HeaderTitle).sub_text = self.screen_sub_title
 
         event.prevent_default()
 
@@ -249,12 +262,26 @@ class CliveHeader(Header, CliveWidget):
 
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
 
-        if not self.world.is_in_onboarding_mode:
-            self.watch(self.world, "profile", self._update_alarm_display_showing)
+    def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
+        self.add_class("-tall") if expanded else self.remove_class("-tall")
+
+
+class CliveHeader(CliveRawHeader):
+    DEFAULT_CSS = get_css_from_relative_path(__file__)
+
+    def __init__(self) -> None:
+        super().__init__()
+        self._node_version = DynamicLabel(
+            obj_to_watch=self.world,
+            attribute_name="node",
+            callback=self._get_node_version,
+            first_try_callback=lambda: self.node.cached.is_online_status_known,
+            id_="node-type",
+        )
 
     def compose(self) -> ComposeResult:
         yield HeaderIcon()
-        with Horizontal(id="bar"):
+        with Bar(id="bar"):
             if not self.world.is_in_onboarding_mode:
                 with LeftPart():
                     yield from self._create_left_part_bar()
@@ -262,12 +289,16 @@ class CliveHeader(Header, CliveWidget):
             with RightPart():
                 yield from self._create_right_part_bar()
 
-        with Horizontal(id="expandable"):
+        with Horizontal():
             with LeftPart():
                 yield from self._create_left_part_expandable()
-            yield self._header_title
+            yield HeaderTitle()
             with RightPart():
                 yield from self._create_right_part_expandable()
+
+    def on_mount(self, _: Mount) -> None:
+        if not self.world.is_in_onboarding_mode:
+            self.watch(self.world, "profile", self._update_alarm_display_showing)
 
     @on(LockStatus.WalletUnlocked)
     def change_state_to_unlocked(self) -> None:
@@ -276,9 +307,6 @@ class CliveHeader(Header, CliveWidget):
     @on(LockStatus.WalletLocked)
     def change_state_to_locked(self) -> None:
         self.remove_class("-unlocked")
-
-    def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
-        self.add_class("-tall") if expanded else self.remove_class("-tall")
 
     def _create_left_part_bar(self) -> ComposeResult:
         yield DynamicLabel(
@@ -305,15 +333,6 @@ class CliveHeader(Header, CliveWidget):
             id_="node-address-label",
         )
         yield self._node_version
-
-    def _on_click(self, event: events.Click) -> None:  # type: ignore[override]
-        """
-        Override this method to prevent expanding header on click.
-
-        Default behavior of the textual header is to expand on click.
-        We do not want behavior like that, so we had to override the `_on_click` method.
-        """
-        event.prevent_default()
 
     def _update_alarm_display_showing(self, profile: Profile) -> None:
         """Use to mount/remove the alarm display depends on the current working account."""

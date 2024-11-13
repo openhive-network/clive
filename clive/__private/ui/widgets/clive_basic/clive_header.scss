@@ -1,21 +1,23 @@
 $success-header-color: $success-darken-3;
 
-CliveHeader {
+CliveRawHeader {
   box-sizing: content-box;
   border-bottom: inner $error-darken-1;
 
-  &.-unlocked {
-    border-bottom: inner $success;
+  HeaderTitle {
+    width: 1fr;
+    height: 1;
   }
 
   HeaderIcon {
     content-align: center middle;
     width: auto;
   }
+}
 
-  #bar {
-    background: $panel;
-    height: 1;
+CliveHeader {
+  &.-unlocked {
+    border-bottom: inner $success;
   }
 
   LeftPart {
@@ -37,11 +39,6 @@ CliveHeader {
     BlockDisplay {
       width: auto;
     }
-  }
-
-  HeaderTitle {
-    width: 1fr;
-    height: 1;
   }
 
   RightPart {

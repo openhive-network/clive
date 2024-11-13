@@ -20,7 +20,6 @@ from clive.__private.ui.clive_dom_node import CliveDOMNode
 from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
-from clive.__private.ui.widgets.clive_basic.clive_header import LeftPart, LockStatus
 
 if TYPE_CHECKING:
     from collections.abc import Iterator
@@ -232,17 +231,11 @@ class TUIWorld(World, CliveDOMNode):
 
         self.profile.save()
 
-        def workaround_header_displaying_issue() -> None:
-            """Will be resolved with CliveHeader implementation that won't show node/chain info in the locked mode."""
-            self.app.screen.query_one(LeftPart).display = False
-            self.app.screen.query_one(LockStatus).display = False
-
         async def lock() -> None:
             nonlocal send_notification
 
             self._add_welcome_modes()
             await self.app.switch_mode("unlock")
-            workaround_header_displaying_issue()
             await self._restart_dashboard_mode()
             self._switch_to_welcome_profile()
             send_notification()

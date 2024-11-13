@@ -8,7 +8,7 @@ from textual.widgets import Footer
 
 from clive.__private.abstract_class import AbstractClassMessagePump
 from clive.__private.ui.clive_screen import CliveScreen, ScreenResultT
-from clive.__private.ui.widgets.clive_basic import CliveHeader
+from clive.__private.ui.widgets.clive_basic import CliveHeader, CliveRawHeader
 from clive.__private.ui.widgets.location_indicator import LocationIndicator
 
 if TYPE_CHECKING:
@@ -19,6 +19,7 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
     BIG_TITLE: ClassVar[str] = ""
     SUBTITLE: ClassVar[str] = ""
     """Subtitle won't be shown when BIG_TITLE is not set also"""
+    SHOW_RAW_HEADER: ClassVar[bool] = False
     subtitle: str = reactive("", recompose=True)  # type: ignore[assignment]
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
@@ -26,7 +27,7 @@ class BaseScreen(CliveScreen[ScreenResultT], AbstractClassMessagePump):
         self.subtitle = self.SUBTITLE
 
     def compose(self) -> ComposeResult:
-        yield CliveHeader()
+        yield CliveHeader() if not self.SHOW_RAW_HEADER else CliveRawHeader()
         if self.BIG_TITLE:
             yield LocationIndicator(self.BIG_TITLE, self.subtitle)
         yield from self.create_main_panel()
