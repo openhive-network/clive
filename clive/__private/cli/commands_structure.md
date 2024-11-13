@@ -138,6 +138,7 @@ flowchart LR
         ConfigureTrackedAccount --> RemoveTrackedAccount[remove]
 
         Configure --> ConfigureWorkingAccount(working-account)
+        ConfigureWorkingAccount --> SwitchWorkingAccount[switch]
         ConfigureWorkingAccount --> SetWorkingAccount[set]
         ConfigureWorkingAccount --> UnsetWorkingAccount[unset]
 

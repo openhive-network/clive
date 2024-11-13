@@ -49,3 +49,19 @@ class UnsetWorkingAccount(ProfileBasedCommand):
             )
 
         self.profile.accounts.unset_working_account()
+
+@dataclass(kw_only=True)
+class SwitchWorkingAccount(ProfileBasedCommand):
+    account_name: str
+
+    async def _run(self) -> None:
+        self.profile.accounts.switch_working_account(self.account_name)
+
+    def _validate_already_working_account(self) -> None:
+        if self.profile.accounts.is_account_working(self.account_name):
+            raise CLIPrettyError(f"Account {self.account_name} is already a working account.") from None
+
+    async def validate_inside_context_manager(self) -> None:
+        self._validate_account_exists(self.account_name)
+        self._validate_already_working_account()
+        await super().validate_inside_context_manager()
