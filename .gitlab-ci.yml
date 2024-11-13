@@ -42,7 +42,7 @@ include:
     ref: a3e53c6150c0d7fd412c4f5be2705d7d98b73a1a
     file: '/scripts/ci-helpers/prepare_data_image_job.yml'
   - project: 'hive/common-ci-configuration'
-    ref: 12db226cfde2df929bb8bcb0c7c51d04c8900d32
+    ref: d4e29410ea168096e1a822f77c7ce741d9cfb57a
     file:
       - '/templates/python_projects.gitlab-ci.yml'
       - '/templates/docker_image_jobs.gitlab-ci.yml'
@@ -270,6 +270,7 @@ deploy_wheel_to_pypi:
     SCRIPTS_PATH: "$CI_PROJECT_DIR/scripts"
 
   script:
+    - git config --global --add safe.directory '*'
     - echo "WHEEL_BUILD_VERSION is ${WHEEL_BUILD_VERSION}"
     - $SCRIPTS_PATH/ci-helpers/build_instance.sh
       "${TAG_COMMIT}"
