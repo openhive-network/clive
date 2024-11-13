@@ -146,6 +146,7 @@ docker buildx build --target="${DOCKER_TARGET}" \
   --tag "${CLIVE_IMAGE_NAME}" \
   --tag "${REGISTRY}minimal-instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
   --tag "${REGISTRY}instance:${IMAGE_TAG_PREFIX}${BUILD_IMAGE_TAG}" \
+  --load \
   --file docker/Dockerfile .
 
 popd
