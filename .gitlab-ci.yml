@@ -365,7 +365,7 @@ build_and_publish_tagged_image:
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
   rules:
-    - if: '$COMMIT_BRANCH_NAME == "develop" && $CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_COMMIT_BRANCH == "develop" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
   needs:
@@ -377,7 +377,7 @@ generate_clive_develop_startup_scripts:
 generate_clive_master_startup_scripts:
   extends: .generate_clive_startup_scripts_base
   rules:
-    - if: '$COMMIT_BRANCH_NAME == "master" && $CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_COMMIT_BRANCH == "master" && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
   needs:
