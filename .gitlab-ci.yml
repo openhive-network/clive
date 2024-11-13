@@ -249,7 +249,7 @@ deploy_wheel_to_pypi:
       - ./scripts/start_clive_cli.sh
 
 .prepare_clive_image:
-  extends: .docker_image_builder_job
+  extends: .docker_image_builder_job_template
   stage: build_and_deploy_docker
   needs:
     - job: pre_commit_checks
