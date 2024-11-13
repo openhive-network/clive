@@ -139,8 +139,6 @@ flowchart LR
 
         Configure --> ConfigureWorkingAccount(working-account)
         ConfigureWorkingAccount --> SwitchWorkingAccount[switch]
-        ConfigureWorkingAccount --> SetWorkingAccount[set]
-        ConfigureWorkingAccount --> UnsetWorkingAccount[unset]
 
         Configure --> ConfigureKey(key)
         ConfigureKey --> AddKey[add]
