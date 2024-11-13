@@ -221,7 +221,7 @@ deploy_wheel_to_gitlab:
   stage: deploy
   <<: *deploy_wheel_needs
   rules:
-    - if: ($CI_COMMIT_BRANCH == "master" || $CI_COMMIT_BRANCH == "develop")
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: manual
 
@@ -257,10 +257,10 @@ deploy_wheel_to_pypi:
       artifacts: true
     - job: deploy_wheel_to_gitlab
       artifacts: true
-  when: manual
-  except:
-    - develop
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "false"'
+      when: manual
+    - when: never
   variables:
     GIT_DEPTH: 0
     BASE_IMAGE: "python:3.10-slim-bookworm"
@@ -304,9 +304,10 @@ generate_clive_startup_scripts:
   needs:
     - job: build_and_push_clive_image
       artifacts: true
-  except:
-    - develop
-    - master
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "false"'
+      when: on_success
+    - when: never
   artifacts:
     expire_in: 7 days
 
@@ -320,11 +321,6 @@ build_and_push_clive_testnet_image:
 # extends standard build procedure by additional tagging to branch name based tag
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
-  when: on_success
-  except: [ ]
-  only:
-    - develop
-    - master
   after_script:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
     - export BRANCH_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${CI_COMMIT_REF_NAME}"
@@ -332,6 +328,10 @@ build_and_push_clive_testnet_image:
     - docker tag ${CLIVE_IMAGE_NAME} ${BRANCH_IMAGE_NAME}
     - docker push ${BRANCH_IMAGE_NAME}
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
+  rules:
+    - if: '$CI_COMMIT_TAG == "" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+    - when: never
 
 build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
@@ -346,7 +346,6 @@ build_and_publish_image:
       artifacts: true
     - job: deploy_wheel_to_gitlab
       artifacts: true
-  when: manual
 
   variables:
     GIT_DEPTH: 0
@@ -360,8 +359,10 @@ build_and_publish_image:
 
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
-  only:
-    - develop
+  rules:
+    - if: '$COMMIT_BRANCH_NAME == "develop" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+    - when: never
   needs:
     - job: build_and_push_clive_stable_image
       artifacts: true
@@ -370,8 +371,10 @@ generate_clive_develop_startup_scripts:
 
 generate_clive_master_startup_scripts:
   extends: .generate_clive_startup_scripts_base
-  only:
-    - master
+  rules:
+    - if: '$COMMIT_BRANCH_NAME == "master" && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+    - when: never
   needs:
     - job: build_and_push_clive_stable_image
       artifacts: true
