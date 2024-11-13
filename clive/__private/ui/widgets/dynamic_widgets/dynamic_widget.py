@@ -4,6 +4,7 @@ from abc import abstractmethod
 from inspect import isawaitable
 from typing import TYPE_CHECKING, Any, Awaitable, Callable, Generic, TypeVar, cast, overload
 
+from textual.reactive import invoke_watcher
 from textual.widget import Widget
 
 from clive.__private.abstract_class import AbstractClassMessagePump
@@ -74,6 +75,15 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
             self.run_worker(self._attribute_changed(old_value, value))
 
         self.watch(self._obj_to_watch, self._attribute_name, delegate_work, self._init)
+
+    def force_update(self) -> None:
+        """
+        Force the widget to update.
+
+        Useful when the widget is not updated automatically because observed value is not changed.
+        """
+        current_value = getattr(self._obj_to_watch, self._attribute_name, None)
+        invoke_watcher(self._obj_to_watch, self._attribute_changed, current_value, current_value)
 
     @abstractmethod
     def _create_widget(self) -> WidgetT:
