@@ -329,7 +329,7 @@ build_and_push_clive_testnet_image:
     - docker push ${BRANCH_IMAGE_NAME}
     - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
   rules:
-    - if: '$CI_COMMIT_TAG == "" && $CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_COMMIT_BRANCH && $CI_COMMIT_REF_PROTECTED == "true"'
       when: on_success
     - when: never
 
