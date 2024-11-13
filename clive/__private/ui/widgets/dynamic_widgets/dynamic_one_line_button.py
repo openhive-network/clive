@@ -42,19 +42,19 @@ class DynamicOneLineButton(DynamicWidget[OneLineButton, str]):
             classes=classes,
         )
 
-    def update_widget_state(self, result: str) -> None:
+    def _update_widget_state(self, result: str) -> None:
         if self._widget.variant == "loading-variant":
             self._widget.variant = "primary"
 
         if result != self._widget.label:
             self._widget.update(result)
 
-    def create_widget(self) -> OneLineButton:
+    def _create_widget(self) -> OneLineButton:
         return OneLineButton("loading...", self._variant)
 
 
 class DynamicOneLineButtonUnfocusable(DynamicOneLineButton):
-    def create_widget(self) -> OneLineButton:
-        button = super().create_widget()
+    def _create_widget(self) -> OneLineButton:
+        button = super()._create_widget()
         button.can_focus = False
         return button

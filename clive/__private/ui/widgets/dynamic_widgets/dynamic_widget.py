@@ -58,7 +58,7 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
     ) -> None:
         super().__init__(id=id_, classes=classes)
 
-        self._widget = self.create_widget()
+        self._widget = self._create_widget()
 
         self._init = init
         self._obj_to_watch = obj_to_watch
@@ -68,14 +68,14 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
 
     def on_mount(self) -> None:
         def delegate_work(old_value: Any, value: Any) -> None:  # noqa: ANN401
-            self.run_worker(self.attribute_changed(old_value, value))
+            self.run_worker(self._attribute_changed(old_value, value))
 
         self.watch(self._obj_to_watch, self._attribute_name, delegate_work, self._init)
 
     def compose(self) -> ComposeResult:
         yield self._widget
 
-    async def attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
+    async def _attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
         callback = self._callback
 
         should_update = self._call_with_arbitrary_args(self._first_try_callback, old_value, value)
@@ -88,7 +88,7 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
         else:
             result_ = result
 
-        self.update_widget_state(result_)
+        self._update_widget_state(result_)
 
     @overload
     def _call_with_arbitrary_args(
@@ -122,9 +122,9 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
         return cast(WatchLikeCallbackNoArgsType[Any], callback)()
 
     @abstractmethod
-    def update_widget_state(self, result: CallbackReturnT) -> None:
+    def _update_widget_state(self, result: CallbackReturnT) -> None:
         pass
 
     @abstractmethod
-    def create_widget(self) -> WidgetT:
+    def _create_widget(self) -> WidgetT:
         pass
