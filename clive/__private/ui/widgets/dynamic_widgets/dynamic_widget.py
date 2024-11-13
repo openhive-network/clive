@@ -123,8 +123,8 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
 
     @abstractmethod
     def _update_widget_state(self, result: CallbackReturnT) -> None:
-        pass
+        """Define how the widget should be updated with the given result."""
 
     @abstractmethod
     def _create_widget(self) -> WidgetT:
-        pass
+        """Create a widget that will be updated when the reactive variable changes."""
