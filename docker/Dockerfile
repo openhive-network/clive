@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.5
 ARG HIVED_IMAGE
 ARG BASE_IMAGE
 
