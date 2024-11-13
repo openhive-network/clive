@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 class CreateProfileForm(BaseScreen, FormScreen[OnboardingContext]):
     CSS_PATH = [get_relative_css_path(__file__)]
     BIG_TITLE = "onboarding"
+    SHOW_RAW_HEADER = True
 
     def __init__(self, owner: Form[OnboardingContext]) -> None:
         self._profile_name_input = SetProfileNameInput()

@@ -25,6 +25,7 @@ class Description(Static):
 
 class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
     CSS_PATH = [get_relative_css_path(__file__)]
+    SHOW_RAW_HEADER = True
 
     def __init__(self, owner: Form[ContextT], description: str) -> None:
         self.__description = description
