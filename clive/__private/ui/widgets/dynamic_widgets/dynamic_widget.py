@@ -66,14 +66,22 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
         self._callback = callback
         self._first_try_callback = first_try_callback
 
+    def compose(self) -> ComposeResult:
+        yield self._widget
+
     def on_mount(self) -> None:
         def delegate_work(old_value: Any, value: Any) -> None:  # noqa: ANN401
             self.run_worker(self._attribute_changed(old_value, value))
 
         self.watch(self._obj_to_watch, self._attribute_name, delegate_work, self._init)
 
-    def compose(self) -> ComposeResult:
-        yield self._widget
+    @abstractmethod
+    def _create_widget(self) -> WidgetT:
+        """Create a widget that will be updated when the reactive variable changes."""
+
+    @abstractmethod
+    def _update_widget_state(self, result: CallbackReturnT) -> None:
+        """Define how the widget should be updated with the given result."""
 
     async def _attribute_changed(self, old_value: Any, value: Any) -> None:  # noqa: ANN401
         callback = self._callback
@@ -120,11 +128,3 @@ class DynamicWidget(CliveWidget, AbstractClassMessagePump, Generic[WidgetT, Call
             return cast(WatchLikeCallbackNewValueType[Any], callback)(value)
 
         return cast(WatchLikeCallbackNoArgsType[Any], callback)()
-
-    @abstractmethod
-    def _update_widget_state(self, result: CallbackReturnT) -> None:
-        """Define how the widget should be updated with the given result."""
-
-    @abstractmethod
-    def _create_widget(self) -> WidgetT:
-        """Create a widget that will be updated when the reactive variable changes."""

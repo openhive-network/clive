@@ -47,9 +47,9 @@ class DynamicLabel(DynamicWidget[Label, str]):
     def renderable(self) -> RenderableType:
         return self._widget.renderable
 
+    def _create_widget(self) -> Label:
+        return Label("loading...", shrink=self._shrink)
+
     def _update_widget_state(self, result: str) -> None:
         if result != self.renderable:
             self._widget.update(f"{self._prefix}{result}")
-
-    def _create_widget(self) -> Label:
-        return Label("loading...", shrink=self._shrink)
