@@ -96,3 +96,7 @@ class Notice(CliveWidget):
     def watch_variant(self, old_variant: str, variant: str) -> None:
         self.remove_class(f"-{old_variant}")
         self.add_class(f"-{variant}")
+
+    def force_dynamic_update(self) -> None:
+        assert self.is_dynamic, "This method should be called only when the notice is dynamic."
+        self.query_exactly_one(DynamicLabel).force_update()

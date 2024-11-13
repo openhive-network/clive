@@ -191,9 +191,8 @@ class PowerDown(TabPane, OperationActionBindings):
 
     @on(CurrencySelectorHpVests.Changed)
     def shares_type_changed(self) -> None:
-        """Clear input when shares type was changed and hide factor display when vests selected."""
-        self._shares_input.input.clear()
-
+        """Display hp to vests factor only when HP is selected."""
+        self._one_withdrawal_display.force_dynamic_update()
         hp_vests_factor = self.query_exactly_one(HpVestsFactor)
         if self._shares_input.selected_asset_type is Asset.Vests:
             hp_vests_factor.display = False
