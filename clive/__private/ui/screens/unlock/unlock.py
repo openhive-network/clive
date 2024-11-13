@@ -118,8 +118,8 @@ class Unlock(BaseScreen):
 
     @on(Button.Pressed, "#new-profile-button")
     async def create_new_profile(self) -> None:
-        await self.app.switch_mode("onboarding")
+        await self.app.switch_mode("create_profile")
 
     def _remove_welcome_modes(self) -> None:
         self.app.remove_mode("unlock")
-        self.app.remove_mode("onboarding")
+        self.app.remove_mode("create_profile")

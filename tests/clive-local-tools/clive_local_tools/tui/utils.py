@@ -13,12 +13,12 @@ if TYPE_CHECKING:
 
 
 def is_header_in_locked_mode(app: CliveApp) -> bool:
-    """Do not call while onboarding process."""
+    """Do not call while create_profile process."""
     try:
         widget = app.screen.query_exactly_one(LockStatus)
     except NoMatches as error:
         raise AssertionError(
-            "Couldn't get mode from the header. It is not available in the onboarding process."
+            "Couldn't get mode from the header. It is not available in the create_profile process."
         ) from error
     return widget.is_locked
 
@@ -35,5 +35,5 @@ def get_profile_name(app: CliveApp) -> str:
     try:
         widget = app.screen.query_exactly_one("#profile-label", TitledLabel)
     except NoMatches as error:
-        raise AssertionError("Profile couldn't be found. It is not available in the onboarding process.") from error
+        raise AssertionError("Profile couldn't be found. It is not available in the create_profile process.") from error
     return str(widget.value).strip()

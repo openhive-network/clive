@@ -5,13 +5,11 @@ from typing import TYPE_CHECKING
 from textual import on
 from textual.widgets import Checkbox
 
-from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_ONBOARDING_PLACEHOLDER
+from clive.__private.core.constants.tui.placeholders import ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER
+from clive.__private.ui.create_profile.context import CreateProfileContext
+from clive.__private.ui.create_profile.form_screen import FormScreen
+from clive.__private.ui.create_profile.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.onboarding.context import OnboardingContext
-from clive.__private.ui.onboarding.form_screen import FormScreen
-from clive.__private.ui.onboarding.navigation_buttons import (
-    NavigationButtons,
-)
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.account_name_input import AccountNameInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedValidationError
@@ -29,9 +27,9 @@ class WorkingAccountCheckbox(Checkbox):
         super().__init__("Working account?", value=True)
 
 
-class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
+class SetAccount(BaseScreen, FormScreen[CreateProfileContext]):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BIG_TITLE = "onboarding"
+    BIG_TITLE = "create profile"
 
     @property
     def account_name(self) -> str:
@@ -50,7 +48,7 @@ class SetAccount(BaseScreen, FormScreen[OnboardingContext]):
     def create_main_panel(self) -> ComposeResult:
         with SectionScrollable("Set account name"):
             yield AccountNameInput(
-                placeholder=ACCOUNT_NAME_ONBOARDING_PLACEHOLDER,
+                placeholder=ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER,
                 include_title_in_placeholder_when_blurred=False,
                 show_known_account=False,
             )

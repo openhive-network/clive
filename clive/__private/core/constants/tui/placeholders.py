@@ -8,7 +8,7 @@ INTEGER_PLACEHOLDER: Final[str] = "e.g.: 1"
 ACCOUNT_NAME_PLACEHOLDER: Final[str] = "e.g.: alice"
 ACCOUNT_NAME2_PLACEHOLDER: Final[str] = "e.g.: bob"
 ACCOUNT_NAME_PATTERN_PLACEHOLDER: Final[str] = "part of the name e.g.: ali"
-ACCOUNT_NAME_ONBOARDING_PLACEHOLDER: Final[str] = "Please enter hive account name, without @"
+ACCOUNT_NAME_CREATE_PROFILE_PLACEHOLDER: Final[str] = "Please enter hive account name, without @"
 
 PROFILE_NAME_PLACEHOLDER: Final[str] = "e.g.: master"
 

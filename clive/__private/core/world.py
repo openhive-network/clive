@@ -17,7 +17,7 @@ from clive.__private.core.node.node import Node
 from clive.__private.core.profile import Profile
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_dom_node import CliveDOMNode
-from clive.__private.ui.onboarding.onboarding import Onboarding
+from clive.__private.ui.create_profile.create_profile import CreateProfile
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.unlock import Unlock
 
@@ -202,7 +202,7 @@ class TUIWorld(World, CliveDOMNode):
 
     def _load_profile(self, profile_name: str | None) -> Profile:
         profile = super()._load_profile(profile_name)
-        if self._is_in_onboarding_mode(profile):
+        if self._is_in_create_profile_mode(profile):
             profile.skip_saving()
         return profile
 
@@ -211,8 +211,8 @@ class TUIWorld(World, CliveDOMNode):
         return cast(TUICommands, super().commands)
 
     @property
-    def is_in_onboarding_mode(self) -> bool:
-        return self._is_in_onboarding_mode(self.profile)
+    def is_in_create_profile_mode(self) -> bool:
+        return self._is_in_create_profile_mode(self.profile)
 
     def _switch_to_welcome_profile(self) -> None:
         """Set the profile to default (welcome)."""
@@ -251,16 +251,16 @@ class TUIWorld(World, CliveDOMNode):
 
     @property
     def _should_sync_with_beekeeper(self) -> bool:
-        return super()._should_sync_with_beekeeper and not self.is_in_onboarding_mode
+        return super()._should_sync_with_beekeeper and not self.is_in_create_profile_mode
 
-    def _is_in_onboarding_mode(self, profile: Profile) -> bool:
+    def _is_in_create_profile_mode(self, profile: Profile) -> bool:
         return profile.name == WELCOME_PROFILE_NAME
 
     def _setup_commands(self) -> TUICommands:
         return TUICommands(self)
 
     def _add_welcome_modes(self) -> None:
-        self.app.add_mode("onboarding", Onboarding)
+        self.app.add_mode("create_profile", CreateProfile)
         self.app.add_mode("unlock", Unlock)
 
     async def _restart_dashboard_mode(self) -> None:

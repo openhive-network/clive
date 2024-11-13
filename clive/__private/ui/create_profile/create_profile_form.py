@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 from clive.__private.core.commands.create_wallet import CreateWallet
 from clive.__private.core.commands.sync_data_with_beekeeper import SyncDataWithBeekeeper
+from clive.__private.ui.create_profile.context import CreateProfileContext
+from clive.__private.ui.create_profile.form_screen import FormScreen
+from clive.__private.ui.create_profile.navigation_buttons import NavigationButtons
 from clive.__private.ui.get_css import get_relative_css_path
-from clive.__private.ui.onboarding.context import OnboardingContext
-from clive.__private.ui.onboarding.form_screen import FormScreen
-from clive.__private.ui.onboarding.navigation_buttons import NavigationButtons
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.widgets.inputs.clive_validated_input import CliveValidatedInput, CliveValidatedInputError
 from clive.__private.ui.widgets.inputs.repeat_password_input import RepeatPasswordInput
@@ -19,15 +19,15 @@ from clive.__private.ui.widgets.select_copy_paste_hint import SelectCopyPasteHin
 if TYPE_CHECKING:
     from textual.app import ComposeResult
 
-    from clive.__private.ui.onboarding.form import Form
+    from clive.__private.ui.create_profile.form import Form
 
 
-class CreateProfileForm(BaseScreen, FormScreen[OnboardingContext]):
+class CreateProfileForm(BaseScreen, FormScreen[CreateProfileContext]):
     CSS_PATH = [get_relative_css_path(__file__)]
-    BIG_TITLE = "onboarding"
+    BIG_TITLE = "create profile"
     SHOW_RAW_HEADER = True
 
-    def __init__(self, owner: Form[OnboardingContext]) -> None:
+    def __init__(self, owner: Form[CreateProfileContext]) -> None:
         self._profile_name_input = SetProfileNameInput()
         self._password_input = SetPasswordInput()
         self._repeat_password_input = RepeatPasswordInput(self._password_input)

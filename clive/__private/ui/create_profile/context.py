@@ -11,6 +11,6 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class OnboardingContext(Context):
+class CreateProfileContext(Context):
     profile: Profile
     node: Node

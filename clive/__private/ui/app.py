@@ -18,9 +18,9 @@ from clive.__private.core.world import TUIWorld
 from clive.__private.logger import logger
 from clive.__private.settings import safe_settings
 from clive.__private.ui.clive_pilot import ClivePilot
+from clive.__private.ui.create_profile.create_profile import CreateProfile
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.help import Help
-from clive.__private.ui.onboarding.onboarding import Onboarding
 from clive.__private.ui.screens.dashboard import Dashboard
 from clive.__private.ui.screens.quit import Quit
 from clive.__private.ui.screens.unlock import Unlock
@@ -64,7 +64,7 @@ class Clive(App[int]):
 
     MODES = {
         "unlock": Unlock,
-        "onboarding": Onboarding,
+        "create_profile": CreateProfile,
         "dashboard": Dashboard,
     }
 
@@ -173,7 +173,7 @@ class Clive(App[int]):
         if self.world.profile.is_any_profile_saved:
             self.switch_mode("unlock")
         else:
-            self.switch_mode("onboarding")
+            self.switch_mode("create_profile")
 
     async def on_unmount(self) -> None:
         if self._world is not None:

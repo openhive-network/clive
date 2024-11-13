@@ -11,12 +11,12 @@ from textual.reactive import var
 from clive.__private.core.constants.tui.bindings import NEXT_SCREEN_BINDING_KEY, PREVIOUS_SCREEN_BINDING_KEY
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.onboarding.context import OnboardingContext
-from clive.__private.ui.onboarding.navigation_buttons import NextScreenButton, PreviousScreenButton
+from clive.__private.ui.create_profile.context import CreateProfileContext
+from clive.__private.ui.create_profile.navigation_buttons import NextScreenButton, PreviousScreenButton
 from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 
 if TYPE_CHECKING:
-    from clive.__private.ui.onboarding.form import Form
+    from clive.__private.ui.create_profile.form import Form
 
 
 class FormScreenBase(CliveScreen, Contextual[ContextT]):
@@ -95,7 +95,7 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
 
     async def _action_finish(self) -> None:
         self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
-        context = cast(OnboardingContext, self.context)  # TODO: remove cast, resolve type
+        context = cast(CreateProfileContext, self.context)  # TODO: remove cast, resolve type
 
         profile = context.profile
         profile.enable_saving()
@@ -107,5 +107,5 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
 
     async def _handle_modes_on_finish(self) -> None:
         await self.app.switch_mode("dashboard")
-        await self.app.remove_mode("onboarding")
+        await self.app.remove_mode("create_profile")
         await self.app.remove_mode("unlock")

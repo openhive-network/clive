@@ -13,11 +13,11 @@ if TYPE_CHECKING:
 
     from textual.app import ComposeResult
 
-FINISH_ONBOARDING_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN_BINDING_KEY})"
+FINISH_CREATE_PROFILE_BUTTON_LABEL: Final[str] = f"Finish! ({NEXT_SCREEN_BINDING_KEY})"
 
 
 class NextScreenButton(CliveButton):
-    """Button to go to the next onboarding screen."""
+    """Button to go to the next create_profile screen."""
 
     DEFAULT_NEXT_BUTTON_LABEL: Final[str] = f"Next ({NEXT_SCREEN_BINDING_KEY}) →"
 
@@ -36,7 +36,7 @@ class NextScreenButton(CliveButton):
 
 
 class PreviousScreenButton(OneLineButton):
-    """Button to go to the previous onboarding screen."""
+    """Button to go to the previous create_profile screen."""
 
     DEFAULT_PREVIOUS_BUTTON_LABEL: Final[str] = f"← Previous ({PREVIOUS_SCREEN_BINDING_KEY})"
 
@@ -99,7 +99,7 @@ class NavigationButtons(Horizontal):
         yield NextScreenButton(self._next_button_label)
 
     def set_finish_button(self) -> None:
-        self.query_exactly_one(NextScreenButton).label = FINISH_ONBOARDING_BUTTON_LABEL
+        self.query_exactly_one(NextScreenButton).label = FINISH_CREATE_PROFILE_BUTTON_LABEL
 
     def set_next_screen_button(self) -> None:
         self.query_exactly_one(NextScreenButton).label = NextScreenButton.DEFAULT_NEXT_BUTTON_LABEL
