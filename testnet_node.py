@@ -45,7 +45,7 @@ def init_argparse(args: Sequence[str]) -> argparse.Namespace:
         "--prepare-profiles",
         action="store_true",
         default=False,
-        help="When set, pregenerated profiles will be created. Otherwise clive onboarding will be launched.",
+        help="When set, pregenerated profiles will be created. Otherwise clive create_profile will be launched.",
     )
     add(
         "-t",

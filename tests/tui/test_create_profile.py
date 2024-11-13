@@ -5,11 +5,11 @@ from typing import TYPE_CHECKING, Final
 import pytest
 
 from clive.__private.ui.app import Clive
-from clive.__private.ui.onboarding.create_profile_form import CreateProfileForm
-from clive.__private.ui.onboarding.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
-from clive.__private.ui.onboarding.new_key_alias_form import NewKeyAliasForm
-from clive.__private.ui.onboarding.set_account import SetAccount
-from clive.__private.ui.onboarding.set_account.set_account import WorkingAccountCheckbox
+from clive.__private.ui.create_profile.create_profile_form import CreateProfileForm
+from clive.__private.ui.create_profile.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
+from clive.__private.ui.create_profile.new_key_alias_form import NewKeyAliasForm
+from clive.__private.ui.create_profile.set_account import SetAccount
+from clive.__private.ui.create_profile.set_account.set_account import WorkingAccountCheckbox
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -48,7 +48,7 @@ KEY_ALIAS_NAME: Final[str] = "master@active"
 
 
 @pytest.fixture
-async def prepared_tui_on_onboarding(
+async def prepared_tui_on_create_profile(
     node_with_wallet: NodeWithWallet,  # noqa: ARG001
 ) -> AsyncIterator[ClivePilot]:
     async with Clive().run_test() as pilot:
@@ -57,7 +57,7 @@ async def prepared_tui_on_onboarding(
         await clive_quit(pilot)
 
 
-async def onboarding_until_set_account(
+async def crate_profile_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
     assert_is_screen_active(pilot, WelcomeFormScreen)
@@ -77,7 +77,7 @@ async def onboarding_until_set_account(
     await write_text(pilot, account_name)
 
 
-async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
+async def create_profile_mark_account_as_watched(pilot: ClivePilot) -> None:
     assert_is_screen_active(pilot, SetAccount)
     assert_is_clive_composed_input_focused(pilot, AccountNameInput, context="SetAccount should have initial focus")
     await focus_next(pilot)
@@ -88,7 +88,7 @@ async def onboarding_mark_account_as_watched(pilot: ClivePilot) -> None:
     ), "Expected 'Working account?' to be unchecked!"
 
 
-async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:
+async def create_profile_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, private_key: str) -> None:
     assert_is_screen_active(pilot, NewKeyAliasForm)
     assert_is_clive_composed_input_focused(
         pilot, PublicKeyAliasInput, context="KeyAliasForm screen should have initial focus"
@@ -99,7 +99,7 @@ async def onboarding_set_key_and_alias_name(pilot: ClivePilot, alias_name: str, 
     await write_text(pilot, private_key)
 
 
-async def onboarding_finish(pilot: ClivePilot) -> None:
+async def create_profile_finish(pilot: ClivePilot) -> None:
     await press_and_wait_for_screen(pilot, "ctrl+n", Dashboard)
     assert_is_dashboard(pilot)
 
@@ -131,29 +131,29 @@ def assert_no_working_account(pilot: ClivePilot) -> None:
     assert not pilot.app.world.profile.accounts.has_working_account, "Expected no working account"
 
 
-async def test_onboarding_watched_account_creation(prepared_tui_on_onboarding: ClivePilot) -> None:
+async def test_create_profile_watched_account_creation(prepared_tui_on_create_profile: ClivePilot) -> None:
     # ARRANGE
-    pilot = prepared_tui_on_onboarding
+    pilot = prepared_tui_on_create_profile
 
     # ACT
-    await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
-    await onboarding_mark_account_as_watched(pilot)
-    await onboarding_finish(pilot)
+    await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
+    await create_profile_mark_account_as_watched(pilot)
+    await create_profile_finish(pilot)
 
     # ASSERT
     assert_no_working_account(pilot)
     assert_watched_accounts(pilot, ACCOUNT_NAME)
 
 
-async def test_onboarding_working_account_creation(prepared_tui_on_onboarding: ClivePilot) -> None:
+async def test_create_profile_working_account_creation(prepared_tui_on_create_profile: ClivePilot) -> None:
     # ARRANGE
-    pilot = prepared_tui_on_onboarding
+    pilot = prepared_tui_on_create_profile
 
     # ACT
-    await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
+    await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await press_and_wait_for_screen(pilot, "enter", NewKeyAliasForm)
-    await onboarding_set_key_and_alias_name(pilot, KEY_ALIAS_NAME, PRIVATE_KEY)
-    await onboarding_finish(pilot)
+    await create_profile_set_key_and_alias_name(pilot, KEY_ALIAS_NAME, PRIVATE_KEY)
+    await create_profile_finish(pilot)
 
     # ASSERT
     assert_working_account(pilot, ACCOUNT_NAME)
@@ -161,14 +161,14 @@ async def test_onboarding_working_account_creation(prepared_tui_on_onboarding: C
     await assert_tui_key_alias_exists(pilot)
 
 
-async def test_onboarding_working_account_creation_no_key(prepared_tui_on_onboarding: ClivePilot) -> None:
+async def test_create_profile_working_account_creation_no_key(prepared_tui_on_create_profile: ClivePilot) -> None:
     # ARRANGE
-    pilot = prepared_tui_on_onboarding
+    pilot = prepared_tui_on_create_profile
 
     # ACT
-    await onboarding_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
+    await crate_profile_until_set_account(pilot, PROFILE_NAME, PROFILE_PASSWORD, ACCOUNT_NAME)
     await press_and_wait_for_screen(pilot, "enter", NewKeyAliasForm)
-    await onboarding_finish(pilot)
+    await create_profile_finish(pilot)
 
     # ASSERT
     assert_working_account(pilot, ACCOUNT_NAME)
