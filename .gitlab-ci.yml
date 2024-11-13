@@ -321,9 +321,11 @@ build_and_push_clive_testnet_image:
 # extends standard build procedure by additional tagging to branch name based tag
 .prepare_clive_stable_image:
   extends: .prepare_clive_image
+  variables:
+    STABLE_IMAGE_TAG: "${CI_COMMIT_REF_NAME}"
   after_script:
     - source docker_image_name.env  # required: https://gitlab.syncad.com/hive/clive/-/jobs/622075
-    - export BRANCH_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${CI_COMMIT_REF_NAME}"
+    - export BRANCH_IMAGE_NAME="${CLIVE_IMAGE_PATH}:${STABLE_IMAGE_TAG}"
     - echo -e "${TXT_BLUE}Tagging ${TXT_GREEN}${CLIVE_IMAGE_NAME} ${TXT_BLUE}with additional ${TXT_GREEN}${BRANCH_IMAGE_NAME}${TXT_CLEAR}"
     - docker tag ${CLIVE_IMAGE_NAME} ${BRANCH_IMAGE_NAME}
     - docker push ${BRANCH_IMAGE_NAME}
@@ -405,5 +407,6 @@ build_and_push_clive_stable_testnet_image:
   variables:
     BASE_IMAGE: "mwalbeck/python-poetry:1.7-3.10"
     BUILD_INSTANCE_ARGS: "--embedded-testnet"
+    STABLE_IMAGE_TAG: "testnet-${CI_COMMIT_REF_NAME}"
 
 #<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<| BUILD AND DEPLOY DOCKER |<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
