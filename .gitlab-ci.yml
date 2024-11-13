@@ -337,7 +337,7 @@ build_and_push_clive_stable_image:
   extends: .prepare_clive_stable_image
 
 # this job is responsible for publishing official docker images specific to protected tags (usually made for release versions)
-build_and_publish_image:
+build_and_publish_tagged_image:
   stage: build_and_deploy_docker
   extends: .publish_docker_image_template
   needs:
@@ -356,6 +356,11 @@ build_and_publish_image:
         --build-instance-arg="--hived-source-image=${HIVED_IMAGE_NAME}"
         --build-instance-arg="--base-image=${BASE_IMAGE}"
         --build-instance-arg="--clive-version=${WHEEL_BUILD_VERSION}"
+  artifacts:
+    reports:
+      dotenv: docker_image_name.env
+    paths:
+      - ./docker_image_name.env
 
 generate_clive_develop_startup_scripts:
   extends: .generate_clive_startup_scripts_base
@@ -380,6 +385,19 @@ generate_clive_master_startup_scripts:
       artifacts: true
   artifacts:
     expire_in: never
+
+generate_clive_tagged_image_startup_scripts:
+  extends: .generate_clive_startup_scripts_base
+  rules:
+    - if: '$CI_COMMIT_TAG && $CI_COMMIT_REF_PROTECTED == "true"'
+      when: on_success
+    - when: never
+  needs:
+    - job: build_and_publish_tagged_image
+      artifacts: true
+  artifacts:
+    expire_in: never
+
 
 build_and_push_clive_stable_testnet_image:
   extends: .prepare_clive_stable_image
