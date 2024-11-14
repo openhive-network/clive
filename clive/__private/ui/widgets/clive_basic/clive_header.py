@@ -38,12 +38,11 @@ class HeaderIcon(TextualHeaderIcon, CliveWidget):
     }
     """
 
-    def __init__(self) -> None:
-        super().__init__()
-        self.tooltip = "Toggle header details"
+    def on_mount(self, event: Mount) -> None:  # type: ignore[override]
+        event.prevent_default()
 
-    def on_mount(self) -> None:
         self.watch(self.app, "header_expanded", self.header_expanded_changed)
+        self.tooltip = "Toggle header details"
 
     def header_expanded_changed(self, expanded: bool) -> None:  # noqa: FBT001
         self.icon = "-" if expanded else "+"
