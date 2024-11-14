@@ -223,7 +223,7 @@ class TUIWorld(World, CliveDOMNode):
         if source == "beekeeper_notification_server":
             send_notification = partial(
                 self.app.notify,
-                f"{base_message} due to inactivity in a temporary unlock mode.",
+                f"{base_message} due to inactivity.",
                 timeout=10,
             )
         else:
