@@ -6,10 +6,10 @@ import pytest
 
 from clive.__private.ui.app import Clive
 from clive.__private.ui.create_profile.create_profile_form import CreateProfileForm
-from clive.__private.ui.create_profile.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.create_profile.new_key_alias_form import NewKeyAliasForm
 from clive.__private.ui.create_profile.set_account import SetAccount
 from clive.__private.ui.create_profile.set_account.set_account import WorkingAccountCheckbox
+from clive.__private.ui.create_profile.welcome_form_screen import CreateProfileWelcomeScreen
 from clive.__private.ui.screens.config import Config
 from clive.__private.ui.screens.config.manage_key_aliases.manage_key_aliases import KeyAliasRow, ManageKeyAliases
 from clive.__private.ui.screens.dashboard import Dashboard
@@ -60,7 +60,7 @@ async def prepared_tui_on_create_profile(
 async def crate_profile_until_set_account(
     pilot: ClivePilot, profile_name: str, profile_password: str, account_name: str
 ) -> None:
-    assert_is_screen_active(pilot, WelcomeFormScreen)
+    assert_is_screen_active(pilot, CreateProfileWelcomeScreen)
     await press_and_wait_for_screen(pilot, "enter", CreateProfileForm)
     assert_is_clive_composed_input_focused(
         pilot, SetProfileNameInput, context="CreateProfileForm should have initial focus"

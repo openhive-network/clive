@@ -6,7 +6,8 @@ from textual import on
 from textual.binding import Binding
 from textual.widgets import Static
 
-from clive.__private.core.contextual import ContextT
+from clive.__private.core.constants.tui.messages import PRESS_HELP_MESSAGE
+from clive.__private.ui.create_profile.context import CreateProfileContext
 from clive.__private.ui.create_profile.form_screen import FirstFormScreen
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
@@ -23,22 +24,18 @@ class Description(Static):
     """Description of the welcome screen."""
 
 
-class WelcomeFormScreen(BaseScreen, FirstFormScreen[ContextT]):
+class CreateProfileWelcomeScreen(BaseScreen, FirstFormScreen[CreateProfileContext]):
+    BINDINGS = [Binding("f1", "help", "Help")]  # help is a hidden global binding, but we want to show it here
     CSS_PATH = [get_relative_css_path(__file__)]
     SHOW_RAW_HEADER = True
 
-    def __init__(self, owner: Form[ContextT], description: str) -> None:
-        self.__description = description
+    def __init__(self, owner: Form[CreateProfileContext]) -> None:
         super().__init__(owner)
-
-    def _content_after_description(self) -> ComposeResult:
-        """Override this method to add content after title."""
-        return []
+        self._description = "Let's create profile!\n" + PRESS_HELP_MESSAGE
 
     def create_main_panel(self) -> ComposeResult:
         with DialogContainer("welcome"):
-            yield Description(self.__description)
-            yield from self._content_after_description()
+            yield Description(self._description)
             yield CliveButton("Start!", id_="welcome-button-start")
 
     def on_mount(self) -> None:
