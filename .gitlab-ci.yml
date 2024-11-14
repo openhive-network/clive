@@ -260,6 +260,7 @@ deploy_wheel_to_pypi:
   rules:
     - if: '$CI_COMMIT_REF_PROTECTED == "false"'
       when: manual
+      allow_failure: true
     - when: never
   variables:
     GIT_DEPTH: 0
