@@ -8,7 +8,6 @@ from typing import Any, Final
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextT, Contextual
 from clive.__private.ui.clive_screen import CliveScreen
-from clive.__private.ui.create_profile.dedicated_form_screens.welcome_form_screen import WelcomeFormScreen
 from clive.__private.ui.create_profile.form_screen import FormScreenBase
 
 ScreenBuilder = Callable[["Form[ContextT]"], FormScreenBase[ContextT] | FormScreenBase[None]]
@@ -93,8 +92,9 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     def register_screen_builders(self) -> Iterator[ScreenBuilder[ContextT]]:
         """Return screens to display."""
 
+    @abstractmethod
     def create_welcome_screen(self) -> ScreenBuilder[ContextT]:
-        return lambda owner: WelcomeFormScreen(owner, "Let's fill some fields")
+        """Return screen builder for welcome screen."""
 
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:

@@ -8,7 +8,7 @@ from textual.binding import Binding
 from textual.widgets import MarkdownViewer
 
 from clive.__private.core.constants.env import ROOT_DIRECTORY
-from clive.__private.ui.create_profile.create_profile import CreateProfileWelcomeScreen
+from clive.__private.ui.create_profile.welcome_form_screen import CreateProfileWelcomeScreen
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.dashboard import Dashboard
 
