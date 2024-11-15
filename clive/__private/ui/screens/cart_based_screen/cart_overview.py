@@ -39,6 +39,15 @@ class CartItem(Static):
 class CartItemsAmount(DynamicLabel):
     """Holds the cart items amount info."""
 
+    def __init__(self) -> None:
+        super().__init__(self, "profile", self._get_cart_item_count)
+
+    def _get_cart_item_count(self, profile: Profile) -> str:
+        amount = len(profile.cart)
+        if amount > 0:
+            return f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART"
+        return "CART IS EMPTY"
+
 
 class CartItemsContainer(ScrollablePartFocusable):
     """A container that holds the cart items."""
@@ -65,11 +74,7 @@ class CartOverview(CliveWidget):
             yield Static("HBD balance:")
             yield DynamicLabel(self, "profile", self._get_hbd_balance)
         with CartInfoContainer():
-            yield CartItemsAmount(
-                self,
-                "profile",
-                self._get_cart_item_count,
-            )
+            yield CartItemsAmount()
             with self._cart_items_container:
                 yield from self._create_cart_items(self.profile)
 
@@ -81,12 +86,6 @@ class CartOverview(CliveWidget):
             await self._cart_items_container.query(CartItem).remove()
             new_cart_items = self._create_cart_items(profile)
             await self._cart_items_container.mount(*new_cart_items)
-
-    def _get_cart_item_count(self, profile: Profile) -> str:
-        amount = len(profile.cart)
-        if amount > 0:
-            return f"{amount} OPERATION{'S' if amount > 1 else ''} IN THE CART"
-        return "CART IS EMPTY"
 
     def _get_rc(self, profile: Profile) -> str:
         self._set_rc_api_missing(profile.accounts.working)
