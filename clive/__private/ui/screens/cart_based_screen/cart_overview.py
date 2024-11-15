@@ -93,11 +93,11 @@ class CartOverview(CliveWidget):
         self.local_profile = profile
         self.mutate_reactive(self.__class__.local_profile)  # type: ignore[arg-type]
 
-    def _sync_cart_items(self, profile: Profile) -> None:
+    async def _sync_cart_items(self, profile: Profile) -> None:
         with self.app.batch_update():
-            self._cart_items_container.query(CartItem).remove()
+            await self._cart_items_container.query(CartItem).remove()
             new_cart_items = self._create_cart_items(profile)
-            self._cart_items_container.mount(*new_cart_items)
+            await self._cart_items_container.mount(*new_cart_items)
 
     def _get_cart_item_count(self, profile: Profile) -> str:
         amount = len(profile.cart)
