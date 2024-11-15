@@ -3,7 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from textual.containers import Container, Grid, Horizontal
-from textual.reactive import reactive
 from textual.widgets import Static
 
 from clive.__private.core.formatters.data_labels import MISSING_API_LABEL
@@ -46,8 +45,6 @@ class CartItemsContainer(ScrollablePartFocusable):
 
 
 class CartOverview(CliveWidget):
-    local_profile: Profile = reactive(None)  # type: ignore[assignment]
-
     def __init__(self) -> None:
         super().__init__()
 
@@ -58,40 +55,26 @@ class CartOverview(CliveWidget):
         with Resources():
             with self._rc_container:
                 yield Static("RC:")
-                yield DynamicLabel(
-                    self, "local_profile", self._get_rc, first_try_callback=self._local_profile_first_try_cb
-                )
+                yield DynamicLabel(self, "profile", self._get_rc)
             yield Static("HIVE balance:")
             yield DynamicLabel(
                 self,
-                "local_profile",
+                "profile",
                 self._get_hive_balance,
-                first_try_callback=self._local_profile_first_try_cb,
             )
             yield Static("HBD balance:")
-            yield DynamicLabel(
-                self, "local_profile", self._get_hbd_balance, first_try_callback=self._local_profile_first_try_cb
-            )
+            yield DynamicLabel(self, "profile", self._get_hbd_balance)
         with CartInfoContainer():
             yield CartItemsAmount(
                 self,
-                "local_profile",
+                "profile",
                 self._get_cart_item_count,
-                first_try_callback=self._local_profile_first_try_cb,
             )
             with self._cart_items_container:
-                yield from self._create_cart_items(self.local_profile)
+                yield from self._create_cart_items(self.profile)
 
     def on_mount(self) -> None:
-        self.watch(self, "local_profile", callback=self._sync_cart_items)
-        self.watch(self.world, "profile", callback=self._sync_local_profile)
-
-    def _local_profile_first_try_cb(self) -> bool:
-        return self.local_profile is not None
-
-    def _sync_local_profile(self, profile: Profile) -> None:
-        self.local_profile = profile
-        self.mutate_reactive(self.__class__.local_profile)  # type: ignore[arg-type]
+        self.watch(self, "profile", self._sync_cart_items)
 
     async def _sync_cart_items(self, profile: Profile) -> None:
         with self.app.batch_update():
@@ -127,8 +110,5 @@ class CartOverview(CliveWidget):
     def _get_hbd_balance(profile: Profile) -> str:
         return Asset.pretty_amount(profile.accounts.working.data.hbd_balance)
 
-    def _create_cart_items(self, profile: Profile | None) -> list[CartItem]:
-        if profile is None:
-            return []
-
+    def _create_cart_items(self, profile: Profile) -> list[CartItem]:
         return [CartItem(index + 1, operation) for index, operation in enumerate(profile.cart)]
