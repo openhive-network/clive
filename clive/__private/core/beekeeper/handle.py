@@ -231,7 +231,7 @@ class Beekeeper:
             raise BeekeeperNon200StatusCodeError
 
         result = await response.json()
-        response_model = get_response_model(result_model, **result)
+        response_model = get_response_model(result_model, endpoint, **result)
 
         if is_in_dev_mode():
             logger.debug(f"Got beekeeper response: {response_model}")

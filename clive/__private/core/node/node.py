@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from abc import abstractmethod
 from contextlib import contextmanager
 from dataclasses import dataclass, field
@@ -83,7 +84,8 @@ class _DelayedResponseWrapper:
 
     def _set_response(self, **kwargs: Any) -> None:
         expected_type = super().__getattribute__("_expected_type")
-        super().__setattr__("_response", get_response_model(expected_type, **kwargs))
+        endpoint = str(json.loads(self._request)["method"])
+        super().__setattr__("_response", get_response_model(expected_type, endpoint, **kwargs))
 
     def _set_exception(self, exception: Exception) -> None:
         super().__setattr__("_exception", exception)
@@ -447,12 +449,13 @@ class Node(BaseNode):
                 self.cached._set_offline()
             raise
 
-        response_model = get_response_model(expect_type, **data)
+        endpoint = request.method
+        response_model = get_response_model(expect_type, endpoint, **data)
         assert isinstance(
             response_model, JSONRPCResult
         ), f"Response  model is not JSONRPCResult, but {type(response_model)}"
         self.cached._set_online()
-        return response_model.result
+        return response_model.result  # type: ignore[no-any-return]
 
     @property
     async def chain_id(self) -> str:

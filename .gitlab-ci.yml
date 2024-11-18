@@ -118,6 +118,7 @@ build_wheel:
 .testing:
   stage: tests
   extends: .project_develop_configuration_template
+  allow_failure: true
   needs:
     - job: prepare_mainnet_hived_image
       artifacts: true

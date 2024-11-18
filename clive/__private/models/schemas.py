@@ -69,10 +69,10 @@ from schemas.fields.hex import Sha256, Signature, TransactionId
 from schemas.fields.hive_datetime import HiveDateTime
 from schemas.fields.hive_int import HiveInt
 from schemas.fields.serializable import Serializable
-from schemas.jsonrpc import ExpectResultT as JSONRPCExpectResultT
-from schemas.jsonrpc import JSONRPCRequest as SchemasJSONRPCRequest
-from schemas.jsonrpc import JSONRPCResult
 from schemas.jsonrpc import get_response_model as schemas_get_response_model
+from schemas.jsonrpc_constants import JSONRPCRequest as SchemasJSONRPCRequest
+from schemas.jsonrpc_models.jsonrpc_models import ExpectResultT as JSONRPCExpectResultT
+from schemas.jsonrpc_models.jsonrpc_models import JSONRPCResult
 from schemas.operation import Operation
 from schemas.operations import (
     AccountUpdate2Operation,
@@ -231,11 +231,11 @@ VirtualOperationUnion = AnyVirtualOperation
 
 #  list API responses (have nested list property which stores actual model)
 
-ListRcAccounts = SchemasListRcAccounts[AssetVestsHF26]
+ListRcAccounts = SchemasListRcAccounts
 
 # find API response aliases (have nested list property which stores actual model)
 
-FindRcAccounts = SchemasFindRcAccounts[AssetVestsHF26]
+FindRcAccounts = SchemasFindRcAccounts
 
 # get API responses (have unnecessary nested property which stores actual model)
 
