@@ -12,15 +12,20 @@ from clive.__private.core.commands.load_transaction import LoadTransactionError
 from clive.__private.core.constants.tui.bindings import (
     BROADCAST_TRANSACTION_BINDING_KEY,
     LOAD_TRANSACTION_FROM_FILE_BINDING_KEY,
+    REFRESH_TRANSACTION_METADATA_BINDING_KEY,
     SAVE_TRANSACTION_TO_FILE_BINDING_KEY,
 )
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
-from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import TransactionMetadataContainer
+from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
+    RefreshMetadataButton,
+    TransactionMetadataContainer,
+)
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
@@ -163,6 +168,7 @@ class TransactionSummary(BaseScreen):
         Binding(LOAD_TRANSACTION_FROM_FILE_BINDING_KEY, "load_transaction_from_file", "Open transaction file"),
         Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"),
         Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"),
+        Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"),
     ]
     BIG_TITLE = "transaction summary"
     transaction: Transaction = reactive(None, init=False)  # type: ignore[assignment]
@@ -218,6 +224,17 @@ class TransactionSummary(BaseScreen):
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
         self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
+
+    @on(RefreshMetadataButton.Pressed)
+    async def action_refresh_metadata(self) -> None:
+        async def refresh_metadata_cb(confirm: bool | None) -> None:
+            if confirm:
+                await self._update_transaction_metadata()
+
+        if self.transaction.is_signed():
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
+        else:
+            await self._update_transaction_metadata()
 
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:
@@ -323,9 +340,11 @@ class TransactionSummary(BaseScreen):
         if not self.transaction:
             self.unbind(BROADCAST_TRANSACTION_BINDING_KEY)
             self.unbind(SAVE_TRANSACTION_TO_FILE_BINDING_KEY)
+            self.unbind(REFRESH_TRANSACTION_METADATA_BINDING_KEY)
         else:
             self.bind(Binding(BROADCAST_TRANSACTION_BINDING_KEY, "broadcast", "Broadcast"))
             self.bind(Binding(SAVE_TRANSACTION_TO_FILE_BINDING_KEY, "save_to_file", "Save to file"))
+            self.bind(Binding(REFRESH_TRANSACTION_METADATA_BINDING_KEY, "refresh_metadata", "Refresh metadata"))
 
     def _update_subtitle(self) -> None:
         subtitle = self.query_exactly_one(Subtitle)
