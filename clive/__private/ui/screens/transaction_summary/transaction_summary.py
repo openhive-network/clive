@@ -18,7 +18,7 @@ from clive.__private.core.constants.tui.bindings import (
 from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.ui.clive_widget import CliveWidget
-from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
+from clive.__private.ui.dialogs import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
@@ -27,7 +27,6 @@ from clive.__private.ui.screens.transaction_summary.transaction_metadata_contain
     TransactionMetadataContainer,
 )
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
@@ -186,20 +185,9 @@ class TransactionSummary(BaseScreen):
     def key_container(self) -> KeyContainer:
         return self.query_exactly_one(KeyContainer)
 
-    @property
-    def _should_display_warning_notice(self) -> bool:
-        return self.transaction and self.transaction.is_signed()
-
     def create_main_panel(self) -> ComposeResult:
         yield Subtitle(self._create_subtitle_content())
         yield TransactionMetadataContainer(self.transaction)
-
-        notice = Notice(
-            "If you edit the transaction, the signatures will be lost and the transaction metadata"
-            " will be recalculated.",
-        )
-        notice.display = self._should_display_warning_notice
-        yield notice
         with Horizontal(id="actions-container"):
             key_container = KeyContainer(self.transaction)
             key_container.display = bool(self.transaction)
