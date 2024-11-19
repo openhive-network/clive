@@ -20,6 +20,15 @@ class BeekeeperInfo(BeekeeperBasedCommand):
 
 
 @dataclass(kw_only=True)
+class BeekeeperCreateSession(BeekeeperBasedCommand):
+    async def _run(self) -> None:
+        typer.echo(f"{await self.beekeeper.create_session_token()}")
+
+    async def _hook_before_entering_context_manager(self) -> None:
+        """We do not need information about Using."""
+
+
+@dataclass(kw_only=True)
 class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
