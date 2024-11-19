@@ -15,6 +15,7 @@ from typing_extensions import Self
 from clive.__private.core.constants.tui.class_names import CLIVE_EVEN_COLUMN_CLASS_NAME, CLIVE_ODD_COLUMN_CLASS_NAME
 from clive.__private.core.formatters.humanize import humanize_operation_details, humanize_operation_name
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.dialogs.raw_json_dialog import RawJsonDialog
 from clive.__private.ui.widgets.buttons import CliveButton, RemoveButton
 from clive.__private.ui.widgets.clive_basic import (
@@ -203,20 +204,30 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
         return self
 
     @on(CliveButton.Pressed, "#move-up-button")
-    def move_up(self) -> None:
-        self._move("up")
+    async def move_up(self) -> None:
+        await self._move("up")
 
     @on(CliveButton.Pressed, "#move-down-button")
-    def move_down(self) -> None:
-        self._move("down")
+    async def move_down(self) -> None:
+        await self._move("down")
 
     @on(RemoveButton.Pressed)
-    def delete(self) -> None:
+    async def delete(self) -> None:
+        def post_message_and_disable_action() -> None:
+            self._action_manager.disable_action()
+            self.post_message(self.Delete(self))
+
+        async def cb(confirm: bool | None) -> None:
+            if confirm:
+                post_message_and_disable_action()
+
         if self._action_manager.is_action_disabled:
             return
 
-        self._action_manager.disable_action()
-        self.post_message(self.Delete(self))
+        if self.profile.transaction.is_signed():
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
+        else:
+            post_message_and_disable_action()
 
     @on(ButtonRawJson.Pressed)
     async def show_raw_json(self) -> None:
@@ -240,12 +251,25 @@ class CartItem(CliveCheckerboardTableRow, CliveWidget):
     def _is_operation_index_valid(self, value: int) -> bool:
         return value < self.operations_amount
 
-    def _move(self, direction: Literal["up", "down"]) -> None:
+    async def _move(self, direction: Literal["up", "down"]) -> None:
+        def post_message_and_disable_action() -> None:
+            self._action_manager.disable_action()
+            index_change = -1 if direction == "up" else 1
+            self.post_message(
+                self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change)
+            )
+
+        async def cb(confirm: bool | None) -> None:
+            if confirm:
+                post_message_and_disable_action()
+
         if self._action_manager.is_action_disabled:
             return
-        self._action_manager.disable_action()
-        index_change = -1 if direction == "up" else 1
-        self.post_message(self.Move(from_index=self._operation_index, to_index=self._operation_index + index_change))
+
+        if self.profile.transaction.is_signed():
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), cb)
+        else:
+            post_message_and_disable_action()
 
 
 class CartHeader(Horizontal):
