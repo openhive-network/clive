@@ -115,6 +115,9 @@ class CLITester:
             ["show", "account"], account_name=account_name, profile_name=profile_name
         )
 
+    def show_accounts(self, *, profile_name: str | None = None) -> Result:
+        return self.__invoke_command_with_options(["show", "accounts"], profile_name=profile_name)
+
     def process_update_owner_authority(  # noqa: PLR0913
         self,
         *,
@@ -481,3 +484,31 @@ class CLITester:
         beekeeper_remote: str | None = None,
     ) -> Result:
         return self.__invoke_command_with_options(["lock"], **extract_params(locals()))
+
+    def configure_working_account_switch(
+        self,
+        *,
+        account_name: str,
+        profile_name: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(
+            ["configure", "working-account", "switch"], **extract_params(locals())
+        )
+
+    def configure_tracked_account_add(
+        self,
+        *,
+        account_name: str,
+        profile_name: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(["configure", "tracked-account", "add"], **extract_params(locals()))
+
+    def configure_tracked_account_remove(
+        self,
+        *,
+        account_name: str,
+        profile_name: str | None = None,
+    ) -> Result:
+        return self.__invoke_command_with_options(
+            ["configure", "tracked-account", "remove"], **extract_params(locals())
+        )
