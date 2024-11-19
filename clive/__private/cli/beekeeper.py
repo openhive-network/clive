@@ -25,6 +25,18 @@ async def spawn(
     await BeekeeperSpawn(background=background).run()
 
 
+@beekeeper.command(param_groups=[BeekeeperOptionsGroup])
+async def create_session(
+    ctx: typer.Context,  # noqa: ARG001
+    echo_token_only: bool = typer.Option(default=False, help="Display only token."),  # noqa: FBT001
+) -> None:
+    """Create beekeeper session."""
+    from clive.__private.cli.commands.beekeeper import BeekeeperCreateSession
+
+    common = BeekeeperOptionsGroup.get_instance()
+    await BeekeeperCreateSession(**common.as_dict(), echo_token_only=echo_token_only).run()
+
+
 @beekeeper.command()
 async def close() -> None:
     """Close beekeeper process."""

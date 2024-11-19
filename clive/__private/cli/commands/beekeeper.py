@@ -11,6 +11,8 @@ from clive.__private.cli.commands.abc.beekeeper_based_command import BeekeeperBa
 from clive.__private.cli.commands.abc.external_cli_command import ExternalCLICommand
 from clive.__private.cli.exceptions import CLIPrettyError
 from clive.__private.core.beekeeper import Beekeeper
+from clive.__private.core.constants.setting_identifiers import BEEKEEPER_SESSION_TOKEN
+from clive.__private.settings import clive_prefixed_envvar
 
 
 @dataclass(kw_only=True)
@@ -20,17 +22,36 @@ class BeekeeperInfo(BeekeeperBasedCommand):
 
 
 @dataclass(kw_only=True)
+class BeekeeperCreateSession(BeekeeperBasedCommand):
+    echo_token_only: bool
+
+    async def _run(self) -> None:
+        token = await self.beekeeper.create_session_token()
+        if self.echo_token_only:
+            message = token
+        else:
+            message = (
+                f"A new session was created, token is: {token}\n"
+                "If you want to use that Beekeeper session in Clive CLI env, please set:\n"
+                f"export {clive_prefixed_envvar(BEEKEEPER_SESSION_TOKEN)}={token}"
+            )
+        typer.echo(message=message)
+
+    async def _hook_before_entering_context_manager(self) -> None:
+        """Display information about using Beekeeper if not using echo-token-only flag."""
+        if not self.echo_token_only:
+            await super()._hook_before_entering_context_manager()
+
+
+@dataclass(kw_only=True)
 class BeekeeperSpawn(ExternalCLICommand):
     background: bool
 
-    async def _run(self) -> None:
-        if await Beekeeper.is_already_running_locally():
-            message = (
-                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
-                f" {Beekeeper.get_pid_from_file()}"
-            )
-            raise CLIPrettyError(message, errno.EEXIST)
+    async def validate(self) -> None:
+        await self._validate_beekeeper_is_not_running()
+        await super().validate()
 
+    async def _run(self) -> None:
         typer.echo("Launching beekeeper...")
 
         async with Beekeeper(run_in_background=self.background) as beekeeper:
@@ -38,6 +59,14 @@ class BeekeeperSpawn(ExternalCLICommand):
 
             if not self.background:
                 self.__serve_forever()
+
+    async def _validate_beekeeper_is_not_running(self) -> None:
+        if await Beekeeper.is_already_running_locally():
+            message = (
+                f"Beekeeper is already running on {Beekeeper.get_remote_address_from_connection_file()} with pid"
+                f" {Beekeeper.get_pid_from_file()}"
+            )
+            raise CLIPrettyError(message, errno.EEXIST)
 
     @staticmethod
     def __serve_forever() -> None:

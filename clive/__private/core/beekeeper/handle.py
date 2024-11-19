@@ -158,12 +158,7 @@ class Beekeeper:
         return self.__token
 
     async def __set_token(self) -> None:
-        self.__token = (
-            await self.api.create_session(
-                notifications_endpoint=self.__notification_server.http_endpoint.as_string(with_protocol=False),
-                salt=str(id(self)),
-            )
-        ).token
+        self.__token = await self.create_session_token()
 
     @property
     def http_endpoint(self) -> Url:
@@ -429,3 +424,14 @@ class Beekeeper:
                     shutil.move(wallet_path, extract_to)
                 keys: ExportedKeys = json.load(keys_file)
                 return keys
+
+    async def create_session_token(self) -> str:
+        token = (
+            await self.api.create_session(
+                notifications_endpoint=self.__notification_server.http_endpoint.as_string(with_protocol=False),
+                salt=str(id(self)),
+            )
+        ).token
+        if not token:
+            raise BeekeeperTokenNotAvailableError
+        return token
