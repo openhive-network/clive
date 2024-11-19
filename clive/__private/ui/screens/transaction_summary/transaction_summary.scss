@@ -106,6 +106,16 @@ TransactionSummary {
     #no-metadata {
       text-align: center;
     }
+
+    #label-and-button-container {
+      height: auto;
+
+      Container {
+        align-horizontal: right;
+        margin-top: 1;
+        height: auto;
+      }
+    }
   }
 
   TaposHolder {

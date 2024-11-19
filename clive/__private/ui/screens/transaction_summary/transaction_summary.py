@@ -13,10 +13,14 @@ from clive.__private.core.keys import PublicKey
 from clive.__private.core.keys.key_manager import KeyNotFoundError
 from clive.__private.models import Transaction
 from clive.__private.ui.clive_widget import CliveWidget
+from clive.__private.ui.dialogs.confirm_invalidate_signatures_dialog import ConfirmInvalidateSignaturesDialog
 from clive.__private.ui.get_css import get_relative_css_path
 from clive.__private.ui.screens.base_screen import BaseScreen
 from clive.__private.ui.screens.transaction_summary.cart_table import CartTable
-from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import TransactionMetadataContainer
+from clive.__private.ui.screens.transaction_summary.transaction_metadata_container import (
+    RefreshMetadataButton,
+    TransactionMetadataContainer,
+)
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
 from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
@@ -223,6 +227,17 @@ class TransactionSummary(BaseScreen):
     @on(ButtonSave.Pressed)
     def action_save_to_file(self) -> None:
         self.app.push_screen(SelectFileToSaveTransaction(), self._save_to_file)
+
+    @on(RefreshMetadataButton.Pressed)
+    async def refresh_metadata(self) -> None:
+        async def refresh_metadata_cb(confirm: bool | None) -> None:
+            if confirm:
+                await self._update_transaction_metadata()
+
+        if self.transaction.is_signed():
+            await self.app.push_screen(ConfirmInvalidateSignaturesDialog(), refresh_metadata_cb)
+        else:
+            await self._update_transaction_metadata()
 
     @on(CartTable.Modified)
     async def handle_cart_update(self) -> None:

@@ -2,12 +2,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from textual.containers import Horizontal, Vertical
+from textual.containers import Container, Horizontal, Vertical
 from textual.reactive import reactive
 from textual.widgets import Label
 
 from clive.__private.core.formatters import humanize
 from clive.__private.models import Transaction
+from clive.__private.ui.widgets.buttons import RefreshOneLineButton
 
 if TYPE_CHECKING:
     from textual.app import ComposeResult
@@ -34,6 +35,16 @@ class TransactionIdLabel(Label):
     """Label for displaying transaction id."""
 
 
+class RefreshMetadataButton(RefreshOneLineButton):
+    def __init__(self) -> None:
+        super().__init__()
+        self._handle_display()
+        self.watch(self.world, "node", self._handle_display)
+
+    def _handle_display(self) -> None:
+        self.display = bool(self.node.cached.online_or_none)  # don't display refresh button when node is offline
+
+
 class TransactionMetadataContainer(Horizontal):
     """Container for the transaction metadata."""
 
@@ -48,6 +59,10 @@ class TransactionMetadataContainer(Horizontal):
             expiration = humanize.humanize_datetime(self.transaction.expiration)
             yield TaposHolder(self.transaction)
             yield TransactionExpirationLabel(f"Expiration: {expiration}")
-            yield TransactionIdLabel(f"Transaction ID: {self.transaction.calculate_transaction_id()}")
+            yield Vertical(
+                TransactionIdLabel(f"Transaction ID: {self.transaction.calculate_transaction_id()}"),
+                Container(RefreshMetadataButton()),
+                id="label-and-button-container",
+            )
         else:
             yield Label("No operations in cart, can't calculate transaction metadata.", id="no-metadata")
