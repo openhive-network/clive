@@ -176,7 +176,10 @@ class Clive(App[int]):
             self.switch_mode("onboarding")
 
     async def on_unmount(self) -> None:
-        await self.world.close()
+        if self._world is not None:
+            # There might be an exception during world setup and therefore world might not be available.
+            # Then when accessing self.world, it will raise an exception which will hide the original one.
+            await self._world.close()
 
     def get_screen_from_current_stack(self, screen: type[Screen[ScreenResultType]]) -> Screen[ScreenResultType]:
         for current_screen in self.screen_stack:
