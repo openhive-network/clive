@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 import contextlib
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from functools import partial
-from typing import TYPE_CHECKING, Any, Final, Generator, cast
+from typing import TYPE_CHECKING, Any, AsyncGenerator, Final, cast
 
 from textual.reactive import var
 
@@ -120,16 +120,19 @@ class World:
                 stack.enter_context(context)
             yield
 
-    @contextmanager
-    def during_setup(self) -> Generator[None, None]:
+    @asynccontextmanager
+    async def during_setup(self) -> AsyncGenerator[None]:
         self._is_during_setup = True
         try:
             yield
+        except Exception:
+            await self.close()
+            raise
         finally:
             self._is_during_setup = False
 
     async def setup(self) -> Self:
-        with self.during_setup():
+        async with self.during_setup():
             await self._node.setup()
             if self._use_beekeeper:
                 self._beekeeper = await self.__setup_beekeeper(remote_endpoint=self._beekeeper_remote_endpoint)
