@@ -22,7 +22,6 @@ from clive.__private.ui.screens.transaction_summary.transaction_metadata_contain
     TransactionMetadataContainer,
 )
 from clive.__private.ui.widgets.buttons.clive_button import CliveButton
-from clive.__private.ui.widgets.notice import Notice
 from clive.__private.ui.widgets.scrolling import ScrollablePart
 from clive.__private.ui.widgets.select.safe_select import SafeSelect
 from clive.__private.ui.widgets.select_file import SaveFileResult, SelectFile
@@ -186,20 +185,9 @@ class TransactionSummary(BaseScreen):
     def key_container(self) -> KeyContainer:
         return self.query_exactly_one(KeyContainer)
 
-    @property
-    def _should_display_warning_notice(self) -> bool:
-        return self.is_transaction_filled_with_operations and self.transaction.is_signed()
-
     def create_main_panel(self) -> ComposeResult:
         yield Subtitle()
         yield TransactionMetadataContainer(self.transaction)
-
-        notice = Notice(
-            "If you edit the transaction, the signatures will be lost and the transaction metadata"
-            " will be recalculated.",
-        )
-        notice.display = self._should_display_warning_notice
-        yield notice
         with Horizontal(id="actions-container"):
             key_container = KeyContainer(self.transaction)
             key_container.display = bool(self.transaction)
@@ -254,8 +242,7 @@ class TransactionSummary(BaseScreen):
         button_container.mutate_reactive(button_container.__class__.transaction)  # type: ignore[arg-type]
         self.key_container.transaction = transaction
         self.key_container.mutate_reactive(self.key_container.__class__.transaction)  # type: ignore[arg-type]
-        self.key_container.display = bool(transaction)
-        self.query_exactly_one(Notice).display = self._should_display_warning_notice
+        self.key_container.display = bool(self.transaction)
         subtitle = self.query_exactly_one(Subtitle)
         if self._transaction_file_path:
             subtitle.update(f"Loaded from [blue]{self._transaction_file_path}[/]")
