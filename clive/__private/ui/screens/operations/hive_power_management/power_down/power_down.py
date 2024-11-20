@@ -194,10 +194,7 @@ class PowerDown(TabPane, OperationActionBindings):
         """Display hp to vests factor only when HP is selected."""
         self._one_withdrawal_display.force_dynamic_update()
         hp_vests_factor = self.query_exactly_one(HpVestsFactor)
-        if self._shares_input.selected_asset_type is Asset.Vests:
-            hp_vests_factor.display = False
-            return
-        hp_vests_factor.display = True
+        hp_vests_factor.display = self._shares_input.selected_asset_type is Asset.Hive
 
     def _create_operation(self) -> WithdrawVestingOperation | None:
         asset = self._shares_input.value_or_none()
