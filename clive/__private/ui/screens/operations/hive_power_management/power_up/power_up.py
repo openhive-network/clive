@@ -55,7 +55,7 @@ class PowerUp(TabPane, OperationActionBindings):
                 yield Center(AddToCartButton())
 
     def _additional_actions_after_clearing_inputs(self) -> None:
-        receiver_input = self.query_one(ReceiverInput)
+        receiver_input = self.query_exactly_one(ReceiverInput)
         receiver_input.input.value = self.profile.accounts.working.name
 
     def _get_hive_balance(self) -> Asset.Hive:
