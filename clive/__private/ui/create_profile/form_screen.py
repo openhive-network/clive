@@ -38,18 +38,12 @@ class FirstFormScreen(FormScreenBase[ContextT]):
         self._owner.action_next_screen()
 
 
-class LastFormScreen(FormScreenBase[ContextT]):
+class FormScreen(FirstFormScreen[ContextT], ABC):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
         Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"),
     ]
 
-    @on(PreviousScreenButton.Pressed)
-    async def action_previous_screen(self) -> None:
-        self._owner.action_previous_screen()
-
-
-class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
     should_finish: bool = var(default=False)  # type: ignore[assignment]
 
     @dataclass
@@ -62,6 +56,10 @@ class FormScreen(FirstFormScreen[ContextT], LastFormScreen[ContextT], ABC):
 
         notification_message: str | None = None
         """Message to be displayed in the notification."""
+
+    @on(PreviousScreenButton.Pressed)
+    async def action_previous_screen(self) -> None:
+        self._owner.action_previous_screen()
 
     @on(NextScreenButton.Pressed)
     @on(CliveInput.Submitted)
