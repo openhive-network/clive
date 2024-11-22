@@ -22,12 +22,10 @@ class CreateProfile(Form[CreateProfileContext]):
         return self.__context
 
     def register_screen_builders(self) -> Iterator[ScreenBuilder[CreateProfileContext]]:
+        yield CreateProfileWelcomeScreen
         yield CreateProfileForm
         yield SetAccount
         yield NewKeyAliasForm
-
-    def create_welcome_screen(self) -> ScreenBuilder[CreateProfileContext]:
-        return lambda owner: CreateProfileWelcomeScreen(owner)
 
     def _rebuild_context(self) -> None:
         profile = Profile.create(WELCOME_PROFILE_NAME)

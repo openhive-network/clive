@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from collections.abc import Callable, Iterator
 from queue import Queue
-from typing import Any, Final
+from typing import Any
 
 from clive.__private.core.commands.abc.command import Command
 from clive.__private.core.contextual import ContextT, Contextual
@@ -15,16 +15,13 @@ PostAction = Command | Callable[[], Any]
 
 
 class Form(Contextual[ContextT], CliveScreen[None]):
-    AMOUNT_OF_DEFAULT_SCREENS: Final[int] = 1
+    MINIMUM_SCREEN_COUNT = 2  # Rationale: it makes no sense to have only one screen in the form
 
     def __init__(self) -> None:
         self.__current_screen_index = 0
-        self.__screens: list[ScreenBuilder[ContextT]] = [
-            self.create_welcome_screen(),
-            *list(self.register_screen_builders()),
-        ]
+        self.__screens: list[ScreenBuilder[ContextT]] = [*list(self.register_screen_builders())]
         self.__skipped_screens: set[ScreenBuilder[ContextT]] = set()
-        assert len(self.__screens) > self.AMOUNT_OF_DEFAULT_SCREENS, "no screen given to display"
+        assert len(self.__screens) >= self.MINIMUM_SCREEN_COUNT, "Form must have at least 2 screens"
         self._rebuild_context()
         self._post_actions = Queue[PostAction]()
 
@@ -91,10 +88,6 @@ class Form(Contextual[ContextT], CliveScreen[None]):
     @abstractmethod
     def register_screen_builders(self) -> Iterator[ScreenBuilder[ContextT]]:
         """Return screens to display."""
-
-    @abstractmethod
-    def create_welcome_screen(self) -> ScreenBuilder[ContextT]:
-        """Return screen builder for welcome screen."""
 
     def add_post_action(self, *actions: PostAction) -> None:
         for action in actions:
