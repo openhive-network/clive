@@ -283,6 +283,7 @@ deploy_wheel_to_pypi:
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - source docker_image_name.env
     - docker push ${CLIVE_IMAGE_NAME}
+    - echo -e "${TXT_BLUE}Pushed image ${TXT_GREEN}${CLIVE_IMAGE_NAME}${TXT_CLEAR}"
   artifacts:
     reports:
       dotenv: docker_image_name.env
