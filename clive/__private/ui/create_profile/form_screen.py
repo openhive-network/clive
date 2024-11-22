@@ -38,10 +38,11 @@ class FirstFormScreen(FormScreenBase[ContextT]):
         self._owner.action_next_screen()
 
 
-class FormScreen(FirstFormScreen[ContextT], ABC):
+class FormScreen(FormScreenBase[ContextT], ABC):
     BINDINGS = [
         Binding("escape", "previous_screen", "Previous screen", show=False),
         Binding(PREVIOUS_SCREEN_BINDING_KEY, "previous_screen", "Previous screen"),
+        Binding(NEXT_SCREEN_BINDING_KEY, "next_screen", "Next screen"),
     ]
 
     should_finish: bool = var(default=False)  # type: ignore[assignment]
@@ -77,7 +78,7 @@ class FormScreen(FirstFormScreen[ContextT], ABC):
             await self.finish()
             return
 
-        await super().action_next_screen()
+        self._owner.action_next_screen()
 
     async def finish(self) -> None:
         # Has to be done in a separate task to avoid deadlock. More: https://github.com/Textualize/textual/issues/5008
