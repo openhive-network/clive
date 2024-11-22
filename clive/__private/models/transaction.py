@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import Field, validator
 
@@ -16,6 +16,9 @@ from clive.__private.models.schemas import (
 )
 from clive.__private.models.schemas import Transaction as SchemasTransaction
 
+if TYPE_CHECKING:
+    from collections.abc import Iterator
+
 
 class Transaction(SchemasTransaction):
     operations: list[OperationRepresentationUnion] = Field(default_factory=list)
@@ -24,6 +27,21 @@ class Transaction(SchemasTransaction):
     expiration: HiveDateTime = Field(default_factory=lambda: HiveDateTime.now() + timedelta(minutes=30))
     extensions: list[Any] = Field(default_factory=list)
     signatures: list[Signature] = Field(default_factory=list)
+
+    def __bool__(self) -> bool:
+        """Return True when there are any operations."""
+        return bool(self.operations)
+
+    def __contains__(self, operation: OperationRepresentationUnion | OperationUnion) -> bool:
+        if isinstance(operation, OperationUnion):
+            return operation in self.operations_models
+        return operation in self.operations
+
+    def __iter__(self) -> Iterator[OperationUnion]:  # type: ignore[override]
+        return iter(self.operations_models)
+
+    def __len__(self) -> int:
+        return len(self.operations)
 
     @property
     def operations_models(self) -> list[OperationUnion]:
@@ -36,8 +54,15 @@ class Transaction(SchemasTransaction):
         assert isinstance(value, list)
         return [convert_to_representation(op) for op in value]
 
-    def add_operation(self, operation: OperationUnion) -> None:
-        self.operations.append(convert_to_representation(operation))
+    def add_operation(self, *operations: OperationUnion) -> None:
+        operation_representations = self.convert_operations(list(operations))
+        self.operations.extend(operation_representations)
+
+    def remove_operation(self, operation: OperationUnion) -> None:
+        for op in self.operations:
+            if op.value == operation:  # type: ignore[attr-defined]
+                self.operations.remove(op)
+                return
 
     def is_signed(self) -> bool:
         return bool(self.signatures)
@@ -49,6 +74,14 @@ class Transaction(SchemasTransaction):
         from clive.__private.core import iwax
 
         return TransactionId(iwax.calculate_transaction_id(self))
+
+    def reset(self) -> None:
+        self.operations: list[OperationRepresentationUnion] = []
+        self.ref_block_num: HiveInt = HiveInt(-1)
+        self.ref_block_prefix: HiveInt = HiveInt(-1)
+        self.expiration: HiveDateTime = HiveDateTime.now() + timedelta(minutes=30)
+        self.extensions: list[Any] = []
+        self.signatures: list[Signature] = []
 
     def with_hash(self) -> TransactionWithHash:
         return TransactionWithHash(**self.dict(by_alias=True), transaction_id=self.calculate_transaction_id())
