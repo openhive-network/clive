@@ -1,15 +1,14 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar
 
 from textual import on
 
 from clive.__private.logger import logger
 from clive.__private.ui.create_profile.context import CreateProfileContext
 from clive.__private.ui.create_profile.form_screen import FormScreen
-from clive.__private.ui.create_profile.navigation_buttons import NextScreenButton, PreviousScreenButton
+from clive.__private.ui.create_profile.navigation_buttons import PreviousScreenButton
 from clive.__private.ui.screens.config.manage_key_aliases.new_key_alias import NewKeyAliasBase
-from clive.__private.ui.widgets.inputs.clive_input import CliveInput
 from clive.__private.ui.widgets.inputs.clive_validated_input import FailedManyValidationError
 
 if TYPE_CHECKING:
@@ -22,27 +21,15 @@ class NewKeyAliasForm(NewKeyAliasBase[CreateProfileContext], FormScreen[CreatePr
     IS_KEY_ALIAS_REQUIRED: ClassVar[bool] = False
     IS_PRIVATE_KEY_REQUIRED: ClassVar[bool] = False
 
-    @property
-    def should_complete_this_step(self) -> bool:
-        """NewKeyAliasForm step is optional, to check if it should be skipped use this property."""
-        return not self._key_input.is_empty or not self._key_alias_input.is_empty
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        self.should_finish = True
 
     @on(PreviousScreenButton.Pressed)
     async def action_previous_screen(self) -> None:
         # We allow just for adding one key during create_profile. Clear old ones because validation could fail.
         self.context.profile.keys.clear_to_import()
         await super().action_previous_screen()
-
-    @on(NextScreenButton.Pressed)
-    @on(CliveInput.Submitted)
-    async def action_next_screen(self) -> None:
-        self.should_finish = True
-        if not self.should_complete_this_step:
-            # skip validation and apply part
-            await self.finish()
-            return
-
-        await super().action_next_screen()
 
     async def validate(self) -> NewKeyAliasForm.ValidationFail | None:
         try:
@@ -54,6 +41,9 @@ class NewKeyAliasForm(NewKeyAliasBase[CreateProfileContext], FormScreen[CreatePr
     async def apply(self) -> None:
         self.context.profile.keys.set_to_import([self._private_key_aliased])
         logger.debug("New private key is waiting to be imported...")
+
+    def is_step_optional(self) -> bool:
+        return self._key_input.is_empty or self._key_alias_input.is_empty
 
     def get_node(self) -> Node:
         return self.context.node

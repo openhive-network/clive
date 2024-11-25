@@ -65,14 +65,15 @@ class FormScreen(FormScreenBase[ContextT], ABC):
     @on(NextScreenButton.Pressed)
     @on(CliveInput.Submitted)
     async def action_next_screen(self) -> None:
-        validation_result = await self.validate()
-        if isinstance(validation_result, self.ValidationFail):
-            notification_message = validation_result.notification_message
-            if notification_message:
-                self.notify(notification_message, severity="error")
-            return
+        if not self.is_step_optional():
+            validation_result = await self.validate()
+            if isinstance(validation_result, self.ValidationFail):
+                notification_message = validation_result.notification_message
+                if notification_message:
+                    self.notify(notification_message, severity="error")
+                return
 
-        await self.apply()
+            await self.apply()
 
         if self.should_finish:
             await self.finish()
@@ -91,6 +92,10 @@ class FormScreen(FormScreenBase[ContextT], ABC):
     @abstractmethod
     async def apply(self) -> None:
         """Apply the form data."""
+
+    def is_step_optional(self) -> bool:
+        """Override to skip form validation."""
+        return False
 
     async def _action_finish(self) -> None:
         self._owner.add_post_action(self.app.update_alarms_data_asap_on_newest_node_data)
