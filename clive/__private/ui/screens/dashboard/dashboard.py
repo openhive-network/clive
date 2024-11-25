@@ -263,7 +263,7 @@ class WatchedAccountContainer(Static, CliveWidget):
 
 class Dashboard(BaseScreen):
     CSS_PATH = [get_relative_css_path(__file__, name="dashboard")]
-    NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (go to the Config view to add some)"
+    NO_ACCOUNTS_INFO: ClassVar[str] = "No accounts found (press F4 to add some)"
 
     BINDINGS = [
         Binding("f1", "help", "Help"),  # help is a hidden global binding, but we want to show it here
